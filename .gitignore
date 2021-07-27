@@ -1,0 +1,6 @@
+sonic.lst
+*.txt
+s1built.bin
+s1built.prev.bin
+smps*
+samples/*
