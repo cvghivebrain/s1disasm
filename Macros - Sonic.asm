@@ -161,3 +161,36 @@ piece:		macro
 		dc.w sprite_tile+sprite_xflip+sprite_yflip+sprite_hi+sprite_pal
 		dc.b sprite_xpos
 		endm
+
+; ---------------------------------------------------------------------------
+; Object placement
+; input: xpos, ypos, object id, subtype
+; optional: xflip, yflip, rem (any order)
+; ---------------------------------------------------------------------------
+
+objpos:		macro
+		dc.w \1		; xpos
+		obj_ypos: = \2
+		obj_id: = \3
+		obj_sub: = \4
+		obj_xflip: = 0
+		obj_yflip: = 0
+		obj_rem: = 0
+		rept narg-4
+			if strcmp("\5","xflip")
+			obj_xflip: = $4000
+			elseif strcmp("\5","yflip")
+			obj_yflip: = $8000
+			elseif strcmp("\5","rem")
+			obj_rem: = $80
+			else
+			endc
+		shift
+		endr
+		
+		dc.w obj_ypos+obj_xflip+obj_yflip
+		dc.b obj_id+obj_rem, obj_sub
+		endm
+
+endobj:		macros
+		objpos $ffff,0,0,0

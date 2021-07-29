@@ -41197,31 +41197,31 @@ ObjPosSBZPlatform_Index:
 		ptr ObjPos_SBZ1pf1
 		ptr ObjPos_SBZ1pf2
 		dc.b $FF, $FF, 0, 0, 0,	0
-ObjPos_GHZ1:	incbin	"objpos\ghz1.bin"
+ObjPos_GHZ1:	include	"objpos\GHZ1.asm"
 		even
-ObjPos_GHZ2:	incbin	"objpos\ghz2.bin"
+ObjPos_GHZ2:	include	"objpos\ghz2.asm"
 		even
 ObjPos_GHZ3:	if Revision=0
-		incbin	"objpos\ghz3.bin"
+		include	"objpos\ghz3.asm"
 		else
-		incbin	"objpos\ghz3 (JP1).bin"
+		include	"objpos\ghz3 (JP1).asm"
 		endc
 		even
 ObjPos_LZ1:	if Revision=0
-		incbin	"objpos\lz1.bin"
+		include	"objpos\lz1.asm"
 		else
-		incbin	"objpos\lz1 (JP1).bin"
+		include	"objpos\lz1 (JP1).asm"
 		endc
 		even
-ObjPos_LZ2:	incbin	"objpos\lz2.bin"
+ObjPos_LZ2:	include	"objpos\lz2.asm"
 		even
 ObjPos_LZ3:	if Revision=0
-		incbin	"objpos\lz3.bin"
+		include	"objpos\lz3.asm"
 		else
-		incbin	"objpos\lz3 (JP1).bin"
+		include	"objpos\lz3 (JP1).asm"
 		endc
 		even
-ObjPos_SBZ3:	incbin	"objpos\sbz3.bin"
+ObjPos_SBZ3:	include	"objpos\sbz3.asm"
 		even
 ObjPos_LZ1pf1:	incbin	"objpos\lz1pf1.bin"
 		even
@@ -41236,40 +41236,40 @@ ObjPos_LZ3pf1:	incbin	"objpos\lz3pf1.bin"
 ObjPos_LZ3pf2:	incbin	"objpos\lz3pf2.bin"
 		even
 ObjPos_MZ1:	if Revision=0
-		incbin	"objpos\mz1.bin"
+		include	"objpos\mz1.asm"
 		else
-		incbin	"objpos\mz1 (JP1).bin"
+		include	"objpos\mz1 (JP1).asm"
 		endc
 		even
-ObjPos_MZ2:	incbin	"objpos\mz2.bin"
+ObjPos_MZ2:	include	"objpos\mz2.asm"
 		even
-ObjPos_MZ3:	incbin	"objpos\mz3.bin"
+ObjPos_MZ3:	include	"objpos\mz3.asm"
 		even
-ObjPos_SLZ1:	incbin	"objpos\slz1.bin"
+ObjPos_SLZ1:	include	"objpos\slz1.asm"
 		even
-ObjPos_SLZ2:	incbin	"objpos\slz2.bin"
+ObjPos_SLZ2:	include	"objpos\slz2.asm"
 		even
-ObjPos_SLZ3:	incbin	"objpos\slz3.bin"
+ObjPos_SLZ3:	include	"objpos\slz3.asm"
 		even
-ObjPos_SYZ1:	incbin	"objpos\syz1.bin"
+ObjPos_SYZ1:	include	"objpos\syz1.asm"
 		even
-ObjPos_SYZ2:	incbin	"objpos\syz2.bin"
+ObjPos_SYZ2:	include	"objpos\syz2.asm"
 		even
 ObjPos_SYZ3:	if Revision=0
-		incbin	"objpos\syz3.bin"
+		include	"objpos\syz3.asm"
 		else
-		incbin	"objpos\syz3 (JP1).bin"
+		include	"objpos\syz3 (JP1).asm"
 		endc
 		even
 ObjPos_SBZ1:	if Revision=0
-		incbin	"objpos\sbz1.bin"
+		include	"objpos\sbz1.asm"
 		else
-		incbin	"objpos\sbz1 (JP1).bin"
+		include	"objpos\sbz1 (JP1).asm"
 		endc
 		even
-ObjPos_SBZ2:	incbin	"objpos\sbz2.bin"
+ObjPos_SBZ2:	include	"objpos\sbz2.asm"
 		even
-ObjPos_FZ:	incbin	"objpos\fz.bin"
+ObjPos_FZ:	include	"objpos\FZ.asm"
 		even
 ObjPos_SBZ1pf1:	incbin	"objpos\sbz1pf1.bin"
 		even
@@ -41283,7 +41283,7 @@ ObjPos_SBZ1pf5:	incbin	"objpos\sbz1pf5.bin"
 		even
 ObjPos_SBZ1pf6:	incbin	"objpos\sbz1pf6.bin"
 		even
-ObjPos_End:	incbin	"objpos\ending.bin"
+ObjPos_End:	include	"objpos\ending.asm"
 		even
 ObjPos_Null:	dc.b $FF, $FF, 0, 0, 0,	0
 
