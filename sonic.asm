@@ -18205,7 +18205,7 @@ Obj_Index:
 		ptr SonicPlayer		; $01
 		ptr NullObject
 		ptr NullObject
-		ptr NullObject
+		ptr NullObject		; $04
 		ptr NullObject
 		ptr NullObject
 		ptr NullObject
@@ -18213,7 +18213,7 @@ Obj_Index:
 		ptr SonicSpecial
 		ptr DrownCount
 		ptr Pole
-		ptr FlapDoor
+		ptr FlapDoor		; $0C
 		ptr Signpost
 		ptr TitleSonic
 		ptr PSBTM
@@ -18221,7 +18221,7 @@ Obj_Index:
 		ptr Bridge
 		ptr SpinningLight
 		ptr LavaMaker
-		ptr LavaBall
+		ptr LavaBall		; $14
 		ptr SwingingPlatform
 		ptr Harpoon
 		ptr Helix
@@ -18229,7 +18229,7 @@ Obj_Index:
 		ptr Obj19
 		ptr CollapseLedge
 		ptr WaterSurface
-		ptr Scenery
+		ptr Scenery		; $1C
 		ptr MagicSwitch
 		ptr BallHog
 		ptr Crabmeat
@@ -18237,7 +18237,7 @@ Obj_Index:
 		ptr HUD
 		ptr BuzzBomber
 		ptr Missile
-		ptr MissileDissolve
+		ptr MissileDissolve	; $24
 		ptr Rings
 		ptr Monitor
 		ptr ExplosionItem
@@ -18245,7 +18245,7 @@ Obj_Index:
 		ptr Points
 		ptr AutoDoor
 		ptr Chopper
-		ptr Jaws
+		ptr Jaws		; $2C
 		ptr Burrobot
 		ptr PowerUp
 		ptr LargeGrass
@@ -18253,7 +18253,7 @@ Obj_Index:
 		ptr ChainStomp
 		ptr Button
 		ptr PushBlock
-		ptr TitleCard
+		ptr TitleCard		; $34
 		ptr GrassFire
 		ptr Spikes
 		ptr RingLoss
@@ -18261,7 +18261,7 @@ Obj_Index:
 		ptr GameOverCard
 		ptr GotThroughCard
 		ptr PurpleRock
-		ptr SmashWall
+		ptr SmashWall		; $3C
 		ptr BossGreenHill
 		ptr Prison
 		ptr ExplosionBomb
@@ -18269,7 +18269,7 @@ Obj_Index:
 		ptr Springs
 		ptr Newtron
 		ptr Roller
-		ptr EdgeWalls
+		ptr EdgeWalls		; $44
 		ptr SideStomp
 		ptr MarbleBrick
 		ptr Bumper
@@ -18277,7 +18277,7 @@ Obj_Index:
 		ptr WaterSound
 		ptr VanishSonic
 		ptr GiantRing
-		ptr GeyserMaker
+		ptr GeyserMaker		; $4C
 		ptr LavaGeyser
 		ptr LavaWall
 		ptr Obj4F
@@ -18285,7 +18285,7 @@ Obj_Index:
 		ptr SmashBlock
 		ptr MovingBlock
 		ptr CollapseFloor
-		ptr LavaTag
+		ptr LavaTag		; $54
 		ptr Basaran
 		ptr FloatingBlock
 		ptr SpikeBall
@@ -18293,7 +18293,7 @@ Obj_Index:
 		ptr Elevator
 		ptr CirclingPlatform
 		ptr Staircase
-		ptr Pylon
+		ptr Pylon		; $5C
 		ptr Fan
 		ptr Seesaw
 		ptr Bomb
@@ -18301,7 +18301,7 @@ Obj_Index:
 		ptr LabyrinthBlock
 		ptr Gargoyle
 		ptr LabyrinthConvey
-		ptr Bubble
+		ptr Bubble		; $64
 		ptr Waterfall
 		ptr Junction
 		ptr RunningDisc
@@ -18309,7 +18309,7 @@ Obj_Index:
 		ptr SpinPlatform
 		ptr Saws
 		ptr ScrapStomp
-		ptr VanishPlatform
+		ptr VanishPlatform	; $6C
 		ptr Flamethrower
 		ptr Electro
 		ptr SpinConvey
@@ -18317,7 +18317,7 @@ Obj_Index:
 		ptr Invisibarrier
 		ptr Teleport
 		ptr BossMarble
-		ptr BossFire
+		ptr BossFire		; $74
 		ptr BossSpringYard
 		ptr BossBlock
 		ptr BossLabyrinth
@@ -18325,7 +18325,7 @@ Obj_Index:
 		ptr Lamppost
 		ptr BossStarLight
 		ptr BossSpikeball
-		ptr RingFlash
+		ptr RingFlash		; $7C
 		ptr HiddenBonus
 		ptr SSResult
 		ptr SSRChaos
@@ -18333,7 +18333,7 @@ Obj_Index:
 		ptr ContSonic
 		ptr ScrapEggman
 		ptr FalseFloor
-		ptr EggmanCylinder
+		ptr EggmanCylinder	; $84
 		ptr BossFinal
 		ptr BossPlasma
 		ptr EndSonic
@@ -18341,7 +18341,7 @@ Obj_Index:
 		ptr EndSTH
 		ptr CreditsText
 		ptr EndEggman
-		ptr TryChaos
+		ptr TryChaos		; $8C
 
 NullObject:
 		;jmp	(DeleteObject).l	; It would be safer to have this instruction here, but instead it just falls through to ObjectFall
@@ -41196,96 +41196,97 @@ ObjPosSBZPlatform_Index:
 		ptr ObjPos_SBZ1pf6
 		ptr ObjPos_SBZ1pf1
 		ptr ObjPos_SBZ1pf2
-		dc.b $FF, $FF, 0, 0, 0,	0
-ObjPos_GHZ1:	include	"objpos\GHZ1.asm"
+		endobj
+		
+ObjPos_GHZ1:	include	"Object Placement\GHZ1.asm"
 		even
-ObjPos_GHZ2:	include	"objpos\ghz2.asm"
+ObjPos_GHZ2:	include	"Object Placement\GHZ2.asm"
 		even
 ObjPos_GHZ3:	if Revision=0
-		include	"objpos\ghz3.asm"
+		include	"Object Placement\GHZ3.asm"
 		else
-		include	"objpos\ghz3 (JP1).asm"
+		include	"Object Placement\GHZ3 (JP1).asm"
 		endc
 		even
 ObjPos_LZ1:	if Revision=0
-		include	"objpos\lz1.asm"
+		include	"Object Placement\LZ1.asm"
 		else
-		include	"objpos\lz1 (JP1).asm"
+		include	"Object Placement\LZ1 (JP1).asm"
 		endc
 		even
-ObjPos_LZ2:	include	"objpos\lz2.asm"
+ObjPos_LZ2:	include	"Object Placement\LZ2.asm"
 		even
 ObjPos_LZ3:	if Revision=0
-		include	"objpos\lz3.asm"
+		include	"Object Placement\LZ3.asm"
 		else
-		include	"objpos\lz3 (JP1).asm"
+		include	"Object Placement\LZ3 (JP1).asm"
 		endc
 		even
-ObjPos_SBZ3:	include	"objpos\sbz3.asm"
+ObjPos_SBZ3:	include	"Object Placement\SBZ3.asm"
 		even
-ObjPos_LZ1pf1:	incbin	"objpos\lz1pf1.bin"
+ObjPos_LZ1pf1:	incbin	"Object Placement\lz1pf1.bin"
 		even
-ObjPos_LZ1pf2:	incbin	"objpos\lz1pf2.bin"
+ObjPos_LZ1pf2:	incbin	"Object Placement\lz1pf2.bin"
 		even
-ObjPos_LZ2pf1:	incbin	"objpos\lz2pf1.bin"
+ObjPos_LZ2pf1:	incbin	"Object Placement\lz2pf1.bin"
 		even
-ObjPos_LZ2pf2:	incbin	"objpos\lz2pf2.bin"
+ObjPos_LZ2pf2:	incbin	"Object Placement\lz2pf2.bin"
 		even
-ObjPos_LZ3pf1:	incbin	"objpos\lz3pf1.bin"
+ObjPos_LZ3pf1:	incbin	"Object Placement\lz3pf1.bin"
 		even
-ObjPos_LZ3pf2:	incbin	"objpos\lz3pf2.bin"
+ObjPos_LZ3pf2:	incbin	"Object Placement\lz3pf2.bin"
 		even
 ObjPos_MZ1:	if Revision=0
-		include	"objpos\mz1.asm"
+		include	"Object Placement\MZ1.asm"
 		else
-		include	"objpos\mz1 (JP1).asm"
+		include	"Object Placement\MZ1 (JP1).asm"
 		endc
 		even
-ObjPos_MZ2:	include	"objpos\mz2.asm"
+ObjPos_MZ2:	include	"Object Placement\MZ2.asm"
 		even
-ObjPos_MZ3:	include	"objpos\mz3.asm"
+ObjPos_MZ3:	include	"Object Placement\MZ3.asm"
 		even
-ObjPos_SLZ1:	include	"objpos\slz1.asm"
+ObjPos_SLZ1:	include	"Object Placement\SLZ1.asm"
 		even
-ObjPos_SLZ2:	include	"objpos\slz2.asm"
+ObjPos_SLZ2:	include	"Object Placement\SLZ2.asm"
 		even
-ObjPos_SLZ3:	include	"objpos\slz3.asm"
+ObjPos_SLZ3:	include	"Object Placement\SLZ3.asm"
 		even
-ObjPos_SYZ1:	include	"objpos\syz1.asm"
+ObjPos_SYZ1:	include	"Object Placement\SYZ1.asm"
 		even
-ObjPos_SYZ2:	include	"objpos\syz2.asm"
+ObjPos_SYZ2:	include	"Object Placement\SYZ2.asm"
 		even
 ObjPos_SYZ3:	if Revision=0
-		include	"objpos\syz3.asm"
+		include	"Object Placement\SYZ3.asm"
 		else
-		include	"objpos\syz3 (JP1).asm"
+		include	"Object Placement\SYZ3 (JP1).asm"
 		endc
 		even
 ObjPos_SBZ1:	if Revision=0
-		include	"objpos\sbz1.asm"
+		include	"Object Placement\SBZ1.asm"
 		else
-		include	"objpos\sbz1 (JP1).asm"
+		include	"Object Placement\SBZ1 (JP1).asm"
 		endc
 		even
-ObjPos_SBZ2:	include	"objpos\sbz2.asm"
+ObjPos_SBZ2:	include	"Object Placement\SBZ2.asm"
 		even
-ObjPos_FZ:	include	"objpos\FZ.asm"
+ObjPos_FZ:	include	"Object Placement\FZ.asm"
 		even
-ObjPos_SBZ1pf1:	incbin	"objpos\sbz1pf1.bin"
+ObjPos_SBZ1pf1:	incbin	"Object Placement\sbz1pf1.bin"
 		even
-ObjPos_SBZ1pf2:	incbin	"objpos\sbz1pf2.bin"
+ObjPos_SBZ1pf2:	incbin	"Object Placement\sbz1pf2.bin"
 		even
-ObjPos_SBZ1pf3:	incbin	"objpos\sbz1pf3.bin"
+ObjPos_SBZ1pf3:	incbin	"Object Placement\sbz1pf3.bin"
 		even
-ObjPos_SBZ1pf4:	incbin	"objpos\sbz1pf4.bin"
+ObjPos_SBZ1pf4:	incbin	"Object Placement\sbz1pf4.bin"
 		even
-ObjPos_SBZ1pf5:	incbin	"objpos\sbz1pf5.bin"
+ObjPos_SBZ1pf5:	incbin	"Object Placement\sbz1pf5.bin"
 		even
-ObjPos_SBZ1pf6:	incbin	"objpos\sbz1pf6.bin"
+ObjPos_SBZ1pf6:	incbin	"Object Placement\sbz1pf6.bin"
 		even
-ObjPos_End:	include	"objpos\ending.asm"
+ObjPos_End:	include	"Object Placement\Ending.asm"
 		even
-ObjPos_Null:	dc.b $FF, $FF, 0, 0, 0,	0
+ObjPos_Null:	endobj
 
 		if Revision=0
 		dcb.b $62A,$FF
