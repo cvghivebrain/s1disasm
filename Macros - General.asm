@@ -4,7 +4,7 @@
 ; ---------------------------------------------------------------------------
 
 align:	macro
-	if (narg=1)
+	if narg=1
 	dcb.b \1-(*%\1),0
 	else
 	dcb.b \1-(*%\1),\2
@@ -114,7 +114,7 @@ ptr:		macro
 ; ---------------------------------------------------------------------------
 
 locVRAM:	macro loc,controlport
-		if (narg=1)
+		if narg=1
 		move.l	#($40000000+((loc&$3FFF)<<16)+((loc&$C000)>>14)),(vdp_control_port).l
 		else
 		move.l	#($40000000+((loc&$3FFF)<<16)+((loc&$C000)>>14)),controlport
@@ -122,32 +122,39 @@ locVRAM:	macro loc,controlport
 		endm
 
 ; ---------------------------------------------------------------------------
-; DMA copy data from 68K (ROM/RAM) to the VRAM.
-; input: source, length, destination
+; DMA copy data from 68K (ROM/RAM) to VRAM/CRAM/VSRAM.
+; input: source, length, destination ([vram address]|cram|vsram),
+;  cram/vsram destination (0 by default)
 ; ---------------------------------------------------------------------------
 
-writeVRAM:	macro
+dma:		macro
+		dma_type: = $4000
+		dma_type2: = $80
+		
+		if strcmp("\3","cram")
+		dma_type: = $C000
+			if strlen("\4")=0
+			dma_dest: = 0
+			else
+			dma_dest: = \4
+			endc
+		elseif strcmp("\3","vsram")
+		dma_type2: = $90
+			if strlen("\4")=0
+			dma_dest: = 0
+			else
+			dma_dest: = \4
+			endc
+		else
+		dma_dest: = \3
+		endc
+		
 		lea	(vdp_control_port).l,a5
 		move.l	#$94000000+(((\2>>1)&$FF00)<<8)+$9300+((\2>>1)&$FF),(a5)
 		move.l	#$96000000+(((\1>>1)&$FF00)<<8)+$9500+((\1>>1)&$FF),(a5)
 		move.w	#$9700+((((\1>>1)&$FF0000)>>16)&$7F),(a5)
-		move.w	#$4000+(\3&$3FFF),(a5)
-		move.w	#$80+((\3&$C000)>>14),(v_vdp_buffer2).w
-		move.w	(v_vdp_buffer2).w,(a5)
-		endm
-
-; ---------------------------------------------------------------------------
-; DMA copy data from 68K (ROM/RAM) to the CRAM.
-; input: source, length, destination
-; ---------------------------------------------------------------------------
-
-writeCRAM:	macro
-		lea	(vdp_control_port).l,a5
-		move.l	#$94000000+(((\2>>1)&$FF00)<<8)+$9300+((\2>>1)&$FF),(a5)
-		move.l	#$96000000+(((\1>>1)&$FF00)<<8)+$9500+((\1>>1)&$FF),(a5)
-		move.w	#$9700+((((\1>>1)&$FF0000)>>16)&$7F),(a5)
-		move.w	#$C000+(\3&$3FFF),(a5)
-		move.w	#$80+((\3&$C000)>>14),(v_vdp_buffer2).w
+		move.w	#dma_type+(dma_dest&$3FFF),(a5)
+		move.w	#dma_type2+((dma_dest&$C000)>>14),(v_vdp_buffer2).w
 		move.w	(v_vdp_buffer2).w,(a5)
 		endm
 
@@ -156,7 +163,7 @@ writeCRAM:	macro
 ; input: value, length, destination
 ; ---------------------------------------------------------------------------
 
-fillVRAM:	macro value,length,loc
+dma_fill:	macro value,length,loc
 		lea	(vdp_control_port).l,a5
 		move.w	#$8F01,(a5)
 		move.l	#$94000000+((length&$FF00)<<8)+$9300+(length&$FF),(a5)

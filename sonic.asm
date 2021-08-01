@@ -641,11 +641,11 @@ VBla_00:
 		tst.b	(f_wtr_state).w	; is water above top of screen?
 		bne.s	@waterabove 	; if yes, branch
 
-		writeCRAM	v_pal_dry,$80,0
+		dma	v_pal_dry,$80,cram
 		bra.s	@waterbelow
 
 @waterabove:
-		writeCRAM	v_pal_water,$80,0
+		dma	v_pal_water,$80,cram
 
 	@waterbelow:
 		move.w	(v_hbla_hreg).w,(a5)
@@ -693,21 +693,21 @@ VBla_08:
 		tst.b	(f_wtr_state).w
 		bne.s	@waterabove
 
-		writeCRAM	v_pal_dry,$80,0
+		dma	v_pal_dry,$80,cram
 		bra.s	@waterbelow
 
 @waterabove:
-		writeCRAM	v_pal_water,$80,0
+		dma	v_pal_water,$80,cram
 
 	@waterbelow:
 		move.w	(v_hbla_hreg).w,(a5)
 
-		writeVRAM	v_hscrolltablebuffer,$380,vram_hscroll
-		writeVRAM	v_spritetablebuffer,$280,vram_sprites
+		dma	v_hscrolltablebuffer,$380,vram_hscroll
+		dma	v_spritetablebuffer,$280,vram_sprites
 		tst.b	(f_sonframechg).w ; has Sonic's sprite changed?
 		beq.s	@nochg		; if not, branch
 
-		writeVRAM	v_sgfx_buffer,$2E0,vram_sonic ; load new Sonic gfx
+		dma	v_sgfx_buffer,$2E0,vram_sonic ; load new Sonic gfx
 		move.b	#0,(f_sonframechg).w
 
 	@nochg:
@@ -748,15 +748,15 @@ VBla_0A:
 		stopZ80
 		waitZ80
 		bsr.w	ReadJoypads
-		writeCRAM	v_pal_dry,$80,0
-		writeVRAM	v_spritetablebuffer,$280,vram_sprites
-		writeVRAM	v_hscrolltablebuffer,$380,vram_hscroll
+		dma	v_pal_dry,$80,cram
+		dma	v_spritetablebuffer,$280,vram_sprites
+		dma	v_hscrolltablebuffer,$380,vram_hscroll
 		startZ80
 		bsr.w	PalCycle_SS
 		tst.b	(f_sonframechg).w ; has Sonic's sprite changed?
 		beq.s	@nochg		; if not, branch
 
-		writeVRAM	v_sgfx_buffer,$2E0,vram_sonic ; load new Sonic gfx
+		dma	v_sgfx_buffer,$2E0,vram_sonic ; load new Sonic gfx
 		move.b	#0,(f_sonframechg).w
 
 	@nochg:
@@ -775,19 +775,19 @@ VBla_0C:
 		tst.b	(f_wtr_state).w
 		bne.s	@waterabove
 
-		writeCRAM	v_pal_dry,$80,0
+		dma	v_pal_dry,$80,cram
 		bra.s	@waterbelow
 
 @waterabove:
-		writeCRAM	v_pal_water,$80,0
+		dma	v_pal_water,$80,cram
 
 	@waterbelow:
 		move.w	(v_hbla_hreg).w,(a5)
-		writeVRAM	v_hscrolltablebuffer,$380,vram_hscroll
-		writeVRAM	v_spritetablebuffer,$280,vram_sprites
+		dma	v_hscrolltablebuffer,$380,vram_hscroll
+		dma	v_spritetablebuffer,$280,vram_sprites
 		tst.b	(f_sonframechg).w
 		beq.s	@nochg
-		writeVRAM	v_sgfx_buffer,$2E0,vram_sonic
+		dma	v_sgfx_buffer,$2E0,vram_sonic
 		move.b	#0,(f_sonframechg).w
 
 	@nochg:
@@ -820,13 +820,13 @@ VBla_16:
 		stopZ80
 		waitZ80
 		bsr.w	ReadJoypads
-		writeCRAM	v_pal_dry,$80,0
-		writeVRAM	v_spritetablebuffer,$280,vram_sprites
-		writeVRAM	v_hscrolltablebuffer,$380,vram_hscroll
+		dma	v_pal_dry,$80,cram
+		dma	v_spritetablebuffer,$280,vram_sprites
+		dma	v_hscrolltablebuffer,$380,vram_hscroll
 		startZ80
 		tst.b	(f_sonframechg).w
 		beq.s	@nochg
-		writeVRAM	v_sgfx_buffer,$2E0,vram_sonic
+		dma	v_sgfx_buffer,$2E0,vram_sonic
 		move.b	#0,(f_sonframechg).w
 
 	@nochg:
@@ -846,15 +846,15 @@ sub_106E:
 		bsr.w	ReadJoypads
 		tst.b	(f_wtr_state).w ; is water above top of screen?
 		bne.s	@waterabove	; if yes, branch
-		writeCRAM	v_pal_dry,$80,0
+		dma	v_pal_dry,$80,cram
 		bra.s	@waterbelow
 
 	@waterabove:
-		writeCRAM	v_pal_water,$80,0
+		dma	v_pal_water,$80,cram
 
 	@waterbelow:
-		writeVRAM	v_spritetablebuffer,$280,vram_sprites
-		writeVRAM	v_hscrolltablebuffer,$380,vram_hscroll
+		dma	v_spritetablebuffer,$280,vram_sprites
+		dma	v_hscrolltablebuffer,$380,vram_hscroll
 		startZ80
 		rts	
 ; End of function sub_106E
@@ -1005,11 +1005,11 @@ VDPSetupGame:
 		clr.l	(v_scrposy_dup).w
 		clr.l	(v_scrposx_dup).w
 		move.l	d1,-(sp)
-		fillVRAM	0,$FFFF,0
+		dma_fill	0,$FFFF,0
 
 	@waitforDMA:
 		move.w	(a5),d1
-		btst	#1,d1		; is DMA (fillVRAM) still running?
+		btst	#1,d1		; is dma_fill still running?
 		bne.s	@waitforDMA	; if yes, branch
 
 		move.w	#$8F02,(a5)	; set VDP increment size
@@ -1046,7 +1046,7 @@ VDPSetupArray:	dc.w $8004		; 8-colour mode
 
 
 ClearScreen:
-		fillVRAM	0,$FFF,vram_fg ; clear foreground namespace
+		dma_fill	0,$FFF,vram_fg ; clear foreground namespace
 
 	@wait1:
 		move.w	(a5),d1
@@ -1054,7 +1054,7 @@ ClearScreen:
 		bne.s	@wait1
 
 		move.w	#$8F02,(a5)
-		fillVRAM	0,$FFF,vram_bg ; clear background namespace
+		dma_fill	0,$FFF,vram_bg ; clear background namespace
 
 	@wait2:
 		move.w	(a5),d1
@@ -5106,7 +5106,7 @@ GM_Special:
 		move.w	d0,(vdp_control_port).l
 		bsr.w	ClearScreen
 		enable_ints
-		fillVRAM	0,$6FFF,$5000
+		dma_fill	0,$6FFF,$5000
 
 	SS_WaitForDMA:
 		move.w	(a5),d1		; read control port ($C00004)
