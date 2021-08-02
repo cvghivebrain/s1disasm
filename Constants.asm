@@ -130,32 +130,6 @@ invtime:	equ $32	; time left for invincibility
 shoetime:	equ $34	; time left for speed shoes
 standonobject:	equ $3D	; object Sonic stands on
 
-; Object variables (Sonic 2 disassembly nomenclature)
-render_flags:	equ 1	; bitfield for x/y flip, display mode
-art_tile:	equ 2	; palette line & VRAM setting (2 bytes)
-mappings:	equ 4	; mappings address (4 bytes)
-x_pos:		equ 8	; x-axis position (2-4 bytes)
-y_pos:		equ $C	; y-axis position (2-4 bytes)
-x_vel:		equ $10	; x-axis velocity (2 bytes)
-y_vel:		equ $12	; y-axis velocity (2 bytes)
-y_radius:	equ $16	; height/2
-x_radius:	equ $17	; width/2
-priority:	equ $18	; sprite stack priority -- 0 is front
-width_pixels:	equ $19	; action width
-mapping_frame:	equ $1A	; current frame displayed
-anim_frame:	equ $1B	; current frame in animation script
-anim:		equ $1C	; current animation
-next_anim:	equ $1D	; next animation
-anim_frame_duration: equ $1E ; time to next frame
-collision_flags: equ $20 ; collision response type
-collision_property: equ $21 ; collision extra property
-status:		equ $22	; orientation or mode
-respawn_index:	equ $23	; respawn list index number
-routine:	equ $24	; routine number
-routine_secondary: equ $25 ; secondary routine number
-angle:		equ $26	; angle
-subtype:	equ $28	; object subtype
-
 ; Animation flags
 afEnd:		equ $FF	; return to beginning of animation
 afBack:		equ $FE	; go back (specified number) bytes

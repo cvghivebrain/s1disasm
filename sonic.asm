@@ -14528,7 +14528,7 @@ Flash_Collect:
 		bne.s	locret_9F76	; if not, branch
 		movea.l	$3C(a0),a1	; get parent object address
 		move.b	#6,obRoutine(a1) ; delete parent object
-		move.b	#id_Null,(v_player+obAnim).w ; make Sonic invisible
+		move.b	#id_Blank,(v_player+obAnim).w ; make Sonic invisible
 		move.b	#1,(f_bigring).w ; stop	Sonic getting bonuses
 		clr.b	(v_invinc).w	; remove invincibility
 		clr.b	(v_shield).w	; remove shield
@@ -27000,11 +27000,11 @@ Sonic_Animate:
 		neg.w	d2		; modulus speed
 
 	@nomodspeed:
-		lea	(SonAni_Run).l,a1 ; use	running	animation
+		lea	(Run).l,a1	; use running animation
 		cmpi.w	#$600,d2	; is Sonic at running speed?
 		bcc.s	@running	; if yes, branch
 
-		lea	(SonAni_Walk).l,a1 ; use walking animation
+		lea	(Walk).l,a1	; use walking animation
 		move.b	d0,d1
 		lsr.b	#1,d1
 		add.b	d1,d0
@@ -27033,10 +27033,10 @@ Sonic_Animate:
 		neg.w	d2
 
 	@nomodspeed2:
-		lea	(SonAni_Roll2).l,a1 ; use fast animation
+		lea	(Roll2).l,a1	; use fast animation
 		cmpi.w	#$600,d2	; is Sonic moving fast?
 		bcc.s	@rollfast	; if yes, branch
-		lea	(SonAni_Roll).l,a1 ; use slower	animation
+		lea	(Roll).l,a1	; use slower animation
 
 	@rollfast:
 		neg.w	d2
@@ -27067,7 +27067,7 @@ Sonic_Animate:
 	@belowmax3:
 		lsr.w	#6,d2
 		move.b	d2,obTimeFrame(a0) ; modify frame duration
-		lea	(SonAni_Push).l,a1
+		lea	(Pushing).l,a1
 		move.b	obStatus(a0),d1
 		andi.b	#1,d1
 		andi.b	#$FC,obRender(a0)
@@ -27075,139 +27075,9 @@ Sonic_Animate:
 		bra.w	@loadframe
 
 ; End of function Sonic_Animate
-; ---------------------------------------------------------------------------
-; Animation script - Sonic
-; ---------------------------------------------------------------------------
-Ani_Sonic:
 
-ptr_Walk:	dc.w SonAni_Walk-Ani_Sonic
-ptr_Run:	dc.w SonAni_Run-Ani_Sonic
-ptr_Roll:	dc.w SonAni_Roll-Ani_Sonic
-ptr_Roll2:	dc.w SonAni_Roll2-Ani_Sonic
-ptr_Push:	dc.w SonAni_Push-Ani_Sonic
-ptr_Wait:	dc.w SonAni_Wait-Ani_Sonic
-ptr_Balance:	dc.w SonAni_Balance-Ani_Sonic
-ptr_LookUp:	dc.w SonAni_LookUp-Ani_Sonic
-ptr_Duck:	dc.w SonAni_Duck-Ani_Sonic
-ptr_Warp1:	dc.w SonAni_Warp1-Ani_Sonic
-ptr_Warp2:	dc.w SonAni_Warp2-Ani_Sonic
-ptr_Warp3:	dc.w SonAni_Warp3-Ani_Sonic
-ptr_Warp4:	dc.w SonAni_Warp4-Ani_Sonic
-ptr_Stop:	dc.w SonAni_Stop-Ani_Sonic
-ptr_Float1:	dc.w SonAni_Float1-Ani_Sonic
-ptr_Float2:	dc.w SonAni_Float2-Ani_Sonic
-ptr_Spring:	dc.w SonAni_Spring-Ani_Sonic
-ptr_Hang:	dc.w SonAni_Hang-Ani_Sonic
-ptr_Leap1:	dc.w SonAni_Leap1-Ani_Sonic
-ptr_Leap2:	dc.w SonAni_Leap2-Ani_Sonic
-ptr_Surf:	dc.w SonAni_Surf-Ani_Sonic
-ptr_GetAir:	dc.w SonAni_GetAir-Ani_Sonic
-ptr_Burnt:	dc.w SonAni_Burnt-Ani_Sonic
-ptr_Drown:	dc.w SonAni_Drown-Ani_Sonic
-ptr_Death:	dc.w SonAni_Death-Ani_Sonic
-ptr_Shrink:	dc.w SonAni_Shrink-Ani_Sonic
-ptr_Hurt:	dc.w SonAni_Hurt-Ani_Sonic
-ptr_WaterSlide:	dc.w SonAni_WaterSlide-Ani_Sonic
-ptr_Null:	dc.w SonAni_Null-Ani_Sonic
-ptr_Float3:	dc.w SonAni_Float3-Ani_Sonic
-ptr_Float4:	dc.w SonAni_Float4-Ani_Sonic
+Ani_Sonic:	include "Animations\Sonic.asm"
 
-SonAni_Walk:	dc.b $FF, id_frame_walk13, id_frame_walk14,	id_frame_walk15, id_frame_walk16, id_frame_walk11, id_frame_walk12, afEnd
-		even
-SonAni_Run:	dc.b $FF,  id_frame_run11,  id_frame_run12,  id_frame_run13,  id_frame_run14,     afEnd,     afEnd, afEnd
-		even
-SonAni_Roll:	dc.b $FE,  id_frame_Roll1,  id_frame_Roll2,  id_frame_Roll3,  id_frame_Roll4,  id_frame_Roll5,     afEnd, afEnd
-		even
-SonAni_Roll2:	dc.b $FE,  id_frame_Roll1,  id_frame_Roll2,  id_frame_Roll5,  id_frame_Roll3,  id_frame_Roll4,  id_frame_Roll5, afEnd
-		even
-SonAni_Push:	dc.b $FD,  id_frame_push1,  id_frame_push2,  id_frame_push3,  id_frame_push4,     afEnd,     afEnd, afEnd
-		even
-SonAni_Wait:	dc.b $17, id_frame_stand, id_frame_stand, id_frame_stand, id_frame_stand, id_frame_stand, id_frame_stand, id_frame_stand, id_frame_stand, id_frame_stand
-		dc.b id_frame_stand, id_frame_stand, id_frame_stand, id_frame_wait2, id_frame_wait1, id_frame_wait1, id_frame_wait1, id_frame_wait2, id_frame_wait3, afBack, 2
-		even
-SonAni_Balance:	dc.b $1F, id_frame_balance1, id_frame_balance2, afEnd
-		even
-SonAni_LookUp:	dc.b $3F, id_frame_lookup, afEnd
-		even
-SonAni_Duck:	dc.b $3F, id_frame_duck, afEnd
-		even
-SonAni_Warp1:	dc.b $3F, id_frame_warp1, afEnd
-		even
-SonAni_Warp2:	dc.b $3F, id_frame_warp2, afEnd
-		even
-SonAni_Warp3:	dc.b $3F, id_frame_warp3, afEnd
-		even
-SonAni_Warp4:	dc.b $3F, id_frame_warp4, afEnd
-		even
-SonAni_Stop:	dc.b 7,	id_frame_stop1, id_frame_stop2, afEnd
-		even
-SonAni_Float1:	dc.b 7,	id_frame_float1, id_frame_float4, afEnd
-		even
-SonAni_Float2:	dc.b 7,	id_frame_float1, id_frame_float2, id_frame_float5, id_frame_float3, id_frame_float6, afEnd
-		even
-SonAni_Spring:	dc.b $2F, id_frame_spring, afChange, id_Walk
-		even
-SonAni_Hang:	dc.b 4,	id_frame_hang1, id_frame_hang2, afEnd
-		even
-SonAni_Leap1:	dc.b $F, id_frame_leap1, id_frame_leap1, id_frame_leap1,	afBack, 1
-		even
-SonAni_Leap2:	dc.b $F, id_frame_leap1, id_frame_leap2, afBack, 1
-		even
-SonAni_Surf:	dc.b $3F, id_frame_surf, afEnd
-		even
-SonAni_GetAir:	dc.b $B, id_frame_getair, id_frame_getair, id_frame_walk15, id_frame_walk16, afChange, id_Walk
-		even
-SonAni_Burnt:	dc.b $20, id_frame_burnt, afEnd
-		even
-SonAni_Drown:	dc.b $2F, id_frame_drown, afEnd
-		even
-SonAni_Death:	dc.b 3,	id_frame_death, afEnd
-		even
-SonAni_Shrink:	dc.b 3,	id_frame_shrink1, id_frame_shrink2, id_frame_shrink3, id_frame_shrink4, id_frame_shrink5, id_frame_blank, afBack, 1
-		even
-SonAni_Hurt:	dc.b 3,	id_frame_injury, afEnd
-		even
-SonAni_WaterSlide:
-		dc.b 7, id_frame_injury, id_frame_waterslide, afEnd
-		even
-SonAni_Null:	dc.b $77, id_frame_blank, afChange, id_Walk
-		even
-SonAni_Float3:	dc.b 3,	id_frame_float1, id_frame_float2, id_frame_float5, id_frame_float3, id_frame_float6, afEnd
-		even
-SonAni_Float4:	dc.b 3,	id_frame_float1, afChange, id_Walk
-		even
-
-id_Walk:	equ (ptr_Walk-Ani_Sonic)/2	; 0
-id_Run:		equ (ptr_Run-Ani_Sonic)/2	; 1
-id_Roll:	equ (ptr_Roll-Ani_Sonic)/2	; 2
-id_Roll2:	equ (ptr_Roll2-Ani_Sonic)/2	; 3
-id_Push:	equ (ptr_Push-Ani_Sonic)/2	; 4
-id_Wait:	equ (ptr_Wait-Ani_Sonic)/2	; 5
-id_Balance:	equ (ptr_Balance-Ani_Sonic)/2	; 6
-id_LookUp:	equ (ptr_LookUp-Ani_Sonic)/2	; 7
-id_Duck:	equ (ptr_Duck-Ani_Sonic)/2	; 8
-id_Warp1:	equ (ptr_Warp1-Ani_Sonic)/2	; 9
-id_Warp2:	equ (ptr_Warp2-Ani_Sonic)/2	; $A
-id_Warp3:	equ (ptr_Warp3-Ani_Sonic)/2	; $B
-id_Warp4:	equ (ptr_Warp4-Ani_Sonic)/2	; $C
-id_Stop:	equ (ptr_Stop-Ani_Sonic)/2	; $D
-id_Float1:	equ (ptr_Float1-Ani_Sonic)/2	; $E
-id_Float2:	equ (ptr_Float2-Ani_Sonic)/2	; $F
-id_Spring:	equ (ptr_Spring-Ani_Sonic)/2	; $10
-id_Hang:	equ (ptr_Hang-Ani_Sonic)/2	; $11
-id_Leap1:	equ (ptr_Leap1-Ani_Sonic)/2	; $12
-id_Leap2:	equ (ptr_Leap2-Ani_Sonic)/2	; $13
-id_Surf:	equ (ptr_Surf-Ani_Sonic)/2	; $14
-id_GetAir:	equ (ptr_GetAir-Ani_Sonic)/2	; $15
-id_Burnt:	equ (ptr_Burnt-Ani_Sonic)/2	; $16
-id_Drown:	equ (ptr_Drown-Ani_Sonic)/2	; $17
-id_Death:	equ (ptr_Death-Ani_Sonic)/2	; $18
-id_Shrink:	equ (ptr_Shrink-Ani_Sonic)/2	; $19
-id_Hurt:	equ (ptr_Hurt-Ani_Sonic)/2	; $1A
-id_WaterSlide:	equ (ptr_WaterSlide-Ani_Sonic)/2 ; $1B
-id_Null:	equ (ptr_Null-Ani_Sonic)/2	; $1C
-id_Float3:	equ (ptr_Float3-Ani_Sonic)/2	; $1D
-id_Float4:	equ (ptr_Float4-Ani_Sonic)/2	; $1E
 ; ---------------------------------------------------------------------------
 ; Sonic	graphics loading subroutine
 ; ---------------------------------------------------------------------------
