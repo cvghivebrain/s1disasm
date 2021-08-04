@@ -101,8 +101,8 @@ Vectors:	dc.l v_systemstack&$FFFFFF	; Initial stack pointer value
 	else
 loc_E0:
 		; Relocated code from Spik_Hurt. REVXB was a nasty hex-edit.
-		move.l	obY(a0),d3
-		move.w	obVelY(a0),d0
+		move.l	ost_y_pos(a0),d3
+		move.w	ost_y_vel(a0),d0
 		ext.l	d0
 		asl.l	#8,d0
 		jmp	(loc_D5A2).l
@@ -3414,7 +3414,7 @@ GM_Title:
 
 		move.b	#id_TitleSonic,(v_objspace+$40).w ; load big Sonic object
 		move.b	#id_PSBTM,(v_objspace+$80).w ; load "PRESS START BUTTON" object
-		;clr.b	(v_objspace+$80+obRoutine).w ; The 'Mega Games 10' version of Sonic 1 added this line, to fix the 'PRESS START BUTTON' object not appearing
+		;clr.b	(v_objspace+$80+ost_routine).w ; The 'Mega Games 10' version of Sonic 1 added this line, to fix the 'PRESS START BUTTON' object not appearing
 
 		if Revision=0
 		else
@@ -3423,10 +3423,10 @@ GM_Title:
 		endc
 
 		move.b	#id_PSBTM,(v_objspace+$C0).w ; load "TM" object
-		move.b	#3,(v_objspace+$C0+obFrame).w
+		move.b	#3,(v_objspace+$C0+ost_frame).w
 	@isjap:
 		move.b	#id_PSBTM,(v_objspace+$100).w ; load object which hides part of Sonic
-		move.b	#2,(v_objspace+$100+obFrame).w
+		move.b	#2,(v_objspace+$100+ost_frame).w
 		jsr	(ExecuteObjects).l
 		bsr.w	DeformLayers
 		jsr	(BuildSprites).l
@@ -3447,9 +3447,9 @@ Tit_MainLoop:
 		jsr	(BuildSprites).l
 		bsr.w	PCycle_Title
 		bsr.w	RunPLC
-		move.w	(v_objspace+obX).w,d0
+		move.w	(v_objspace+ost_x_pos).w,d0
 		addq.w	#2,d0
-		move.w	d0,(v_objspace+obX).w ; move Sonic to the right
+		move.w	d0,(v_objspace+ost_x_pos).w ; move Sonic to the right
 		cmpi.w	#$1C00,d0	; has Sonic object passed $1C00 on x-axis?
 		blo.s	Tit_ChkRegion	; if not, branch
 
@@ -3710,9 +3710,9 @@ loc_33B6:
 		bsr.w	DeformLayers
 		bsr.w	PaletteCycle
 		bsr.w	RunPLC
-		move.w	(v_objspace+obX).w,d0
+		move.w	(v_objspace+ost_x_pos).w,d0
 		addq.w	#2,d0
-		move.w	d0,(v_objspace+obX).w
+		move.w	d0,(v_objspace+ost_x_pos).w
 		cmpi.w	#$1C00,d0
 		blo.s	loc_33E4
 		move.b	#id_Sega,(v_gamemode).w
@@ -4128,9 +4128,9 @@ Level_ChkWater:
 		cmpi.b	#id_LZ,(v_zone).w ; is level LZ?
 		bne.s	Level_LoadObj	; if not, branch
 		move.b	#id_WaterSurface,(v_objspace+$780).w ; load water surface object
-		move.w	#$60,(v_objspace+$780+obX).w
+		move.w	#$60,(v_objspace+$780+ost_x_pos).w
 		move.b	#id_WaterSurface,(v_objspace+$7C0).w
-		move.w	#$120,(v_objspace+$7C0+obX).w
+		move.w	#$120,(v_objspace+$7C0+ost_x_pos).w
 
 Level_LoadObj:
 		jsr	(ObjPosLoad).l
@@ -4204,10 +4204,10 @@ Level_Delay:
 		bsr.w	PalFadeIn_Alt
 		tst.w	(f_demo).w	; is an ending sequence demo running?
 		bmi.s	Level_ClrCardArt ; if yes, branch
-		addq.b	#2,(v_objspace+$80+obRoutine).w ; make title card move
-		addq.b	#4,(v_objspace+$C0+obRoutine).w
-		addq.b	#4,(v_objspace+$100+obRoutine).w
-		addq.b	#4,(v_objspace+$140+obRoutine).w
+		addq.b	#2,(v_objspace+$80+ost_routine).w ; make title card move
+		addq.b	#4,(v_objspace+$C0+ost_routine).w
+		addq.b	#4,(v_objspace+$100+ost_routine).w
+		addq.b	#4,(v_objspace+$140+ost_routine).w
 		bra.s	Level_StartGame
 ; ===========================================================================
 
@@ -4241,7 +4241,7 @@ Level_MainLoop:
 		endc
 		tst.w	(v_debuguse).w	; is debug mode being used?
 		bne.s	Level_DoScroll	; if yes, branch
-		cmpi.b	#6,(v_player+obRoutine).w ; has Sonic just died?
+		cmpi.b	#6,(v_player+ost_routine).w ; has Sonic just died?
 		bhs.s	Level_SkipScroll ; if yes, branch
 
 	Level_DoScroll:
@@ -4322,7 +4322,7 @@ LZWaterFeatures:
 			tst.b   (f_nobgscroll).w
 			bne.s	@setheight
 		endc
-		cmpi.b	#6,(v_player+obRoutine).w ; has Sonic just died?
+		cmpi.b	#6,(v_player+ost_routine).w ; has Sonic just died?
 		bcc.s	@setheight	; if yes, skip other effects
 
 		bsr.w	LZWindTunnels
@@ -4405,7 +4405,7 @@ DynWater_LZ1:
 		cmpi.w	#$600,d0	; has screen reached next position?
 		bcs.s	@setwater	; if not, branch
 		move.w	#$108,d1
-		cmpi.w	#$200,(v_player+obY).w ; is Sonic above $200 y-axis?
+		cmpi.w	#$200,(v_player+ost_y_pos).w ; is Sonic above $200 y-axis?
 		bcs.s	@sonicishigh	; if yes, branch
 		cmpi.w	#$C00,d0
 		bcs.s	@setwater
@@ -4439,7 +4439,7 @@ DynWater_LZ1:
 @routine2:
 		subq.b	#1,d2
 		bne.s	@skip
-		cmpi.w	#$2E0,(v_player+obY).w ; is Sonic above $2E0 y-axis?
+		cmpi.w	#$2E0,(v_player+ost_y_pos).w ; is Sonic above $2E0 y-axis?
 		bcc.s	@skip		; if not, branch
 		move.w	#$3A8,d1
 		cmpi.w	#$1300,d0
@@ -4477,9 +4477,9 @@ DynWater_LZ3:
 		move.w	#$900,d1
 		cmpi.w	#$600,d0	; has screen reached position?
 		bcs.s	@setwaterlz3	; if not, branch
-		cmpi.w	#$3C0,(v_player+obY).w
+		cmpi.w	#$3C0,(v_player+ost_y_pos).w
 		bcs.s	@setwaterlz3
-		cmpi.w	#$600,(v_player+obY).w ; is Sonic in a y-axis range?
+		cmpi.w	#$600,(v_player+ost_y_pos).w ; is Sonic in a y-axis range?
 		bcc.s	@setwaterlz3	; if not, branch
 
 		move.w	#$4C8,d1	; set new water height
@@ -4504,9 +4504,9 @@ DynWater_LZ3:
 		bcs.s	@setwater2
 		cmpi.w	#$508,(v_waterpos3).w
 		beq.s	@sonicislow
-		cmpi.w	#$600,(v_player+obY).w ; is Sonic below $600 y-axis?
+		cmpi.w	#$600,(v_player+ost_y_pos).w ; is Sonic below $600 y-axis?
 		bcc.s	@sonicislow	; if yes, branch
-		cmpi.w	#$280,(v_player+obY).w
+		cmpi.w	#$280,(v_player+ost_y_pos).w
 		bcc.s	@setwater2
 
 @sonicislow:
@@ -4607,12 +4607,12 @@ LZWindTunnels:
 		lea	(v_player).w,a1
 
 @chksonic:
-		move.w	obX(a1),d0
+		move.w	ost_x_pos(a1),d0
 		cmp.w	(a2),d0
 		bcs.w	@chknext
 		cmp.w	4(a2),d0
 		bcc.w	@chknext
-		move.w	obY(a1),d2
+		move.w	ost_y_pos(a1),d2
 		cmp.w	2(a2),d2
 		bcs.s	@chknext
 		cmp.w	6(a2),d2
@@ -4625,7 +4625,7 @@ LZWindTunnels:
 	@skipsound:
 		tst.b	(f_wtunnelallow).w ; are wind tunnels disabled?
 		bne.w	@quit	; if yes, branch
-		cmpi.b	#4,obRoutine(a1) ; is Sonic hurt/dying?
+		cmpi.b	#4,ost_routine(a1) ; is Sonic hurt/dying?
 		bcc.s	@clrquit	; if yes, branch
 		move.b	#1,(f_wtunnelmode).w
 		subi.w	#$80,d0
@@ -4637,22 +4637,22 @@ LZWindTunnels:
 		neg.w	d0
 
 	@notact2:
-		add.w	d0,obY(a1)	; adjust Sonic's y-axis for curve of tunnel
+		add.w	d0,ost_y_pos(a1)	; adjust Sonic's y-axis for curve of tunnel
 
 @movesonic:
-		addq.w	#4,obX(a1)
-		move.w	#$400,obVelX(a1) ; move Sonic horizontally
-		move.w	#0,obVelY(a1)
-		move.b	#id_Float2,obAnim(a1)	; use floating animation
-		bset	#1,obStatus(a1)
+		addq.w	#4,ost_x_pos(a1)
+		move.w	#$400,ost_x_vel(a1) ; move Sonic horizontally
+		move.w	#0,ost_y_vel(a1)
+		move.b	#id_Float2,ost_anim(a1)	; use floating animation
+		bset	#1,ost_status(a1)
 		btst	#0,(v_jpadhold2).w ; is up pressed?
 		beq.s	@down		; if not, branch
-		subq.w	#1,obY(a1)	; move Sonic up on pole
+		subq.w	#1,ost_y_pos(a1)	; move Sonic up on pole
 
 	@down:
 		btst	#1,(v_jpadhold2).w ; is down being pressed?
 		beq.s	@end		; if not, branch
-		addq.w	#1,obY(a1)	; move Sonic down on pole
+		addq.w	#1,ost_y_pos(a1)	; move Sonic down on pole
 
 	@end:
 		rts	
@@ -4663,7 +4663,7 @@ LZWindTunnels:
 		dbf	d1,@chksonic	; on act 1, repeat for a second tunnel
 		tst.b	(f_wtunnelmode).w ; is Sonic still in a tunnel?
 		beq.s	@quit		; if yes, branch
-		move.b	#id_Walk,obAnim(a1)	; use walking animation
+		move.b	#id_Walk,ost_anim(a1)	; use walking animation
 
 @clrquit:
 		clr.b	(f_wtunnelmode).w ; finish tunnel
@@ -4691,12 +4691,12 @@ LZWind_Data:	dc.w $A80, $300, $C10,  $380 ; act 1 values (set 1)
 
 LZWaterSlides:
 		lea	(v_player).w,a1
-		btst	#1,obStatus(a1)	; is Sonic jumping?
+		btst	#1,ost_status(a1)	; is Sonic jumping?
 		bne.s	loc_3F6A	; if not, branch
-		move.w	obY(a1),d0
+		move.w	ost_y_pos(a1),d0
 		lsr.w	#1,d0
 		andi.w	#$380,d0
-		move.b	obX(a1),d1
+		move.b	ost_x_pos(a1),d1
 		andi.w	#$7F,d1
 		add.w	d1,d0
 		lea	(v_lvllayout).w,a2
@@ -4725,15 +4725,15 @@ LZSlide_Move:
 		nop	
 
 loc_3F84:
-		bclr	#0,obStatus(a1)
+		bclr	#0,ost_status(a1)
 		move.b	Slide_Speeds(pc,d1.w),d0
-		move.b	d0,obInertia(a1)
+		move.b	d0,ost_inertia(a1)
 		bpl.s	loc_3F9A
-		bset	#0,obStatus(a1)
+		bset	#0,ost_status(a1)
 
 loc_3F9A:
-		clr.b	obInertia+1(a1)
-		move.b	#id_WaterSlide,obAnim(a1) ; use Sonic's "sliding" animation
+		clr.b	ost_inertia+1(a1)
+		move.b	#id_WaterSlide,ost_anim(a1) ; use Sonic's "sliding" animation
 		move.b	#1,(f_jumponly).w ; lock controls (except jumping)
 		move.b	(v_vbla_byte).w,d0
 		andi.b	#$1F,d0
@@ -4939,7 +4939,7 @@ OscillateNumInit:
 ; Oscillate values
 
 OscillateNumDo:
-		cmpi.b	#6,(v_player+obRoutine).w ; has Sonic just died?
+		cmpi.b	#6,(v_player+ost_routine).w ; has Sonic just died?
 		bcc.s	@end		; if yes, branch
 		lea	(v_oscillate).w,a1
 		lea	(@settings).l,a2
@@ -5626,10 +5626,10 @@ GM_Continue:
 		move.b	#id_ContSonic,(v_player).w ; load Sonic object
 		move.b	#id_ContScrItem,(v_objspace+$40).w ; load continue screen objects
 		move.b	#id_ContScrItem,(v_objspace+$80).w
-		move.b	#3,(v_objspace+$80+obPriority).w
-		move.b	#4,(v_objspace+$80+obFrame).w
+		move.b	#3,(v_objspace+$80+ost_priority).w
+		move.b	#4,(v_objspace+$80+ost_frame).w
 		move.b	#id_ContScrItem,(v_objspace+$C0).w
-		move.b	#4,(v_objspace+$C0+obRoutine).w
+		move.b	#4,(v_objspace+$C0+ost_routine).w
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
 		move.w	(v_vdp_buffer1).w,d0
@@ -5644,7 +5644,7 @@ GM_Continue:
 Cont_MainLoop:
 		move.b	#$16,(v_vbla_routine).w
 		bsr.w	WaitForVBla
-		cmpi.b	#6,(v_player+obRoutine).w
+		cmpi.b	#6,(v_player+ost_routine).w
 		bhs.s	loc_4DF2
 		disable_ints
 		move.w	(v_demolength).w,d1
@@ -5656,9 +5656,9 @@ Cont_MainLoop:
 loc_4DF2:
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
-		cmpi.w	#$180,(v_player+obX).w ; has Sonic run off screen?
+		cmpi.w	#$180,(v_player+ost_x_pos).w ; has Sonic run off screen?
 		bhs.s	Cont_GotoLevel	; if yes, branch
-		cmpi.b	#6,(v_player+obRoutine).w
+		cmpi.b	#6,(v_player+ost_routine).w
 		bhs.s	Cont_MainLoop
 		tst.w	(v_demolength).w
 		bne.w	Cont_MainLoop
@@ -5696,13 +5696,13 @@ CSI_Index:	index *
 ; ===========================================================================
 
 CSI_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_ContScr,obMap(a0)
-		move.w	#$8500,obGfx(a0)
-		move.b	#0,obRender(a0)
-		move.b	#$3C,obActWid(a0)
-		move.w	#$120,obX(a0)
-		move.w	#$C0,obScreenY(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_ContScr,ost_mappings(a0)
+		move.w	#$8500,ost_tile(a0)
+		move.b	#0,ost_render(a0)
+		move.b	#$3C,ost_actwidth(a0)
+		move.w	#$120,ost_x_pos(a0)
+		move.w	#$C0,ost_y_screen(a0)
 		move.w	#0,(v_rings).w	; clear rings
 
 CSI_Display:	; Routine 2
@@ -5737,33 +5737,33 @@ CSI_MakeMiniSonic:
 
 CSI_MiniSonicLoop:
 		move.b	#id_ContScrItem,0(a1) ; load mini-Sonic object
-		move.w	(a2)+,obX(a1)	; use above data for x-axis position
+		move.w	(a2)+,ost_x_pos(a1)	; use above data for x-axis position
 		tst.b	d2		; do you have an even number of continues?
 		beq.s	CSI_Even	; if yes, branch
-		subi.w	#$A,obX(a1)	; shift mini-Sonics slightly to the right
+		subi.w	#$A,ost_x_pos(a1)	; shift mini-Sonics slightly to the right
 
 	CSI_Even:
-		move.w	#$D0,obScreenY(a1)
-		move.b	#6,obFrame(a1)
-		move.b	#6,obRoutine(a1)
-		move.l	#Map_ContScr,obMap(a1)
-		move.w	#$8551,obGfx(a1)
-		move.b	#0,obRender(a1)
+		move.w	#$D0,ost_y_screen(a1)
+		move.b	#6,ost_frame(a1)
+		move.b	#6,ost_routine(a1)
+		move.l	#Map_ContScr,ost_mappings(a1)
+		move.w	#$8551,ost_tile(a1)
+		move.b	#0,ost_render(a1)
 		lea	$40(a1),a1
 		dbf	d1,CSI_MiniSonicLoop ; repeat for number of continues
 
 		lea	-$40(a1),a1
-		move.b	d3,obSubtype(a1)
+		move.b	d3,ost_subtype(a1)
 
 CSI_ChkDel:	; Routine 6
-		tst.b	obSubtype(a0)	; do you have 16 or more continues?
+		tst.b	ost_subtype(a0)	; do you have 16 or more continues?
 		beq.s	CSI_Animate	; if yes, branch
-		cmpi.b	#6,(v_player+obRoutine).w ; is Sonic running?
+		cmpi.b	#6,(v_player+ost_routine).w ; is Sonic running?
 		bcs.s	CSI_Animate	; if not, branch
 		move.b	(v_vbla_byte).w,d0
 		andi.b	#1,d0
 		bne.s	CSI_Animate
-		tst.w	(v_player+obVelX).w ; is Sonic running?
+		tst.w	(v_player+ost_x_vel).w ; is Sonic running?
 		bne.s	CSI_Delete	; if yes, goto delete
 		rts	
 
@@ -5771,7 +5771,7 @@ CSI_Animate:
 		move.b	(v_vbla_byte).w,d0
 		andi.b	#$F,d0
 		bne.s	CSI_Display2
-		bchg	#0,obFrame(a0)
+		bchg	#0,ost_frame(a0)
 
 	CSI_Display2:
 		jmp	(DisplaySprite).l
@@ -5785,7 +5785,7 @@ CSI_Delete:
 
 ContSonic:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	CSon_Index(pc,d0.w),d1
 		jsr	CSon_Index(pc,d1.w)
 		jmp	(DisplaySprite).l
@@ -5798,25 +5798,25 @@ CSon_Index:	index *
 ; ===========================================================================
 
 CSon_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.w	#$A0,obX(a0)
-		move.w	#$C0,obY(a0)
-		move.l	#Map_Sonic,obMap(a0)
-		move.w	#$780,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#2,obPriority(a0)
-		move.b	#id_Float3,obAnim(a0) ; use "floating" animation
-		move.w	#$400,obVelY(a0) ; make Sonic fall from above
+		addq.b	#2,ost_routine(a0)
+		move.w	#$A0,ost_x_pos(a0)
+		move.w	#$C0,ost_y_pos(a0)
+		move.l	#Map_Sonic,ost_mappings(a0)
+		move.w	#$780,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#2,ost_priority(a0)
+		move.b	#id_Float3,ost_anim(a0) ; use "floating" animation
+		move.w	#$400,ost_y_vel(a0) ; make Sonic fall from above
 
 CSon_ChkLand:	; Routine 2
-		cmpi.w	#$1A0,obY(a0)	; has Sonic landed yet?
+		cmpi.w	#$1A0,ost_y_pos(a0)	; has Sonic landed yet?
 		bne.s	CSon_ShowFall	; if not, branch
 
-		addq.b	#2,obRoutine(a0)
-		clr.w	obVelY(a0)	; stop Sonic falling
-		move.l	#Map_ContScr,obMap(a0)
-		move.w	#$8500,obGfx(a0)
-		move.b	#id_Walk,obAnim(a0)
+		addq.b	#2,ost_routine(a0)
+		clr.w	ost_y_vel(a0)	; stop Sonic falling
+		move.l	#Map_ContScr,ost_mappings(a0)
+		move.w	#$8500,ost_tile(a0)
+		move.b	#id_Walk,ost_anim(a0)
 		bra.s	CSon_Animate
 
 CSon_ShowFall:
@@ -5832,22 +5832,22 @@ CSon_Animate:	; Routine 4
 		jmp	(AnimateSprite).l
 
 CSon_GetUp:
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Sonic,obMap(a0)
-		move.w	#$780,obGfx(a0)
-		move.b	#id_Float4,obAnim(a0) ; use "getting up" animation
-		clr.w	obInertia(a0)
-		subq.w	#8,obY(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Sonic,ost_mappings(a0)
+		move.w	#$780,ost_tile(a0)
+		move.b	#id_Float4,ost_anim(a0) ; use "getting up" animation
+		clr.w	ost_inertia(a0)
+		subq.w	#8,ost_y_pos(a0)
 		sfx	bgm_Fade,0,1,1 ; fade out music
 
 CSon_Run:	; Routine 6
-		cmpi.w	#$800,obInertia(a0) ; check Sonic's inertia
+		cmpi.w	#$800,ost_inertia(a0) ; check Sonic's inertia
 		bne.s	CSon_AddInertia	; if too low, branch
-		move.w	#$1000,obVelX(a0) ; move Sonic to the right
+		move.w	#$1000,ost_x_vel(a0) ; move Sonic to the right
 		bra.s	CSon_ShowRun
 
 CSon_AddInertia:
-		addi.w	#$20,obInertia(a0) ; increase inertia
+		addi.w	#$20,ost_inertia(a0) ; increase inertia
 
 CSon_ShowRun:
 		jsr	(SpeedToPos).l
@@ -5938,10 +5938,10 @@ End_LoadData:
 
 End_LoadSonic:
 		move.b	#id_SonicPlayer,(v_player).w ; load Sonic object
-		bset	#0,(v_player+obStatus).w ; make Sonic face left
+		bset	#0,(v_player+ost_status).w ; make Sonic face left
 		move.b	#1,(f_lockctrl).w ; lock controls
 		move.w	#(btnL<<8),(v_jpadhold2).w ; move Sonic to the left
-		move.w	#$F800,(v_player+obInertia).w ; set Sonic's speed
+		move.w	#$F800,(v_player+ost_inertia).w ; set Sonic's speed
 		move.b	#id_HUD,(v_objspace+$40).w ; load HUD object
 		jsr	(ObjPosLoad).l
 		jsr	(ExecuteObjects).l
@@ -6047,7 +6047,7 @@ End_ChkEmerald:
 End_MoveSonic:
 		move.b	(v_sonicend).w,d0
 		bne.s	End_MoveSon2
-		cmpi.w	#$90,(v_player+obX).w ; has Sonic passed $90 on x-axis?
+		cmpi.w	#$90,(v_player+ost_x_pos).w ; has Sonic passed $90 on x-axis?
 		bhs.s	End_MoveSonExit	; if not, branch
 
 		addq.b	#2,(v_sonicend).w
@@ -6059,18 +6059,18 @@ End_MoveSonic:
 End_MoveSon2:
 		subq.b	#2,d0
 		bne.s	End_MoveSon3
-		cmpi.w	#$A0,(v_player+obX).w ; has Sonic passed $A0 on x-axis?
+		cmpi.w	#$A0,(v_player+ost_x_pos).w ; has Sonic passed $A0 on x-axis?
 		blo.s	End_MoveSonExit	; if not, branch
 
 		addq.b	#2,(v_sonicend).w
 		moveq	#0,d0
 		move.b	d0,(f_lockctrl).w
 		move.w	d0,(v_jpadhold2).w ; stop Sonic moving
-		move.w	d0,(v_player+obInertia).w
+		move.w	d0,(v_player+ost_inertia).w
 		move.b	#$81,(f_lockmulti).w ; lock controls & position
-		move.b	#id_frame_Wait2,(v_player+obFrame).w
-		move.w	#(id_Wait<<8)+id_Wait,(v_player+obAnim).w ; use "standing" animation
-		move.b	#3,(v_player+obTimeFrame).w
+		move.b	#id_frame_Wait2,(v_player+ost_frame).w
+		move.w	#(id_Wait<<8)+id_Wait,(v_player+ost_anim).w ; use "standing" animation
+		move.b	#3,(v_player+ost_anim_time).w
 		rts	
 ; ===========================================================================
 
@@ -6078,9 +6078,9 @@ End_MoveSon3:
 		subq.b	#2,d0
 		bne.s	End_MoveSonExit
 		addq.b	#2,(v_sonicend).w
-		move.w	#$A0,(v_player+obX).w
+		move.w	#$A0,(v_player+ost_x_pos).w
 		move.b	#id_EndSonic,(v_player).w ; load Sonic ending sequence object
-		clr.w	(v_player+obRoutine).w
+		clr.w	(v_player+ost_routine).w
 
 End_MoveSonExit:
 		rts	
@@ -6094,7 +6094,7 @@ End_MoveSonExit:
 
 EndSonic:
 		moveq	#0,d0
-		move.b	ob2ndRout(a0),d0
+		move.b	ost_routine2(a0),d0
 		move.w	ESon_Index(pc,d0.w),d1
 		jsr	ESon_Index(pc,d1.w)
 		jmp	(DisplaySprite).l
@@ -6117,27 +6117,27 @@ eson_time:	equ $30	; time to wait between events
 ESon_Main:	; Routine 0
 		cmpi.b	#6,(v_emeralds).w ; do you have all 6 emeralds?
 		beq.s	ESon_Main2	; if yes, branch
-		addi.b	#$10,ob2ndRout(a0) ; else, skip emerald sequence
+		addi.b	#$10,ost_routine2(a0) ; else, skip emerald sequence
 		move.w	#216,eson_time(a0)
 		rts	
 ; ===========================================================================
 
 ESon_Main2:
-		addq.b	#2,ob2ndRout(a0)
-		move.l	#Map_ESon,obMap(a0)
-		move.w	#$3E1,obGfx(a0)
-		move.b	#4,obRender(a0)
-		clr.b	obStatus(a0)
-		move.b	#2,obPriority(a0)
-		move.b	#0,obFrame(a0)
+		addq.b	#2,ost_routine2(a0)
+		move.l	#Map_ESon,ost_mappings(a0)
+		move.w	#$3E1,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		clr.b	ost_status(a0)
+		move.b	#2,ost_priority(a0)
+		move.b	#0,ost_frame(a0)
 		move.w	#80,eson_time(a0) ; set duration for Sonic to pause
 
 ESon_MakeEmeralds:
 		; Routine 2
 		subq.w	#1,eson_time(a0) ; subtract 1 from duration
 		bne.s	ESon_Wait
-		addq.b	#2,ob2ndRout(a0)
-		move.w	#1,obAnim(a0)
+		addq.b	#2,ost_routine2(a0)
+		move.w	#1,ost_anim(a0)
 		move.b	#id_EndChaos,(v_objspace+$400).w ; load chaos emeralds objects
 
 	ESon_Wait:
@@ -6149,7 +6149,7 @@ Obj87_LookUp:	; Routine 6
 		bne.s	locret_5480
 		move.w	#1,(f_restart).w ; set level to	restart	(causes	flash)
 		move.w	#90,eson_time(a0)
-		addq.b	#2,ob2ndRout(a0)
+		addq.b	#2,ost_routine2(a0)
 
 locret_5480:
 		rts	
@@ -6166,8 +6166,8 @@ Obj87_ClrLoop:
 		clr.l	(a1)+
 		dbf	d1,Obj87_ClrLoop ; clear the object RAM
 		move.w	#1,(f_restart).w
-		addq.b	#2,ob2ndRout(a0)
-		move.b	#1,obAnim(a0)
+		addq.b	#2,ost_routine2(a0)
+		move.b	#1,ost_anim(a0)
 		move.w	#60,eson_time(a0)
 
 ESon_Wait2:
@@ -6177,9 +6177,9 @@ ESon_Wait2:
 Obj87_MakeLogo:	; Routine $C
 		subq.w	#1,eson_time(a0)
 		bne.s	ESon_Wait3
-		addq.b	#2,ob2ndRout(a0)
+		addq.b	#2,ost_routine2(a0)
 		move.w	#180,eson_time(a0)
-		move.b	#2,obAnim(a0)
+		move.b	#2,ost_anim(a0)
 		move.b	#id_EndSTH,(v_objspace+$400).w ; load "SONIC THE HEDGEHOG" object
 
 ESon_Wait3:
@@ -6194,14 +6194,14 @@ Obj87_Animate:	; Rountine 4, $A, $E, $12
 Obj87_Leap:	; Routine $10
 		subq.w	#1,eson_time(a0)
 		bne.s	ESon_Wait4
-		addq.b	#2,ob2ndRout(a0)
-		move.l	#Map_ESon,obMap(a0)
-		move.w	#$3E1,obGfx(a0)
-		move.b	#4,obRender(a0)
-		clr.b	obStatus(a0)
-		move.b	#2,obPriority(a0)
-		move.b	#5,obFrame(a0)
-		move.b	#2,obAnim(a0)	; use "leaping"	animation
+		addq.b	#2,ost_routine2(a0)
+		move.l	#Map_ESon,ost_mappings(a0)
+		move.w	#$3E1,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		clr.b	ost_status(a0)
+		move.b	#2,ost_priority(a0)
+		move.b	#5,ost_frame(a0)
+		move.b	#2,ost_anim(a0)	; use "leaping"	animation
 		move.b	#id_EndSTH,(v_objspace+$400).w ; load "SONIC THE HEDGEHOG" object
 		bra.s	Obj87_Animate
 ; ===========================================================================
@@ -6217,7 +6217,7 @@ AniScript_ESon:	include "Animations\Ending Sonic.asm"
 
 EndChaos:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	ECha_Index(pc,d0.w),d1
 		jsr	ECha_Index(pc,d1.w)
 		jmp	(DisplaySprite).l
@@ -6233,15 +6233,15 @@ echa_angle:	equ $3E	; angle for rotation (2 bytes)
 ; ===========================================================================
 
 ECha_Main:	; Routine 0
-		cmpi.b	#2,(v_player+obFrame).w ; this isn't `id_frame_Wait1`: `v_player` is Object 88, which has its own frames
+		cmpi.b	#2,(v_player+ost_frame).w ; this isn't `id_frame_Wait1`: `v_player` is Object 88, which has its own frames
 		beq.s	ECha_CreateEms
 		addq.l	#4,sp
 		rts	
 ; ===========================================================================
 
 ECha_CreateEms:
-		move.w	(v_player+obX).w,obX(a0) ; match X position with Sonic
-		move.w	(v_player+obY).w,obY(a0) ; match Y position with Sonic
+		move.w	(v_player+ost_x_pos).w,ost_x_pos(a0) ; match X position with Sonic
+		move.w	(v_player+ost_y_pos).w,ost_y_pos(a0) ; match Y position with Sonic
 		movea.l	a0,a1
 		moveq	#0,d3
 		moveq	#1,d2
@@ -6249,25 +6249,25 @@ ECha_CreateEms:
 
 	ECha_LoadLoop:
 		move.b	#id_EndChaos,(a1) ; load chaos emerald object
-		addq.b	#2,obRoutine(a1)
-		move.l	#Map_ECha,obMap(a1)
-		move.w	#$3C5,obGfx(a1)
-		move.b	#4,obRender(a1)
-		move.b	#1,obPriority(a1)
-		move.w	obX(a0),echa_origX(a1)
-		move.w	obY(a0),echa_origY(a1)
-		move.b	d2,obAnim(a1)
-		move.b	d2,obFrame(a1)
+		addq.b	#2,ost_routine(a1)
+		move.l	#Map_ECha,ost_mappings(a1)
+		move.w	#$3C5,ost_tile(a1)
+		move.b	#4,ost_render(a1)
+		move.b	#1,ost_priority(a1)
+		move.w	ost_x_pos(a0),echa_origX(a1)
+		move.w	ost_y_pos(a0),echa_origY(a1)
+		move.b	d2,ost_anim(a1)
+		move.b	d2,ost_frame(a1)
 		addq.b	#1,d2
-		move.b	d3,obAngle(a1)
+		move.b	d3,ost_angle(a1)
 		addi.b	#$100/6,d3	; angle between each emerald
 		lea	$40(a1),a1
 		dbf	d1,ECha_LoadLoop ; repeat 5 more times
 
 ECha_Move:	; Routine 2
 		move.w	echa_angle(a0),d0
-		add.w	d0,obAngle(a0)
-		move.b	obAngle(a0),d0
+		add.w	d0,ost_angle(a0)
+		move.b	ost_angle(a0),d0
 		jsr	(CalcSine).l
 		moveq	#0,d4
 		move.b	echa_radius(a0),d4
@@ -6277,8 +6277,8 @@ ECha_Move:	; Routine 2
 		asr.l	#8,d0
 		add.w	echa_origX(a0),d1
 		add.w	echa_origY(a0),d0
-		move.w	d1,obX(a0)
-		move.w	d0,obY(a0)
+		move.w	d1,ost_x_pos(a0)
+		move.w	d0,ost_y_pos(a0)
 
 	ECha_Expand:
 		cmpi.w	#$2000,echa_radius(a0)
@@ -6321,18 +6321,18 @@ esth_time:	equ $30		; time until exit
 ; ===========================================================================
 
 ESth_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.w	#-$20,obX(a0)	; object starts	outside	the level boundary
-		move.w	#$D8,obScreenY(a0)
-		move.l	#Map_ESTH,obMap(a0)
-		move.w	#$5C5,obGfx(a0)
-		move.b	#0,obRender(a0)
-		move.b	#0,obPriority(a0)
+		addq.b	#2,ost_routine(a0)
+		move.w	#-$20,ost_x_pos(a0)	; object starts	outside	the level boundary
+		move.w	#$D8,ost_y_screen(a0)
+		move.l	#Map_ESTH,ost_mappings(a0)
+		move.w	#$5C5,ost_tile(a0)
+		move.b	#0,ost_render(a0)
+		move.b	#0,ost_priority(a0)
 
 ESth_Move:	; Routine 2
-		cmpi.w	#$C0,obX(a0)	; has object reached $C0?
+		cmpi.w	#$C0,ost_x_pos(a0)	; has object reached $C0?
 		beq.s	ESth_Delay	; if yes, branch
-		addi.w	#$10,obX(a0)	; move object to the right
+		addi.w	#$10,ost_x_pos(a0)	; move object to the right
 		if Revision=0
 		bra.w	DisplaySprite
 		else
@@ -6340,7 +6340,7 @@ ESth_Move:	; Routine 2
 		endc
 
 ESth_Delay:
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 		if Revision=0
 		move.w	#120,esth_time(a0) ; set duration for delay (2 seconds)
 		else
@@ -6566,7 +6566,7 @@ TryAg_Exit:
 
 EndEggman:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	EEgg_Index(pc,d0.w),d1
 		jsr	EEgg_Index(pc,d1.w)
 		jmp	(DisplaySprite).l
@@ -6581,21 +6581,21 @@ eegg_time:	equ $30		; time between juggle motions
 ; ===========================================================================
 
 EEgg_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.w	#$120,obX(a0)
-		move.w	#$F4,obScreenY(a0)
-		move.l	#Map_EEgg,obMap(a0)
-		move.w	#$3E1,obGfx(a0)
-		move.b	#0,obRender(a0)
-		move.b	#2,obPriority(a0)
-		move.b	#2,obAnim(a0)	; use "END" animation
+		addq.b	#2,ost_routine(a0)
+		move.w	#$120,ost_x_pos(a0)
+		move.w	#$F4,ost_y_screen(a0)
+		move.l	#Map_EEgg,ost_mappings(a0)
+		move.w	#$3E1,ost_tile(a0)
+		move.b	#0,ost_render(a0)
+		move.b	#2,ost_priority(a0)
+		move.b	#2,ost_anim(a0)	; use "END" animation
 		cmpi.b	#6,(v_emeralds).w ; do you have all 6 emeralds?
 		beq.s	EEgg_Animate	; if yes, branch
 
 		move.b	#id_CreditsText,(v_objspace+$C0).w ; load credits object
 		move.w	#9,(v_creditsnum).w ; use "TRY AGAIN" text
 		move.b	#id_TryChaos,(v_objspace+$800).w ; load emeralds object on "TRY AGAIN" screen
-		move.b	#0,obAnim(a0)	; use "TRY AGAIN" animation
+		move.b	#0,ost_anim(a0)	; use "TRY AGAIN" animation
 
 EEgg_Animate:	; Routine 2
 		lea	(Ani_EEgg).l,a1
@@ -6603,9 +6603,9 @@ EEgg_Animate:	; Routine 2
 ; ===========================================================================
 
 EEgg_Juggle:	; Routine 4
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 		moveq	#2,d0
-		btst	#0,obAnim(a0)
+		btst	#0,ost_anim(a0)
 		beq.s	@noflip
 		neg.w	d0
 
@@ -6617,17 +6617,17 @@ EEgg_Juggle:	; Routine 4
 		move.b	d0,$3E(a1)
 		move.w	d0,d2
 		asl.w	#3,d2
-		add.b	d2,obAngle(a1)
+		add.b	d2,ost_angle(a1)
 		lea	$40(a1),a1
 		dbf	d1,@emeraldloop
-		addq.b	#1,obFrame(a0)
+		addq.b	#1,ost_frame(a0)
 		move.w	#112,eegg_time(a0)
 
 EEgg_Wait:	; Routine 6
 		subq.w	#1,eegg_time(a0) ; decrement timer
 		bpl.s	@nochg		; branch if time remains
-		bchg	#0,obAnim(a0)
-		move.b	#2,obRoutine(a0) ; goto EEgg_Animate next
+		bchg	#0,ost_anim(a0)
+		move.b	#2,ost_routine(a0) ; goto EEgg_Animate next
 
 	@nochg:
 		rts	
@@ -6640,7 +6640,7 @@ Ani_EEgg:	include "Animations\Ending Eggman Try Again.asm"
 
 TryChaos:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	TCha_Index(pc,d0.w),d1
 		jsr	TCha_Index(pc,d1.w)
 		jmp	(DisplaySprite).l
@@ -6659,15 +6659,15 @@ TCha_Main:	; Routine 0
 
 @makeemerald:
 		move.b	#id_TryChaos,(a1) ; load emerald object
-		addq.b	#2,obRoutine(a1)
-		move.l	#Map_ECha,obMap(a1)
-		move.w	#$3C5,obGfx(a1)
-		move.b	#0,obRender(a1)
-		move.b	#1,obPriority(a1)
-		move.w	#$104,obX(a1)
+		addq.b	#2,ost_routine(a1)
+		move.l	#Map_ECha,ost_mappings(a1)
+		move.w	#$3C5,ost_tile(a1)
+		move.b	#0,ost_render(a1)
+		move.b	#1,ost_priority(a1)
+		move.w	#$104,ost_x_pos(a1)
 		move.w	#$120,$38(a1)
-		move.w	#$EC,obScreenY(a1)
-		move.w	obScreenY(a1),$3A(a1)
+		move.w	#$EC,ost_y_screen(a1)
+		move.w	ost_y_screen(a1),$3A(a1)
 		move.b	#$1C,$3C(a1)
 		lea	(v_emldlist).w,a3
 
@@ -6688,12 +6688,12 @@ TCha_Main:	; Routine 0
 		dbf	d0,@chkloop
 
 @loc_5B42:
-		move.b	d2,obFrame(a1)
-		addq.b	#1,obFrame(a1)
+		move.b	d2,ost_frame(a1)
+		addq.b	#1,ost_frame(a1)
 		addq.b	#1,d2
-		move.b	#$80,obAngle(a1)
-		move.b	d3,obTimeFrame(a1)
-		move.b	d3,obDelayAni(a1)
+		move.b	#$80,ost_angle(a1)
+		move.b	d3,ost_anim_time(a1)
+		move.b	d3,ost_anim_delay(a1)
 		addi.w	#10,d3
 		lea	$40(a1),a1
 		dbf	d1,@makeemerald	; repeat 5 times
@@ -6701,24 +6701,24 @@ TCha_Main:	; Routine 0
 TCha_Move:	; Routine 2
 		tst.w	$3E(a0)
 		beq.s	locret_5BBA
-		tst.b	obTimeFrame(a0)
+		tst.b	ost_anim_time(a0)
 		beq.s	loc_5B78
-		subq.b	#1,obTimeFrame(a0)
+		subq.b	#1,ost_anim_time(a0)
 		bne.s	loc_5B80
 
 loc_5B78:
 		move.w	$3E(a0),d0
-		add.w	d0,obAngle(a0)
+		add.w	d0,ost_angle(a0)
 
 loc_5B80:
-		move.b	obAngle(a0),d0
+		move.b	ost_angle(a0),d0
 		beq.s	loc_5B8C
 		cmpi.b	#$80,d0
 		bne.s	loc_5B96
 
 loc_5B8C:
 		clr.w	$3E(a0)
-		move.b	obDelayAni(a0),obTimeFrame(a0)
+		move.b	ost_anim_delay(a0),ost_anim_time(a0)
 
 loc_5B96:
 		jsr	(CalcSine).l
@@ -6730,8 +6730,8 @@ loc_5B96:
 		asr.l	#8,d0
 		add.w	$38(a0),d1
 		add.w	$3A(a0),d0
-		move.w	d1,obX(a0)
-		move.w	d0,obScreenY(a0)
+		move.w	d1,ost_x_pos(a0)
+		move.w	d0,ost_y_screen(a0)
 
 locret_5BBA:
 		rts	
@@ -6862,8 +6862,8 @@ LevSz_ChkLamp:
 		beq.s	LevSz_StartLoc	; if not, branch
 
 		jsr	(Lamp_LoadInfo).l
-		move.w	(v_player+obX).w,d1
-		move.w	(v_player+obY).w,d0
+		move.w	(v_player+ost_x_pos).w,d1
+		move.w	(v_player+ost_y_pos).w,d0
 		bra.s	LevSz_SkipStartPos
 ; ===========================================================================
 
@@ -6883,10 +6883,10 @@ LevSz_StartLoc:
 LevSz_SonicPos:
 		moveq	#0,d1
 		move.w	(a1)+,d1
-		move.w	d1,(v_player+obX).w ; set Sonic's position on x-axis
+		move.w	d1,(v_player+ost_x_pos).w ; set Sonic's position on x-axis
 		moveq	#0,d0
 		move.w	(a1),d0
-		move.w	d0,(v_player+obY).w ; set Sonic's position on y-axis
+		move.w	d0,(v_player+ost_y_pos).w ; set Sonic's position on y-axis
 
 SetScreen:
 	LevSz_SkipStartPos:
@@ -7534,7 +7534,7 @@ locret_65B0:
 
 
 MoveScreenHoriz:
-		move.w	(v_player+obX).w,d0
+		move.w	(v_player+ost_x_pos).w,d0
 		sub.w	(v_screenposx).w,d0 ; Sonic's distance from left edge of screen
 		subi.w	#144,d0		; is distance less than 144px?
 		bcs.s	SH_BehindMid	; if yes, branch
@@ -7591,14 +7591,14 @@ loc_6610:
 
 ScrollVertical:
 		moveq	#0,d1
-		move.w	(v_player+obY).w,d0
+		move.w	(v_player+ost_y_pos).w,d0
 		sub.w	(v_screenposy).w,d0 ; Sonic's distance from top of screen
-		btst	#2,(v_player+obStatus).w ; is Sonic rolling?
+		btst	#2,(v_player+ost_status).w ; is Sonic rolling?
 		beq.s	SV_NotRolling	; if not, branch
 		subq.w	#5,d0
 
 	SV_NotRolling:
-		btst	#1,(v_player+obStatus).w ; is Sonic jumping?
+		btst	#1,(v_player+ost_status).w ; is Sonic jumping?
 		beq.s	loc_664A	; if not, branch
 
 		addi.w	#32,d0
@@ -7625,7 +7625,7 @@ loc_6656:
 loc_665C:
 		cmpi.w	#$60,(v_lookshift).w
 		bne.s	loc_6684
-		move.w	(v_player+obInertia).w,d1
+		move.w	(v_player+ost_inertia).w,d1
 		bpl.s	loc_666C
 		neg.w	d1
 
@@ -7684,7 +7684,7 @@ loc_66CC:
 		cmpi.w	#-$100,d1
 		bgt.s	loc_66F0
 		andi.w	#$7FF,d1
-		andi.w	#$7FF,(v_player+obY).w
+		andi.w	#$7FF,(v_player+ost_y_pos).w
 		andi.w	#$7FF,(v_screenposy).w
 		andi.w	#$3FF,(v_bgscreenposy).w
 		bra.s	loc_6724
@@ -7706,7 +7706,7 @@ loc_6700:
 		blt.s	loc_6724
 		subi.w	#$800,d1
 		bcs.s	loc_6720
-		andi.w	#$7FF,(v_player+obY).w
+		andi.w	#$7FF,(v_player+ost_y_pos).w
 		subi.w	#$800,(v_screenposy).w
 		andi.w	#$3FF,(v_bgscreenposy).w
 		bra.s	loc_6724
@@ -7986,8 +7986,8 @@ LevSz_ChkLamp:
 		beq.s	LevSz_StartLoc	; if not, branch
 
 		jsr	(Lamp_LoadInfo).l
-		move.w	(v_player+obX).w,d1
-		move.w	(v_player+obY).w,d0
+		move.w	(v_player+ost_x_pos).w,d1
+		move.w	(v_player+ost_y_pos).w,d0
 		bra.s	LevSz_SkipStartPos
 ; ===========================================================================
 
@@ -8007,10 +8007,10 @@ LevSz_StartLoc:
 LevSz_SonicPos:
 		moveq	#0,d1
 		move.w	(a1)+,d1
-		move.w	d1,(v_player+obX).w ; set Sonic's position on x-axis
+		move.w	d1,(v_player+ost_x_pos).w ; set Sonic's position on x-axis
 		moveq	#0,d0
 		move.w	(a1),d0
-		move.w	d0,(v_player+obY).w ; set Sonic's position on y-axis
+		move.w	d0,(v_player+ost_y_pos).w ; set Sonic's position on y-axis
 
 SetScreen:
 	LevSz_SkipStartPos:
@@ -8906,7 +8906,7 @@ ScrollHoriz:
 
 
 MoveScreenHoriz:
-		move.w	(v_player+obX).w,d0
+		move.w	(v_player+ost_x_pos).w,d0
 		sub.w	(v_screenposx).w,d0 ; Sonic's distance from left edge of screen
 		subi.w	#144,d0		; is distance less than 144px?
 		bcs.s	SH_BehindMid	; if yes, branch
@@ -8963,14 +8963,14 @@ loc_6610:
 
 ScrollVertical:
 		moveq	#0,d1
-		move.w	(v_player+obY).w,d0
+		move.w	(v_player+ost_y_pos).w,d0
 		sub.w	(v_screenposy).w,d0 ; Sonic's distance from top of screen
-		btst	#2,(v_player+obStatus).w ; is Sonic rolling?
+		btst	#2,(v_player+ost_status).w ; is Sonic rolling?
 		beq.s	SV_NotRolling	; if not, branch
 		subq.w	#5,d0
 
 	SV_NotRolling:
-		btst	#1,(v_player+obStatus).w ; is Sonic jumping?
+		btst	#1,(v_player+ost_status).w ; is Sonic jumping?
 		beq.s	loc_664A	; if not, branch
 
 		addi.w	#32,d0
@@ -8997,7 +8997,7 @@ loc_6656:
 loc_665C:
 		cmpi.w	#$60,(v_lookshift).w
 		bne.s	loc_6684
-		move.w	(v_player+obInertia).w,d1
+		move.w	(v_player+ost_inertia).w,d1
 		bpl.s	loc_666C
 		neg.w	d1
 
@@ -9056,7 +9056,7 @@ loc_66CC:
 		cmpi.w	#-$100,d1
 		bgt.s	loc_66F0
 		andi.w	#$7FF,d1
-		andi.w	#$7FF,(v_player+obY).w
+		andi.w	#$7FF,(v_player+ost_y_pos).w
 		andi.w	#$7FF,(v_screenposy).w
 		andi.w	#$3FF,(v_bgscreenposy).w
 		bra.s	loc_6724
@@ -9078,7 +9078,7 @@ loc_6700:
 		blt.s	loc_6724
 		subi.w	#$800,d1
 		bcs.s	loc_6720
-		andi.w	#$7FF,(v_player+obY).w
+		andi.w	#$7FF,(v_player+ost_y_pos).w
 		subi.w	#$800,(v_screenposy).w
 		andi.w	#$3FF,(v_bgscreenposy).w
 		bra.s	loc_6724
@@ -10384,7 +10384,7 @@ loc_6DAC:
 		addq.w	#8,d0
 		cmp.w	(v_limitbtm2).w,d0
 		bcs.s	loc_6DC4
-		btst	#1,(v_player+obStatus).w
+		btst	#1,(v_player+ost_status).w
 		beq.s	loc_6DC4
 		add.w	d1,d1
 		add.w	d1,d1
@@ -10504,8 +10504,8 @@ loc_6EB0:
 		bsr.w	FindFreeObj
 		bne.s	loc_6ED0
 		move.b	#id_BossGreenHill,0(a1) ; load GHZ boss	object
-		move.w	#$2A60,obX(a1)
-		move.w	#$280,obY(a1)
+		move.w	#$2A60,ost_x_pos(a1)
+		move.w	#$280,ost_y_pos(a1)
 
 loc_6ED0:
 		music	bgm_Boss,0,1,0	; play boss music
@@ -10584,7 +10584,7 @@ locret_6F64:
 DLE_SBZ3:
 		cmpi.w	#$D00,(v_screenposx).w
 		bcs.s	locret_6F8C
-		cmpi.w	#$18,(v_player+obY).w ; has Sonic reached the top of the level?
+		cmpi.w	#$18,(v_player+ost_y_pos).w ; has Sonic reached the top of the level?
 		bcc.s	locret_6F8C	; if not, branch
 		clr.b	(v_lastlamp).w
 		move.w	#1,(f_restart).w ; restart level
@@ -10747,8 +10747,8 @@ DLE_MZ3boss:
 		bsr.w	FindFreeObj
 		bne.s	loc_70D0
 		move.b	#id_BossMarble,0(a1) ; load MZ boss object
-		move.w	#$19F0,obX(a1)
-		move.w	#$22C,obY(a1)
+		move.w	#$19F0,ost_x_pos(a1)
+		move.w	#$22C,ost_y_pos(a1)
 
 loc_70D0:
 		music	bgm_Boss,0,1,0	; play boss music
@@ -10859,7 +10859,7 @@ DLE_SYZ2:
 		cmpi.w	#$25A0,(v_screenposx).w
 		bcs.s	locret_71A2
 		move.w	#$420,(v_limitbtm1).w
-		cmpi.w	#$4D0,(v_player+obY).w
+		cmpi.w	#$4D0,(v_player+ost_y_pos).w
 		bcs.s	locret_71A2
 		move.w	#$520,(v_limitbtm1).w
 
@@ -11079,7 +11079,7 @@ DLE_Ending:
 
 Bridge:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Bri_Index(pc,d0.w),d1
 		jmp	Bri_Index(pc,d1.w)
 ; ===========================================================================
@@ -11093,16 +11093,16 @@ Bri_Index:	index *
 ; ===========================================================================
 
 Bri_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Bri,obMap(a0)
-		move.w	#$438E,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#3,obPriority(a0)
-		move.b	#$80,obActWid(a0)
-		move.w	obY(a0),d2
-		move.w	obX(a0),d3
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Bri,ost_mappings(a0)
+		move.w	#$438E,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#3,ost_priority(a0)
+		move.b	#$80,ost_actwidth(a0)
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
 		move.b	0(a0),d4	; copy object number ($11) to d4
-		lea	obSubtype(a0),a2
+		lea	ost_subtype(a0),a2
 		moveq	#0,d1
 		move.b	(a2),d1		; copy bridge length to d1
 		move.b	#0,(a2)+	; clear bridge length
@@ -11116,19 +11116,19 @@ Bri_Main:	; Routine 0
 @buildloop:
 		bsr.w	FindFreeObj
 		bne.s	Bri_Action
-		addq.b	#1,obSubtype(a0)
-		cmp.w	obX(a0),d3	; is this log the leftmost one?
+		addq.b	#1,ost_subtype(a0)
+		cmp.w	ost_x_pos(a0),d3	; is this log the leftmost one?
 		bne.s	@notleftmost	; if not, branch
 
 		addi.w	#$10,d3
-		move.w	d2,obY(a0)
+		move.w	d2,ost_y_pos(a0)
 		move.w	d2,$3C(a0)
 		move.w	a0,d5
 		subi.w	#$D000,d5
 		lsr.w	#6,d5
 		andi.w	#$7F,d5
 		move.b	d5,(a2)+
-		addq.b	#1,obSubtype(a0)
+		addq.b	#1,ost_subtype(a0)
 
 	@notleftmost:
 		move.w	a1,d5
@@ -11136,16 +11136,16 @@ Bri_Main:	; Routine 0
 		lsr.w	#6,d5
 		andi.w	#$7F,d5
 		move.b	d5,(a2)+
-		move.b	#$A,obRoutine(a1)
+		move.b	#$A,ost_routine(a1)
 		move.b	d4,0(a1)	; load bridge object (d4 = $11)
-		move.w	d2,obY(a1)
+		move.w	d2,ost_y_pos(a1)
 		move.w	d2,$3C(a1)
-		move.w	d3,obX(a1)
-		move.l	#Map_Bri,obMap(a1)
-		move.w	#$438E,obGfx(a1)
-		move.b	#4,obRender(a1)
-		move.b	#3,obPriority(a1)
-		move.b	#8,obActWid(a1)
+		move.w	d3,ost_x_pos(a1)
+		move.l	#Map_Bri,ost_mappings(a1)
+		move.w	#$438E,ost_tile(a1)
+		move.b	#4,ost_render(a1)
+		move.b	#3,ost_priority(a1)
+		move.b	#8,ost_actwidth(a1)
 		addi.w	#$10,d3
 		dbf	d1,@buildloop ; repeat d1 times (length of bridge)
 
@@ -11165,16 +11165,16 @@ Bri_Action:	; Routine 2
 
 Bri_Solid:
 		moveq	#0,d1
-		move.b	obSubtype(a0),d1
+		move.b	ost_subtype(a0),d1
 		lsl.w	#3,d1
 		move.w	d1,d2
 		addq.w	#8,d1
 		add.w	d2,d2
 		lea	(v_player).w,a1
-		tst.w	obVelY(a1)
+		tst.w	ost_y_vel(a1)
 		bmi.w	Plat_Exit
-		move.w	obX(a1),d0
-		sub.w	obX(a0),d0
+		move.w	ost_x_pos(a1),d0
+		sub.w	ost_x_pos(a0),d0
 		add.w	d1,d0
 		bmi.w	Plat_Exit
 		cmp.w	d2,d0
@@ -11190,12 +11190,12 @@ Bri_Solid:
 
 PlatformObject:
 		lea	(v_player).w,a1
-		tst.w	obVelY(a1)	; is Sonic moving up/jumping?
+		tst.w	ost_y_vel(a1)	; is Sonic moving up/jumping?
 		bmi.w	Plat_Exit	; if yes, branch
 
 ;		perform x-axis range check
-		move.w	obX(a1),d0
-		sub.w	obX(a0),d0
+		move.w	ost_x_pos(a1),d0
+		sub.w	ost_x_pos(a0),d0
 		add.w	d1,d0
 		bmi.w	Plat_Exit
 		add.w	d1,d1
@@ -11203,13 +11203,13 @@ PlatformObject:
 		bhs.w	Plat_Exit
 
 	Plat_NoXCheck:
-		move.w	obY(a0),d0
+		move.w	ost_y_pos(a0),d0
 		subq.w	#8,d0
 
 Platform3:
 ;		perform y-axis range check
-		move.w	obY(a1),d2
-		move.b	obHeight(a1),d1
+		move.w	ost_y_pos(a1),d2
+		move.b	ost_height(a1),d1
 		ext.w	d1
 		add.w	d2,d1
 		addq.w	#4,d1
@@ -11220,26 +11220,26 @@ Platform3:
 
 		tst.b	(f_lockmulti).w
 		bmi.w	Plat_Exit
-		cmpi.b	#6,obRoutine(a1)
+		cmpi.b	#6,ost_routine(a1)
 		bhs.w	Plat_Exit
 		add.w	d0,d2
 		addq.w	#3,d2
-		move.w	d2,obY(a1)
-		addq.b	#2,obRoutine(a0)
+		move.w	d2,ost_y_pos(a1)
+		addq.b	#2,ost_routine(a0)
 
 loc_74AE:
-		btst	#3,obStatus(a1)
+		btst	#3,ost_status(a1)
 		beq.s	loc_74DC
 		moveq	#0,d0
 		move.b	standonobject(a1),d0
 		lsl.w	#6,d0
 		addi.l	#v_objspace&$FFFFFF,d0
 		movea.l	d0,a2
-		bclr	#3,obStatus(a2)
-		clr.b	ob2ndRout(a2)
-		cmpi.b	#4,obRoutine(a2)
+		bclr	#3,ost_status(a2)
+		clr.b	ost_routine2(a2)
+		cmpi.b	#4,ost_routine(a2)
 		bne.s	loc_74DC
-		subq.b	#2,obRoutine(a2)
+		subq.b	#2,ost_routine(a2)
 
 loc_74DC:
 		move.w	a0,d0
@@ -11247,10 +11247,10 @@ loc_74DC:
 		lsr.w	#6,d0
 		andi.w	#$7F,d0
 		move.b	d0,standonobject(a1)
-		move.b	#0,obAngle(a1)
-		move.w	#0,obVelY(a1)
-		move.w	obVelX(a1),obInertia(a1)
-		btst	#1,obStatus(a1)
+		move.b	#0,ost_angle(a1)
+		move.w	#0,ost_y_vel(a1)
+		move.w	ost_x_vel(a1),ost_inertia(a1)
+		btst	#1,ost_status(a1)
 		beq.s	loc_7512
 		move.l	a0,-(sp)
 		movea.l	a1,a0
@@ -11258,8 +11258,8 @@ loc_74DC:
 		movea.l	(sp)+,a0
 
 loc_7512:
-		bset	#3,obStatus(a1)
-		bset	#3,obStatus(a0)
+		bset	#3,ost_status(a1)
+		bset	#3,ost_status(a0)
 
 Plat_Exit:
 		rts	
@@ -11274,16 +11274,16 @@ Plat_Exit:
 
 SlopeObject:
 		lea	(v_player).w,a1
-		tst.w	obVelY(a1)
+		tst.w	ost_y_vel(a1)
 		bmi.w	Plat_Exit
-		move.w	obX(a1),d0
-		sub.w	obX(a0),d0
+		move.w	ost_x_pos(a1),d0
+		sub.w	ost_x_pos(a0),d0
 		add.w	d1,d0
 		bmi.s	Plat_Exit
 		add.w	d1,d1
 		cmp.w	d1,d0
 		bhs.s	Plat_Exit
-		btst	#0,obRender(a0)
+		btst	#0,ost_render(a0)
 		beq.s	loc_754A
 		not.w	d0
 		add.w	d1,d0
@@ -11292,7 +11292,7 @@ loc_754A:
 		lsr.w	#1,d0
 		moveq	#0,d3
 		move.b	(a2,d0.w),d3
-		move.w	obY(a0),d0
+		move.w	ost_y_pos(a0),d0
 		sub.w	d3,d0
 		bra.w	Platform3
 ; End of function SlopeObject
@@ -11303,16 +11303,16 @@ loc_754A:
 
 Swing_Solid:
 		lea	(v_player).w,a1
-		tst.w	obVelY(a1)
+		tst.w	ost_y_vel(a1)
 		bmi.w	Plat_Exit
-		move.w	obX(a1),d0
-		sub.w	obX(a0),d0
+		move.w	ost_x_pos(a1),d0
+		sub.w	ost_x_pos(a0),d0
 		add.w	d1,d0
 		bmi.w	Plat_Exit
 		add.w	d1,d1
 		cmp.w	d1,d0
 		bhs.w	Plat_Exit
-		move.w	obY(a0),d0
+		move.w	ost_y_pos(a0),d0
 		sub.w	d3,d0
 		bra.w	Platform3
 ; End of function Obj15_Solid
@@ -11334,7 +11334,7 @@ Bri_Platform:	; Routine 4
 
 Bri_WalkOff:
 		moveq	#0,d1
-		move.b	obSubtype(a0),d1
+		move.b	ost_subtype(a0),d1
 		lsl.w	#3,d1
 		move.w	d1,d2
 		addq.w	#8,d1
@@ -11368,19 +11368,19 @@ ExitPlatform:
 ExitPlatform2:
 		add.w	d2,d2
 		lea	(v_player).w,a1
-		btst	#1,obStatus(a1)
+		btst	#1,ost_status(a1)
 		bne.s	loc_75E0
-		move.w	obX(a1),d0
-		sub.w	obX(a0),d0
+		move.w	ost_x_pos(a1),d0
+		sub.w	ost_x_pos(a0),d0
 		add.w	d1,d0
 		bmi.s	loc_75E0
 		cmp.w	d2,d0
 		blo.s	locret_75F2
 
 loc_75E0:
-		bclr	#3,obStatus(a1)
-		move.b	#2,obRoutine(a0)
-		bclr	#3,obStatus(a0)
+		bclr	#3,ost_status(a1)
+		move.b	#2,ost_routine(a0)
+		bclr	#3,ost_status(a0)
 
 locret_75F2:
 		rts	
@@ -11397,12 +11397,12 @@ Bri_MoveSonic:
 		addi.l	#v_objspace&$FFFFFF,d0
 		movea.l	d0,a2
 		lea	(v_player).w,a1
-		move.w	obY(a2),d0
+		move.w	ost_y_pos(a2),d0
 		subq.w	#8,d0
 		moveq	#0,d1
-		move.b	obHeight(a1),d1
+		move.b	ost_height(a1),d1
 		sub.w	d1,d0
-		move.w	d0,obY(a1)	; change Sonic's position on y-axis
+		move.w	d0,ost_y_pos(a1)	; change Sonic's position on y-axis
 		rts	
 ; End of function Bri_MoveSonic
 
@@ -11416,7 +11416,7 @@ Bri_Bend:
 		move.w	d0,d4
 		lea	(Obj11_BendData2).l,a4
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		lsl.w	#4,d0
 		moveq	#0,d3
 		move.b	$3F(a0),d3
@@ -11443,10 +11443,10 @@ loc_765C:
 		mulu.w	d4,d0
 		swap	d0
 		add.w	$3C(a1),d0
-		move.w	d0,obY(a1)
+		move.w	d0,ost_y_pos(a1)
 		dbf	d2,loc_765C
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		moveq	#0,d3
 		move.b	$3F(a0),d3
 		addq.b	#1,d3
@@ -11473,7 +11473,7 @@ loc_76A4:
 		mulu.w	d4,d0
 		swap	d0
 		add.w	$3C(a1),d0
-		move.w	d0,obY(a1)
+		move.w	d0,ost_y_pos(a1)
 		dbf	d2,loc_76A4
 
 locret_76CA:
@@ -11499,7 +11499,7 @@ Bri_ChkDel:
 
 @deletebridge:
 		moveq	#0,d2
-		lea	obSubtype(a0),a2 ; load bridge length
+		lea	ost_subtype(a0),a2 ; load bridge length
 		move.b	(a2)+,d2	; move bridge length to	d2
 		subq.b	#1,d2		; subtract 1
 		bcs.s	@delparent
@@ -11540,7 +11540,7 @@ Map_Bri:	include "Mappings\GHZ Bridge.asm"
 
 SwingingPlatform:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Swing_Index(pc,d0.w),d1
 		jmp	Swing_Index(pc,d1.w)
 ; ===========================================================================
@@ -11558,39 +11558,39 @@ swing_origY:	equ $38		; original y-axis position
 ; ===========================================================================
 
 Swing_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Swing_GHZ,obMap(a0) ; GHZ and MZ specific code
-		move.w	#$4380,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#3,obPriority(a0)
-		move.b	#$18,obActWid(a0)
-		move.b	#8,obHeight(a0)
-		move.w	obY(a0),swing_origY(a0)
-		move.w	obX(a0),swing_origX(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Swing_GHZ,ost_mappings(a0) ; GHZ and MZ specific code
+		move.w	#$4380,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#3,ost_priority(a0)
+		move.b	#$18,ost_actwidth(a0)
+		move.b	#8,ost_height(a0)
+		move.w	ost_y_pos(a0),swing_origY(a0)
+		move.w	ost_x_pos(a0),swing_origX(a0)
 		cmpi.b	#id_SLZ,(v_zone).w ; check if level is SLZ
 		bne.s	@notSLZ
 
-		move.l	#Map_Swing_SLZ,obMap(a0) ; SLZ specific code
-		move.w	#$43DC,obGfx(a0)
-		move.b	#$20,obActWid(a0)
-		move.b	#$10,obHeight(a0)
-		move.b	#$99,obColType(a0)
+		move.l	#Map_Swing_SLZ,ost_mappings(a0) ; SLZ specific code
+		move.w	#$43DC,ost_tile(a0)
+		move.b	#$20,ost_actwidth(a0)
+		move.b	#$10,ost_height(a0)
+		move.b	#$99,ost_col_type(a0)
 
 	@notSLZ:
 		cmpi.b	#id_SBZ,(v_zone).w ; check if level is SBZ
 		bne.s	@length
 
-		move.l	#Map_BBall,obMap(a0) ; SBZ specific code
-		move.w	#$391,obGfx(a0)
-		move.b	#$18,obActWid(a0)
-		move.b	#$18,obHeight(a0)
-		move.b	#$86,obColType(a0)
-		move.b	#$C,obRoutine(a0) ; goto Swing_Action next
+		move.l	#Map_BBall,ost_mappings(a0) ; SBZ specific code
+		move.w	#$391,ost_tile(a0)
+		move.b	#$18,ost_actwidth(a0)
+		move.b	#$18,ost_height(a0)
+		move.b	#$86,ost_col_type(a0)
+		move.b	#$C,ost_routine(a0) ; goto Swing_Action next
 
 @length:
 		move.b	0(a0),d4
 		moveq	#0,d1
-		lea	obSubtype(a0),a2 ; move chain length to a2
+		lea	ost_subtype(a0),a2 ; move chain length to a2
 		move.b	(a2),d1		; move a2 to d1
 		move.w	d1,-(sp)
 		andi.w	#$F,d1
@@ -11600,7 +11600,7 @@ Swing_Main:	; Routine 0
 		addq.b	#8,d3
 		move.b	d3,$3C(a0)
 		subq.b	#8,d3
-		tst.b	obFrame(a0)
+		tst.b	ost_frame(a0)
 		beq.s	@makechain
 		addq.b	#8,d3
 		subq.w	#1,d1
@@ -11608,27 +11608,27 @@ Swing_Main:	; Routine 0
 @makechain:
 		bsr.w	FindFreeObj
 		bne.s	@fail
-		addq.b	#1,obSubtype(a0)
+		addq.b	#1,ost_subtype(a0)
 		move.w	a1,d5
 		subi.w	#$D000,d5
 		lsr.w	#6,d5
 		andi.w	#$7F,d5
 		move.b	d5,(a2)+
-		move.b	#$A,obRoutine(a1) ; goto Swing_Display next
+		move.b	#$A,ost_routine(a1) ; goto Swing_Display next
 		move.b	d4,0(a1)	; load swinging	object
-		move.l	obMap(a0),obMap(a1)
-		move.w	obGfx(a0),obGfx(a1)
-		bclr	#6,obGfx(a1)
-		move.b	#4,obRender(a1)
-		move.b	#4,obPriority(a1)
-		move.b	#8,obActWid(a1)
-		move.b	#1,obFrame(a1)
+		move.l	ost_mappings(a0),ost_mappings(a1)
+		move.w	ost_tile(a0),ost_tile(a1)
+		bclr	#6,ost_tile(a1)
+		move.b	#4,ost_render(a1)
+		move.b	#4,ost_priority(a1)
+		move.b	#8,ost_actwidth(a1)
+		move.b	#1,ost_frame(a1)
 		move.b	d3,$3C(a1)
 		subi.b	#$10,d3
 		bcc.s	@notanchor
-		move.b	#2,obFrame(a1)
-		move.b	#3,obPriority(a1)
-		bset	#6,obGfx(a1)
+		move.b	#2,ost_frame(a1)
+		move.b	#3,ost_priority(a1)
+		bset	#6,ost_tile(a1)
 
 	@notanchor:
 		dbf	d1,@makechain ; repeat d1 times (chain length)
@@ -11639,16 +11639,16 @@ Swing_Main:	; Routine 0
 		lsr.w	#6,d5
 		andi.w	#$7F,d5
 		move.b	d5,(a2)+
-		move.w	#$4080,obAngle(a0)
+		move.w	#$4080,ost_angle(a0)
 		move.w	#-$200,$3E(a0)
 		move.w	(sp)+,d1
 		btst	#4,d1		; is object type $1X ?
 		beq.s	@not1X	; if not, branch
-		move.l	#Map_GBall,obMap(a0) ; use GHZ ball mappings
-		move.w	#$43AA,obGfx(a0)
-		move.b	#1,obFrame(a0)
-		move.b	#2,obPriority(a0)
-		move.b	#$81,obColType(a0) ; make object hurt when touched
+		move.l	#Map_GBall,ost_mappings(a0) ; use GHZ ball mappings
+		move.w	#$43AA,ost_tile(a0)
+		move.b	#1,ost_frame(a0)
+		move.b	#2,ost_priority(a0)
+		move.b	#$81,ost_col_type(a0) ; make object hurt when touched
 
 	@not1X:
 		cmpi.b	#id_SBZ,(v_zone).w ; is zone SBZ?
@@ -11656,9 +11656,9 @@ Swing_Main:	; Routine 0
 
 Swing_SetSolid:	; Routine 2
 		moveq	#0,d1
-		move.b	obActWid(a0),d1
+		move.b	ost_actwidth(a0),d1
 		moveq	#0,d3
-		move.b	obHeight(a0),d3
+		move.b	ost_height(a0),d3
 		bsr.w	Swing_Solid
 
 Swing_Action:	; Routine $C
@@ -11669,13 +11669,13 @@ Swing_Action:	; Routine $C
 
 Swing_Action2:	; Routine 4
 		moveq	#0,d1
-		move.b	obActWid(a0),d1
+		move.b	ost_actwidth(a0),d1
 		bsr.w	ExitPlatform
-		move.w	obX(a0),-(sp)
+		move.w	ost_x_pos(a0),-(sp)
 		bsr.w	Swing_Move
 		move.w	(sp)+,d2
 		moveq	#0,d3
-		move.b	obHeight(a0),d3
+		move.b	ost_height(a0),d3
 		addq.b	#1,d3
 		bsr.w	MvSonicOnPtfm
 		bsr.w	DisplaySprite
@@ -11692,7 +11692,7 @@ Swing_Action2:	; Routine 4
 
 MvSonicOnPtfm:
 		lea	(v_player).w,a1
-		move.w	obY(a0),d0
+		move.w	ost_y_pos(a0),d0
 		sub.w	d3,d0
 		bra.s	MvSonic2
 ; End of function MvSonicOnPtfm
@@ -11706,22 +11706,22 @@ MvSonicOnPtfm:
 
 MvSonicOnPtfm2:
 		lea	(v_player).w,a1
-		move.w	obY(a0),d0
+		move.w	ost_y_pos(a0),d0
 		subi.w	#9,d0
 
 MvSonic2:
 		tst.b	(f_lockmulti).w
 		bmi.s	locret_7B62
-		cmpi.b	#6,(v_player+obRoutine).w
+		cmpi.b	#6,(v_player+ost_routine).w
 		bhs.s	locret_7B62
 		tst.w	(v_debuguse).w
 		bne.s	locret_7B62
 		moveq	#0,d1
-		move.b	obHeight(a1),d1
+		move.b	ost_height(a1),d1
 		sub.w	d1,d0
-		move.w	d0,obY(a1)
-		sub.w	obX(a0),d2
-		sub.w	d2,obX(a1)
+		move.w	d0,ost_y_pos(a1)
+		sub.w	ost_x_pos(a0),d2
+		sub.w	d2,ost_x_pos(a1)
 
 locret_7B62:
 		rts	
@@ -11733,7 +11733,7 @@ locret_7B62:
 Swing_Move:
 		move.b	(v_oscillate+$1A).w,d0
 		move.w	#$80,d1
-		btst	#0,obStatus(a0)
+		btst	#0,ost_status(a0)
 		beq.s	loc_7B78
 		neg.w	d0
 		add.w	d1,d0
@@ -11752,7 +11752,7 @@ Obj48_Move:
 		move.w	$3E(a0),d0
 		addq.w	#8,d0
 		move.w	d0,$3E(a0)
-		add.w	d0,obAngle(a0)
+		add.w	d0,ost_angle(a0)
 		cmpi.w	#$200,d0
 		bne.s	loc_7BB6
 		move.b	#1,standonobject(a0)
@@ -11763,13 +11763,13 @@ loc_7B9C:
 		move.w	$3E(a0),d0
 		subq.w	#8,d0
 		move.w	d0,$3E(a0)
-		add.w	d0,obAngle(a0)
+		add.w	d0,ost_angle(a0)
 		cmpi.w	#-$200,d0
 		bne.s	loc_7BB6
 		move.b	#0,standonobject(a0)
 
 loc_7BB6:
-		move.b	obAngle(a0),d0
+		move.b	ost_angle(a0),d0
 ; End of function Obj48_Move
 
 
@@ -11780,7 +11780,7 @@ Swing_Move2:
 		bsr.w	CalcSine
 		move.w	$38(a0),d2
 		move.w	$3A(a0),d3
-		lea	obSubtype(a0),a2
+		lea	ost_subtype(a0),a2
 		moveq	#0,d6
 		move.b	(a2)+,d6
 
@@ -11799,8 +11799,8 @@ loc_7BCE:
 		asr.l	#8,d5
 		add.w	d2,d4
 		add.w	d3,d5
-		move.w	d4,obY(a1)
-		move.w	d5,obX(a1)
+		move.w	d4,ost_y_pos(a1)
+		move.w	d5,ost_x_pos(a1)
 		dbf	d6,loc_7BCE
 		rts	
 ; End of function Swing_Move2
@@ -11814,7 +11814,7 @@ Swing_ChkDel:
 
 Swing_DelAll:
 		moveq	#0,d2
-		lea	obSubtype(a0),a2
+		lea	ost_subtype(a0),a2
 		move.b	(a2)+,d2
 
 Swing_DelLoop:
@@ -11845,7 +11845,7 @@ Map_Swing_SLZ:	include "Mappings\SLZ Swinging Platforms.asm"
 
 Helix:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Hel_Index(pc,d0.w),d1
 		jmp	Hel_Index(pc,d1.w)
 ; ===========================================================================
@@ -11862,17 +11862,17 @@ hel_frame:	equ $3E		; start frame (different for each spike)
 ; ===========================================================================
 
 Hel_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Hel,obMap(a0)
-		move.w	#$4398,obGfx(a0)
-		move.b	#7,obStatus(a0)
-		move.b	#4,obRender(a0)
-		move.b	#3,obPriority(a0)
-		move.b	#8,obActWid(a0)
-		move.w	obY(a0),d2
-		move.w	obX(a0),d3
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Hel,ost_mappings(a0)
+		move.w	#$4398,ost_tile(a0)
+		move.b	#7,ost_status(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#3,ost_priority(a0)
+		move.b	#8,ost_actwidth(a0)
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
 		move.b	0(a0),d4
-		lea	obSubtype(a0),a2 ; move helix length to a2
+		lea	ost_subtype(a0),a2 ; move helix length to a2
 		moveq	#0,d1
 		move.b	(a2),d1		; move helix length to d1
 		move.b	#0,(a2)+	; clear subtype
@@ -11887,33 +11887,33 @@ Hel_Main:	; Routine 0
 Hel_Build:
 		bsr.w	FindFreeObj
 		bne.s	Hel_Action
-		addq.b	#1,obSubtype(a0)
+		addq.b	#1,ost_subtype(a0)
 		move.w	a1,d5
 		subi.w	#$D000,d5
 		lsr.w	#6,d5
 		andi.w	#$7F,d5
 		move.b	d5,(a2)+	; copy child address to parent RAM
-		move.b	#8,obRoutine(a1)
+		move.b	#8,ost_routine(a1)
 		move.b	d4,0(a1)
-		move.w	d2,ObY(a1)
-		move.w	d3,obX(a1)
-		move.l	obMap(a0),obMap(a1)
-		move.w	#$4398,obGfx(a1)
-		move.b	#4,obRender(a1)
-		move.b	#3,obPriority(a1)
-		move.b	#8,obActWid(a1)
+		move.w	d2,ost_y_pos(a1)
+		move.w	d3,ost_x_pos(a1)
+		move.l	ost_mappings(a0),ost_mappings(a1)
+		move.w	#$4398,ost_tile(a1)
+		move.b	#4,ost_render(a1)
+		move.b	#3,ost_priority(a1)
+		move.b	#8,ost_actwidth(a1)
 		move.b	d6,hel_frame(a1)
 		addq.b	#1,d6
 		andi.b	#7,d6
 		addi.w	#$10,d3
-		cmp.w	obX(a0),d3	; is this spike in the centre?
+		cmp.w	ost_x_pos(a0),d3	; is this spike in the centre?
 		bne.s	Hel_NotCentre	; if not, branch
 
 		move.b	d6,hel_frame(a0) ; set parent spike frame
 		addq.b	#1,d6
 		andi.b	#7,d6
 		addi.w	#$10,d3		; skip to next spike
-		addq.b	#1,obSubtype(a0)
+		addq.b	#1,ost_subtype(a0)
 
 	Hel_NotCentre:
 		dbf	d1,Hel_Build ; repeat d1 times (helix length)
@@ -11928,12 +11928,12 @@ Hel_Action:	; Routine 2, 4
 
 Hel_RotateSpikes:
 		move.b	(v_ani0_frame).w,d0
-		move.b	#0,obColType(a0) ; make object harmless
+		move.b	#0,ost_col_type(a0) ; make object harmless
 		add.b	hel_frame(a0),d0
 		andi.b	#7,d0
-		move.b	d0,obFrame(a0)	; change current frame
+		move.b	d0,ost_frame(a0)	; change current frame
 		bne.s	locret_7DA6
-		move.b	#$84,obColType(a0) ; make object harmful
+		move.b	#$84,ost_col_type(a0) ; make object harmful
 
 locret_7DA6:
 		rts	
@@ -11948,7 +11948,7 @@ Hel_ChkDel:
 
 Hel_DelAll:
 		moveq	#0,d2
-		lea	obSubtype(a0),a2 ; move helix length to a2
+		lea	ost_subtype(a0),a2 ; move helix length to a2
 		move.b	(a2)+,d2	; move helix length to d2
 		subq.b	#2,d2
 		bcs.s	Hel_Delete
@@ -11979,7 +11979,7 @@ Map_Hel:	include "Mappings\GHZ Spiked Helix Pole.asm"
 
 BasicPlatform:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Plat_Index(pc,d0.w),d1
 		jmp	Plat_Index(pc,d1.w)
 ; ===========================================================================
@@ -11992,40 +11992,40 @@ Plat_Index:	index *
 ; ===========================================================================
 
 Plat_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.w	#$4000,obGfx(a0)
-		move.l	#Map_Plat_GHZ,obMap(a0)
-		move.b	#$20,obActWid(a0)
+		addq.b	#2,ost_routine(a0)
+		move.w	#$4000,ost_tile(a0)
+		move.l	#Map_Plat_GHZ,ost_mappings(a0)
+		move.b	#$20,ost_actwidth(a0)
 		cmpi.b	#id_SYZ,(v_zone).w ; check if level is SYZ
 		bne.s	@notSYZ
 
-		move.l	#Map_Plat_SYZ,obMap(a0) ; SYZ specific code
-		move.b	#$20,obActWid(a0)
+		move.l	#Map_Plat_SYZ,ost_mappings(a0) ; SYZ specific code
+		move.b	#$20,ost_actwidth(a0)
 
 	@notSYZ:
 		cmpi.b	#id_SLZ,(v_zone).w ; check if level is SLZ
 		bne.s	@notSLZ
-		move.l	#Map_Plat_SLZ,obMap(a0) ; SLZ specific code
-		move.b	#$20,obActWid(a0)
-		move.w	#$4000,obGfx(a0)
-		move.b	#3,obSubtype(a0)
+		move.l	#Map_Plat_SLZ,ost_mappings(a0) ; SLZ specific code
+		move.b	#$20,ost_actwidth(a0)
+		move.w	#$4000,ost_tile(a0)
+		move.b	#3,ost_subtype(a0)
 
 	@notSLZ:
-		move.b	#4,obRender(a0)
-		move.b	#4,obPriority(a0)
-		move.w	obY(a0),$2C(a0)
-		move.w	obY(a0),$34(a0)
-		move.w	obX(a0),$32(a0)
-		move.w	#$80,obAngle(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#4,ost_priority(a0)
+		move.w	ost_y_pos(a0),$2C(a0)
+		move.w	ost_y_pos(a0),$34(a0)
+		move.w	ost_x_pos(a0),$32(a0)
+		move.w	#$80,ost_angle(a0)
 		moveq	#0,d1
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		cmpi.b	#$A,d0		; is object type $A (large platform)?
 		bne.s	@setframe	; if not, branch
 		addq.b	#1,d1		; use frame #1
-		move.b	#$20,obActWid(a0) ; set width
+		move.b	#$20,ost_actwidth(a0) ; set width
 
 	@setframe:
-		move.b	d1,obFrame(a0)	; set frame to d1
+		move.b	d1,ost_frame(a0)	; set frame to d1
 
 Plat_Solid:	; Routine 2
 		tst.b	$38(a0)
@@ -12034,7 +12034,7 @@ Plat_Solid:	; Routine 2
 
 	loc_7EE0:
 		moveq	#0,d1
-		move.b	obActWid(a0),d1
+		move.b	ost_actwidth(a0),d1
 		bsr.w	PlatformObject
 
 Plat_Action:	; Routine 8
@@ -12051,9 +12051,9 @@ Plat_Action2:	; Routine 4
 
 	loc_7F06:
 		moveq	#0,d1
-		move.b	obActWid(a0),d1
+		move.b	ost_actwidth(a0),d1
 		bsr.w	ExitPlatform
-		move.w	obX(a0),-(sp)
+		move.w	ost_x_pos(a0),-(sp)
 		bsr.w	Plat_Move
 		bsr.w	Plat_Nudge
 		move.w	(sp)+,d2
@@ -12077,7 +12077,7 @@ Plat_Nudge:
 		muls.w	d1,d0
 		swap	d0
 		add.w	$2C(a0),d0
-		move.w	d0,obY(a0)
+		move.w	d0,ost_y_pos(a0)
 		rts	
 ; End of function Plat_Nudge
 
@@ -12090,7 +12090,7 @@ Plat_Nudge:
 
 Plat_Move:
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		andi.w	#$F,d0
 		add.w	d0,d0
 		move.w	@index(pc,d0.w),d1
@@ -12120,7 +12120,7 @@ Plat_Move:
 
 @type05:
 		move.w	$32(a0),d0
-		move.b	obAngle(a0),d1	; load platform-motion variable
+		move.b	ost_angle(a0),d1	; load platform-motion variable
 		neg.b	d1		; reverse platform-motion
 		addi.b	#$40,d1
 		bra.s	@type01_move
@@ -12128,13 +12128,13 @@ Plat_Move:
 
 @type01:
 		move.w	$32(a0),d0
-		move.b	obAngle(a0),d1	; load platform-motion variable
+		move.b	ost_angle(a0),d1	; load platform-motion variable
 		subi.b	#$40,d1
 
 	@type01_move:
 		ext.w	d1
 		add.w	d1,d0
-		move.w	d0,obX(a0)	; change position on x-axis
+		move.w	d0,ost_x_pos(a0)	; change position on x-axis
 		bra.w	@chgmotion
 ; ===========================================================================
 
@@ -12155,7 +12155,7 @@ Plat_Move:
 
 @type06:
 		move.w	$34(a0),d0
-		move.b	obAngle(a0),d1	; load platform-motion variable
+		move.b	ost_angle(a0),d1	; load platform-motion variable
 		neg.b	d1		; reverse platform-motion
 		addi.b	#$40,d1
 		bra.s	@type02_move
@@ -12163,7 +12163,7 @@ Plat_Move:
 
 @type02:
 		move.w	$34(a0),d0
-		move.b	obAngle(a0),d1	; load platform-motion variable
+		move.b	ost_angle(a0),d1	; load platform-motion variable
 		subi.b	#$40,d1
 
 	@type02_move:
@@ -12176,7 +12176,7 @@ Plat_Move:
 @type03:
 		tst.w	$3A(a0)		; is time delay	set?
 		bne.s	@type03_wait	; if yes, branch
-		btst	#3,obStatus(a0)	; is Sonic standing on the platform?
+		btst	#3,ost_status(a0)	; is Sonic standing on the platform?
 		beq.s	@type03_nomove	; if not, branch
 		move.w	#30,$3A(a0)	; set time delay to 0.5	seconds
 
@@ -12187,7 +12187,7 @@ Plat_Move:
 		subq.w	#1,$3A(a0)	; subtract 1 from time
 		bne.s	@type03_nomove	; if time is > 0, branch
 		move.w	#32,$3A(a0)
-		addq.b	#1,obSubtype(a0) ; change to type 04 (falling)
+		addq.b	#1,ost_subtype(a0) ; change to type 04 (falling)
 		rts	
 ; ===========================================================================
 
@@ -12196,31 +12196,31 @@ Plat_Move:
 		beq.s	@loc_8048
 		subq.w	#1,$3A(a0)
 		bne.s	@loc_8048
-		btst	#3,obStatus(a0)
+		btst	#3,ost_status(a0)
 		beq.s	@loc_8042
-		bset	#1,obStatus(a1)
-		bclr	#3,obStatus(a1)
-		move.b	#2,obRoutine(a1)
-		bclr	#3,obStatus(a0)
+		bset	#1,ost_status(a1)
+		bclr	#3,ost_status(a1)
+		move.b	#2,ost_routine(a1)
+		bclr	#3,ost_status(a0)
 		clr.b	$25(a0)
-		move.w	obVelY(a0),obVelY(a1)
+		move.w	ost_y_vel(a0),ost_y_vel(a1)
 
 	@loc_8042:
-		move.b	#8,obRoutine(a0)
+		move.b	#8,ost_routine(a0)
 
 	@loc_8048:
 		move.l	$2C(a0),d3
-		move.w	obVelY(a0),d0
+		move.w	ost_y_vel(a0),d0
 		ext.l	d0
 		asl.l	#8,d0
 		add.l	d0,d3
 		move.l	d3,$2C(a0)
-		addi.w	#$38,obVelY(a0)
+		addi.w	#$38,ost_y_vel(a0)
 		move.w	(v_limitbtm2).w,d0
 		addi.w	#$E0,d0
 		cmp.w	$2C(a0),d0
 		bcc.s	@locret_8074
-		move.b	#6,obRoutine(a0)
+		move.b	#6,ost_routine(a0)
 
 	@locret_8074:
 		rts	
@@ -12231,7 +12231,7 @@ Plat_Move:
 		bne.s	@type07_wait	; if yes, branch
 		lea	(f_switch).w,a2	; load switch statuses
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0 ; move object type ($x7) to d0
+		move.b	ost_subtype(a0),d0 ; move object type ($x7) to d0
 		lsr.w	#4,d0		; divide d0 by 8, round	down
 		tst.b	(a2,d0.w)	; has switch no. d0 been pressed?
 		beq.s	@type07_nomove	; if not, branch
@@ -12243,7 +12243,7 @@ Plat_Move:
 	@type07_wait:
 		subq.w	#1,$3A(a0)	; subtract 1 from time delay
 		bne.s	@type07_nomove	; if time is > 0, branch
-		addq.b	#1,obSubtype(a0) ; change to type 08
+		addq.b	#1,ost_subtype(a0) ; change to type 08
 		rts	
 ; ===========================================================================
 
@@ -12253,7 +12253,7 @@ Plat_Move:
 		subi.w	#$200,d0
 		cmp.w	$2C(a0),d0	; has platform moved $200 pixels?
 		bne.s	@type08_nostop	; if not, branch
-		clr.b	obSubtype(a0)	; change to type 00 (stop moving)
+		clr.b	ost_subtype(a0)	; change to type 00 (stop moving)
 
 	@type08_nostop:
 		rts	
@@ -12261,7 +12261,7 @@ Plat_Move:
 
 @type0A:
 		move.w	$34(a0),d0
-		move.b	obAngle(a0),d1	; load platform-motion variable
+		move.b	ost_angle(a0),d1	; load platform-motion variable
 		subi.b	#$40,d1
 		ext.w	d1
 		asr.w	#1,d1
@@ -12301,7 +12301,7 @@ Map_GBall:	include "Mappings\GHZ Giant Ball.asm"
 
 CollapseLedge:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Ledge_Index(pc,d0.w),d1
 		jmp	Ledge_Index(pc,d1.w)
 ; ===========================================================================
@@ -12318,16 +12318,16 @@ ledge_collapse_flag:	equ $3A		; collapse flag
 ; ===========================================================================
 
 Ledge_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Ledge,obMap(a0)
-		move.w	#$4000,obGfx(a0)
-		ori.b	#4,obRender(a0)
-		move.b	#4,obPriority(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Ledge,ost_mappings(a0)
+		move.w	#$4000,ost_tile(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	#4,ost_priority(a0)
 		move.b	#7,ledge_timedelay(a0) ; set time delay for collapse
-		move.b	#$64,obActWid(a0)
-		move.b	obSubtype(a0),obFrame(a0)
-		move.b	#$38,obHeight(a0)
-		bset	#4,obRender(a0)
+		move.b	#$64,ost_actwidth(a0)
+		move.b	ost_subtype(a0),ost_frame(a0)
+		move.b	#$38,ost_height(a0)
+		bset	#4,ost_render(a0)
 
 Ledge_Touch:	; Routine 2
 		tst.b	ledge_collapse_flag(a0)	; is ledge collapsing?
@@ -12357,7 +12357,7 @@ Ledge_WalkOff:	; Routine $A
 		bsr.w	ExitPlatform
 		move.w	#$30,d1
 		lea	(Ledge_SlopeData).l,a2
-		move.w	obX(a0),d2
+		move.w	ost_x_pos(a0),d2
 		bsr.w	SlopeObject2
 		bra.w	RememberState
 ; End of function Ledge_WalkOff
@@ -12377,17 +12377,17 @@ loc_82D0:
 		subq.b	#1,ledge_timedelay(a0)
 		bsr.w	Ledge_WalkOff
 		lea	(v_player).w,a1
-		btst	#3,obStatus(a1)
+		btst	#3,ost_status(a1)
 		beq.s	loc_82FC
 		tst.b	ledge_timedelay(a0)
 		bne.s	locret_8308
-		bclr	#3,obStatus(a1)
-		bclr	#5,obStatus(a1)
-		move.b	#1,obNextAni(a1)
+		bclr	#3,ost_status(a1)
+		bclr	#5,ost_status(a1)
+		move.b	#1,ost_anim_next(a1)
 
 loc_82FC:
 		move.b	#0,ledge_collapse_flag(a0)
-		move.b	#6,obRoutine(a0) ; run "Ledge_Display" routine
+		move.b	#6,ost_routine(a0) ; run "Ledge_Display" routine
 
 locret_8308:
 		rts	
@@ -12396,7 +12396,7 @@ locret_8308:
 Ledge_TimeZero:
 		bsr.w	ObjectFall
 		bsr.w	DisplaySprite
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.s	Ledge_Delete
 		rts	
 ; ===========================================================================
@@ -12410,7 +12410,7 @@ Ledge_Delete:	; Routine 8
 
 CollapseFloor:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	CFlo_Index(pc,d0.w),d1
 		jmp	CFlo_Index(pc,d1.w)
 ; ===========================================================================
@@ -12427,25 +12427,25 @@ cflo_collapse_flag:	equ $3A
 ; ===========================================================================
 
 CFlo_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_CFlo,obMap(a0)
-		move.w	#$42B8,obGfx(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_CFlo,ost_mappings(a0)
+		move.w	#$42B8,ost_tile(a0)
 		cmpi.b	#id_SLZ,(v_zone).w ; check if level is SLZ
 		bne.s	@notSLZ
 
-		move.w	#$44E0,obGfx(a0) ; SLZ specific code
-		addq.b	#2,obFrame(a0)
+		move.w	#$44E0,ost_tile(a0) ; SLZ specific code
+		addq.b	#2,ost_frame(a0)
 
 	@notSLZ:
 		cmpi.b	#id_SBZ,(v_zone).w ; check if level is SBZ
 		bne.s	@notSBZ
-		move.w	#$43F5,obGfx(a0) ; SBZ specific code
+		move.w	#$43F5,ost_tile(a0) ; SBZ specific code
 
 	@notSBZ:
-		ori.b	#4,obRender(a0)
-		move.b	#4,obPriority(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	#4,ost_priority(a0)
 		move.b	#7,cflo_timedelay(a0)
-		move.b	#$44,obActWid(a0)
+		move.b	#$44,ost_actwidth(a0)
 
 CFlo_Touch:	; Routine 2
 		tst.b	cflo_collapse_flag(a0)	; has Sonic touched the	object?
@@ -12457,15 +12457,15 @@ CFlo_Touch:	; Routine 2
 	@solid:
 		move.w	#$20,d1
 		bsr.w	PlatformObject
-		tst.b	obSubtype(a0)
+		tst.b	ost_subtype(a0)
 		bpl.s	@remstate
-		btst	#3,obStatus(a1)
+		btst	#3,ost_status(a1)
 		beq.s	@remstate
-		bclr	#0,obRender(a0)
-		move.w	obX(a1),d0
-		sub.w	obX(a0),d0
+		bclr	#0,ost_render(a0)
+		move.w	ost_x_pos(a1),d0
+		sub.w	ost_x_pos(a0),d0
 		bcc.s	@remstate
-		bset	#0,obRender(a0)
+		bset	#0,ost_render(a0)
 
 	@remstate:
 		bra.w	RememberState
@@ -12483,7 +12483,7 @@ CFlo_Collapse:	; Routine 4
 CFlo_WalkOff:	; Routine $A
 		move.w	#$20,d1
 		bsr.w	ExitPlatform
-		move.w	obX(a0),d2
+		move.w	ost_x_pos(a0),d2
 		bsr.w	MvSonicOnPtfm2
 		bra.w	RememberState
 ; End of function CFlo_WalkOff
@@ -12503,17 +12503,17 @@ loc_8402:
 		subq.b	#1,cflo_timedelay(a0)
 		bsr.w	CFlo_WalkOff
 		lea	(v_player).w,a1
-		btst	#3,obStatus(a1)
+		btst	#3,ost_status(a1)
 		beq.s	loc_842E
 		tst.b	cflo_timedelay(a0)
 		bne.s	locret_843A
-		bclr	#3,obStatus(a1)
-		bclr	#5,obStatus(a1)
-		move.b	#1,obNextAni(a1)
+		bclr	#3,ost_status(a1)
+		bclr	#5,ost_status(a1)
+		move.b	#1,ost_anim_next(a1)
 
 loc_842E:
 		move.b	#0,cflo_collapse_flag(a0)
-		move.b	#6,obRoutine(a0) ; run "CFlo_Display" routine
+		move.b	#6,ost_routine(a0) ; run "CFlo_Display" routine
 
 locret_843A:
 		rts	
@@ -12522,7 +12522,7 @@ locret_843A:
 CFlo_TimeZero:
 		bsr.w	ObjectFall
 		bsr.w	DisplaySprite
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.s	CFlo_Delete
 		rts	
 ; ===========================================================================
@@ -12537,13 +12537,13 @@ CFlo_Fragment:
 
 loc_8458:
 		lea	(CFlo_Data2).l,a4
-		btst	#0,obSubtype(a0)
+		btst	#0,ost_subtype(a0)
 		beq.s	loc_846C
 		lea	(CFlo_Data3).l,a4
 
 loc_846C:
 		moveq	#7,d1
-		addq.b	#1,obFrame(a0)
+		addq.b	#1,ost_frame(a0)
 		bra.s	loc_8486
 
 ; ===========================================================================
@@ -12554,18 +12554,18 @@ Ledge_Fragment:
 loc_847A:
 		lea	(CFlo_Data1).l,a4
 		moveq	#$18,d1
-		addq.b	#2,obFrame(a0)
+		addq.b	#2,ost_frame(a0)
 
 loc_8486:
 		moveq	#0,d0
-		move.b	obFrame(a0),d0
+		move.b	ost_frame(a0),d0
 		add.w	d0,d0
-		movea.l	obMap(a0),a3
+		movea.l	ost_mappings(a0),a3
 		adda.w	(a3,d0.w),a3
 		addq.w	#1,a3
-		bset	#5,obRender(a0)
+		bset	#5,ost_render(a0)
 		move.b	0(a0),d4
-		move.b	obRender(a0),d5
+		move.b	ost_render(a0),d5
 		movea.l	a0,a1
 		bra.s	loc_84B2
 ; ===========================================================================
@@ -12576,15 +12576,15 @@ loc_84AA:
 		addq.w	#5,a3
 
 loc_84B2:
-		move.b	#6,obRoutine(a1)
+		move.b	#6,ost_routine(a1)
 		move.b	d4,0(a1)
-		move.l	a3,obMap(a1)
-		move.b	d5,obRender(a1)
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
-		move.w	obGfx(a0),obGfx(a1)
-		move.b	obPriority(a0),obPriority(a1)
-		move.b	obActWid(a0),obActWid(a1)
+		move.l	a3,ost_mappings(a1)
+		move.b	d5,ost_render(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
+		move.w	ost_tile(a0),ost_tile(a1)
+		move.b	ost_priority(a0),ost_priority(a1)
+		move.b	ost_actwidth(a0),ost_actwidth(a1)
 		move.b	(a4)+,ledge_timedelay(a1)
 		cmpa.l	a0,a1
 		bhs.s	loc_84EE
@@ -12614,13 +12614,13 @@ CFlo_Data3:	dc.b $16, $1E, $1A, $12, 6, $E,	$A, 2
 
 SlopeObject2:
 		lea	(v_player).w,a1
-		btst	#3,obStatus(a1)
+		btst	#3,ost_status(a1)
 		beq.s	locret_856E
-		move.w	obX(a1),d0
-		sub.w	obX(a0),d0
+		move.w	ost_x_pos(a1),d0
+		sub.w	ost_x_pos(a0),d0
 		add.w	d1,d0
 		lsr.w	#1,d0
-		btst	#0,obRender(a0)
+		btst	#0,ost_render(a0)
 		beq.s	loc_854E
 		not.w	d0
 		add.w	d1,d0
@@ -12628,14 +12628,14 @@ SlopeObject2:
 loc_854E:
 		moveq	#0,d1
 		move.b	(a2,d0.w),d1
-		move.w	obY(a0),d0
+		move.w	ost_y_pos(a0),d0
 		sub.w	d1,d0
 		moveq	#0,d1
-		move.b	obHeight(a1),d1
+		move.b	ost_height(a1),d1
 		sub.w	d1,d0
-		move.w	d0,obY(a1)
-		sub.w	obX(a0),d2
-		sub.w	d2,obX(a1)
+		move.w	d0,ost_y_pos(a1)
+		sub.w	ost_x_pos(a0),d2
+		sub.w	d2,ost_x_pos(a1)
 
 locret_856E:
 		rts	
@@ -12658,7 +12658,7 @@ Map_CFlo:	include "Mappings\Collapsing Floors & Blocks.asm"
 
 Scenery:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Scen_Index(pc,d0.w),d1
 		jmp	Scen_Index(pc,d1.w)
 ; ===========================================================================
@@ -12668,18 +12668,18 @@ Scen_Index:	index *
 ; ===========================================================================
 
 Scen_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0 ; copy object subtype to d0
+		move.b	ost_subtype(a0),d0 ; copy object subtype to d0
 		mulu.w	#$A,d0		; multiply by $A
 		lea	Scen_Values(pc,d0.w),a1
-		move.l	(a1)+,obMap(a0)
-		move.w	(a1)+,obGfx(a0)
-		ori.b	#4,obRender(a0)
-		move.b	(a1)+,obFrame(a0)
-		move.b	(a1)+,obActWid(a0)
-		move.b	(a1)+,obPriority(a0)
-		move.b	(a1)+,obColType(a0)
+		move.l	(a1)+,ost_mappings(a0)
+		move.w	(a1)+,ost_tile(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	(a1)+,ost_frame(a0)
+		move.b	(a1)+,ost_actwidth(a0)
+		move.b	(a1)+,ost_priority(a0)
+		move.b	(a1)+,ost_col_type(a0)
 
 Scen_ChkDel:	; Routine 2
 		out_of_range	DeleteObject
@@ -12711,7 +12711,7 @@ Map_Scen:	include "Mappings\SLZ Fireball Launcher.asm"
 
 MagicSwitch:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Swi_Index(pc,d0.w),d1
 		jmp	Swi_Index(pc,d1.w)
 ; ===========================================================================
@@ -12724,21 +12724,21 @@ swi_origY:	equ $30		; original y-axis position
 ; ===========================================================================
 
 Swi_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Swi,obMap(a0)
-		move.w	#$4000,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.w	obY(a0),swi_origY(a0) ; save position on y-axis
-		move.b	#$10,obActWid(a0)
-		move.b	#5,obPriority(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Swi,ost_mappings(a0)
+		move.w	#$4000,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.w	ost_y_pos(a0),swi_origY(a0) ; save position on y-axis
+		move.b	#$10,ost_actwidth(a0)
+		move.b	#5,ost_priority(a0)
 
 Swi_Action:	; Routine 2
-		move.w	swi_origY(a0),obY(a0) ; restore position on y-axis
+		move.w	swi_origY(a0),ost_y_pos(a0) ; restore position on y-axis
 		move.w	#$10,d1
 		bsr.w	Swi_ChkTouch	; check if Sonic touches the switch
 		beq.s	Swi_ChkDel	; if not, branch
 
-		addq.w	#2,obY(a0)	; move object 2	pixels
+		addq.w	#2,ost_y_pos(a0)	; move object 2	pixels
 		moveq	#1,d0
 		move.w	d0,(f_switch).w	; set switch 0 as "pressed"
 
@@ -12761,18 +12761,18 @@ Swi_Delete:	; Routine 4
 
 Swi_ChkTouch:
 		lea	(v_player).w,a1
-		move.w	obX(a1),d0
-		sub.w	obX(a0),d0
+		move.w	ost_x_pos(a1),d0
+		sub.w	ost_x_pos(a0),d0
 		add.w	d1,d0
 		bmi.s	Swi_NoTouch
 		add.w	d1,d1
 		cmp.w	d1,d0
 		bcc.s	Swi_NoTouch
-		move.w	obY(a1),d2
-		move.b	obHeight(a1),d1
+		move.w	ost_y_pos(a1),d2
+		move.b	ost_height(a1),d1
 		ext.w	d1
 		add.w	d2,d1
-		move.w	obY(a0),d0
+		move.w	ost_y_pos(a0),d0
 		subi.w	#$10,d0
 		sub.w	d1,d0
 		bhi.s	Swi_NoTouch
@@ -12795,7 +12795,7 @@ Map_Swi:	include "Mappings\Unused Switch.asm"
 
 AutoDoor:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	ADoor_Index(pc,d0.w),d1
 		jmp	ADoor_Index(pc,d1.w)
 ; ===========================================================================
@@ -12805,49 +12805,49 @@ ADoor_Index:	index *
 ; ===========================================================================
 
 ADoor_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_ADoor,obMap(a0)
-		move.w	#$42E8,obGfx(a0)
-		ori.b	#4,obRender(a0)
-		move.b	#8,obActWid(a0)
-		move.b	#4,obPriority(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_ADoor,ost_mappings(a0)
+		move.w	#$42E8,ost_tile(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	#8,ost_actwidth(a0)
+		move.b	#4,ost_priority(a0)
 
 ADoor_OpenShut:	; Routine 2
 		move.w	#$40,d1		; set range for door detection
-		clr.b	obAnim(a0)	; use "closing"	animation
-		move.w	(v_player+obX).w,d0
+		clr.b	ost_anim(a0)	; use "closing"	animation
+		move.w	(v_player+ost_x_pos).w,d0
 		add.w	d1,d0
-		cmp.w	obX(a0),d0
+		cmp.w	ost_x_pos(a0),d0
 		bcs.s	ADoor_Animate
 		sub.w	d1,d0
 		sub.w	d1,d0
-		cmp.w	obX(a0),d0	; is Sonic > $40 pixels from door?
+		cmp.w	ost_x_pos(a0),d0	; is Sonic > $40 pixels from door?
 		bcc.s	ADoor_Animate	; close door
 		add.w	d1,d0
-		cmp.w	obX(a0),d0	; is Sonic left of the door?
+		cmp.w	ost_x_pos(a0),d0	; is Sonic left of the door?
 		bcc.s	loc_899A	; if yes, branch
-		btst	#0,obStatus(a0)
+		btst	#0,ost_status(a0)
 		bne.s	ADoor_Animate
 		bra.s	ADoor_Open
 ; ===========================================================================
 
 loc_899A:
-		btst	#0,obStatus(a0)
+		btst	#0,ost_status(a0)
 		beq.s	ADoor_Animate
 
 ADoor_Open:
-		move.b	#1,obAnim(a0)	; use "opening"	animation
+		move.b	#1,ost_anim(a0)	; use "opening"	animation
 
 ADoor_Animate:
 		lea	(Ani_ADoor).l,a1
 		bsr.w	AnimateSprite
-		tst.b	obFrame(a0)	; is the door open?
+		tst.b	ost_frame(a0)	; is the door open?
 		bne.s	@remember	; if yes, branch
 		move.w	#$11,d1
 		move.w	#$20,d2
 		move.w	d2,d3
 		addq.w	#1,d3
-		move.w	obX(a0),d4
+		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject
 
 	@remember:
@@ -12866,48 +12866,48 @@ Obj44_SolidWall:
 		tst.w	d0
 		beq.w	loc_8A92
 		bmi.s	loc_8A7C
-		tst.w	obVelX(a1)
+		tst.w	ost_x_vel(a1)
 		bmi.s	loc_8A92
 		bra.s	loc_8A82
 ; ===========================================================================
 
 loc_8A7C:
-		tst.w	obVelX(a1)
+		tst.w	ost_x_vel(a1)
 		bpl.s	loc_8A92
 
 loc_8A82:
-		sub.w	d0,obX(a1)
-		move.w	#0,obInertia(a1)
-		move.w	#0,obVelX(a1)
+		sub.w	d0,ost_x_pos(a1)
+		move.w	#0,ost_inertia(a1)
+		move.w	#0,ost_x_vel(a1)
 
 loc_8A92:
-		btst	#1,obStatus(a1)
+		btst	#1,ost_status(a1)
 		bne.s	loc_8AB6
-		bset	#5,obStatus(a1)
-		bset	#5,obStatus(a0)
+		bset	#5,ost_status(a1)
+		bset	#5,ost_status(a0)
 		rts	
 ; ===========================================================================
 
 loc_8AA8:
-		btst	#5,obStatus(a0)
+		btst	#5,ost_status(a0)
 		beq.s	locret_8AC2
-		move.w	#id_Run,obAnim(a1)
+		move.w	#id_Run,ost_anim(a1)
 
 loc_8AB6:
-		bclr	#5,obStatus(a0)
-		bclr	#5,obStatus(a1)
+		bclr	#5,ost_status(a0)
+		bclr	#5,ost_status(a1)
 
 locret_8AC2:
 		rts	
 ; ===========================================================================
 
 loc_8AC4:
-		tst.w	obVelY(a1)
+		tst.w	ost_y_vel(a1)
 		bpl.s	locret_8AD8
 		tst.w	d3
 		bpl.s	locret_8AD8
-		sub.w	d3,obY(a1)
-		move.w	#0,obVelY(a1)
+		sub.w	d3,ost_y_pos(a1)
+		move.w	#0,ost_y_vel(a1)
 
 locret_8AD8:
 		rts	
@@ -12919,19 +12919,19 @@ locret_8AD8:
 
 Obj44_SolidWall2:
 		lea	(v_player).w,a1
-		move.w	obX(a1),d0
-		sub.w	obX(a0),d0
+		move.w	ost_x_pos(a1),d0
+		sub.w	ost_x_pos(a0),d0
 		add.w	d1,d0
 		bmi.s	loc_8B48
 		move.w	d1,d3
 		add.w	d3,d3
 		cmp.w	d3,d0
 		bhi.s	loc_8B48
-		move.b	obHeight(a1),d3
+		move.b	ost_height(a1),d3
 		ext.w	d3
 		add.w	d3,d2
-		move.w	obY(a1),d3
-		sub.w	obY(a0),d3
+		move.w	ost_y_pos(a1),d3
+		sub.w	ost_y_pos(a0),d3
 		add.w	d2,d3
 		bmi.s	loc_8B48
 		move.w	d2,d4
@@ -12940,7 +12940,7 @@ Obj44_SolidWall2:
 		bhs.s	loc_8B48
 		tst.b	(f_lockmulti).w
 		bmi.s	loc_8B48
-		cmpi.b	#6,(v_player+obRoutine).w
+		cmpi.b	#6,(v_player+ost_routine).w
 		bhs.s	loc_8B48
 		tst.w	(v_debuguse).w
 		bne.s	loc_8B48
@@ -12985,7 +12985,7 @@ loc_8B48:
 
 BallHog:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Hog_Index(pc,d0.w),d1
 		jmp	Hog_Index(pc,d1.w)
 ; ===========================================================================
@@ -12997,21 +12997,21 @@ hog_launchflag:	equ $32		; 0 to launch a cannonball
 ; ===========================================================================
 
 Hog_Main:	; Routine 0
-		move.b	#$13,obHeight(a0)
-		move.b	#8,obWidth(a0)
-		move.l	#Map_Hog,obMap(a0)
-		move.w	#$2302,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#4,obPriority(a0)
-		move.b	#5,obColType(a0)
-		move.b	#$C,obActWid(a0)
+		move.b	#$13,ost_height(a0)
+		move.b	#8,ost_width(a0)
+		move.l	#Map_Hog,ost_mappings(a0)
+		move.w	#$2302,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#4,ost_priority(a0)
+		move.b	#5,ost_col_type(a0)
+		move.b	#$C,ost_actwidth(a0)
 		bsr.w	ObjectFall
 		jsr	(ObjFloorDist).l	; find floor
 		tst.w	d1
 		bpl.s	@floornotfound
-		add.w	d1,obY(a0)
-		move.w	#0,obVelY(a0)
-		addq.b	#2,obRoutine(a0)
+		add.w	d1,ost_y_pos(a0)
+		move.w	#0,ost_y_vel(a0)
+		addq.b	#2,ost_routine(a0)
 
 	@floornotfound:
 		rts	
@@ -13020,7 +13020,7 @@ Hog_Main:	; Routine 0
 Hog_Action:	; Routine 2
 		lea	(Ani_Hog).l,a1
 		bsr.w	AnimateSprite
-		cmpi.b	#1,obFrame(a0)	; is final frame (01) displayed?
+		cmpi.b	#1,ost_frame(a0)	; is final frame (01) displayed?
 		bne.s	@setlaunchflag	; if not, branch
 		tst.b	hog_launchflag(a0)	; is it	set to launch cannonball?
 		beq.s	@makeball	; if yes, branch
@@ -13039,20 +13039,20 @@ Hog_Action:	; Routine 2
 		bsr.w	FindFreeObj
 		bne.s	@fail
 		move.b	#id_Cannonball,0(a1) ; load cannonball object ($20)
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
-		move.w	#-$100,obVelX(a1) ; cannonball bounces to the left
-		move.w	#0,obVelY(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
+		move.w	#-$100,ost_x_vel(a1) ; cannonball bounces to the left
+		move.w	#0,ost_y_vel(a1)
 		moveq	#-4,d0
-		btst	#0,obStatus(a0)	; is Ball Hog facing right?
+		btst	#0,ost_status(a0)	; is Ball Hog facing right?
 		beq.s	@noflip		; if not, branch
 		neg.w	d0
-		neg.w	obVelX(a1)	; cannonball bounces to	the right
+		neg.w	ost_x_vel(a1)	; cannonball bounces to	the right
 
 	@noflip:
-		add.w	d0,obX(a1)
-		addi.w	#$C,obY(a1)
-		move.b	obSubtype(a0),obSubtype(a1) ; copy object type from Ball Hog
+		add.w	d0,ost_x_pos(a1)
+		addi.w	#$C,ost_y_pos(a1)
+		move.b	ost_subtype(a0),ost_subtype(a1) ; copy object type from Ball Hog
 
 	@fail:
 		bra.s	@remember
@@ -13062,7 +13062,7 @@ Hog_Action:	; Routine 2
 
 Cannonball:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Cbal_Index(pc,d0.w),d1
 		jmp	Cbal_Index(pc,d1.w)
 ; ===========================================================================
@@ -13074,43 +13074,43 @@ cbal_time:	equ $30		; time until the cannonball explodes (2 bytes)
 ; ===========================================================================
 
 Cbal_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.b	#7,obHeight(a0)
-		move.l	#Map_Hog,obMap(a0)
-		move.w	#$2302,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#3,obPriority(a0)
-		move.b	#$87,obColType(a0)
-		move.b	#8,obActWid(a0)
+		addq.b	#2,ost_routine(a0)
+		move.b	#7,ost_height(a0)
+		move.l	#Map_Hog,ost_mappings(a0)
+		move.w	#$2302,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#3,ost_priority(a0)
+		move.b	#$87,ost_col_type(a0)
+		move.b	#8,ost_actwidth(a0)
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0 ; move subtype to d0
+		move.b	ost_subtype(a0),d0 ; move subtype to d0
 		mulu.w	#60,d0		; multiply by 60 frames	(1 second)
 		move.w	d0,cbal_time(a0) ; set explosion time
-		move.b	#4,obFrame(a0)
+		move.b	#4,ost_frame(a0)
 
 Cbal_Bounce:	; Routine 2
 		jsr	(ObjectFall).l
-		tst.w	obVelY(a0)
+		tst.w	ost_y_vel(a0)
 		bmi.s	Cbal_ChkExplode
 		jsr	(ObjFloorDist).l
 		tst.w	d1		; has ball hit the floor?
 		bpl.s	Cbal_ChkExplode	; if not, branch
 
-		add.w	d1,obY(a0)
-		move.w	#-$300,obVelY(a0) ; bounce
+		add.w	d1,ost_y_pos(a0)
+		move.w	#-$300,ost_y_vel(a0) ; bounce
 		tst.b	d3
 		beq.s	Cbal_ChkExplode
 		bmi.s	loc_8CA4
-		tst.w	obVelX(a0)
+		tst.w	ost_x_vel(a0)
 		bpl.s	Cbal_ChkExplode
-		neg.w	obVelX(a0)
+		neg.w	ost_x_vel(a0)
 		bra.s	Cbal_ChkExplode
 ; ===========================================================================
 
 loc_8CA4:
-		tst.w	obVelX(a0)
+		tst.w	ost_x_vel(a0)
 		bmi.s	Cbal_ChkExplode
-		neg.w	obVelX(a0)
+		neg.w	ost_x_vel(a0)
 
 Cbal_ChkExplode:
 		subq.w	#1,cbal_time(a0) ; subtract 1 from explosion time
@@ -13119,21 +13119,21 @@ Cbal_ChkExplode:
 	Cbal_Explode:
 		move.b	#id_MissileDissolve,0(a0)
 		move.b	#id_ExplosionBomb,0(a0)	; change object	to an explosion	($3F)
-		move.b	#0,obRoutine(a0) ; reset routine counter
+		move.b	#0,ost_routine(a0) ; reset routine counter
 		bra.w	ExplosionBomb	; jump to explosion code
 ; ===========================================================================
 
 Cbal_Animate:
-		subq.b	#1,obTimeFrame(a0) ; subtract 1 from frame duration
+		subq.b	#1,ost_anim_time(a0) ; subtract 1 from frame duration
 		bpl.s	Cbal_Display
-		move.b	#5,obTimeFrame(a0) ; set frame duration to 5 frames
-		bchg	#0,obFrame(a0)	; change frame
+		move.b	#5,ost_anim_time(a0) ; set frame duration to 5 frames
+		bchg	#0,ost_frame(a0)	; change frame
 
 Cbal_Display:
 		bsr.w	DisplaySprite
 		move.w	(v_limitbtm2).w,d0
 		addi.w	#$E0,d0
-		cmp.w	obY(a0),d0	; has object fallen off	the level?
+		cmp.w	ost_y_pos(a0),d0	; has object fallen off	the level?
 		bcs.w	DeleteObject	; if yes, branch
 		rts	
 ; ---------------------------------------------------------------------------
@@ -13142,7 +13142,7 @@ Cbal_Display:
 
 MissileDissolve:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	MDis_Index(pc,d0.w),d1
 		jmp	MDis_Index(pc,d1.w)
 ; ===========================================================================
@@ -13152,23 +13152,23 @@ MDis_Index:	index *
 ; ===========================================================================
 
 MDis_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_MisDissolve,obMap(a0)
-		move.w	#$41C,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#1,obPriority(a0)
-		move.b	#0,obColType(a0)
-		move.b	#$C,obActWid(a0)
-		move.b	#9,obTimeFrame(a0)
-		move.b	#0,obFrame(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_MisDissolve,ost_mappings(a0)
+		move.w	#$41C,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#1,ost_priority(a0)
+		move.b	#0,ost_col_type(a0)
+		move.b	#$C,ost_actwidth(a0)
+		move.b	#9,ost_anim_time(a0)
+		move.b	#0,ost_frame(a0)
 		sfx	sfx_A5,0,0,0		 ; play sound
 
 MDis_Animate:	; Routine 2
-		subq.b	#1,obTimeFrame(a0) ; subtract 1 from frame duration
+		subq.b	#1,ost_anim_time(a0) ; subtract 1 from frame duration
 		bpl.s	@display
-		move.b	#9,obTimeFrame(a0) ; set frame duration to 9 frames
-		addq.b	#1,obFrame(a0)	; next frame
-		cmpi.b	#4,obFrame(a0)	; has animation completed?
+		move.b	#9,ost_anim_time(a0) ; set frame duration to 9 frames
+		addq.b	#1,ost_frame(a0)	; next frame
+		cmpi.b	#4,ost_frame(a0)	; has animation completed?
 		beq.w	DeleteObject	; if yes, branch
 
 	@display:
@@ -13181,7 +13181,7 @@ MDis_Animate:	; Routine 2
 
 ExplosionItem:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	ExItem_Index(pc,d0.w),d1
 		jmp	ExItem_Index(pc,d1.w)
 ; ===========================================================================
@@ -13192,32 +13192,32 @@ ExItem_Index:	index *
 ; ===========================================================================
 
 ExItem_Animal:	; Routine 0
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 		bsr.w	FindFreeObj
 		bne.s	ExItem_Main
 		move.b	#id_Animals,0(a1) ; load animal object
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.w	$3E(a0),$3E(a1)
 
 ExItem_Main:	; Routine 2
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_ExplodeItem,obMap(a0)
-		move.w	#$5A0,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#1,obPriority(a0)
-		move.b	#0,obColType(a0)
-		move.b	#$C,obActWid(a0)
-		move.b	#7,obTimeFrame(a0) ; set frame duration to 7 frames
-		move.b	#0,obFrame(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_ExplodeItem,ost_mappings(a0)
+		move.w	#$5A0,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#1,ost_priority(a0)
+		move.b	#0,ost_col_type(a0)
+		move.b	#$C,ost_actwidth(a0)
+		move.b	#7,ost_anim_time(a0) ; set frame duration to 7 frames
+		move.b	#0,ost_frame(a0)
 		sfx	sfx_BreakItem,0,0,0	; play breaking enemy sound
 
 ExItem_Animate:	; Routine 4 (2 for ExplosionBomb)
-		subq.b	#1,obTimeFrame(a0) ; subtract 1 from frame duration
+		subq.b	#1,ost_anim_time(a0) ; subtract 1 from frame duration
 		bpl.s	@display
-		move.b	#7,obTimeFrame(a0) ; set frame duration to 7 frames
-		addq.b	#1,obFrame(a0)	; next frame
-		cmpi.b	#5,obFrame(a0)	; is the final frame (05) displayed?
+		move.b	#7,ost_anim_time(a0) ; set frame duration to 7 frames
+		addq.b	#1,ost_frame(a0)	; next frame
+		cmpi.b	#5,ost_frame(a0)	; is the final frame (05) displayed?
 		beq.w	DeleteObject	; if yes, branch
 
 	@display:
@@ -13229,7 +13229,7 @@ ExItem_Animate:	; Routine 4 (2 for ExplosionBomb)
 
 ExplosionBomb:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	ExBom_Index(pc,d0.w),d1
 		jmp	ExBom_Index(pc,d1.w)
 ; ===========================================================================
@@ -13239,15 +13239,15 @@ ExBom_Index:	index *
 ; ===========================================================================
 
 ExBom_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_ExplodeBomb,obMap(a0)
-		move.w	#$5A0,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#1,obPriority(a0)
-		move.b	#0,obColType(a0)
-		move.b	#$C,obActWid(a0)
-		move.b	#7,obTimeFrame(a0)
-		move.b	#0,obFrame(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_ExplodeBomb,ost_mappings(a0)
+		move.w	#$5A0,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#1,ost_priority(a0)
+		move.b	#0,ost_col_type(a0)
+		move.b	#$C,ost_actwidth(a0)
+		move.b	#7,ost_anim_time(a0)
+		move.b	#0,ost_frame(a0)
 		sfx	sfx_Bomb,1,0,0	; play exploding bomb sound
 
 Ani_Hog:	include "Animations\Ball Hog.asm"
@@ -13262,7 +13262,7 @@ Map_ExplodeItem:include "Mappings\Explosions.asm"
 
 Animals:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Anml_Index(pc,d0.w),d1
 		jmp	Anml_Index(pc,d1.w)
 ; ===========================================================================
@@ -13319,32 +13319,32 @@ Anml_EndVram:	dc.w $5A5, $5A5, $5A5, $553, $553, $573, $573, $585, $593
 ; ===========================================================================
 
 Anml_Ending:	; Routine 0
-		tst.b	obSubtype(a0)	; did animal come from a destroyed enemy?
+		tst.b	ost_subtype(a0)	; did animal come from a destroyed enemy?
 		beq.w	Anml_FromEnemy	; if yes, branch
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0 ; move object type to d0
+		move.b	ost_subtype(a0),d0 ; move object type to d0
 		add.w	d0,d0		; multiply d0 by 2
-		move.b	d0,obRoutine(a0) ; move d0 to routine counter
+		move.b	d0,ost_routine(a0) ; move d0 to routine counter
 		subi.w	#$14,d0
-		move.w	Anml_EndVram(pc,d0.w),obGfx(a0)
+		move.w	Anml_EndVram(pc,d0.w),ost_tile(a0)
 		add.w	d0,d0
-		move.l	Anml_EndMap(pc,d0.w),obMap(a0)
+		move.l	Anml_EndMap(pc,d0.w),ost_mappings(a0)
 		lea	Anml_EndSpeed(pc),a1
 		move.w	(a1,d0.w),$32(a0) ; load horizontal speed
-		move.w	(a1,d0.w),obVelX(a0)
+		move.w	(a1,d0.w),ost_x_vel(a0)
 		move.w	2(a1,d0.w),$34(a0) ; load vertical speed
-		move.w	2(a1,d0.w),obVelY(a0)
-		move.b	#$C,obHeight(a0)
-		move.b	#4,obRender(a0)
-		bset	#0,obRender(a0)
-		move.b	#6,obPriority(a0)
-		move.b	#8,obActWid(a0)
-		move.b	#7,obTimeFrame(a0)
+		move.w	2(a1,d0.w),ost_y_vel(a0)
+		move.b	#$C,ost_height(a0)
+		move.b	#4,ost_render(a0)
+		bset	#0,ost_render(a0)
+		move.b	#6,ost_priority(a0)
+		move.b	#8,ost_actwidth(a0)
+		move.b	#7,ost_anim_time(a0)
 		bra.w	DisplaySprite
 ; ===========================================================================
 
 Anml_FromEnemy:
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 		bsr.w	RandomNumber
 		andi.w	#1,d0
 		moveq	#0,d1
@@ -13359,65 +13359,65 @@ Anml_FromEnemy:
 		adda.w	d0,a1
 		move.w	(a1)+,$32(a0)	; load horizontal speed
 		move.w	(a1)+,$34(a0)	; load vertical	speed
-		move.l	(a1)+,obMap(a0)	; load mappings
-		move.w	#$580,obGfx(a0)	; VRAM setting for 1st animal
+		move.l	(a1)+,ost_mappings(a0)	; load mappings
+		move.w	#$580,ost_tile(a0)	; VRAM setting for 1st animal
 		btst	#0,$30(a0)	; is 1st animal	used?
 		beq.s	loc_90C0	; if yes, branch
-		move.w	#$592,obGfx(a0)	; VRAM setting for 2nd animal
+		move.w	#$592,ost_tile(a0)	; VRAM setting for 2nd animal
 
 loc_90C0:
-		move.b	#$C,obHeight(a0)
-		move.b	#4,obRender(a0)
-		bset	#0,obRender(a0)
-		move.b	#6,obPriority(a0)
-		move.b	#8,obActWid(a0)
-		move.b	#7,obTimeFrame(a0)
-		move.b	#2,obFrame(a0)
-		move.w	#-$400,obVelY(a0)
+		move.b	#$C,ost_height(a0)
+		move.b	#4,ost_render(a0)
+		bset	#0,ost_render(a0)
+		move.b	#6,ost_priority(a0)
+		move.b	#8,ost_actwidth(a0)
+		move.b	#7,ost_anim_time(a0)
+		move.b	#2,ost_frame(a0)
+		move.w	#-$400,ost_y_vel(a0)
 		tst.b	(v_bossstatus).w
 		bne.s	loc_911C
 		bsr.w	FindFreeObj
 		bne.s	Anml_Display
 		move.b	#id_Points,0(a1) ; load points object
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.w	$3E(a0),d0
 		lsr.w	#1,d0
-		move.b	d0,obFrame(a1)
+		move.b	d0,ost_frame(a1)
 
 Anml_Display:
 		bra.w	DisplaySprite
 ; ===========================================================================
 
 loc_911C:
-		move.b	#$12,obRoutine(a0)
-		clr.w	obVelX(a0)
+		move.b	#$12,ost_routine(a0)
+		clr.w	ost_x_vel(a0)
 		bra.w	DisplaySprite
 ; ===========================================================================
 
 loc_912A:
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.w	DeleteObject
 		bsr.w	ObjectFall
-		tst.w	obVelY(a0)
+		tst.w	ost_y_vel(a0)
 		bmi.s	loc_9180
 		jsr	(ObjFloorDist).l
 		tst.w	d1
 		bpl.s	loc_9180
-		add.w	d1,obY(a0)
-		move.w	$32(a0),obVelX(a0)
-		move.w	$34(a0),obVelY(a0)
-		move.b	#1,obFrame(a0)
+		add.w	d1,ost_y_pos(a0)
+		move.w	$32(a0),ost_x_vel(a0)
+		move.w	$34(a0),ost_y_vel(a0)
+		move.b	#1,ost_frame(a0)
 		move.b	$30(a0),d0
 		add.b	d0,d0
 		addq.b	#4,d0
-		move.b	d0,obRoutine(a0)
+		move.b	d0,ost_routine(a0)
 		tst.b	(v_bossstatus).w
 		beq.s	loc_9180
 		btst	#4,(v_vbla_byte).w
 		beq.s	loc_9180
-		neg.w	obVelX(a0)
-		bchg	#0,obRender(a0)
+		neg.w	ost_x_vel(a0)
+		bchg	#0,ost_render(a0)
 
 loc_9180:
 		bra.w	DisplaySprite
@@ -13425,63 +13425,63 @@ loc_9180:
 
 loc_9184:
 		bsr.w	ObjectFall
-		move.b	#1,obFrame(a0)
-		tst.w	obVelY(a0)
+		move.b	#1,ost_frame(a0)
+		tst.w	ost_y_vel(a0)
 		bmi.s	loc_91AE
-		move.b	#0,obFrame(a0)
+		move.b	#0,ost_frame(a0)
 		jsr	(ObjFloorDist).l
 		tst.w	d1
 		bpl.s	loc_91AE
-		add.w	d1,obY(a0)
-		move.w	$34(a0),obVelY(a0)
+		add.w	d1,ost_y_pos(a0)
+		move.w	$34(a0),ost_y_vel(a0)
 
 loc_91AE:
-		tst.b	obSubtype(a0)
+		tst.b	ost_subtype(a0)
 		bne.s	loc_9224
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.w	DeleteObject
 		bra.w	DisplaySprite
 ; ===========================================================================
 
 loc_91C0:
 		bsr.w	SpeedToPos
-		addi.w	#$18,obVelY(a0)
-		tst.w	obVelY(a0)
+		addi.w	#$18,ost_y_vel(a0)
+		tst.w	ost_y_vel(a0)
 		bmi.s	loc_91FC
 		jsr	(ObjFloorDist).l
 		tst.w	d1
 		bpl.s	loc_91FC
-		add.w	d1,obY(a0)
-		move.w	$34(a0),obVelY(a0)
-		tst.b	obSubtype(a0)
+		add.w	d1,ost_y_pos(a0)
+		move.w	$34(a0),ost_y_vel(a0)
+		tst.b	ost_subtype(a0)
 		beq.s	loc_91FC
-		cmpi.b	#$A,obSubtype(a0)
+		cmpi.b	#$A,ost_subtype(a0)
 		beq.s	loc_91FC
-		neg.w	obVelX(a0)
-		bchg	#0,obRender(a0)
+		neg.w	ost_x_vel(a0)
+		bchg	#0,ost_render(a0)
 
 loc_91FC:
-		subq.b	#1,obTimeFrame(a0)
+		subq.b	#1,ost_anim_time(a0)
 		bpl.s	loc_9212
-		move.b	#1,obTimeFrame(a0)
-		addq.b	#1,obFrame(a0)
-		andi.b	#1,obFrame(a0)
+		move.b	#1,ost_anim_time(a0)
+		addq.b	#1,ost_frame(a0)
+		andi.b	#1,ost_frame(a0)
 
 loc_9212:
-		tst.b	obSubtype(a0)
+		tst.b	ost_subtype(a0)
 		bne.s	loc_9224
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.w	DeleteObject
 		bra.w	DisplaySprite
 ; ===========================================================================
 
 loc_9224:
-		move.w	obX(a0),d0
-		sub.w	(v_player+obX).w,d0
+		move.w	ost_x_pos(a0),d0
+		sub.w	(v_player+ost_x_pos).w,d0
 		bcs.s	loc_923C
 		subi.w	#$180,d0
 		bpl.s	loc_923C
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.w	DeleteObject
 
 loc_923C:
@@ -13489,12 +13489,12 @@ loc_923C:
 ; ===========================================================================
 
 loc_9240:
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.w	DeleteObject
 		subq.w	#1,$36(a0)
 		bne.w	loc_925C
-		move.b	#2,obRoutine(a0)
-		move.b	#3,obPriority(a0)
+		move.b	#2,ost_routine(a0)
+		move.b	#3,ost_priority(a0)
 
 loc_925C:
 		bra.w	DisplaySprite
@@ -13503,9 +13503,9 @@ loc_925C:
 loc_9260:
 		bsr.w	sub_9404
 		bcc.s	loc_927C
-		move.w	$32(a0),obVelX(a0)
-		move.w	$34(a0),obVelY(a0)
-		move.b	#$E,obRoutine(a0)
+		move.w	$32(a0),ost_x_vel(a0)
+		move.w	$34(a0),ost_y_vel(a0)
+		move.b	#$E,ost_routine(a0)
 		bra.w	loc_91C0
 ; ===========================================================================
 
@@ -13516,17 +13516,17 @@ loc_927C:
 loc_9280:
 		bsr.w	sub_9404
 		bpl.s	loc_92B6
-		clr.w	obVelX(a0)
+		clr.w	ost_x_vel(a0)
 		clr.w	$32(a0)
 		bsr.w	SpeedToPos
-		addi.w	#$18,obVelY(a0)
+		addi.w	#$18,ost_y_vel(a0)
 		bsr.w	loc_93C4
 		bsr.w	loc_93EC
-		subq.b	#1,obTimeFrame(a0)
+		subq.b	#1,ost_anim_time(a0)
 		bpl.s	loc_92B6
-		move.b	#1,obTimeFrame(a0)
-		addq.b	#1,obFrame(a0)
-		andi.b	#1,obFrame(a0)
+		move.b	#1,ost_anim_time(a0)
+		addq.b	#1,ost_frame(a0)
+		andi.b	#1,ost_frame(a0)
 
 loc_92B6:
 		bra.w	loc_9224
@@ -13535,29 +13535,29 @@ loc_92B6:
 loc_92BA:
 		bsr.w	sub_9404
 		bpl.s	loc_9310
-		move.w	$32(a0),obVelX(a0)
-		move.w	$34(a0),obVelY(a0)
-		move.b	#4,obRoutine(a0)
+		move.w	$32(a0),ost_x_vel(a0)
+		move.w	$34(a0),ost_y_vel(a0)
+		move.b	#4,ost_routine(a0)
 		bra.w	loc_9184
 ; ===========================================================================
 
 loc_92D6:
 		bsr.w	ObjectFall
-		move.b	#1,obFrame(a0)
-		tst.w	obVelY(a0)
+		move.b	#1,ost_frame(a0)
+		tst.w	ost_y_vel(a0)
 		bmi.s	loc_9310
-		move.b	#0,obFrame(a0)
+		move.b	#0,ost_frame(a0)
 		jsr	(ObjFloorDist).l
 		tst.w	d1
 		bpl.s	loc_9310
 		not.b	$29(a0)
 		bne.s	loc_9306
-		neg.w	obVelX(a0)
-		bchg	#0,obRender(a0)
+		neg.w	ost_x_vel(a0)
+		bchg	#0,ost_render(a0)
 
 loc_9306:
-		add.w	d1,obY(a0)
-		move.w	$34(a0),obVelY(a0)
+		add.w	d1,ost_y_pos(a0)
+		move.w	$34(a0),ost_y_vel(a0)
 
 loc_9310:
 		bra.w	loc_9224
@@ -13566,7 +13566,7 @@ loc_9310:
 loc_9314:
 		bsr.w	sub_9404
 		bpl.s	loc_932E
-		clr.w	obVelX(a0)
+		clr.w	ost_x_vel(a0)
 		clr.w	$32(a0)
 		bsr.w	ObjectFall
 		bsr.w	loc_93C4
@@ -13580,17 +13580,17 @@ loc_9332:
 		bsr.w	sub_9404
 		bpl.s	loc_936C
 		bsr.w	ObjectFall
-		move.b	#1,obFrame(a0)
-		tst.w	obVelY(a0)
+		move.b	#1,ost_frame(a0)
+		tst.w	ost_y_vel(a0)
 		bmi.s	loc_936C
-		move.b	#0,obFrame(a0)
+		move.b	#0,ost_frame(a0)
 		jsr	(ObjFloorDist).l
 		tst.w	d1
 		bpl.s	loc_936C
-		neg.w	obVelX(a0)
-		bchg	#0,obRender(a0)
-		add.w	d1,obY(a0)
-		move.w	$34(a0),obVelY(a0)
+		neg.w	ost_x_vel(a0)
+		bchg	#0,ost_render(a0)
+		add.w	d1,ost_y_pos(a0)
+		move.w	$34(a0),ost_y_vel(a0)
 
 loc_936C:
 		bra.w	loc_9224
@@ -13600,53 +13600,53 @@ loc_9370:
 		bsr.w	sub_9404
 		bpl.s	loc_93C0
 		bsr.w	SpeedToPos
-		addi.w	#$18,obVelY(a0)
-		tst.w	obVelY(a0)
+		addi.w	#$18,ost_y_vel(a0)
+		tst.w	ost_y_vel(a0)
 		bmi.s	loc_93AA
 		jsr	(ObjFloorDist).l
 		tst.w	d1
 		bpl.s	loc_93AA
 		not.b	$29(a0)
 		bne.s	loc_93A0
-		neg.w	obVelX(a0)
-		bchg	#0,obRender(a0)
+		neg.w	ost_x_vel(a0)
+		bchg	#0,ost_render(a0)
 
 loc_93A0:
-		add.w	d1,obY(a0)
-		move.w	$34(a0),obVelY(a0)
+		add.w	d1,ost_y_pos(a0)
+		move.w	$34(a0),ost_y_vel(a0)
 
 loc_93AA:
-		subq.b	#1,obTimeFrame(a0)
+		subq.b	#1,ost_anim_time(a0)
 		bpl.s	loc_93C0
-		move.b	#1,obTimeFrame(a0)
-		addq.b	#1,obFrame(a0)
-		andi.b	#1,obFrame(a0)
+		move.b	#1,ost_anim_time(a0)
+		addq.b	#1,ost_frame(a0)
+		andi.b	#1,ost_frame(a0)
 
 loc_93C0:
 		bra.w	loc_9224
 ; ===========================================================================
 
 loc_93C4:
-		move.b	#1,obFrame(a0)
-		tst.w	obVelY(a0)
+		move.b	#1,ost_frame(a0)
+		tst.w	ost_y_vel(a0)
 		bmi.s	locret_93EA
-		move.b	#0,obFrame(a0)
+		move.b	#0,ost_frame(a0)
 		jsr	(ObjFloorDist).l
 		tst.w	d1
 		bpl.s	locret_93EA
-		add.w	d1,obY(a0)
-		move.w	$34(a0),obVelY(a0)
+		add.w	d1,ost_y_pos(a0)
+		move.w	$34(a0),ost_y_vel(a0)
 
 locret_93EA:
 		rts	
 ; ===========================================================================
 
 loc_93EC:
-		bset	#0,obRender(a0)
-		move.w	obX(a0),d0
-		sub.w	(v_player+obX).w,d0
+		bset	#0,ost_render(a0)
+		move.w	ost_x_pos(a0),d0
+		sub.w	(v_player+ost_x_pos).w,d0
 		bcc.s	locret_9402
-		bclr	#0,obRender(a0)
+		bclr	#0,ost_render(a0)
 
 locret_9402:
 		rts	
@@ -13655,8 +13655,8 @@ locret_9402:
 
 
 sub_9404:
-		move.w	(v_player+obX).w,d0
-		sub.w	obX(a0),d0
+		move.w	(v_player+ost_x_pos).w,d0
+		sub.w	ost_x_pos(a0),d0
 		subi.w	#$B8,d0
 		rts	
 ; End of function sub_9404
@@ -13666,7 +13666,7 @@ sub_9404:
 
 Points:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Poi_Index(pc,d0.w),d1
 		jsr	Poi_Index(pc,d1.w)
 		bra.w	DisplaySprite
@@ -13677,19 +13677,19 @@ Poi_Index:	index *
 ; ===========================================================================
 
 Poi_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Points,obMap(a0)
-		move.w	#$2797,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#1,obPriority(a0)
-		move.b	#8,obActWid(a0)
-		move.w	#-$300,obVelY(a0) ; move object upwards
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Points,ost_mappings(a0)
+		move.w	#$2797,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#1,ost_priority(a0)
+		move.b	#8,ost_actwidth(a0)
+		move.w	#-$300,ost_y_vel(a0) ; move object upwards
 
 Poi_Slower:	; Routine 2
-		tst.w	obVelY(a0)	; is object moving?
+		tst.w	ost_y_vel(a0)	; is object moving?
 		bpl.w	DeleteObject	; if not, delete
 		bsr.w	SpeedToPos
-		addi.w	#$18,obVelY(a0)	; reduce object	speed
+		addi.w	#$18,ost_y_vel(a0)	; reduce object	speed
 		rts	
 Map_Animal1:	include "Mappings\Animals 1.asm"
 Map_Animal2:	include "Mappings\Animals 2.asm"
@@ -13702,7 +13702,7 @@ Map_Points:	include "Mappings\Points.asm"
 
 Crabmeat:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Crab_Index(pc,d0.w),d1
 		jmp	Crab_Index(pc,d1.w)
 ; ===========================================================================
@@ -13718,22 +13718,22 @@ crab_mode:	equ $32
 ; ===========================================================================
 
 Crab_Main:	; Routine 0
-		move.b	#$10,obHeight(a0)
-		move.b	#8,obWidth(a0)
-		move.l	#Map_Crab,obMap(a0)
-		move.w	#$400,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#3,obPriority(a0)
-		move.b	#6,obColType(a0)
-		move.b	#$15,obActWid(a0)
+		move.b	#$10,ost_height(a0)
+		move.b	#8,ost_width(a0)
+		move.l	#Map_Crab,ost_mappings(a0)
+		move.w	#$400,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#3,ost_priority(a0)
+		move.b	#6,ost_col_type(a0)
+		move.b	#$15,ost_actwidth(a0)
 		bsr.w	ObjectFall
 		jsr	(ObjFloorDist).l	; find floor
 		tst.w	d1
 		bpl.s	@floornotfound
-		add.w	d1,obY(a0)
-		move.b	d3,obAngle(a0)
-		move.w	#0,obVelY(a0)
-		addq.b	#2,obRoutine(a0)
+		add.w	d1,ost_y_pos(a0)
+		move.b	d3,ost_angle(a0)
+		move.w	#0,ost_y_vel(a0)
+		addq.b	#2,ost_routine(a0)
 
 	@floornotfound:
 		rts	
@@ -13741,7 +13741,7 @@ Crab_Main:	; Routine 0
 
 Crab_Action:	; Routine 2
 		moveq	#0,d0
-		move.b	ob2ndRout(a0),d0
+		move.b	ost_routine2(a0),d0
 		move.w	@index(pc,d0.w),d1
 		jsr	@index(pc,d1.w)
 		lea	(Ani_Crab).l,a1
@@ -13756,21 +13756,21 @@ Crab_Action:	; Routine 2
 @waittofire:
 		subq.w	#1,crab_timedelay(a0) ; subtract 1 from time delay
 		bpl.s	@dontmove
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.s	@movecrab
 		bchg	#1,crab_mode(a0)
 		bne.s	@fire
 
 	@movecrab:
-		addq.b	#2,ob2ndRout(a0)
+		addq.b	#2,ost_routine2(a0)
 		move.w	#127,crab_timedelay(a0) ; set time delay to approx 2 seconds
-		move.w	#$80,obVelX(a0)	; move Crabmeat	to the right
+		move.w	#$80,ost_x_vel(a0)	; move Crabmeat	to the right
 		bsr.w	Crab_SetAni
 		addq.b	#3,d0
-		move.b	d0,obAnim(a0)
-		bchg	#0,obStatus(a0)
+		move.b	d0,ost_anim(a0)
+		bchg	#0,ost_status(a0)
 		bne.s	@noflip
-		neg.w	obVelX(a0)	; change direction
+		neg.w	ost_x_vel(a0)	; change direction
 
 	@dontmove:
 	@noflip:
@@ -13779,25 +13779,25 @@ Crab_Action:	; Routine 2
 
 @fire:
 		move.w	#59,crab_timedelay(a0)
-		move.b	#6,obAnim(a0)	; use firing animation
+		move.b	#6,ost_anim(a0)	; use firing animation
 		bsr.w	FindFreeObj
 		bne.s	@failleft
 		move.b	#id_Crabmeat,0(a1) ; load left fireball
-		move.b	#id_Crab_BallMain,obRoutine(a1)
-		move.w	obX(a0),obX(a1)
-		subi.w	#$10,obX(a1)
-		move.w	obY(a0),obY(a1)
-		move.w	#-$100,obVelX(a1)
+		move.b	#id_Crab_BallMain,ost_routine(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		subi.w	#$10,ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
+		move.w	#-$100,ost_x_vel(a1)
 
 	@failleft:
 		bsr.w	FindFreeObj
 		bne.s	@failright
 		move.b	#id_Crabmeat,0(a1) ; load right fireball
-		move.b	#id_Crab_BallMain,obRoutine(a1)
-		move.w	obX(a0),obX(a1)
-		addi.w	#$10,obX(a1)
-		move.w	obY(a0),obY(a1)
-		move.w	#$100,obVelX(a1)
+		move.b	#id_Crab_BallMain,ost_routine(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		addi.w	#$10,ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
+		move.w	#$100,ost_x_vel(a1)
 
 	@failright:
 		rts	
@@ -13809,9 +13809,9 @@ Crab_Action:	; Routine 2
 		bsr.w	SpeedToPos
 		bchg	#0,crab_mode(a0)
 		bne.s	loc_9654
-		move.w	obX(a0),d3
+		move.w	ost_x_pos(a0),d3
 		addi.w	#$10,d3
-		btst	#0,obStatus(a0)
+		btst	#0,ost_status(a0)
 		beq.s	loc_9640
 		subi.w	#$20,d3
 
@@ -13826,20 +13826,20 @@ loc_9640:
 
 loc_9654:
 		jsr	(ObjFloorDist).l
-		add.w	d1,obY(a0)
-		move.b	d3,obAngle(a0)
+		add.w	d1,ost_y_pos(a0)
+		move.b	d3,ost_angle(a0)
 		bsr.w	Crab_SetAni
 		addq.b	#3,d0
-		move.b	d0,obAnim(a0)
+		move.b	d0,ost_anim(a0)
 		rts	
 ; ===========================================================================
 
 loc_966E:
-		subq.b	#2,ob2ndRout(a0)
+		subq.b	#2,ost_routine2(a0)
 		move.w	#59,crab_timedelay(a0)
-		move.w	#0,obVelX(a0)
+		move.w	#0,ost_x_vel(a0)
 		bsr.w	Crab_SetAni
-		move.b	d0,obAnim(a0)
+		move.b	d0,ost_anim(a0)
 		rts	
 ; ---------------------------------------------------------------------------
 ; Subroutine to	set the	correct	animation for a	Crabmeat
@@ -13850,12 +13850,12 @@ loc_966E:
 
 Crab_SetAni:
 		moveq	#0,d0
-		move.b	obAngle(a0),d3
+		move.b	ost_angle(a0),d3
 		bmi.s	loc_96A4
 		cmpi.b	#6,d3
 		bcs.s	locret_96A2
 		moveq	#1,d0
-		btst	#0,obStatus(a0)
+		btst	#0,ost_status(a0)
 		bne.s	locret_96A2
 		moveq	#2,d0
 
@@ -13867,7 +13867,7 @@ loc_96A4:
 		cmpi.b	#-6,d3
 		bhi.s	locret_96B6
 		moveq	#2,d0
-		btst	#0,obStatus(a0)
+		btst	#0,ost_status(a0)
 		bne.s	locret_96B6
 		moveq	#1,d0
 
@@ -13886,15 +13886,15 @@ Crab_Delete:	; Routine 4
 ; ---------------------------------------------------------------------------
 
 Crab_BallMain:	; Routine 6
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Crab,obMap(a0)
-		move.w	#$400,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#3,obPriority(a0)
-		move.b	#$87,obColType(a0)
-		move.b	#8,obActWid(a0)
-		move.w	#-$400,obVelY(a0)
-		move.b	#7,obAnim(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Crab,ost_mappings(a0)
+		move.w	#$400,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#3,ost_priority(a0)
+		move.b	#$87,ost_col_type(a0)
+		move.b	#8,ost_actwidth(a0)
+		move.w	#-$400,ost_y_vel(a0)
+		move.b	#7,ost_anim(a0)
 
 Crab_BallMove:	; Routine 8
 		lea	(Ani_Crab).l,a1
@@ -13903,7 +13903,7 @@ Crab_BallMove:	; Routine 8
 		bsr.w	DisplaySprite
 		move.w	(v_limitbtm2).w,d0
 		addi.w	#$E0,d0
-		cmp.w	obY(a0),d0	; has object moved below the level boundary?
+		cmp.w	ost_y_pos(a0),d0	; has object moved below the level boundary?
 		bcs.s	@delete		; if yes, branch
 		rts	
 
@@ -13919,7 +13919,7 @@ Map_Crab:	include "Mappings\Crabmeat.asm"
 
 BuzzBomber:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Buzz_Index(pc,d0.w),d1
 		jmp	Buzz_Index(pc,d1.w)
 ; ===========================================================================
@@ -13934,17 +13934,17 @@ buzz_parent:	equ $3C
 ; ===========================================================================
 
 Buzz_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Buzz,obMap(a0)
-		move.w	#$444,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#3,obPriority(a0)
-		move.b	#8,obColType(a0)
-		move.b	#$18,obActWid(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Buzz,ost_mappings(a0)
+		move.w	#$444,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#3,ost_priority(a0)
+		move.b	#8,ost_col_type(a0)
+		move.b	#$18,ost_actwidth(a0)
 
 Buzz_Action:	; Routine 2
 		moveq	#0,d0
-		move.b	ob2ndRout(a0),d0
+		move.b	ost_routine2(a0),d0
 		move.w	@index(pc,d0.w),d1
 		jsr	@index(pc,d1.w)
 		lea	(Ani_Buzz).l,a1
@@ -13961,13 +13961,13 @@ Buzz_Action:	; Routine 2
 		bpl.s	@noflip		; if time remains, branch
 		btst	#1,buzz_buzzstatus(a0) ; is Buzz Bomber near Sonic?
 		bne.s	@fire		; if yes, branch
-		addq.b	#2,ob2ndRout(a0)
+		addq.b	#2,ost_routine2(a0)
 		move.w	#127,buzz_timedelay(a0) ; set time delay to just over 2 seconds
-		move.w	#$400,obVelX(a0) ; move Buzz Bomber to the right
-		move.b	#1,obAnim(a0)	; use "flying" animation
-		btst	#0,obStatus(a0)	; is Buzz Bomber facing	left?
+		move.w	#$400,ost_x_vel(a0) ; move Buzz Bomber to the right
+		move.b	#1,ost_anim(a0)	; use "flying" animation
+		btst	#0,ost_status(a0)	; is Buzz Bomber facing	left?
 		bne.s	@noflip		; if not, branch
-		neg.w	obVelX(a0)	; move Buzz Bomber to the left
+		neg.w	ost_x_vel(a0)	; move Buzz Bomber to the left
 
 	@noflip:
 		rts	
@@ -13977,25 +13977,25 @@ Buzz_Action:	; Routine 2
 		bsr.w	FindFreeObj
 		bne.s	@fail
 		move.b	#id_Missile,0(a1) ; load missile object
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
-		addi.w	#$1C,obY(a1)
-		move.w	#$200,obVelY(a1) ; move missile downwards
-		move.w	#$200,obVelX(a1) ; move missile to the right
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
+		addi.w	#$1C,ost_y_pos(a1)
+		move.w	#$200,ost_y_vel(a1) ; move missile downwards
+		move.w	#$200,ost_x_vel(a1) ; move missile to the right
 		move.w	#$18,d0
-		btst	#0,obStatus(a0)	; is Buzz Bomber facing	left?
+		btst	#0,ost_status(a0)	; is Buzz Bomber facing	left?
 		bne.s	@noflip2	; if not, branch
 		neg.w	d0
-		neg.w	obVelX(a1)	; move missile to the left
+		neg.w	ost_x_vel(a1)	; move missile to the left
 
 	@noflip2:
-		add.w	d0,obX(a1)
-		move.b	obStatus(a0),obStatus(a1)
+		add.w	d0,ost_x_pos(a1)
+		move.b	ost_status(a0),ost_status(a1)
 		move.w	#$E,buzz_timedelay(a1)
 		move.l	a0,buzz_parent(a1)
 		move.b	#1,buzz_buzzstatus(a0) ; set to "already fired" to prevent refiring
 		move.w	#59,buzz_timedelay(a0)
-		move.b	#2,obAnim(a0)	; use "firing" animation
+		move.b	#2,ost_anim(a0)	; use "firing" animation
 
 	@fail:
 		rts	
@@ -14007,15 +14007,15 @@ Buzz_Action:	; Routine 2
 		bsr.w	SpeedToPos
 		tst.b	buzz_buzzstatus(a0)
 		bne.s	@keepgoing
-		move.w	(v_player+obX).w,d0
-		sub.w	obX(a0),d0
+		move.w	(v_player+ost_x_pos).w,d0
+		sub.w	ost_x_pos(a0),d0
 		bpl.s	@isleft
 		neg.w	d0
 
 	@isleft:
 		cmpi.w	#$60,d0		; is Buzz Bomber within	$60 pixels of Sonic?
 		bcc.s	@keepgoing	; if not, branch
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.s	@keepgoing
 		move.b	#2,buzz_buzzstatus(a0) ; set Buzz Bomber to "near Sonic"
 		move.w	#29,buzz_timedelay(a0) ; set time delay to half a second
@@ -14024,13 +14024,13 @@ Buzz_Action:	; Routine 2
 
 	@chgdirection:
 		move.b	#0,buzz_buzzstatus(a0) ; set Buzz Bomber to "normal"
-		bchg	#0,obStatus(a0)	; change direction
+		bchg	#0,ost_status(a0)	; change direction
 		move.w	#59,buzz_timedelay(a0)
 
 	@stop:
-		subq.b	#2,ob2ndRout(a0)
-		move.w	#0,obVelX(a0)	; stop Buzz Bomber moving
-		move.b	#0,obAnim(a0)	; use "hovering" animation
+		subq.b	#2,ost_routine2(a0)
+		move.w	#0,ost_x_vel(a0)	; stop Buzz Bomber moving
+		move.b	#0,ost_anim(a0)	; use "hovering" animation
 
 @keepgoing:
 		rts	
@@ -14045,7 +14045,7 @@ Buzz_Delete:	; Routine 4
 
 Missile:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Msl_Index(pc,d0.w),d1
 		jmp	Msl_Index(pc,d1.w)
 ; ===========================================================================
@@ -14062,19 +14062,19 @@ msl_parent:	equ $3C
 Msl_Main:	; Routine 0
 		subq.w	#1,$32(a0)
 		bpl.s	Msl_ChkCancel
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Missile,obMap(a0)
-		move.w	#$2444,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#3,obPriority(a0)
-		move.b	#8,obActWid(a0)
-		andi.b	#3,obStatus(a0)
-		tst.b	obSubtype(a0)	; was object created by	a Newtron?
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Missile,ost_mappings(a0)
+		move.w	#$2444,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#3,ost_priority(a0)
+		move.b	#8,ost_actwidth(a0)
+		andi.b	#3,ost_status(a0)
+		tst.b	ost_subtype(a0)	; was object created by	a Newtron?
 		beq.s	Msl_Animate	; if not, branch
 
-		move.b	#8,obRoutine(a0) ; run "Msl_FromNewt" routine
-		move.b	#$87,obColType(a0)
-		move.b	#1,obAnim(a0)
+		move.b	#8,ost_routine(a0) ; run "Msl_FromNewt" routine
+		move.b	#$87,ost_col_type(a0)
+		move.b	#1,ost_anim(a0)
 		bra.s	Msl_Animate2
 ; ===========================================================================
 
@@ -14101,24 +14101,24 @@ Msl_ChkCancel:
 ; ===========================================================================
 
 Msl_FromBuzz:	; Routine 4
-		btst	#7,obStatus(a0)
+		btst	#7,ost_status(a0)
 		bne.s	@explode
-		move.b	#$87,obColType(a0)
-		move.b	#1,obAnim(a0)
+		move.b	#$87,ost_col_type(a0)
+		move.b	#1,ost_anim(a0)
 		bsr.w	SpeedToPos
 		lea	(Ani_Missile).l,a1
 		bsr.w	AnimateSprite
 		bsr.w	DisplaySprite
 		move.w	(v_limitbtm2).w,d0
 		addi.w	#$E0,d0
-		cmp.w	obY(a0),d0	; has object moved below the level boundary?
+		cmp.w	ost_y_pos(a0),d0	; has object moved below the level boundary?
 		bcs.s	Msl_Delete	; if yes, branch
 		rts	
 ; ===========================================================================
 
 	@explode:
 		move.b	#id_MissileDissolve,0(a0) ; change object to an explosion (Obj24)
-		move.b	#0,obRoutine(a0)
+		move.b	#0,ost_routine(a0)
 		bra.w	MissileDissolve
 ; ===========================================================================
 
@@ -14128,7 +14128,7 @@ Msl_Delete:	; Routine 6
 ; ===========================================================================
 
 Msl_FromNewt:	; Routine 8
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.s	Msl_Delete
 		bsr.w	SpeedToPos
 
@@ -14149,7 +14149,7 @@ Map_Missile:	include "Mappings\Buzz Bomber Missile.asm"
 
 Rings:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Ring_Index(pc,d0.w),d1
 		jmp	Ring_Index(pc,d1.w)
 ; ===========================================================================
@@ -14183,10 +14183,10 @@ Ring_PosData:	dc.b $10, 0		; horizontal tight
 Ring_Main:	; Routine 0
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
-		move.b	obRespawnNo(a0),d0
+		move.b	ost_respawn(a0),d0
 		lea	2(a2,d0.w),a2
 		move.b	(a2),d4
-		move.b	obSubtype(a0),d1
+		move.b	ost_subtype(a0),d1
 		move.b	d1,d0
 		andi.w	#7,d1
 		cmpi.w	#7,d1
@@ -14203,8 +14203,8 @@ Ring_Main:	; Routine 0
 		move.b	Ring_PosData+1(pc,d0.w),d6
 		ext.w	d6
 		movea.l	a0,a1
-		move.w	obX(a0),d2
-		move.w	obY(a0),d3
+		move.w	ost_x_pos(a0),d2
+		move.w	ost_y_pos(a0),d3
 		lsr.b	#1,d4
 		bcs.s	loc_9C02
 		bclr	#7,(a2)
@@ -14221,17 +14221,17 @@ Ring_MakeRings:
 
 loc_9BBA:
 		move.b	#id_Rings,0(a1)	; load ring object
-		addq.b	#2,obRoutine(a1)
-		move.w	d2,obX(a1)	; set x-axis position based on d2
-		move.w	obX(a0),$32(a1)
-		move.w	d3,obY(a1)	; set y-axis position based on d3
-		move.l	#Map_Ring,obMap(a1)
-		move.w	#$27B2,obGfx(a1)
-		move.b	#4,obRender(a1)
-		move.b	#2,obPriority(a1)
-		move.b	#$47,obColType(a1)
-		move.b	#8,obActWid(a1)
-		move.b	obRespawnNo(a0),obRespawnNo(a1)
+		addq.b	#2,ost_routine(a1)
+		move.w	d2,ost_x_pos(a1)	; set x-axis position based on d2
+		move.w	ost_x_pos(a0),$32(a1)
+		move.w	d3,ost_y_pos(a1)	; set y-axis position based on d3
+		move.l	#Map_Ring,ost_mappings(a1)
+		move.w	#$27B2,ost_tile(a1)
+		move.b	#4,ost_render(a1)
+		move.b	#2,ost_priority(a1)
+		move.b	#$47,ost_col_type(a1)
+		move.b	#8,ost_actwidth(a1)
+		move.b	ost_respawn(a0),ost_respawn(a1)
 		move.b	d1,$34(a1)
 
 loc_9C02:
@@ -14246,20 +14246,20 @@ loc_9C0E:
 		bne.w	DeleteObject
 
 Ring_Animate:	; Routine 2
-		move.b	(v_ani1_frame).w,obFrame(a0) ; set frame
+		move.b	(v_ani1_frame).w,ost_frame(a0) ; set frame
 		bsr.w	DisplaySprite
 		out_of_range.s	Ring_Delete,$32(a0)
 		rts	
 ; ===========================================================================
 
 Ring_Collect:	; Routine 4
-		addq.b	#2,obRoutine(a0)
-		move.b	#0,obColType(a0)
-		move.b	#1,obPriority(a0)
+		addq.b	#2,ost_routine(a0)
+		move.b	#0,ost_col_type(a0)
+		move.b	#1,ost_priority(a0)
 		bsr.w	CollectRing
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
-		move.b	obRespawnNo(a0),d0
+		move.b	ost_respawn(a0),d0
 		move.b	$34(a0),d1
 		bset	d1,2(a2,d0.w)
 
@@ -14304,7 +14304,7 @@ CollectRing:
 
 RingLoss:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	RLoss_Index(pc,d0.w),d1
 		jmp	RLoss_Index(pc,d1.w)
 ; ===========================================================================
@@ -14337,17 +14337,17 @@ RLoss_Count:	; Routine 0
 
 @makerings:
 		move.b	#id_RingLoss,0(a1) ; load bouncing ring object
-		addq.b	#2,obRoutine(a1)
-		move.b	#8,obHeight(a1)
-		move.b	#8,obWidth(a1)
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
-		move.l	#Map_Ring,obMap(a1)
-		move.w	#$27B2,obGfx(a1)
-		move.b	#4,obRender(a1)
-		move.b	#3,obPriority(a1)
-		move.b	#$47,obColType(a1)
-		move.b	#8,obActWid(a1)
+		addq.b	#2,ost_routine(a1)
+		move.b	#8,ost_height(a1)
+		move.b	#8,ost_width(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
+		move.l	#Map_Ring,ost_mappings(a1)
+		move.w	#$27B2,ost_tile(a1)
+		move.b	#4,ost_render(a1)
+		move.b	#3,ost_priority(a1)
+		move.b	#$47,ost_col_type(a1)
+		move.b	#8,ost_actwidth(a1)
 		move.b	#-1,(v_ani3_time).w
 		tst.w	d4
 		bmi.s	@loc_9D62
@@ -14366,8 +14366,8 @@ RLoss_Count:	; Routine 0
 		move.w	#$288,d4
 
 	@loc_9D62:
-		move.w	d2,obVelX(a1)
-		move.w	d3,obVelY(a1)
+		move.w	d2,ost_x_vel(a1)
+		move.w	d3,ost_y_vel(a1)
 		neg.w	d2
 		neg.w	d4
 		dbf	d5,@loop	; repeat for number of rings (max 31)
@@ -14379,9 +14379,9 @@ RLoss_Count:	; Routine 0
 		sfx	sfx_RingLoss,0,0,0	; play ring loss sound
 
 RLoss_Bounce:	; Routine 2
-		move.b	(v_ani3_frame).w,obFrame(a0)
+		move.b	(v_ani3_frame).w,ost_frame(a0)
 		bsr.w	SpeedToPos
-		addi.w	#$18,obVelY(a0)
+		addi.w	#$18,ost_y_vel(a0)
 		bmi.s	@chkdel
 		move.b	(v_vbla_byte).w,d0
 		add.b	d7,d0
@@ -14390,26 +14390,26 @@ RLoss_Bounce:	; Routine 2
 		jsr	(ObjFloorDist).l
 		tst.w	d1
 		bpl.s	@chkdel
-		add.w	d1,obY(a0)
-		move.w	obVelY(a0),d0
+		add.w	d1,ost_y_pos(a0)
+		move.w	ost_y_vel(a0),d0
 		asr.w	#2,d0
-		sub.w	d0,obVelY(a0)
-		neg.w	obVelY(a0)
+		sub.w	d0,ost_y_vel(a0)
+		neg.w	ost_y_vel(a0)
 
 	@chkdel:
 		tst.b	(v_ani3_time).w
 		beq.s	RLoss_Delete
 		move.w	(v_limitbtm2).w,d0
 		addi.w	#$E0,d0
-		cmp.w	obY(a0),d0	; has object moved below level boundary?
+		cmp.w	ost_y_pos(a0),d0	; has object moved below level boundary?
 		bcs.s	RLoss_Delete	; if yes, branch
 		bra.w	DisplaySprite
 ; ===========================================================================
 
 RLoss_Collect:	; Routine 4
-		addq.b	#2,obRoutine(a0)
-		move.b	#0,obColType(a0)
-		move.b	#1,obPriority(a0)
+		addq.b	#2,ost_routine(a0)
+		move.b	#0,ost_col_type(a0)
+		move.b	#1,ost_priority(a0)
 		bsr.w	CollectRing
 
 RLoss_Sparkle:	; Routine 6
@@ -14426,7 +14426,7 @@ RLoss_Delete:	; Routine 8
 
 GiantRing:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	GRing_Index(pc,d0.w),d1
 		jmp	GRing_Index(pc,d1.w)
 ; ===========================================================================
@@ -14438,11 +14438,11 @@ GRing_Index:	index *
 ; ===========================================================================
 
 GRing_Main:	; Routine 0
-		move.l	#Map_GRing,obMap(a0)
-		move.w	#$2400,obGfx(a0)
-		ori.b	#4,obRender(a0)
-		move.b	#$40,obActWid(a0)
-		tst.b	obRender(a0)
+		move.l	#Map_GRing,ost_mappings(a0)
+		move.w	#$2400,ost_tile(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	#$40,ost_actwidth(a0)
+		tst.b	ost_render(a0)
 		bpl.s	GRing_Animate
 		cmpi.b	#6,(v_emeralds).w ; do you have 6 emeralds?
 		beq.w	GRing_Delete	; if yes, branch
@@ -14452,30 +14452,30 @@ GRing_Main:	; Routine 0
 ; ===========================================================================
 
 GRing_Okay:
-		addq.b	#2,obRoutine(a0)
-		move.b	#2,obPriority(a0)
-		move.b	#$52,obColType(a0)
+		addq.b	#2,ost_routine(a0)
+		move.b	#2,ost_priority(a0)
+		move.b	#$52,ost_col_type(a0)
 		move.w	#$C40,(v_gfxbigring).w	; Signal that Art_BigRing should be loaded ($C40 is the size of Art_BigRing)
 
 GRing_Animate:	; Routine 2
-		move.b	(v_ani1_frame).w,obFrame(a0)
+		move.b	(v_ani1_frame).w,ost_frame(a0)
 		out_of_range	DeleteObject
 		bra.w	DisplaySprite
 ; ===========================================================================
 
 GRing_Collect:	; Routine 4
-		subq.b	#2,obRoutine(a0)
-		move.b	#0,obColType(a0)
+		subq.b	#2,ost_routine(a0)
+		move.b	#0,ost_col_type(a0)
 		bsr.w	FindFreeObj
 		bne.w	GRing_PlaySnd
 		move.b	#id_RingFlash,0(a1) ; load giant ring flash object
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.l	a0,$3C(a1)
-		move.w	(v_player+obX).w,d0
-		cmp.w	obX(a0),d0	; has Sonic come from the left?
+		move.w	(v_player+ost_x_pos).w,d0
+		cmp.w	ost_x_pos(a0),d0	; has Sonic come from the left?
 		bcs.s	GRing_PlaySnd	; if yes, branch
-		bset	#0,obRender(a1)	; reverse flash	object
+		bset	#0,ost_render(a1)	; reverse flash	object
 
 GRing_PlaySnd:
 		sfx	sfx_GiantRing,0,0,0	; play giant ring sound
@@ -14490,7 +14490,7 @@ GRing_Delete:	; Routine 6
 
 RingFlash:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Flash_Index(pc,d0.w),d1
 		jmp	Flash_Index(pc,d1.w)
 ; ===========================================================================
@@ -14501,13 +14501,13 @@ Flash_Index:	index *
 ; ===========================================================================
 
 Flash_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Flash,obMap(a0)
-		move.w	#$2462,obGfx(a0)
-		ori.b	#4,obRender(a0)
-		move.b	#0,obPriority(a0)
-		move.b	#$20,obActWid(a0)
-		move.b	#$FF,obFrame(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Flash,ost_mappings(a0)
+		move.w	#$2462,ost_tile(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	#0,ost_priority(a0)
+		move.b	#$20,ost_actwidth(a0)
+		move.b	#$FF,ost_frame(a0)
 
 Flash_ChkDel:	; Routine 2
 		bsr.s	Flash_Collect
@@ -14518,17 +14518,17 @@ Flash_ChkDel:	; Routine 2
 
 
 Flash_Collect:
-		subq.b	#1,obTimeFrame(a0)
+		subq.b	#1,ost_anim_time(a0)
 		bpl.s	locret_9F76
-		move.b	#1,obTimeFrame(a0)
-		addq.b	#1,obFrame(a0)
-		cmpi.b	#8,obFrame(a0)	; has animation	finished?
+		move.b	#1,ost_anim_time(a0)
+		addq.b	#1,ost_frame(a0)
+		cmpi.b	#8,ost_frame(a0)	; has animation	finished?
 		bcc.s	Flash_End	; if yes, branch
-		cmpi.b	#3,obFrame(a0)	; is 3rd frame displayed?
+		cmpi.b	#3,ost_frame(a0)	; is 3rd frame displayed?
 		bne.s	locret_9F76	; if not, branch
 		movea.l	$3C(a0),a1	; get parent object address
-		move.b	#6,obRoutine(a1) ; delete parent object
-		move.b	#id_Blank,(v_player+obAnim).w ; make Sonic invisible
+		move.b	#6,ost_routine(a1) ; delete parent object
+		move.b	#id_Blank,(v_player+ost_anim).w ; make Sonic invisible
 		move.b	#1,(f_bigring).w ; stop	Sonic getting bonuses
 		clr.b	(v_invinc).w	; remove invincibility
 		clr.b	(v_shield).w	; remove shield
@@ -14538,7 +14538,7 @@ locret_9F76:
 ; ===========================================================================
 
 Flash_End:
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 		move.w	#0,(v_player).w ; remove Sonic object
 		addq.l	#4,sp
 		rts	
@@ -14560,7 +14560,7 @@ Map_Flash:	include "Mappings\Giant Ring Flash.asm"
 
 Monitor:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Mon_Index(pc,d0.w),d1
 		jmp	Mon_Index(pc,d1.w)
 ; ===========================================================================
@@ -14573,49 +14573,49 @@ Mon_Index:	index *
 ; ===========================================================================
 
 Mon_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.b	#$E,obHeight(a0)
-		move.b	#$E,obWidth(a0)
-		move.l	#Map_Monitor,obMap(a0)
-		move.w	#$680,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#3,obPriority(a0)
-		move.b	#$F,obActWid(a0)
+		addq.b	#2,ost_routine(a0)
+		move.b	#$E,ost_height(a0)
+		move.b	#$E,ost_width(a0)
+		move.l	#Map_Monitor,ost_mappings(a0)
+		move.w	#$680,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#3,ost_priority(a0)
+		move.b	#$F,ost_actwidth(a0)
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
-		move.b	obRespawnNo(a0),d0
+		move.b	ost_respawn(a0),d0
 		bclr	#7,2(a2,d0.w)
 		btst	#0,2(a2,d0.w)	; has monitor been broken?
 		beq.s	@notbroken	; if not, branch
-		move.b	#8,obRoutine(a0) ; run "Mon_Display" routine
-		move.b	#$B,obFrame(a0)	; use broken monitor frame
+		move.b	#8,ost_routine(a0) ; run "Mon_Display" routine
+		move.b	#$B,ost_frame(a0)	; use broken monitor frame
 		rts	
 ; ===========================================================================
 
 	@notbroken:
-		move.b	#$46,obColType(a0)
-		move.b	obSubtype(a0),obAnim(a0)
+		move.b	#$46,ost_col_type(a0)
+		move.b	ost_subtype(a0),ost_anim(a0)
 
 Mon_Solid:	; Routine 2
-		move.b	ob2ndRout(a0),d0 ; is monitor set to fall?
+		move.b	ost_routine2(a0),d0 ; is monitor set to fall?
 		beq.s	@normal		; if not, branch
 		subq.b	#2,d0
 		bne.s	@fall
 
 		; 2nd Routine 2
 		moveq	#0,d1
-		move.b	obActWid(a0),d1
+		move.b	ost_actwidth(a0),d1
 		addi.w	#$B,d1
 		bsr.w	ExitPlatform
-		btst	#3,obStatus(a1) ; is Sonic on top of the monitor?
+		btst	#3,ost_status(a1) ; is Sonic on top of the monitor?
 		bne.w	@ontop		; if yes, branch
-		clr.b	ob2ndRout(a0)
+		clr.b	ost_routine2(a0)
 		bra.w	Mon_Animate
 ; ===========================================================================
 
 	@ontop:
 		move.w	#$10,d3
-		move.w	obX(a0),d2
+		move.w	ost_x_pos(a0),d2
 		bsr.w	MvSonicOnPtfm
 		bra.w	Mon_Animate
 ; ===========================================================================
@@ -14625,9 +14625,9 @@ Mon_Solid:	; Routine 2
 		jsr	(ObjFloorDist).l
 		tst.w	d1
 		bpl.w	Mon_Animate
-		add.w	d1,obY(a0)
-		clr.w	obVelY(a0)
-		clr.b	ob2ndRout(a0)
+		add.w	d1,ost_y_pos(a0)
+		clr.w	ost_y_vel(a0)
+		clr.b	ost_routine2(a0)
 		bra.w	Mon_Animate
 ; ===========================================================================
 
@@ -14636,17 +14636,17 @@ Mon_Solid:	; Routine 2
 		move.w	#$F,d2
 		bsr.w	Mon_SolidSides
 		beq.w	loc_A25C
-		tst.w	obVelY(a1)
+		tst.w	ost_y_vel(a1)
 		bmi.s	loc_A20A
-		cmpi.b	#id_Roll,obAnim(a1) ; is Sonic rolling?
+		cmpi.b	#id_Roll,ost_anim(a1) ; is Sonic rolling?
 		beq.s	loc_A25C	; if yes, branch
 
 loc_A20A:
 		tst.w	d1
 		bpl.s	loc_A220
-		sub.w	d3,obY(a1)
+		sub.w	d3,ost_y_pos(a1)
 		bsr.w	loc_74AE
-		move.b	#2,ob2ndRout(a0)
+		move.b	#2,ost_routine2(a0)
 		bra.w	Mon_Animate
 ; ===========================================================================
 
@@ -14654,36 +14654,36 @@ loc_A220:
 		tst.w	d0
 		beq.w	loc_A246
 		bmi.s	loc_A230
-		tst.w	obVelX(a1)
+		tst.w	ost_x_vel(a1)
 		bmi.s	loc_A246
 		bra.s	loc_A236
 ; ===========================================================================
 
 loc_A230:
-		tst.w	obVelX(a1)
+		tst.w	ost_x_vel(a1)
 		bpl.s	loc_A246
 
 loc_A236:
-		sub.w	d0,obX(a1)
-		move.w	#0,obInertia(a1)
-		move.w	#0,obVelX(a1)
+		sub.w	d0,ost_x_pos(a1)
+		move.w	#0,ost_inertia(a1)
+		move.w	#0,ost_x_vel(a1)
 
 loc_A246:
-		btst	#1,obStatus(a1)
+		btst	#1,ost_status(a1)
 		bne.s	loc_A26A
-		bset	#5,obStatus(a1)
-		bset	#5,obStatus(a0)
+		bset	#5,ost_status(a1)
+		bset	#5,ost_status(a0)
 		bra.s	Mon_Animate
 ; ===========================================================================
 
 loc_A25C:
-		btst	#5,obStatus(a0)
+		btst	#5,ost_status(a0)
 		beq.s	Mon_Animate
-		move.w	#1,obAnim(a1)	; clear obAnim and set obNextAni to 1
+		move.w	#1,ost_anim(a1)	; clear ost_anim and set ost_anim_next to 1
 
 loc_A26A:
-		bclr	#5,obStatus(a0)
-		bclr	#5,obStatus(a1)
+		bclr	#5,ost_status(a0)
+		bclr	#5,ost_status(a1)
 
 Mon_Animate:	; Routine 6
 		lea	(Ani_Monitor).l,a1
@@ -14696,29 +14696,29 @@ Mon_Display:	; Routine 8
 ; ===========================================================================
 
 Mon_BreakOpen:	; Routine 4
-		addq.b	#2,obRoutine(a0)
-		move.b	#0,obColType(a0)
+		addq.b	#2,ost_routine(a0)
+		move.b	#0,ost_col_type(a0)
 		bsr.w	FindFreeObj
 		bne.s	Mon_Explode
 		move.b	#id_PowerUp,0(a1) ; load monitor contents object
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
-		move.b	obAnim(a0),obAnim(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
+		move.b	ost_anim(a0),ost_anim(a1)
 
 Mon_Explode:
 		bsr.w	FindFreeObj
 		bne.s	@fail
 		move.b	#id_ExplosionItem,0(a1) ; load explosion object
-		addq.b	#2,obRoutine(a1) ; don't create an animal
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
+		addq.b	#2,ost_routine(a1) ; don't create an animal
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
 
 	@fail:
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
-		move.b	obRespawnNo(a0),d0
+		move.b	ost_respawn(a0),d0
 		bset	#0,2(a2,d0.w)
-		move.b	#9,obAnim(a0)	; set monitor type to broken
+		move.b	#9,ost_anim(a0)	; set monitor type to broken
 		bra.w	DisplaySprite
 ; ---------------------------------------------------------------------------
 ; Object 2E - contents of monitors
@@ -14726,7 +14726,7 @@ Mon_Explode:
 
 PowerUp:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Pow_Index(pc,d0.w),d1
 		jsr	Pow_Index(pc,d1.w)
 		bra.w	DisplaySprite
@@ -14738,36 +14738,36 @@ Pow_Index:	index *
 ; ===========================================================================
 
 Pow_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.w	#$680,obGfx(a0)
-		move.b	#$24,obRender(a0)
-		move.b	#3,obPriority(a0)
-		move.b	#8,obActWid(a0)
-		move.w	#-$300,obVelY(a0)
+		addq.b	#2,ost_routine(a0)
+		move.w	#$680,ost_tile(a0)
+		move.b	#$24,ost_render(a0)
+		move.b	#3,ost_priority(a0)
+		move.b	#8,ost_actwidth(a0)
+		move.w	#-$300,ost_y_vel(a0)
 		moveq	#0,d0
-		move.b	obAnim(a0),d0	; get subtype
+		move.b	ost_anim(a0),d0	; get subtype
 		addq.b	#2,d0
-		move.b	d0,obFrame(a0)	; use correct frame
+		move.b	d0,ost_frame(a0)	; use correct frame
 		movea.l	#Map_Monitor,a1
 		add.b	d0,d0
 		adda.w	(a1,d0.w),a1
 		addq.w	#1,a1
-		move.l	a1,obMap(a0)
+		move.l	a1,ost_mappings(a0)
 
 Pow_Move:	; Routine 2
-		tst.w	obVelY(a0)	; is object moving?
+		tst.w	ost_y_vel(a0)	; is object moving?
 		bpl.w	Pow_Checks	; if not, branch
 		bsr.w	SpeedToPos
-		addi.w	#$18,obVelY(a0)	; reduce object	speed
+		addi.w	#$18,ost_y_vel(a0)	; reduce object	speed
 		rts	
 ; ===========================================================================
 
 Pow_Checks:
-		addq.b	#2,obRoutine(a0)
-		move.w	#29,obTimeFrame(a0) ; display icon for half a second
+		addq.b	#2,ost_routine(a0)
+		move.w	#29,ost_anim_time(a0) ; display icon for half a second
 
 Pow_ChkEggman:
-		move.b	obAnim(a0),d0
+		move.b	ost_anim(a0),d0
 		cmpi.b	#1,d0		; does monitor contain Eggman?
 		bne.s	Pow_ChkSonic
 		rts			; Eggman monitor does nothing
@@ -14811,13 +14811,13 @@ Pow_ChkInvinc:
 		move.b	#1,(v_invinc).w	; make Sonic invincible
 		move.w	#$4B0,(v_player+$32).w ; time limit for the power-up
 		move.b	#id_ShieldItem,(v_objspace+$200).w ; load stars object ($3801)
-		move.b	#1,(v_objspace+$200+obAnim).w
+		move.b	#1,(v_objspace+$200+ost_anim).w
 		move.b	#id_ShieldItem,(v_objspace+$240).w ; load stars object ($3802)
-		move.b	#2,(v_objspace+$240+obAnim).w
+		move.b	#2,(v_objspace+$240+ost_anim).w
 		move.b	#id_ShieldItem,(v_objspace+$280).w ; load stars object ($3803)
-		move.b	#3,(v_objspace+$280+obAnim).w
+		move.b	#3,(v_objspace+$280+ost_anim).w
 		move.b	#id_ShieldItem,(v_objspace+$2C0).w ; load stars object ($3804)
-		move.b	#4,(v_objspace+$2C0+obAnim).w
+		move.b	#4,(v_objspace+$2C0+ost_anim).w
 		tst.b	(f_lockscreen).w ; is boss mode on?
 		bne.s	Pow_NoMusic	; if yes, branch
 		if Revision=0
@@ -14861,7 +14861,7 @@ Pow_ChkEnd:
 ; ===========================================================================
 
 Pow_Delete:	; Routine 4
-		subq.w	#1,obTimeFrame(a0)
+		subq.w	#1,ost_anim_time(a0)
 		bmi.w	DeleteObject	; delete after half a second
 		rts	
 ; ---------------------------------------------------------------------------
@@ -14873,19 +14873,19 @@ Pow_Delete:	; Routine 4
 
 Mon_SolidSides:
 		lea	(v_player).w,a1
-		move.w	obX(a1),d0
-		sub.w	obX(a0),d0
+		move.w	ost_x_pos(a1),d0
+		sub.w	ost_x_pos(a0),d0
 		add.w	d1,d0
 		bmi.s	loc_A4E6
 		move.w	d1,d3
 		add.w	d3,d3
 		cmp.w	d3,d0
 		bhi.s	loc_A4E6
-		move.b	obHeight(a1),d3
+		move.b	ost_height(a1),d3
 		ext.w	d3
 		add.w	d3,d2
-		move.w	obY(a1),d3
-		sub.w	obY(a0),d3
+		move.w	ost_y_pos(a1),d3
+		sub.w	ost_y_pos(a0),d3
 		add.w	d2,d3
 		bmi.s	loc_A4E6
 		add.w	d2,d2
@@ -14893,7 +14893,7 @@ Mon_SolidSides:
 		bcc.s	loc_A4E6
 		tst.b	(f_lockmulti).w
 		bmi.s	loc_A4E6
-		cmpi.b	#6,(v_player+obRoutine).w
+		cmpi.b	#6,(v_player+ost_routine).w
 		bcc.s	loc_A4E6
 		tst.w	(v_debuguse).w
 		bne.s	loc_A4E6
@@ -14918,12 +14918,12 @@ loc_A4E6:
 
 loc_A4EA:
 		moveq	#0,d1
-		move.b	obActWid(a0),d1
+		move.b	ost_actwidth(a0),d1
 		addq.w	#4,d1
 		move.w	d1,d2
 		add.w	d2,d2
-		add.w	obX(a1),d1
-		sub.w	obX(a0),d1
+		add.w	ost_x_pos(a1),d1
+		sub.w	ost_x_pos(a0),d1
 		bmi.s	loc_A4E2
 		cmp.w	d2,d1
 		bcc.s	loc_A4E2
@@ -14940,7 +14940,7 @@ Map_Monitor:	include "Mappings\Monitors.asm"
 
 TitleSonic:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	TSon_Index(pc,d0.w),d1
 		jmp	TSon_Index(pc,d1.w)
 ; ===========================================================================
@@ -14952,20 +14952,20 @@ TSon_Index:	index *
 ; ===========================================================================
 
 TSon_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.w	#$F0,obX(a0)
-		move.w	#$DE,obScreenY(a0) ; position is fixed to screen
-		move.l	#Map_TSon,obMap(a0)
-		move.w	#$2300,obGfx(a0)
-		move.b	#1,obPriority(a0)
-		move.b	#29,obDelayAni(a0) ; set time delay to 0.5 seconds
+		addq.b	#2,ost_routine(a0)
+		move.w	#$F0,ost_x_pos(a0)
+		move.w	#$DE,ost_y_screen(a0) ; position is fixed to screen
+		move.l	#Map_TSon,ost_mappings(a0)
+		move.w	#$2300,ost_tile(a0)
+		move.b	#1,ost_priority(a0)
+		move.b	#29,ost_anim_delay(a0) ; set time delay to 0.5 seconds
 		lea	(Ani_TSon).l,a1
 		bsr.w	AnimateSprite
 
 TSon_Delay:	;Routine 2
-		subq.b	#1,obDelayAni(a0) ; subtract 1 from time delay
+		subq.b	#1,ost_anim_delay(a0) ; subtract 1 from time delay
 		bpl.s	@wait		; if time remains, branch
-		addq.b	#2,obRoutine(a0) ; go to next routine
+		addq.b	#2,ost_routine(a0) ; go to next routine
 		bra.w	DisplaySprite
 
 	@wait:
@@ -14973,10 +14973,10 @@ TSon_Delay:	;Routine 2
 ; ===========================================================================
 
 TSon_Move:	; Routine 4
-		subq.w	#8,obScreenY(a0) ; move Sonic up
-		cmpi.w	#$96,obScreenY(a0) ; has Sonic reached final position?
+		subq.w	#8,ost_y_screen(a0) ; move Sonic up
+		cmpi.w	#$96,ost_y_screen(a0) ; has Sonic reached final position?
 		bne.s	@display	; if not, branch
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 
 	@display:
 		bra.w	DisplaySprite
@@ -14996,7 +14996,7 @@ TSon_Animate:	; Routine 6
 
 PSBTM:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	PSB_Index(pc,d0.w),d1
 		jsr	PSB_Index(pc,d1.w)
 		bra.w	DisplaySprite
@@ -15008,21 +15008,21 @@ PSB_Index:	index *
 ; ===========================================================================
 
 PSB_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.w	#$D0,obX(a0)
-		move.w	#$130,obScreenY(a0)
-		move.l	#Map_PSB,obMap(a0)
-		move.w	#$200,obGfx(a0)
-		cmpi.b	#2,obFrame(a0)	; is object "PRESS START"?
+		addq.b	#2,ost_routine(a0)
+		move.w	#$D0,ost_x_pos(a0)
+		move.w	#$130,ost_y_screen(a0)
+		move.l	#Map_PSB,ost_mappings(a0)
+		move.w	#$200,ost_tile(a0)
+		cmpi.b	#2,ost_frame(a0)	; is object "PRESS START"?
 		bcs.s	PSB_PrsStart	; if yes, branch
 
-		addq.b	#2,obRoutine(a0)
-		cmpi.b	#3,obFrame(a0)	; is the object	"TM"?
+		addq.b	#2,ost_routine(a0)
+		cmpi.b	#3,ost_frame(a0)	; is the object	"TM"?
 		bne.s	PSB_Exit	; if not, branch
 
-		move.w	#$2510,obGfx(a0) ; "TM" specific code
-		move.w	#$170,obX(a0)
-		move.w	#$F8,obScreenY(a0)
+		move.w	#$2510,ost_tile(a0) ; "TM" specific code
+		move.w	#$170,ost_x_pos(a0)
+		move.w	#$F8,ost_y_screen(a0)
 
 PSB_Exit:	; Routine 4
 		rts	
@@ -15046,36 +15046,36 @@ Ani_PSBTM:	include "Animations\Title Screen Press Start.asm"
 
 AnimateSprite:
 		moveq	#0,d0
-		move.b	obAnim(a0),d0	; move animation number	to d0
-		cmp.b	obNextAni(a0),d0 ; is animation set to restart?
+		move.b	ost_anim(a0),d0	; move animation number	to d0
+		cmp.b	ost_anim_next(a0),d0 ; is animation set to restart?
 		beq.s	Anim_Run	; if not, branch
 
-		move.b	d0,obNextAni(a0) ; set to "no restart"
-		move.b	#0,obAniFrame(a0) ; reset animation
-		move.b	#0,obTimeFrame(a0) ; reset frame duration
+		move.b	d0,ost_anim_next(a0) ; set to "no restart"
+		move.b	#0,ost_anim_frame(a0) ; reset animation
+		move.b	#0,ost_anim_time(a0) ; reset frame duration
 
 Anim_Run:
-		subq.b	#1,obTimeFrame(a0) ; subtract 1 from frame duration
+		subq.b	#1,ost_anim_time(a0) ; subtract 1 from frame duration
 		bpl.s	Anim_Wait	; if time remains, branch
 		add.w	d0,d0
 		adda.w	(a1,d0.w),a1	; jump to appropriate animation	script
-		move.b	(a1),obTimeFrame(a0) ; load frame duration
+		move.b	(a1),ost_anim_time(a0) ; load frame duration
 		moveq	#0,d1
-		move.b	obAniFrame(a0),d1 ; load current frame number
+		move.b	ost_anim_frame(a0),d1 ; load current frame number
 		move.b	1(a1,d1.w),d0	; read sprite number from script
 		bmi.s	Anim_End_FF	; if animation is complete, branch
 
 Anim_Next:
 		move.b	d0,d1		; copy full frame info to d1
 		andi.b	#$1F,d0		; sprite number only
-		move.b	d0,obFrame(a0)	; load sprite number
-		move.b	obStatus(a0),d0
+		move.b	d0,ost_frame(a0)	; load sprite number
+		move.b	ost_status(a0),d0
 		rol.b	#3,d1
 		eor.b	d0,d1
 		andi.b	#3,d1		; get x/y flip bits in d1
-		andi.b	#$FC,obRender(a0)
-		or.b	d1,obRender(a0)	; apply x/y flip bits
-		addq.b	#1,obAniFrame(a0) ; next frame number
+		andi.b	#$FC,ost_render(a0)
+		or.b	d1,ost_render(a0)	; apply x/y flip bits
+		addq.b	#1,ost_anim_frame(a0) ; next frame number
 
 Anim_Wait:
 		rts	
@@ -15084,7 +15084,7 @@ Anim_Wait:
 Anim_End_FF:
 		addq.b	#1,d0		; is the end flag = $FF	?
 		bne.s	Anim_End_FE	; if not, branch
-		move.b	#0,obAniFrame(a0) ; restart the animation
+		move.b	#0,ost_anim_frame(a0) ; restart the animation
 		move.b	1(a1),d0	; read sprite number
 		bra.s	Anim_Next
 ; ===========================================================================
@@ -15093,7 +15093,7 @@ Anim_End_FE:
 		addq.b	#1,d0		; is the end flag = $FE	?
 		bne.s	Anim_End_FD	; if not, branch
 		move.b	2(a1,d1.w),d0	; read the next	byte in	the script
-		sub.b	d0,obAniFrame(a0) ; jump back d0 bytes in the script
+		sub.b	d0,ost_anim_frame(a0) ; jump back d0 bytes in the script
 		sub.b	d0,d1
 		move.b	1(a1,d1.w),d0	; read sprite number
 		bra.s	Anim_Next
@@ -15102,23 +15102,23 @@ Anim_End_FE:
 Anim_End_FD:
 		addq.b	#1,d0		; is the end flag = $FD	?
 		bne.s	Anim_End_FC	; if not, branch
-		move.b	2(a1,d1.w),obAnim(a0) ; read next byte, run that animation
+		move.b	2(a1,d1.w),ost_anim(a0) ; read next byte, run that animation
 
 Anim_End_FC:
 		addq.b	#1,d0		; is the end flag = $FC	?
 		bne.s	Anim_End_FB	; if not, branch
-		addq.b	#2,obRoutine(a0) ; jump to next routine
+		addq.b	#2,ost_routine(a0) ; jump to next routine
 
 Anim_End_FB:
 		addq.b	#1,d0		; is the end flag = $FB	?
 		bne.s	Anim_End_FA	; if not, branch
-		move.b	#0,obAniFrame(a0) ; reset animation
-		clr.b	ob2ndRout(a0)	; reset	2nd routine counter
+		move.b	#0,ost_anim_frame(a0) ; reset animation
+		clr.b	ost_routine2(a0)	; reset	2nd routine counter
 
 Anim_End_FA:
 		addq.b	#1,d0		; is the end flag = $FA	?
 		bne.s	Anim_End	; if not, branch
-		addq.b	#2,ob2ndRout(a0) ; jump to next routine
+		addq.b	#2,ost_routine2(a0) ; jump to next routine
 
 Anim_End:
 		rts	
@@ -15133,7 +15133,7 @@ Map_TSon:	include "Mappings\Title Screen Sonic.asm"
 
 Chopper:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Chop_Index(pc,d0.w),d1
 		jsr	Chop_Index(pc,d1.w)
 		bra.w	RememberState
@@ -15146,36 +15146,36 @@ chop_origY:	equ $30
 ; ===========================================================================
 
 Chop_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Chop,obMap(a0)
-		move.w	#$47B,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#4,obPriority(a0)
-		move.b	#9,obColType(a0)
-		move.b	#$10,obActWid(a0)
-		move.w	#-$700,obVelY(a0) ; set vertical speed
-		move.w	obY(a0),chop_origY(a0) ; save original position
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Chop,ost_mappings(a0)
+		move.w	#$47B,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#4,ost_priority(a0)
+		move.b	#9,ost_col_type(a0)
+		move.b	#$10,ost_actwidth(a0)
+		move.w	#-$700,ost_y_vel(a0) ; set vertical speed
+		move.w	ost_y_pos(a0),chop_origY(a0) ; save original position
 
 Chop_ChgSpeed:	; Routine 2
 		lea	(Ani_Chop).l,a1
 		bsr.w	AnimateSprite
 		bsr.w	SpeedToPos
-		addi.w	#$18,obVelY(a0)	; reduce speed
+		addi.w	#$18,ost_y_vel(a0)	; reduce speed
 		move.w	chop_origY(a0),d0
-		cmp.w	obY(a0),d0	; has Chopper returned to its original position?
+		cmp.w	ost_y_pos(a0),d0	; has Chopper returned to its original position?
 		bcc.s	@chganimation	; if not, branch
-		move.w	d0,obY(a0)
-		move.w	#-$700,obVelY(a0) ; set vertical speed
+		move.w	d0,ost_y_pos(a0)
+		move.w	#-$700,ost_y_vel(a0) ; set vertical speed
 
 	@chganimation:
-		move.b	#1,obAnim(a0)	; use fast animation
+		move.b	#1,ost_anim(a0)	; use fast animation
 		subi.w	#$C0,d0
-		cmp.w	obY(a0),d0
+		cmp.w	ost_y_pos(a0),d0
 		bcc.s	@nochg
-		move.b	#0,obAnim(a0)	; use slow animation
-		tst.w	obVelY(a0)	; is Chopper at	its highest point?
+		move.b	#0,ost_anim(a0)	; use slow animation
+		tst.w	ost_y_vel(a0)	; is Chopper at	its highest point?
 		bmi.s	@nochg		; if not, branch
-		move.b	#2,obAnim(a0)	; use stationary animation
+		move.b	#2,ost_anim(a0)	; use stationary animation
 
 	@nochg:
 		rts	
@@ -15189,7 +15189,7 @@ Map_Chop:	include "Mappings\Chopper.asm"
 
 Jaws:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Jaws_Index(pc,d0.w),d1
 		jmp	Jaws_Index(pc,d1.w)
 ; ===========================================================================
@@ -15202,31 +15202,31 @@ jaws_timedelay:	equ $32
 ; ===========================================================================
 
 Jaws_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Jaws,obMap(a0)
-		move.w	#$2486,obGfx(a0)
-		ori.b	#4,obRender(a0)
-		move.b	#$A,obColType(a0)
-		move.b	#4,obPriority(a0)
-		move.b	#$10,obActWid(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Jaws,ost_mappings(a0)
+		move.w	#$2486,ost_tile(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	#$A,ost_col_type(a0)
+		move.b	#4,ost_priority(a0)
+		move.b	#$10,ost_actwidth(a0)
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0 ; load object subtype number
+		move.b	ost_subtype(a0),d0 ; load object subtype number
 		lsl.w	#6,d0		; multiply d0 by 64
 		subq.w	#1,d0
 		move.w	d0,jaws_timecount(a0) ; set turn delay time
 		move.w	d0,jaws_timedelay(a0)
-		move.w	#-$40,obVelX(a0) ; move Jaws to the left
-		btst	#0,obStatus(a0)	; is Jaws facing left?
+		move.w	#-$40,ost_x_vel(a0) ; move Jaws to the left
+		btst	#0,ost_status(a0)	; is Jaws facing left?
 		beq.s	Jaws_Turn	; if yes, branch
-		neg.w	obVelX(a0)	; move Jaws to the right
+		neg.w	ost_x_vel(a0)	; move Jaws to the right
 
 Jaws_Turn:	; Routine 2
 		subq.w	#1,jaws_timecount(a0) ; subtract 1 from turn delay time
 		bpl.s	@animate	; if time remains, branch
 		move.w	jaws_timedelay(a0),jaws_timecount(a0) ; reset turn delay time
-		neg.w	obVelX(a0)	; change speed direction
-		bchg	#0,obStatus(a0)	; change Jaws facing direction
-		move.b	#1,obNextAni(a0) ; reset animation
+		neg.w	ost_x_vel(a0)	; change speed direction
+		bchg	#0,ost_status(a0)	; change Jaws facing direction
+		move.b	#1,ost_anim_next(a0) ; reset animation
 
 	@animate:
 		lea	(Ani_Jaws).l,a1
@@ -15243,7 +15243,7 @@ Map_Jaws:	include "Mappings\Jaws.asm"
 
 Burrobot:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Burro_Index(pc,d0.w),d1
 		jmp	Burro_Index(pc,d1.w)
 ; ===========================================================================
@@ -15255,21 +15255,21 @@ burro_timedelay:	equ $30		; time between direction changes
 ; ===========================================================================
 
 Burro_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.b	#$13,obHeight(a0)
-		move.b	#8,obWidth(a0)
-		move.l	#Map_Burro,obMap(a0)
-		move.w	#$4A6,obGfx(a0)
-		ori.b	#4,obRender(a0)
-		move.b	#4,obPriority(a0)
-		move.b	#5,obColType(a0)
-		move.b	#$C,obActWid(a0)
-		addq.b	#6,ob2ndRout(a0) ; run "Burro_ChkSonic" routine
-		move.b	#2,obAnim(a0)
+		addq.b	#2,ost_routine(a0)
+		move.b	#$13,ost_height(a0)
+		move.b	#8,ost_width(a0)
+		move.l	#Map_Burro,ost_mappings(a0)
+		move.w	#$4A6,ost_tile(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	#4,ost_priority(a0)
+		move.b	#5,ost_col_type(a0)
+		move.b	#$C,ost_actwidth(a0)
+		addq.b	#6,ost_routine2(a0) ; run "Burro_ChkSonic" routine
+		move.b	#2,ost_anim(a0)
 
 Burro_Action:	; Routine 2
 		moveq	#0,d0
-		move.b	ob2ndRout(a0),d0
+		move.b	ost_routine2(a0),d0
 		move.w	@index(pc,d0.w),d1
 		jsr	@index(pc,d1.w)
 		lea	(Ani_Burro).l,a1
@@ -15286,13 +15286,13 @@ Burro_Action:	; Routine 2
 @changedir:
 		subq.w	#1,burro_timedelay(a0)
 		bpl.s	@nochg
-		addq.b	#2,ob2ndRout(a0)
+		addq.b	#2,ost_routine2(a0)
 		move.w	#255,burro_timedelay(a0)
-		move.w	#$80,obVelX(a0)
-		move.b	#1,obAnim(a0)
-		bchg	#0,obStatus(a0)	; change direction the Burrobot	is facing
+		move.w	#$80,ost_x_vel(a0)
+		move.b	#1,ost_anim(a0)
+		bchg	#0,ost_status(a0)	; change direction the Burrobot	is facing
 		beq.s	@nochg
-		neg.w	obVelX(a0)	; change direction the Burrobot	is moving
+		neg.w	ost_x_vel(a0)	; change direction the Burrobot	is moving
 
 	@nochg:
 		rts	
@@ -15304,9 +15304,9 @@ Burro_Move:
 		bsr.w	SpeedToPos
 		bchg	#0,$32(a0)
 		bne.s	loc_AD78
-		move.w	obX(a0),d3
+		move.w	ost_x_pos(a0),d3
 		addi.w	#$C,d3
-		btst	#0,obStatus(a0)
+		btst	#0,ost_status(a0)
 		bne.s	loc_AD6A
 		subi.w	#$18,d3
 
@@ -15319,40 +15319,40 @@ loc_AD6A:
 
 loc_AD78:
 		jsr	(ObjFloorDist).l
-		add.w	d1,obY(a0)
+		add.w	d1,ost_y_pos(a0)
 		rts	
 ; ===========================================================================
 
 loc_AD84:
 		btst	#2,(v_vbla_byte).w
 		beq.s	loc_ADA4
-		subq.b	#2,ob2ndRout(a0)
+		subq.b	#2,ost_routine2(a0)
 		move.w	#59,burro_timedelay(a0)
-		move.w	#0,obVelX(a0)
-		move.b	#0,obAnim(a0)
+		move.w	#0,ost_x_vel(a0)
+		move.b	#0,ost_anim(a0)
 		rts	
 ; ===========================================================================
 
 loc_ADA4:
-		addq.b	#2,ob2ndRout(a0)
-		move.w	#-$400,obVelY(a0)
-		move.b	#2,obAnim(a0)
+		addq.b	#2,ost_routine2(a0)
+		move.w	#-$400,ost_y_vel(a0)
+		move.b	#2,ost_anim(a0)
 		rts	
 ; ===========================================================================
 
 Burro_Jump:
 		bsr.w	SpeedToPos
-		addi.w	#$18,obVelY(a0)
+		addi.w	#$18,ost_y_vel(a0)
 		bmi.s	locret_ADF0
-		move.b	#3,obAnim(a0)
+		move.b	#3,ost_anim(a0)
 		jsr	(ObjFloorDist).l
 		tst.w	d1
 		bpl.s	locret_ADF0
-		add.w	d1,obY(a0)
-		move.w	#0,obVelY(a0)
-		move.b	#1,obAnim(a0)
+		add.w	d1,ost_y_pos(a0)
+		move.w	#0,ost_y_vel(a0)
+		move.b	#1,ost_anim(a0)
 		move.w	#255,burro_timedelay(a0)
-		subq.b	#2,ob2ndRout(a0)
+		subq.b	#2,ost_routine2(a0)
 		bsr.w	Burro_ChkSonic2
 
 locret_ADF0:
@@ -15363,16 +15363,16 @@ Burro_ChkSonic:
 		move.w	#$60,d2
 		bsr.w	Burro_ChkSonic2
 		bcc.s	locret_AE20
-		move.w	(v_player+obY).w,d0
-		sub.w	obY(a0),d0
+		move.w	(v_player+ost_y_pos).w,d0
+		sub.w	ost_y_pos(a0),d0
 		bcc.s	locret_AE20
 		cmpi.w	#-$80,d0
 		bcs.s	locret_AE20
 		tst.w	(v_debuguse).w
 		bne.s	locret_AE20
-		subq.b	#2,ob2ndRout(a0)
-		move.w	d1,obVelX(a0)
-		move.w	#-$400,obVelY(a0)
+		subq.b	#2,ost_routine2(a0)
+		move.w	d1,ost_x_vel(a0)
+		move.w	#-$400,ost_y_vel(a0)
 
 locret_AE20:
 		rts	
@@ -15382,13 +15382,13 @@ locret_AE20:
 
 Burro_ChkSonic2:
 		move.w	#$80,d1
-		bset	#0,obStatus(a0)
-		move.w	(v_player+obX).w,d0
-		sub.w	obX(a0),d0
+		bset	#0,ost_status(a0)
+		move.w	(v_player+ost_x_pos).w,d0
+		sub.w	ost_x_pos(a0),d0
 		bcc.s	loc_AE40
 		neg.w	d0
 		neg.w	d1
-		bclr	#0,obStatus(a0)
+		bclr	#0,ost_status(a0)
 
 loc_AE40:
 		cmp.w	d2,d0
@@ -15404,7 +15404,7 @@ Map_Burro:	include "Mappings\Burrobot.asm"
 
 LargeGrass:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	LGrass_Index(pc,d0.w),d1
 		jmp	LGrass_Index(pc,d1.w)
 ; ===========================================================================
@@ -15425,57 +15425,57 @@ LGrass_Data:	index *
 ; ===========================================================================
 
 LGrass_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_LGrass,obMap(a0)
-		move.w	#$C000,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#5,obPriority(a0)
-		move.w	obY(a0),lgrass_origY(a0)
-		move.w	obX(a0),lgrass_origX(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_LGrass,ost_mappings(a0)
+		move.w	#$C000,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#5,ost_priority(a0)
+		move.w	ost_y_pos(a0),lgrass_origY(a0)
+		move.w	ost_x_pos(a0),lgrass_origX(a0)
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		lsr.w	#2,d0
 		andi.w	#$1C,d0
 		lea	LGrass_Data(pc,d0.w),a1
 		move.w	(a1)+,d0
 		lea	LGrass_Data(pc,d0.w),a2
 		move.l	a2,$30(a0)
-		move.b	(a1)+,obFrame(a0)
-		move.b	(a1),obActWid(a0)
-		andi.b	#$F,obSubtype(a0)
-		move.b	#$40,obHeight(a0)
+		move.b	(a1)+,ost_frame(a0)
+		move.b	(a1),ost_actwidth(a0)
+		andi.b	#$F,ost_subtype(a0)
+		move.b	#$40,ost_height(a0)
 		bset	#4,1(a0)
 
 LGrass_Action:	; Routine 2
 		bsr.w	LGrass_Types
-		tst.b	ob2ndRout(a0)
+		tst.b	ost_routine2(a0)
 		beq.s	LGrass_Solid
 		moveq	#0,d1
-		move.b	obActWid(a0),d1
+		move.b	ost_actwidth(a0),d1
 		addi.w	#$B,d1
 		bsr.w	ExitPlatform
-		btst	#3,obStatus(a1)
+		btst	#3,ost_status(a1)
 		bne.w	LGrass_Slope
-		clr.b	ob2ndRout(a0)
+		clr.b	ost_routine2(a0)
 		bra.s	LGrass_Display
 ; ===========================================================================
 
 LGrass_Slope:
 		moveq	#0,d1
-		move.b	obActWid(a0),d1
+		move.b	ost_actwidth(a0),d1
 		addi.w	#$B,d1
 		movea.l	$30(a0),a2
-		move.w	obX(a0),d2
+		move.w	ost_x_pos(a0),d2
 		bsr.w	SlopeObject2
 		bra.s	LGrass_Display
 ; ===========================================================================
 
 LGrass_Solid:
 		moveq	#0,d1
-		move.b	obActWid(a0),d1
+		move.b	ost_actwidth(a0),d1
 		addi.w	#$B,d1
 		move.w	#$20,d2
-		cmpi.b	#2,obFrame(a0)
+		cmpi.b	#2,ost_frame(a0)
 		bne.s	loc_AF8E
 		move.w	#$30,d2
 
@@ -15492,7 +15492,7 @@ LGrass_Display:
 
 LGrass_Types:
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		andi.w	#7,d0
 		add.w	d0,d0
 		move.w	LGrass_TypeIndex(pc,d0.w),d1
@@ -15536,7 +15536,7 @@ LGrass_Type04:
 		move.w	#$60,d1
 
 LGrass_Move:
-		btst	#3,obSubtype(a0)
+		btst	#3,ost_subtype(a0)
 		beq.s	loc_AFF2
 		neg.w	d0
 		add.w	d1,d0
@@ -15544,13 +15544,13 @@ LGrass_Move:
 loc_AFF2:
 		move.w	lgrass_origY(a0),d1
 		sub.w	d0,d1
-		move.w	d1,obY(a0)	; update position on y-axis
+		move.w	d1,ost_y_pos(a0)	; update position on y-axis
 		rts	
 ; ===========================================================================
 
 LGrass_Type05:
 		move.b	$34(a0),d0
-		tst.b	ob2ndRout(a0)
+		tst.b	ost_routine2(a0)
 		bne.s	loc_B010
 		subq.b	#2,d0
 		bcc.s	loc_B01C
@@ -15570,7 +15570,7 @@ loc_B01C:
 		lsr.w	#4,d0
 		move.w	d0,d1
 		add.w	lgrass_origY(a0),d0
-		move.w	d0,obY(a0)
+		move.w	d0,ost_y_pos(a0)
 		cmpi.b	#$20,$34(a0)
 		bne.s	loc_B07A
 		tst.b	$35(a0)
@@ -15579,11 +15579,11 @@ loc_B01C:
 		bsr.w	FindNextFreeObj
 		bne.s	loc_B07A
 		move.b	#id_GrassFire,0(a1) ; load sitting flame object
-		move.w	obX(a0),obX(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	lgrass_origY(a0),lgrass_origY(a1)
 		addq.w	#8,lgrass_origY(a1)
 		subq.w	#3,lgrass_origY(a1)
-		subi.w	#$40,obX(a1)
+		subi.w	#$40,ost_x_pos(a1)
 		move.l	$30(a0),$30(a1)
 		move.l	a0,$38(a1)
 		movea.l	a0,a2
@@ -15630,7 +15630,7 @@ sub_B09C:
 LGrass_ChkDel:
 		tst.b	$35(a0)
 		beq.s	loc_B0C6
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.s	LGrass_DelFlames
 
 loc_B0C6:
@@ -15679,7 +15679,7 @@ LGrass_Data3:	incbin	"misc\mz_pfm3.bin"
 
 GrassFire:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	GFire_Index(pc,d0.w),d1
 		jmp	GFire_Index(pc,d1.w)
 ; ===========================================================================
@@ -15692,24 +15692,24 @@ gfire_origX:	equ $2A
 ; ===========================================================================
 
 GFire_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Fire,obMap(a0)
-		move.w	#$345,obGfx(a0)
-		move.w	obX(a0),gfire_origX(a0)
-		move.b	#4,obRender(a0)
-		move.b	#1,obPriority(a0)
-		move.b	#$8B,obColType(a0)
-		move.b	#8,obActWid(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Fire,ost_mappings(a0)
+		move.w	#$345,ost_tile(a0)
+		move.w	ost_x_pos(a0),gfire_origX(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#1,ost_priority(a0)
+		move.b	#$8B,ost_col_type(a0)
+		move.b	#8,ost_actwidth(a0)
 		sfx	sfx_Burning,0,0,0	 ; play burning sound
-		tst.b	obSubtype(a0)
+		tst.b	ost_subtype(a0)
 		beq.s	loc_B238
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 		bra.w	GFire_Move
 ; ===========================================================================
 
 loc_B238:	; Routine 2
 		movea.l	$30(a0),a1
-		move.w	obX(a0),d1
+		move.w	ost_x_pos(a0),d1
 		sub.w	gfire_origX(a0),d1
 		addi.w	#$C,d1
 		move.w	d1,d0
@@ -15719,23 +15719,23 @@ loc_B238:	; Routine 2
 		add.w	$2C(a0),d0
 		move.w	d0,d2
 		add.w	$3C(a0),d0
-		move.w	d0,obY(a0)
+		move.w	d0,ost_y_pos(a0)
 		cmpi.w	#$84,d1
 		bcc.s	loc_B2B0
-		addi.l	#$10000,obX(a0)
+		addi.l	#$10000,ost_x_pos(a0)
 		cmpi.w	#$80,d1
 		bcc.s	loc_B2B0
-		move.l	obX(a0),d0
+		move.l	ost_x_pos(a0),d0
 		addi.l	#$80000,d0
 		andi.l	#$FFFFF,d0
 		bne.s	loc_B2B0
 		bsr.w	FindNextFreeObj
 		bne.s	loc_B2B0
 		move.b	#id_GrassFire,0(a1)
-		move.w	obX(a0),obX(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	d2,$2C(a1)
 		move.w	$3C(a0),$3C(a1)
-		move.b	#1,obSubtype(a1)
+		move.b	#1,ost_subtype(a1)
 		movea.l	$38(a0),a2
 		bsr.w	sub_B09C
 
@@ -15746,7 +15746,7 @@ loc_B2B0:
 GFire_Move:	; Routine 4
 		move.w	$2C(a0),d0
 		add.w	$3C(a0),d0
-		move.w	d0,obY(a0)
+		move.w	d0,ost_y_pos(a0)
 
 GFire_Animate:
 		lea	(Ani_GFire).l,a1
@@ -15763,7 +15763,7 @@ Map_Fire:	include "Mappings\Fireballs.asm"
 
 GlassBlock:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Glass_Index(pc,d0.w),d1
 		jsr	Glass_Index(pc,d1.w)
 		out_of_range	Glass_Delete
@@ -15792,13 +15792,13 @@ Glass_Vars2:	dc.b 6,	0, 2
 Glass_Main:	; Routine 0
 		lea	(Glass_Vars1).l,a2
 		moveq	#1,d1
-		move.b	#$48,obHeight(a0)
-		cmpi.b	#3,obSubtype(a0) ; is object type 0/1/2 ?
+		move.b	#$48,ost_height(a0)
+		cmpi.b	#3,ost_subtype(a0) ; is object type 0/1/2 ?
 		bcs.s	@IsType012	; if yes, branch
 
 		lea	(Glass_Vars2).l,a2
 		moveq	#1,d1
-		move.b	#$38,obHeight(a0)
+		move.b	#$38,ost_height(a0)
 
 	@IsType012:
 		movea.l	a0,a1
@@ -15810,39 +15810,39 @@ Glass_Main:	; Routine 0
 		bne.s	@Fail
 
 @Load:
-		move.b	(a2)+,obRoutine(a1)
+		move.b	(a2)+,ost_routine(a1)
 		move.b	#id_GlassBlock,0(a1)
-		move.w	obX(a0),obX(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.b	(a2)+,d0
 		ext.w	d0
-		add.w	obY(a0),d0
-		move.w	d0,obY(a1)
-		move.l	#Map_Glass,obMap(a1)
-		move.w	#$C38E,obGfx(a1)
-		move.b	#4,obRender(a1)
-		move.w	obY(a1),$30(a1)
-		move.b	obSubtype(a0),obSubtype(a1)
-		move.b	#$20,obActWid(a1)
-		move.b	#4,obPriority(a1)
-		move.b	(a2)+,obFrame(a1)
+		add.w	ost_y_pos(a0),d0
+		move.w	d0,ost_y_pos(a1)
+		move.l	#Map_Glass,ost_mappings(a1)
+		move.w	#$C38E,ost_tile(a1)
+		move.b	#4,ost_render(a1)
+		move.w	ost_y_pos(a1),$30(a1)
+		move.b	ost_subtype(a0),ost_subtype(a1)
+		move.b	#$20,ost_actwidth(a1)
+		move.b	#4,ost_priority(a1)
+		move.b	(a2)+,ost_frame(a1)
 		move.l	a0,glass_parent(a1)
 		dbf	d1,@Repeat	; repeat once to load "reflection object"
 
-		move.b	#$10,obActWid(a1)
-		move.b	#3,obPriority(a1)
-		addq.b	#8,obSubtype(a1)
-		andi.b	#$F,obSubtype(a1)
+		move.b	#$10,ost_actwidth(a1)
+		move.b	#3,ost_priority(a1)
+		addq.b	#8,ost_subtype(a1)
+		andi.b	#$F,ost_subtype(a1)
 
 	@Fail:
 		move.w	#$90,glass_dist(a0)
-		bset	#4,obRender(a0)
+		bset	#4,ost_render(a0)
 
 Glass_Block012:	; Routine 2
 		bsr.w	Glass_Types
 		move.w	#$2B,d1
 		move.w	#$48,d2
 		move.w	#$49,d3
-		move.w	obX(a0),d4
+		move.w	ost_x_pos(a0),d4
 		bra.w	SolidObject
 ; ===========================================================================
 
@@ -15858,7 +15858,7 @@ Glass_Block34:	; Routine 6
 		move.w	#$2B,d1
 		move.w	#$38,d2
 		move.w	#$39,d3
-		move.w	obX(a0),d4
+		move.w	ost_x_pos(a0),d4
 		bra.w	SolidObject
 ; ===========================================================================
 
@@ -15866,7 +15866,7 @@ Glass_Reflect34:
 		; Routine 8
 		movea.l	$3C(a0),a1
 		move.w	glass_dist(a1),glass_dist(a0)
-		move.w	obY(a1),$30(a0)
+		move.w	ost_y_pos(a1),$30(a0)
 		bra.w	Glass_Types
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
@@ -15874,7 +15874,7 @@ Glass_Reflect34:
 
 Glass_Types:
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		andi.w	#7,d0
 		add.w	d0,d0
 		move.w	Glass_TypeIndex(pc,d0.w),d1
@@ -15907,7 +15907,7 @@ Glass_Type02:
 		add.w	d1,d0
 
 loc_B514:
-		btst	#3,obSubtype(a0)
+		btst	#3,ost_subtype(a0)
 		beq.s	loc_B526
 		neg.w	d0
 		add.w	d1,d0
@@ -15919,7 +15919,7 @@ loc_B526:
 ; ===========================================================================
 
 Glass_Type03:
-		btst	#3,obSubtype(a0)
+		btst	#3,ost_subtype(a0)
 		beq.s	loc_B53E
 		move.b	(v_oscillate+$12).w,d0
 		subi.w	#$10,d0
@@ -15927,7 +15927,7 @@ Glass_Type03:
 ; ===========================================================================
 
 loc_B53E:
-		btst	#3,obStatus(a0)
+		btst	#3,ost_status(a0)
 		bne.s	loc_B54E
 		bclr	#0,$34(a0)
 		bra.s	loc_B582
@@ -15970,7 +15970,7 @@ loc_B5AA:
 ; ===========================================================================
 
 Glass_Type04:
-		btst	#3,obSubtype(a0)
+		btst	#3,ost_subtype(a0)
 		beq.s	Glass_ChkSwitch
 		move.b	(v_oscillate+$12).w,d0
 		subi.w	#$10,d0
@@ -15982,7 +15982,7 @@ Glass_ChkSwitch:
 		bne.s	loc_B5E0
 		lea	(f_switch).w,a2
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0 ; load object type number
+		move.b	ost_subtype(a0),d0 ; load object type number
 		lsr.w	#4,d0		; read only the	first nybble
 		tst.b	(a2,d0.w)	; has switch number d0 been pressed?
 		beq.s	loc_B5EA	; if not, branch
@@ -15999,7 +15999,7 @@ loc_B5EA:
 loc_B5EE:
 		move.w	$30(a0),d1
 		sub.w	d0,d1
-		move.w	d1,obY(a0)
+		move.w	d1,ost_y_pos(a0)
 		rts	
 		
 Map_Glass:	include "Mappings\MZ Green Glass Blocks.asm"
@@ -16010,7 +16010,7 @@ Map_Glass:	include "Mappings\MZ Green Glass Blocks.asm"
 
 ChainStomp:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	CStom_Index(pc,d0.w),d1
 		jmp	CStom_Index(pc,d1.w)
 ; ===========================================================================
@@ -16039,14 +16039,14 @@ word_B6A4:	dc.w $7000, $A000
 
 CStom_Main:	; Routine 0
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		bpl.s	loc_B6CE
 		andi.w	#$7F,d0
 		add.w	d0,d0
 		lea	CStom_SwchNums(pc,d0.w),a2
 		move.b	(a2)+,CStom_switch(a0)
 		move.b	(a2)+,d0
-		move.b	d0,obSubtype(a0)
+		move.b	d0,ost_subtype(a0)
 
 loc_B6CE:
 		andi.b	#$F,d0
@@ -16068,47 +16068,47 @@ CStom_Loop:
 		bne.w	CStom_SetSize
 
 CStom_MakeStomper:
-		move.b	(a2)+,obRoutine(a1)
+		move.b	(a2)+,ost_routine(a1)
 		move.b	#id_ChainStomp,0(a1)
-		move.w	obX(a0),obX(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.b	(a2)+,d0
 		ext.w	d0
-		add.w	obY(a0),d0
-		move.w	d0,obY(a1)
-		move.l	#Map_CStom,obMap(a1)
-		move.w	#$300,obGfx(a1)
-		move.b	#4,obRender(a1)
-		move.w	obY(a1),$30(a1)
-		move.b	obSubtype(a0),obSubtype(a1)
-		move.b	#$10,obActWid(a1)
+		add.w	ost_y_pos(a0),d0
+		move.w	d0,ost_y_pos(a1)
+		move.l	#Map_CStom,ost_mappings(a1)
+		move.w	#$300,ost_tile(a1)
+		move.b	#4,ost_render(a1)
+		move.w	ost_y_pos(a1),$30(a1)
+		move.b	ost_subtype(a0),ost_subtype(a1)
+		move.b	#$10,ost_actwidth(a1)
 		move.w	d2,$34(a1)
-		move.b	#4,obPriority(a1)
-		move.b	(a2)+,obFrame(a1)
-		cmpi.b	#1,obFrame(a1)
+		move.b	#4,ost_priority(a1)
+		move.b	(a2)+,ost_frame(a1)
+		cmpi.b	#1,ost_frame(a1)
 		bne.s	loc_B76A
 		subq.w	#1,d1
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		andi.w	#$F0,d0
 		cmpi.w	#$20,d0
 		beq.s	CStom_MakeStomper
-		move.b	#$38,obActWid(a1)
-		move.b	#$90,obColType(a1)
+		move.b	#$38,ost_actwidth(a1)
+		move.b	#$90,ost_col_type(a1)
 		addq.w	#1,d1
 
 loc_B76A:
 		move.l	a0,$3C(a1)
 		dbf	d1,CStom_Loop
 
-		move.b	#3,obPriority(a1)
+		move.b	#3,ost_priority(a1)
 
 CStom_SetSize:
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		lsr.w	#3,d0
 		andi.b	#$E,d0
 		lea	CStom_Var2(pc,d0.w),a2
-		move.b	(a2)+,obActWid(a0)
-		move.b	(a2)+,obFrame(a0)
+		move.b	(a2)+,ost_actwidth(a0)
+		move.b	(a2)+,ost_frame(a0)
 		bra.s	loc_B798
 ; ===========================================================================
 CStom_Var2:	dc.b $38, 0		; width, frame number
@@ -16118,15 +16118,15 @@ CStom_Var2:	dc.b $38, 0		; width, frame number
 
 loc_B798:	; Routine 2
 		bsr.w	CStom_Types
-		move.w	obY(a0),(v_obj31ypos).w
+		move.w	ost_y_pos(a0),(v_obj31ypos).w
 		moveq	#0,d1
-		move.b	obActWid(a0),d1
+		move.b	ost_actwidth(a0),d1
 		addi.w	#$B,d1
 		move.w	#$C,d2
 		move.w	#$D,d3
-		move.w	obX(a0),d4
+		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject
-		btst	#3,obStatus(a0)
+		btst	#3,ost_status(a0)
 		beq.s	CStom_Display
 		cmpi.b	#$10,$32(a0)
 		bcc.s	CStom_Display
@@ -16141,20 +16141,20 @@ CStom_Display:
 ; ===========================================================================
 
 loc_B7E2:	; Routine 8
-		move.b	#$80,obHeight(a0)
-		bset	#4,obRender(a0)
+		move.b	#$80,ost_height(a0)
+		bset	#4,ost_render(a0)
 		movea.l	$3C(a0),a1
 		move.b	$32(a1),d0
 		lsr.b	#5,d0
 		addq.b	#3,d0
-		move.b	d0,obFrame(a0)
+		move.b	d0,ost_frame(a0)
 
 loc_B7FE:	; Routine 4
 		movea.l	$3C(a0),a1
 		moveq	#0,d0
 		move.b	$32(a1),d0
 		add.w	$30(a0),d0
-		move.w	d0,obY(a0)
+		move.w	d0,ost_y_pos(a0)
 
 CStom_Display2:	; Routine 6
 		bsr.w	DisplaySprite
@@ -16165,7 +16165,7 @@ CStom_ChkDel:
 ; ===========================================================================
 
 CStom_Types:
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		andi.w	#$F,d0
 		add.w	d0,d0
 		move.w	CStom_TypeIndex(pc,d0.w),d1
@@ -16208,7 +16208,7 @@ loc_B892:
 		move.w	#0,$32(a0)
 
 loc_B8A0:
-		move.w	#0,obVelY(a0)
+		move.w	#0,ost_y_vel(a0)
 		bra.s	CStom_Restart
 ; ===========================================================================
 
@@ -16216,14 +16216,14 @@ loc_B8A8:
 		move.w	$34(a0),d1
 		cmp.w	$32(a0),d1
 		beq.s	CStom_Restart
-		move.w	obVelY(a0),d0
-		addi.w	#$70,obVelY(a0)	; make object fall
+		move.w	ost_y_vel(a0),d0
+		addi.w	#$70,ost_y_vel(a0)	; make object fall
 		add.w	d0,$32(a0)
 		cmp.w	$32(a0),d1
 		bhi.s	CStom_Restart
 		move.w	d1,$32(a0)
-		move.w	#0,obVelY(a0)	; stop object falling
-		tst.b	obRender(a0)
+		move.w	#0,ost_y_vel(a0)	; stop object falling
+		tst.b	ost_render(a0)
 		bpl.s	CStom_Restart
 		sfx	sfx_ChainStomp,0,0,0	; play stomping sound
 
@@ -16231,7 +16231,7 @@ CStom_Restart:
 		moveq	#0,d0
 		move.b	$32(a0),d0
 		add.w	$30(a0),d0
-		move.w	d0,obY(a0)
+		move.w	d0,ost_y_pos(a0)
 		rts	
 ; ===========================================================================
 
@@ -16248,7 +16248,7 @@ loc_B902:
 		move.b	(v_vbla_byte).w,d0
 		andi.b	#$F,d0
 		bne.s	loc_B91C
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.s	loc_B91C
 		sfx	sfx_ChainRise,0,0,0	; play rising chain sound
 
@@ -16256,7 +16256,7 @@ loc_B91C:
 		subi.w	#$80,$32(a0)
 		bcc.s	loc_B97C
 		move.w	#0,$32(a0)
-		move.w	#0,obVelY(a0)
+		move.w	#0,ost_y_vel(a0)
 		move.w	#0,$36(a0)
 		bra.s	loc_B97C
 ; ===========================================================================
@@ -16265,16 +16265,16 @@ loc_B938:
 		move.w	$34(a0),d1
 		cmp.w	$32(a0),d1
 		beq.s	loc_B97C
-		move.w	obVelY(a0),d0
-		addi.w	#$70,obVelY(a0)	; make object fall
+		move.w	ost_y_vel(a0),d0
+		addi.w	#$70,ost_y_vel(a0)	; make object fall
 		add.w	d0,$32(a0)
 		cmp.w	$32(a0),d1
 		bhi.s	loc_B97C
 		move.w	d1,$32(a0)
-		move.w	#0,obVelY(a0)	; stop object falling
+		move.w	#0,ost_y_vel(a0)	; stop object falling
 		move.w	#1,$36(a0)
 		move.w	#$3C,$38(a0)
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.s	loc_B97C
 		sfx	sfx_ChainStomp,0,0,0	; play stomping sound
 
@@ -16283,15 +16283,15 @@ loc_B97C:
 ; ===========================================================================
 
 CStom_Type03:
-		move.w	(v_player+obX).w,d0
-		sub.w	obX(a0),d0
+		move.w	(v_player+ost_x_pos).w,d0
+		sub.w	ost_x_pos(a0),d0
 		bcc.s	loc_B98C
 		neg.w	d0
 
 loc_B98C:
 		cmpi.w	#$90,d0
 		bcc.s	loc_B996
-		addq.b	#1,obSubtype(a0)
+		addq.b	#1,ost_subtype(a0)
 
 loc_B996:
 		bra.w	CStom_Restart
@@ -16301,7 +16301,7 @@ loc_B996:
 
 SideStomp:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	SStom_Index(pc,d0.w),d1
 		jmp	SStom_Index(pc,d1.w)
 ; ===========================================================================
@@ -16327,7 +16327,7 @@ SStom_Len:	dc.w $3800	; short
 
 SStom_Main:	; Routine 0
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		add.w	d0,d0
 		move.w	SStom_Len(pc,d0.w),d2
 		lea	(SStom_Var).l,a2
@@ -16340,38 +16340,38 @@ SStom_Main:	; Routine 0
 		bne.s	@fail
 
 	@load:
-		move.b	(a2)+,obRoutine(a1)
+		move.b	(a2)+,ost_routine(a1)
 		move.b	#id_SideStomp,0(a1)
-		move.w	obY(a0),obY(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	(a2)+,d0
 		ext.w	d0
-		add.w	obX(a0),d0
-		move.w	d0,obX(a1)
-		move.l	#Map_SStom,obMap(a1)
-		move.w	#$300,obGfx(a1)
-		move.b	#4,obRender(a1)
-		move.w	obX(a1),$30(a1)
-		move.w	obX(a0),$3A(a1)
-		move.b	obSubtype(a0),obSubtype(a1)
-		move.b	#$20,obActWid(a1)
+		add.w	ost_x_pos(a0),d0
+		move.w	d0,ost_x_pos(a1)
+		move.l	#Map_SStom,ost_mappings(a1)
+		move.w	#$300,ost_tile(a1)
+		move.b	#4,ost_render(a1)
+		move.w	ost_x_pos(a1),$30(a1)
+		move.w	ost_x_pos(a0),$3A(a1)
+		move.b	ost_subtype(a0),ost_subtype(a1)
+		move.b	#$20,ost_actwidth(a1)
 		move.w	d2,$34(a1)
-		move.b	#4,obPriority(a1)
+		move.b	#4,ost_priority(a1)
 		cmpi.b	#1,(a2)		; is subobject spikes?
 		bne.s	@notspikes	; if not, branch
-		move.b	#$91,obColType(a1) ; use harmful collision type
+		move.b	#$91,ost_col_type(a1) ; use harmful collision type
 
 	@notspikes:
-		move.b	(a2)+,obFrame(a1)
+		move.b	(a2)+,ost_frame(a1)
 		move.l	a0,$3C(a1)
 		dbf	d1,@loop	; repeat 3 times
 
-		move.b	#3,obPriority(a1)
+		move.b	#3,ost_priority(a1)
 
 	@fail:
-		move.b	#$10,obActWid(a0)
+		move.b	#$10,ost_actwidth(a0)
 
 SStom_Solid:	; Routine 2
-		move.w	obX(a0),-(sp)
+		move.w	ost_x_pos(a0),-(sp)
 		bsr.w	SStom_Move
 		move.w	#$17,d1
 		move.w	#$20,d2
@@ -16388,7 +16388,7 @@ SStom_Pole:	; Routine 8
 		addi.b	#$10,d0
 		lsr.b	#5,d0
 		addq.b	#3,d0
-		move.b	d0,obFrame(a0)
+		move.b	d0,ost_frame(a0)
 
 loc_BA8E:	; Routine 4
 		movea.l	$3C(a0),a1
@@ -16396,7 +16396,7 @@ loc_BA8E:	; Routine 4
 		move.b	$32(a1),d0
 		neg.w	d0
 		add.w	$30(a0),d0
-		move.w	d0,obX(a0)
+		move.w	d0,ost_x_pos(a0)
 
 SStom_Display:	; Routine 6
 		bsr.w	DisplaySprite
@@ -16410,7 +16410,7 @@ SStom_ChkDel:
 
 SStom_Move:
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		add.w	d0,d0
 		move.w	off_BAD6(pc,d0.w),d1
 		jmp	off_BAD6(pc,d1.w)
@@ -16437,7 +16437,7 @@ loc_BAEC:
 		subi.w	#$80,$32(a0)
 		bcc.s	loc_BB3C
 		move.w	#0,$32(a0)
-		move.w	#0,obVelX(a0)
+		move.w	#0,ost_x_vel(a0)
 		move.w	#0,$36(a0)
 		bra.s	loc_BB3C
 ; ===========================================================================
@@ -16446,13 +16446,13 @@ loc_BB08:
 		move.w	$34(a0),d1
 		cmp.w	$32(a0),d1
 		beq.s	loc_BB3C
-		move.w	obVelX(a0),d0
-		addi.w	#$70,obVelX(a0)
+		move.w	ost_x_vel(a0),d0
+		addi.w	#$70,ost_x_vel(a0)
 		add.w	d0,$32(a0)
 		cmp.w	$32(a0),d1
 		bhi.s	loc_BB3C
 		move.w	d1,$32(a0)
-		move.w	#0,obVelX(a0)
+		move.w	#0,ost_x_vel(a0)
 		move.w	#1,$36(a0)
 		move.w	#$3C,$38(a0)
 
@@ -16461,7 +16461,7 @@ loc_BB3C:
 		move.b	$32(a0),d0
 		neg.w	d0
 		add.w	$30(a0),d0
-		move.w	d0,obX(a0)
+		move.w	d0,ost_x_pos(a0)
 		rts
 		
 Map_CStom:	include "Mappings\MZ Chain Stompers.asm"
@@ -16473,7 +16473,7 @@ Map_SStom:	include "Mappings\MZ Unused Sideways Stomper.asm"
 
 Button:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	But_Index(pc,d0.w),d1
 		jmp	But_Index(pc,d1.w)
 ; ===========================================================================
@@ -16483,46 +16483,46 @@ But_Index:	index *
 ; ===========================================================================
 
 But_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_But,obMap(a0)
-		move.w	#$4513,obGfx(a0) ; MZ specific code
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_But,ost_mappings(a0)
+		move.w	#$4513,ost_tile(a0) ; MZ specific code
 		cmpi.b	#id_MZ,(v_zone).w ; is level Marble Zone?
 		beq.s	But_IsMZ	; if yes, branch
 
-		move.w	#$513,obGfx(a0)	; SYZ, LZ and SBZ specific code
+		move.w	#$513,ost_tile(a0)	; SYZ, LZ and SBZ specific code
 
 	But_IsMZ:
-		move.b	#4,obRender(a0)
-		move.b	#$10,obActWid(a0)
-		move.b	#4,obPriority(a0)
-		addq.w	#3,obY(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#$10,ost_actwidth(a0)
+		move.b	#4,ost_priority(a0)
+		addq.w	#3,ost_y_pos(a0)
 
 But_Pressed:	; Routine 2
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.s	But_Display
 		move.w	#$1B,d1
 		move.w	#5,d2
 		move.w	#5,d3
-		move.w	obX(a0),d4
+		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject
-		bclr	#0,obFrame(a0)	; use "unpressed" frame
-		move.b	obSubtype(a0),d0
+		bclr	#0,ost_frame(a0)	; use "unpressed" frame
+		move.b	ost_subtype(a0),d0
 		andi.w	#$F,d0
 		lea	(f_switch).w,a3
 		lea	(a3,d0.w),a3
 		moveq	#0,d3
-		btst	#6,obSubtype(a0)
+		btst	#6,ost_subtype(a0)
 		beq.s	loc_BDB2
 		moveq	#7,d3
 
 loc_BDB2:
-		tst.b	obSubtype(a0)
+		tst.b	ost_subtype(a0)
 		bpl.s	loc_BDBE
 		bsr.w	But_MZBlock
 		bne.s	loc_BDC8
 
 loc_BDBE:
-		tst.b	ob2ndRout(a0)
+		tst.b	ost_routine2(a0)
 		bne.s	loc_BDC8
 		bclr	d3,(a3)
 		bra.s	loc_BDDE
@@ -16535,15 +16535,15 @@ loc_BDC8:
 
 loc_BDD6:
 		bset	d3,(a3)
-		bset	#0,obFrame(a0)	; use "pressed"	frame
+		bset	#0,ost_frame(a0)	; use "pressed"	frame
 
 loc_BDDE:
-		btst	#5,obSubtype(a0)
+		btst	#5,ost_subtype(a0)
 		beq.s	But_Display
-		subq.b	#1,obTimeFrame(a0)
+		subq.b	#1,ost_anim_time(a0)
 		bpl.s	But_Display
-		move.b	#7,obTimeFrame(a0)
-		bchg	#1,obFrame(a0)
+		move.b	#7,ost_anim_time(a0)
+		bchg	#1,ost_frame(a0)
 
 But_Display:
 		bsr.w	DisplaySprite
@@ -16560,8 +16560,8 @@ But_Delete:
 
 But_MZBlock:
 		move.w	d3,-(sp)
-		move.w	obX(a0),d2
-		move.w	obY(a0),d3
+		move.w	ost_x_pos(a0),d2
+		move.w	ost_y_pos(a0),d3
 		subi.w	#$10,d2
 		subq.w	#8,d3
 		move.w	#$20,d4
@@ -16570,7 +16570,7 @@ But_MZBlock:
 		move.w	#$5F,d6
 
 But_MZLoop:
-		tst.b	obRender(a1)
+		tst.b	ost_render(a1)
 		bpl.s	loc_BE4E
 		cmpi.b	#id_PushBlock,(a1) ; is the object a green MZ block?
 		beq.s	loc_BE5E	; if yes, branch
@@ -16595,7 +16595,7 @@ loc_BE5E:
 		lea	But_MZData-2(pc,d0.w),a2
 		move.b	(a2)+,d1
 		ext.w	d1
-		move.w	obX(a1),d0
+		move.w	ost_x_pos(a1),d0
 		sub.w	d1,d0
 		sub.w	d2,d0
 		bcc.s	loc_BE80
@@ -16612,7 +16612,7 @@ loc_BE80:
 loc_BE84:
 		move.b	(a2)+,d1
 		ext.w	d1
-		move.w	obY(a1),d0
+		move.w	ost_y_pos(a1),d0
 		sub.w	d1,d0
 		sub.w	d3,d0
 		bcc.s	loc_BE9A
@@ -16640,7 +16640,7 @@ Map_But:	include "Mappings\Button.asm"
 
 PushBlock:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	PushB_Index(pc,d0.w),d1
 		jmp	PushB_Index(pc,d1.w)
 ; ===========================================================================
@@ -16654,35 +16654,35 @@ PushB_Var:	dc.b $10, 0	; object width,	frame number
 ; ===========================================================================
 
 PushB_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.b	#$F,obHeight(a0)
-		move.b	#$F,obWidth(a0)
-		move.l	#Map_Push,obMap(a0)
-		move.w	#$42B8,obGfx(a0) ; MZ specific code
+		addq.b	#2,ost_routine(a0)
+		move.b	#$F,ost_height(a0)
+		move.b	#$F,ost_width(a0)
+		move.l	#Map_Push,ost_mappings(a0)
+		move.w	#$42B8,ost_tile(a0) ; MZ specific code
 		cmpi.b	#1,(v_zone).w
 		bne.s	@notLZ
-		move.w	#$43DE,obGfx(a0) ; LZ specific code
+		move.w	#$43DE,ost_tile(a0) ; LZ specific code
 
 	@notLZ:
-		move.b	#4,obRender(a0)
-		move.b	#3,obPriority(a0)
-		move.w	obX(a0),$34(a0)
-		move.w	obY(a0),$36(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#3,ost_priority(a0)
+		move.w	ost_x_pos(a0),$34(a0)
+		move.w	ost_y_pos(a0),$36(a0)
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		add.w	d0,d0
 		andi.w	#$E,d0
 		lea	PushB_Var(pc,d0.w),a2
-		move.b	(a2)+,obActWid(a0)
-		move.b	(a2)+,obFrame(a0)
-		tst.b	obSubtype(a0)
+		move.b	(a2)+,ost_actwidth(a0)
+		move.b	(a2)+,ost_frame(a0)
+		tst.b	ost_subtype(a0)
 		beq.s	@chkgone
-		move.w	#$C2B8,obGfx(a0)
+		move.w	#$C2B8,ost_tile(a0)
 
 	@chkgone:
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
-		move.b	obRespawnNo(a0),d0
+		move.b	ost_respawn(a0),d0
 		beq.s	loc_BF6E
 		bclr	#7,2(a2,d0.w)
 		bset	#0,2(a2,d0.w)
@@ -16692,25 +16692,25 @@ loc_BF6E:	; Routine 2
 		tst.b	$32(a0)
 		bne.w	loc_C046
 		moveq	#0,d1
-		move.b	obActWid(a0),d1
+		move.b	ost_actwidth(a0),d1
 		addi.w	#$B,d1
 		move.w	#$10,d2
 		move.w	#$11,d3
-		move.w	obX(a0),d4
+		move.w	ost_x_pos(a0),d4
 		bsr.w	loc_C186
 		cmpi.w	#(id_MZ<<8)+0,(v_zone).w ; is the level MZ act 1?
 		bne.s	loc_BFC6	; if not, branch
-		bclr	#7,obSubtype(a0)
-		move.w	obX(a0),d0
+		bclr	#7,ost_subtype(a0)
+		move.w	ost_x_pos(a0),d0
 		cmpi.w	#$A20,d0
 		bcs.s	loc_BFC6
 		cmpi.w	#$AA1,d0
 		bcc.s	loc_BFC6
 		move.w	(v_obj31ypos).w,d0
 		subi.w	#$1C,d0
-		move.w	d0,obY(a0)
+		move.w	d0,ost_y_pos(a0)
 		bset	#7,(v_obj31ypos).w
-		bset	#7,obSubtype(a0)
+		bset	#7,ost_subtype(a0)
 
 	loc_BFC6:
 		out_of_range.s	loc_ppppp
@@ -16719,16 +16719,16 @@ loc_BF6E:	; Routine 2
 
 loc_ppppp:
 		out_of_range.s	loc_C016,$34(a0)
-		move.w	$34(a0),obX(a0)
-		move.w	$36(a0),obY(a0)
-		move.b	#4,obRoutine(a0)
+		move.w	$34(a0),ost_x_pos(a0)
+		move.w	$36(a0),ost_y_pos(a0)
+		move.b	#4,ost_routine(a0)
 		bra.s	loc_C02C
 ; ===========================================================================
 
 loc_C016:
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
-		move.b	obRespawnNo(a0),d0
+		move.b	ost_respawn(a0),d0
 		beq.s	loc_C028
 		bclr	#0,2(a2,d0.w)
 
@@ -16739,38 +16739,38 @@ loc_C028:
 loc_C02C:	; Routine 4
 		bsr.w	ChkPartiallyVisible
 		beq.s	locret_C044
-		move.b	#2,obRoutine(a0)
+		move.b	#2,ost_routine(a0)
 		clr.b	$32(a0)
-		clr.w	obVelX(a0)
-		clr.w	obVelY(a0)
+		clr.w	ost_x_vel(a0)
+		clr.w	ost_y_vel(a0)
 
 locret_C044:
 		rts	
 ; ===========================================================================
 
 loc_C046:
-		move.w	obX(a0),-(sp)
-		cmpi.b	#4,ob2ndRout(a0)
+		move.w	ost_x_pos(a0),-(sp)
+		cmpi.b	#4,ost_routine2(a0)
 		bcc.s	loc_C056
 		bsr.w	SpeedToPos
 
 loc_C056:
-		btst	#1,obStatus(a0)
+		btst	#1,ost_status(a0)
 		beq.s	loc_C0A0
-		addi.w	#$18,obVelY(a0)
+		addi.w	#$18,ost_y_vel(a0)
 		jsr	(ObjFloorDist).l
 		tst.w	d1
 		bpl.w	loc_C09E
-		add.w	d1,obY(a0)
-		clr.w	obVelY(a0)
-		bclr	#1,obStatus(a0)
+		add.w	d1,ost_y_pos(a0)
+		clr.w	ost_y_vel(a0)
+		bclr	#1,ost_status(a0)
 		move.w	(a1),d0
 		andi.w	#$3FF,d0
 		cmpi.w	#$16A,d0
 		bcs.s	loc_C09E
 		move.w	$30(a0),d0
 		asr.w	#3,d0
-		move.w	d0,obVelX(a0)
+		move.w	d0,ost_x_vel(a0)
 		move.b	#1,$32(a0)
 		clr.w	$E(a0)
 
@@ -16779,11 +16779,11 @@ loc_C09E:
 ; ===========================================================================
 
 loc_C0A0:
-		tst.w	obVelX(a0)
+		tst.w	ost_x_vel(a0)
 		beq.w	loc_C0D6
 		bmi.s	loc_C0BC
 		moveq	#0,d3
-		move.b	obActWid(a0),d3
+		move.b	ost_actwidth(a0),d3
 		jsr	(ObjHitWallRight).l
 		tst.w	d1		; has block touched a wall?
 		bmi.s	PushB_StopPush	; if yes, branch
@@ -16792,7 +16792,7 @@ loc_C0A0:
 
 loc_C0BC:
 		moveq	#0,d3
-		move.b	obActWid(a0),d3
+		move.b	ost_actwidth(a0),d3
 		not.w	d3
 		jsr	(ObjHitWallLeft).l
 		tst.w	d1		; has block touched a wall?
@@ -16801,18 +16801,18 @@ loc_C0BC:
 ; ===========================================================================
 
 PushB_StopPush:
-		clr.w	obVelX(a0)		; stop block moving
+		clr.w	ost_x_vel(a0)		; stop block moving
 		bra.s	loc_C0E6
 ; ===========================================================================
 
 loc_C0D6:
-		addi.l	#$2001,obY(a0)
-		cmpi.b	#$A0,obY+3(a0)
+		addi.l	#$2001,ost_y_pos(a0)
+		cmpi.b	#$A0,ost_y_pos+3(a0)
 		bcc.s	loc_C104
 
 loc_C0E6:
 		moveq	#0,d1
-		move.b	obActWid(a0),d1
+		move.b	ost_actwidth(a0),d1
 		addi.w	#$B,d1
 		move.w	#$10,d2
 		move.w	#$11,d3
@@ -16825,8 +16825,8 @@ loc_C0E6:
 loc_C104:
 		move.w	(sp)+,d4
 		lea	(v_player).w,a1
-		bclr	#3,obStatus(a1)
-		bclr	#3,obStatus(a0)
+		bclr	#3,ost_status(a1)
+		bclr	#3,ost_status(a0)
 		bra.w	loc_ppppp
 ; ===========================================================================
 
@@ -16834,11 +16834,11 @@ PushB_ChkLava:
 		cmpi.w	#(id_MZ<<8)+1,(v_zone).w ; is the level MZ act 2?
 		bne.s	PushB_ChkLava2	; if not, branch
 		move.w	#-$20,d2
-		cmpi.w	#$DD0,obX(a0)
+		cmpi.w	#$DD0,ost_x_pos(a0)
 		beq.s	PushB_LoadLava
-		cmpi.w	#$CC0,obX(a0)
+		cmpi.w	#$CC0,ost_x_pos(a0)
 		beq.s	PushB_LoadLava
-		cmpi.w	#$BA0,obX(a0)
+		cmpi.w	#$BA0,ost_x_pos(a0)
 		beq.s	PushB_LoadLava
 		rts	
 ; ===========================================================================
@@ -16847,9 +16847,9 @@ PushB_ChkLava2:
 		cmpi.w	#(id_MZ<<8)+2,(v_zone).w ; is the level MZ act 3?
 		bne.s	PushB_NoLava	; if not, branch
 		move.w	#$20,d2
-		cmpi.w	#$560,obX(a0)
+		cmpi.w	#$560,ost_x_pos(a0)
 		beq.s	PushB_LoadLava
-		cmpi.w	#$5C0,obX(a0)
+		cmpi.w	#$5C0,ost_x_pos(a0)
 		beq.s	PushB_LoadLava
 
 PushB_NoLava:
@@ -16860,10 +16860,10 @@ PushB_LoadLava:
 		bsr.w	FindFreeObj
 		bne.s	locret_C184
 		move.b	#id_GeyserMaker,0(a1) ; load lava geyser object
-		move.w	obX(a0),obX(a1)
-		add.w	d2,obX(a1)
-		move.w	obY(a0),obY(a1)
-		addi.w	#$10,obY(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		add.w	d2,ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
+		addi.w	#$10,ost_y_pos(a1)
 		move.l	a0,$3C(a1)
 
 locret_C184:
@@ -16871,14 +16871,14 @@ locret_C184:
 ; ===========================================================================
 
 loc_C186:
-		move.b	ob2ndRout(a0),d0
+		move.b	ost_routine2(a0),d0
 		beq.w	loc_C218
 		subq.b	#2,d0
 		bne.s	loc_C1AA
 		bsr.w	ExitPlatform
-		btst	#3,obStatus(a1)
+		btst	#3,ost_status(a1)
 		bne.s	loc_C1A4
-		clr.b	ob2ndRout(a0)
+		clr.b	ost_routine2(a0)
 		rts	
 ; ===========================================================================
 
@@ -16891,22 +16891,22 @@ loc_C1AA:
 		subq.b	#2,d0
 		bne.s	loc_C1F2
 		bsr.w	SpeedToPos
-		addi.w	#$18,obVelY(a0)
+		addi.w	#$18,ost_y_vel(a0)
 		jsr	(ObjFloorDist).l
 		tst.w	d1
 		bpl.w	locret_C1F0
-		add.w	d1,obY(a0)
-		clr.w	obVelY(a0)
-		clr.b	ob2ndRout(a0)
+		add.w	d1,ost_y_pos(a0)
+		clr.w	ost_y_vel(a0)
+		clr.b	ost_routine2(a0)
 		move.w	(a1),d0
 		andi.w	#$3FF,d0
 		cmpi.w	#$16A,d0
 		bcs.s	locret_C1F0
 		move.w	$30(a0),d0
 		asr.w	#3,d0
-		move.w	d0,obVelX(a0)
+		move.w	d0,ost_x_vel(a0)
 		move.b	#1,$32(a0)
-		clr.w	obY+2(a0)
+		clr.w	ost_y_pos+2(a0)
 
 locret_C1F0:
 		rts	
@@ -16914,13 +16914,13 @@ locret_C1F0:
 
 loc_C1F2:
 		bsr.w	SpeedToPos
-		move.w	obX(a0),d0
+		move.w	ost_x_pos(a0),d0
 		andi.w	#$C,d0
 		bne.w	locret_C2E4
-		andi.w	#-$10,obX(a0)
-		move.w	obVelX(a0),$30(a0)
-		clr.w	obVelX(a0)
-		subq.b	#2,ob2ndRout(a0)
+		andi.w	#-$10,ost_x_pos(a0)
+		move.w	ost_x_vel(a0),$30(a0)
+		clr.w	ost_x_vel(a0)
+		subq.b	#2,ost_routine2(a0)
 		rts	
 ; ===========================================================================
 
@@ -16938,63 +16938,63 @@ loc_C230:
 		tst.w	d0
 		beq.w	locret_C2E4
 		bmi.s	loc_C268
-		btst	#0,obStatus(a1)
+		btst	#0,ost_status(a1)
 		bne.w	locret_C2E4
 		move.w	d0,-(sp)
 		moveq	#0,d3
-		move.b	obActWid(a0),d3
+		move.b	ost_actwidth(a0),d3
 		jsr	(ObjHitWallRight).l
 		move.w	(sp)+,d0
 		tst.w	d1
 		bmi.w	locret_C2E4
-		addi.l	#$10000,obX(a0)
+		addi.l	#$10000,ost_x_pos(a0)
 		moveq	#1,d0
 		move.w	#$40,d1
 		bra.s	loc_C294
 ; ===========================================================================
 
 loc_C268:
-		btst	#0,obStatus(a1)
+		btst	#0,ost_status(a1)
 		beq.s	locret_C2E4
 		move.w	d0,-(sp)
 		moveq	#0,d3
-		move.b	obActWid(a0),d3
+		move.b	ost_actwidth(a0),d3
 		not.w	d3
 		jsr	(ObjHitWallLeft).l
 		move.w	(sp)+,d0
 		tst.w	d1
 		bmi.s	locret_C2E4
-		subi.l	#$10000,obX(a0)
+		subi.l	#$10000,ost_x_pos(a0)
 		moveq	#-1,d0
 		move.w	#-$40,d1
 
 loc_C294:
 		lea	(v_player).w,a1
-		add.w	d0,obX(a1)
-		move.w	d1,obInertia(a1)
-		move.w	#0,obVelX(a1)
+		add.w	d0,ost_x_pos(a1)
+		move.w	d1,ost_inertia(a1)
+		move.w	#0,ost_x_vel(a1)
 		move.w	d0,-(sp)
 		sfx	sfx_Push,0,0,0	 ; play pushing sound
 		move.w	(sp)+,d0
-		tst.b	obSubtype(a0)
+		tst.b	ost_subtype(a0)
 		bmi.s	locret_C2E4
 		move.w	d0,-(sp)
 		jsr	(ObjFloorDist).l
 		move.w	(sp)+,d0
 		cmpi.w	#4,d1
 		ble.s	loc_C2E0
-		move.w	#$400,obVelX(a0)
+		move.w	#$400,ost_x_vel(a0)
 		tst.w	d0
 		bpl.s	loc_C2D8
-		neg.w	obVelX(a0)
+		neg.w	ost_x_vel(a0)
 
 loc_C2D8:
-		move.b	#6,ob2ndRout(a0)
+		move.b	#6,ost_routine2(a0)
 		bra.s	locret_C2E4
 ; ===========================================================================
 
 loc_C2E0:
-		add.w	d1,obY(a0)
+		add.w	d1,ost_y_pos(a0)
 
 locret_C2E4:
 		rts	
@@ -17007,7 +17007,7 @@ Map_Push:	include "Mappings\MZ & LZ Pushable Blocks.asm"
 
 TitleCard:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Card_Index(pc,d0.w),d1
 		jmp	Card_Index(pc,d1.w)
 ; ===========================================================================
@@ -17045,11 +17045,11 @@ Card_CheckSBZ3:	; Routine 0
 
 Card_Loop:
 		move.b	#id_TitleCard,0(a1)
-		move.w	(a3),obX(a1)	; load start x-position
+		move.w	(a3),ost_x_pos(a1)	; load start x-position
 		move.w	(a3)+,card_finalX(a1) ; load finish x-position (same as start)
 		move.w	(a3)+,card_mainX(a1) ; load main x-position
-		move.w	(a2)+,obScreenY(a1)
-		move.b	(a2)+,obRoutine(a1)
+		move.w	(a2)+,ost_y_screen(a1)
+		move.b	(a2)+,ost_routine(a1)
 		move.b	(a2)+,d0
 		bne.s	Card_ActNumber
 		move.b	d2,d0
@@ -17063,29 +17063,29 @@ Card_Loop:
 		subq.b	#1,d0
 
 	Card_MakeSprite:
-		move.b	d0,obFrame(a1)	; display frame	number d0
-		move.l	#Map_Card,obMap(a1)
-		move.w	#$8580,obGfx(a1)
-		move.b	#$78,obActWid(a1)
-		move.b	#0,obRender(a1)
-		move.b	#0,obPriority(a1)
-		move.w	#60,obTimeFrame(a1) ; set time delay to 1 second
+		move.b	d0,ost_frame(a1)	; display frame	number d0
+		move.l	#Map_Card,ost_mappings(a1)
+		move.w	#$8580,ost_tile(a1)
+		move.b	#$78,ost_actwidth(a1)
+		move.b	#0,ost_render(a1)
+		move.b	#0,ost_priority(a1)
+		move.w	#60,ost_anim_time(a1) ; set time delay to 1 second
 		lea	$40(a1),a1	; next object
 		dbf	d1,Card_Loop	; repeat sequence another 3 times
 
 Card_ChkPos:	; Routine 2
 		moveq	#$10,d1		; set horizontal speed
 		move.w	card_mainX(a0),d0
-		cmp.w	obX(a0),d0	; has item reached the target position?
+		cmp.w	ost_x_pos(a0),d0	; has item reached the target position?
 		beq.s	Card_NoMove	; if yes, branch
 		bge.s	Card_Move
 		neg.w	d1
 
 Card_Move:
-		add.w	d1,obX(a0)	; change item's position
+		add.w	d1,ost_x_pos(a0)	; change item's position
 
 Card_NoMove:
-		move.w	obX(a0),d0
+		move.w	ost_x_pos(a0),d0
 		bmi.s	locret_C3D8
 		cmpi.w	#$200,d0	; has item moved beyond	$200 on	x-axis?
 		bcc.s	locret_C3D8	; if yes, branch
@@ -17097,25 +17097,25 @@ locret_C3D8:
 ; ===========================================================================
 
 Card_Wait:	; Routine 4/6
-		tst.w	obTimeFrame(a0)	; is time remaining zero?
+		tst.w	ost_anim_time(a0)	; is time remaining zero?
 		beq.s	Card_ChkPos2	; if yes, branch
-		subq.w	#1,obTimeFrame(a0) ; subtract 1 from time
+		subq.w	#1,ost_anim_time(a0) ; subtract 1 from time
 		bra.w	DisplaySprite
 ; ===========================================================================
 
 Card_ChkPos2:
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.s	Card_ChangeArt
 		moveq	#$20,d1
 		move.w	card_finalX(a0),d0
-		cmp.w	obX(a0),d0	; has item reached the finish position?
+		cmp.w	ost_x_pos(a0),d0	; has item reached the finish position?
 		beq.s	Card_ChangeArt	; if yes, branch
 		bge.s	Card_Move2
 		neg.w	d1
 
 Card_Move2:
-		add.w	d1,obX(a0)	; change item's position
-		move.w	obX(a0),d0
+		add.w	d1,ost_x_pos(a0)	; change item's position
+		move.w	ost_x_pos(a0),d0
 		bmi.s	locret_C412
 		cmpi.w	#$200,d0	; has item moved beyond	$200 on	x-axis?
 		bcc.s	locret_C412	; if yes, branch
@@ -17127,7 +17127,7 @@ locret_C412:
 ; ===========================================================================
 
 Card_ChangeArt:
-		cmpi.b	#4,obRoutine(a0)
+		cmpi.b	#4,ost_routine(a0)
 		bne.s	Card_Delete
 		moveq	#id_PLC_Explode,d0
 		jsr	(AddPLC).l	; load explosion patterns
@@ -17167,7 +17167,7 @@ Card_ConData:	dc.w 0,	$120, $FEFC, $13C, $414, $154, $214, $154 ; GHZ
 
 GameOverCard:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Over_Index(pc,d0.w),d1
 		jmp	Over_Index(pc,d1.w)
 ; ===========================================================================
@@ -17184,34 +17184,34 @@ Over_ChkPLC:	; Routine 0
 ; ===========================================================================
 
 Over_Main:
-		addq.b	#2,obRoutine(a0)
-		move.w	#$50,obX(a0)	; set x-position
-		btst	#0,obFrame(a0)	; is the object	"OVER"?
+		addq.b	#2,ost_routine(a0)
+		move.w	#$50,ost_x_pos(a0)	; set x-position
+		btst	#0,ost_frame(a0)	; is the object	"OVER"?
 		beq.s	Over_1stWord	; if not, branch
-		move.w	#$1F0,obX(a0)	; set x-position for "OVER"
+		move.w	#$1F0,ost_x_pos(a0)	; set x-position for "OVER"
 
 	Over_1stWord:
-		move.w	#$F0,obScreenY(a0)
-		move.l	#Map_Over,obMap(a0)
-		move.w	#$855E,obGfx(a0)
-		move.b	#0,obRender(a0)
-		move.b	#0,obPriority(a0)
+		move.w	#$F0,ost_y_screen(a0)
+		move.l	#Map_Over,ost_mappings(a0)
+		move.w	#$855E,ost_tile(a0)
+		move.b	#0,ost_render(a0)
+		move.b	#0,ost_priority(a0)
 
 Over_Move:	; Routine 2
 		moveq	#$10,d1		; set horizontal speed
-		cmpi.w	#$120,obX(a0)	; has item reached its target position?
+		cmpi.w	#$120,ost_x_pos(a0)	; has item reached its target position?
 		beq.s	Over_SetWait	; if yes, branch
 		bcs.s	Over_UpdatePos
 		neg.w	d1
 
 	Over_UpdatePos:
-		add.w	d1,obX(a0)	; change item's position
+		add.w	d1,ost_x_pos(a0)	; change item's position
 		bra.w	DisplaySprite
 ; ===========================================================================
 
 Over_SetWait:
-		move.w	#720,obTimeFrame(a0) ; set time delay to 12 seconds
-		addq.b	#2,obRoutine(a0)
+		move.w	#720,ost_anim_time(a0) ; set time delay to 12 seconds
+		addq.b	#2,ost_routine(a0)
 		rts	
 ; ===========================================================================
 
@@ -17219,11 +17219,11 @@ Over_Wait:	; Routine 4
 		move.b	(v_jpadpress1).w,d0
 		andi.b	#btnABC,d0	; is button A, B or C pressed?
 		bne.s	Over_ChgMode	; if yes, branch
-		btst	#0,obFrame(a0)
+		btst	#0,ost_frame(a0)
 		bne.s	Over_Display
-		tst.w	obTimeFrame(a0)	; has time delay reached zero?
+		tst.w	ost_anim_time(a0)	; has time delay reached zero?
 		beq.s	Over_ChgMode	; if yes, branch
-		subq.w	#1,obTimeFrame(a0) ; subtract 1 from time delay
+		subq.w	#1,ost_anim_time(a0) ; subtract 1 from time delay
 		bra.w	DisplaySprite
 ; ===========================================================================
 
@@ -17252,7 +17252,7 @@ Over_Display:
 
 GotThroughCard:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Got_Index(pc,d0.w),d1
 		jmp	Got_Index(pc,d1.w)
 ; ===========================================================================
@@ -17284,37 +17284,37 @@ Got_Main:
 
 Got_Loop:
 		move.b	#id_GotThroughCard,0(a1)
-		move.w	(a2),obX(a1)	; load start x-position
+		move.w	(a2),ost_x_pos(a1)	; load start x-position
 		move.w	(a2)+,got_finalX(a1) ; load finish x-position (same as start)
 		move.w	(a2)+,got_mainX(a1) ; load main x-position
-		move.w	(a2)+,obScreenY(a1) ; load y-position
-		move.b	(a2)+,obRoutine(a1)
+		move.w	(a2)+,ost_y_screen(a1) ; load y-position
+		move.b	(a2)+,ost_routine(a1)
 		move.b	(a2)+,d0
 		cmpi.b	#6,d0
 		bne.s	loc_C5CA
 		add.b	(v_act).w,d0	; add act number to frame number
 
 	loc_C5CA:
-		move.b	d0,obFrame(a1)
-		move.l	#Map_Got,obMap(a1)
-		move.w	#$8580,obGfx(a1)
-		move.b	#0,obRender(a1)
+		move.b	d0,ost_frame(a1)
+		move.l	#Map_Got,ost_mappings(a1)
+		move.w	#$8580,ost_tile(a1)
+		move.b	#0,ost_render(a1)
 		lea	$40(a1),a1
 		dbf	d1,Got_Loop	; repeat 6 times
 
 Got_Move:	; Routine 2
 		moveq	#$10,d1		; set horizontal speed
 		move.w	got_mainX(a0),d0
-		cmp.w	obX(a0),d0	; has item reached its target position?
+		cmp.w	ost_x_pos(a0),d0	; has item reached its target position?
 		beq.s	loc_C61A	; if yes, branch
 		bge.s	Got_ChgPos
 		neg.w	d1
 
 	Got_ChgPos:
-		add.w	d1,obX(a0)	; change item's position
+		add.w	d1,ost_x_pos(a0)	; change item's position
 
 	loc_C5FE:
-		move.w	obX(a0),d0
+		move.w	ost_x_pos(a0),d0
 		bmi.s	locret_C60E
 		cmpi.w	#$200,d0	; has item moved beyond	$200 on	x-axis?
 		bcc.s	locret_C60E	; if yes, branch
@@ -17326,22 +17326,22 @@ locret_C60E:
 ; ===========================================================================
 
 loc_C610:
-		move.b	#$E,obRoutine(a0)
+		move.b	#$E,ost_routine(a0)
 		bra.w	Got_Move2
 ; ===========================================================================
 
 loc_C61A:
 		cmpi.b	#$E,($FFFFD724).w
 		beq.s	loc_C610
-		cmpi.b	#4,obFrame(a0)
+		cmpi.b	#4,ost_frame(a0)
 		bne.s	loc_C5FE
-		addq.b	#2,obRoutine(a0)
-		move.w	#180,obTimeFrame(a0) ; set time delay to 3 seconds
+		addq.b	#2,ost_routine(a0)
+		move.w	#180,ost_anim_time(a0) ; set time delay to 3 seconds
 
 Got_Wait:	; Routine 4, 8, $C
-		subq.w	#1,obTimeFrame(a0) ; subtract 1 from time delay
+		subq.w	#1,ost_anim_time(a0) ; subtract 1 from time delay
 		bne.s	Got_Display
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 
 Got_Display:
 		bra.w	DisplaySprite
@@ -17366,13 +17366,13 @@ Got_ChkBonus:
 		tst.w	d0		; is there any bonus?
 		bne.s	Got_AddBonus	; if yes, branch
 		sfx	sfx_Cash,0,0,0	; play "ker-ching" sound
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 		cmpi.w	#(id_SBZ<<8)+1,(v_zone).w
 		bne.s	Got_SetDelay
-		addq.b	#4,obRoutine(a0)
+		addq.b	#4,ost_routine(a0)
 
 Got_SetDelay:
-		move.w	#180,obTimeFrame(a0) ; set time delay to 3 seconds
+		move.w	#180,ost_anim_time(a0) ; set time delay to 3 seconds
 
 locret_C692:
 		rts	
@@ -17462,14 +17462,14 @@ LevelOrder:
 Got_Move2:	; Routine $E
 		moveq	#$20,d1		; set horizontal speed
 		move.w	got_finalX(a0),d0
-		cmp.w	obX(a0),d0	; has item reached its finish position?
+		cmp.w	ost_x_pos(a0),d0	; has item reached its finish position?
 		beq.s	Got_SBZ2	; if yes, branch
 		bge.s	Got_ChgPos2
 		neg.w	d1
 
 	Got_ChgPos2:
-		add.w	d1,obX(a0)	; change item's position
-		move.w	obX(a0),d0
+		add.w	d1,ost_x_pos(a0)	; change item's position
+		move.w	ost_x_pos(a0),d0
 		bmi.s	locret_C748
 		cmpi.w	#$200,d0	; has item moved beyond	$200 on	x-axis?
 		bcc.s	locret_C748	; if yes, branch
@@ -17481,9 +17481,9 @@ locret_C748:
 ; ===========================================================================
 
 Got_SBZ2:
-		cmpi.b	#4,obFrame(a0)
+		cmpi.b	#4,ost_frame(a0)
 		bne.w	DeleteObject
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 		clr.b	(f_lockctrl).w	; unlock controls
 		music	bgm_FZ,1,0,0	; play FZ music
 ; ===========================================================================
@@ -17523,7 +17523,7 @@ Got_Config:	dc.w 4,		$124,	$BC			; "SONIC HAS"
 
 SSResult:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	SSR_Index(pc,d0.w),d1
 		jmp	SSR_Index(pc,d1.w)
 ; ===========================================================================
@@ -17559,14 +17559,14 @@ SSR_Main:
 
 	SSR_Loop:
 		move.b	#id_SSResult,0(a1)
-		move.w	(a2)+,obX(a1)	; load start x-position
+		move.w	(a2)+,ost_x_pos(a1)	; load start x-position
 		move.w	(a2)+,ssr_mainX(a1) ; load main x-position
-		move.w	(a2)+,obScreenY(a1) ; load y-position
-		move.b	(a2)+,obRoutine(a1)
-		move.b	(a2)+,obFrame(a1)
-		move.l	#Map_SSR,obMap(a1)
-		move.w	#$8580,obGfx(a1)
-		move.b	#0,obRender(a1)
+		move.w	(a2)+,ost_y_screen(a1) ; load y-position
+		move.b	(a2)+,ost_routine(a1)
+		move.b	(a2)+,ost_frame(a1)
+		move.l	#Map_SSR,ost_mappings(a1)
+		move.w	#$8580,ost_tile(a1)
+		move.b	#0,ost_render(a1)
 		lea	$40(a1),a1
 		dbf	d1,SSR_Loop	; repeat sequence 3 or 4 times
 
@@ -17577,25 +17577,25 @@ SSR_Main:
 		cmpi.b	#6,d1		; do you have all chaos	emeralds?
 		bne.s	loc_C842	; if not, branch
 		moveq	#8,d0		; load "Sonic got them all" text
-		move.w	#$18,obX(a0)
+		move.w	#$18,ost_x_pos(a0)
 		move.w	#$118,ssr_mainX(a0) ; change position of text
 
 loc_C842:
-		move.b	d0,obFrame(a0)
+		move.b	d0,ost_frame(a0)
 
 SSR_Move:	; Routine 2
 		moveq	#$10,d1		; set horizontal speed
 		move.w	ssr_mainX(a0),d0
-		cmp.w	obX(a0),d0	; has item reached its target position?
+		cmp.w	ost_x_pos(a0),d0	; has item reached its target position?
 		beq.s	loc_C86C	; if yes, branch
 		bge.s	SSR_ChgPos
 		neg.w	d1
 
 SSR_ChgPos:
-		add.w	d1,obX(a0)	; change item's position
+		add.w	d1,ost_x_pos(a0)	; change item's position
 
 loc_C85A:
-		move.w	obX(a0),d0
+		move.w	ost_x_pos(a0),d0
 		bmi.s	locret_C86A
 		cmpi.w	#$200,d0	; has item moved beyond	$200 on	x-axis?
 		bcc.s	locret_C86A	; if yes, branch
@@ -17607,16 +17607,16 @@ locret_C86A:
 ; ===========================================================================
 
 loc_C86C:
-		cmpi.b	#2,obFrame(a0)
+		cmpi.b	#2,ost_frame(a0)
 		bne.s	loc_C85A
-		addq.b	#2,obRoutine(a0)
-		move.w	#180,obTimeFrame(a0) ; set time delay to 3 seconds
+		addq.b	#2,ost_routine(a0)
+		move.w	#180,ost_anim_time(a0) ; set time delay to 3 seconds
 		move.b	#id_SSRChaos,(v_objspace+$800).w ; load chaos emerald object
 
 SSR_Wait:	; Routine 4, 8, $C, $10
-		subq.w	#1,obTimeFrame(a0) ; subtract 1 from time delay
+		subq.w	#1,ost_anim_time(a0) ; subtract 1 from time delay
 		bne.s	SSR_Display
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 
 SSR_Display:
 		bra.w	DisplaySprite
@@ -17638,12 +17638,12 @@ SSR_RingBonus:	; Routine 6
 
 loc_C8C4:
 		sfx	sfx_Cash,0,0,0	; play "ker-ching" sound
-		addq.b	#2,obRoutine(a0)
-		move.w	#180,obTimeFrame(a0) ; set time delay to 3 seconds
+		addq.b	#2,ost_routine(a0)
+		move.w	#180,ost_anim_time(a0) ; set time delay to 3 seconds
 		cmpi.w	#50,(v_rings).w	; do you have at least 50 rings?
 		bcs.s	locret_C8EA	; if not, branch
-		move.w	#60,obTimeFrame(a0) ; set time delay to 1 second
-		addq.b	#4,obRoutine(a0) ; goto "SSR_Continue" routine
+		move.w	#60,ost_anim_time(a0) ; set time delay to 1 second
+		addq.b	#4,ost_routine(a0) ; goto "SSR_Continue" routine
 
 locret_C8EA:
 		rts	
@@ -17655,11 +17655,11 @@ SSR_Exit:	; Routine $A, $12
 ; ===========================================================================
 
 SSR_Continue:	; Routine $E
-		move.b	#4,(v_objspace+$6C0+obFrame).w
-		move.b	#$14,(v_objspace+$6C0+obRoutine).w
+		move.b	#4,(v_objspace+$6C0+ost_frame).w
+		move.b	#$14,(v_objspace+$6C0+ost_routine).w
 		sfx	sfx_Continue,0,0,0	; play continues jingle
-		addq.b	#2,obRoutine(a0)
-		move.w	#360,obTimeFrame(a0) ; set time delay to 6 seconds
+		addq.b	#2,ost_routine(a0)
+		move.w	#360,ost_anim_time(a0) ; set time delay to 6 seconds
 		bra.w	DisplaySprite
 ; ===========================================================================
 
@@ -17667,7 +17667,7 @@ loc_C91A:	; Routine $14
 		move.b	(v_vbla_byte).w,d0
 		andi.b	#$F,d0
 		bne.s	SSR_Display2
-		bchg	#0,obFrame(a0)
+		bchg	#0,ost_frame(a0)
 
 SSR_Display2:
 		bra.w	DisplaySprite
@@ -17688,7 +17688,7 @@ SSR_Config:	dc.w $20, $120,	$C4	; start	x-pos, main x-pos, y-pos
 
 SSRChaos:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	SSRC_Index(pc,d0.w),d1
 		jmp	SSRC_Index(pc,d1.w)
 ; ===========================================================================
@@ -17713,26 +17713,26 @@ SSRC_Main:	; Routine 0
 
 	SSRC_Loop:
 		move.b	#id_SSRChaos,0(a1)
-		move.w	(a2)+,obX(a1)	; set x-position
-		move.w	#$F0,obScreenY(a1) ; set y-position
+		move.w	(a2)+,ost_x_pos(a1)	; set x-position
+		move.w	#$F0,ost_y_screen(a1) ; set y-position
 		lea	(v_emldlist).w,a3 ; check which emeralds you have
 		move.b	(a3,d2.w),d3
-		move.b	d3,obFrame(a1)
-		move.b	d3,obAnim(a1)
+		move.b	d3,ost_frame(a1)
+		move.b	d3,ost_anim(a1)
 		addq.b	#1,d2
-		addq.b	#2,obRoutine(a1)
-		move.l	#Map_SSRC,obMap(a1)
-		move.w	#$8541,obGfx(a1)
-		move.b	#0,obRender(a1)
+		addq.b	#2,ost_routine(a1)
+		move.l	#Map_SSRC,ost_mappings(a1)
+		move.w	#$8541,ost_tile(a1)
+		move.b	#0,ost_render(a1)
 		lea	$40(a1),a1	; next object
 		dbf	d1,SSRC_Loop	; loop for d1 number of	emeralds
 
 SSRC_Flash:	; Routine 2
-		move.b	obFrame(a0),d0
-		move.b	#6,obFrame(a0)	; load 6th frame (blank)
+		move.b	ost_frame(a0),d0
+		move.b	#6,ost_frame(a0)	; load 6th frame (blank)
 		cmpi.b	#6,d0
 		bne.s	SSRC_Display
-		move.b	obAnim(a0),obFrame(a0) ; load visible frame
+		move.b	ost_anim(a0),ost_frame(a0) ; load visible frame
 
 	SSRC_Display:
 		bra.w	DisplaySprite
@@ -17749,7 +17749,7 @@ Map_SSRC:	include "Mappings\Special Stage Results Chaos Emeralds.asm"
 
 Spikes:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Spik_Index(pc,d0.w),d1
 		jmp	Spik_Index(pc,d1.w)
 ; ===========================================================================
@@ -17769,28 +17769,28 @@ Spik_Var:	dc.b 0,	$14		; frame	number,	object width
 ; ===========================================================================
 
 Spik_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Spike,obMap(a0)
-		move.w	#$51B,obGfx(a0)
-		ori.b	#4,obRender(a0)
-		move.b	#4,obPriority(a0)
-		move.b	obSubtype(a0),d0
-		andi.b	#$F,obSubtype(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Spike,ost_mappings(a0)
+		move.w	#$51B,ost_tile(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	#4,ost_priority(a0)
+		move.b	ost_subtype(a0),d0
+		andi.b	#$F,ost_subtype(a0)
 		andi.w	#$F0,d0
 		lea	(Spik_Var).l,a1
 		lsr.w	#3,d0
 		adda.w	d0,a1
-		move.b	(a1)+,obFrame(a0)
-		move.b	(a1)+,obActWid(a0)
-		move.w	obX(a0),spik_origX(a0)
-		move.w	obY(a0),spik_origY(a0)
+		move.b	(a1)+,ost_frame(a0)
+		move.b	(a1)+,ost_actwidth(a0)
+		move.w	ost_x_pos(a0),spik_origX(a0)
+		move.w	ost_y_pos(a0),spik_origY(a0)
 
 Spik_Solid:	; Routine 2
 		bsr.w	Spik_Type0x	; make the object move
 		move.w	#4,d2
-		cmpi.b	#5,obFrame(a0)	; is object type $5x ?
+		cmpi.b	#5,ost_frame(a0)	; is object type $5x ?
 		beq.s	Spik_SideWays	; if yes, branch
-		cmpi.b	#1,obFrame(a0)	; is object type $1x ?
+		cmpi.b	#1,ost_frame(a0)	; is object type $1x ?
 		bne.s	Spik_Upright	; if not, branch
 		move.w	#$14,d2
 
@@ -17800,9 +17800,9 @@ Spik_SideWays:
 		move.w	#$1B,d1
 		move.w	d2,d3
 		addq.w	#1,d3
-		move.w	obX(a0),d4
+		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject
-		btst	#3,obStatus(a0)
+		btst	#3,ost_status(a0)
 		bne.s	Spik_Display
 		cmpi.w	#1,d4
 		beq.s	Spik_Hurt
@@ -17813,13 +17813,13 @@ Spik_SideWays:
 
 Spik_Upright:
 		moveq	#0,d1
-		move.b	obActWid(a0),d1
+		move.b	ost_actwidth(a0),d1
 		addi.w	#$B,d1
 		move.w	#$10,d2
 		move.w	#$11,d3
-		move.w	obX(a0),d4
+		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject
-		btst	#3,obStatus(a0)
+		btst	#3,ost_status(a0)
 		bne.s	Spik_Hurt
 		tst.w	d4
 		bpl.s	Spik_Display
@@ -17830,11 +17830,11 @@ Spik_Hurt:
 		move.l	a0,-(sp)
 		movea.l	a0,a2
 		lea	(v_player).w,a0
-		cmpi.b	#4,obRoutine(a0)
+		cmpi.b	#4,ost_routine(a0)
 		bcc.s	loc_CF20
 	if Revision<>2
-		move.l	obY(a0),d3
-		move.w	obVelY(a0),d0
+		move.l	ost_y_pos(a0),d3
+		move.w	ost_y_vel(a0),d0
 		ext.l	d0
 		asl.l	#8,d0
 	else
@@ -17845,7 +17845,7 @@ Spik_Hurt:
 loc_D5A2:
 	endif
 		sub.l	d0,d3
-		move.l	d3,obY(a0)
+		move.l	d3,ost_y_pos(a0)
 		jsr	(HurtSonic).l
 
 loc_CF20:
@@ -17859,7 +17859,7 @@ Spik_Display:
 
 Spik_Type0x:
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		add.w	d0,d0
 		move.w	Spik_TypeIndex(pc,d0.w),d1
 		jmp	Spik_TypeIndex(pc,d1.w)
@@ -17879,7 +17879,7 @@ Spik_Type01:
 		moveq	#0,d0
 		move.b	$34(a0),d0
 		add.w	spik_origY(a0),d0
-		move.w	d0,obY(a0)	; move the object vertically
+		move.w	d0,ost_y_pos(a0)	; move the object vertically
 		rts	
 ; ===========================================================================
 
@@ -17888,7 +17888,7 @@ Spik_Type02:
 		moveq	#0,d0
 		move.b	$34(a0),d0
 		add.w	spik_origX(a0),d0
-		move.w	d0,obX(a0)	; move the object horizontally
+		move.w	d0,ost_x_pos(a0)	; move the object horizontally
 		rts	
 ; ===========================================================================
 
@@ -17897,7 +17897,7 @@ Spik_Wait:
 		beq.s	loc_CFA4	; if yes, branch
 		subq.w	#1,$38(a0)	; subtract 1 from time delay
 		bne.s	locret_CFE6
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.s	locret_CFE6
 		sfx	sfx_SpikesMove,0,0,0	; play "spikes moving" sound
 		bra.s	locret_CFE6
@@ -17933,7 +17933,7 @@ Map_Spike:	include "Mappings\Spikes.asm"
 
 PurpleRock:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Rock_Index(pc,d0.w),d1
 		jmp	Rock_Index(pc,d1.w)
 ; ===========================================================================
@@ -17943,18 +17943,18 @@ Rock_Index:	index *
 ; ===========================================================================
 
 Rock_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_PRock,obMap(a0)
-		move.w	#$63D0,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#$13,obActWid(a0)
-		move.b	#4,obPriority(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_PRock,ost_mappings(a0)
+		move.w	#$63D0,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#$13,ost_actwidth(a0)
+		move.b	#4,ost_priority(a0)
 
 Rock_Solid:	; Routine 2
 		move.w	#$1B,d1
 		move.w	#$10,d2
 		move.w	#$10,d3
-		move.w	obX(a0),d4
+		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject
 		bsr.w	DisplaySprite
 		out_of_range	DeleteObject
@@ -17965,7 +17965,7 @@ Rock_Solid:	; Routine 2
 
 WaterSound:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	WSnd_Index(pc,d0.w),d1
 		jmp	WSnd_Index(pc,d1.w)
 ; ===========================================================================
@@ -17975,8 +17975,8 @@ WSnd_Index:	index *
 ; ===========================================================================
 
 WSnd_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.b	#4,obRender(a0)
+		addq.b	#2,ost_routine(a0)
+		move.b	#4,ost_render(a0)
 
 WSnd_PlaySnd:	; Routine 2
 		move.b	(v_vbla_byte).w,d0 ; get low byte of VBlank counter
@@ -17996,7 +17996,7 @@ Map_PRock:	include "Mappings\GHZ Purple Rock.asm"
 
 SmashWall:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Smash_Index(pc,d0.w),d1
 		jsr	Smash_Index(pc,d1.w)
 		bra.w	RememberState
@@ -18010,22 +18010,22 @@ smash_speed:	equ $30		; Sonic's horizontal speed
 ; ===========================================================================
 
 Smash_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Smash,obMap(a0)
-		move.w	#$450F,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#$10,obActWid(a0)
-		move.b	#4,obPriority(a0)
-		move.b	obSubtype(a0),obFrame(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Smash,ost_mappings(a0)
+		move.w	#$450F,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#$10,ost_actwidth(a0)
+		move.b	#4,ost_priority(a0)
+		move.b	ost_subtype(a0),ost_frame(a0)
 
 Smash_Solid:	; Routine 2
-		move.w	(v_player+obVelX).w,smash_speed(a0) ; load Sonic's horizontal speed
+		move.w	(v_player+ost_x_vel).w,smash_speed(a0) ; load Sonic's horizontal speed
 		move.w	#$1B,d1
 		move.w	#$20,d2
 		move.w	#$20,d3
-		move.w	obX(a0),d4
+		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject
-		btst	#5,obStatus(a0)	; is Sonic pushing against the wall?
+		btst	#5,ost_status(a0)	; is Sonic pushing against the wall?
 		bne.s	@chkroll	; if yes, branch
 
 @donothing:
@@ -18033,7 +18033,7 @@ Smash_Solid:	; Routine 2
 ; ===========================================================================
 
 @chkroll:
-		cmpi.b	#id_Roll,obAnim(a1) ; is Sonic rolling?
+		cmpi.b	#id_Roll,ost_anim(a1) ; is Sonic rolling?
 		bne.s	@donothing	; if not, branch
 		move.w	smash_speed(a0),d0
 		bpl.s	@chkspeed
@@ -18042,28 +18042,28 @@ Smash_Solid:	; Routine 2
 	@chkspeed:
 		cmpi.w	#$480,d0	; is Sonic's speed $480 or higher?
 		bcs.s	@donothing	; if not, branch
-		move.w	smash_speed(a0),obVelX(a1)
-		addq.w	#4,obX(a1)
+		move.w	smash_speed(a0),ost_x_vel(a1)
+		addq.w	#4,ost_x_pos(a1)
 		lea	(Smash_FragSpd1).l,a4 ;	use fragments that move	right
-		move.w	obX(a0),d0
-		cmp.w	obX(a1),d0	; is Sonic to the right	of the block?
+		move.w	ost_x_pos(a0),d0
+		cmp.w	ost_x_pos(a1),d0	; is Sonic to the right	of the block?
 		bcs.s	@smash		; if yes, branch
-		subq.w	#8,obX(a1)
+		subq.w	#8,ost_x_pos(a1)
 		lea	(Smash_FragSpd2).l,a4 ;	use fragments that move	left
 
 	@smash:
-		move.w	obVelX(a1),obInertia(a1)
-		bclr	#5,obStatus(a0)
-		bclr	#5,obStatus(a1)
+		move.w	ost_x_vel(a1),ost_inertia(a1)
+		bclr	#5,ost_status(a0)
+		bclr	#5,ost_status(a1)
 		moveq	#7,d1		; load 8 fragments
 		move.w	#$70,d2
 		bsr.s	SmashObject
 
 Smash_FragMove:	; Routine 4
 		bsr.w	SpeedToPos
-		addi.w	#$70,obVelY(a0)	; make fragment	fall faster
+		addi.w	#$70,ost_y_vel(a0)	; make fragment	fall faster
 		bsr.w	DisplaySprite
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.w	DeleteObject
 		rts	
 
@@ -18076,14 +18076,14 @@ Smash_FragMove:	; Routine 4
 
 SmashObject:
 		moveq	#0,d0
-		move.b	obFrame(a0),d0
+		move.b	ost_frame(a0),d0
 		add.w	d0,d0
-		movea.l	obMap(a0),a3
+		movea.l	ost_mappings(a0),a3
 		adda.w	(a3,d0.w),a3
 		addq.w	#1,a3
-		bset	#5,obRender(a0)
+		bset	#5,ost_render(a0)
 		move.b	0(a0),d4
-		move.b	obRender(a0),d5
+		move.b	ost_render(a0),d5
 		movea.l	a0,a1
 		bra.s	@loadfrag
 ; ===========================================================================
@@ -18094,23 +18094,23 @@ SmashObject:
 		addq.w	#5,a3
 
 @loadfrag:
-		move.b	#4,obRoutine(a1)
+		move.b	#4,ost_routine(a1)
 		move.b	d4,0(a1)
-		move.l	a3,obMap(a1)
-		move.b	d5,obRender(a1)
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
-		move.w	obGfx(a0),obGfx(a1)
-		move.b	obPriority(a0),obPriority(a1)
-		move.b	obActWid(a0),obActWid(a1)
-		move.w	(a4)+,obVelX(a1)
-		move.w	(a4)+,obVelY(a1)
+		move.l	a3,ost_mappings(a1)
+		move.b	d5,ost_render(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
+		move.w	ost_tile(a0),ost_tile(a1)
+		move.b	ost_priority(a0),ost_priority(a1)
+		move.b	ost_actwidth(a0),ost_actwidth(a1)
+		move.w	(a4)+,ost_x_vel(a1)
+		move.w	(a4)+,ost_y_vel(a1)
 		cmpa.l	a0,a1
 		bcc.s	@loc_D268
 		move.l	a0,-(sp)
 		movea.l	a1,a0
 		bsr.w	SpeedToPos
-		add.w	d2,obVelY(a0)
+		add.w	d2,ost_y_vel(a0)
 		movea.l	(sp)+,a0
 		bsr.w	DisplaySprite1
 
@@ -18156,7 +18156,7 @@ ExecuteObjects:
 		lea	(v_objspace).w,a0 ; set address for object RAM
 		moveq	#$7F,d7
 		moveq	#0,d0
-		cmpi.b	#6,(v_player+obRoutine).w
+		cmpi.b	#6,(v_player+ost_routine).w
 		bhs.s	loc_D362
 
 loc_D348:
@@ -18183,7 +18183,7 @@ loc_D368:
 		moveq	#0,d0
 		move.b	(a0),d0
 		beq.s	loc_D378
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.s	loc_D378
 		bsr.w	DisplaySprite
 
@@ -18355,19 +18355,19 @@ NullObject:
 
 
 ObjectFall:
-		move.l	obX(a0),d2
-		move.l	obY(a0),d3
-		move.w	obVelX(a0),d0
+		move.l	ost_x_pos(a0),d2
+		move.l	ost_y_pos(a0),d3
+		move.w	ost_x_vel(a0),d0
 		ext.l	d0
 		asl.l	#8,d0
 		add.l	d0,d2
-		move.w	obVelY(a0),d0
-		addi.w	#$38,obVelY(a0)	; increase vertical speed
+		move.w	ost_y_vel(a0),d0
+		addi.w	#$38,ost_y_vel(a0)	; increase vertical speed
 		ext.l	d0
 		asl.l	#8,d0
 		add.l	d0,d3
-		move.l	d2,obX(a0)
-		move.l	d3,obY(a0)
+		move.l	d2,ost_x_pos(a0)
+		move.l	d3,ost_y_pos(a0)
 		rts	
 
 ; End of function ObjectFall
@@ -18379,18 +18379,18 @@ ObjectFall:
 
 
 SpeedToPos:
-		move.l	obX(a0),d2
-		move.l	obY(a0),d3
-		move.w	obVelX(a0),d0	; load horizontal speed
+		move.l	ost_x_pos(a0),d2
+		move.l	ost_y_pos(a0),d3
+		move.w	ost_x_vel(a0),d0	; load horizontal speed
 		ext.l	d0
 		asl.l	#8,d0		; multiply speed by $100
 		add.l	d0,d2		; add to x-axis	position
-		move.w	obVelY(a0),d0	; load vertical	speed
+		move.w	ost_y_vel(a0),d0	; load vertical	speed
 		ext.l	d0
 		asl.l	#8,d0		; multiply by $100
 		add.l	d0,d3		; add to y-axis	position
-		move.l	d2,obX(a0)	; update x-axis	position
-		move.l	d3,obY(a0)	; update y-axis	position
+		move.l	d2,ost_x_pos(a0)	; update x-axis	position
+		move.l	d3,ost_y_pos(a0)	; update y-axis	position
 		rts	
 
 ; End of function SpeedToPos
@@ -18403,7 +18403,7 @@ SpeedToPos:
 
 DisplaySprite:
 		lea	(v_spritequeue).w,a1
-		move.w	obPriority(a0),d0 ; get sprite priority
+		move.w	ost_priority(a0),d0 ; get sprite priority
 		lsr.w	#1,d0
 		andi.w	#$380,d0
 		adda.w	d0,a1		; jump to position in queue
@@ -18428,7 +18428,7 @@ DisplaySprite:
 
 DisplaySprite1:
 		lea	(v_spritequeue).w,a2
-		move.w	obPriority(a1),d0
+		move.w	ost_priority(a1),d0
 		lsr.w	#1,d0
 		andi.w	#$380,d0
 		adda.w	d0,a2
@@ -18490,17 +18490,17 @@ BuildSprites:
 		movea.w	(a4,d6.w),a0	; load object ID
 		tst.b	(a0)		; if null, branch
 		beq.w	@skipObject
-		bclr	#7,obRender(a0)		; set as not visible
+		bclr	#7,ost_render(a0)		; set as not visible
 
-		move.b	obRender(a0),d0
+		move.b	ost_render(a0),d0
 		move.b	d0,d4
 		andi.w	#$C,d0		; get drawing coordinates
 		beq.s	@screenCoords	; branch if 0 (screen coordinates)
 		movea.l	BldSpr_ScrPos(pc,d0.w),a1
 	; check object bounds
 		moveq	#0,d0
-		move.b	obActWid(a0),d0
-		move.w	obX(a0),d3
+		move.b	ost_actwidth(a0),d0
+		move.w	ost_x_pos(a0),d3
 		sub.w	(a1),d3
 		move.w	d3,d1
 		add.w	d0,d1
@@ -18514,8 +18514,8 @@ BuildSprites:
 		btst	#4,d4		; is assume height flag on?
 		beq.s	@assumeHeight	; if yes, branch
 		moveq	#0,d0
-		move.b	obHeight(a0),d0
-		move.w	obY(a0),d2
+		move.b	ost_height(a0),d0
+		move.w	ost_y_pos(a0),d2
 		sub.w	4(a1),d2
 		move.w	d2,d1
 		add.w	d0,d1
@@ -18530,13 +18530,13 @@ BuildSprites:
 
 	@screenCoords:
 		move.w	$A(a0),d2	; special variable for screen Y
-		move.w	obX(a0),d3
+		move.w	ost_x_pos(a0),d3
 		bra.s	@drawObject
 ; ===========================================================================
 
 	@assumeHeight:
-		move.w	obY(a0),d2
-		sub.w	obMap(a1),d2
+		move.w	ost_y_pos(a0),d2
+		sub.w	ost_mappings(a1),d2
 		addi.w	#$80,d2
 		cmpi.w	#$60,d2
 		blo.s	@skipObject
@@ -18544,11 +18544,11 @@ BuildSprites:
 		bhs.s	@skipObject
 
 	@drawObject:
-		movea.l	obMap(a0),a1
+		movea.l	ost_mappings(a0),a1
 		moveq	#0,d1
 		btst	#5,d4		; is static mappings flag on?
 		bne.s	@drawFrame	; if yes, branch
-		move.b	obFrame(a0),d1
+		move.b	ost_frame(a0),d1
 		add.b	d1,d1
 		adda.w	(a1,d1.w),a1	; get mappings frame address
 		move.b	(a1)+,d1	; number of sprite pieces
@@ -18559,7 +18559,7 @@ BuildSprites:
 		bsr.w	BuildSpr_Draw	; write data from sprite pieces to buffer
 
 	@setVisible:
-		bset	#7,obRender(a0)		; set object as visible
+		bset	#7,ost_render(a0)		; set object as visible
 
 	@skipObject:
 		addq.w	#2,d6
@@ -18586,7 +18586,7 @@ BuildSprites:
 
 
 BuildSpr_Draw:
-		movea.w	obGfx(a0),a3
+		movea.w	ost_tile(a0),a3
 		btst	#0,d4
 		bne.s	BuildSpr_FlipX
 		btst	#1,d4
@@ -18760,13 +18760,13 @@ BuildSpr_FlipXY:
 
 
 ChkObjectVisible:
-		move.w	obX(a0),d0	; get object x-position
+		move.w	ost_x_pos(a0),d0	; get object x-position
 		sub.w	(v_screenposx).w,d0 ; subtract screen x-position
 		bmi.s	@offscreen
 		cmpi.w	#320,d0		; is object on the screen?
 		bge.s	@offscreen	; if not, branch
 
-		move.w	obY(a0),d1	; get object y-position
+		move.w	ost_y_pos(a0),d1	; get object y-position
 		sub.w	(v_screenposy).w,d1 ; subtract screen y-position
 		bmi.s	@offscreen
 		cmpi.w	#224,d1		; is object on the screen?
@@ -18793,8 +18793,8 @@ ChkObjectVisible:
 
 ChkPartiallyVisible:
 		moveq	#0,d1
-		move.b	obActWid(a0),d1
-		move.w	obX(a0),d0	; get object x-position
+		move.b	ost_actwidth(a0),d1
+		move.w	ost_x_pos(a0),d0	; get object x-position
 		sub.w	(v_screenposx).w,d0 ; subtract screen x-position
 		add.w	d1,d0		; add object width
 		bmi.s	@offscreen2
@@ -18803,7 +18803,7 @@ ChkPartiallyVisible:
 		cmpi.w	#320,d0
 		bge.s	@offscreen2
 
-		move.w	obY(a0),d1
+		move.w	ost_y_pos(a0),d1
 		sub.w	(v_screenposy).w,d1
 		bmi.s	@offscreen2
 		cmpi.w	#224,d1
@@ -19018,23 +19018,23 @@ loc_DA3C:
 OPL_MakeItem:
 		bsr.w	FindFreeObj
 		bne.s	locret_DA8A
-		move.w	(a0)+,obX(a1)
+		move.w	(a0)+,ost_x_pos(a1)
 		move.w	(a0)+,d0
 		move.w	d0,d1
 		andi.w	#$FFF,d0
-		move.w	d0,obY(a1)
+		move.w	d0,ost_y_pos(a1)
 		rol.w	#2,d1
 		andi.b	#3,d1
-		move.b	d1,obRender(a1)
-		move.b	d1,obStatus(a1)
+		move.b	d1,ost_render(a1)
+		move.b	d1,ost_status(a1)
 		move.b	(a0)+,d0
 		bpl.s	loc_DA80
 		andi.b	#$7F,d0
-		move.b	d2,obRespawnNo(a1)
+		move.b	d2,ost_respawn(a1)
 
 loc_DA80:
 		move.b	d0,0(a1)
-		move.b	(a0)+,obSubtype(a1)
+		move.b	(a0)+,ost_subtype(a1)
 		moveq	#0,d0
 
 locret_DA8A:
@@ -19100,7 +19100,7 @@ FindNextFreeObj:
 
 Springs:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Spring_Index(pc,d0.w),d1
 		jsr	Spring_Index(pc,d1.w)
 		bsr.w	DisplaySprite
@@ -19126,33 +19126,33 @@ Spring_Powers:	dc.w -$1000		; power	of red spring
 ; ===========================================================================
 
 Spring_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Spring,obMap(a0)
-		move.w	#$523,obGfx(a0)
-		ori.b	#4,obRender(a0)
-		move.b	#$10,obActWid(a0)
-		move.b	#4,obPriority(a0)
-		move.b	obSubtype(a0),d0
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Spring,ost_mappings(a0)
+		move.w	#$523,ost_tile(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	#$10,ost_actwidth(a0)
+		move.b	#4,ost_priority(a0)
+		move.b	ost_subtype(a0),d0
 		btst	#4,d0		; does the spring face left/right?
 		beq.s	Spring_NotLR	; if not, branch
 
-		move.b	#id_Spring_LR,obRoutine(a0) ; use "Spring_LR" routine
-		move.b	#1,obAnim(a0)
-		move.b	#3,obFrame(a0)
-		move.w	#$533,obGfx(a0)
-		move.b	#8,obActWid(a0)
+		move.b	#id_Spring_LR,ost_routine(a0) ; use "Spring_LR" routine
+		move.b	#1,ost_anim(a0)
+		move.b	#3,ost_frame(a0)
+		move.w	#$533,ost_tile(a0)
+		move.b	#8,ost_actwidth(a0)
 
 	Spring_NotLR:
 		btst	#5,d0		; does the spring face downwards?
 		beq.s	Spring_NotDwn	; if not, branch
 
-		move.b	#id_Spring_Dwn,obRoutine(a0) ; use "Spring_Dwn" routine
-		bset	#1,obStatus(a0)
+		move.b	#id_Spring_Dwn,ost_routine(a0) ; use "Spring_Dwn" routine
+		bset	#1,ost_status(a0)
 
 	Spring_NotDwn:
 		btst	#1,d0
 		beq.s	loc_DB72
-		bset	#5,obGfx(a0)
+		bset	#5,ost_tile(a0)
 
 loc_DB72:
 		andi.w	#$F,d0
@@ -19164,23 +19164,23 @@ Spring_Up:	; Routine 2
 		move.w	#$1B,d1
 		move.w	#8,d2
 		move.w	#$10,d3
-		move.w	obX(a0),d4
+		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject
-		tst.b	obSolid(a0)	; is Sonic on top of the spring?
+		tst.b	ost_solid(a0)	; is Sonic on top of the spring?
 		bne.s	Spring_BounceUp	; if yes, branch
 		rts	
 ; ===========================================================================
 
 Spring_BounceUp:
-		addq.b	#2,obRoutine(a0)
-		addq.w	#8,obY(a1)
-		move.w	spring_pow(a0),obVelY(a1) ; move Sonic upwards
-		bset	#1,obStatus(a1)
-		bclr	#3,obStatus(a1)
-		move.b	#id_Spring,obAnim(a1) ; use "bouncing" animation
-		move.b	#2,obRoutine(a1)
-		bclr	#3,obStatus(a0)
-		clr.b	obSolid(a0)
+		addq.b	#2,ost_routine(a0)
+		addq.w	#8,ost_y_pos(a1)
+		move.w	spring_pow(a0),ost_y_vel(a1) ; move Sonic upwards
+		bset	#1,ost_status(a1)
+		bclr	#3,ost_status(a1)
+		move.b	#id_Spring,ost_anim(a1) ; use "bouncing" animation
+		move.b	#2,ost_routine(a1)
+		bclr	#3,ost_status(a0)
+		clr.b	ost_solid(a0)
 		sfx	sfx_Spring,0,0,0	; play spring sound
 
 Spring_AniUp:	; Routine 4
@@ -19189,8 +19189,8 @@ Spring_AniUp:	; Routine 4
 ; ===========================================================================
 
 Spring_ResetUp:	; Routine 6
-		move.b	#1,obNextAni(a0) ; reset animation
-		subq.b	#4,obRoutine(a0) ; goto "Spring_Up" routine
+		move.b	#1,ost_anim_next(a0) ; reset animation
+		subq.b	#4,ost_routine(a0) ; goto "Spring_Up" routine
 		rts	
 ; ===========================================================================
 
@@ -19198,38 +19198,38 @@ Spring_LR:	; Routine 8
 		move.w	#$13,d1
 		move.w	#$E,d2
 		move.w	#$F,d3
-		move.w	obX(a0),d4
+		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject
-		cmpi.b	#2,obRoutine(a0)
+		cmpi.b	#2,ost_routine(a0)
 		bne.s	loc_DC0C
-		move.b	#8,obRoutine(a0)
+		move.b	#8,ost_routine(a0)
 
 loc_DC0C:
-		btst	#5,obStatus(a0)
+		btst	#5,ost_status(a0)
 		bne.s	Spring_BounceLR
 		rts	
 ; ===========================================================================
 
 Spring_BounceLR:
-		addq.b	#2,obRoutine(a0)
-		move.w	spring_pow(a0),obVelX(a1) ; move Sonic to the left
-		addq.w	#8,obX(a1)
-		btst	#0,obStatus(a0)	; is object flipped?
+		addq.b	#2,ost_routine(a0)
+		move.w	spring_pow(a0),ost_x_vel(a1) ; move Sonic to the left
+		addq.w	#8,ost_x_pos(a1)
+		btst	#0,ost_status(a0)	; is object flipped?
 		bne.s	Spring_Flipped	; if yes, branch
-		subi.w	#$10,obX(a1)
-		neg.w	obVelX(a1)	; move Sonic to	the right
+		subi.w	#$10,ost_x_pos(a1)
+		neg.w	ost_x_vel(a1)	; move Sonic to	the right
 
 	Spring_Flipped:
 		move.w	#$F,$3E(a1)
-		move.w	obVelX(a1),obInertia(a1)
-		bchg	#0,obStatus(a1)
-		btst	#2,obStatus(a1)
+		move.w	ost_x_vel(a1),ost_inertia(a1)
+		bchg	#0,ost_status(a1)
+		btst	#2,ost_status(a1)
 		bne.s	loc_DC56
-		move.b	#id_Walk,obAnim(a1)	; use walking animation
+		move.b	#id_Walk,ost_anim(a1)	; use walking animation
 
 loc_DC56:
-		bclr	#5,obStatus(a0)
-		bclr	#5,obStatus(a1)
+		bclr	#5,ost_status(a0)
+		bclr	#5,ost_status(a1)
 		sfx	sfx_Spring,0,0,0	; play spring sound
 
 Spring_AniLR:	; Routine $A
@@ -19238,8 +19238,8 @@ Spring_AniLR:	; Routine $A
 ; ===========================================================================
 
 Spring_ResetLR:	; Routine $C
-		move.b	#2,obNextAni(a0) ; reset animation
-		subq.b	#4,obRoutine(a0) ; goto "Spring_LR" routine
+		move.b	#2,ost_anim_next(a0) ; reset animation
+		subq.b	#4,ost_routine(a0) ; goto "Spring_LR" routine
 		rts	
 ; ===========================================================================
 
@@ -19247,14 +19247,14 @@ Spring_Dwn:	; Routine $E
 		move.w	#$1B,d1
 		move.w	#8,d2
 		move.w	#$10,d3
-		move.w	obX(a0),d4
+		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject
-		cmpi.b	#id_Spring_Up,obRoutine(a0)
+		cmpi.b	#id_Spring_Up,ost_routine(a0)
 		bne.s	loc_DCA4
-		move.b	#id_Spring_Dwn,obRoutine(a0)
+		move.b	#id_Spring_Dwn,ost_routine(a0)
 
 loc_DCA4:
-		tst.b	obSolid(a0)
+		tst.b	ost_solid(a0)
 		bne.s	locret_DCAE
 		tst.w	d4
 		bmi.s	Spring_BounceDwn
@@ -19264,15 +19264,15 @@ locret_DCAE:
 ; ===========================================================================
 
 Spring_BounceDwn:
-		addq.b	#2,obRoutine(a0)
-		subq.w	#8,obY(a1)
-		move.w	spring_pow(a0),obVelY(a1)
-		neg.w	obVelY(a1)	; move Sonic downwards
-		bset	#1,obStatus(a1)
-		bclr	#3,obStatus(a1)
-		move.b	#2,obRoutine(a1)
-		bclr	#3,obStatus(a0)
-		clr.b	obSolid(a0)
+		addq.b	#2,ost_routine(a0)
+		subq.w	#8,ost_y_pos(a1)
+		move.w	spring_pow(a0),ost_y_vel(a1)
+		neg.w	ost_y_vel(a1)	; move Sonic downwards
+		bset	#1,ost_status(a1)
+		bclr	#3,ost_status(a1)
+		move.b	#2,ost_routine(a1)
+		bclr	#3,ost_status(a0)
+		clr.b	ost_solid(a0)
 		sfx	sfx_Spring,0,0,0	; play spring sound
 
 Spring_AniDwn:	; Routine $10
@@ -19282,8 +19282,8 @@ Spring_AniDwn:	; Routine $10
 
 Spring_ResetDwn:
 		; Routine $12
-		move.b	#1,obNextAni(a0) ; reset animation
-		subq.b	#4,obRoutine(a0) ; goto "Spring_Dwn" routine
+		move.b	#1,ost_anim_next(a0) ; reset animation
+		subq.b	#4,ost_routine(a0) ; goto "Spring_Dwn" routine
 		rts	
 
 Ani_Spring:	include "Animations\Springs.asm"
@@ -19295,7 +19295,7 @@ Map_Spring:	include "Mappings\Springs.asm"
 
 Newtron:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Newt_Index(pc,d0.w),d1
 		jmp	Newt_Index(pc,d1.w)
 ; ===========================================================================
@@ -19306,18 +19306,18 @@ Newt_Index:	index *
 ; ===========================================================================
 
 Newt_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Newt,obMap(a0)
-		move.w	#$49B,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#4,obPriority(a0)
-		move.b	#$14,obActWid(a0)
-		move.b	#$10,obHeight(a0)
-		move.b	#8,obWidth(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Newt,ost_mappings(a0)
+		move.w	#$49B,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#4,ost_priority(a0)
+		move.b	#$14,ost_actwidth(a0)
+		move.b	#$10,ost_height(a0)
+		move.b	#8,ost_width(a0)
 
 Newt_Action:	; Routine 2
 		moveq	#0,d0
-		move.b	ob2ndRout(a0),d0
+		move.b	ost_routine2(a0),d0
 		move.w	@index(pc,d0.w),d1
 		jsr	@index(pc,d1.w)
 		lea	(Ani_Newt).l,a1
@@ -19333,24 +19333,24 @@ Newt_Action:	; Routine 2
 ; ===========================================================================
 
 @chkdistance:
-		bset	#0,obStatus(a0)
-		move.w	(v_player+obX).w,d0
-		sub.w	obX(a0),d0
+		bset	#0,ost_status(a0)
+		move.w	(v_player+ost_x_pos).w,d0
+		sub.w	ost_x_pos(a0),d0
 		bcc.s	@sonicisright
 		neg.w	d0
-		bclr	#0,obStatus(a0)
+		bclr	#0,ost_status(a0)
 
 	@sonicisright:
 		cmpi.w	#$80,d0		; is Sonic within $80 pixels of	the newtron?
 		bcc.s	@outofrange	; if not, branch
-		addq.b	#2,ob2ndRout(a0) ; goto @type00 next
-		move.b	#1,obAnim(a0)
-		tst.b	obSubtype(a0)	; check	object type
+		addq.b	#2,ost_routine2(a0) ; goto @type00 next
+		move.b	#1,ost_anim(a0)
+		tst.b	ost_subtype(a0)	; check	object type
 		beq.s	@istype00	; if type is 00, branch
 
-		move.w	#$249B,obGfx(a0)
-		move.b	#8,ob2ndRout(a0) ; goto @type01 next
-		move.b	#4,obAnim(a0)	; use different	animation
+		move.w	#$249B,ost_tile(a0)
+		move.b	#8,ost_routine2(a0) ; goto @type01 next
+		move.b	#4,ost_anim(a0)	; use different	animation
 
 	@outofrange:
 	@istype00:
@@ -19358,22 +19358,22 @@ Newt_Action:	; Routine 2
 ; ===========================================================================
 
 @type00:
-		cmpi.b	#4,obFrame(a0)	; has "appearing" animation finished?
+		cmpi.b	#4,ost_frame(a0)	; has "appearing" animation finished?
 		bcc.s	@fall		; is yes, branch
-		bset	#0,obStatus(a0)
-		move.w	(v_player+obX).w,d0
-		sub.w	obX(a0),d0
+		bset	#0,ost_status(a0)
+		move.w	(v_player+ost_x_pos).w,d0
+		sub.w	ost_x_pos(a0),d0
 		bcc.s	@sonicisright2
-		bclr	#0,obStatus(a0)
+		bclr	#0,ost_status(a0)
 
 	@sonicisright2:
 		rts	
 ; ===========================================================================
 
 	@fall:
-		cmpi.b	#1,obFrame(a0)
+		cmpi.b	#1,ost_frame(a0)
 		bne.s	@loc_DE42
-		move.b	#$C,obColType(a0)
+		move.b	#$C,ost_col_type(a0)
 
 	@loc_DE42:
 		bsr.w	ObjectFall
@@ -19381,20 +19381,20 @@ Newt_Action:	; Routine 2
 		tst.w	d1		; has newtron hit the floor?
 		bpl.s	@keepfalling	; if not, branch
 
-		add.w	d1,obY(a0)
-		move.w	#0,obVelY(a0)	; stop newtron falling
-		addq.b	#2,ob2ndRout(a0)
-		move.b	#2,obAnim(a0)
-		btst	#5,obGfx(a0)
+		add.w	d1,ost_y_pos(a0)
+		move.w	#0,ost_y_vel(a0)	; stop newtron falling
+		addq.b	#2,ost_routine2(a0)
+		move.b	#2,ost_anim(a0)
+		btst	#5,ost_tile(a0)
 		beq.s	@pppppppp
-		addq.b	#1,obAnim(a0)
+		addq.b	#1,ost_anim(a0)
 
 	@pppppppp:
-		move.b	#$D,obColType(a0)
-		move.w	#$200,obVelX(a0) ; move newtron horizontally
-		btst	#0,obStatus(a0)
+		move.b	#$D,ost_col_type(a0)
+		move.w	#$200,ost_x_vel(a0) ; move newtron horizontally
+		btst	#0,ost_status(a0)
 		bne.s	@keepfalling
-		neg.w	obVelX(a0)
+		neg.w	ost_x_vel(a0)
 
 	@keepfalling:
 		rts	
@@ -19407,12 +19407,12 @@ Newt_Action:	; Routine 2
 		blt.s	@nextroutine
 		cmpi.w	#$C,d1
 		bge.s	@nextroutine
-		add.w	d1,obY(a0)	; match	newtron's position with floor
+		add.w	d1,ost_y_pos(a0)	; match	newtron's position with floor
 		rts	
 ; ===========================================================================
 
 	@nextroutine:
-		addq.b	#2,ob2ndRout(a0) ; goto @speed next
+		addq.b	#2,ost_routine2(a0) ; goto @speed next
 		rts	
 ; ===========================================================================
 
@@ -19422,12 +19422,12 @@ Newt_Action:	; Routine 2
 ; ===========================================================================
 
 @type01:
-		cmpi.b	#1,obFrame(a0)
+		cmpi.b	#1,ost_frame(a0)
 		bne.s	@firemissile
-		move.b	#$C,obColType(a0)
+		move.b	#$C,ost_col_type(a0)
 
 	@firemissile:
-		cmpi.b	#2,obFrame(a0)
+		cmpi.b	#2,ost_frame(a0)
 		bne.s	@fail
 		tst.b	$32(a0)
 		bne.s	@fail
@@ -19435,20 +19435,20 @@ Newt_Action:	; Routine 2
 		bsr.w	FindFreeObj
 		bne.s	@fail
 		move.b	#id_Missile,0(a1) ; load missile object
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
-		subq.w	#8,obY(a1)
-		move.w	#$200,obVelX(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
+		subq.w	#8,ost_y_pos(a1)
+		move.w	#$200,ost_x_vel(a1)
 		move.w	#$14,d0
-		btst	#0,obStatus(a0)
+		btst	#0,ost_status(a0)
 		bne.s	@noflip
 		neg.w	d0
-		neg.w	obVelX(a1)
+		neg.w	ost_x_vel(a1)
 
 	@noflip:
-		add.w	d0,obX(a1)
-		move.b	obStatus(a0),obStatus(a1)
-		move.b	#1,obSubtype(a1)
+		add.w	d0,ost_x_pos(a1)
+		move.b	ost_status(a0),ost_status(a1)
+		move.b	#1,ost_subtype(a1)
 
 	@fail:
 		rts	
@@ -19466,7 +19466,7 @@ Map_Newt:	include "Mappings\Newtron.asm"
 
 Roller:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Roll_Index(pc,d0.w),d1
 		jmp	Roll_Index(pc,d1.w)
 ; ===========================================================================
@@ -19476,20 +19476,20 @@ Roll_Index:	index *
 ; ===========================================================================
 
 Roll_Main:	; Routine 0
-		move.b	#$E,obHeight(a0)
-		move.b	#8,obWidth(a0)
+		move.b	#$E,ost_height(a0)
+		move.b	#8,ost_width(a0)
 		bsr.w	ObjectFall
 		bsr.w	ObjFloorDist
 		tst.w	d1
 		bpl.s	locret_E052
-		add.w	d1,obY(a0)	; match	roller's position with the floor
-		move.w	#0,obVelY(a0)
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Roll,obMap(a0)
-		move.w	#$4B8,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#4,obPriority(a0)
-		move.b	#$10,obActWid(a0)
+		add.w	d1,ost_y_pos(a0)	; match	roller's position with the floor
+		move.w	#0,ost_y_vel(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Roll,ost_mappings(a0)
+		move.w	#$4B8,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#4,ost_priority(a0)
+		move.b	#$10,ost_actwidth(a0)
 
 	locret_E052:
 		rts	
@@ -19497,12 +19497,12 @@ Roll_Main:	; Routine 0
 
 Roll_Action:	; Routine 2
 		moveq	#0,d0
-		move.b	ob2ndRout(a0),d0
+		move.b	ost_routine2(a0),d0
 		move.w	Roll_Index2(pc,d0.w),d1
 		jsr	Roll_Index2(pc,d1.w)
 		lea	(Ani_Roll).l,a1
 		bsr.w	AnimateSprite
-		move.w	obX(a0),d0
+		move.w	ost_x_pos(a0),d0
 		andi.w	#$FF80,d0
 		move.w	(v_screenposx).w,d1
 		subi.w	#$80,d1
@@ -19516,7 +19516,7 @@ Roll_Action:	; Routine 2
 Roll_ChkGone:
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
-		move.b	obRespawnNo(a0),d0
+		move.b	ost_respawn(a0),d0
 		beq.s	Roll_Delete
 		bclr	#7,2(a2,d0.w)
 
@@ -19531,15 +19531,15 @@ Roll_Index2:	index *
 ; ===========================================================================
 
 Roll_RollChk:
-		move.w	(v_player+obX).w,d0
+		move.w	(v_player+ost_x_pos).w,d0
 		subi.w	#$100,d0
 		bcs.s	loc_E0D2
-		sub.w	obX(a0),d0	; check	distance between Roller	and Sonic
+		sub.w	ost_x_pos(a0),d0	; check	distance between Roller	and Sonic
 		bcs.s	loc_E0D2
-		addq.b	#4,ob2ndRout(a0)
-		move.b	#2,obAnim(a0)
-		move.w	#$700,obVelX(a0) ; move Roller horizontally
-		move.b	#$8E,obColType(a0) ; make Roller invincible
+		addq.b	#4,ost_routine2(a0)
+		move.b	#2,ost_anim(a0)
+		move.w	#$700,ost_x_vel(a0) ; move Roller horizontally
+		move.b	#$8E,ost_col_type(a0) ; make Roller invincible
 
 loc_E0D2:
 		addq.l	#4,sp
@@ -19547,20 +19547,20 @@ loc_E0D2:
 ; ===========================================================================
 
 Roll_RollNoChk:
-		cmpi.b	#2,obAnim(a0)
+		cmpi.b	#2,ost_anim(a0)
 		beq.s	loc_E0F8
 		subq.w	#1,$30(a0)
 		bpl.s	locret_E0F6
-		move.b	#1,obAnim(a0)
-		move.w	#$700,obVelX(a0)
-		move.b	#$8E,obColType(a0)
+		move.b	#1,ost_anim(a0)
+		move.w	#$700,ost_x_vel(a0)
+		move.b	#$8E,ost_col_type(a0)
 
 locret_E0F6:
 		rts	
 ; ===========================================================================
 
 loc_E0F8:
-		addq.b	#2,ob2ndRout(a0)
+		addq.b	#2,ost_routine2(a0)
 		rts	
 ; ===========================================================================
 
@@ -19572,15 +19572,15 @@ Roll_ChkJump:
 		blt.s	Roll_Jump
 		cmpi.w	#$C,d1
 		bge.s	Roll_Jump
-		add.w	d1,obY(a0)
+		add.w	d1,ost_y_pos(a0)
 		rts	
 ; ===========================================================================
 
 Roll_Jump:
-		addq.b	#2,ob2ndRout(a0)
+		addq.b	#2,ost_routine2(a0)
 		bset	#0,$32(a0)
 		beq.s	locret_E12E
-		move.w	#-$600,obVelY(a0)	; move Roller vertically
+		move.w	#-$600,ost_y_vel(a0)	; move Roller vertically
 
 locret_E12E:
 		rts	
@@ -19588,14 +19588,14 @@ locret_E12E:
 
 Roll_MatchFloor:
 		bsr.w	ObjectFall
-		tst.w	obVelY(a0)
+		tst.w	ost_y_vel(a0)
 		bmi.s	locret_E150
 		bsr.w	ObjFloorDist
 		tst.w	d1
 		bpl.s	locret_E150
-		add.w	d1,obY(a0)	; match	Roller's position with the floor
-		subq.b	#2,ob2ndRout(a0)
-		move.w	#0,obVelY(a0)
+		add.w	d1,ost_y_pos(a0)	; match	Roller's position with the floor
+		subq.b	#2,ost_routine2(a0)
+		move.w	#0,ost_y_vel(a0)
 
 locret_E150:
 		rts	
@@ -19606,15 +19606,15 @@ locret_E150:
 Roll_Stop:
 		tst.b	$32(a0)
 		bmi.s	locret_E188
-		move.w	(v_player+obX).w,d0
+		move.w	(v_player+ost_x_pos).w,d0
 		subi.w	#$30,d0
-		sub.w	obX(a0),d0
+		sub.w	ost_x_pos(a0),d0
 		bcc.s	locret_E188
-		move.b	#0,obAnim(a0)
-		move.b	#$E,obColType(a0)
-		clr.w	obVelX(a0)
+		move.b	#0,ost_anim(a0)
+		move.b	#$E,ost_col_type(a0)
+		clr.w	ost_x_vel(a0)
 		move.w	#120,$30(a0)	; set waiting time to 2	seconds
-		move.b	#2,ob2ndRout(a0)
+		move.b	#2,ost_routine2(a0)
 		bset	#7,$32(a0)
 
 locret_E188:
@@ -19630,7 +19630,7 @@ Map_Roll:	include "Mappings\Roller.asm"
 
 EdgeWalls:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Edge_Index(pc,d0.w),d1
 		jmp	Edge_Index(pc,d1.w)
 ; ===========================================================================
@@ -19641,16 +19641,16 @@ Edge_Index:	index *
 ; ===========================================================================
 
 Edge_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Edge,obMap(a0)
-		move.w	#$434C,obGfx(a0)
-		ori.b	#4,obRender(a0)
-		move.b	#8,obActWid(a0)
-		move.b	#6,obPriority(a0)
-		move.b	obSubtype(a0),obFrame(a0) ; copy object type number to frame number
-		bclr	#4,obFrame(a0)	; clear	4th bit	(deduct	$10)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Edge,ost_mappings(a0)
+		move.w	#$434C,ost_tile(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	#8,ost_actwidth(a0)
+		move.b	#6,ost_priority(a0)
+		move.b	ost_subtype(a0),ost_frame(a0) ; copy object type number to frame number
+		bclr	#4,ost_frame(a0)	; clear	4th bit	(deduct	$10)
 		beq.s	Edge_Solid	; make object solid if 4th bit = 0
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 		bra.s	Edge_Display	; don't make it solid if 4th bit = 1
 ; ===========================================================================
 
@@ -19672,7 +19672,7 @@ Map_Edge:	include "Mappings\GHZ Walls.asm"
 
 LavaMaker:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	LavaM_Index(pc,d0.w),d1
 		jsr	LavaM_Index(pc,d1.w)
 		bra.w	LBall_ChkDel
@@ -19688,26 +19688,26 @@ LavaM_Rates:	dc.b 30, 60, 90, 120, 150, 180
 ; ===========================================================================
 
 LavaM_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.b	obSubtype(a0),d0
+		addq.b	#2,ost_routine(a0)
+		move.b	ost_subtype(a0),d0
 		lsr.w	#4,d0
 		andi.w	#$F,d0
-		move.b	LavaM_Rates(pc,d0.w),obDelayAni(a0)
-		move.b	obDelayAni(a0),obTimeFrame(a0) ; set time delay for lava balls
-		andi.b	#$F,obSubtype(a0)
+		move.b	LavaM_Rates(pc,d0.w),ost_anim_delay(a0)
+		move.b	ost_anim_delay(a0),ost_anim_time(a0) ; set time delay for lava balls
+		andi.b	#$F,ost_subtype(a0)
 
 LavaM_MakeLava:	; Routine 2
-		subq.b	#1,obTimeFrame(a0) ; subtract 1 from time delay
+		subq.b	#1,ost_anim_time(a0) ; subtract 1 from time delay
 		bne.s	LavaM_Wait	; if time still	remains, branch
-		move.b	obDelayAni(a0),obTimeFrame(a0) ; reset time delay
+		move.b	ost_anim_delay(a0),ost_anim_time(a0) ; reset time delay
 		bsr.w	ChkObjectVisible
 		bne.s	LavaM_Wait
 		bsr.w	FindFreeObj
 		bne.s	LavaM_Wait
 		move.b	#id_LavaBall,0(a1) ; load lava ball object
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
-		move.b	obSubtype(a0),obSubtype(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
+		move.b	ost_subtype(a0),ost_subtype(a1)
 
 	LavaM_Wait:
 		rts	
@@ -19717,7 +19717,7 @@ LavaM_MakeLava:	; Routine 2
 
 LavaBall:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	LBall_Index(pc,d0.w),d1
 		jsr	LBall_Index(pc,d1.w)
 		bra.w	DisplaySprite
@@ -19732,44 +19732,44 @@ LBall_Speeds:	dc.w -$400, -$500, -$600, -$700, -$200
 ; ===========================================================================
 
 LBall_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.b	#8,obHeight(a0)
-		move.b	#8,obWidth(a0)
-		move.l	#Map_Fire,obMap(a0)
-		move.w	#$345,obGfx(a0)
+		addq.b	#2,ost_routine(a0)
+		move.b	#8,ost_height(a0)
+		move.b	#8,ost_width(a0)
+		move.l	#Map_Fire,ost_mappings(a0)
+		move.w	#$345,ost_tile(a0)
 		cmpi.b	#3,(v_zone).w	; check if level is SLZ
 		bne.s	@notSLZ
-		move.w	#$480,obGfx(a0)	; SLZ specific code
+		move.w	#$480,ost_tile(a0)	; SLZ specific code
 
 	@notSLZ:
-		move.b	#4,obRender(a0)
-		move.b	#3,obPriority(a0)
-		move.b	#$8B,obColType(a0)
-		move.w	obY(a0),$30(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#3,ost_priority(a0)
+		move.b	#$8B,ost_col_type(a0)
+		move.w	ost_y_pos(a0),$30(a0)
 		tst.b	$29(a0)
 		beq.s	@speed
-		addq.b	#2,obPriority(a0)
+		addq.b	#2,ost_priority(a0)
 
 	@speed:
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		add.w	d0,d0
-		move.w	LBall_Speeds(pc,d0.w),obVelY(a0) ; load object speed (vertical)
-		move.b	#8,obActWid(a0)
-		cmpi.b	#6,obSubtype(a0) ; is object type below $6 ?
+		move.w	LBall_Speeds(pc,d0.w),ost_y_vel(a0) ; load object speed (vertical)
+		move.b	#8,ost_actwidth(a0)
+		cmpi.b	#6,ost_subtype(a0) ; is object type below $6 ?
 		bcs.s	@sound		; if yes, branch
 
-		move.b	#$10,obActWid(a0)
-		move.b	#2,obAnim(a0)	; use horizontal animation
-		move.w	obVelY(a0),obVelX(a0) ; set horizontal speed
-		move.w	#0,obVelY(a0)	; delete vertical speed
+		move.b	#$10,ost_actwidth(a0)
+		move.b	#2,ost_anim(a0)	; use horizontal animation
+		move.w	ost_y_vel(a0),ost_x_vel(a0) ; set horizontal speed
+		move.w	#0,ost_y_vel(a0)	; delete vertical speed
 
 	@sound:
 		sfx	sfx_Fireball,0,0,0	; play lava ball sound
 
 LBall_Action:	; Routine 2
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		add.w	d0,d0
 		move.w	LBall_TypeIndex(pc,d0.w),d1
 		jsr	LBall_TypeIndex(pc,d1.w)
@@ -19795,17 +19795,17 @@ LBall_TypeIndex:index *
 ; lavaball types 00-03 fly up and fall back down
 
 LBall_Type00:
-		addi.w	#$18,obVelY(a0)	; increase object's downward speed
+		addi.w	#$18,ost_y_vel(a0)	; increase object's downward speed
 		move.w	$30(a0),d0
-		cmp.w	obY(a0),d0	; has object fallen back to its	original position?
+		cmp.w	ost_y_pos(a0),d0	; has object fallen back to its	original position?
 		bcc.s	loc_E41E	; if not, branch
-		addq.b	#2,obRoutine(a0)	; goto "LBall_Delete" routine
+		addq.b	#2,ost_routine(a0)	; goto "LBall_Delete" routine
 
 loc_E41E:
-		bclr	#1,obStatus(a0)
-		tst.w	obVelY(a0)
+		bclr	#1,ost_status(a0)
+		tst.w	ost_y_vel(a0)
 		bpl.s	locret_E430
-		bset	#1,obStatus(a0)
+		bset	#1,ost_status(a0)
 
 locret_E430:
 		rts	
@@ -19813,13 +19813,13 @@ locret_E430:
 ; lavaball type	04 flies up until it hits the ceiling
 
 LBall_Type04:
-		bset	#1,obStatus(a0)
+		bset	#1,ost_status(a0)
 		bsr.w	ObjHitCeiling
 		tst.w	d1
 		bpl.s	locret_E452
-		move.b	#8,obSubtype(a0)
-		move.b	#1,obAnim(a0)
-		move.w	#0,obVelY(a0)	; stop the object when it touches the ceiling
+		move.b	#8,ost_subtype(a0)
+		move.b	#1,ost_anim(a0)
+		move.w	#0,ost_y_vel(a0)	; stop the object when it touches the ceiling
 
 locret_E452:
 		rts	
@@ -19827,13 +19827,13 @@ locret_E452:
 ; lavaball type	05 falls down until it hits the	floor
 
 LBall_Type05:
-		bclr	#1,obStatus(a0)
+		bclr	#1,ost_status(a0)
 		bsr.w	ObjFloorDist
 		tst.w	d1
 		bpl.s	locret_E474
-		move.b	#8,obSubtype(a0)
-		move.b	#1,obAnim(a0)
-		move.w	#0,obVelY(a0)	; stop the object when it touches the floor
+		move.b	#8,ost_subtype(a0)
+		move.b	#1,ost_anim(a0)
+		move.w	#0,ost_y_vel(a0)	; stop the object when it touches the floor
 
 locret_E474:
 		rts	
@@ -19841,28 +19841,28 @@ locret_E474:
 ; lavaball types 06-07 move sideways
 
 LBall_Type06:
-		bset	#0,obStatus(a0)
+		bset	#0,ost_status(a0)
 		moveq	#-8,d3
 		bsr.w	ObjHitWallLeft
 		tst.w	d1
 		bpl.s	locret_E498
-		move.b	#8,obSubtype(a0)
-		move.b	#3,obAnim(a0)
-		move.w	#0,obVelX(a0)	; stop object when it touches a	wall
+		move.b	#8,ost_subtype(a0)
+		move.b	#3,ost_anim(a0)
+		move.w	#0,ost_x_vel(a0)	; stop object when it touches a	wall
 
 locret_E498:
 		rts	
 ; ===========================================================================
 
 LBall_Type07:
-		bclr	#0,obStatus(a0)
+		bclr	#0,ost_status(a0)
 		moveq	#8,d3
 		bsr.w	ObjHitWallRight
 		tst.w	d1
 		bpl.s	locret_E4BC
-		move.b	#8,obSubtype(a0)
-		move.b	#3,obAnim(a0)
-		move.w	#0,obVelX(a0)	; stop object when it touches a	wall
+		move.b	#8,ost_subtype(a0)
+		move.b	#3,ost_anim(a0)
+		move.w	#0,ost_x_vel(a0)	; stop object when it touches a	wall
 
 locret_E4BC:
 		rts	
@@ -19883,7 +19883,7 @@ Ani_Fire:	include "Animations\Fireballs.asm"
 
 Flamethrower:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Flame_Index(pc,d0.w),d1
 		jmp	Flame_Index(pc,d1.w)
 ; ===========================================================================
@@ -19893,33 +19893,33 @@ Flame_Index:	index *
 ; ===========================================================================
 
 Flame_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Flame,obMap(a0)
-		move.w	#$83D9,obGfx(a0)
-		ori.b	#4,obRender(a0)
-		move.b	#1,obPriority(a0)
-		move.w	obY(a0),$30(a0)	; store obY (gets overwritten later though)
-		move.b	#$C,obActWid(a0)
-		move.b	obSubtype(a0),d0
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Flame,ost_mappings(a0)
+		move.w	#$83D9,ost_tile(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	#1,ost_priority(a0)
+		move.w	ost_y_pos(a0),$30(a0)	; store ost_y_pos (gets overwritten later though)
+		move.b	#$C,ost_actwidth(a0)
+		move.b	ost_subtype(a0),d0
 		andi.w	#$F0,d0		; read 1st digit of object type
 		add.w	d0,d0		; multiply by 2
 		move.w	d0,$30(a0)
 		move.w	d0,$32(a0)	; set flaming time
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		andi.w	#$F,d0		; read 2nd digit of object type
 		lsl.w	#5,d0		; multiply by $20
 		move.w	d0,$34(a0)	; set pause time
 		move.b	#$A,$36(a0)
-		btst	#1,obStatus(a0)
+		btst	#1,ost_status(a0)
 		beq.s	Flame_Action
-		move.b	#2,obAnim(a0)
+		move.b	#2,ost_anim(a0)
 		move.b	#$15,$36(a0)
 
 Flame_Action:	; Routine 2
 		subq.w	#1,$30(a0)	; subtract 1 from time
 		bpl.s	loc_E57A	; if time remains, branch
 		move.w	$34(a0),$30(a0)	; begin	pause time
-		bchg	#0,obAnim(a0)
+		bchg	#0,ost_anim(a0)
 		beq.s	loc_E57A
 		move.w	$32(a0),$30(a0)	; begin	flaming	time
 		sfx	sfx_Flamethrower,0,0,0 ; play flame sound
@@ -19927,11 +19927,11 @@ Flame_Action:	; Routine 2
 loc_E57A:
 		lea	(Ani_Flame).l,a1
 		bsr.w	AnimateSprite
-		move.b	#0,obColType(a0)
+		move.b	#0,ost_col_type(a0)
 		move.b	$36(a0),d0
-		cmp.b	obFrame(a0),d0
+		cmp.b	ost_frame(a0),d0
 		bne.s	Flame_ChkDel
-		move.b	#$A3,obColType(a0)
+		move.b	#$A3,ost_col_type(a0)
 
 Flame_ChkDel:
 		out_of_range	DeleteObject
@@ -19946,7 +19946,7 @@ Map_Flame:	include "Mappings\SBZ Flamethrower.asm"
 
 MarbleBrick:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Brick_Index(pc,d0.w),d1
 		jmp	Brick_Index(pc,d1.w)
 ; ===========================================================================
@@ -19958,22 +19958,22 @@ brick_origY:	equ $30
 ; ===========================================================================
 
 Brick_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.b	#$F,obHeight(a0)
-		move.b	#$F,obWidth(a0)
-		move.l	#Map_Brick,obMap(a0)
-		move.w	#$4000,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#3,obPriority(a0)
-		move.b	#$10,obActWid(a0)
-		move.w	obY(a0),brick_origY(a0)
+		addq.b	#2,ost_routine(a0)
+		move.b	#$F,ost_height(a0)
+		move.b	#$F,ost_width(a0)
+		move.l	#Map_Brick,ost_mappings(a0)
+		move.w	#$4000,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#3,ost_priority(a0)
+		move.b	#$10,ost_actwidth(a0)
+		move.w	ost_y_pos(a0),brick_origY(a0)
 		move.w	#$5C0,$32(a0)
 
 Brick_Action:	; Routine 2
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.s	@chkdel
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0 ; get object type
+		move.b	ost_subtype(a0),d0 ; get object type
 		andi.w	#7,d0		; read only the	1st digit
 		add.w	d0,d0
 		move.w	Brick_TypeIndex(pc,d0.w),d1
@@ -19981,7 +19981,7 @@ Brick_Action:	; Routine 2
 		move.w	#$1B,d1
 		move.w	#$10,d2
 		move.w	#$11,d3
-		move.w	obX(a0),d4
+		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject
 
 	@chkdel:
@@ -20007,20 +20007,20 @@ Brick_Type00:
 ; ===========================================================================
 
 Brick_Type02:
-		move.w	(v_player+obX).w,d0
-		sub.w	obX(a0),d0
+		move.w	(v_player+ost_x_pos).w,d0
+		sub.w	ost_x_pos(a0),d0
 		bcc.s	loc_E888
 		neg.w	d0
 
 loc_E888:
 		cmpi.w	#$90,d0		; is Sonic within $90 pixels of	the block?
 		bcc.s	Brick_Type01	; if not, resume wobbling
-		move.b	#3,obSubtype(a0)	; if yes, make the block fall
+		move.b	#3,ost_subtype(a0)	; if yes, make the block fall
 
 Brick_Type01:
 		moveq	#0,d0
 		move.b	(v_oscillate+$16).w,d0
-		btst	#3,obSubtype(a0)
+		btst	#3,ost_subtype(a0)
 		beq.s	loc_E8A8
 		neg.w	d0
 		addi.w	#$10,d0
@@ -20028,20 +20028,20 @@ Brick_Type01:
 loc_E8A8:
 		move.w	brick_origY(a0),d1
 		sub.w	d0,d1
-		move.w	d1,obY(a0)	; update the block's position to make it wobble
+		move.w	d1,ost_y_pos(a0)	; update the block's position to make it wobble
 		rts	
 ; ===========================================================================
 
 Brick_Type03:
 		bsr.w	SpeedToPos
-		addi.w	#$18,obVelY(a0)	; increase falling speed
+		addi.w	#$18,ost_y_vel(a0)	; increase falling speed
 		bsr.w	ObjFloorDist
 		tst.w	d1		; has the block	hit the	floor?
 		bpl.w	locret_E8EE	; if not, branch
-		add.w	d1,obY(a0)
-		clr.w	obVelY(a0)	; stop the block falling
-		move.w	obY(a0),brick_origY(a0)
-		move.b	#4,obSubtype(a0)
+		add.w	d1,ost_y_pos(a0)
+		clr.w	ost_y_vel(a0)	; stop the block falling
+		move.w	ost_y_pos(a0),brick_origY(a0)
+		move.b	#4,ost_subtype(a0)
 		move.w	(a1),d0
 		andi.w	#$3FF,d0
 		if Revision=0
@@ -20050,7 +20050,7 @@ Brick_Type03:
 			cmpi.w	#$16A,d0
 		endc
 		bcc.s	locret_E8EE
-		move.b	#0,obSubtype(a0)
+		move.b	#0,ost_subtype(a0)
 
 locret_E8EE:
 		rts	
@@ -20062,7 +20062,7 @@ Brick_Type04:
 		lsr.w	#3,d0
 		move.w	brick_origY(a0),d1
 		sub.w	d0,d1
-		move.w	d1,obY(a0)	; make the block wobble
+		move.w	d1,ost_y_pos(a0)	; make the block wobble
 		rts	
 		
 Map_Brick:	include "Mappings\MZ Purple Brick Block.asm"
@@ -20073,7 +20073,7 @@ Map_Brick:	include "Mappings\MZ Purple Brick Block.asm"
 
 SpinningLight:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Light_Index(pc,d0.w),d1
 		jmp	Light_Index(pc,d1.w)
 ; ===========================================================================
@@ -20083,21 +20083,21 @@ Light_Index:	index *
 ; ===========================================================================
 
 Light_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Light,obMap(a0)
-		move.w	#0,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#$10,obActWid(a0)
-		move.b	#6,obPriority(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Light,ost_mappings(a0)
+		move.w	#0,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#$10,ost_actwidth(a0)
+		move.b	#6,ost_priority(a0)
 
 Light_Animate:	; Routine 2
-		subq.b	#1,obTimeFrame(a0)
+		subq.b	#1,ost_anim_time(a0)
 		bpl.s	@chkdel
-		move.b	#7,obTimeFrame(a0)
-		addq.b	#1,obFrame(a0)
-		cmpi.b	#6,obFrame(a0)
+		move.b	#7,ost_anim_time(a0)
+		addq.b	#1,ost_frame(a0)
+		cmpi.b	#6,ost_frame(a0)
 		bcs.s	@chkdel
-		move.b	#0,obFrame(a0)
+		move.b	#0,ost_frame(a0)
 
 	@chkdel:
 		out_of_range	DeleteObject
@@ -20111,7 +20111,7 @@ Map_Light:	include "Mappings\SYZ Lamp.asm"
 
 Bumper:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Bump_Index(pc,d0.w),d1
 		jmp	Bump_Index(pc,d1.w)
 ; ===========================================================================
@@ -20121,40 +20121,40 @@ Bump_Index:	index *
 ; ===========================================================================
 
 Bump_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Bump,obMap(a0)
-		move.w	#$380,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#$10,obActWid(a0)
-		move.b	#1,obPriority(a0)
-		move.b	#$D7,obColType(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Bump,ost_mappings(a0)
+		move.w	#$380,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#$10,ost_actwidth(a0)
+		move.b	#1,ost_priority(a0)
+		move.b	#$D7,ost_col_type(a0)
 
 Bump_Hit:	; Routine 2
-		tst.b	obColProp(a0)	; has Sonic touched the	bumper?
+		tst.b	ost_col_property(a0)	; has Sonic touched the	bumper?
 		beq.w	@display	; if not, branch
-		clr.b	obColProp(a0)
+		clr.b	ost_col_property(a0)
 		lea	(v_player).w,a1
-		move.w	obX(a0),d1
-		move.w	obY(a0),d2
-		sub.w	obX(a1),d1
-		sub.w	obY(a1),d2
+		move.w	ost_x_pos(a0),d1
+		move.w	ost_y_pos(a0),d2
+		sub.w	ost_x_pos(a1),d1
+		sub.w	ost_y_pos(a1),d2
 		jsr	(CalcAngle).l
 		jsr	(CalcSine).l
 		muls.w	#-$700,d1
 		asr.l	#8,d1
-		move.w	d1,obVelX(a1)	; bounce Sonic away
+		move.w	d1,ost_x_vel(a1)	; bounce Sonic away
 		muls.w	#-$700,d0
 		asr.l	#8,d0
-		move.w	d0,obVelY(a1)	; bounce Sonic away
-		bset	#1,obStatus(a1)
-		bclr	#4,obStatus(a1)
-		bclr	#5,obStatus(a1)
+		move.w	d0,ost_y_vel(a1)	; bounce Sonic away
+		bset	#1,ost_status(a1)
+		bclr	#4,ost_status(a1)
+		bclr	#5,ost_status(a1)
 		clr.b	$3C(a1)
-		move.b	#1,obAnim(a0)	; use "hit" animation
+		move.b	#1,ost_anim(a0)	; use "hit" animation
 		sfx	sfx_Bumper,0,0,0	; play bumper sound
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
-		move.b	obRespawnNo(a0),d0
+		move.b	ost_respawn(a0),d0
 		beq.s	@addscore
 		cmpi.b	#$8A,2(a2,d0.w)	; has bumper been hit 10 times?
 		bcc.s	@display	; if yes, Sonic	gets no	points
@@ -20166,9 +20166,9 @@ Bump_Hit:	; Routine 2
 		bsr.w	FindFreeObj
 		bne.s	@display
 		move.b	#id_Points,0(a1) ; load points object
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
-		move.b	#4,obFrame(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
+		move.b	#4,ost_frame(a1)
 
 	@display:
 		lea	(Ani_Bump).l,a1
@@ -20180,7 +20180,7 @@ Bump_Hit:	; Routine 2
 @resetcount:
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
-		move.b	obRespawnNo(a0),d0
+		move.b	ost_respawn(a0),d0
 		beq.s	@delete
 		bclr	#7,2(a2,d0.w)
 
@@ -20196,7 +20196,7 @@ Map_Bump:	include "Mappings\SYZ Bumper.asm"
 
 Signpost:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Sign_Index(pc,d0.w),d1
 		jsr	Sign_Index(pc,d1.w)
 		lea	(Ani_Sign).l,a1
@@ -20218,23 +20218,23 @@ sparkle_id:	equ $34		; counter to keep track of sparkles
 ; ===========================================================================
 
 Sign_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Sign,obMap(a0)
-		move.w	#$680,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#$18,obActWid(a0)
-		move.b	#4,obPriority(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Sign,ost_mappings(a0)
+		move.w	#$680,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#$18,ost_actwidth(a0)
+		move.b	#4,ost_priority(a0)
 
 Sign_Touch:	; Routine 2
-		move.w	(v_player+obX).w,d0
-		sub.w	obX(a0),d0
+		move.w	(v_player+ost_x_pos).w,d0
+		sub.w	ost_x_pos(a0),d0
 		bcs.s	@notouch
 		cmpi.w	#$20,d0		; is Sonic within $20 pixels of	the signpost?
 		bcc.s	@notouch	; if not, branch
 		music	sfx_Signpost,0,0,0	; play signpost sound
 		clr.b	(f_timecount).w	; stop time counter
 		move.w	(v_limitright2).w,(v_limitleft2).w ; lock screen position
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 
 	@notouch:
 		rts	
@@ -20244,10 +20244,10 @@ Sign_Spin:	; Routine 4
 		subq.w	#1,spintime(a0)	; subtract 1 from spin time
 		bpl.s	@chksparkle	; if time remains, branch
 		move.w	#60,spintime(a0) ; set spin cycle time to 1 second
-		addq.b	#1,obAnim(a0)	; next spin cycle
-		cmpi.b	#3,obAnim(a0)	; have 3 spin cycles completed?
+		addq.b	#1,ost_anim(a0)	; next spin cycle
+		cmpi.b	#3,ost_anim(a0)	; have 3 spin cycles completed?
 		bne.s	@chksparkle	; if not, branch
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 
 	@chksparkle:
 		subq.w	#1,sparkletime(a0) ; subtract 1 from time delay
@@ -20261,20 +20261,20 @@ Sign_Spin:	; Routine 4
 		bsr.w	FindFreeObj
 		bne.s	@fail
 		move.b	#id_Rings,0(a1)	; load rings object
-		move.b	#id_Ring_Sparkle,obRoutine(a1) ; jump to ring sparkle subroutine
+		move.b	#id_Ring_Sparkle,ost_routine(a1) ; jump to ring sparkle subroutine
 		move.b	(a2)+,d0
 		ext.w	d0
-		add.w	obX(a0),d0
-		move.w	d0,obX(a1)
+		add.w	ost_x_pos(a0),d0
+		move.w	d0,ost_x_pos(a1)
 		move.b	(a2)+,d0
 		ext.w	d0
-		add.w	obY(a0),d0
-		move.w	d0,obY(a1)
-		move.l	#Map_Ring,obMap(a1)
-		move.w	#$27B2,obGfx(a1)
-		move.b	#4,obRender(a1)
-		move.b	#2,obPriority(a1)
-		move.b	#8,obActWid(a1)
+		add.w	ost_y_pos(a0),d0
+		move.w	d0,ost_y_pos(a1)
+		move.l	#Map_Ring,ost_mappings(a1)
+		move.w	#$27B2,ost_tile(a1)
+		move.b	#4,ost_render(a1)
+		move.b	#2,ost_priority(a1)
+		move.b	#8,ost_actwidth(a1)
 
 	@fail:
 		rts	
@@ -20292,7 +20292,7 @@ Sign_SparkPos:	dc.b -$18,-$10		; x-position, y-position
 Sign_SonicRun:	; Routine 6
 		tst.w	(v_debuguse).w	; is debug mode	on?
 		bne.w	locret_ECEE	; if yes, branch
-		btst	#1,(v_player+obStatus).w
+		btst	#1,(v_player+ost_status).w
 		bne.s	loc_EC70
 		move.b	#1,(f_lockctrl).w ; lock controls
 		move.w	#btnR<<8,(v_jpadhold2).w ; make Sonic run to the right
@@ -20300,14 +20300,14 @@ Sign_SonicRun:	; Routine 6
 	loc_EC70:
 		tst.b	(v_player).w
 		beq.s	loc_EC86
-		move.w	(v_player+obX).w,d0
+		move.w	(v_player+ost_x_pos).w,d0
 		move.w	(v_limitright2).w,d1
 		addi.w	#$128,d1
 		cmp.w	d1,d0
 		bcs.s	locret_ECEE
 
 	loc_EC86:
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 
 
 ; ---------------------------------------------------------------------------
@@ -20368,7 +20368,7 @@ Map_Sign:	include "Mappings\Signpost.asm"
 
 GeyserMaker:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	GMake_Index(pc,d0.w),d1
 		jsr	GMake_Index(pc,d1.w)
 		bra.w	Geyser_ChkDel
@@ -20387,12 +20387,12 @@ gmake_parent:	equ $3C		; address of parent object
 ; ===========================================================================
 
 GMake_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Geyser,obMap(a0)
-		move.w	#$E3A8,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#1,obPriority(a0)
-		move.b	#$38,obActWid(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Geyser,ost_mappings(a0)
+		move.w	#$E3A8,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#1,ost_priority(a0)
+		move.b	#$38,ost_actwidth(a0)
 		move.w	#120,gmake_time(a0) ; set time delay to 2 seconds
 
 GMake_Wait:	; Routine 2
@@ -20400,48 +20400,48 @@ GMake_Wait:	; Routine 2
 		bpl.s	@cancel		; if time remains, branch
 
 		move.w	gmake_time(a0),gmake_timer(a0) ; reset timer
-		move.w	(v_player+obY).w,d0
-		move.w	obY(a0),d1
+		move.w	(v_player+ost_y_pos).w,d0
+		move.w	ost_y_pos(a0),d1
 		cmp.w	d1,d0
 		bcc.s	@cancel
 		subi.w	#$170,d1
 		cmp.w	d1,d0
 		bcs.s	@cancel
-		addq.b	#2,obRoutine(a0) ; if Sonic is within range, goto GMake_ChkType
+		addq.b	#2,ost_routine(a0) ; if Sonic is within range, goto GMake_ChkType
 
 	@cancel:
 		rts	
 ; ===========================================================================
 
 GMake_MakeLava:	; Routine 6
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 		bsr.w	FindNextFreeObj
 		bne.s	@fail
 		move.b	#id_LavaGeyser,0(a1) ; load lavafall object
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
-		move.b	obSubtype(a0),obSubtype(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
+		move.b	ost_subtype(a0),ost_subtype(a1)
 		move.l	a0,gmake_parent(a1)
 
 	@fail:
-		move.b	#1,obAnim(a0)
-		tst.b	obSubtype(a0)	; is object type 0 (geyser) ?
+		move.b	#1,ost_anim(a0)
+		tst.b	ost_subtype(a0)	; is object type 0 (geyser) ?
 		beq.s	@isgeyser	; if yes, branch
-		move.b	#4,obAnim(a0)
+		move.b	#4,ost_anim(a0)
 		bra.s	GMake_Display
 ; ===========================================================================
 
 	@isgeyser:
 		movea.l	gmake_parent(a0),a1 ; get parent object address
-		bset	#1,obStatus(a1)
-		move.w	#-$580,obVelY(a1)
+		bset	#1,ost_status(a1)
+		move.w	#-$580,ost_y_vel(a1)
 		bra.s	GMake_Display
 ; ===========================================================================
 
 GMake_ChkType:	; Routine 4
-		tst.b	obSubtype(a0)	; is object type 00 (geyser) ?
+		tst.b	ost_subtype(a0)	; is object type 00 (geyser) ?
 		beq.s	GMake_Display	; if yes, branch
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 		rts	
 ; ===========================================================================
 
@@ -20453,9 +20453,9 @@ GMake_Display:	; Routine 8
 ; ===========================================================================
 
 GMake_Delete:	; Routine $A
-		move.b	#0,obAnim(a0)
-		move.b	#2,obRoutine(a0)
-		tst.b	obSubtype(a0)
+		move.b	#0,ost_anim(a0)
+		move.b	#2,ost_routine(a0)
+		tst.b	ost_subtype(a0)
 		beq.w	DeleteObject
 		rts	
 
@@ -20466,7 +20466,7 @@ GMake_Delete:	; Routine $A
 
 LavaGeyser:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Geyser_Index(pc,d0.w),d1
 		jsr	Geyser_Index(pc,d1.w)
 		bra.w	DisplaySprite
@@ -20481,17 +20481,17 @@ Geyser_Speeds:	dc.w $FB00, 0
 ; ===========================================================================
 
 Geyser_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.w	obY(a0),$30(a0)
-		tst.b	obSubtype(a0)
+		addq.b	#2,ost_routine(a0)
+		move.w	ost_y_pos(a0),$30(a0)
+		tst.b	ost_subtype(a0)
 		beq.s	@isgeyser
-		subi.w	#$250,obY(a0)
+		subi.w	#$250,ost_y_pos(a0)
 
 	@isgeyser:
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		add.w	d0,d0
-		move.w	Geyser_Speeds(pc,d0.w),obVelY(a0)
+		move.w	Geyser_Speeds(pc,d0.w),ost_y_vel(a0)
 		movea.l	a0,a1
 		moveq	#1,d1
 		bsr.s	@makelava
@@ -20504,18 +20504,18 @@ Geyser_Main:	; Routine 0
 
 @makelava:
 		move.b	#id_LavaGeyser,0(a1)
-		move.l	#Map_Geyser,obMap(a1)
-		move.w	#$63A8,obGfx(a1)
-		move.b	#4,obRender(a1)
-		move.b	#$20,obActWid(a1)
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
-		move.b	obSubtype(a0),obSubtype(a1)
-		move.b	#1,obPriority(a1)
-		move.b	#5,obAnim(a1)
-		tst.b	obSubtype(a0)
+		move.l	#Map_Geyser,ost_mappings(a1)
+		move.w	#$63A8,ost_tile(a1)
+		move.b	#4,ost_render(a1)
+		move.b	#$20,ost_actwidth(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
+		move.b	ost_subtype(a0),ost_subtype(a1)
+		move.b	#1,ost_priority(a1)
+		move.b	#5,ost_anim(a1)
+		tst.b	ost_subtype(a0)
 		beq.s	@fail
-		move.b	#2,obAnim(a1)
+		move.b	#2,ost_anim(a1)
 
 	@fail:
 		dbf	d1,@loop
@@ -20523,32 +20523,32 @@ Geyser_Main:	; Routine 0
 ; ===========================================================================
 
 @activate:
-		addi.w	#$60,obY(a1)
+		addi.w	#$60,ost_y_pos(a1)
 		move.w	$30(a0),$30(a1)
 		addi.w	#$60,$30(a1)
-		move.b	#$93,obColType(a1)
-		move.b	#$80,obHeight(a1)
-		bset	#4,obRender(a1)
-		addq.b	#4,obRoutine(a1)
+		move.b	#$93,ost_col_type(a1)
+		move.b	#$80,ost_height(a1)
+		bset	#4,ost_render(a1)
+		addq.b	#4,ost_routine(a1)
 		move.l	a0,$3C(a1)
-		tst.b	obSubtype(a0)
+		tst.b	ost_subtype(a0)
 		beq.s	@sound
 		moveq	#0,d1
 		bsr.w	@loop
-		addq.b	#2,obRoutine(a1)
-		bset	#4,obGfx(a1)
-		addi.w	#$100,obY(a1)
-		move.b	#0,obPriority(a1)
+		addq.b	#2,ost_routine(a1)
+		bset	#4,ost_tile(a1)
+		addi.w	#$100,ost_y_pos(a1)
+		move.b	#0,ost_priority(a1)
 		move.w	$30(a0),$30(a1)
 		move.l	$3C(a0),$3C(a1)
-		move.b	#0,obSubtype(a0)
+		move.b	#0,ost_subtype(a0)
 
 	@sound:
 		sfx	sfx_Burning,0,0,0	; play flame sound
 
 Geyser_Action:	; Routine 2
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		add.w	d0,d0
 		move.w	Geyser_Types(pc,d0.w),d1
 		jsr	Geyser_Types(pc,d1.w)
@@ -20566,26 +20566,26 @@ Geyser_Types:	index *
 ; ===========================================================================
 
 Geyser_Type00:
-		addi.w	#$18,obVelY(a0)	; increase object's falling speed
+		addi.w	#$18,ost_y_vel(a0)	; increase object's falling speed
 		move.w	$30(a0),d0
-		cmp.w	obY(a0),d0
+		cmp.w	ost_y_pos(a0),d0
 		bcc.s	locret_EFDA
-		addq.b	#4,obRoutine(a0)
+		addq.b	#4,ost_routine(a0)
 		movea.l	$3C(a0),a1
-		move.b	#3,obAnim(a1)
+		move.b	#3,ost_anim(a1)
 
 locret_EFDA:
 		rts	
 ; ===========================================================================
 
 Geyser_Type01:
-		addi.w	#$18,obVelY(a0)	; increase object's falling speed
+		addi.w	#$18,ost_y_vel(a0)	; increase object's falling speed
 		move.w	$30(a0),d0
-		cmp.w	obY(a0),d0
+		cmp.w	ost_y_pos(a0),d0
 		bcc.s	locret_EFFA
-		addq.b	#4,obRoutine(a0)
+		addq.b	#4,ost_routine(a0)
 		movea.l	$3C(a0),a1
-		move.b	#1,obAnim(a1)
+		move.b	#1,ost_anim(a1)
 
 locret_EFFA:
 		rts	
@@ -20593,11 +20593,11 @@ locret_EFFA:
 
 loc_EFFC:	; Routine 4
 		movea.l	$3C(a0),a1
-		cmpi.b	#6,obRoutine(a1)
+		cmpi.b	#6,ost_routine(a1)
 		beq.w	Geyser_Delete
-		move.w	obY(a1),d0
+		move.w	ost_y_pos(a1),d0
 		addi.w	#$60,d0
-		move.w	d0,obY(a0)
+		move.w	d0,ost_y_pos(a0)
 		sub.w	$30(a0),d0
 		neg.w	d0
 		moveq	#8,d1
@@ -20611,18 +20611,18 @@ loc_F026:
 		moveq	#$E,d1
 
 loc_F02E:
-		subq.b	#1,obTimeFrame(a0)
+		subq.b	#1,ost_anim_time(a0)
 		bpl.s	loc_F04C
-		move.b	#7,obTimeFrame(a0)
-		addq.b	#1,obAniFrame(a0)
-		cmpi.b	#2,obAniFrame(a0)
+		move.b	#7,ost_anim_time(a0)
+		addq.b	#1,ost_anim_frame(a0)
+		cmpi.b	#2,ost_anim_frame(a0)
 		bcs.s	loc_F04C
-		move.b	#0,obAniFrame(a0)
+		move.b	#0,ost_anim_frame(a0)
 
 loc_F04C:
-		move.b	obAniFrame(a0),d0
+		move.b	ost_anim_frame(a0),d0
 		add.b	d1,d0
-		move.b	d0,obFrame(a0)
+		move.b	d0,ost_frame(a0)
 		bra.w	Geyser_ChkDel
 ; ===========================================================================
 
@@ -20634,7 +20634,7 @@ Geyser_Delete:	; Routine 6
 
 LavaWall:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	LWall_Index(pc,d0.w),d1
 		jmp	LWall_Index(pc,d1.w)
 ; ===========================================================================
@@ -20649,7 +20649,7 @@ lwall_flag:	equ $36		; flag to start wall moving
 ; ===========================================================================
 
 LWall_Main:	; Routine 0
-		addq.b	#4,obRoutine(a0)
+		addq.b	#4,ost_routine(a0)
 		movea.l	a0,a1
 		moveq	#1,d1
 		bra.s	@make
@@ -20661,34 +20661,34 @@ LWall_Main:	; Routine 0
 
 @make:
 		move.b	#id_LavaWall,0(a1)	; load object
-		move.l	#Map_LWall,obMap(a1)
-		move.w	#$63A8,obGfx(a1)
-		move.b	#4,obRender(a1)
-		move.b	#$50,obActWid(a1)
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
-		move.b	#1,obPriority(a1)
-		move.b	#0,obAnim(a1)
-		move.b	#$94,obColType(a1)
+		move.l	#Map_LWall,ost_mappings(a1)
+		move.w	#$63A8,ost_tile(a1)
+		move.b	#4,ost_render(a1)
+		move.b	#$50,ost_actwidth(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
+		move.b	#1,ost_priority(a1)
+		move.b	#0,ost_anim(a1)
+		move.b	#$94,ost_col_type(a1)
 		move.l	a0,$3C(a1)
 
 	@fail:
 		dbf	d1,@loop	; repeat sequence once
 
-		addq.b	#6,obRoutine(a1)
-		move.b	#4,obFrame(a1)
+		addq.b	#6,ost_routine(a1)
+		move.b	#4,ost_frame(a1)
 
 LWall_Action:	; Routine 4
-		move.w	(v_player+obX).w,d0
-		sub.w	obX(a0),d0
+		move.w	(v_player+ost_x_pos).w,d0
+		sub.w	ost_x_pos(a0),d0
 		bcc.s	@rangechk
 		neg.w	d0
 
 	@rangechk:
 		cmpi.w	#$C0,d0		; is Sonic within $C0 pixels (x-axis)?
 		bcc.s	@movewall	; if not, branch
-		move.w	(v_player+obY).w,d0
-		sub.w	obY(a0),d0
+		move.w	(v_player+ost_y_pos).w,d0
+		sub.w	ost_y_pos(a0),d0
 		bcc.s	@rangechk2
 		neg.w	d0
 
@@ -20702,7 +20702,7 @@ LWall_Action:	; Routine 4
 @movewall:
 		tst.b	lwall_flag(a0)	; is object set	to move?
 		beq.s	LWall_Solid	; if not, branch
-		move.w	#$180,obVelX(a0) ; set object speed
+		move.w	#$180,ost_x_vel(a0) ; set object speed
 		subq.b	#2,$24(a0)
 
 LWall_Solid:	; Routine 2
@@ -20710,21 +20710,21 @@ LWall_Solid:	; Routine 2
 		move.w	#$18,d2
 		move.w	d2,d3
 		addq.w	#1,d3
-		move.w	obX(a0),d4
-		move.b	obRoutine(a0),d0
+		move.w	ost_x_pos(a0),d4
+		move.b	ost_routine(a0),d0
 		move.w	d0,-(sp)
 		bsr.w	SolidObject
 		move.w	(sp)+,d0
-		move.b	d0,obRoutine(a0)
-		cmpi.w	#$6A0,obX(a0)	; has object reached $6A0 on the x-axis?
+		move.b	d0,ost_routine(a0)
+		cmpi.w	#$6A0,ost_x_pos(a0)	; has object reached $6A0 on the x-axis?
 		bne.s	@animate	; if not, branch
-		clr.w	obVelX(a0)	; stop object moving
+		clr.w	ost_x_vel(a0)	; stop object moving
 		clr.b	lwall_flag(a0)
 
 	@animate:
 		lea	(Ani_LWall).l,a1
 		bsr.w	AnimateSprite
-		cmpi.b	#4,(v_player+obRoutine).w
+		cmpi.b	#4,(v_player+ost_routine).w
 		bcc.s	@rangechk
 		bsr.w	SpeedToPos
 
@@ -20741,18 +20741,18 @@ LWall_Solid:	; Routine 2
 @chkgone:
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
-		move.b	obRespawnNo(a0),d0
+		move.b	ost_respawn(a0),d0
 		bclr	#7,2(a2,d0.w)
-		move.b	#8,obRoutine(a0)
+		move.b	#8,ost_routine(a0)
 		rts	
 ; ===========================================================================
 
 LWall_Move:	; Routine 6
 		movea.l	$3C(a0),a1
-		cmpi.b	#8,obRoutine(a1)
+		cmpi.b	#8,ost_routine(a1)
 		beq.s	LWall_Delete
-		move.w	obX(a1),obX(a0)	; move rest of lava wall
-		subi.w	#$80,obX(a0)
+		move.w	ost_x_pos(a1),ost_x_pos(a0)	; move rest of lava wall
+		subi.w	#$80,ost_x_pos(a0)
 		bra.w	DisplaySprite
 ; ===========================================================================
 
@@ -20764,7 +20764,7 @@ LWall_Delete:	; Routine 8
 
 LavaTag:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	LTag_Index(pc,d0.w),d1
 		jmp	LTag_Index(pc,d1.w)
 ; ===========================================================================
@@ -20777,15 +20777,15 @@ LTag_ColTypes:	dc.b $96, $94, $95
 ; ===========================================================================
 
 LTag_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
-		move.b	LTag_ColTypes(pc,d0.w),obColType(a0)
-		move.l	#Map_LTag,obMap(a0)
-		move.b	#$84,obRender(a0)
+		move.b	ost_subtype(a0),d0
+		move.b	LTag_ColTypes(pc,d0.w),ost_col_type(a0)
+		move.l	#Map_LTag,ost_mappings(a0)
+		move.b	#$84,ost_render(a0)
 
 LTag_ChkDel:	; Routine 2
-		move.w	obX(a0),d0
+		move.w	ost_x_pos(a0),d0
 		andi.w	#$FF80,d0
 		move.w	(v_screenposx).w,d1
 		subi.w	#$80,d1
@@ -20807,7 +20807,7 @@ Map_LWall:	include "Mappings\MZ Lava Wall.asm"
 
 MotoBug:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Moto_Index(pc,d0.w),d1
 		jmp	Moto_Index(pc,d1.w)
 ; ===========================================================================
@@ -20819,37 +20819,37 @@ Moto_Index:	index *
 ; ===========================================================================
 
 Moto_Main:	; Routine 0
-		move.l	#Map_Moto,obMap(a0)
-		move.w	#$4F0,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#4,obPriority(a0)
-		move.b	#$14,obActWid(a0)
-		tst.b	obAnim(a0)	; is object a smoke trail?
+		move.l	#Map_Moto,ost_mappings(a0)
+		move.w	#$4F0,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#4,ost_priority(a0)
+		move.b	#$14,ost_actwidth(a0)
+		tst.b	ost_anim(a0)	; is object a smoke trail?
 		bne.s	@smoke		; if yes, branch
-		move.b	#$E,obHeight(a0)
-		move.b	#8,obWidth(a0)
-		move.b	#$C,obColType(a0)
+		move.b	#$E,ost_height(a0)
+		move.b	#8,ost_width(a0)
+		move.b	#$C,ost_col_type(a0)
 		bsr.w	ObjectFall
 		jsr	(ObjFloorDist).l
 		tst.w	d1
 		bpl.s	@notonfloor
-		add.w	d1,obY(a0)	; match	object's position with the floor
-		move.w	#0,obVelY(a0)
-		addq.b	#2,obRoutine(a0) ; goto Moto_Action next
-		bchg	#0,obStatus(a0)
+		add.w	d1,ost_y_pos(a0)	; match	object's position with the floor
+		move.w	#0,ost_y_vel(a0)
+		addq.b	#2,ost_routine(a0) ; goto Moto_Action next
+		bchg	#0,ost_status(a0)
 
 	@notonfloor:
 		rts	
 ; ===========================================================================
 
 @smoke:
-		addq.b	#4,obRoutine(a0) ; goto Moto_Animate next
+		addq.b	#4,ost_routine(a0) ; goto Moto_Animate next
 		bra.w	Moto_Animate
 ; ===========================================================================
 
 Moto_Action:	; Routine 2
 		moveq	#0,d0
-		move.b	ob2ndRout(a0),d0
+		move.b	ost_routine2(a0),d0
 		move.w	Moto_ActIndex(pc,d0.w),d1
 		jsr	Moto_ActIndex(pc,d1.w)
 		lea	(Ani_Moto).l,a1
@@ -20866,7 +20866,7 @@ RememberState:
 	@offscreen:
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
-		move.b	obRespawnNo(a0),d0
+		move.b	ost_respawn(a0),d0
 		beq.s	@delete
 		bclr	#7,2(a2,d0.w)
 
@@ -20885,12 +20885,12 @@ Moto_ActIndex:	index *
 @move:
 		subq.w	#1,@time(a0)	; subtract 1 from pause	time
 		bpl.s	@wait		; if time remains, branch
-		addq.b	#2,ob2ndRout(a0)
-		move.w	#-$100,obVelX(a0) ; move object to the left
-		move.b	#1,obAnim(a0)
-		bchg	#0,obStatus(a0)
+		addq.b	#2,ost_routine2(a0)
+		move.w	#-$100,ost_x_vel(a0) ; move object to the left
+		move.b	#1,ost_anim(a0)
+		bchg	#0,ost_status(a0)
 		bne.s	@wait
-		neg.w	obVelX(a0)	; change direction
+		neg.w	ost_x_vel(a0)	; change direction
 
 	@wait:
 		rts	
@@ -20903,26 +20903,26 @@ Moto_ActIndex:	index *
 		blt.s	@pause
 		cmpi.w	#$C,d1
 		bge.s	@pause
-		add.w	d1,obY(a0)	; match	object's position with the floor
+		add.w	d1,ost_y_pos(a0)	; match	object's position with the floor
 		subq.b	#1,@smokedelay(a0)
 		bpl.s	@nosmoke
 		move.b	#$F,@smokedelay(a0)
 		bsr.w	FindFreeObj
 		bne.s	@nosmoke
 		move.b	#id_MotoBug,0(a1) ; load exhaust smoke object
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
-		move.b	obStatus(a0),obStatus(a1)
-		move.b	#2,obAnim(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
+		move.b	ost_status(a0),ost_status(a1)
+		move.b	#2,ost_anim(a1)
 
 	@nosmoke:
 		rts	
 
 @pause:
-		subq.b	#2,ob2ndRout(a0)
+		subq.b	#2,ost_routine2(a0)
 		move.w	#59,@time(a0)	; set pause time to 1 second
-		move.w	#0,obVelX(a0)	; stop the object moving
-		move.b	#0,obAnim(a0)
+		move.w	#0,ost_x_vel(a0)	; stop the object moving
+		move.b	#0,ost_anim(a0)
 		rts	
 ; ===========================================================================
 
@@ -20954,8 +20954,8 @@ Yad_ChkWall:
 		andi.w	#3,d0
 		bne.s	loc_F836
 		moveq	#0,d3
-		move.b	obActWid(a0),d3
-		tst.w	obVelX(a0)
+		move.b	ost_actwidth(a0),d3
+		tst.w	ost_x_vel(a0)
 		bmi.s	loc_F82C
 		bsr.w	ObjHitWallRight
 		tst.w	d1
@@ -20984,7 +20984,7 @@ loc_F836:
 
 Yadrin:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Yad_Index(pc,d0.w),d1
 		jmp	Yad_Index(pc,d1.w)
 ; ===========================================================================
@@ -20996,22 +20996,22 @@ yad_timedelay:	equ $30
 ; ===========================================================================
 
 Yad_Main:	; Routine 0
-		move.l	#Map_Yad,obMap(a0)
-		move.w	#$247B,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#4,obPriority(a0)
-		move.b	#$14,obActWid(a0)
-		move.b	#$11,obHeight(a0)
-		move.b	#8,obWidth(a0)
-		move.b	#$CC,obColType(a0)
+		move.l	#Map_Yad,ost_mappings(a0)
+		move.w	#$247B,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#4,ost_priority(a0)
+		move.b	#$14,ost_actwidth(a0)
+		move.b	#$11,ost_height(a0)
+		move.b	#8,ost_width(a0)
+		move.b	#$CC,ost_col_type(a0)
 		bsr.w	ObjectFall
 		bsr.w	ObjFloorDist
 		tst.w	d1
 		bpl.s	locret_F89E
-		add.w	d1,obY(a0)	; match	object's position with the floor
-		move.w	#0,obVelY(a0)
-		addq.b	#2,obRoutine(a0)
-		bchg	#0,obStatus(a0)
+		add.w	d1,ost_y_pos(a0)	; match	object's position with the floor
+		move.w	#0,ost_y_vel(a0)
+		addq.b	#2,ost_routine(a0)
+		bchg	#0,ost_status(a0)
 
 	locret_F89E:
 		rts	
@@ -21019,7 +21019,7 @@ Yad_Main:	; Routine 0
 
 Yad_Action:	; Routine 2
 		moveq	#0,d0
-		move.b	ob2ndRout(a0),d0
+		move.b	ost_routine2(a0),d0
 		move.w	Yad_Index2(pc,d0.w),d1
 		jsr	Yad_Index2(pc,d1.w)
 		lea	(Ani_Yad).l,a1
@@ -21034,12 +21034,12 @@ Yad_Index2:	index *
 Yad_Move:
 		subq.w	#1,yad_timedelay(a0) ; subtract 1 from pause time
 		bpl.s	locret_F8E2	; if time remains, branch
-		addq.b	#2,ob2ndRout(a0)
-		move.w	#-$100,obVelX(a0) ; move object
-		move.b	#1,obAnim(a0)
-		bchg	#0,obStatus(a0)
+		addq.b	#2,ost_routine2(a0)
+		move.w	#-$100,ost_x_vel(a0) ; move object
+		move.b	#1,ost_anim(a0)
+		bchg	#0,ost_status(a0)
 		bne.s	locret_F8E2
-		neg.w	obVelX(a0)	; change direction
+		neg.w	ost_x_vel(a0)	; change direction
 
 	locret_F8E2:
 		rts	
@@ -21052,17 +21052,17 @@ Yad_FixToFloor:
 		blt.s	Yad_Pause
 		cmpi.w	#$C,d1
 		bge.s	Yad_Pause
-		add.w	d1,obY(a0)	; match	object's position to the floor
+		add.w	d1,ost_y_pos(a0)	; match	object's position to the floor
 		bsr.w	Yad_ChkWall
 		bne.s	Yad_Pause
 		rts	
 ; ===========================================================================
 
 Yad_Pause:
-		subq.b	#2,ob2ndRout(a0)
+		subq.b	#2,ost_routine2(a0)
 		move.w	#59,yad_timedelay(a0) ; set pause time to 1 second
-		move.w	#0,obVelX(a0)
-		move.b	#0,obAnim(a0)
+		move.w	#0,ost_x_vel(a0)
+		move.b	#0,ost_anim(a0)
 		rts	
 
 Ani_Yad:	include "Animations\Yadrin.asm"
@@ -21082,24 +21082,24 @@ Map_Yad:	include "Mappings\Yadrin.asm"
 
 
 SolidObject:
-		tst.b	obSolid(a0)	; is Sonic standing on the object?
+		tst.b	ost_solid(a0)	; is Sonic standing on the object?
 		beq.w	Solid_ChkEnter	; if not, branch
 		move.w	d1,d2
 		add.w	d2,d2
 		lea	(v_player).w,a1
-		btst	#1,obStatus(a1)	; is Sonic in the air?
+		btst	#1,ost_status(a1)	; is Sonic in the air?
 		bne.s	@leave		; if yes, branch
-		move.w	obX(a1),d0
-		sub.w	obX(a0),d0
+		move.w	ost_x_pos(a1),d0
+		sub.w	ost_x_pos(a0),d0
 		add.w	d1,d0
 		bmi.s	@leave		; if Sonic moves off the left, branch
 		cmp.w	d2,d0		; has Sonic moved off the right?
 		bcs.s	@stand		; if not, branch
 
 	@leave:
-		bclr	#3,obStatus(a1)	; clear Sonic's standing flag
-		bclr	#3,obStatus(a0)	; clear object's standing flag
-		clr.b	obSolid(a0)
+		bclr	#3,ost_status(a1)	; clear Sonic's standing flag
+		bclr	#3,ost_status(a0)	; clear object's standing flag
+		clr.b	ost_solid(a0)
 		moveq	#0,d4
 		rts	
 
@@ -21111,24 +21111,24 @@ SolidObject:
 ; ===========================================================================
 
 SolidObject71:
-		tst.b	obSolid(a0)
+		tst.b	ost_solid(a0)
 		beq.w	loc_FAD0
 		move.w	d1,d2
 		add.w	d2,d2
 		lea	(v_player).w,a1
-		btst	#1,obStatus(a1)
+		btst	#1,ost_status(a1)
 		bne.s	@leave
-		move.w	obX(a1),d0
-		sub.w	obX(a0),d0
+		move.w	ost_x_pos(a1),d0
+		sub.w	ost_x_pos(a0),d0
 		add.w	d1,d0
 		bmi.s	@leave
 		cmp.w	d2,d0
 		bcs.s	@stand
 
 	@leave:
-		bclr	#3,obStatus(a1)
-		bclr	#3,obStatus(a0)
-		clr.b	obSolid(a0)
+		bclr	#3,ost_status(a1)
+		bclr	#3,ost_status(a0)
+		clr.b	ost_solid(a0)
 		moveq	#0,d4
 		rts	
 
@@ -21141,10 +21141,10 @@ SolidObject71:
 
 SolidObject2F:
 		lea	(v_player).w,a1
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.w	Solid_Ignore
-		move.w	obX(a1),d0
-		sub.w	obX(a0),d0
+		move.w	ost_x_pos(a1),d0
+		sub.w	ost_x_pos(a0),d0
 		add.w	d1,d0
 		bmi.w	Solid_Ignore
 		move.w	d1,d3
@@ -21152,7 +21152,7 @@ SolidObject2F:
 		cmp.w	d3,d0
 		bhi.w	Solid_Ignore
 		move.w	d0,d5
-		btst	#0,obRender(a0)	; is object horizontally flipped?
+		btst	#0,ost_render(a0)	; is object horizontally flipped?
 		beq.s	@notflipped	; if not, branch
 		not.w	d5
 		add.w	d3,d5
@@ -21162,12 +21162,12 @@ SolidObject2F:
 		moveq	#0,d3
 		move.b	(a2,d5.w),d3
 		sub.b	(a2),d3
-		move.w	obY(a0),d5
+		move.w	ost_y_pos(a0),d5
 		sub.w	d3,d5
-		move.b	obHeight(a1),d3
+		move.b	ost_height(a1),d3
 		ext.w	d3
 		add.w	d3,d2
-		move.w	obY(a1),d3
+		move.w	ost_y_pos(a1),d3
 		sub.w	d5,d3
 		addq.w	#4,d3
 		add.w	d2,d3
@@ -21180,24 +21180,24 @@ SolidObject2F:
 ; ===========================================================================
 
 Solid_ChkEnter:
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.w	Solid_Ignore
 
 loc_FAD0:
 		lea	(v_player).w,a1
-		move.w	obX(a1),d0
-		sub.w	obX(a0),d0
+		move.w	ost_x_pos(a1),d0
+		sub.w	ost_x_pos(a0),d0
 		add.w	d1,d0
 		bmi.w	Solid_Ignore	; if Sonic moves off the left, branch
 		move.w	d1,d3
 		add.w	d3,d3
 		cmp.w	d3,d0		; has Sonic moved off the right?
 		bhi.w	Solid_Ignore	; if yes, branch
-		move.b	obHeight(a1),d3
+		move.b	ost_height(a1),d3
 		ext.w	d3
 		add.w	d3,d2
-		move.w	obY(a1),d3
-		sub.w	obY(a0),d3
+		move.w	ost_y_pos(a1),d3
+		sub.w	ost_y_pos(a0),d3
 		addq.w	#4,d3
 		add.w	d2,d3
 		bmi.w	Solid_Ignore	; if Sonic moves above, branch
@@ -21209,7 +21209,7 @@ loc_FAD0:
 loc_FB0E:
 		tst.b	(f_lockmulti).w	; are controls locked?
 		bmi.w	Solid_Ignore	; if yes, branch
-		cmpi.b	#6,(v_player+obRoutine).w ; is Sonic dying?
+		cmpi.b	#6,(v_player+ost_routine).w ; is Sonic dying?
 		if Revision=0
 		bcc.w	Solid_Ignore	; if yes, branch
 		else
@@ -21243,25 +21243,25 @@ loc_FB0E:
 		tst.w	d0		; where is Sonic?
 		beq.s	Solid_Centre	; if inside the object, branch
 		bmi.s	Solid_Right	; if right of the object, branch
-		tst.w	obVelX(a1)	; is Sonic moving left?
+		tst.w	ost_x_vel(a1)	; is Sonic moving left?
 		bmi.s	Solid_Centre	; if yes, branch
 		bra.s	Solid_Left
 ; ===========================================================================
 
 Solid_Right:
-		tst.w	obVelX(a1)	; is Sonic moving right?
+		tst.w	ost_x_vel(a1)	; is Sonic moving right?
 		bpl.s	Solid_Centre	; if yes, branch
 
 Solid_Left:
-		move.w	#0,obInertia(a1)
-		move.w	#0,obVelX(a1)	; stop Sonic moving
+		move.w	#0,ost_inertia(a1)
+		move.w	#0,ost_x_vel(a1)	; stop Sonic moving
 
 Solid_Centre:
-		sub.w	d0,obX(a1)	; correct Sonic's position
-		btst	#1,obStatus(a1)	; is Sonic in the air?
+		sub.w	d0,ost_x_pos(a1)	; correct Sonic's position
+		btst	#1,ost_status(a1)	; is Sonic in the air?
 		bne.s	Solid_SideAir	; if yes, branch
-		bset	#5,obStatus(a1)	; make Sonic push object
-		bset	#5,obStatus(a0)	; make object be pushed
+		bset	#5,ost_status(a1)	; make Sonic push object
+		bset	#5,ost_status(a0)	; make object be pushed
 		moveq	#1,d4		; return side collision
 		rts	
 ; ===========================================================================
@@ -21273,13 +21273,13 @@ Solid_SideAir:
 ; ===========================================================================
 
 Solid_Ignore:
-		btst	#5,obStatus(a0)	; is Sonic pushing?
+		btst	#5,ost_status(a0)	; is Sonic pushing?
 		beq.s	Solid_Debug	; if not, branch
-		move.w	#id_Run,obAnim(a1) ; use running animation
+		move.w	#id_Run,ost_anim(a1) ; use running animation
 
 Solid_NotPushing:
-		bclr	#5,obStatus(a0)	; clear pushing flag
-		bclr	#5,obStatus(a1)	; clear Sonic's pushing flag
+		bclr	#5,ost_status(a0)	; clear pushing flag
+		bclr	#5,ost_status(a1)	; clear Sonic's pushing flag
 
 Solid_Debug:
 		moveq	#0,d4		; return no collision
@@ -21295,13 +21295,13 @@ Solid_TopBottom:
 ; ===========================================================================
 
 Solid_Below:
-		tst.w	obVelY(a1)	; is Sonic moving vertically?
+		tst.w	ost_y_vel(a1)	; is Sonic moving vertically?
 		beq.s	Solid_Squash	; if not, branch
 		bpl.s	Solid_TopBtmAir	; if moving downwards, branch
 		tst.w	d3		; is Sonic above the object?
 		bpl.s	Solid_TopBtmAir	; if yes, branch
-		sub.w	d3,obY(a1)	; correct Sonic's position
-		move.w	#0,obVelY(a1)	; stop Sonic moving
+		sub.w	d3,ost_y_pos(a1)	; correct Sonic's position
+		move.w	#0,ost_y_vel(a1)	; stop Sonic moving
 
 Solid_TopBtmAir:
 		moveq	#-1,d4
@@ -21309,7 +21309,7 @@ Solid_TopBtmAir:
 ; ===========================================================================
 
 Solid_Squash:
-		btst	#1,obStatus(a1)	; is Sonic in the air?
+		btst	#1,ost_status(a1)	; is Sonic in the air?
 		bne.s	Solid_TopBtmAir	; if yes, branch
 		move.l	a0,-(sp)
 		movea.l	a1,a0
@@ -21322,21 +21322,21 @@ Solid_Squash:
 Solid_Landed:
 		subq.w	#4,d3
 		moveq	#0,d1
-		move.b	obActWid(a0),d1
+		move.b	ost_actwidth(a0),d1
 		move.w	d1,d2
 		add.w	d2,d2
-		add.w	obX(a1),d1
-		sub.w	obX(a0),d1
+		add.w	ost_x_pos(a1),d1
+		sub.w	ost_x_pos(a0),d1
 		bmi.s	Solid_Miss	; if Sonic is right of object, branch
 		cmp.w	d2,d1		; is Sonic left of object?
 		bcc.s	Solid_Miss	; if yes, branch
-		tst.w	obVelY(a1)	; is Sonic moving upwards?
+		tst.w	ost_y_vel(a1)	; is Sonic moving upwards?
 		bmi.s	Solid_Miss	; if yes, branch
-		sub.w	d3,obY(a1)	; correct Sonic's position
-		subq.w	#1,obY(a1)
+		sub.w	d3,ost_y_pos(a1)	; correct Sonic's position
+		subq.w	#1,ost_y_pos(a1)
 		bsr.s	Solid_ResetFloor
-		move.b	#2,obSolid(a0) ; set standing flags
-		bset	#3,obStatus(a0)
+		move.b	#2,ost_solid(a0) ; set standing flags
+		bset	#3,ost_status(a0)
 		moveq	#-1,d4		; return top/bottom collision
 		rts	
 ; ===========================================================================
@@ -21351,7 +21351,7 @@ Solid_Miss:
 
 
 Solid_ResetFloor:
-		btst	#3,obStatus(a1)	; is Sonic standing on something?
+		btst	#3,ost_status(a1)	; is Sonic standing on something?
 		beq.s	@notonobj	; if not, branch
 
 		moveq	#0,d0
@@ -21359,8 +21359,8 @@ Solid_ResetFloor:
 		lsl.w	#6,d0
 		addi.l	#(v_objspace&$FFFFFF),d0
 		movea.l	d0,a2
-		bclr	#3,obStatus(a2)	; clear object's standing flags
-		clr.b	obSolid(a2)
+		bclr	#3,ost_status(a2)	; clear object's standing flags
+		clr.b	ost_solid(a2)
 
 	@notonobj:
 		move.w	a0,d0
@@ -21368,10 +21368,10 @@ Solid_ResetFloor:
 		lsr.w	#6,d0
 		andi.w	#$7F,d0
 		move.b	d0,standonobject(a1)	; set object being stood on
-		move.b	#0,obAngle(a1)	; clear Sonic's angle
-		move.w	#0,obVelY(a1)	; stop Sonic
-		move.w	obVelX(a1),obInertia(a1)
-		btst	#1,obStatus(a1)	; is Sonic in the air?
+		move.b	#0,ost_angle(a1)	; clear Sonic's angle
+		move.w	#0,ost_y_vel(a1)	; stop Sonic
+		move.w	ost_x_vel(a1),ost_inertia(a1)
+		btst	#1,ost_status(a1)	; is Sonic in the air?
 		beq.s	@notinair	; if not, branch
 		move.l	a0,-(sp)
 		movea.l	a1,a0
@@ -21379,8 +21379,8 @@ Solid_ResetFloor:
 		movea.l	(sp)+,a0
 
 	@notinair:
-		bset	#3,obStatus(a1)	; set object standing flag
-		bset	#3,obStatus(a0)	; set Sonic standing on object flag
+		bset	#3,ost_status(a1)	; set object standing flag
+		bset	#3,ost_status(a0)	; set Sonic standing on object flag
 		rts	
 ; End of function Solid_ResetFloor
 
@@ -21390,7 +21390,7 @@ Solid_ResetFloor:
 
 SmashBlock:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Smab_Index(pc,d0.w),d1
 		jsr	Smab_Index(pc,d1.w)
 		bra.w	RememberState
@@ -21402,13 +21402,13 @@ Smab_Index:	index *
 ; ===========================================================================
 
 Smab_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Smab,obMap(a0)
-		move.w	#$42B8,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#$10,obActWid(a0)
-		move.b	#4,obPriority(a0)
-		move.b	obSubtype(a0),obFrame(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Smab,ost_mappings(a0)
+		move.w	#$42B8,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#$10,ost_actwidth(a0)
+		move.b	#4,ost_priority(a0)
+		move.b	ost_subtype(a0),ost_frame(a0)
 
 Smab_Solid:	; Routine 2
 
@@ -21416,13 +21416,13 @@ sonicAniFrame:	equ $32		; Sonic's current animation number
 @count:		equ $34		; number of blocks hit + previous stuff
 
 		move.w	(v_itembonus).w,$34(a0)
-		move.b	(v_player+obAnim).w,sonicAniFrame(a0) ; load Sonic's animation number
+		move.b	(v_player+ost_anim).w,sonicAniFrame(a0) ; load Sonic's animation number
 		move.w	#$1B,d1
 		move.w	#$10,d2
 		move.w	#$11,d3
-		move.w	obX(a0),d4
+		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject
-		btst	#3,obStatus(a0)	; has Sonic landed on the block?
+		btst	#3,ost_status(a0)	; has Sonic landed on the block?
 		bne.s	@smash		; if yes, branch
 
 	@notspinning:
@@ -21433,17 +21433,17 @@ sonicAniFrame:	equ $32		; Sonic's current animation number
 		cmpi.b	#id_Roll,sonicAniFrame(a0) ; is Sonic rolling/jumping?
 		bne.s	@notspinning	; if not, branch
 		move.w	@count(a0),(v_itembonus).w
-		bset	#2,obStatus(a1)
-		move.b	#$E,obHeight(a1)
-		move.b	#7,obWidth(a1)
-		move.b	#id_Roll,obAnim(a1) ; make Sonic roll
-		move.w	#-$300,obVelY(a1) ; rebound Sonic
-		bset	#1,obStatus(a1)
-		bclr	#3,obStatus(a1)
-		move.b	#2,obRoutine(a1)
-		bclr	#3,obStatus(a0)
-		clr.b	obSolid(a0)
-		move.b	#1,obFrame(a0)
+		bset	#2,ost_status(a1)
+		move.b	#$E,ost_height(a1)
+		move.b	#7,ost_width(a1)
+		move.b	#id_Roll,ost_anim(a1) ; make Sonic roll
+		move.w	#-$300,ost_y_vel(a1) ; rebound Sonic
+		bset	#1,ost_status(a1)
+		bclr	#3,ost_status(a1)
+		move.b	#2,ost_routine(a1)
+		bclr	#3,ost_status(a0)
+		clr.b	ost_solid(a0)
+		move.b	#1,ost_frame(a0)
 		lea	(Smab_Speeds).l,a4 ; load broken fragment speed data
 		moveq	#3,d1		; set number of	fragments to 4
 		move.w	#$38,d2
@@ -21451,8 +21451,8 @@ sonicAniFrame:	equ $32		; Sonic's current animation number
 		bsr.w	FindFreeObj
 		bne.s	Smab_Points
 		move.b	#id_Points,0(a1) ; load points object
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.w	(v_itembonus).w,d2
 		addq.w	#2,(v_itembonus).w ; increment bonus counter
 		cmpi.w	#6,d2		; have fewer than 3 blocks broken?
@@ -21470,13 +21470,13 @@ sonicAniFrame:	equ $32		; Sonic's current animation number
 	@givepoints:
 		jsr	(AddPoints).l
 		lsr.w	#1,d2
-		move.b	d2,obFrame(a1)
+		move.b	d2,ost_frame(a1)
 
 Smab_Points:	; Routine 4
 		bsr.w	SpeedToPos
-		addi.w	#$38,obVelY(a0)
+		addi.w	#$38,ost_y_vel(a0)
 		bsr.w	DisplaySprite
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.w	DeleteObject
 		rts	
 ; ===========================================================================
@@ -21495,7 +21495,7 @@ Map_Smab:	include "Mappings\MZ Smashable Green Block.asm"
 
 MovingBlock:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	MBlock_Index(pc,d0.w),d1
 		jmp	MBlock_Index(pc,d1.w)
 ; ===========================================================================
@@ -21515,50 +21515,50 @@ MBlock_Var:	dc.b $10, 0		; object width,	frame number
 ; ===========================================================================
 
 MBlock_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_MBlock,obMap(a0)
-		move.w	#$42B8,obGfx(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_MBlock,ost_mappings(a0)
+		move.w	#$42B8,ost_tile(a0)
 		cmpi.b	#id_LZ,(v_zone).w ; check if level is LZ
 		bne.s	loc_FE44
-		move.l	#Map_MBlockLZ,obMap(a0) ; LZ specific code
-		move.w	#$43BC,obGfx(a0)
-		move.b	#7,obHeight(a0)
+		move.l	#Map_MBlockLZ,ost_mappings(a0) ; LZ specific code
+		move.w	#$43BC,ost_tile(a0)
+		move.b	#7,ost_height(a0)
 
 loc_FE44:
 		cmpi.b	#id_SBZ,(v_zone).w ; check if level is SBZ
 		bne.s	loc_FE60
-		move.w	#$22C0,obGfx(a0) ; SBZ specific code (object 5228)
-		cmpi.b	#$28,obSubtype(a0) ; is object 5228 ?
+		move.w	#$22C0,ost_tile(a0) ; SBZ specific code (object 5228)
+		cmpi.b	#$28,ost_subtype(a0) ; is object 5228 ?
 		beq.s	loc_FE60	; if yes, branch
-		move.w	#$4460,obGfx(a0) ; SBZ specific code (object 523x)
+		move.w	#$4460,ost_tile(a0) ; SBZ specific code (object 523x)
 
 loc_FE60:
-		move.b	#4,obRender(a0)
+		move.b	#4,ost_render(a0)
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		lsr.w	#3,d0
 		andi.w	#$1E,d0
 		lea	MBlock_Var(pc,d0.w),a2
-		move.b	(a2)+,obActWid(a0)
-		move.b	(a2)+,obFrame(a0)
-		move.b	#4,obPriority(a0)
-		move.w	obX(a0),mblock_origX(a0)
-		move.w	obY(a0),mblock_origY(a0)
-		andi.b	#$F,obSubtype(a0)
+		move.b	(a2)+,ost_actwidth(a0)
+		move.b	(a2)+,ost_frame(a0)
+		move.b	#4,ost_priority(a0)
+		move.w	ost_x_pos(a0),mblock_origX(a0)
+		move.w	ost_y_pos(a0),mblock_origY(a0)
+		andi.b	#$F,ost_subtype(a0)
 
 MBlock_Platform: ; Routine 2
 		bsr.w	MBlock_Move
 		moveq	#0,d1
-		move.b	obActWid(a0),d1
+		move.b	ost_actwidth(a0),d1
 		jsr	(PlatformObject).l
 		bra.s	MBlock_ChkDel
 ; ===========================================================================
 
 MBlock_StandOn:	; Routine 4
 		moveq	#0,d1
-		move.b	obActWid(a0),d1
+		move.b	ost_actwidth(a0),d1
 		jsr	(ExitPlatform).l
-		move.w	obX(a0),-(sp)
+		move.w	ost_x_pos(a0),-(sp)
 		bsr.w	MBlock_Move
 		move.w	(sp)+,d2
 		jsr	(MvSonicOnPtfm2).l
@@ -21570,7 +21570,7 @@ MBlock_ChkDel:
 
 MBlock_Move:
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		andi.w	#$F,d0
 		add.w	d0,d0
 		move.w	MBlock_TypeIndex(pc,d0.w),d1
@@ -21597,7 +21597,7 @@ MBlock_Type00:
 MBlock_Type01:
 		move.b	(v_oscillate+$E).w,d0
 		move.w	#$60,d1
-		btst	#0,obStatus(a0)
+		btst	#0,ost_status(a0)
 		beq.s	loc_FF26
 		neg.w	d0
 		add.w	d1,d0
@@ -21605,14 +21605,14 @@ MBlock_Type01:
 loc_FF26:
 		move.w	mblock_origX(a0),d1
 		sub.w	d0,d1
-		move.w	d1,obX(a0)
+		move.w	d1,ost_x_pos(a0)
 		rts	
 ; ===========================================================================
 
 MBlock_Type02:
-		cmpi.b	#4,obRoutine(a0) ; is Sonic standing on the platform?
+		cmpi.b	#4,ost_routine(a0) ; is Sonic standing on the platform?
 		bne.s	MBlock_02_Wait
-		addq.b	#1,obSubtype(a0) ; if yes, add 1 to type
+		addq.b	#1,ost_subtype(a0) ; if yes, add 1 to type
 
 MBlock_02_Wait:
 		rts	
@@ -21620,45 +21620,45 @@ MBlock_02_Wait:
 
 MBlock_Type03:
 		moveq	#0,d3
-		move.b	obActWid(a0),d3
+		move.b	ost_actwidth(a0),d3
 		bsr.w	ObjHitWallRight
 		tst.w	d1		; has the platform hit a wall?
 		bmi.s	MBlock_03_End	; if yes, branch
-		addq.w	#1,obX(a0)	; move platform	to the right
-		move.w	obX(a0),mblock_origX(a0)
+		addq.w	#1,ost_x_pos(a0)	; move platform	to the right
+		move.w	ost_x_pos(a0),mblock_origX(a0)
 		rts	
 ; ===========================================================================
 
 MBlock_03_End:
-		clr.b	obSubtype(a0)	; change to type 00 (non-moving	type)
+		clr.b	ost_subtype(a0)	; change to type 00 (non-moving	type)
 		rts	
 ; ===========================================================================
 
 MBlock_Type05:
 		moveq	#0,d3
-		move.b	obActWid(a0),d3
+		move.b	ost_actwidth(a0),d3
 		bsr.w	ObjHitWallRight
 		tst.w	d1		; has the platform hit a wall?
 		bmi.s	MBlock_05_End	; if yes, branch
-		addq.w	#1,obX(a0)	; move platform	to the right
-		move.w	obX(a0),mblock_origX(a0)
+		addq.w	#1,ost_x_pos(a0)	; move platform	to the right
+		move.w	ost_x_pos(a0),mblock_origX(a0)
 		rts	
 ; ===========================================================================
 
 MBlock_05_End:
-		addq.b	#1,obSubtype(a0) ; change to type 06 (falling)
+		addq.b	#1,ost_subtype(a0) ; change to type 06 (falling)
 		rts	
 ; ===========================================================================
 
 MBlock_Type06:
 		bsr.w	SpeedToPos
-		addi.w	#$18,obVelY(a0)	; make the platform fall
+		addi.w	#$18,ost_y_vel(a0)	; make the platform fall
 		bsr.w	ObjFloorDist
 		tst.w	d1		; has platform hit the floor?
 		bpl.w	locret_FFA0	; if not, branch
-		add.w	d1,obY(a0)
-		clr.w	obVelY(a0)	; stop platform	falling
-		clr.b	obSubtype(a0)	; change to type 00 (non-moving)
+		add.w	d1,ost_y_pos(a0)
+		clr.w	ost_y_vel(a0)	; stop platform	falling
+		clr.b	ost_subtype(a0)	; change to type 00 (non-moving)
 
 locret_FFA0:
 		rts	
@@ -21667,7 +21667,7 @@ locret_FFA0:
 MBlock_Type07:
 		tst.b	(f_switch+2).w	; has switch number 02 been pressed?
 		beq.s	MBlock_07_ChkDel
-		subq.b	#3,obSubtype(a0) ; if yes, change object type to 04
+		subq.b	#3,ost_subtype(a0) ; if yes, change object type to 04
 
 MBlock_07_ChkDel:
 		addq.l	#4,sp
@@ -21678,7 +21678,7 @@ MBlock_07_ChkDel:
 MBlock_Type08:
 		move.b	(v_oscillate+$1E).w,d0
 		move.w	#$80,d1
-		btst	#0,obStatus(a0)
+		btst	#0,ost_status(a0)
 		beq.s	loc_FFE2
 		neg.w	d0
 		add.w	d1,d0
@@ -21686,16 +21686,16 @@ MBlock_Type08:
 loc_FFE2:
 		move.w	mblock_origY(a0),d1
 		sub.w	d0,d1
-		move.w	d1,obY(a0)
+		move.w	d1,ost_y_pos(a0)
 		rts	
 ; ===========================================================================
 
 MBlock_Type0A:
 		moveq	#0,d3
-		move.b	obActWid(a0),d3
+		move.b	ost_actwidth(a0),d3
 		add.w	d3,d3
 		moveq	#8,d1
-		btst	#0,obStatus(a0)
+		btst	#0,ost_status(a0)
 		beq.s	loc_10004
 		neg.w	d1
 		neg.w	d3
@@ -21703,11 +21703,11 @@ MBlock_Type0A:
 loc_10004:
 		tst.w	$36(a0)		; is platform set to move back?
 		bne.s	MBlock_0A_Back	; if yes, branch
-		move.w	obX(a0),d0
+		move.w	ost_x_pos(a0),d0
 		sub.w	mblock_origX(a0),d0
 		cmp.w	d3,d0
 		beq.s	MBlock_0A_Wait
-		add.w	d1,obX(a0)	; move platform
+		add.w	d1,ost_x_pos(a0)	; move platform
 		move.w	#300,$34(a0)	; set time delay to 5 seconds
 		rts	
 ; ===========================================================================
@@ -21722,16 +21722,16 @@ locret_1002E:
 ; ===========================================================================
 
 MBlock_0A_Back:
-		move.w	obX(a0),d0
+		move.w	ost_x_pos(a0),d0
 		sub.w	mblock_origX(a0),d0
 		beq.s	MBlock_0A_Reset
-		sub.w	d1,obX(a0)	; return platform to its original position
+		sub.w	d1,ost_x_pos(a0)	; return platform to its original position
 		rts	
 ; ===========================================================================
 
 MBlock_0A_Reset:
 		clr.w	$36(a0)
-		subq.b	#1,obSubtype(a0)
+		subq.b	#1,ost_subtype(a0)
 		rts	
 Map_MBlock:	include "Mappings\MZ & SBZ Moving Blocks.asm"
 Map_MBlockLZ:	include "Mappings\LZ Moving Block.asm"
@@ -21742,7 +21742,7 @@ Map_MBlockLZ:	include "Mappings\LZ Moving Block.asm"
 
 Basaran:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Bas_Index(pc,d0.w),d1
 		jmp	Bas_Index(pc,d1.w)
 ; ===========================================================================
@@ -21752,18 +21752,18 @@ Bas_Index:	index *
 ; ===========================================================================
 
 Bas_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Bas,obMap(a0)
-		move.w	#$84B8,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#$C,obHeight(a0)
-		move.b	#2,obPriority(a0)
-		move.b	#$B,obColType(a0)
-		move.b	#$10,obActWid(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Bas,ost_mappings(a0)
+		move.w	#$84B8,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#$C,ost_height(a0)
+		move.b	#2,ost_priority(a0)
+		move.b	#$B,ost_col_type(a0)
+		move.b	#$10,ost_actwidth(a0)
 
 Bas_Action:	; Routine 2
 		moveq	#0,d0
-		move.b	ob2ndRout(a0),d0
+		move.b	ost_routine2(a0),d0
 		move.w	@index(pc,d0.w),d1
 		jsr	@index(pc,d1.w)
 		lea	(Ani_Bas).l,a1
@@ -21781,9 +21781,9 @@ Bas_Action:	; Routine 2
 		move.w	#$80,d2
 		bsr.w	@chkdistance	; is Sonic < $80 pixels from basaran?
 		bcc.s	@nodrop		; if not, branch
-		move.w	(v_player+obY).w,d0
+		move.w	(v_player+ost_y_pos).w,d0
 		move.w	d0,$36(a0)
-		sub.w	obY(a0),d0
+		sub.w	ost_y_pos(a0),d0
 		bcs.s	@nodrop
 		cmpi.w	#$80,d0		; is Sonic < $80 pixels from basaran?
 		bcc.s	@nodrop		; if not, branch
@@ -21794,8 +21794,8 @@ Bas_Action:	; Routine 2
 		add.b	d7,d0
 		andi.b	#7,d0
 		bne.s	@nodrop
-		move.b	#1,obAnim(a0)
-		addq.b	#2,ob2ndRout(a0)
+		move.b	#1,ost_anim(a0)
+		addq.b	#2,ost_routine2(a0)
 
 	@nodrop:
 		rts	
@@ -21803,24 +21803,24 @@ Bas_Action:	; Routine 2
 
 @dropfly:
 		bsr.w	SpeedToPos
-		addi.w	#$18,obVelY(a0)	; make basaran fall
+		addi.w	#$18,ost_y_vel(a0)	; make basaran fall
 		move.w	#$80,d2
 		bsr.w	@chkdistance
 		move.w	$36(a0),d0
-		sub.w	obY(a0),d0
+		sub.w	ost_y_pos(a0),d0
 		bcs.s	@chkdel
 		cmpi.w	#$10,d0		; is basaran close to Sonic vertically?
 		bcc.s	@dropmore	; if not, branch
-		move.w	d1,obVelX(a0)	; make basaran fly horizontally
-		move.w	#0,obVelY(a0)	; stop basaran falling
-		move.b	#2,obAnim(a0)
-		addq.b	#2,ob2ndRout(a0)
+		move.w	d1,ost_x_vel(a0)	; make basaran fly horizontally
+		move.w	#0,ost_y_vel(a0)	; stop basaran falling
+		move.b	#2,ost_anim(a0)
+		addq.b	#2,ost_routine2(a0)
 
 	@dropmore:
 		rts	
 
 	@chkdel:
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.w	DeleteObject
 		rts	
 ; ===========================================================================
@@ -21833,8 +21833,8 @@ Bas_Action:	; Routine 2
 
 	@nosound:
 		bsr.w	SpeedToPos
-		move.w	(v_player+obX).w,d0
-		sub.w	obX(a0),d0
+		move.w	(v_player+ost_x_pos).w,d0
+		sub.w	ost_x_pos(a0),d0
 		bcc.s	@isright	; if Sonic is right of basaran, branch
 		neg.w	d0
 
@@ -21845,7 +21845,7 @@ Bas_Action:	; Routine 2
 		add.b	d7,d0
 		andi.b	#7,d0
 		bne.s	@dontflyup
-		addq.b	#2,ob2ndRout(a0)
+		addq.b	#2,ost_routine2(a0)
 
 @dontflyup:
 		rts	
@@ -21853,16 +21853,16 @@ Bas_Action:	; Routine 2
 
 @flyup:
 		bsr.w	SpeedToPos
-		subi.w	#$18,obVelY(a0)	; make basaran fly upwards
+		subi.w	#$18,ost_y_vel(a0)	; make basaran fly upwards
 		bsr.w	ObjHitCeiling
 		tst.w	d1		; has basaran hit the ceiling?
 		bpl.s	@noceiling	; if not, branch
-		sub.w	d1,obY(a0)
-		andi.w	#$FFF8,obX(a0)
-		clr.w	obVelX(a0)	; stop basaran moving
-		clr.w	obVelY(a0)
-		clr.b	obAnim(a0)
-		clr.b	ob2ndRout(a0)
+		sub.w	d1,ost_y_pos(a0)
+		andi.w	#$FFF8,ost_x_pos(a0)
+		clr.w	ost_x_vel(a0)	; stop basaran moving
+		clr.w	ost_y_vel(a0)
+		clr.b	ost_anim(a0)
+		clr.b	ost_routine2(a0)
 
 	@noceiling:
 		rts	
@@ -21879,13 +21879,13 @@ Bas_Action:	; Routine 2
 
 @chkdistance:
 		move.w	#$100,d1
-		bset	#0,obStatus(a0)
-		move.w	(v_player+obX).w,d0
-		sub.w	obX(a0),d0
+		bset	#0,ost_status(a0)
+		move.w	(v_player+ost_x_pos).w,d0
+		sub.w	ost_x_pos(a0),d0
 		bcc.s	@right		; if Sonic is right of basaran, branch
 		neg.w	d0
 		neg.w	d1
-		bclr	#0,obStatus(a0)
+		bclr	#0,ost_status(a0)
 
 	@right:
 		cmp.w	d2,d0
@@ -21894,7 +21894,7 @@ Bas_Action:	; Routine 2
 ; unused crap
 		bsr.w	SpeedToPos
 		bsr.w	DisplaySprite
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.w	DeleteObject
 		rts	
 
@@ -21907,7 +21907,7 @@ Map_Bas:	include "Mappings\Batbrain.asm"
 
 FloatingBlock:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	FBlock_Index(pc,d0.w),d1
 		jmp	FBlock_Index(pc,d1.w)
 ; ===========================================================================
@@ -21932,42 +21932,42 @@ FBlock_Var:	; width/2, height/2
 ; ===========================================================================
 
 FBlock_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_FBlock,obMap(a0)
-		move.w	#$4000,obGfx(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_FBlock,ost_mappings(a0)
+		move.w	#$4000,ost_tile(a0)
 		cmpi.b	#id_LZ,(v_zone).w ; check if level is LZ
 		bne.s	@notLZ
-		move.w	#$43C4,obGfx(a0) ; LZ specific code
+		move.w	#$43C4,ost_tile(a0) ; LZ specific code
 
 	@notLZ:
-		move.b	#4,obRender(a0)
-		move.b	#3,obPriority(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#3,ost_priority(a0)
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0 ; get subtype
+		move.b	ost_subtype(a0),d0 ; get subtype
 		lsr.w	#3,d0
 		andi.w	#$E,d0		; read only the 1st digit
 		lea	FBlock_Var(pc,d0.w),a2 ; get size data
-		move.b	(a2)+,obActWid(a0)
-		move.b	(a2),obHeight(a0)
+		move.b	(a2)+,ost_actwidth(a0)
+		move.b	(a2),ost_height(a0)
 		lsr.w	#1,d0
-		move.b	d0,obFrame(a0)
-		move.w	obX(a0),fb_origX(a0)
-		move.w	obY(a0),fb_origY(a0)
+		move.b	d0,ost_frame(a0)
+		move.w	ost_x_pos(a0),fb_origX(a0)
+		move.w	ost_y_pos(a0),fb_origY(a0)
 		moveq	#0,d0
 		move.b	(a2),d0
 		add.w	d0,d0
 		move.w	d0,fb_height(a0)
 		if Revision=0
 		else
-			cmpi.b	#$37,obSubtype(a0)
+			cmpi.b	#$37,ost_subtype(a0)
 			bne.s	@dontdelete
-			cmpi.w	#$1BB8,obX(a0)
+			cmpi.w	#$1BB8,ost_x_pos(a0)
 			bne.s	@notatpos
 			tst.b	($FFFFF7CE).w
 			beq.s	@dontdelete
 			jmp	(DeleteObject).l
 	@notatpos:
-			clr.b	obSubtype(a0)
+			clr.b	ost_subtype(a0)
 			tst.b	($FFFFF7CE).w
 			bne.s	@dontdelete
 			jmp	(DeleteObject).l
@@ -21976,7 +21976,7 @@ FBlock_Main:	; Routine 0
 		moveq	#0,d0
 		cmpi.b	#id_LZ,(v_zone).w ; check if level is LZ
 		beq.s	@stillnotLZ
-		move.b	obSubtype(a0),d0 ; SYZ/SLZ specific code
+		move.b	ost_subtype(a0),d0 ; SYZ/SLZ specific code
 		andi.w	#$F,d0
 		subq.w	#8,d0
 		bcs.s	@stillnotLZ
@@ -21985,46 +21985,46 @@ FBlock_Main:	; Routine 0
 		lea	(a2,d0.w),a2
 		tst.w	(a2)
 		bpl.s	@stillnotLZ
-		bchg	#0,obStatus(a0)
+		bchg	#0,ost_status(a0)
 
 	@stillnotLZ:
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		bpl.s	FBlock_Action
 		andi.b	#$F,d0
 		move.b	d0,fb_type(a0)
-		move.b	#5,obSubtype(a0)
-		cmpi.b	#7,obFrame(a0)
+		move.b	#5,ost_subtype(a0)
+		cmpi.b	#7,ost_frame(a0)
 		bne.s	@chkstate
-		move.b	#$C,obSubtype(a0)
+		move.b	#$C,ost_subtype(a0)
 		move.w	#$80,fb_height(a0)
 
 @chkstate:
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
-		move.b	obRespawnNo(a0),d0
+		move.b	ost_respawn(a0),d0
 		beq.s	FBlock_Action
 		bclr	#7,2(a2,d0.w)
 		btst	#0,2(a2,d0.w)
 		beq.s	FBlock_Action
-		addq.b	#1,obSubtype(a0)
+		addq.b	#1,ost_subtype(a0)
 		clr.w	fb_height(a0)
 
 FBlock_Action:	; Routine 2
-		move.w	obX(a0),-(sp)
+		move.w	ost_x_pos(a0),-(sp)
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0 ; get object subtype
+		move.b	ost_subtype(a0),d0 ; get object subtype
 		andi.w	#$F,d0		; read only the	2nd digit
 		add.w	d0,d0
 		move.w	@index(pc,d0.w),d1
 		jsr	@index(pc,d1.w)	; move block subroutines
 		move.w	(sp)+,d4
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.s	@chkdel
 		moveq	#0,d1
-		move.b	obActWid(a0),d1
+		move.b	ost_actwidth(a0),d1
 		addi.w	#$B,d1
 		moveq	#0,d2
-		move.b	obHeight(a0),d2
+		move.b	ost_height(a0),d2
 		move.w	d2,d3
 		addq.w	#1,d3
 		bsr.w	SolidObject
@@ -22038,7 +22038,7 @@ FBlock_Action:	; Routine 2
 		@display:
 			bra.w	DisplaySprite
 		@chkdel2:
-			cmpi.b	#$37,obSubtype(a0)
+			cmpi.b	#$37,ost_subtype(a0)
 			bne.s	@delete
 			tst.b	$38(a0)
 			bne.s	@display
@@ -22083,7 +22083,7 @@ FBlock_Action:	; Routine 2
 		move.b	(v_oscillate+$1E).w,d0
 
 	@moveLR:
-		btst	#0,obStatus(a0)
+		btst	#0,ost_status(a0)
 		beq.s	@noflip
 		neg.w	d0
 		add.w	d1,d0
@@ -22091,7 +22091,7 @@ FBlock_Action:	; Routine 2
 	@noflip:
 		move.w	fb_origX(a0),d1
 		sub.w	d0,d1
-		move.w	d1,obX(a0)	; move object horizontally
+		move.w	d1,ost_x_pos(a0)	; move object horizontally
 		rts	
 ; ===========================================================================
 
@@ -22110,7 +22110,7 @@ FBlock_Action:	; Routine 2
 		move.b	(v_oscillate+$1E).w,d0
 
 	@moveUD:
-		btst	#0,obStatus(a0)
+		btst	#0,ost_status(a0)
 		beq.s	@noflip04
 		neg.w	d0
 		add.w	d1,d0
@@ -22118,7 +22118,7 @@ FBlock_Action:	; Routine 2
 	@noflip04:
 		move.w	fb_origY(a0),d1
 		sub.w	d0,d1
-		move.w	d1,obY(a0)	; move object vertically
+		move.w	d1,ost_y_pos(a0)	; move object vertically
 		rts	
 ; ===========================================================================
 
@@ -22131,8 +22131,8 @@ FBlock_Action:	; Routine 2
 		cmpi.b	#3,fb_type(a0)
 		bne.s	@aaa
 		clr.b	(f_wtunnelallow).w
-		move.w	(v_player+obX).w,d0
-		cmp.w	obX(a0),d0
+		move.w	(v_player+ost_x_pos).w,d0
+		cmp.w	ost_x_pos(a0),d0
 		bcc.s	@aaa
 		move.b	#1,(f_wtunnelallow).w
 
@@ -22165,7 +22165,7 @@ FBlock_Action:	; Routine 2
 @loc_104BC:
 		move.w	fb_origY(a0),d1
 		add.w	d0,d1
-		move.w	d1,obY(a0)
+		move.w	d1,ost_y_pos(a0)
 		rts	
 ; ===========================================================================
 
@@ -22174,7 +22174,7 @@ FBlock_Action:	; Routine 2
 		clr.b	$38(a0)
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
-		move.b	obRespawnNo(a0),d0
+		move.b	ost_respawn(a0),d0
 		beq.s	@loc_104AE
 		bset	#0,2(a2,d0.w)
 		bra.s	@loc_104AE
@@ -22192,7 +22192,7 @@ FBlock_Action:	; Routine 2
 
 @loc_10500:
 		moveq	#0,d0
-		move.b	obHeight(a0),d0
+		move.b	ost_height(a0),d0
 		add.w	d0,d0
 		cmp.w	fb_height(a0),d0
 		beq.s	@loc_1052C
@@ -22200,23 +22200,23 @@ FBlock_Action:	; Routine 2
 
 @loc_10512:
 		move.w	fb_height(a0),d0
-		btst	#0,obStatus(a0)
+		btst	#0,ost_status(a0)
 		beq.s	@loc_10520
 		neg.w	d0
 
 @loc_10520:
 		move.w	fb_origY(a0),d1
 		add.w	d0,d1
-		move.w	d1,obY(a0)
+		move.w	d1,ost_y_pos(a0)
 		rts	
 ; ===========================================================================
 
 @loc_1052C:
-		subq.b	#1,obSubtype(a0)
+		subq.b	#1,ost_subtype(a0)
 		clr.b	$38(a0)
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
-		move.b	obRespawnNo(a0),d0
+		move.b	ost_respawn(a0),d0
 		beq.s	@loc_10512
 		bclr	#0,2(a2,d0.w)
 		bra.s	@loc_10512
@@ -22231,8 +22231,8 @@ FBlock_Action:	; Routine 2
 		clr.w	fb_height(a0)
 
 @loc_1055E:
-		addq.w	#1,obX(a0)
-		move.w	obX(a0),fb_origX(a0)
+		addq.w	#1,ost_x_pos(a0)
+		move.w	ost_x_pos(a0),fb_origX(a0)
 		addq.w	#1,fb_height(a0)
 		cmpi.w	#$380,fb_height(a0)
 		bne.s	@locret_10578
@@ -22241,7 +22241,7 @@ FBlock_Action:	; Routine 2
 			move.b	#1,($FFFFF7CE).w
 			clr.b	$38(a0)
 		endc
-		clr.b	obSubtype(a0)
+		clr.b	ost_subtype(a0)
 
 @locret_10578:
 		rts	
@@ -22264,7 +22264,7 @@ FBlock_Action:	; Routine 2
 
 @loc_105A2:
 		move.w	fb_height(a0),d0
-		btst	#0,obStatus(a0)
+		btst	#0,ost_status(a0)
 		beq.s	@loc_105B4
 		neg.w	d0
 		addi.w	#$80,d0
@@ -22272,16 +22272,16 @@ FBlock_Action:	; Routine 2
 @loc_105B4:
 		move.w	fb_origX(a0),d1
 		add.w	d0,d1
-		move.w	d1,obX(a0)
+		move.w	d1,ost_x_pos(a0)
 		rts	
 ; ===========================================================================
 
 @loc_105C0:
-		addq.b	#1,obSubtype(a0)
+		addq.b	#1,ost_subtype(a0)
 		clr.b	$38(a0)
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
-		move.b	obRespawnNo(a0),d0
+		move.b	ost_respawn(a0),d0
 		beq.s	@loc_105A2
 		bset	#0,2(a2,d0.w)
 		bra.s	@loc_105A2
@@ -22305,7 +22305,7 @@ FBlock_Action:	; Routine 2
 
 @wtf:
 		move.w	fb_height(a0),d0
-		btst	#0,obStatus(a0)
+		btst	#0,ost_status(a0)
 		beq.s	@loc_10618
 		neg.w	d0
 		addi.w	#$80,d0
@@ -22313,16 +22313,16 @@ FBlock_Action:	; Routine 2
 @loc_10618:
 		move.w	fb_origX(a0),d1
 		add.w	d0,d1
-		move.w	d1,obX(a0)
+		move.w	d1,ost_x_pos(a0)
 		rts	
 ; ===========================================================================
 
 @loc_10624:
-		subq.b	#1,obSubtype(a0)
+		subq.b	#1,ost_subtype(a0)
 		clr.b	$38(a0)
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
-		move.b	obRespawnNo(a0),d0
+		move.b	ost_respawn(a0),d0
 		beq.s	@wtf
 		bclr	#0,2(a2,d0.w)
 		bra.s	@wtf
@@ -22362,19 +22362,19 @@ FBlock_Action:	; Routine 2
 @square:
 		tst.w	d3
 		bne.s	@loc_1068E
-		addq.b	#1,obStatus(a0)
-		andi.b	#3,obStatus(a0)
+		addq.b	#1,ost_status(a0)
+		andi.b	#3,ost_status(a0)
 
 @loc_1068E:
-		move.b	obStatus(a0),d2
+		move.b	ost_status(a0),d2
 		andi.b	#3,d2
 		bne.s	@loc_106AE
 		sub.w	d1,d0
 		add.w	fb_origX(a0),d0
-		move.w	d0,obX(a0)
+		move.w	d0,ost_x_pos(a0)
 		neg.w	d1
 		add.w	fb_origY(a0),d1
-		move.w	d1,obY(a0)
+		move.w	d1,ost_y_pos(a0)
 		rts	
 ; ===========================================================================
 
@@ -22385,10 +22385,10 @@ FBlock_Action:	; Routine 2
 		sub.w	d1,d0
 		neg.w	d0
 		add.w	fb_origY(a0),d0
-		move.w	d0,obY(a0)
+		move.w	d0,ost_y_pos(a0)
 		addq.w	#1,d1
 		add.w	fb_origX(a0),d1
-		move.w	d1,obX(a0)
+		move.w	d1,ost_x_pos(a0)
 		rts	
 ; ===========================================================================
 
@@ -22399,20 +22399,20 @@ FBlock_Action:	; Routine 2
 		sub.w	d1,d0
 		neg.w	d0
 		add.w	fb_origX(a0),d0
-		move.w	d0,obX(a0)
+		move.w	d0,ost_x_pos(a0)
 		addq.w	#1,d1
 		add.w	fb_origY(a0),d1
-		move.w	d1,obY(a0)
+		move.w	d1,ost_y_pos(a0)
 		rts	
 ; ===========================================================================
 
 @loc_106EA:
 		sub.w	d1,d0
 		add.w	fb_origY(a0),d0
-		move.w	d0,obY(a0)
+		move.w	d0,ost_y_pos(a0)
 		neg.w	d1
 		add.w	fb_origX(a0),d1
-		move.w	d1,obX(a0)
+		move.w	d1,ost_x_pos(a0)
 		rts	
 		
 Map_FBlock:	include "Mappings\SYZ & SLZ Floating Blocks, LZ Doors.asm"
@@ -22423,7 +22423,7 @@ Map_FBlock:	include "Mappings\SYZ & SLZ Floating Blocks, LZ Doors.asm"
 
 SpikeBall:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	SBall_Index(pc,d0.w),d1
 		jmp	SBall_Index(pc,d1.w)
 ; ===========================================================================
@@ -22441,34 +22441,34 @@ sball_speed:	equ $3E		; rate of spin (2 bytes)
 ; ===========================================================================
 
 SBall_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_SBall,obMap(a0)
-		move.w	#$3BA,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#4,obPriority(a0)
-		move.b	#8,obActWid(a0)
-		move.w	obX(a0),sball_origX(a0)
-		move.w	obY(a0),sball_origY(a0)
-		move.b	#$98,obColType(a0) ; SYZ specific code (chain hurts Sonic)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_SBall,ost_mappings(a0)
+		move.w	#$3BA,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#4,ost_priority(a0)
+		move.b	#8,ost_actwidth(a0)
+		move.w	ost_x_pos(a0),sball_origX(a0)
+		move.w	ost_y_pos(a0),sball_origY(a0)
+		move.b	#$98,ost_col_type(a0) ; SYZ specific code (chain hurts Sonic)
 		cmpi.b	#id_LZ,(v_zone).w ; check if level is LZ
 		bne.s	@notlz
 
-		move.b	#0,obColType(a0) ; LZ specific code (chain doesn't hurt)
-		move.w	#$310,obGfx(a0)
-		move.l	#Map_SBall2,obMap(a0)
+		move.b	#0,ost_col_type(a0) ; LZ specific code (chain doesn't hurt)
+		move.w	#$310,ost_tile(a0)
+		move.l	#Map_SBall2,ost_mappings(a0)
 
 	@notlz:
-		move.b	obSubtype(a0),d1 ; get object type
+		move.b	ost_subtype(a0),d1 ; get object type
 		andi.b	#$F0,d1		; read only the	1st digit
 		ext.w	d1
 		asl.w	#3,d1		; multiply by 8
 		move.w	d1,sball_speed(a0) ; set object twirl speed
-		move.b	obStatus(a0),d0
+		move.b	ost_status(a0),d0
 		ror.b	#2,d0
 		andi.b	#$C0,d0
-		move.b	d0,obAngle(a0)
+		move.b	d0,ost_angle(a0)
 		lea	sball_childs(a0),a2
-		move.b	obSubtype(a0),d1 ; get object type
+		move.b	ost_subtype(a0),d1 ; get object type
 		andi.w	#7,d1		; read only the	2nd digit
 		move.b	#0,(a2)+
 		move.w	d1,d3
@@ -22476,7 +22476,7 @@ SBall_Main:	; Routine 0
 		move.b	d3,sball_radius(a0)
 		subq.w	#1,d1		; set chain length (type-1)
 		bcs.s	@fail
-		btst	#3,obSubtype(a0)
+		btst	#3,ost_subtype(a0)
 		beq.s	@makechain
 		subq.w	#1,d1
 		bcs.s	@fail
@@ -22490,14 +22490,14 @@ SBall_Main:	; Routine 0
 		lsr.w	#6,d5		; divide by $40
 		andi.w	#$7F,d5
 		move.b	d5,(a2)+	; copy child RAM number
-		move.b	#4,obRoutine(a1)
+		move.b	#4,ost_routine(a1)
 		move.b	0(a0),0(a1)
-		move.l	obMap(a0),obMap(a1)
-		move.w	obGfx(a0),obGfx(a1)
-		move.b	obRender(a0),obRender(a1)
-		move.b	obPriority(a0),obPriority(a1)
-		move.b	obActWid(a0),obActWid(a1)
-		move.b	obColType(a0),obColType(a1)
+		move.l	ost_mappings(a0),ost_mappings(a1)
+		move.w	ost_tile(a0),ost_tile(a1)
+		move.b	ost_render(a0),ost_render(a1)
+		move.b	ost_priority(a0),ost_priority(a1)
+		move.b	ost_actwidth(a0),ost_actwidth(a1)
+		move.b	ost_col_type(a0),ost_col_type(a1)
 		subi.b	#$10,d3
 		move.b	d3,sball_radius(a1)
 		cmpi.b	#id_LZ,(v_zone).w ; check if level is LZ
@@ -22505,7 +22505,7 @@ SBall_Main:	; Routine 0
 
 		tst.b	d3
 		bne.s	@notlzagain
-		move.b	#2,obFrame(a1)	; use different frame for LZ chain
+		move.b	#2,ost_frame(a1)	; use different frame for LZ chain
 
 	@notlzagain:
 		dbf	d1,@makechain ; repeat for length of chain
@@ -22519,8 +22519,8 @@ SBall_Main:	; Routine 0
 		cmpi.b	#id_LZ,(v_zone).w ; check if level is LZ
 		bne.s	SBall_Move
 
-		move.b	#$8B,obColType(a0) ; if yes, make last spikeball larger
-		move.b	#1,obFrame(a0)	; use different	frame
+		move.b	#$8B,ost_col_type(a0) ; if yes, make last spikeball larger
+		move.b	#1,ost_frame(a0)	; use different	frame
 
 SBall_Move:	; Routine 2
 		bsr.w	@movesub
@@ -22529,8 +22529,8 @@ SBall_Move:	; Routine 2
 
 @movesub:
 		move.w	sball_speed(a0),d0
-		add.w	d0,obAngle(a0)
-		move.b	obAngle(a0),d0
+		add.w	d0,ost_angle(a0)
+		move.b	ost_angle(a0),d0
 		jsr	(CalcSine).l
 		move.w	sball_origY(a0),d2
 		move.w	sball_origX(a0),d3
@@ -22553,8 +22553,8 @@ SBall_Move:	; Routine 2
 		asr.l	#8,d5
 		add.w	d2,d4
 		add.w	d3,d5
-		move.w	d4,obY(a1)
-		move.w	d5,obX(a1)
+		move.w	d4,ost_y_pos(a1)
+		move.w	d5,ost_x_pos(a1)
 		dbf	d6,@loop
 		rts	
 ; ===========================================================================
@@ -22593,7 +22593,7 @@ Map_SBall2:	include "Mappings\LZ Spike Ball on Chain.asm"
 
 BigSpikeBall:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	BBall_Index(pc,d0.w),d1
 		jmp	BBall_Index(pc,d1.w)
 ; ===========================================================================
@@ -22608,29 +22608,29 @@ bball_speed:	equ $3E		; speed
 ; ===========================================================================
 
 BBall_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_BBall,obMap(a0)
-		move.w	#$396,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#4,obPriority(a0)
-		move.b	#$18,obActWid(a0)
-		move.w	obX(a0),bball_origX(a0)
-		move.w	obY(a0),bball_origY(a0)
-		move.b	#$86,obColType(a0)
-		move.b	obSubtype(a0),d1 ; get object type
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_BBall,ost_mappings(a0)
+		move.w	#$396,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#4,ost_priority(a0)
+		move.b	#$18,ost_actwidth(a0)
+		move.w	ost_x_pos(a0),bball_origX(a0)
+		move.w	ost_y_pos(a0),bball_origY(a0)
+		move.b	#$86,ost_col_type(a0)
+		move.b	ost_subtype(a0),d1 ; get object type
 		andi.b	#$F0,d1		; read only the	1st digit
 		ext.w	d1
 		asl.w	#3,d1		; multiply by 8
 		move.w	d1,bball_speed(a0) ; set object speed
-		move.b	obStatus(a0),d0
+		move.b	ost_status(a0),d0
 		ror.b	#2,d0
 		andi.b	#$C0,d0
-		move.b	d0,obAngle(a0)
+		move.b	d0,ost_angle(a0)
 		move.b	#$50,bball_radius(a0) ; set radius of circle motion
 
 BBall_Move:	; Routine 2
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0 ; get object type
+		move.b	ost_subtype(a0),d0 ; get object type
 		andi.w	#7,d0		; read only the	2nd digit
 		add.w	d0,d0
 		move.w	@index(pc,d0.w),d1
@@ -22653,7 +22653,7 @@ BBall_Move:	; Routine 2
 		move.w	#$60,d1
 		moveq	#0,d0
 		move.b	(v_oscillate+$E).w,d0
-		btst	#0,obStatus(a0)
+		btst	#0,ost_status(a0)
 		beq.s	@noflip1
 		neg.w	d0
 		add.w	d1,d0
@@ -22661,7 +22661,7 @@ BBall_Move:	; Routine 2
 	@noflip1:
 		move.w	bball_origX(a0),d1
 		sub.w	d0,d1
-		move.w	d1,obX(a0)	; move object horizontally
+		move.w	d1,ost_x_pos(a0)	; move object horizontally
 		rts	
 ; ===========================================================================
 
@@ -22669,7 +22669,7 @@ BBall_Move:	; Routine 2
 		move.w	#$60,d1
 		moveq	#0,d0
 		move.b	(v_oscillate+$E).w,d0
-		btst	#0,obStatus(a0)
+		btst	#0,ost_status(a0)
 		beq.s	@noflip2
 		neg.w	d0
 		addi.w	#$80,d0
@@ -22677,14 +22677,14 @@ BBall_Move:	; Routine 2
 	@noflip2:
 		move.w	bball_origY(a0),d1
 		sub.w	d0,d1
-		move.w	d1,obY(a0)	; move object vertically
+		move.w	d1,ost_y_pos(a0)	; move object vertically
 		rts	
 ; ===========================================================================
 
 @type03:
 		move.w	bball_speed(a0),d0
-		add.w	d0,obAngle(a0)
-		move.b	obAngle(a0),d0
+		add.w	d0,ost_angle(a0)
+		move.b	ost_angle(a0),d0
 		jsr	(CalcSine).l
 		move.w	bball_origY(a0),d2
 		move.w	bball_origX(a0),d3
@@ -22697,8 +22697,8 @@ BBall_Move:	; Routine 2
 		asr.l	#8,d5
 		add.w	d2,d4
 		add.w	d3,d5
-		move.w	d4,obY(a0)	; move object circularly
-		move.w	d5,obX(a0)
+		move.w	d4,ost_y_pos(a0)	; move object circularly
+		move.w	d5,ost_x_pos(a0)
 		rts	
 Map_BBall:	include "Mappings\SYZ & SBZ Large Spike Balls.asm"
 
@@ -22708,7 +22708,7 @@ Map_BBall:	include "Mappings\SYZ & SBZ Large Spike Balls.asm"
 
 Elevator:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Elev_Index(pc,d0.w),d1
 		jsr	Elev_Index(pc,d1.w)
 		out_of_range	DeleteObject,elev_origX(a0)
@@ -22744,11 +22744,11 @@ Elev_Var2:	dc.b $10, 1		; distance to move, action type
 ; ===========================================================================
 
 Elev_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		bpl.s	@normal		; branch for types 00-7F
-		addq.b	#4,obRoutine(a0) ; goto Elev_MakeMulti next
+		addq.b	#4,ost_routine(a0) ; goto Elev_MakeMulti next
 		andi.w	#$7F,d0
 		mulu.w	#6,d0
 		move.w	d0,elev_dist(a0)
@@ -22761,36 +22761,36 @@ Elev_Main:	; Routine 0
 		lsr.w	#3,d0
 		andi.w	#$1E,d0
 		lea	Elev_Var1(pc,d0.w),a2
-		move.b	(a2)+,obActWid(a0) ; set width
-		move.b	(a2)+,obFrame(a0) ; set frame
+		move.b	(a2)+,ost_actwidth(a0) ; set width
+		move.b	(a2)+,ost_frame(a0) ; set frame
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		add.w	d0,d0
 		andi.w	#$1E,d0
 		lea	Elev_Var2(pc,d0.w),a2
 		move.b	(a2)+,d0
 		lsl.w	#2,d0
 		move.w	d0,elev_dist(a0)	; set distance to move
-		move.b	(a2)+,obSubtype(a0)	; set type
-		move.l	#Map_Elev,obMap(a0)
-		move.w	#$4000,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#4,obPriority(a0)
-		move.w	obX(a0),elev_origX(a0)
-		move.w	obY(a0),elev_origY(a0)
+		move.b	(a2)+,ost_subtype(a0)	; set type
+		move.l	#Map_Elev,ost_mappings(a0)
+		move.w	#$4000,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#4,ost_priority(a0)
+		move.w	ost_x_pos(a0),elev_origX(a0)
+		move.w	ost_y_pos(a0),elev_origY(a0)
 
 Elev_Platform:	; Routine 2
 		moveq	#0,d1
-		move.b	obActWid(a0),d1
+		move.b	ost_actwidth(a0),d1
 		jsr	(PlatformObject).l
 		bra.w	Elev_Types
 ; ===========================================================================
 
 Elev_Action:	; Routine 4
 		moveq	#0,d1
-		move.b	obActWid(a0),d1
+		move.b	ost_actwidth(a0),d1
 		jsr	(ExitPlatform).l
-		move.w	obX(a0),-(sp)
+		move.w	ost_x_pos(a0),-(sp)
 		bsr.w	Elev_Types
 		move.w	(sp)+,d2
 		tst.b	0(a0)
@@ -22803,7 +22803,7 @@ Elev_Action:	; Routine 4
 
 Elev_Types:
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		andi.w	#$F,d0
 		add.w	d0,d0
 		move.w	@index(pc,d0.w),d1
@@ -22827,9 +22827,9 @@ Elev_Types:
 ; ===========================================================================
 
 @type01:
-		cmpi.b	#4,obRoutine(a0) ; check if Sonic is standing on the object
+		cmpi.b	#4,ost_routine(a0) ; check if Sonic is standing on the object
 		bne.s	@notstanding
-		addq.b	#1,obSubtype(a0) ; if yes, add 1 to type
+		addq.b	#1,ost_subtype(a0) ; if yes, add 1 to type
 
 	@notstanding:
 		rts	
@@ -22840,7 +22840,7 @@ Elev_Types:
 		move.w	$34(a0),d0
 		neg.w	d0
 		add.w	elev_origY(a0),d0
-		move.w	d0,obY(a0)
+		move.w	d0,ost_y_pos(a0)
 		rts	
 ; ===========================================================================
 
@@ -22848,7 +22848,7 @@ Elev_Types:
 		bsr.w	Elev_Move
 		move.w	$34(a0),d0
 		add.w	elev_origY(a0),d0
-		move.w	d0,obY(a0)
+		move.w	d0,ost_y_pos(a0)
 		rts	
 ; ===========================================================================
 
@@ -22858,10 +22858,10 @@ Elev_Types:
 		asr.w	#1,d0
 		neg.w	d0
 		add.w	elev_origY(a0),d0
-		move.w	d0,obY(a0)
+		move.w	d0,ost_y_pos(a0)
 		move.w	$34(a0),d0
 		add.w	elev_origX(a0),d0
-		move.w	d0,obX(a0)
+		move.w	d0,ost_x_pos(a0)
 		rts	
 ; ===========================================================================
 
@@ -22870,11 +22870,11 @@ Elev_Types:
 		move.w	$34(a0),d0
 		asr.w	#1,d0
 		add.w	elev_origY(a0),d0
-		move.w	d0,obY(a0)
+		move.w	d0,ost_y_pos(a0)
 		move.w	$34(a0),d0
 		neg.w	d0
 		add.w	elev_origX(a0),d0
-		move.w	d0,obX(a0)
+		move.w	d0,ost_x_pos(a0)
 		rts	
 ; ===========================================================================
 
@@ -22883,18 +22883,18 @@ Elev_Types:
 		move.w	$34(a0),d0
 		neg.w	d0
 		add.w	elev_origY(a0),d0
-		move.w	d0,obY(a0)
-		tst.b	obSubtype(a0)
+		move.w	d0,ost_y_pos(a0)
+		tst.b	ost_subtype(a0)
 		beq.w	@typereset
 		rts	
 ; ===========================================================================
 
 	@typereset:
-		btst	#3,obStatus(a0)
+		btst	#3,ost_status(a0)
 		beq.s	@delete
-		bset	#1,obStatus(a1)
-		bclr	#3,obStatus(a1)
-		move.b	#2,obRoutine(a1)
+		bset	#1,ost_status(a1)
+		bclr	#3,ost_status(a1)
+		move.b	#2,ost_routine(a1)
 
 	@delete:
 		bra.w	DeleteObject
@@ -22933,7 +22933,7 @@ loc_10CF0:
 		add.w	d2,d2
 		cmp.w	d2,d0
 		bne.s	locret_10CFA
-		clr.b	obSubtype(a0)
+		clr.b	ost_subtype(a0)
 
 locret_10CFA:
 		rts	
@@ -22948,9 +22948,9 @@ Elev_MakeMulti:	; Routine 6
 		bsr.w	FindFreeObj
 		bne.s	@chkdel
 		move.b	#id_Elevator,0(a1) ; duplicate the object
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
-		move.b	#$E,obSubtype(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
+		move.b	#$E,ost_subtype(a1)
 
 @chkdel:
 		addq.l	#4,sp
@@ -22965,7 +22965,7 @@ Map_Elev:	include "Mappings\SLZ Elevator.asm"
 
 CirclingPlatform:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Circ_Index(pc,d0.w),d1
 		jsr	Circ_Index(pc,d1.w)
 		out_of_range	DeleteObject,circ_origX(a0)
@@ -22981,27 +22981,27 @@ circ_origY:	equ $30		; original y-axis position
 ; ===========================================================================
 
 Circ_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Circ,obMap(a0)
-		move.w	#$4000,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#4,obPriority(a0)
-		move.b	#$18,obActWid(a0)
-		move.w	obX(a0),circ_origX(a0)
-		move.w	obY(a0),circ_origY(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Circ,ost_mappings(a0)
+		move.w	#$4000,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#4,ost_priority(a0)
+		move.b	#$18,ost_actwidth(a0)
+		move.w	ost_x_pos(a0),circ_origX(a0)
+		move.w	ost_y_pos(a0),circ_origY(a0)
 
 Circ_Platform:	; Routine 2
 		moveq	#0,d1
-		move.b	obActWid(a0),d1
+		move.b	ost_actwidth(a0),d1
 		jsr	(PlatformObject).l
 		bra.w	Circ_Types
 ; ===========================================================================
 
 Circ_Action:	; Routine 4
 		moveq	#0,d1
-		move.b	obActWid(a0),d1
+		move.b	ost_actwidth(a0),d1
 		jsr	(ExitPlatform).l
-		move.w	obX(a0),-(sp)
+		move.w	ost_x_pos(a0),-(sp)
 		bsr.w	Circ_Types
 		move.w	(sp)+,d2
 		jmp	(MvSonicOnPtfm2).l
@@ -23009,7 +23009,7 @@ Circ_Action:	; Routine 4
 
 Circ_Types:
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		andi.w	#$C,d0
 		lsr.w	#1,d0
 		move.w	@index(pc,d0.w),d1
@@ -23027,22 +23027,22 @@ Circ_Types:
 		move.b	(v_oscillate+$26).w,d2
 		subi.b	#$50,d2
 		ext.w	d2
-		btst	#0,obSubtype(a0)
+		btst	#0,ost_subtype(a0)
 		beq.s	@noshift00a
 		neg.w	d1
 		neg.w	d2
 
 	@noshift00a:
-		btst	#1,obSubtype(a0)
+		btst	#1,ost_subtype(a0)
 		beq.s	@noshift00b
 		neg.w	d1
 		exg	d1,d2
 
 	@noshift00b:
 		add.w	circ_origX(a0),d1
-		move.w	d1,obX(a0)
+		move.w	d1,ost_x_pos(a0)
 		add.w	circ_origY(a0),d2
-		move.w	d2,obY(a0)
+		move.w	d2,ost_y_pos(a0)
 		rts	
 ; ===========================================================================
 
@@ -23053,13 +23053,13 @@ Circ_Types:
 		move.b	(v_oscillate+$26).w,d2
 		subi.b	#$50,d2
 		ext.w	d2
-		btst	#0,obSubtype(a0)
+		btst	#0,ost_subtype(a0)
 		beq.s	@noshift04a
 		neg.w	d1
 		neg.w	d2
 
 	@noshift04a:
-		btst	#1,obSubtype(a0)
+		btst	#1,ost_subtype(a0)
 		beq.s	@noshift04b
 		neg.w	d1
 		exg	d1,d2
@@ -23067,9 +23067,9 @@ Circ_Types:
 	@noshift04b:
 		neg.w	d1
 		add.w	circ_origX(a0),d1
-		move.w	d1,obX(a0)
+		move.w	d1,ost_x_pos(a0)
 		add.w	circ_origY(a0),d2
-		move.w	d2,obY(a0)
+		move.w	d2,ost_y_pos(a0)
 		rts	
 		
 Map_Circ:	include "Mappings\SLZ Circling Platform.asm"
@@ -23080,7 +23080,7 @@ Map_Circ:	include "Mappings\SLZ Circling Platform.asm"
 
 Staircase:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Stair_Index(pc,d0.w),d1
 		jsr	Stair_Index(pc,d1.w)
 		out_of_range	DeleteObject,stair_origX(a0)
@@ -23098,16 +23098,16 @@ stair_parent:	equ $3C		; address of parent object (4 bytes)
 ; ===========================================================================
 
 Stair_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 		moveq	#$38,d3
 		moveq	#1,d4
-		btst	#0,obStatus(a0)	; is object flipped?
+		btst	#0,ost_status(a0)	; is object flipped?
 		beq.s	@notflipped	; if not, branch
 		moveq	#$3B,d3
 		moveq	#-1,d4
 
 	@notflipped:
-		move.w	obX(a0),d2
+		move.w	ost_x_pos(a0),d2
 		movea.l	a0,a1
 		moveq	#3,d1
 		bra.s	@makeblocks
@@ -23116,20 +23116,20 @@ Stair_Main:	; Routine 0
 @loop:
 		bsr.w	FindNextFreeObj
 		bne.w	@fail
-		move.b	#4,obRoutine(a1)
+		move.b	#4,ost_routine(a1)
 
 @makeblocks:
 		move.b	#id_Staircase,0(a1) ; load another block object
-		move.l	#Map_Stair,obMap(a1)
-		move.w	#$4000,obGfx(a1)
-		move.b	#4,obRender(a1)
-		move.b	#3,obPriority(a1)
-		move.b	#$10,obActWid(a1)
-		move.b	obSubtype(a0),obSubtype(a1)
-		move.w	d2,obX(a1)
-		move.w	obY(a0),obY(a1)
-		move.w	obX(a0),stair_origX(a1)
-		move.w	obY(a1),stair_origY(a1)
+		move.l	#Map_Stair,ost_mappings(a1)
+		move.w	#$4000,ost_tile(a1)
+		move.b	#4,ost_render(a1)
+		move.b	#3,ost_priority(a1)
+		move.b	#$10,ost_actwidth(a1)
+		move.b	ost_subtype(a0),ost_subtype(a1)
+		move.w	d2,ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
+		move.w	ost_x_pos(a0),stair_origX(a1)
+		move.w	ost_y_pos(a1),stair_origY(a1)
 		addi.w	#$20,d2
 		move.b	d3,$37(a1)
 		move.l	a0,stair_parent(a1)
@@ -23140,7 +23140,7 @@ Stair_Main:	; Routine 0
 
 Stair_Move:	; Routine 2
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		andi.w	#7,d0
 		add.w	d0,d0
 		move.w	Stair_TypeIndex(pc,d0.w),d1
@@ -23152,20 +23152,20 @@ Stair_Solid:	; Routine 4
 		move.b	$37(a0),d0
 		move.b	(a2,d0.w),d0
 		add.w	stair_origY(a0),d0
-		move.w	d0,obY(a0)
+		move.w	d0,ost_y_pos(a0)
 		moveq	#0,d1
-		move.b	obActWid(a0),d1
+		move.b	ost_actwidth(a0),d1
 		addi.w	#$B,d1
 		move.w	#$10,d2
 		move.w	#$11,d3
-		move.w	obX(a0),d4
+		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject
 		tst.b	d4
 		bpl.s	loc_10F92
 		move.b	d4,$36(a2)
 
 loc_10F92:
-		btst	#3,obStatus(a0)
+		btst	#3,ost_status(a0)
 		beq.s	locret_10FA0
 		move.b	#1,$36(a2)
 
@@ -23193,7 +23193,7 @@ locret_10FBE:
 loc_10FC0:
 		subq.w	#1,$34(a0)
 		bne.s	locret_10FBE
-		addq.b	#1,obSubtype(a0) ; add 1 to type
+		addq.b	#1,ost_subtype(a0) ; add 1 to type
 		rts	
 ; ===========================================================================
 
@@ -23211,7 +23211,7 @@ locret_10FDE:
 loc_10FE0:
 		subq.w	#1,$34(a0)
 		bne.s	loc_10FEC
-		addq.b	#1,obSubtype(a0) ; add 1 to type
+		addq.b	#1,ost_subtype(a0) ; add 1 to type
 		rts	
 ; ===========================================================================
 
@@ -23262,7 +23262,7 @@ Map_Stair:	include "Mappings\SLZ Stairs.asm"
 
 Pylon:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Pyl_Index(pc,d0.w),d1
 		jmp	Pyl_Index(pc,d1.w)
 ; ===========================================================================
@@ -23272,24 +23272,24 @@ Pyl_Index:	index *
 ; ===========================================================================
 
 Pyl_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Pylon,obMap(a0)
-		move.w	#$83CC,obGfx(a0)
-		move.b	#$10,obActWid(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Pylon,ost_mappings(a0)
+		move.w	#$83CC,ost_tile(a0)
+		move.b	#$10,ost_actwidth(a0)
 
 Pyl_Display:	; Routine 2
 		move.l	(v_screenposx).w,d1
 		add.l	d1,d1
 		swap	d1
 		neg.w	d1
-		move.w	d1,obX(a0)
+		move.w	d1,ost_x_pos(a0)
 		move.l	(v_screenposy).w,d1
 		add.l	d1,d1
 		swap	d1
 		andi.w	#$3F,d1
 		neg.w	d1
 		addi.w	#$100,d1
-		move.w	d1,obScreenY(a0)
+		move.w	d1,ost_y_screen(a0)
 		bra.w	DisplaySprite
 		
 Map_Pylon:	include "Mappings\SLZ Pylon.asm"
@@ -23300,7 +23300,7 @@ Map_Pylon:	include "Mappings\SLZ Pylon.asm"
 
 WaterSurface:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Surf_Index(pc,d0.w),d1
 		jmp	Surf_Index(pc,d1.w)
 ; ===========================================================================
@@ -23313,12 +23313,12 @@ surf_freeze:	equ $32		; flag to freeze animation
 ; ===========================================================================
 
 Surf_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Surf,obMap(a0)
-		move.w	#$C300,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#$80,obActWid(a0)
-		move.w	obX(a0),surf_origX(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Surf,ost_mappings(a0)
+		move.w	#$C300,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#$80,ost_actwidth(a0)
+		move.w	ost_x_pos(a0),surf_origX(a0)
 
 Surf_Action:	; Routine 2
 		move.w	(v_screenposx).w,d1
@@ -23329,14 +23329,14 @@ Surf_Action:	; Routine 2
 		addi.w	#$20,d1
 
 	@even:
-		move.w	d1,obX(a0)	; match	obj x-position to screen position
+		move.w	d1,ost_x_pos(a0)	; match	obj x-position to screen position
 		move.w	(v_waterpos1).w,d1
-		move.w	d1,obY(a0)	; match	obj y-position to water	height
+		move.w	d1,ost_y_pos(a0)	; match	obj y-position to water	height
 		tst.b	surf_freeze(a0)
 		bne.s	@stopped
 		btst	#bitStart,(v_jpadpress1).w ; is Start button pressed?
 		beq.s	@animate	; if not, branch
-		addq.b	#3,obFrame(a0)	; use different	frames
+		addq.b	#3,ost_frame(a0)	; use different	frames
 		move.b	#1,surf_freeze(a0) ; stop animation
 		bra.s	@display
 ; ===========================================================================
@@ -23345,16 +23345,16 @@ Surf_Action:	; Routine 2
 		tst.w	(f_pause).w	; is the game paused?
 		bne.s	@display	; if yes, branch
 		move.b	#0,surf_freeze(a0) ; resume animation
-		subq.b	#3,obFrame(a0)	; use normal frames
+		subq.b	#3,ost_frame(a0)	; use normal frames
 
 @animate:
-		subq.b	#1,obTimeFrame(a0)
+		subq.b	#1,ost_anim_time(a0)
 		bpl.s	@display
-		move.b	#7,obTimeFrame(a0)
-		addq.b	#1,obFrame(a0)
-		cmpi.b	#3,obFrame(a0)
+		move.b	#7,ost_anim_time(a0)
+		addq.b	#1,ost_frame(a0)
+		cmpi.b	#3,ost_frame(a0)
 		bcs.s	@display
-		move.b	#0,obFrame(a0)
+		move.b	#0,ost_frame(a0)
 
 @display:
 		bra.w	DisplaySprite
@@ -23367,7 +23367,7 @@ Map_Surf:	include "Mappings\LZ Water Surface.asm"
 
 Pole:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Pole_Index(pc,d0.w),d1
 		jmp	Pole_Index(pc,d1.w)
 ; ===========================================================================
@@ -23381,15 +23381,15 @@ pole_grabbed:	equ $32		; flag set when Sonic grabs the pole
 ; ===========================================================================
 
 Pole_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Pole,obMap(a0)
-		move.w	#$43DE,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#8,obActWid(a0)
-		move.b	#4,obPriority(a0)
-		move.b	#$E1,obColType(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Pole,ost_mappings(a0)
+		move.w	#$43DE,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#8,ost_actwidth(a0)
+		move.b	#4,ost_priority(a0)
+		move.b	#$E1,ost_col_type(a0)
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0 ; get object type
+		move.b	ost_subtype(a0),d0 ; get object type
 		mulu.w	#60,d0		; multiply by 60 (1 second)
 		move.w	d0,pole_time(a0) ; set breakage time
 
@@ -23400,29 +23400,29 @@ Pole_Action:	; Routine 2
 		beq.s	@moveup
 		subq.w	#1,pole_time(a0) ; decrement time until break
 		bne.s	@moveup
-		move.b	#1,obFrame(a0)	; break	the pole
+		move.b	#1,ost_frame(a0)	; break	the pole
 		bra.s	@release
 ; ===========================================================================
 
 @moveup:
 		lea	(v_player).w,a1
-		move.w	obY(a0),d0
+		move.w	ost_y_pos(a0),d0
 		subi.w	#$18,d0
 		btst	#bitUp,(v_jpadhold1).w ; is "up" pressed?
 		beq.s	@movedown	; if not, branch
-		subq.w	#1,obY(a1)	; move Sonic up
-		cmp.w	obY(a1),d0
+		subq.w	#1,ost_y_pos(a1)	; move Sonic up
+		cmp.w	ost_y_pos(a1),d0
 		bcs.s	@movedown
-		move.w	d0,obY(a1)
+		move.w	d0,ost_y_pos(a1)
 
 @movedown:
 		addi.w	#$24,d0
 		btst	#bitDn,(v_jpadhold1).w ; is "down" pressed?
 		beq.s	@letgo		; if not, branch
-		addq.w	#1,obY(a1)	; move Sonic down
-		cmp.w	obY(a1),d0
+		addq.w	#1,ost_y_pos(a1)	; move Sonic down
+		cmp.w	ost_y_pos(a1),d0
 		bcc.s	@letgo
-		move.w	d0,obY(a1)
+		move.w	d0,ost_y_pos(a1)
 
 @letgo:
 		move.b	(v_jpadpress2).w,d0
@@ -23430,8 +23430,8 @@ Pole_Action:	; Routine 2
 		beq.s	Pole_Display	; if not, branch
 
 @release:
-		clr.b	obColType(a0)
-		addq.b	#2,obRoutine(a0) ; goto Pole_Display next
+		clr.b	ost_col_type(a0)
+		addq.b	#2,ost_routine(a0) ; goto Pole_Display next
 		clr.b	(f_lockmulti).w
 		clr.b	(f_wtunnelallow).w
 		clr.b	pole_grabbed(a0)
@@ -23439,23 +23439,23 @@ Pole_Action:	; Routine 2
 ; ===========================================================================
 
 @grab:
-		tst.b	obColProp(a0)	; has Sonic touched the	pole?
+		tst.b	ost_col_property(a0)	; has Sonic touched the	pole?
 		beq.s	Pole_Display	; if not, branch
 		lea	(v_player).w,a1
-		move.w	obX(a0),d0
+		move.w	ost_x_pos(a0),d0
 		addi.w	#$14,d0
-		cmp.w	obX(a1),d0
+		cmp.w	ost_x_pos(a1),d0
 		bcc.s	Pole_Display
-		clr.b	obColProp(a0)
-		cmpi.b	#4,obRoutine(a1)
+		clr.b	ost_col_property(a0)
+		cmpi.b	#4,ost_routine(a1)
 		bcc.s	Pole_Display
-		clr.w	obVelX(a1)	; stop Sonic moving
-		clr.w	obVelY(a1)	; stop Sonic moving
-		move.w	obX(a0),d0
+		clr.w	ost_x_vel(a1)	; stop Sonic moving
+		clr.w	ost_y_vel(a1)	; stop Sonic moving
+		move.w	ost_x_pos(a0),d0
 		addi.w	#$14,d0
-		move.w	d0,obX(a1)
-		bclr	#0,obStatus(a1)
-		move.b	#id_Hang,obAnim(a1) ; set Sonic's animation to "hanging" ($11)
+		move.w	d0,ost_x_pos(a1)
+		bclr	#0,ost_status(a1)
+		move.b	#id_Hang,ost_anim(a1) ; set Sonic's animation to "hanging" ($11)
 		move.b	#1,(f_lockmulti).w ; lock controls
 		move.b	#1,(f_wtunnelallow).w ; disable wind tunnel
 		move.b	#1,pole_grabbed(a0) ; begin countdown to breakage
@@ -23471,7 +23471,7 @@ Map_Pole:	include "Mappings\LZ Pole.asm"
 
 FlapDoor:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Flap_Index(pc,d0.w),d1
 		jmp	Flap_Index(pc,d1.w)
 ; ===========================================================================
@@ -23484,13 +23484,13 @@ flap_wait:	equ $30		; time until change
 ; ===========================================================================
 
 Flap_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Flap,obMap(a0)
-		move.w	#$4328,obGfx(a0)
-		ori.b	#4,obRender(a0)
-		move.b	#$28,obActWid(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Flap,ost_mappings(a0)
+		move.w	#$4328,ost_tile(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	#$28,ost_actwidth(a0)
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0 ; get object type
+		move.b	ost_subtype(a0),d0 ; get object type
 		mulu.w	#60,d0		; multiply by 60 (1 second)
 		move.w	d0,flap_time(a0) ; set flap delay time
 
@@ -23498,8 +23498,8 @@ Flap_OpenClose:	; Routine 2
 		subq.w	#1,flap_wait(a0) ; decrement time delay
 		bpl.s	@wait		; if time remains, branch
 		move.w	flap_time(a0),flap_wait(a0) ; reset time delay
-		bchg	#0,obAnim(a0)	; open/close door
-		tst.b	obRender(a0)
+		bchg	#0,ost_anim(a0)	; open/close door
+		tst.b	ost_render(a0)
 		bpl.s	@nosound
 		sfx	sfx_Door,0,0,0	; play door sound
 
@@ -23508,17 +23508,17 @@ Flap_OpenClose:	; Routine 2
 		lea	(Ani_Flap).l,a1
 		bsr.w	AnimateSprite
 		clr.b	(f_wtunnelallow).w ; enable wind tunnel
-		tst.b	obFrame(a0)	; is the door open?
+		tst.b	ost_frame(a0)	; is the door open?
 		bne.s	@display	; if yes, branch
-		move.w	(v_player+obX).w,d0
-		cmp.w	obX(a0),d0	; has Sonic passed through the door?
+		move.w	(v_player+ost_x_pos).w,d0
+		cmp.w	ost_x_pos(a0),d0	; has Sonic passed through the door?
 		bcc.s	@display	; if yes, branch
 		move.b	#1,(f_wtunnelallow).w ; disable wind tunnel
 		move.w	#$13,d1
 		move.w	#$20,d2
 		move.w	d2,d3
 		addq.w	#1,d3
-		move.w	obX(a0),d4
+		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject	; make the door	solid
 
 	@display:
@@ -23533,7 +23533,7 @@ Map_Flap:	include "Mappings\LZ Flapping Door.asm"
 
 Invisibarrier:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Invis_Index(pc,d0.w),d1
 		jmp	Invis_Index(pc,d1.w)
 ; ===========================================================================
@@ -23545,16 +23545,16 @@ invis_height:	equ $16		; height in pixels
 ; ===========================================================================
 
 Invis_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Invis,obMap(a0)
-		move.w	#$8680,obGfx(a0)
-		ori.b	#4,obRender(a0)
-		move.b	obSubtype(a0),d0 ; get object type
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Invis,ost_mappings(a0)
+		move.w	#$8680,ost_tile(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	ost_subtype(a0),d0 ; get object type
 		move.b	d0,d1
 		andi.w	#$F0,d0		; read only the	1st byte
 		addi.w	#$10,d0
 		lsr.w	#1,d0
-		move.b	d0,obActWid(a0)	; set object width
+		move.b	d0,ost_actwidth(a0)	; set object width
 		andi.w	#$F,d1		; read only the	2nd byte
 		addq.w	#1,d1
 		lsl.w	#3,d1
@@ -23564,13 +23564,13 @@ Invis_Solid:	; Routine 2
 		bsr.w	ChkObjectVisible
 		bne.s	@chkdel
 		moveq	#0,d1
-		move.b	obActWid(a0),d1
+		move.b	ost_actwidth(a0),d1
 		addi.w	#$B,d1
 		moveq	#0,d2
 		move.b	invis_height(a0),d2
 		move.w	d2,d3
 		addq.w	#1,d3
-		move.w	obX(a0),d4
+		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject71
 
 @chkdel:
@@ -23593,7 +23593,7 @@ Map_Invis:	include "Mappings\Invisible Solid Blocks.asm"
 
 Fan:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Fan_Index(pc,d0.w),d1
 		jmp	Fan_Index(pc,d1.w)
 ; ===========================================================================
@@ -23606,15 +23606,15 @@ fan_switch:	equ $32		; on/off switch
 ; ===========================================================================
 
 Fan_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Fan,obMap(a0)
-		move.w	#$43A0,obGfx(a0)
-		ori.b	#4,obRender(a0)
-		move.b	#$10,obActWid(a0)
-		move.b	#4,obPriority(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Fan,ost_mappings(a0)
+		move.w	#$43A0,ost_tile(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	#$10,ost_actwidth(a0)
+		move.b	#4,ost_priority(a0)
 
 Fan_Delay:	; Routine 2
-		btst	#1,obSubtype(a0) ; is object type 02/03 (always on)?
+		btst	#1,ost_subtype(a0) ; is object type 02/03 (always on)?
 		bne.s	@blow		; if yes, branch
 		subq.w	#1,fan_time(a0)	; subtract 1 from time delay
 		bpl.s	@blow		; if time remains, branch
@@ -23627,9 +23627,9 @@ Fan_Delay:	; Routine 2
 		tst.b	fan_switch(a0)	; is fan switched on?
 		bne.w	@chkdel		; if not, branch
 		lea	(v_player).w,a1
-		move.w	obX(a1),d0
-		sub.w	obX(a0),d0
-		btst	#0,obStatus(a0)	; is fan facing right?
+		move.w	ost_x_pos(a1),d0
+		sub.w	ost_x_pos(a0),d0
+		btst	#0,ost_status(a0)	; is fan facing right?
 		bne.s	@chksonic	; if yes, branch
 		neg.w	d0
 
@@ -23637,9 +23637,9 @@ Fan_Delay:	; Routine 2
 		addi.w	#$50,d0
 		cmpi.w	#$F0,d0		; is Sonic more	than $A0 pixels	from the fan?
 		bcc.s	@animate	; if yes, branch
-		move.w	obY(a1),d1
+		move.w	ost_y_pos(a1),d1
 		addi.w	#$60,d1
-		sub.w	obY(a0),d1
+		sub.w	ost_y_pos(a0),d1
 		bcs.s	@animate	; branch if Sonic is too low
 		cmpi.w	#$70,d1
 		bcc.s	@animate	; branch if Sonic is too high
@@ -23650,38 +23650,38 @@ Fan_Delay:	; Routine 2
 
 	@faraway:
 		addi.w	#$60,d0
-		btst	#0,obStatus(a0)	; is fan facing right?
+		btst	#0,ost_status(a0)	; is fan facing right?
 		bne.s	@right		; if yes, branch
 		neg.w	d0
 
 	@right:
 		neg.b	d0
 		asr.w	#4,d0
-		btst	#0,obSubtype(a0)
+		btst	#0,ost_subtype(a0)
 		beq.s	@movesonic
 		neg.w	d0
 
 	@movesonic:
-		add.w	d0,obX(a1)	; push Sonic away from the fan
+		add.w	d0,ost_x_pos(a1)	; push Sonic away from the fan
 
 @animate:
-		subq.b	#1,obTimeFrame(a0)
+		subq.b	#1,ost_anim_time(a0)
 		bpl.s	@chkdel
-		move.b	#0,obTimeFrame(a0)
-		addq.b	#1,obAniFrame(a0)
-		cmpi.b	#3,obAniFrame(a0)
+		move.b	#0,ost_anim_time(a0)
+		addq.b	#1,ost_anim_frame(a0)
+		cmpi.b	#3,ost_anim_frame(a0)
 		bcs.s	@noreset
-		move.b	#0,obAniFrame(a0) ; reset after 4 frames
+		move.b	#0,ost_anim_frame(a0) ; reset after 4 frames
 
 	@noreset:
 		moveq	#0,d0
-		btst	#0,obSubtype(a0)
+		btst	#0,ost_subtype(a0)
 		beq.s	@noflip
 		moveq	#2,d0
 
 	@noflip:
-		add.b	obAniFrame(a0),d0
-		move.b	d0,obFrame(a0)
+		add.b	ost_anim_frame(a0),d0
+		move.b	d0,ost_frame(a0)
 
 @chkdel:
 		bsr.w	DisplaySprite
@@ -23696,7 +23696,7 @@ Map_Fan:	include "Mappings\SLZ Fans.asm"
 
 Seesaw:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	See_Index(pc,d0.w),d1
 		jsr	See_Index(pc,d1.w)
 		move.w	see_origX(a0),d0
@@ -23726,44 +23726,44 @@ see_parent:	equ $3C		; RAM address of parent object
 ; ===========================================================================
 
 See_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Seesaw,obMap(a0)
-		move.w	#$374,obGfx(a0)
-		ori.b	#4,obRender(a0)
-		move.b	#4,obPriority(a0)
-		move.b	#$30,obActWid(a0)
-		move.w	obX(a0),see_origX(a0)
-		tst.b	obSubtype(a0)	; is object type 00 ?
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Seesaw,ost_mappings(a0)
+		move.w	#$374,ost_tile(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	#4,ost_priority(a0)
+		move.b	#$30,ost_actwidth(a0)
+		move.w	ost_x_pos(a0),see_origX(a0)
+		tst.b	ost_subtype(a0)	; is object type 00 ?
 		bne.s	@noball		; if not, branch
 
 		bsr.w	FindNextFreeObj
 		bne.s	@noball
 		move.b	#id_Seesaw,0(a1) ; load spikeball object
-		addq.b	#6,obRoutine(a1) ; use See_Spikeball routine
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
-		move.b	obStatus(a0),obStatus(a1)
+		addq.b	#6,ost_routine(a1) ; use See_Spikeball routine
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
+		move.b	ost_status(a0),ost_status(a1)
 		move.l	a0,see_parent(a1)
 
 	@noball:
-		btst	#0,obStatus(a0)	; is seesaw flipped?
+		btst	#0,ost_status(a0)	; is seesaw flipped?
 		beq.s	@noflip		; if not, branch
-		move.b	#2,obFrame(a0)	; use different frame
+		move.b	#2,ost_frame(a0)	; use different frame
 
 	@noflip:
-		move.b	obFrame(a0),see_frame(a0)
+		move.b	ost_frame(a0),see_frame(a0)
 
 See_Slope:	; Routine 2
 		move.b	see_frame(a0),d1
 		bsr.w	See_ChgFrame
 		lea	(See_DataSlope).l,a2
-		btst	#0,obFrame(a0)	; is seesaw flat?
+		btst	#0,ost_frame(a0)	; is seesaw flat?
 		beq.s	@notflat	; if not, branch
 		lea	(See_DataFlat).l,a2
 
 	@notflat:
 		lea	(v_player).w,a1
-		move.w	obVelY(a1),see_speed(a0)
+		move.w	ost_y_vel(a1),see_speed(a0)
 		move.w	#$30,d1
 		jsr	(SlopeObject).l
 		rts	
@@ -23772,7 +23772,7 @@ See_Slope:	; Routine 2
 See_Slope2:	; Routine 4
 		bsr.w	See_ChkSide
 		lea	(See_DataSlope).l,a2
-		btst	#0,obFrame(a0)	; is seesaw flat?
+		btst	#0,ost_frame(a0)	; is seesaw flat?
 		beq.s	@notflat	; if not, branch
 		lea	(See_DataFlat).l,a2
 
@@ -23780,7 +23780,7 @@ See_Slope2:	; Routine 4
 		move.w	#$30,d1
 		jsr	(ExitPlatform).l
 		move.w	#$30,d1
-		move.w	obX(a0),d2
+		move.w	ost_x_pos(a0),d2
 		jsr	(SlopeObject2).l
 		rts	
 ; ===========================================================================
@@ -23788,8 +23788,8 @@ See_Slope2:	; Routine 4
 See_ChkSide:
 		moveq	#2,d1
 		lea	(v_player).w,a1
-		move.w	obX(a0),d0
-		sub.w	obX(a1),d0	; is Sonic on the left side of the seesaw?
+		move.w	ost_x_pos(a0),d0
+		sub.w	ost_x_pos(a1),d0	; is Sonic on the left side of the seesaw?
 		bcc.s	@leftside	; if yes, branch
 		neg.w	d0
 		moveq	#0,d1
@@ -23800,7 +23800,7 @@ See_ChkSide:
 		moveq	#1,d1
 
 See_ChgFrame:
-		move.b	obFrame(a0),d0
+		move.b	ost_frame(a0),d0
 		cmp.b	d1,d0		; does frame need to change?
 		beq.s	@noflip		; if not, branch
 		bcc.s	@loc_11772
@@ -23808,32 +23808,32 @@ See_ChgFrame:
 
 	@loc_11772:
 		subq.b	#1,d0
-		move.b	d0,obFrame(a0)
+		move.b	d0,ost_frame(a0)
 		move.b	d1,see_frame(a0)
-		bclr	#0,obRender(a0)
-		btst	#1,obFrame(a0)
+		bclr	#0,ost_render(a0)
+		btst	#1,ost_frame(a0)
 		beq.s	@noflip
-		bset	#0,obRender(a0)
+		bset	#0,ost_render(a0)
 
 	@noflip:
 		rts	
 ; ===========================================================================
 
 See_Spikeball:	; Routine 6
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_SSawBall,obMap(a0)
-		move.w	#$4F0,obGfx(a0)
-		ori.b	#4,obRender(a0)
-		move.b	#4,obPriority(a0)
-		move.b	#$8B,obColType(a0)
-		move.b	#$C,obActWid(a0)
-		move.w	obX(a0),see_origX(a0)
-		addi.w	#$28,obX(a0)
-		move.w	obY(a0),see_origY(a0)
-		move.b	#1,obFrame(a0)
-		btst	#0,obStatus(a0)	; is seesaw flipped?
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_SSawBall,ost_mappings(a0)
+		move.w	#$4F0,ost_tile(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	#4,ost_priority(a0)
+		move.b	#$8B,ost_col_type(a0)
+		move.b	#$C,ost_actwidth(a0)
+		move.w	ost_x_pos(a0),see_origX(a0)
+		addi.w	#$28,ost_x_pos(a0)
+		move.w	ost_y_pos(a0),see_origY(a0)
+		move.b	#1,ost_frame(a0)
+		btst	#0,ost_status(a0)	; is seesaw flipped?
 		beq.s	See_MoveSpike	; if not, branch
-		subi.w	#$50,obX(a0)	; move spikeball to the other side
+		subi.w	#$50,ost_x_pos(a0)	; move spikeball to the other side
 		move.b	#2,see_frame(a0)
 
 See_MoveSpike:	; Routine 8
@@ -23858,24 +23858,24 @@ loc_117FC:
 		move.w	#-$A0,d2
 
 loc_11822:
-		move.w	d1,obVelY(a0)
-		move.w	d2,obVelX(a0)
-		move.w	obX(a0),d0
+		move.w	d1,ost_y_vel(a0)
+		move.w	d2,ost_x_vel(a0)
+		move.w	ost_x_pos(a0),d0
 		sub.w	see_origX(a0),d0
 		bcc.s	loc_11838
-		neg.w	obVelX(a0)
+		neg.w	ost_x_vel(a0)
 
 loc_11838:
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 		bra.s	See_SpikeFall
 ; ===========================================================================
 
 loc_1183E:
 		lea	(See_Speeds).l,a2
 		moveq	#0,d0
-		move.b	obFrame(a1),d0
+		move.b	ost_frame(a1),d0
 		move.w	#$28,d2
-		move.w	obX(a0),d1
+		move.w	ost_x_pos(a0),d1
 		sub.w	see_origX(a0),d1
 		bcc.s	loc_1185C
 		neg.w	d2
@@ -23885,21 +23885,21 @@ loc_1185C:
 		add.w	d0,d0
 		move.w	see_origY(a0),d1
 		add.w	(a2,d0.w),d1
-		move.w	d1,obY(a0)
+		move.w	d1,ost_y_pos(a0)
 		add.w	see_origX(a0),d2
-		move.w	d2,obX(a0)
-		clr.w	obY+2(a0)
-		clr.w	obX+2(a0)
+		move.w	d2,ost_x_pos(a0)
+		clr.w	ost_y_pos+2(a0)
+		clr.w	ost_x_pos+2(a0)
 		rts	
 ; ===========================================================================
 
 See_SpikeFall:	; Routine $A
-		tst.w	obVelY(a0)	; is spikeball falling down?
+		tst.w	ost_y_vel(a0)	; is spikeball falling down?
 		bpl.s	loc_1189A	; if yes, branch
 		bsr.w	ObjectFall
 		move.w	see_origY(a0),d0
 		subi.w	#$2F,d0
-		cmp.w	obY(a0),d0
+		cmp.w	ost_y_pos(a0),d0
 		bgt.s	locret_11898
 		bsr.w	ObjectFall
 
@@ -23912,8 +23912,8 @@ loc_1189A:
 		movea.l	see_parent(a0),a1
 		lea	(See_Speeds).l,a2
 		moveq	#0,d0
-		move.b	obFrame(a1),d0
-		move.w	obX(a0),d1
+		move.b	ost_frame(a1),d0
+		move.w	ost_x_pos(a0),d1
 		sub.w	see_origX(a0),d1
 		bcc.s	loc_118BA
 		addq.w	#2,d0
@@ -23922,37 +23922,37 @@ loc_118BA:
 		add.w	d0,d0
 		move.w	see_origY(a0),d1
 		add.w	(a2,d0.w),d1
-		cmp.w	obY(a0),d1
+		cmp.w	ost_y_pos(a0),d1
 		bgt.s	locret_11938
 		movea.l	see_parent(a0),a1
 		moveq	#2,d1
-		tst.w	obVelX(a0)
+		tst.w	ost_x_vel(a0)
 		bmi.s	See_Spring
 		moveq	#0,d1
 
 See_Spring:
 		move.b	d1,$3A(a1)
 		move.b	d1,see_frame(a0)
-		cmp.b	obFrame(a1),d1
+		cmp.b	ost_frame(a1),d1
 		beq.s	loc_1192C
-		bclr	#3,obStatus(a1)
+		bclr	#3,ost_status(a1)
 		beq.s	loc_1192C
-		clr.b	ob2ndRout(a1)
-		move.b	#2,obRoutine(a1)
+		clr.b	ost_routine2(a1)
+		move.b	#2,ost_routine(a1)
 		lea	(v_player).w,a2
-		move.w	obVelY(a0),obVelY(a2)
-		neg.w	obVelY(a2)
-		bset	#1,obStatus(a2)
-		bclr	#3,obStatus(a2)
+		move.w	ost_y_vel(a0),ost_y_vel(a2)
+		neg.w	ost_y_vel(a2)
+		bset	#1,ost_status(a2)
+		bclr	#3,ost_status(a2)
 		clr.b	$3C(a2)
-		move.b	#id_Spring,obAnim(a2) ; change Sonic's animation to "spring" ($10)
-		move.b	#2,obRoutine(a2)
+		move.b	#id_Spring,ost_anim(a2) ; change Sonic's animation to "spring" ($10)
+		move.b	#2,ost_routine(a2)
 		sfx	sfx_Spring,0,0,0	; play spring sound
 
 loc_1192C:
-		clr.w	obVelX(a0)
-		clr.w	obVelY(a0)
-		subq.b	#2,obRoutine(a0)
+		clr.w	ost_x_vel(a0)
+		clr.w	ost_y_vel(a0)
+		subq.b	#2,ost_routine(a0)
 
 locret_11938:
 		rts	
@@ -23973,7 +23973,7 @@ Map_SSawBall:	include "Mappings\SLZ Seesaw Spike Ball.asm"
 
 Bomb:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Bom_Index(pc,d0.w),d1
 		jmp	Bom_Index(pc,d1.w)
 ; ===========================================================================
@@ -23989,25 +23989,25 @@ bom_parent:	equ $3C		; address of parent object
 ; ===========================================================================
 
 Bom_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Bomb,obMap(a0)
-		move.w	#$400,obGfx(a0)
-		ori.b	#4,obRender(a0)
-		move.b	#3,obPriority(a0)
-		move.b	#$C,obActWid(a0)
-		move.b	obSubtype(a0),d0
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Bomb,ost_mappings(a0)
+		move.w	#$400,ost_tile(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	#3,ost_priority(a0)
+		move.b	#$C,ost_actwidth(a0)
+		move.b	ost_subtype(a0),d0
 		beq.s	loc_11A3C
-		move.b	d0,obRoutine(a0)
+		move.b	d0,ost_routine(a0)
 		rts	
 ; ===========================================================================
 
 loc_11A3C:
-		move.b	#$9A,obColType(a0)
-		bchg	#0,obStatus(a0)
+		move.b	#$9A,ost_col_type(a0)
+		bchg	#0,ost_status(a0)
 
 Bom_Action:	; Routine 2
 		moveq	#0,d0
-		move.b	ob2ndRout(a0),d0
+		move.b	ost_routine2(a0),d0
 		move.w	@index(pc,d0.w),d1
 		jsr	@index(pc,d1.w)
 		lea	(Ani_Bomb).l,a1
@@ -24024,13 +24024,13 @@ Bom_Action:	; Routine 2
 		bsr.w	@chksonic
 		subq.w	#1,bom_time(a0)	; subtract 1 from time delay
 		bpl.s	@noflip		; if time remains, branch
-		addq.b	#2,ob2ndRout(a0) ; goto @wait
+		addq.b	#2,ost_routine2(a0) ; goto @wait
 		move.w	#1535,bom_time(a0) ; set time delay to 25 seconds
-		move.w	#$10,obVelX(a0)
-		move.b	#1,obAnim(a0)	; use walking animation
-		bchg	#0,obStatus(a0)
+		move.w	#$10,ost_x_vel(a0)
+		move.b	#1,ost_anim(a0)	; use walking animation
+		bchg	#0,ost_status(a0)
 		beq.s	@noflip
-		neg.w	obVelX(a0)	; change direction
+		neg.w	ost_x_vel(a0)	; change direction
 
 	@noflip:
 		rts	
@@ -24045,10 +24045,10 @@ Bom_Action:	; Routine 2
 ; ===========================================================================
 
 	@stopwalking:
-		subq.b	#2,ob2ndRout(a0)
+		subq.b	#2,ost_routine2(a0)
 		move.w	#179,bom_time(a0) ; set time delay to 3 seconds
-		clr.w	obVelX(a0)	; stop walking
-		move.b	#0,obAnim(a0)	; use waiting animation
+		clr.w	ost_x_vel(a0)	; stop walking
+		move.b	#0,ost_anim(a0)	; use waiting animation
 		rts	
 ; ===========================================================================
 
@@ -24056,23 +24056,23 @@ Bom_Action:	; Routine 2
 		subq.w	#1,bom_time(a0)	; subtract 1 from time delay
 		bpl.s	@noexplode	; if time remains, branch
 		move.b	#id_ExplosionBomb,0(a0) ; change bomb into an explosion
-		move.b	#0,obRoutine(a0)
+		move.b	#0,ost_routine(a0)
 
 	@noexplode:
 		rts	
 ; ===========================================================================
 
 @chksonic:
-		move.w	(v_player+obX).w,d0
-		sub.w	obX(a0),d0
+		move.w	(v_player+ost_x_pos).w,d0
+		sub.w	ost_x_pos(a0),d0
 		bcc.s	@isleft
 		neg.w	d0
 
 	@isleft:
 		cmpi.w	#$60,d0		; is Sonic within $60 pixels?
 		bcc.s	@outofrange	; if not, branch
-		move.w	(v_player+obY).w,d0
-		sub.w	obY(a0),d0
+		move.w	(v_player+ost_y_pos).w,d0
+		sub.w	ost_y_pos(a0),d0
 		bcc.s	@isabove
 		neg.w	d0
 
@@ -24082,23 +24082,23 @@ Bom_Action:	; Routine 2
 		tst.w	(v_debuguse).w
 		bne.s	@outofrange
 
-		move.b	#4,ob2ndRout(a0)
+		move.b	#4,ost_routine2(a0)
 		move.w	#143,bom_time(a0) ; set fuse time
-		clr.w	obVelX(a0)
-		move.b	#2,obAnim(a0)	; use activated animation
+		clr.w	ost_x_vel(a0)
+		move.b	#2,ost_anim(a0)	; use activated animation
 		bsr.w	FindNextFreeObj
 		bne.s	@outofrange
 		move.b	#id_Bomb,0(a1)	; load fuse object
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
-		move.w	obY(a0),bom_origY(a1)
-		move.b	obStatus(a0),obStatus(a1)
-		move.b	#4,obSubtype(a1)
-		move.b	#3,obAnim(a1)
-		move.w	#$10,obVelY(a1)
-		btst	#1,obStatus(a0)	; is bomb upside-down?
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
+		move.w	ost_y_pos(a0),bom_origY(a1)
+		move.b	ost_status(a0),ost_status(a1)
+		move.b	#4,ost_subtype(a1)
+		move.b	#3,ost_anim(a1)
+		move.w	#$10,ost_y_vel(a1)
+		btst	#1,ost_status(a0)	; is bomb upside-down?
 		beq.s	@normal		; if not, branch
-		neg.w	obVelY(a1)	; reverse direction for fuse
+		neg.w	ost_y_vel(a1)	; reverse direction for fuse
 
 	@normal:
 		move.w	#143,bom_time(a1) ; set fuse time
@@ -24124,8 +24124,8 @@ loc_11B70:
 
 loc_11B7C:
 		clr.w	bom_time(a0)
-		clr.b	obRoutine(a0)
-		move.w	bom_origY(a0),obY(a0)
+		clr.b	ost_routine(a0)
+		move.w	bom_origY(a0),ost_y_pos(a0)
 		moveq	#3,d1
 		movea.l	a0,a1
 		lea	(Bom_ShrSpeed).l,a2 ; load shrapnel speed data
@@ -24138,26 +24138,26 @@ loc_11B7C:
 
 @makeshrapnel:
 		move.b	#id_Bomb,0(a1)	; load shrapnel	object
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
-		move.b	#6,obSubtype(a1)
-		move.b	#4,obAnim(a1)
-		move.w	(a2)+,obVelX(a1)
-		move.w	(a2)+,obVelY(a1)
-		move.b	#$98,obColType(a1)
-		bset	#7,obRender(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
+		move.b	#6,ost_subtype(a1)
+		move.b	#4,ost_anim(a1)
+		move.w	(a2)+,ost_x_vel(a1)
+		move.w	(a2)+,ost_y_vel(a1)
+		move.b	#$98,ost_col_type(a1)
+		bset	#7,ost_render(a1)
 
 	@fail:
 		dbf	d1,@loop	; repeat 3 more	times
 
-		move.b	#6,obRoutine(a0)
+		move.b	#6,ost_routine(a0)
 
 Bom_End:	; Routine 6
 		bsr.w	SpeedToPos
-		addi.w	#$18,obVelY(a0)
+		addi.w	#$18,ost_y_vel(a0)
 		lea	(Ani_Bomb).l,a1
 		bsr.w	AnimateSprite
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.w	DeleteObject
 		bra.w	DisplaySprite
 ; ===========================================================================
@@ -24172,7 +24172,7 @@ Map_Bomb:	include "Mappings\Bomb Enemy.asm"
 
 Orbinaut:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Orb_Index(pc,d0.w),d1
 		jmp	Orb_Index(pc,d1.w)
 ; ===========================================================================
@@ -24187,22 +24187,22 @@ orb_parent:	equ $3C		; address of parent object
 ; ===========================================================================
 
 Orb_Main:	; Routine 0
-		move.l	#Map_Orb,obMap(a0)
-		move.w	#$429,obGfx(a0)	; SBZ specific code
+		move.l	#Map_Orb,ost_mappings(a0)
+		move.w	#$429,ost_tile(a0)	; SBZ specific code
 		cmpi.b	#id_SBZ,(v_zone).w ; check if level is SBZ
 		beq.s	@isscrap
-		move.w	#$2429,obGfx(a0) ; SLZ specific code
+		move.w	#$2429,ost_tile(a0) ; SLZ specific code
 
 	@isscrap:
 		cmpi.b	#id_LZ,(v_zone).w ; check if level is LZ
 		bne.s	@notlabyrinth
-		move.w	#$467,obGfx(a0)	; LZ specific code
+		move.w	#$467,ost_tile(a0)	; LZ specific code
 
 	@notlabyrinth:
-		ori.b	#4,obRender(a0)
-		move.b	#4,obPriority(a0)
-		move.b	#$B,obColType(a0)
-		move.b	#$C,obActWid(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	#4,ost_priority(a0)
+		move.b	#$B,ost_col_type(a0)
+		move.b	#$C,ost_actwidth(a0)
 		moveq	#0,d2
 		lea	$37(a0),a2
 		movea.l	a2,a3
@@ -24219,49 +24219,49 @@ Orb_Main:	; Routine 0
 		andi.w	#$7F,d5
 		move.b	d5,(a2)+
 		move.b	0(a0),0(a1)	; load spiked orb object
-		move.b	#6,obRoutine(a1) ; use Orb_MoveOrb routine
-		move.l	obMap(a0),obMap(a1)
-		move.w	obGfx(a0),obGfx(a1)
-		ori.b	#4,obRender(a1)
-		move.b	#4,obPriority(a1)
-		move.b	#8,obActWid(a1)
-		move.b	#3,obFrame(a1)
-		move.b	#$98,obColType(a1)
-		move.b	d2,obAngle(a1)
+		move.b	#6,ost_routine(a1) ; use Orb_MoveOrb routine
+		move.l	ost_mappings(a0),ost_mappings(a1)
+		move.w	ost_tile(a0),ost_tile(a1)
+		ori.b	#4,ost_render(a1)
+		move.b	#4,ost_priority(a1)
+		move.b	#8,ost_actwidth(a1)
+		move.b	#3,ost_frame(a1)
+		move.b	#$98,ost_col_type(a1)
+		move.b	d2,ost_angle(a1)
 		addi.b	#$40,d2
 		move.l	a0,orb_parent(a1)
 		dbf	d1,@makesatellites ; repeat sequence 3 more times
 
 	@fail:
 		moveq	#1,d0
-		btst	#0,obStatus(a0)	; is orbinaut facing left?
+		btst	#0,ost_status(a0)	; is orbinaut facing left?
 		beq.s	@noflip		; if not, branch
 		neg.w	d0
 
 	@noflip:
 		move.b	d0,$36(a0)
-		move.b	obSubtype(a0),obRoutine(a0) ; if type is 02, skip Orb_ChkSonic
-		addq.b	#2,obRoutine(a0)
-		move.w	#-$40,obVelX(a0) ; move orbinaut to the left
-		btst	#0,obStatus(a0)	; is orbinaut facing left??
+		move.b	ost_subtype(a0),ost_routine(a0) ; if type is 02, skip Orb_ChkSonic
+		addq.b	#2,ost_routine(a0)
+		move.w	#-$40,ost_x_vel(a0) ; move orbinaut to the left
+		btst	#0,ost_status(a0)	; is orbinaut facing left??
 		beq.s	@noflip2	; if not, branch
-		neg.w	obVelX(a0)	; move orbinaut	to the right
+		neg.w	ost_x_vel(a0)	; move orbinaut	to the right
 
 	@noflip2:
 		rts	
 ; ===========================================================================
 
 Orb_ChkSonic:	; Routine 2
-		move.w	(v_player+obX).w,d0
-		sub.w	obX(a0),d0	; is Sonic to the right of the orbinaut?
+		move.w	(v_player+ost_x_pos).w,d0
+		sub.w	ost_x_pos(a0),d0	; is Sonic to the right of the orbinaut?
 		bcc.s	@isright	; if yes, branch
 		neg.w	d0
 
 	@isright:
 		cmpi.w	#$A0,d0		; is Sonic within $A0 pixels of	orbinaut?
 		bcc.s	@animate	; if not, branch
-		move.w	(v_player+obY).w,d0
-		sub.w	obY(a0),d0	; is Sonic above the orbinaut?
+		move.w	(v_player+ost_y_pos).w,d0
+		sub.w	ost_y_pos(a0),d0	; is Sonic above the orbinaut?
 		bcc.s	@isabove	; if yes, branch
 		neg.w	d0
 
@@ -24270,7 +24270,7 @@ Orb_ChkSonic:	; Routine 2
 		bcc.s	@animate	; if not, branch
 		tst.w	(v_debuguse).w	; is debug mode	on?
 		bne.s	@animate	; if yes, branch
-		move.b	#1,obAnim(a0)	; use "angry" animation
+		move.b	#1,ost_anim(a0)	; use "angry" animation
 
 @animate:
 		lea	(Ani_Orb).l,a1
@@ -24288,7 +24288,7 @@ Orb_ChkDel:
 @chkgone:
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
-		move.b	obRespawnNo(a0),d0
+		move.b	ost_respawn(a0),d0
 		beq.s	loc_11E34
 		bclr	#7,2(a2,d0.w)
 
@@ -24316,42 +24316,42 @@ Orb_MoveOrb:	; Routine 6
 		movea.l	orb_parent(a0),a1
 		cmpi.b	#id_Orbinaut,0(a1) ; does parent object still exist?
 		bne.w	DeleteObject	; if not, delete
-		cmpi.b	#2,obFrame(a1)	; is orbinaut angry?
+		cmpi.b	#2,ost_frame(a1)	; is orbinaut angry?
 		bne.s	@circle		; if not, branch
-		cmpi.b	#$40,obAngle(a0) ; is spikeorb directly under the orbinaut?
+		cmpi.b	#$40,ost_angle(a0) ; is spikeorb directly under the orbinaut?
 		bne.s	@circle		; if not, branch
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 		subq.b	#1,$37(a1)
 		bne.s	@fire
-		addq.b	#2,obRoutine(a1)
+		addq.b	#2,ost_routine(a1)
 
 	@fire:
-		move.w	#-$200,obVelX(a0) ; move orb to the left (quickly)
-		btst	#0,obStatus(a1)
+		move.w	#-$200,ost_x_vel(a0) ; move orb to the left (quickly)
+		btst	#0,ost_status(a1)
 		beq.s	@noflip
-		neg.w	obVelX(a0)
+		neg.w	ost_x_vel(a0)
 
 	@noflip:
 		bra.w	DisplaySprite
 ; ===========================================================================
 
 @circle:
-		move.b	obAngle(a0),d0
+		move.b	ost_angle(a0),d0
 		jsr	(CalcSine).l
 		asr.w	#4,d1
-		add.w	obX(a1),d1
-		move.w	d1,obX(a0)
+		add.w	ost_x_pos(a1),d1
+		move.w	d1,ost_x_pos(a0)
 		asr.w	#4,d0
-		add.w	obY(a1),d0
-		move.w	d0,obY(a0)
+		add.w	ost_y_pos(a1),d0
+		move.w	d0,ost_y_pos(a0)
 		move.b	$36(a1),d0
-		add.b	d0,obAngle(a0)
+		add.b	d0,ost_angle(a0)
 		bra.w	DisplaySprite
 ; ===========================================================================
 
 Orb_ChkDel2:	; Routine 8
 		bsr.w	SpeedToPos
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.w	DeleteObject
 		bra.w	DisplaySprite
 
@@ -24364,7 +24364,7 @@ Map_Orb:	include "Mappings\Orbinaut.asm"
 
 Harpoon:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Harp_Index(pc,d0.w),d1
 		jmp	Harp_Index(pc,d1.w)
 ; ===========================================================================
@@ -24377,21 +24377,21 @@ harp_time:	equ $30		; time between stabbing/retracting
 ; ===========================================================================
 
 Harp_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Harp,obMap(a0)
-		move.w	#$3CC,obGfx(a0)
-		ori.b	#4,obRender(a0)
-		move.b	#4,obPriority(a0)
-		move.b	obSubtype(a0),obAnim(a0) ; get type (vert/horiz)
-		move.b	#$14,obActWid(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Harp,ost_mappings(a0)
+		move.w	#$3CC,ost_tile(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	#4,ost_priority(a0)
+		move.b	ost_subtype(a0),ost_anim(a0) ; get type (vert/horiz)
+		move.b	#$14,ost_actwidth(a0)
 		move.w	#60,harp_time(a0) ; set time to 1 second
 
 Harp_Move:	; Routine 2
 		lea	(Ani_Harp).l,a1
 		bsr.w	AnimateSprite
 		moveq	#0,d0
-		move.b	obFrame(a0),d0	; get frame number
-		move.b	@types(pc,d0.w),obColType(a0) ; get collision type
+		move.b	ost_frame(a0),d0	; get frame number
+		move.b	@types(pc,d0.w),ost_col_type(a0) ; get collision type
 		bra.w	RememberState
 
 	@types:
@@ -24402,8 +24402,8 @@ Harp_Wait:	; Routine 4
 		subq.w	#1,harp_time(a0) ; decrement timer
 		bpl.s	@chkdel		; branch if time remains
 		move.w	#60,harp_time(a0) ; reset timer
-		subq.b	#2,obRoutine(a0) ; run "Harp_Move" subroutine
-		bchg	#0,obAnim(a0)	; reverse animation
+		subq.b	#2,ost_routine(a0) ; run "Harp_Move" subroutine
+		bchg	#0,ost_anim(a0)	; reverse animation
 
 	@chkdel:
 		bra.w	RememberState
@@ -24417,7 +24417,7 @@ Map_Harp:	include "Mappings\LZ Harpoon.asm"
 
 LabyrinthBlock:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	LBlk_Index(pc,d0.w),d1
 		jmp	LBlk_Index(pc,d1.w)
 ; ===========================================================================
@@ -24438,23 +24438,23 @@ lblk_untouched:	equ $38		; flag block as untouched
 ; ===========================================================================
 
 LBlk_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_LBlock,obMap(a0)
-		move.w	#$43E6,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#3,obPriority(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_LBlock,ost_mappings(a0)
+		move.w	#$43E6,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#3,ost_priority(a0)
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0 ; get block type
+		move.b	ost_subtype(a0),d0 ; get block type
 		lsr.w	#3,d0		; read only the 1st digit
 		andi.w	#$E,d0
 		lea	LBlk_Var(pc,d0.w),a2
-		move.b	(a2)+,obActWid(a0) ; set width
+		move.b	(a2)+,ost_actwidth(a0) ; set width
 		move.b	(a2),lblk_height(a0) ; set height
 		lsr.w	#1,d0
-		move.b	d0,obFrame(a0)
-		move.w	obX(a0),lblk_origX(a0)
-		move.w	obY(a0),lblk_origY(a0)
-		move.b	obSubtype(a0),d0 ; get block type
+		move.b	d0,ost_frame(a0)
+		move.w	ost_x_pos(a0),lblk_origX(a0)
+		move.w	ost_y_pos(a0),lblk_origY(a0)
+		move.b	ost_subtype(a0),d0 ; get block type
 		andi.b	#$F,d0		; read only the 2nd digit
 		beq.s	LBlk_Action	; branch if 0
 		cmpi.b	#7,d0
@@ -24462,18 +24462,18 @@ LBlk_Main:	; Routine 0
 		move.b	#1,lblk_untouched(a0)
 
 LBlk_Action:	; Routine 2
-		move.w	obX(a0),-(sp)
+		move.w	ost_x_pos(a0),-(sp)
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		andi.w	#$F,d0
 		add.w	d0,d0
 		move.w	@index(pc,d0.w),d1
 		jsr	@index(pc,d1.w)
 		move.w	(sp)+,d4
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.s	@chkdel
 		moveq	#0,d1
-		move.b	obActWid(a0),d1
+		move.b	ost_actwidth(a0),d1
 		addi.w	#$B,d1
 		moveq	#0,d2
 		move.b	lblk_height(a0),d2
@@ -24506,7 +24506,7 @@ LBlk_Action:	; Routine 2
 @type03:
 		tst.w	lblk_time(a0)	; does time remain?
 		bne.s	@wait01		; if yes, branch
-		btst	#3,obStatus(a0)	; is Sonic standing on the object?
+		btst	#3,ost_status(a0)	; is Sonic standing on the object?
 		beq.s	@donothing01	; if not, branch
 		move.w	#30,lblk_time(a0) ; wait for half second
 
@@ -24517,7 +24517,7 @@ LBlk_Action:	; Routine 2
 	@wait01:
 		subq.w	#1,lblk_time(a0); decrement waiting time
 		bne.s	@donothing01	; if time remains, branch
-		addq.b	#1,obSubtype(a0) ; goto @type02 or @type04
+		addq.b	#1,ost_subtype(a0) ; goto @type02 or @type04
 		clr.b	lblk_untouched(a0) ; flag block as touched
 		rts	
 ; ===========================================================================
@@ -24525,14 +24525,14 @@ LBlk_Action:	; Routine 2
 @type02:
 @type06:
 		bsr.w	SpeedToPos
-		addq.w	#8,obVelY(a0)	; make block fall
+		addq.w	#8,ost_y_vel(a0)	; make block fall
 		bsr.w	ObjFloorDist
 		tst.w	d1		; has block hit the floor?
 		bpl.w	@nofloor02	; if not, branch
 		addq.w	#1,d1
-		add.w	d1,obY(a0)
-		clr.w	obVelY(a0)	; stop when it touches the floor
-		clr.b	obSubtype(a0)	; set type to 00 (non-moving type)
+		add.w	d1,ost_y_pos(a0)
+		clr.w	ost_y_vel(a0)	; stop when it touches the floor
+		clr.b	ost_subtype(a0)	; set type to 00 (non-moving type)
 
 	@nofloor02:
 		rts	
@@ -24540,13 +24540,13 @@ LBlk_Action:	; Routine 2
 
 @type04:
 		bsr.w	SpeedToPos
-		subq.w	#8,obVelY(a0)	; make block rise
+		subq.w	#8,ost_y_vel(a0)	; make block rise
 		bsr.w	ObjHitCeiling
 		tst.w	d1		; has block hit the ceiling?
 		bpl.w	@noceiling04	; if not, branch
-		sub.w	d1,obY(a0)
-		clr.w	obVelY(a0)	; stop when it touches the ceiling
-		clr.b	obSubtype(a0)	; set type to 00 (non-moving type)
+		sub.w	d1,ost_y_pos(a0)
+		clr.w	ost_y_vel(a0)	; stop when it touches the ceiling
+		clr.b	ost_subtype(a0)	; set type to 00 (non-moving type)
 
 	@noceiling04:
 		rts	
@@ -24555,7 +24555,7 @@ LBlk_Action:	; Routine 2
 @type05:
 		cmpi.b	#1,$3F(a0)	; is Sonic touching the	block?
 		bne.s	@notouch05	; if not, branch
-		addq.b	#1,obSubtype(a0) ; goto @type06
+		addq.b	#1,ost_subtype(a0) ; goto @type06
 		clr.b	lblk_untouched(a0)
 
 	@notouch05:
@@ -24564,7 +24564,7 @@ LBlk_Action:	; Routine 2
 
 @type07:
 		move.w	(v_waterpos1).w,d0
-		sub.w	obY(a0),d0	; is block level with water?
+		sub.w	ost_y_pos(a0),d0	; is block level with water?
 		beq.s	@stop07		; if yes, branch
 		bcc.s	@fall07		; branch if block is above water
 		cmpi.w	#-2,d0
@@ -24572,11 +24572,11 @@ LBlk_Action:	; Routine 2
 		moveq	#-2,d0
 
 	@loc_1214E:
-		add.w	d0,obY(a0)	; make the block rise with water level
+		add.w	d0,ost_y_pos(a0)	; make the block rise with water level
 		bsr.w	ObjHitCeiling
 		tst.w	d1		; has block hit the ceiling?
 		bpl.w	@noceiling07	; if not, branch
-		sub.w	d1,obY(a0)	; stop block
+		sub.w	d1,ost_y_pos(a0)	; stop block
 
 	@noceiling07:
 		rts	
@@ -24588,12 +24588,12 @@ LBlk_Action:	; Routine 2
 		moveq	#2,d0
 
 	@loc_1216A:
-		add.w	d0,obY(a0)	; make the block sink with water level
+		add.w	d0,ost_y_pos(a0)	; make the block sink with water level
 		bsr.w	ObjFloorDist
 		tst.w	d1
 		bpl.w	@stop07
 		addq.w	#1,d1
-		add.w	d1,obY(a0)
+		add.w	d1,ost_y_pos(a0)
 
 	@stop07:
 		rts	
@@ -24602,7 +24602,7 @@ LBlk_Action:	; Routine 2
 loc_12180:
 		tst.b	lblk_untouched(a0) ; has block been stood on or touched?
 		beq.s	locret_121C0	; if yes, branch
-		btst	#3,obStatus(a0)	; is Sonic standing on it now?
+		btst	#3,ost_status(a0)	; is Sonic standing on it now?
 		bne.s	loc_1219A	; if yes, branch
 		tst.b	$3E(a0)
 		beq.s	locret_121C0
@@ -24622,7 +24622,7 @@ loc_121A6:
 		muls.w	d1,d0
 		swap	d0
 		add.w	lblk_origY(a0),d0
-		move.w	d0,obY(a0)
+		move.w	d0,ost_y_pos(a0)
 
 locret_121C0:
 		rts	
@@ -24635,7 +24635,7 @@ Map_LBlock:	include "Mappings\LZ Blocks.asm"
 
 Gargoyle:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Gar_Index(pc,d0.w),d1
 		jsr	Gar_Index(pc,d1.w)
 		bra.w	RememberState
@@ -24650,54 +24650,54 @@ Gar_SpitRate:	dc.b 30, 60, 90, 120, 150, 180,	210, 240
 ; ===========================================================================
 
 Gar_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Gar,obMap(a0)
-		move.w	#$42E9,obGfx(a0)
-		ori.b	#4,obRender(a0)
-		move.b	#3,obPriority(a0)
-		move.b	#$10,obActWid(a0)
-		move.b	obSubtype(a0),d0 ; get object type
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Gar,ost_mappings(a0)
+		move.w	#$42E9,ost_tile(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	#3,ost_priority(a0)
+		move.b	#$10,ost_actwidth(a0)
+		move.b	ost_subtype(a0),d0 ; get object type
 		andi.w	#$F,d0		; read only the	2nd digit
-		move.b	Gar_SpitRate(pc,d0.w),obDelayAni(a0) ; set fireball spit rate
-		move.b	obDelayAni(a0),obTimeFrame(a0)
-		andi.b	#$F,obSubtype(a0)
+		move.b	Gar_SpitRate(pc,d0.w),ost_anim_delay(a0) ; set fireball spit rate
+		move.b	ost_anim_delay(a0),ost_anim_time(a0)
+		andi.b	#$F,ost_subtype(a0)
 
 Gar_MakeFire:	; Routine 2
-		subq.b	#1,obTimeFrame(a0) ; decrement timer
+		subq.b	#1,ost_anim_time(a0) ; decrement timer
 		bne.s	@nofire		; if time remains, branch
 
-		move.b	obDelayAni(a0),obTimeFrame(a0) ; reset timer
+		move.b	ost_anim_delay(a0),ost_anim_time(a0) ; reset timer
 		bsr.w	ChkObjectVisible
 		bne.s	@nofire
 		bsr.w	FindFreeObj
 		bne.s	@nofire
 		move.b	#id_Gargoyle,0(a1) ; load fireball object
-		addq.b	#4,obRoutine(a1) ; use Gar_FireBall routine
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
-		move.b	obRender(a0),obRender(a1)
-		move.b	obStatus(a0),obStatus(a1)
+		addq.b	#4,ost_routine(a1) ; use Gar_FireBall routine
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
+		move.b	ost_render(a0),ost_render(a1)
+		move.b	ost_status(a0),ost_status(a1)
 
 	@nofire:
 		rts	
 ; ===========================================================================
 
 Gar_FireBall:	; Routine 4
-		addq.b	#2,obRoutine(a0)
-		move.b	#8,obHeight(a0)
-		move.b	#8,obWidth(a0)
-		move.l	#Map_Gar,obMap(a0)
-		move.w	#$2E9,obGfx(a0)
-		ori.b	#4,obRender(a0)
-		move.b	#4,obPriority(a0)
-		move.b	#$98,obColType(a0)
-		move.b	#8,obActWid(a0)
-		move.b	#2,obFrame(a0)
-		addq.w	#8,obY(a0)
-		move.w	#$200,obVelX(a0)
-		btst	#0,obStatus(a0)	; is gargoyle facing left?
+		addq.b	#2,ost_routine(a0)
+		move.b	#8,ost_height(a0)
+		move.b	#8,ost_width(a0)
+		move.l	#Map_Gar,ost_mappings(a0)
+		move.w	#$2E9,ost_tile(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	#4,ost_priority(a0)
+		move.b	#$98,ost_col_type(a0)
+		move.b	#8,ost_actwidth(a0)
+		move.b	#2,ost_frame(a0)
+		addq.w	#8,ost_y_pos(a0)
+		move.w	#$200,ost_x_vel(a0)
+		btst	#0,ost_status(a0)	; is gargoyle facing left?
 		bne.s	@noflip		; if not, branch
-		neg.w	obVelX(a0)
+		neg.w	ost_x_vel(a0)
 
 	@noflip:
 		sfx	sfx_Fireball,0,0,0	; play lava ball sound
@@ -24706,11 +24706,11 @@ Gar_AniFire:	; Routine 6
 		move.b	(v_framebyte).w,d0
 		andi.b	#7,d0
 		bne.s	@nochg
-		bchg	#0,obFrame(a0)	; change every 8 frames
+		bchg	#0,ost_frame(a0)	; change every 8 frames
 
 	@nochg:
 		bsr.w	SpeedToPos
-		btst	#0,obStatus(a0) ; is fireball moving left?
+		btst	#0,ost_status(a0) ; is fireball moving left?
 		bne.s	@isright	; if not, branch
 		moveq	#-8,d3
 		bsr.w	ObjHitWallLeft
@@ -24733,7 +24733,7 @@ Map_Gar:	include "Mappings\LZ Gargoyle Head.asm"
 
 LabyrinthConvey:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	LCon_Index(pc,d0.w),d1
 		jsr	LCon_Index(pc,d1.w)
 		out_of_range.s	loc_1236A,$30(a0)
@@ -24764,26 +24764,26 @@ LCon_Index:	index *
 ; ===========================================================================
 
 LCon_Main:	; Routine 0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		bmi.w	loc_12460
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_LConv,obMap(a0)
-		move.w	#$43F6,obGfx(a0)
-		ori.b	#4,obRender(a0)
-		move.b	#$10,obActWid(a0)
-		move.b	#4,obPriority(a0)
-		cmpi.b	#$7F,obSubtype(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_LConv,ost_mappings(a0)
+		move.w	#$43F6,ost_tile(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	#$10,ost_actwidth(a0)
+		move.b	#4,ost_priority(a0)
+		cmpi.b	#$7F,ost_subtype(a0)
 		bne.s	loc_123E2
-		addq.b	#4,obRoutine(a0)
-		move.w	#$3F6,obGfx(a0)
-		move.b	#1,obPriority(a0)
+		addq.b	#4,ost_routine(a0)
+		move.w	#$3F6,ost_tile(a0)
+		move.b	#1,ost_priority(a0)
 		bra.w	loc_124DE
 ; ===========================================================================
 
 loc_123E2:
-		move.b	#4,obFrame(a0)
+		move.b	#4,ost_frame(a0)
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		move.w	d0,d1
 		lsr.w	#3,d0
 		andi.w	#$1E,d0
@@ -24844,10 +24844,10 @@ LCon_Loop:
 
 LCon_MakePtfms:
 		move.b	#id_LabyrinthConvey,0(a1)
-		move.w	(a2)+,obX(a1)
-		move.w	(a2)+,obY(a1)
+		move.w	(a2)+,ost_x_pos(a1)
+		move.w	(a2)+,ost_y_pos(a1)
 		move.w	(a2)+,d0
-		move.b	d0,obSubtype(a1)
+		move.b	d0,ost_subtype(a1)
 
 loc_124AA:
 		dbf	d1,LCon_Loop
@@ -24858,16 +24858,16 @@ loc_124AA:
 
 loc_124B2:	; Routine 2
 		moveq	#0,d1
-		move.b	obActWid(a0),d1
+		move.b	ost_actwidth(a0),d1
 		jsr	(PlatformObject).l
 		bra.w	sub_12502
 ; ===========================================================================
 
 loc_124C2:	; Routine 4
 		moveq	#0,d1
-		move.b	obActWid(a0),d1
+		move.b	ost_actwidth(a0),d1
 		jsr	(ExitPlatform).l
-		move.w	obX(a0),-(sp)
+		move.w	ost_x_pos(a0),-(sp)
 		bsr.w	sub_12502
 		move.w	(sp)+,d2
 		jmp	(MvSonicOnPtfm2).l
@@ -24883,8 +24883,8 @@ loc_124DE:	; Routine 6
 		neg.b	d1
 
 loc_124F2:
-		add.b	d1,obFrame(a0)
-		andi.b	#3,obFrame(a0)
+		add.b	d1,ost_frame(a0)
+		andi.b	#3,ost_frame(a0)
 
 loc_124FC:
 		addq.l	#4,sp
@@ -24905,10 +24905,10 @@ sub_12502:
 ; ===========================================================================
 
 loc_12520:
-		move.w	obX(a0),d0
+		move.w	ost_x_pos(a0),d0
 		cmp.w	$34(a0),d0
 		bne.s	loc_1256A
-		move.w	obY(a0),d0
+		move.w	ost_y_pos(a0),d0
 		cmp.w	$36(a0),d0
 		bne.s	loc_1256A
 
@@ -24944,7 +24944,7 @@ loc_1256A:
 LCon_ChangeDir:
 		moveq	#0,d0
 		move.w	#-$100,d2
-		move.w	obX(a0),d0
+		move.w	ost_x_pos(a0),d0
 		sub.w	$34(a0),d0
 		bcc.s	loc_12584
 		neg.w	d0
@@ -24953,7 +24953,7 @@ LCon_ChangeDir:
 loc_12584:
 		moveq	#0,d1
 		move.w	#-$100,d3
-		move.w	obY(a0),d1
+		move.w	ost_y_pos(a0),d1
 		sub.w	$36(a0),d1
 		bcc.s	loc_12598
 		neg.w	d1
@@ -24962,7 +24962,7 @@ loc_12584:
 loc_12598:
 		cmp.w	d0,d1
 		bcs.s	loc_125C2
-		move.w	obX(a0),d0
+		move.w	ost_x_pos(a0),d0
 		sub.w	$34(a0),d0
 		beq.s	loc_125AE
 		ext.l	d0
@@ -24971,16 +24971,16 @@ loc_12598:
 		neg.w	d0
 
 loc_125AE:
-		move.w	d0,obVelX(a0)
-		move.w	d3,obVelY(a0)
+		move.w	d0,ost_x_vel(a0)
+		move.w	d3,ost_y_vel(a0)
 		swap	d0
-		move.w	d0,obX+2(a0)
-		clr.w	obY+2(a0)
+		move.w	d0,ost_x_pos+2(a0)
+		clr.w	ost_y_pos+2(a0)
 		rts	
 ; ===========================================================================
 
 loc_125C2:
-		move.w	obY(a0),d1
+		move.w	ost_y_pos(a0),d1
 		sub.w	$36(a0),d1
 		beq.s	loc_125D4
 		ext.l	d1
@@ -24989,11 +24989,11 @@ loc_125C2:
 		neg.w	d1
 
 loc_125D4:
-		move.w	d1,obVelY(a0)
-		move.w	d2,obVelX(a0)
+		move.w	d1,ost_y_vel(a0)
+		move.w	d2,ost_x_vel(a0)
 		swap	d1
-		move.w	d1,obY+2(a0)
-		clr.w	obX+2(a0)
+		move.w	d1,ost_y_pos+2(a0)
+		clr.w	ost_x_pos+2(a0)
 		rts	
 ; End of function LCon_ChangeDir
 
@@ -25022,7 +25022,7 @@ Map_LConv:	include "Mappings\LZ Conveyor Belt Platforms.asm"
 
 Bubble:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Bub_Index(pc,d0.w),d1
 		jmp	Bub_Index(pc,d1.w)
 ; ===========================================================================
@@ -25041,58 +25041,58 @@ bub_freq:	equ $33		; frequency of bubble spawn
 ; ===========================================================================
 
 Bub_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Bub,obMap(a0)
-		move.w	#$8348,obGfx(a0)
-		move.b	#$84,obRender(a0)
-		move.b	#$10,obActWid(a0)
-		move.b	#1,obPriority(a0)
-		move.b	obSubtype(a0),d0 ; get bubble type
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Bub,ost_mappings(a0)
+		move.w	#$8348,ost_tile(a0)
+		move.b	#$84,ost_render(a0)
+		move.b	#$10,ost_actwidth(a0)
+		move.b	#1,ost_priority(a0)
+		move.b	ost_subtype(a0),d0 ; get bubble type
 		bpl.s	@bubble		; if type is $0-$7F, branch
 
-		addq.b	#8,obRoutine(a0) ; goto Bub_BblMaker next
+		addq.b	#8,ost_routine(a0) ; goto Bub_BblMaker next
 		andi.w	#$7F,d0		; read only last 7 bits	(deduct	$80)
 		move.b	d0,bub_time(a0)
 		move.b	d0,bub_freq(a0)	; set bubble frequency
-		move.b	#6,obAnim(a0)
+		move.b	#6,ost_anim(a0)
 		bra.w	Bub_BblMaker
 ; ===========================================================================
 
 @bubble:
-		move.b	d0,obAnim(a0)
-		move.w	obX(a0),bub_origX(a0)
-		move.w	#-$88,obVelY(a0) ; float bubble upwards
+		move.b	d0,ost_anim(a0)
+		move.w	ost_x_pos(a0),bub_origX(a0)
+		move.w	#-$88,ost_y_vel(a0) ; float bubble upwards
 		jsr	(RandomNumber).l
-		move.b	d0,obAngle(a0)
+		move.b	d0,ost_angle(a0)
 
 Bub_Animate:	; Routine 2
 		lea	(Ani_Bub).l,a1
 		jsr	(AnimateSprite).l
-		cmpi.b	#6,obFrame(a0)	; is bubble full-size?
+		cmpi.b	#6,ost_frame(a0)	; is bubble full-size?
 		bne.s	Bub_ChkWater	; if not, branch
 
 		move.b	#1,bub_inhalable(a0) ; set "inhalable" flag
 
 Bub_ChkWater:	; Routine 4
 		move.w	(v_waterpos1).w,d0
-		cmp.w	obY(a0),d0	; is bubble underwater?
+		cmp.w	ost_y_pos(a0),d0	; is bubble underwater?
 		bcs.s	@wobble		; if yes, branch
 
 @burst:
-		move.b	#6,obRoutine(a0) ; goto Bub_Display next
-		addq.b	#3,obAnim(a0)	; run "bursting" animation
+		move.b	#6,ost_routine(a0) ; goto Bub_Display next
+		addq.b	#3,ost_anim(a0)	; run "bursting" animation
 		bra.w	Bub_Display
 ; ===========================================================================
 
 @wobble:
-		move.b	obAngle(a0),d0
-		addq.b	#1,obAngle(a0)
+		move.b	ost_angle(a0),d0
+		addq.b	#1,ost_angle(a0)
 		andi.w	#$7F,d0
 		lea	(Drown_WobbleData).l,a1
 		move.b	(a1,d0.w),d0
 		ext.w	d0
 		add.w	bub_origX(a0),d0
-		move.w	d0,obX(a0)	; change bubble's x-axis position
+		move.w	d0,ost_x_pos(a0)	; change bubble's x-axis position
 		tst.b	bub_inhalable(a0)
 		beq.s	@display
 		bsr.w	Bub_ChkSonic	; has Sonic touched the	bubble?
@@ -25101,26 +25101,26 @@ Bub_ChkWater:	; Routine 4
 		bsr.w	ResumeMusic	; cancel countdown music
 		sfx	sfx_Bubble,0,0,0	; play collecting bubble sound
 		lea	(v_player).w,a1
-		clr.w	obVelX(a1)
-		clr.w	obVelY(a1)
-		clr.w	obInertia(a1)	; stop Sonic
-		move.b	#id_GetAir,obAnim(a1) ; use bubble-collecting animation
+		clr.w	ost_x_vel(a1)
+		clr.w	ost_y_vel(a1)
+		clr.w	ost_inertia(a1)	; stop Sonic
+		move.b	#id_GetAir,ost_anim(a1) ; use bubble-collecting animation
 		move.w	#$23,$3E(a1)
 		move.b	#0,$3C(a1)
-		bclr	#5,obStatus(a1)
-		bclr	#4,obStatus(a1)
-		btst	#2,obStatus(a1)
+		bclr	#5,ost_status(a1)
+		bclr	#4,ost_status(a1)
+		btst	#2,ost_status(a1)
 		beq.w	@burst
-		bclr	#2,obStatus(a1)
-		move.b	#$13,obHeight(a1)
-		move.b	#9,obWidth(a1)
-		subq.w	#5,obY(a1)
+		bclr	#2,ost_status(a1)
+		move.b	#$13,ost_height(a1)
+		move.b	#9,ost_width(a1)
+		subq.w	#5,ost_y_pos(a1)
 		bra.w	@burst
 ; ===========================================================================
 
 @display:
 		bsr.w	SpeedToPos
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.s	@delete
 		jmp	(DisplaySprite).l
 
@@ -25131,7 +25131,7 @@ Bub_ChkWater:	; Routine 4
 Bub_Display:	; Routine 6
 		lea	(Ani_Bub).l,a1
 		jsr	(AnimateSprite).l
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.s	@delete
 		jmp	(DisplaySprite).l
 
@@ -25147,9 +25147,9 @@ Bub_BblMaker:	; Routine $A
 		tst.w	$36(a0)
 		bne.s	@loc_12874
 		move.w	(v_waterpos1).w,d0
-		cmp.w	obY(a0),d0	; is bubble maker underwater?
+		cmp.w	ost_y_pos(a0),d0	; is bubble maker underwater?
 		bcc.w	@chkdel		; if not, branch
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.w	@chkdel
 		subq.w	#1,$38(a0)
 		bpl.w	@loc_12914
@@ -25187,16 +25187,16 @@ Bub_BblMaker:	; Routine $A
 		bsr.w	FindFreeObj
 		bne.s	@fail
 		move.b	#id_Bubble,0(a1) ; load bubble object
-		move.w	obX(a0),obX(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		jsr	(RandomNumber).l
 		andi.w	#$F,d0
 		subq.w	#8,d0
-		add.w	d0,obX(a1)
-		move.w	obY(a0),obY(a1)
+		add.w	d0,ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		moveq	#0,d0
 		move.b	$34(a0),d0
 		movea.l	$3C(a0),a2
-		move.b	(a2,d0.w),obSubtype(a1)
+		move.b	(a2,d0.w),ost_subtype(a1)
 		btst	#7,$36(a0)
 		beq.s	@fail
 		jsr	(RandomNumber).l
@@ -25204,14 +25204,14 @@ Bub_BblMaker:	; Routine $A
 		bne.s	@loc_buh
 		bset	#6,$36(a0)
 		bne.s	@fail
-		move.b	#2,obSubtype(a1)
+		move.b	#2,ost_subtype(a1)
 
 @loc_buh:
 		tst.b	$34(a0)
 		bne.s	@fail
 		bset	#6,$36(a0)
 		bne.s	@fail
-		move.b	#2,obSubtype(a1)
+		move.b	#2,ost_subtype(a1)
 
 	@fail:
 		subq.b	#1,$34(a0)
@@ -25229,7 +25229,7 @@ Bub_BblMaker:	; Routine $A
 @chkdel:
 		out_of_range	DeleteObject
 		move.w	(v_waterpos1).w,d0
-		cmp.w	obY(a0),d0
+		cmp.w	ost_y_pos(a0),d0
 		bcs.w	DisplaySprite
 		rts	
 ; ===========================================================================
@@ -25245,16 +25245,16 @@ Bub_ChkSonic:
 		tst.b	(f_lockmulti).w
 		bmi.s	@loc_12998
 		lea	(v_player).w,a1
-		move.w	obX(a1),d0
-		move.w	obX(a0),d1
+		move.w	ost_x_pos(a1),d0
+		move.w	ost_x_pos(a0),d1
 		subi.w	#$10,d1
 		cmp.w	d0,d1
 		bcc.s	@loc_12998
 		addi.w	#$20,d1
 		cmp.w	d0,d1
 		bcs.s	@loc_12998
-		move.w	obY(a1),d0
-		move.w	obY(a0),d1
+		move.w	ost_y_pos(a1),d0
+		move.w	ost_y_pos(a0),d1
 		cmp.w	d0,d1
 		bcc.s	@loc_12998
 		addi.w	#$10,d1
@@ -25277,7 +25277,7 @@ Map_Bub:	include "Mappings\LZ Bubbles.asm"
 
 Waterfall:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	WFall_Index(pc,d0.w),d1
 		jmp	WFall_Index(pc,d1.w)
 ; ===========================================================================
@@ -25290,33 +25290,33 @@ WFall_Index:	index *
 ; ===========================================================================
 
 WFall_Main:	; Routine 0
-		addq.b	#4,obRoutine(a0)
-		move.l	#Map_WFall,obMap(a0)
-		move.w	#$4259,obGfx(a0)
-		ori.b	#4,obRender(a0)
-		move.b	#$18,obActWid(a0)
-		move.b	#1,obPriority(a0)
-		move.b	obSubtype(a0),d0 ; get object type
+		addq.b	#4,ost_routine(a0)
+		move.l	#Map_WFall,ost_mappings(a0)
+		move.w	#$4259,ost_tile(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	#$18,ost_actwidth(a0)
+		move.b	#1,ost_priority(a0)
+		move.b	ost_subtype(a0),d0 ; get object type
 		bpl.s	@under80	; branch if $00-$7F
-		bset	#7,obGfx(a0)
+		bset	#7,ost_tile(a0)
 
 	@under80:
 		andi.b	#$F,d0		; read only the	2nd digit
-		move.b	d0,obFrame(a0)	; set frame number
+		move.b	d0,ost_frame(a0)	; set frame number
 		cmpi.b	#9,d0		; is object type $x9 ?
 		bne.s	WFall_ChkDel	; if not, branch
 
-		clr.b	obPriority(a0)	; object is in front of Sonic
-		subq.b	#2,obRoutine(a0) ; goto WFall_Animate next
-		btst	#6,obSubtype(a0) ; is object type $49 ?
+		clr.b	ost_priority(a0)	; object is in front of Sonic
+		subq.b	#2,ost_routine(a0) ; goto WFall_Animate next
+		btst	#6,ost_subtype(a0) ; is object type $49 ?
 		beq.s	@not49		; if not, branch
 
-		move.b	#6,obRoutine(a0) ; goto WFall_OnWater next
+		move.b	#6,ost_routine(a0) ; goto WFall_OnWater next
 
 	@not49:
-		btst	#5,obSubtype(a0) ; is object type $A9 ?
+		btst	#5,ost_subtype(a0) ; is object type $A9 ?
 		beq.s	WFall_Animate	; if not, branch
-		move.b	#8,obRoutine(a0) ; goto loc_12B36 next
+		move.b	#8,ost_routine(a0) ; goto loc_12B36 next
 
 WFall_Animate:	; Routine 2
 		lea	(Ani_WFall).l,a1
@@ -25329,15 +25329,15 @@ WFall_ChkDel:	; Routine 4
 WFall_OnWater:	; Routine 6
 		move.w	(v_waterpos1).w,d0
 		subi.w	#$10,d0
-		move.w	d0,obY(a0)	; match	object position	to water height
+		move.w	d0,ost_y_pos(a0)	; match	object position	to water height
 		bra.s	WFall_Animate
 ; ===========================================================================
 
 loc_12B36:	; Routine 8
-		bclr	#7,obGfx(a0)
+		bclr	#7,ost_tile(a0)
 		cmpi.b	#7,(v_lvllayout+$106).w
 		bne.s	@animate
-		bset	#7,obGfx(a0)
+		bset	#7,ost_tile(a0)
 
 	@animate:
 		bra.s	WFall_Animate
@@ -25358,7 +25358,7 @@ SonicPlayer:
 
 Sonic_Normal:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Sonic_Index(pc,d0.w),d1
 		jmp	Sonic_Index(pc,d1.w)
 ; ===========================================================================
@@ -25371,14 +25371,14 @@ Sonic_Index:	index *
 ; ===========================================================================
 
 Sonic_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.b	#$13,obHeight(a0)
-		move.b	#9,obWidth(a0)
-		move.l	#Map_Sonic,obMap(a0)
-		move.w	#$780,obGfx(a0)
-		move.b	#2,obPriority(a0)
-		move.b	#$18,obActWid(a0)
-		move.b	#4,obRender(a0)
+		addq.b	#2,ost_routine(a0)
+		move.b	#$13,ost_height(a0)
+		move.b	#9,ost_width(a0)
+		move.l	#Map_Sonic,ost_mappings(a0)
+		move.w	#$780,ost_tile(a0)
+		move.b	#2,ost_priority(a0)
+		move.b	#$18,ost_actwidth(a0)
+		move.b	#4,ost_render(a0)
 		move.w	#$600,(v_sonspeedmax).w ; Sonic's top speed
 		move.w	#$C,(v_sonspeedacc).w ; Sonic's acceleration
 		move.w	#$80,(v_sonspeeddec).w ; Sonic's deceleration
@@ -25402,7 +25402,7 @@ loc_12C64:
 		btst	#0,(f_lockmulti).w ; are controls locked?
 		bne.s	loc_12C7E	; if yes, branch
 		moveq	#0,d0
-		move.b	obStatus(a0),d0
+		move.b	ost_status(a0),d0
 		andi.w	#6,d0
 		move.w	Sonic_Modes(pc,d0.w),d1
 		jsr	Sonic_Modes(pc,d1.w)
@@ -25415,9 +25415,9 @@ loc_12C7E:
 		move.b	($FFFFF76A).w,$37(a0)
 		tst.b	(f_wtunnelmode).w
 		beq.s	loc_12CA6
-		tst.b	obAnim(a0)
+		tst.b	ost_anim(a0)
 		bne.s	loc_12CA6
-		move.b	obNextAni(a0),obAnim(a0)
+		move.b	ost_anim_next(a0),ost_anim(a0)
 
 loc_12CA6:
 		bsr.w	Sonic_Animate
@@ -25514,8 +25514,8 @@ Sonic_RecordPosition:
 		move.w	(v_trackpos).w,d0
 		lea	(v_tracksonic).w,a1
 		lea	(a1,d0.w),a1
-		move.w	obX(a0),(a1)+
-		move.w	obY(a0),(a1)+
+		move.w	ost_x_pos(a0),(a1)+
+		move.w	ost_y_pos(a0),(a1)+
 		addq.b	#4,(v_trackbyte).w
 		rts	
 ; End of function Sonic_RecordPosition
@@ -25536,37 +25536,37 @@ Sonic_Water:
 
 	@islabyrinth:
 		move.w	(v_waterpos1).w,d0
-		cmp.w	obY(a0),d0	; is Sonic above the water?
+		cmp.w	ost_y_pos(a0),d0	; is Sonic above the water?
 		bge.s	@abovewater	; if yes, branch
-		bset	#6,obStatus(a0)
+		bset	#6,ost_status(a0)
 		bne.s	@exit
 		bsr.w	ResumeMusic
 		move.b	#id_DrownCount,(v_objspace+$340).w ; load bubbles object from Sonic's mouth
-		move.b	#$81,(v_objspace+$340+obSubtype).w
+		move.b	#$81,(v_objspace+$340+ost_subtype).w
 		move.w	#$300,(v_sonspeedmax).w ; change Sonic's top speed
 		move.w	#6,(v_sonspeedacc).w ; change Sonic's acceleration
 		move.w	#$40,(v_sonspeeddec).w ; change Sonic's deceleration
-		asr	obVelX(a0)
-		asr	obVelY(a0)
-		asr	obVelY(a0)	; slow Sonic
+		asr	ost_x_vel(a0)
+		asr	ost_y_vel(a0)
+		asr	ost_y_vel(a0)	; slow Sonic
 		beq.s	@exit		; branch if Sonic stops moving
 		move.b	#id_Splash,(v_objspace+$300).w ; load splash object
 		sfx	sfx_Splash,1,0,0	 ; play splash sound
 ; ===========================================================================
 
 @abovewater:
-		bclr	#6,obStatus(a0)
+		bclr	#6,ost_status(a0)
 		beq.s	@exit
 		bsr.w	ResumeMusic
 		move.w	#$600,(v_sonspeedmax).w ; restore Sonic's speed
 		move.w	#$C,(v_sonspeedacc).w ; restore Sonic's acceleration
 		move.w	#$80,(v_sonspeeddec).w ; restore Sonic's deceleration
-		asl	obVelY(a0)
+		asl	ost_y_vel(a0)
 		beq.w	@exit
 		move.b	#id_Splash,(v_objspace+$300).w ; load splash object
-		cmpi.w	#-$1000,obVelY(a0)
+		cmpi.w	#-$1000,ost_y_vel(a0)
 		bgt.s	@belowmaxspeed
-		move.w	#-$1000,obVelY(a0) ; set maximum speed on leaving water
+		move.w	#-$1000,ost_y_vel(a0) ; set maximum speed on leaving water
 
 	@belowmaxspeed:
 		sfx	sfx_Splash,1,0,0	 ; play splash sound
@@ -25594,9 +25594,9 @@ Sonic_MdJump:
 		bsr.w	Sonic_JumpDirection
 		bsr.w	Sonic_LevelBound
 		jsr	(ObjectFall).l
-		btst	#6,obStatus(a0)
+		btst	#6,ost_status(a0)
 		beq.s	loc_12E5C
-		subi.w	#$28,obVelY(a0)
+		subi.w	#$28,ost_y_vel(a0)
 
 loc_12E5C:
 		bsr.w	Sonic_JumpAngle
@@ -25620,9 +25620,9 @@ Sonic_MdJump2:
 		bsr.w	Sonic_JumpDirection
 		bsr.w	Sonic_LevelBound
 		jsr	(ObjectFall).l
-		btst	#6,obStatus(a0)
+		btst	#6,ost_status(a0)
 		beq.s	loc_12EA6
-		subi.w	#$28,obVelY(a0)
+		subi.w	#$28,ost_y_vel(a0)
 
 loc_12EA6:
 		bsr.w	Sonic_JumpAngle
@@ -25654,30 +25654,30 @@ Sonic_Move:
 		bsr.w	Sonic_MoveRight
 
 	@notright:
-		move.b	obAngle(a0),d0
+		move.b	ost_angle(a0),d0
 		addi.b	#$20,d0
 		andi.b	#$C0,d0		; is Sonic on a	slope?
 		bne.w	Sonic_ResetScr	; if yes, branch
-		tst.w	obInertia(a0)	; is Sonic moving?
+		tst.w	ost_inertia(a0)	; is Sonic moving?
 		bne.w	Sonic_ResetScr	; if yes, branch
-		bclr	#5,obStatus(a0)
-		move.b	#id_Wait,obAnim(a0) ; use "standing" animation
-		btst	#3,obStatus(a0)
+		bclr	#5,ost_status(a0)
+		move.b	#id_Wait,ost_anim(a0) ; use "standing" animation
+		btst	#3,ost_status(a0)
 		beq.s	Sonic_Balance
 		moveq	#0,d0
 		move.b	standonobject(a0),d0
 		lsl.w	#6,d0
 		lea	(v_objspace).w,a1
 		lea	(a1,d0.w),a1
-		tst.b	obStatus(a1)
+		tst.b	ost_status(a1)
 		bmi.s	Sonic_LookUp
 		moveq	#0,d1
-		move.b	obActWid(a1),d1
+		move.b	ost_actwidth(a1),d1
 		move.w	d1,d2
 		add.w	d2,d2
 		subq.w	#4,d2
-		add.w	obX(a0),d1
-		sub.w	obX(a1),d1
+		add.w	ost_x_pos(a0),d1
+		sub.w	ost_x_pos(a1),d1
 		cmpi.w	#4,d1
 		blt.s	loc_12F6A
 		cmp.w	d2,d1
@@ -25693,7 +25693,7 @@ Sonic_Balance:
 		bne.s	loc_12F62
 
 loc_12F5A:
-		bclr	#0,obStatus(a0)
+		bclr	#0,ost_status(a0)
 		bra.s	loc_12F70
 ; ===========================================================================
 
@@ -25702,17 +25702,17 @@ loc_12F62:
 		bne.s	Sonic_LookUp
 
 loc_12F6A:
-		bset	#0,obStatus(a0)
+		bset	#0,ost_status(a0)
 
 loc_12F70:
-		move.b	#id_Balance,obAnim(a0) ; use "balancing" animation
+		move.b	#id_Balance,ost_anim(a0) ; use "balancing" animation
 		bra.s	Sonic_ResetScr
 ; ===========================================================================
 
 Sonic_LookUp:
 		btst	#bitUp,(v_jpadhold2).w ; is up being pressed?
 		beq.s	Sonic_Duck	; if not, branch
-		move.b	#id_LookUp,obAnim(a0) ; use "looking up" animation
+		move.b	#id_LookUp,ost_anim(a0) ; use "looking up" animation
 		cmpi.w	#$C8,(v_lookshift).w
 		beq.s	loc_12FC2
 		addq.w	#2,(v_lookshift).w
@@ -25722,7 +25722,7 @@ Sonic_LookUp:
 Sonic_Duck:
 		btst	#bitDn,(v_jpadhold2).w ; is down being pressed?
 		beq.s	Sonic_ResetScr	; if not, branch
-		move.b	#id_Duck,obAnim(a0) ; use "ducking" animation
+		move.b	#id_Duck,ost_anim(a0) ; use "ducking" animation
 		cmpi.w	#8,(v_lookshift).w
 		beq.s	loc_12FC2
 		subq.w	#2,(v_lookshift).w
@@ -25742,7 +25742,7 @@ loc_12FC2:
 		move.b	(v_jpadhold2).w,d0
 		andi.b	#btnL+btnR,d0	; is left/right	pressed?
 		bne.s	loc_12FEE	; if yes, branch
-		move.w	obInertia(a0),d0
+		move.w	ost_inertia(a0),d0
 		beq.s	loc_12FEE
 		bmi.s	loc_12FE2
 		sub.w	d5,d0
@@ -25750,7 +25750,7 @@ loc_12FC2:
 		move.w	#0,d0
 
 loc_12FDC:
-		move.w	d0,obInertia(a0)
+		move.w	d0,ost_inertia(a0)
 		bra.s	loc_12FEE
 ; ===========================================================================
 
@@ -25760,30 +25760,30 @@ loc_12FE2:
 		move.w	#0,d0
 
 loc_12FEA:
-		move.w	d0,obInertia(a0)
+		move.w	d0,ost_inertia(a0)
 
 loc_12FEE:
-		move.b	obAngle(a0),d0
+		move.b	ost_angle(a0),d0
 		jsr	(CalcSine).l
-		muls.w	obInertia(a0),d1
+		muls.w	ost_inertia(a0),d1
 		asr.l	#8,d1
-		move.w	d1,obVelX(a0)
-		muls.w	obInertia(a0),d0
+		move.w	d1,ost_x_vel(a0)
+		muls.w	ost_inertia(a0),d0
 		asr.l	#8,d0
-		move.w	d0,obVelY(a0)
+		move.w	d0,ost_y_vel(a0)
 
 loc_1300C:
-		move.b	obAngle(a0),d0
+		move.b	ost_angle(a0),d0
 		addi.b	#$40,d0
 		bmi.s	locret_1307C
 		move.b	#$40,d1
-		tst.w	obInertia(a0)
+		tst.w	ost_inertia(a0)
 		beq.s	locret_1307C
 		bmi.s	loc_13024
 		neg.w	d1
 
 loc_13024:
-		move.b	obAngle(a0),d0
+		move.b	ost_angle(a0),d0
 		add.b	d1,d0
 		move.w	d0,-(sp)
 		bsr.w	Sonic_WalkSpeed
@@ -25798,26 +25798,26 @@ loc_13024:
 		beq.s	loc_13066
 		cmpi.b	#$80,d0
 		beq.s	loc_13060
-		add.w	d1,obVelX(a0)
-		bset	#5,obStatus(a0)
-		move.w	#0,obInertia(a0)
+		add.w	d1,ost_x_vel(a0)
+		bset	#5,ost_status(a0)
+		move.w	#0,ost_inertia(a0)
 		rts	
 ; ===========================================================================
 
 loc_13060:
-		sub.w	d1,obVelY(a0)
+		sub.w	d1,ost_y_vel(a0)
 		rts	
 ; ===========================================================================
 
 loc_13066:
-		sub.w	d1,obVelX(a0)
-		bset	#5,obStatus(a0)
-		move.w	#0,obInertia(a0)
+		sub.w	d1,ost_x_vel(a0)
+		bset	#5,ost_status(a0)
+		move.w	#0,ost_inertia(a0)
 		rts	
 ; ===========================================================================
 
 loc_13078:
-		add.w	d1,obVelY(a0)
+		add.w	d1,ost_y_vel(a0)
 
 locret_1307C:
 		rts	
@@ -25828,15 +25828,15 @@ locret_1307C:
 
 
 Sonic_MoveLeft:
-		move.w	obInertia(a0),d0
+		move.w	ost_inertia(a0),d0
 		beq.s	loc_13086
 		bpl.s	loc_130B2
 
 loc_13086:
-		bset	#0,obStatus(a0)
+		bset	#0,ost_status(a0)
 		bne.s	loc_1309A
-		bclr	#5,obStatus(a0)
-		move.b	#1,obNextAni(a0)
+		bclr	#5,ost_status(a0)
+		move.b	#1,ost_anim_next(a0)
 
 loc_1309A:
 		sub.w	d5,d0
@@ -25847,8 +25847,8 @@ loc_1309A:
 		move.w	d1,d0
 
 loc_130A6:
-		move.w	d0,obInertia(a0)
-		move.b	#id_Walk,obAnim(a0) ; use walking animation
+		move.w	d0,ost_inertia(a0)
+		move.b	#id_Walk,ost_anim(a0) ; use walking animation
 		rts	
 ; ===========================================================================
 
@@ -25858,15 +25858,15 @@ loc_130B2:
 		move.w	#-$80,d0
 
 loc_130BA:
-		move.w	d0,obInertia(a0)
-		move.b	obAngle(a0),d0
+		move.w	d0,ost_inertia(a0)
+		move.b	ost_angle(a0),d0
 		addi.b	#$20,d0
 		andi.b	#$C0,d0
 		bne.s	locret_130E8
 		cmpi.w	#$400,d0
 		blt.s	locret_130E8
-		move.b	#id_Stop,obAnim(a0) ; use "stopping" animation
-		bclr	#0,obStatus(a0)
+		move.b	#id_Stop,ost_anim(a0) ; use "stopping" animation
+		bclr	#0,ost_status(a0)
 		sfx	sfx_Skid,0,0,0	; play stopping sound
 
 locret_130E8:
@@ -25878,12 +25878,12 @@ locret_130E8:
 
 
 Sonic_MoveRight:
-		move.w	obInertia(a0),d0
+		move.w	ost_inertia(a0),d0
 		bmi.s	loc_13118
-		bclr	#0,obStatus(a0)
+		bclr	#0,ost_status(a0)
 		beq.s	loc_13104
-		bclr	#5,obStatus(a0)
-		move.b	#1,obNextAni(a0)
+		bclr	#5,ost_status(a0)
+		move.b	#1,ost_anim_next(a0)
 
 loc_13104:
 		add.w	d5,d0
@@ -25892,8 +25892,8 @@ loc_13104:
 		move.w	d6,d0
 
 loc_1310C:
-		move.w	d0,obInertia(a0)
-		move.b	#id_Walk,obAnim(a0) ; use walking animation
+		move.w	d0,ost_inertia(a0)
+		move.b	#id_Walk,ost_anim(a0) ; use walking animation
 		rts	
 ; ===========================================================================
 
@@ -25903,15 +25903,15 @@ loc_13118:
 		move.w	#$80,d0
 
 loc_13120:
-		move.w	d0,obInertia(a0)
-		move.b	obAngle(a0),d0
+		move.w	d0,ost_inertia(a0)
+		move.b	ost_angle(a0),d0
 		addi.b	#$20,d0
 		andi.b	#$C0,d0
 		bne.s	locret_1314E
 		cmpi.w	#-$400,d0
 		bgt.s	locret_1314E
-		move.b	#id_Stop,obAnim(a0) ; use "stopping" animation
-		bset	#0,obStatus(a0)
+		move.b	#id_Stop,ost_anim(a0) ; use "stopping" animation
+		bset	#0,ost_status(a0)
 		sfx	sfx_Skid,0,0,0	; play stopping sound
 
 locret_1314E:
@@ -25945,7 +25945,7 @@ Sonic_RollSpeed:
 		bsr.w	Sonic_RollRight
 
 	@notright:
-		move.w	obInertia(a0),d0
+		move.w	ost_inertia(a0),d0
 		beq.s	loc_131AA
 		bmi.s	loc_1319E
 		sub.w	d5,d0
@@ -25953,7 +25953,7 @@ Sonic_RollSpeed:
 		move.w	#0,d0
 
 loc_13198:
-		move.w	d0,obInertia(a0)
+		move.w	d0,ost_inertia(a0)
 		bra.s	loc_131AA
 ; ===========================================================================
 
@@ -25963,24 +25963,24 @@ loc_1319E:
 		move.w	#0,d0
 
 loc_131A6:
-		move.w	d0,obInertia(a0)
+		move.w	d0,ost_inertia(a0)
 
 loc_131AA:
-		tst.w	obInertia(a0)	; is Sonic moving?
+		tst.w	ost_inertia(a0)	; is Sonic moving?
 		bne.s	loc_131CC	; if yes, branch
-		bclr	#2,obStatus(a0)
-		move.b	#$13,obHeight(a0)
-		move.b	#9,obWidth(a0)
-		move.b	#id_Wait,obAnim(a0) ; use "standing" animation
-		subq.w	#5,obY(a0)
+		bclr	#2,ost_status(a0)
+		move.b	#$13,ost_height(a0)
+		move.b	#9,ost_width(a0)
+		move.b	#id_Wait,ost_anim(a0) ; use "standing" animation
+		subq.w	#5,ost_y_pos(a0)
 
 loc_131CC:
-		move.b	obAngle(a0),d0
+		move.b	ost_angle(a0),d0
 		jsr	(CalcSine).l
-		muls.w	obInertia(a0),d0
+		muls.w	ost_inertia(a0),d0
 		asr.l	#8,d0
-		move.w	d0,obVelY(a0)
-		muls.w	obInertia(a0),d1
+		move.w	d0,ost_y_vel(a0)
+		muls.w	ost_inertia(a0),d1
 		asr.l	#8,d1
 		cmpi.w	#$1000,d1
 		ble.s	loc_131F0
@@ -25992,7 +25992,7 @@ loc_131F0:
 		move.w	#-$1000,d1
 
 loc_131FA:
-		move.w	d1,obVelX(a0)
+		move.w	d1,ost_x_vel(a0)
 		bra.w	loc_1300C
 ; End of function Sonic_RollSpeed
 
@@ -26001,13 +26001,13 @@ loc_131FA:
 
 
 Sonic_RollLeft:
-		move.w	obInertia(a0),d0
+		move.w	ost_inertia(a0),d0
 		beq.s	loc_1320A
 		bpl.s	loc_13218
 
 loc_1320A:
-		bset	#0,obStatus(a0)
-		move.b	#id_Roll,obAnim(a0) ; use "rolling" animation
+		bset	#0,ost_status(a0)
+		move.b	#id_Roll,ost_anim(a0) ; use "rolling" animation
 		rts	
 ; ===========================================================================
 
@@ -26017,7 +26017,7 @@ loc_13218:
 		move.w	#-$80,d0
 
 loc_13220:
-		move.w	d0,obInertia(a0)
+		move.w	d0,ost_inertia(a0)
 		rts	
 ; End of function Sonic_RollLeft
 
@@ -26026,10 +26026,10 @@ loc_13220:
 
 
 Sonic_RollRight:
-		move.w	obInertia(a0),d0
+		move.w	ost_inertia(a0),d0
 		bmi.s	loc_1323A
-		bclr	#0,obStatus(a0)
-		move.b	#id_Roll,obAnim(a0) ; use "rolling" animation
+		bclr	#0,ost_status(a0)
+		move.b	#id_Roll,ost_anim(a0) ; use "rolling" animation
 		rts	
 ; ===========================================================================
 
@@ -26039,7 +26039,7 @@ loc_1323A:
 		move.w	#$80,d0
 
 loc_13242:
-		move.w	d0,obInertia(a0)
+		move.w	d0,ost_inertia(a0)
 		rts	
 ; End of function Sonic_RollRight
 ; ---------------------------------------------------------------------------
@@ -26053,12 +26053,12 @@ Sonic_JumpDirection:
 		move.w	(v_sonspeedmax).w,d6
 		move.w	(v_sonspeedacc).w,d5
 		asl.w	#1,d5
-		btst	#4,obStatus(a0)
+		btst	#4,ost_status(a0)
 		bne.s	Obj01_ResetScr2
-		move.w	obVelX(a0),d0
+		move.w	ost_x_vel(a0),d0
 		btst	#bitL,(v_jpadhold2).w ; is left being pressed?
 		beq.s	loc_13278	; if not, branch
-		bset	#0,obStatus(a0)
+		bset	#0,ost_status(a0)
 		sub.w	d5,d0
 		move.w	d6,d1
 		neg.w	d1
@@ -26069,14 +26069,14 @@ Sonic_JumpDirection:
 loc_13278:
 		btst	#bitR,(v_jpadhold2).w ; is right being pressed?
 		beq.s	Obj01_JumpMove	; if not, branch
-		bclr	#0,obStatus(a0)
+		bclr	#0,ost_status(a0)
 		add.w	d5,d0
 		cmp.w	d6,d0
 		blt.s	Obj01_JumpMove
 		move.w	d6,d0
 
 Obj01_JumpMove:
-		move.w	d0,obVelX(a0)	; change Sonic's horizontal speed
+		move.w	d0,ost_x_vel(a0)	; change Sonic's horizontal speed
 
 Obj01_ResetScr2:
 		cmpi.w	#$60,(v_lookshift).w ; is the screen in its default position?
@@ -26088,9 +26088,9 @@ loc_132A0:
 		subq.w	#2,(v_lookshift).w
 
 loc_132A4:
-		cmpi.w	#-$400,obVelY(a0) ; is Sonic moving faster than -$400 upwards?
+		cmpi.w	#-$400,ost_y_vel(a0) ; is Sonic moving faster than -$400 upwards?
 		bcs.s	locret_132D2	; if yes, branch
-		move.w	obVelX(a0),d0
+		move.w	ost_x_vel(a0),d0
 		move.w	d0,d1
 		asr.w	#5,d1
 		beq.s	locret_132D2
@@ -26100,7 +26100,7 @@ loc_132A4:
 		move.w	#0,d0
 
 loc_132C0:
-		move.w	d0,obVelX(a0)
+		move.w	d0,ost_x_vel(a0)
 		rts	
 ; ===========================================================================
 
@@ -26110,7 +26110,7 @@ loc_132C6:
 		move.w	#0,d0
 
 loc_132CE:
-		move.w	d0,obVelX(a0)
+		move.w	d0,ost_x_vel(a0)
 
 locret_132D2:
 		rts	
@@ -26120,17 +26120,17 @@ locret_132D2:
 ; ---------------------------------------------------------------------------
 ; Unused subroutine to squash Sonic
 ; ---------------------------------------------------------------------------
-		move.b	obAngle(a0),d0
+		move.b	ost_angle(a0),d0
 		addi.b	#$20,d0
 		andi.b	#$C0,d0
 		bne.s	locret_13302
 		bsr.w	Sonic_DontRunOnWalls
 		tst.w	d1
 		bpl.s	locret_13302
-		move.w	#0,obInertia(a0) ; stop Sonic moving
-		move.w	#0,obVelX(a0)
-		move.w	#0,obVelY(a0)
-		move.b	#id_Warp3,obAnim(a0) ; use "warping" animation
+		move.w	#0,ost_inertia(a0) ; stop Sonic moving
+		move.w	#0,ost_x_vel(a0)
+		move.w	#0,ost_y_vel(a0)
+		move.b	#id_Warp3,ost_anim(a0) ; use "warping" animation
 
 locret_13302:
 		rts	
@@ -26143,8 +26143,8 @@ locret_13302:
 
 
 Sonic_LevelBound:
-		move.l	obX(a0),d1
-		move.w	obVelX(a0),d0
+		move.l	ost_x_pos(a0),d1
+		move.w	ost_x_vel(a0),d0
 		ext.l	d0
 		asl.l	#8,d0
 		add.l	d0,d1
@@ -26166,7 +26166,7 @@ Sonic_LevelBound:
 	@chkbottom:
 		move.w	(v_limitbtm2).w,d0
 		addi.w	#$E0,d0
-		cmp.w	obY(a0),d0	; has Sonic touched the	bottom boundary?
+		cmp.w	ost_y_pos(a0),d0	; has Sonic touched the	bottom boundary?
 		blt.s	@bottom		; if yes, branch
 		rts	
 ; ===========================================================================
@@ -26174,7 +26174,7 @@ Sonic_LevelBound:
 @bottom:
 		cmpi.w	#(id_SBZ<<8)+1,(v_zone).w ; is level SBZ2 ?
 		bne.w	KillSonic	; if not, kill Sonic
-		cmpi.w	#$2000,(v_player+obX).w
+		cmpi.w	#$2000,(v_player+ost_x_pos).w
 		bcs.w	KillSonic
 		clr.b	(v_lastlamp).w	; clear	lamppost counter
 		move.w	#1,(f_restart).w ; restart the level
@@ -26183,10 +26183,10 @@ Sonic_LevelBound:
 ; ===========================================================================
 
 @sides:
-		move.w	d0,obX(a0)
-		move.w	#0,obX+2(a0)
-		move.w	#0,obVelX(a0)	; stop Sonic moving
-		move.w	#0,obInertia(a0)
+		move.w	d0,ost_x_pos(a0)
+		move.w	#0,ost_x_pos+2(a0)
+		move.w	#0,ost_x_vel(a0)	; stop Sonic moving
+		move.w	#0,ost_inertia(a0)
 		bra.s	@chkbottom
 ; End of function Sonic_LevelBound
 ; ---------------------------------------------------------------------------
@@ -26199,7 +26199,7 @@ Sonic_LevelBound:
 Sonic_Roll:
 		tst.b	(f_jumponly).w
 		bne.s	@noroll
-		move.w	obInertia(a0),d0
+		move.w	ost_inertia(a0),d0
 		bpl.s	@ispositive
 		neg.w	d0
 
@@ -26217,21 +26217,21 @@ Sonic_Roll:
 ; ===========================================================================
 
 Sonic_ChkRoll:
-		btst	#2,obStatus(a0)	; is Sonic already rolling?
+		btst	#2,ost_status(a0)	; is Sonic already rolling?
 		beq.s	@roll		; if not, branch
 		rts	
 ; ===========================================================================
 
 @roll:
-		bset	#2,obStatus(a0)
-		move.b	#$E,obHeight(a0)
-		move.b	#7,obWidth(a0)
-		move.b	#id_Roll,obAnim(a0) ; use "rolling" animation
-		addq.w	#5,obY(a0)
+		bset	#2,ost_status(a0)
+		move.b	#$E,ost_height(a0)
+		move.b	#7,ost_width(a0)
+		move.b	#id_Roll,ost_anim(a0) ; use "rolling" animation
+		addq.w	#5,ost_y_pos(a0)
 		sfx	sfx_Roll,0,0,0	; play rolling sound
-		tst.w	obInertia(a0)
+		tst.w	ost_inertia(a0)
 		bne.s	@ismoving
-		move.w	#$200,obInertia(a0) ; set inertia if 0
+		move.w	#$200,ost_inertia(a0) ; set inertia if 0
 
 	@ismoving:
 		rts	
@@ -26248,49 +26248,49 @@ Sonic_Jump:
 		andi.b	#btnABC,d0	; is A, B or C pressed?
 		beq.w	locret_1348E	; if not, branch
 		moveq	#0,d0
-		move.b	obAngle(a0),d0
+		move.b	ost_angle(a0),d0
 		addi.b	#$80,d0
 		bsr.w	sub_14D48
 		cmpi.w	#6,d1
 		blt.w	locret_1348E
 		move.w	#$680,d2
-		btst	#6,obStatus(a0)
+		btst	#6,ost_status(a0)
 		beq.s	loc_1341C
 		move.w	#$380,d2
 
 loc_1341C:
 		moveq	#0,d0
-		move.b	obAngle(a0),d0
+		move.b	ost_angle(a0),d0
 		subi.b	#$40,d0
 		jsr	(CalcSine).l
 		muls.w	d2,d1
 		asr.l	#8,d1
-		add.w	d1,obVelX(a0)	; make Sonic jump
+		add.w	d1,ost_x_vel(a0)	; make Sonic jump
 		muls.w	d2,d0
 		asr.l	#8,d0
-		add.w	d0,obVelY(a0)	; make Sonic jump
-		bset	#1,obStatus(a0)
-		bclr	#5,obStatus(a0)
+		add.w	d0,ost_y_vel(a0)	; make Sonic jump
+		bset	#1,ost_status(a0)
+		bclr	#5,ost_status(a0)
 		addq.l	#4,sp
 		move.b	#1,$3C(a0)
 		clr.b	$38(a0)
 		sfx	sfx_Jump,0,0,0	; play jumping sound
-		move.b	#$13,obHeight(a0)
-		move.b	#9,obWidth(a0)
-		btst	#2,obStatus(a0)
+		move.b	#$13,ost_height(a0)
+		move.b	#9,ost_width(a0)
+		btst	#2,ost_status(a0)
 		bne.s	loc_13490
-		move.b	#$E,obHeight(a0)
-		move.b	#7,obWidth(a0)
-		move.b	#id_Roll,obAnim(a0) ; use "jumping" animation
-		bset	#2,obStatus(a0)
-		addq.w	#5,obY(a0)
+		move.b	#$E,ost_height(a0)
+		move.b	#7,ost_width(a0)
+		move.b	#id_Roll,ost_anim(a0) ; use "jumping" animation
+		bset	#2,ost_status(a0)
+		addq.w	#5,ost_y_pos(a0)
 
 locret_1348E:
 		rts	
 ; ===========================================================================
 
 loc_13490:
-		bset	#4,obStatus(a0)
+		bset	#4,ost_status(a0)
 		rts	
 ; End of function Sonic_Jump
 ; ---------------------------------------------------------------------------
@@ -26304,26 +26304,26 @@ Sonic_JumpHeight:
 		tst.b	$3C(a0)
 		beq.s	loc_134C4
 		move.w	#-$400,d1
-		btst	#6,obStatus(a0)
+		btst	#6,ost_status(a0)
 		beq.s	loc_134AE
 		move.w	#-$200,d1
 
 loc_134AE:
-		cmp.w	obVelY(a0),d1
+		cmp.w	ost_y_vel(a0),d1
 		ble.s	locret_134C2
 		move.b	(v_jpadhold2).w,d0
 		andi.b	#btnABC,d0	; is A, B or C pressed?
 		bne.s	locret_134C2	; if yes, branch
-		move.w	d1,obVelY(a0)
+		move.w	d1,ost_y_vel(a0)
 
 locret_134C2:
 		rts	
 ; ===========================================================================
 
 loc_134C4:
-		cmpi.w	#-$FC0,obVelY(a0)
+		cmpi.w	#-$FC0,ost_y_vel(a0)
 		bge.s	locret_134D2
-		move.w	#-$FC0,obVelY(a0)
+		move.w	#-$FC0,ost_y_vel(a0)
 
 locret_134D2:
 		rts	
@@ -26336,27 +26336,27 @@ locret_134D2:
 
 
 Sonic_SlopeResist:
-		move.b	obAngle(a0),d0
+		move.b	ost_angle(a0),d0
 		addi.b	#$60,d0
 		cmpi.b	#$C0,d0
 		bcc.s	locret_13508
-		move.b	obAngle(a0),d0
+		move.b	ost_angle(a0),d0
 		jsr	(CalcSine).l
 		muls.w	#$20,d0
 		asr.l	#8,d0
-		tst.w	obInertia(a0)
+		tst.w	ost_inertia(a0)
 		beq.s	locret_13508
 		bmi.s	loc_13504
 		tst.w	d0
 		beq.s	locret_13502
-		add.w	d0,obInertia(a0) ; change Sonic's inertia
+		add.w	d0,ost_inertia(a0) ; change Sonic's inertia
 
 locret_13502:
 		rts	
 ; ===========================================================================
 
 loc_13504:
-		add.w	d0,obInertia(a0)
+		add.w	d0,ost_inertia(a0)
 
 locret_13508:
 		rts	
@@ -26369,22 +26369,22 @@ locret_13508:
 
 
 Sonic_RollRepel:
-		move.b	obAngle(a0),d0
+		move.b	ost_angle(a0),d0
 		addi.b	#$60,d0
 		cmpi.b	#-$40,d0
 		bcc.s	locret_13544
-		move.b	obAngle(a0),d0
+		move.b	ost_angle(a0),d0
 		jsr	(CalcSine).l
 		muls.w	#$50,d0
 		asr.l	#8,d0
-		tst.w	obInertia(a0)
+		tst.w	ost_inertia(a0)
 		bmi.s	loc_1353A
 		tst.w	d0
 		bpl.s	loc_13534
 		asr.l	#2,d0
 
 loc_13534:
-		add.w	d0,obInertia(a0)
+		add.w	d0,ost_inertia(a0)
 		rts	
 ; ===========================================================================
 
@@ -26394,7 +26394,7 @@ loc_1353A:
 		asr.l	#2,d0
 
 loc_13540:
-		add.w	d0,obInertia(a0)
+		add.w	d0,ost_inertia(a0)
 
 locret_13544:
 		rts	
@@ -26412,19 +26412,19 @@ Sonic_SlopeRepel:
 		bne.s	locret_13580
 		tst.w	$3E(a0)
 		bne.s	loc_13582
-		move.b	obAngle(a0),d0
+		move.b	ost_angle(a0),d0
 		addi.b	#$20,d0
 		andi.b	#$C0,d0
 		beq.s	locret_13580
-		move.w	obInertia(a0),d0
+		move.w	ost_inertia(a0),d0
 		bpl.s	loc_1356A
 		neg.w	d0
 
 loc_1356A:
 		cmpi.w	#$280,d0
 		bcc.s	locret_13580
-		clr.w	obInertia(a0)
-		bset	#1,obStatus(a0)
+		clr.w	ost_inertia(a0)
+		bset	#1,ost_status(a0)
 		move.w	#$1E,$3E(a0)
 
 locret_13580:
@@ -26443,7 +26443,7 @@ loc_13582:
 
 
 Sonic_JumpAngle:
-		move.b	obAngle(a0),d0	; get Sonic's angle
+		move.b	ost_angle(a0),d0	; get Sonic's angle
 		beq.s	locret_135A2	; if already 0,	branch
 		bpl.s	loc_13598	; if higher than 0, branch
 
@@ -26461,7 +26461,7 @@ loc_13598:
 		moveq	#0,d0
 
 loc_1359E:
-		move.b	d0,obAngle(a0)
+		move.b	d0,ost_angle(a0)
 
 locret_135A2:
 		rts	
@@ -26474,8 +26474,8 @@ locret_135A2:
 
 
 Sonic_Floor:
-		move.w	obVelX(a0),d1
-		move.w	obVelY(a0),d2
+		move.w	ost_x_vel(a0),d1
+		move.w	ost_y_vel(a0),d2
 		jsr	(CalcAngle).l
 		move.b	d0,($FFFFFFEC).w
 		subi.b	#$20,d0
@@ -26491,22 +26491,22 @@ Sonic_Floor:
 		bsr.w	Sonic_HitWall
 		tst.w	d1
 		bpl.s	loc_135F0
-		sub.w	d1,obX(a0)
-		move.w	#0,obVelX(a0)
+		sub.w	d1,ost_x_pos(a0)
+		move.w	#0,ost_x_vel(a0)
 
 loc_135F0:
 		bsr.w	sub_14EB4
 		tst.w	d1
 		bpl.s	loc_13602
-		add.w	d1,obX(a0)
-		move.w	#0,obVelX(a0)
+		add.w	d1,ost_x_pos(a0)
+		move.w	#0,ost_x_vel(a0)
 
 loc_13602:
 		bsr.w	Sonic_HitFloor
 		move.b	d1,($FFFFFFEF).w
 		tst.w	d1
 		bpl.s	locret_1367E
-		move.b	obVelY(a0),d2
+		move.b	ost_y_vel(a0),d2
 		addq.b	#8,d2
 		neg.b	d2
 		cmp.b	d2,d1
@@ -26515,10 +26515,10 @@ loc_13602:
 		blt.s	locret_1367E
 
 loc_1361E:
-		add.w	d1,obY(a0)
-		move.b	d3,obAngle(a0)
+		add.w	d1,ost_y_pos(a0)
+		move.b	d3,ost_angle(a0)
 		bsr.w	Sonic_ResetOnFloor
-		move.b	#id_Walk,obAnim(a0)
+		move.b	#id_Walk,ost_anim(a0)
 		move.b	d3,d0
 		addi.b	#$20,d0
 		andi.b	#$40,d0
@@ -26527,27 +26527,27 @@ loc_1361E:
 		addi.b	#$10,d0
 		andi.b	#$20,d0
 		beq.s	loc_1364E
-		asr	obVelY(a0)
+		asr	ost_y_vel(a0)
 		bra.s	loc_13670
 ; ===========================================================================
 
 loc_1364E:
-		move.w	#0,obVelY(a0)
-		move.w	obVelX(a0),obInertia(a0)
+		move.w	#0,ost_y_vel(a0)
+		move.w	ost_x_vel(a0),ost_inertia(a0)
 		rts	
 ; ===========================================================================
 
 loc_1365C:
-		move.w	#0,obVelX(a0)
-		cmpi.w	#$FC0,obVelY(a0)
+		move.w	#0,ost_x_vel(a0)
+		cmpi.w	#$FC0,ost_y_vel(a0)
 		ble.s	loc_13670
-		move.w	#$FC0,obVelY(a0)
+		move.w	#$FC0,ost_y_vel(a0)
 
 loc_13670:
-		move.w	obVelY(a0),obInertia(a0)
+		move.w	ost_y_vel(a0),ost_inertia(a0)
 		tst.b	d3
 		bpl.s	locret_1367E
-		neg.w	obInertia(a0)
+		neg.w	ost_inertia(a0)
 
 locret_1367E:
 		rts	
@@ -26557,9 +26557,9 @@ loc_13680:
 		bsr.w	Sonic_HitWall
 		tst.w	d1
 		bpl.s	loc_1369A
-		sub.w	d1,obX(a0)
-		move.w	#0,obVelX(a0)
-		move.w	obVelY(a0),obInertia(a0)
+		sub.w	d1,ost_x_pos(a0)
+		move.w	#0,ost_x_vel(a0)
+		move.w	ost_y_vel(a0),ost_inertia(a0)
 		rts	
 ; ===========================================================================
 
@@ -26567,27 +26567,27 @@ loc_1369A:
 		bsr.w	Sonic_DontRunOnWalls
 		tst.w	d1
 		bpl.s	loc_136B4
-		sub.w	d1,obY(a0)
-		tst.w	obVelY(a0)
+		sub.w	d1,ost_y_pos(a0)
+		tst.w	ost_y_vel(a0)
 		bpl.s	locret_136B2
-		move.w	#0,obVelY(a0)
+		move.w	#0,ost_y_vel(a0)
 
 locret_136B2:
 		rts	
 ; ===========================================================================
 
 loc_136B4:
-		tst.w	obVelY(a0)
+		tst.w	ost_y_vel(a0)
 		bmi.s	locret_136E0
 		bsr.w	Sonic_HitFloor
 		tst.w	d1
 		bpl.s	locret_136E0
-		add.w	d1,obY(a0)
-		move.b	d3,obAngle(a0)
+		add.w	d1,ost_y_pos(a0)
+		move.b	d3,ost_angle(a0)
 		bsr.w	Sonic_ResetOnFloor
-		move.b	#id_Walk,obAnim(a0)
-		move.w	#0,obVelY(a0)
-		move.w	obVelX(a0),obInertia(a0)
+		move.b	#id_Walk,ost_anim(a0)
+		move.w	#0,ost_y_vel(a0)
+		move.w	ost_x_vel(a0),ost_inertia(a0)
 
 locret_136E0:
 		rts	
@@ -26597,36 +26597,36 @@ loc_136E2:
 		bsr.w	Sonic_HitWall
 		tst.w	d1
 		bpl.s	loc_136F4
-		sub.w	d1,obX(a0)
-		move.w	#0,obVelX(a0)
+		sub.w	d1,ost_x_pos(a0)
+		move.w	#0,ost_x_vel(a0)
 
 loc_136F4:
 		bsr.w	sub_14EB4
 		tst.w	d1
 		bpl.s	loc_13706
-		add.w	d1,obX(a0)
-		move.w	#0,obVelX(a0)
+		add.w	d1,ost_x_pos(a0)
+		move.w	#0,ost_x_vel(a0)
 
 loc_13706:
 		bsr.w	Sonic_DontRunOnWalls
 		tst.w	d1
 		bpl.s	locret_1373C
-		sub.w	d1,obY(a0)
+		sub.w	d1,ost_y_pos(a0)
 		move.b	d3,d0
 		addi.b	#$20,d0
 		andi.b	#$40,d0
 		bne.s	loc_13726
-		move.w	#0,obVelY(a0)
+		move.w	#0,ost_y_vel(a0)
 		rts	
 ; ===========================================================================
 
 loc_13726:
-		move.b	d3,obAngle(a0)
+		move.b	d3,ost_angle(a0)
 		bsr.w	Sonic_ResetOnFloor
-		move.w	obVelY(a0),obInertia(a0)
+		move.w	ost_y_vel(a0),ost_inertia(a0)
 		tst.b	d3
 		bpl.s	locret_1373C
-		neg.w	obInertia(a0)
+		neg.w	ost_inertia(a0)
 
 locret_1373C:
 		rts	
@@ -26636,9 +26636,9 @@ loc_1373E:
 		bsr.w	sub_14EB4
 		tst.w	d1
 		bpl.s	loc_13758
-		add.w	d1,obX(a0)
-		move.w	#0,obVelX(a0)
-		move.w	obVelY(a0),obInertia(a0)
+		add.w	d1,ost_x_pos(a0)
+		move.w	#0,ost_x_vel(a0)
+		move.w	ost_y_vel(a0),ost_inertia(a0)
 		rts	
 ; ===========================================================================
 
@@ -26646,27 +26646,27 @@ loc_13758:
 		bsr.w	Sonic_DontRunOnWalls
 		tst.w	d1
 		bpl.s	loc_13772
-		sub.w	d1,obY(a0)
-		tst.w	obVelY(a0)
+		sub.w	d1,ost_y_pos(a0)
+		tst.w	ost_y_vel(a0)
 		bpl.s	locret_13770
-		move.w	#0,obVelY(a0)
+		move.w	#0,ost_y_vel(a0)
 
 locret_13770:
 		rts	
 ; ===========================================================================
 
 loc_13772:
-		tst.w	obVelY(a0)
+		tst.w	ost_y_vel(a0)
 		bmi.s	locret_1379E
 		bsr.w	Sonic_HitFloor
 		tst.w	d1
 		bpl.s	locret_1379E
-		add.w	d1,obY(a0)
-		move.b	d3,obAngle(a0)
+		add.w	d1,ost_y_pos(a0)
+		move.b	d3,ost_angle(a0)
 		bsr.w	Sonic_ResetOnFloor
-		move.b	#id_Walk,obAnim(a0)
-		move.w	#0,obVelY(a0)
-		move.w	obVelX(a0),obInertia(a0)
+		move.b	#id_Walk,ost_anim(a0)
+		move.w	#0,ost_y_vel(a0)
+		move.w	ost_x_vel(a0),ost_inertia(a0)
 
 locret_1379E:
 		rts	
@@ -26679,23 +26679,23 @@ locret_1379E:
 
 
 Sonic_ResetOnFloor:
-		btst	#4,obStatus(a0)
+		btst	#4,ost_status(a0)
 		beq.s	loc_137AE
 		nop	
 		nop	
 		nop	
 
 loc_137AE:
-		bclr	#5,obStatus(a0)
-		bclr	#1,obStatus(a0)
-		bclr	#4,obStatus(a0)
-		btst	#2,obStatus(a0)
+		bclr	#5,ost_status(a0)
+		bclr	#1,ost_status(a0)
+		bclr	#4,ost_status(a0)
+		btst	#2,ost_status(a0)
 		beq.s	loc_137E4
-		bclr	#2,obStatus(a0)
-		move.b	#$13,obHeight(a0)
-		move.b	#9,obWidth(a0)
-		move.b	#id_Walk,obAnim(a0) ; use running/walking animation
-		subq.w	#5,obY(a0)
+		bclr	#2,ost_status(a0)
+		move.b	#$13,ost_height(a0)
+		move.b	#9,ost_width(a0)
+		move.b	#id_Walk,ost_anim(a0) ; use running/walking animation
+		subq.w	#5,ost_y_pos(a0)
 
 loc_137E4:
 		move.b	#0,$3C(a0)
@@ -26708,10 +26708,10 @@ loc_137E4:
 
 Sonic_Hurt:	; Routine 4
 		jsr	(SpeedToPos).l
-		addi.w	#$30,obVelY(a0)
-		btst	#6,obStatus(a0)
+		addi.w	#$30,ost_y_vel(a0)
+		btst	#6,ost_status(a0)
 		beq.s	loc_1380C
-		subi.w	#$20,obVelY(a0)
+		subi.w	#$20,ost_y_vel(a0)
 
 loc_1380C:
 		bsr.w	Sonic_HurtStop
@@ -26731,17 +26731,17 @@ loc_1380C:
 Sonic_HurtStop:
 		move.w	(v_limitbtm2).w,d0
 		addi.w	#$E0,d0
-		cmp.w	obY(a0),d0
+		cmp.w	ost_y_pos(a0),d0
 		bcs.w	KillSonic
 		bsr.w	Sonic_Floor
-		btst	#1,obStatus(a0)
+		btst	#1,ost_status(a0)
 		bne.s	locret_13860
 		moveq	#0,d0
-		move.w	d0,obVelY(a0)
-		move.w	d0,obVelX(a0)
-		move.w	d0,obInertia(a0)
-		move.b	#id_Walk,obAnim(a0)
-		subq.b	#2,obRoutine(a0)
+		move.w	d0,ost_y_vel(a0)
+		move.w	d0,ost_x_vel(a0)
+		move.w	d0,ost_inertia(a0)
+		move.b	#id_Walk,ost_anim(a0)
+		subq.b	#2,ost_routine(a0)
 		move.w	#$78,$30(a0)
 
 locret_13860:
@@ -26766,10 +26766,10 @@ Sonic_Death:	; Routine 6
 GameOver:
 		move.w	(v_limitbtm2).w,d0
 		addi.w	#$100,d0
-		cmp.w	obY(a0),d0
+		cmp.w	ost_y_pos(a0),d0
 		bcc.w	locret_13900
-		move.w	#-$38,obVelY(a0)
-		addq.b	#2,obRoutine(a0)
+		move.w	#-$38,ost_y_vel(a0)
+		addq.b	#2,ost_routine(a0)
 		clr.b	(f_timecount).w	; stop time counter
 		addq.b	#1,(f_lifecount).w ; update lives counter
 		subq.b	#1,(v_lives).w	; subtract 1 from number of lives
@@ -26777,7 +26777,7 @@ GameOver:
 		move.w	#0,$3A(a0)
 		move.b	#id_GameOverCard,(v_objspace+$80).w ; load GAME object
 		move.b	#id_GameOverCard,(v_objspace+$C0).w ; load OVER object
-		move.b	#1,(v_objspace+$C0+obFrame).w ; set OVER object to correct frame
+		move.b	#1,(v_objspace+$C0+ost_frame).w ; set OVER object to correct frame
 		clr.b	(f_timeover).w
 
 loc_138C2:
@@ -26793,8 +26793,8 @@ loc_138D4:
 		move.w	#0,$3A(a0)
 		move.b	#id_GameOverCard,(v_objspace+$80).w ; load TIME object
 		move.b	#id_GameOverCard,(v_objspace+$C0).w ; load OVER object
-		move.b	#2,(v_objspace+$80+obFrame).w
-		move.b	#3,(v_objspace+$C0+obFrame).w
+		move.b	#2,(v_objspace+$80+ost_frame).w
+		move.b	#3,(v_objspace+$C0+ost_frame).w
 		bra.s	loc_138C2
 ; ===========================================================================
 
@@ -26829,10 +26829,10 @@ Sonic_Loops:
 		bne.w	@noloops	; if not, branch
 
 	@isstarlight:
-		move.w	obY(a0),d0
+		move.w	ost_y_pos(a0),d0
 		lsr.w	#1,d0
 		andi.w	#$380,d0
-		move.b	obX(a0),d1
+		move.b	ost_x_pos(a0),d1
 		andi.w	#$7F,d1
 		add.w	d1,d0
 		lea	(v_lvllayout).w,a1
@@ -26847,24 +26847,24 @@ Sonic_Loops:
 		beq.s	@chkifleft	; if yes, branch
 		cmp.b	(v_256loop2).w,d1
 		beq.s	@chkifinair
-		bclr	#6,obRender(a0) ; return Sonic to high plane
+		bclr	#6,ost_render(a0) ; return Sonic to high plane
 		rts	
 ; ===========================================================================
 
 @chkifinair:
-		btst	#1,obStatus(a0)	; is Sonic in the air?
+		btst	#1,ost_status(a0)	; is Sonic in the air?
 		beq.s	@chkifleft	; if not, branch
 
-		bclr	#6,obRender(a0)	; return Sonic to high plane
+		bclr	#6,ost_render(a0)	; return Sonic to high plane
 		rts	
 ; ===========================================================================
 
 @chkifleft:
-		move.w	obX(a0),d2
+		move.w	ost_x_pos(a0),d2
 		cmpi.b	#$2C,d2
 		bcc.s	@chkifright
 
-		bclr	#6,obRender(a0)	; return Sonic to high plane
+		bclr	#6,ost_render(a0)	; return Sonic to high plane
 		rts	
 ; ===========================================================================
 
@@ -26872,27 +26872,27 @@ Sonic_Loops:
 		cmpi.b	#$E0,d2
 		bcs.s	@chkangle1
 
-		bset	#6,obRender(a0)	; send Sonic to	low plane
+		bset	#6,ost_render(a0)	; send Sonic to	low plane
 		rts	
 ; ===========================================================================
 
 @chkangle1:
-		btst	#6,obRender(a0) ; is Sonic on low plane?
+		btst	#6,ost_render(a0) ; is Sonic on low plane?
 		bne.s	@chkangle2	; if yes, branch
 
-		move.b	obAngle(a0),d1
+		move.b	ost_angle(a0),d1
 		beq.s	@done
 		cmpi.b	#$80,d1		; is Sonic upside-down?
 		bhi.s	@done		; if yes, branch
-		bset	#6,obRender(a0)	; send Sonic to	low plane
+		bset	#6,ost_render(a0)	; send Sonic to	low plane
 		rts	
 ; ===========================================================================
 
 @chkangle2:
-		move.b	obAngle(a0),d1
+		move.b	ost_angle(a0),d1
 		cmpi.b	#$80,d1		; is Sonic upright?
 		bls.s	@done		; if yes, branch
-		bclr	#6,obRender(a0)	; send Sonic to	high plane
+		bclr	#6,ost_render(a0)	; send Sonic to	high plane
 
 @noloops:
 @done:
@@ -26908,35 +26908,35 @@ Sonic_Loops:
 Sonic_Animate:
 		lea	(Ani_Sonic).l,a1
 		moveq	#0,d0
-		move.b	obAnim(a0),d0
-		cmp.b	obNextAni(a0),d0 ; is animation set to restart?
+		move.b	ost_anim(a0),d0
+		cmp.b	ost_anim_next(a0),d0 ; is animation set to restart?
 		beq.s	@do		; if not, branch
-		move.b	d0,obNextAni(a0) ; set to "no restart"
-		move.b	#0,obAniFrame(a0) ; reset animation
-		move.b	#0,obTimeFrame(a0) ; reset frame duration
+		move.b	d0,ost_anim_next(a0) ; set to "no restart"
+		move.b	#0,ost_anim_frame(a0) ; reset animation
+		move.b	#0,ost_anim_time(a0) ; reset frame duration
 
 	@do:
 		add.w	d0,d0
 		adda.w	(a1,d0.w),a1	; jump to appropriate animation	script
 		move.b	(a1),d0
 		bmi.s	@walkrunroll	; if animation is walk/run/roll/jump, branch
-		move.b	obStatus(a0),d1
+		move.b	ost_status(a0),d1
 		andi.b	#1,d1
-		andi.b	#$FC,obRender(a0)
-		or.b	d1,obRender(a0)
-		subq.b	#1,obTimeFrame(a0) ; subtract 1 from frame duration
+		andi.b	#$FC,ost_render(a0)
+		or.b	d1,ost_render(a0)
+		subq.b	#1,ost_anim_time(a0) ; subtract 1 from frame duration
 		bpl.s	@delay		; if time remains, branch
-		move.b	d0,obTimeFrame(a0) ; load frame duration
+		move.b	d0,ost_anim_time(a0) ; load frame duration
 
 @loadframe:
 		moveq	#0,d1
-		move.b	obAniFrame(a0),d1 ; load current frame number
+		move.b	ost_anim_frame(a0),d1 ; load current frame number
 		move.b	1(a1,d1.w),d0	; read sprite number from script
 		bmi.s	@end_FF		; if animation is complete, branch
 
 	@next:
-		move.b	d0,obFrame(a0)	; load sprite number
-		addq.b	#1,obAniFrame(a0) ; next frame number
+		move.b	d0,ost_frame(a0)	; load sprite number
+		addq.b	#1,ost_anim_frame(a0) ; next frame number
 
 	@delay:
 		rts	
@@ -26945,7 +26945,7 @@ Sonic_Animate:
 @end_FF:
 		addq.b	#1,d0		; is the end flag = $FF	?
 		bne.s	@end_FE		; if not, branch
-		move.b	#0,obAniFrame(a0) ; restart the animation
+		move.b	#0,ost_anim_frame(a0) ; restart the animation
 		move.b	1(a1),d0	; read sprite number
 		bra.s	@next
 ; ===========================================================================
@@ -26954,7 +26954,7 @@ Sonic_Animate:
 		addq.b	#1,d0		; is the end flag = $FE	?
 		bne.s	@end_FD		; if not, branch
 		move.b	2(a1,d1.w),d0	; read the next	byte in	the script
-		sub.b	d0,obAniFrame(a0) ; jump back d0 bytes in the script
+		sub.b	d0,ost_anim_frame(a0) ; jump back d0 bytes in the script
 		sub.b	d0,d1
 		move.b	1(a1,d1.w),d0	; read sprite number
 		bra.s	@next
@@ -26963,20 +26963,20 @@ Sonic_Animate:
 @end_FD:
 		addq.b	#1,d0		; is the end flag = $FD	?
 		bne.s	@end		; if not, branch
-		move.b	2(a1,d1.w),obAnim(a0) ; read next byte, run that animation
+		move.b	2(a1,d1.w),ost_anim(a0) ; read next byte, run that animation
 
 	@end:
 		rts	
 ; ===========================================================================
 
 @walkrunroll:
-		subq.b	#1,obTimeFrame(a0) ; subtract 1 from frame duration
+		subq.b	#1,ost_anim_time(a0) ; subtract 1 from frame duration
 		bpl.s	@delay		; if time remains, branch
 		addq.b	#1,d0		; is animation walking/running?
 		bne.w	@rolljump	; if not, branch
 		moveq	#0,d1
-		move.b	obAngle(a0),d0	; get Sonic's angle
-		move.b	obStatus(a0),d2
+		move.b	ost_angle(a0),d0	; get Sonic's angle
+		move.b	ost_status(a0),d2
 		andi.b	#1,d2		; is Sonic mirrored horizontally?
 		bne.s	@flip		; if yes, branch
 		not.b	d0		; reverse angle
@@ -26987,15 +26987,15 @@ Sonic_Animate:
 		moveq	#3,d1
 
 	@noinvert:
-		andi.b	#$FC,obRender(a0)
+		andi.b	#$FC,ost_render(a0)
 		eor.b	d1,d2
-		or.b	d2,obRender(a0)
-		btst	#5,obStatus(a0)	; is Sonic pushing something?
+		or.b	d2,ost_render(a0)
+		btst	#5,ost_status(a0)	; is Sonic pushing something?
 		bne.w	@push		; if yes, branch
 
 		lsr.b	#4,d0		; divide angle by $10
 		andi.b	#6,d0		; angle	must be	0, 2, 4	or 6
-		move.w	obInertia(a0),d2 ; get Sonic's speed
+		move.w	ost_inertia(a0),d2 ; get Sonic's speed
 		bpl.s	@nomodspeed
 		neg.w	d2		; modulus speed
 
@@ -27019,16 +27019,16 @@ Sonic_Animate:
 
 	@belowmax:
 		lsr.w	#8,d2
-		move.b	d2,obTimeFrame(a0) ; modify frame duration
+		move.b	d2,ost_anim_time(a0) ; modify frame duration
 		bsr.w	@loadframe
-		add.b	d3,obFrame(a0)	; modify frame number
+		add.b	d3,ost_frame(a0)	; modify frame number
 		rts	
 ; ===========================================================================
 
 @rolljump:
 		addq.b	#1,d0		; is animation rolling/jumping?
 		bne.s	@push		; if not, branch
-		move.w	obInertia(a0),d2 ; get Sonic's speed
+		move.w	ost_inertia(a0),d2 ; get Sonic's speed
 		bpl.s	@nomodspeed2
 		neg.w	d2
 
@@ -27046,16 +27046,16 @@ Sonic_Animate:
 
 	@belowmax2:
 		lsr.w	#8,d2
-		move.b	d2,obTimeFrame(a0) ; modify frame duration
-		move.b	obStatus(a0),d1
+		move.b	d2,ost_anim_time(a0) ; modify frame duration
+		move.b	ost_status(a0),d1
 		andi.b	#1,d1
-		andi.b	#$FC,obRender(a0)
-		or.b	d1,obRender(a0)
+		andi.b	#$FC,ost_render(a0)
+		or.b	d1,ost_render(a0)
 		bra.w	@loadframe
 ; ===========================================================================
 
 @push:
-		move.w	obInertia(a0),d2 ; get Sonic's speed
+		move.w	ost_inertia(a0),d2 ; get Sonic's speed
 		bmi.s	@negspeed
 		neg.w	d2
 
@@ -27066,12 +27066,12 @@ Sonic_Animate:
 
 	@belowmax3:
 		lsr.w	#6,d2
-		move.b	d2,obTimeFrame(a0) ; modify frame duration
+		move.b	d2,ost_anim_time(a0) ; modify frame duration
 		lea	(Pushing).l,a1
-		move.b	obStatus(a0),d1
+		move.b	ost_status(a0),d1
 		andi.b	#1,d1
-		andi.b	#$FC,obRender(a0)
-		or.b	d1,obRender(a0)
+		andi.b	#$FC,ost_render(a0)
+		or.b	d1,ost_render(a0)
 		bra.w	@loadframe
 
 ; End of function Sonic_Animate
@@ -27087,7 +27087,7 @@ Ani_Sonic:	include "Animations\Sonic.asm"
 
 Sonic_LoadGfx:
 		moveq	#0,d0
-		move.b	obFrame(a0),d0	; load frame number
+		move.b	ost_frame(a0),d0	; load frame number
 		cmp.b	(v_sonframenum).w,d0 ; has frame changed?
 		beq.s	@nochange	; if not, branch
 
@@ -27133,7 +27133,7 @@ Sonic_LoadGfx:
 
 DrownCount:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Drown_Index(pc,d0.w),d1
 		jmp	Drown_Index(pc,d1.w)
 ; ===========================================================================
@@ -27153,27 +27153,27 @@ drown_time:		equ $38		; time between each number changes
 ; ===========================================================================
 
 Drown_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Bub,obMap(a0)
-		move.w	#$8348,obGfx(a0)
-		move.b	#$84,obRender(a0)
-		move.b	#$10,obActWid(a0)
-		move.b	#1,obPriority(a0)
-		move.b	obSubtype(a0),d0 ; get bubble type
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Bub,ost_mappings(a0)
+		move.w	#$8348,ost_tile(a0)
+		move.b	#$84,ost_render(a0)
+		move.b	#$10,ost_actwidth(a0)
+		move.b	#1,ost_priority(a0)
+		move.b	ost_subtype(a0),d0 ; get bubble type
 		bpl.s	@smallbubble	; branch if $00-$7F
 
-		addq.b	#8,obRoutine(a0) ; goto Drown_Countdown next
-		move.l	#Map_Drown,obMap(a0)
-		move.w	#$440,obGfx(a0)
+		addq.b	#8,ost_routine(a0) ; goto Drown_Countdown next
+		move.l	#Map_Drown,ost_mappings(a0)
+		move.w	#$440,ost_tile(a0)
 		andi.w	#$7F,d0
 		move.b	d0,$33(a0)
 		bra.w	Drown_Countdown
 ; ===========================================================================
 
 @smallbubble:
-		move.b	d0,obAnim(a0)
-		move.w	obX(a0),drown_origX(a0)
-		move.w	#-$88,obVelY(a0)
+		move.b	d0,ost_anim(a0)
+		move.w	ost_x_pos(a0),drown_origX(a0)
+		move.w	#-$88,ost_y_vel(a0)
 
 Drown_Animate:	; Routine 2
 		lea	(Ani_Drown).l,a1
@@ -27181,12 +27181,12 @@ Drown_Animate:	; Routine 2
 
 Drown_ChkWater:	; Routine 4
 		move.w	(v_waterpos1).w,d0
-		cmp.w	obY(a0),d0	; has bubble reached the water surface?
+		cmp.w	ost_y_pos(a0),d0	; has bubble reached the water surface?
 		bcs.s	@wobble		; if not, branch
 
-		move.b	#id_Drown_Display,obRoutine(a0) ; goto Drown_Display next
-		addq.b	#7,obAnim(a0)
-		cmpi.b	#$D,obAnim(a0)
+		move.b	#id_Drown_Display,ost_routine(a0) ; goto Drown_Display next
+		addq.b	#7,ost_anim(a0)
+		cmpi.b	#$D,ost_anim(a0)
 		beq.s	Drown_Display
 		bra.s	Drown_Display
 ; ===========================================================================
@@ -27197,17 +27197,17 @@ Drown_ChkWater:	; Routine 4
 		addq.w	#4,drown_origX(a0)
 
 	@notunnel:
-		move.b	obAngle(a0),d0
-		addq.b	#1,obAngle(a0)
+		move.b	ost_angle(a0),d0
+		addq.b	#1,ost_angle(a0)
 		andi.w	#$7F,d0
 		lea	(Drown_WobbleData).l,a1
 		move.b	(a1,d0.w),d0
 		ext.w	d0
 		add.w	drown_origX(a0),d0
-		move.w	d0,obX(a0)
+		move.w	d0,ost_x_pos(a0)
 		bsr.s	Drown_ShowNumber
 		jsr	(SpeedToPos).l
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.s	@delete
 		jmp	(DisplaySprite).l
 
@@ -27231,15 +27231,15 @@ Drown_AirLeft:	; Routine $C
 		bhi.s	Drown_AirLeft_Delete		; if higher than $C, branch
 		subq.w	#1,drown_time(a0)
 		bne.s	@display
-		move.b	#id_Drown_Display+8,obRoutine(a0) ; goto Drown_Display next
-		addq.b	#7,obAnim(a0)
+		move.b	#id_Drown_Display+8,ost_routine(a0) ; goto Drown_Display next
+		addq.b	#7,ost_anim(a0)
 		bra.s	Drown_Display
 ; ===========================================================================
 
 	@display:
 		lea	(Ani_Drown).l,a1
 		jsr	(AnimateSprite).l
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.s	Drown_AirLeft_Delete
 		jmp	(DisplaySprite).l
 
@@ -27252,21 +27252,21 @@ Drown_ShowNumber:
 		beq.s	@nonumber
 		subq.w	#1,drown_time(a0)	; decrement timer
 		bne.s	@nonumber	; if time remains, branch
-		cmpi.b	#7,obAnim(a0)
+		cmpi.b	#7,ost_anim(a0)
 		bcc.s	@nonumber
 
 		move.w	#15,drown_time(a0)
-		clr.w	obVelY(a0)
-		move.b	#$80,obRender(a0)
-		move.w	obX(a0),d0
+		clr.w	ost_y_vel(a0)
+		move.b	#$80,ost_render(a0)
+		move.w	ost_x_pos(a0),d0
 		sub.w	(v_screenposx).w,d0
 		addi.w	#$80,d0
-		move.w	d0,obX(a0)
-		move.w	obY(a0),d0
+		move.w	d0,ost_x_pos(a0)
+		move.w	ost_y_pos(a0),d0
 		sub.w	(v_screenposy).w,d0
 		addi.w	#$80,d0
-		move.w	d0,obScreenY(a0)
-		move.b	#id_Drown_AirLeft,obRoutine(a0) ; goto Drown_AirLeft next
+		move.w	d0,ost_y_screen(a0)
+		move.b	#id_Drown_AirLeft,ost_routine(a0) ; goto Drown_AirLeft next
 
 	@nonumber:
 		rts	
@@ -27304,9 +27304,9 @@ Drown_WobbleData:
 Drown_Countdown:; Routine $A
 		tst.w	$2C(a0)
 		bne.w	@loc_13F86
-		cmpi.b	#6,(v_player+obRoutine).w
+		cmpi.b	#6,(v_player+ost_routine).w
 		bcc.w	@nocountdown
-		btst	#6,(v_player+obStatus).w ; is Sonic underwater?
+		btst	#6,(v_player+ost_status).w ; is Sonic underwater?
 		beq.w	@nocountdown	; if not, branch
 
 		subq.w	#1,drown_time(a0)	; decrement timer
@@ -27354,12 +27354,12 @@ Drown_Countdown:; Routine $A
 		move.l	a0,-(sp)
 		lea	(v_player).w,a0
 		bsr.w	Sonic_ResetOnFloor
-		move.b	#id_Drown,obAnim(a0)	; use Sonic's drowning animation
-		bset	#1,obStatus(a0)
-		bset	#7,obGfx(a0)
-		move.w	#0,obVelY(a0)
-		move.w	#0,obVelX(a0)
-		move.w	#0,obInertia(a0)
+		move.b	#id_Drown,ost_anim(a0)	; use Sonic's drowning animation
+		bset	#1,ost_status(a0)
+		bset	#7,ost_tile(a0)
+		move.w	#0,ost_y_vel(a0)
+		move.w	#0,ost_x_vel(a0)
+		move.w	#0,ost_inertia(a0)
 		move.b	#1,(f_nobgscroll).w
 		movea.l	(sp)+,a0
 		rts	
@@ -27368,7 +27368,7 @@ Drown_Countdown:; Routine $A
 @loc_13F86:
 		subq.w	#1,$2C(a0)
 		bne.s	@loc_13F94
-		move.b	#6,(v_player+obRoutine).w
+		move.b	#6,(v_player+ost_routine).w
 		rts	
 ; ===========================================================================
 
@@ -27376,7 +27376,7 @@ Drown_Countdown:; Routine $A
 		move.l	a0,-(sp)
 		lea	(v_player).w,a0
 		jsr	(SpeedToPos).l
-		addi.w	#$10,obVelY(a0)
+		addi.w	#$10,ost_y_vel(a0)
 		movea.l	(sp)+,a0
 		bra.s	@nochange
 ; ===========================================================================
@@ -27398,30 +27398,30 @@ Drown_Countdown:; Routine $A
 		jsr	(FindFreeObj).l
 		bne.w	@nocountdown
 		move.b	#id_DrownCount,0(a1) ; load object
-		move.w	(v_player+obX).w,obX(a1) ; match X position to Sonic
+		move.w	(v_player+ost_x_pos).w,ost_x_pos(a1) ; match X position to Sonic
 		moveq	#6,d0
-		btst	#0,(v_player+obStatus).w
+		btst	#0,(v_player+ost_status).w
 		beq.s	@noflip
 		neg.w	d0
-		move.b	#$40,obAngle(a1)
+		move.b	#$40,ost_angle(a1)
 
 	@noflip:
-		add.w	d0,obX(a1)
-		move.w	(v_player+obY).w,obY(a1)
-		move.b	#6,obSubtype(a1)
+		add.w	d0,ost_x_pos(a1)
+		move.w	(v_player+ost_y_pos).w,ost_y_pos(a1)
+		move.b	#6,ost_subtype(a1)
 		tst.w	$2C(a0)
 		beq.w	@loc_1403E
 		andi.w	#7,$3A(a0)
 		addi.w	#0,$3A(a0)
-		move.w	(v_player+obY).w,d0
+		move.w	(v_player+ost_y_pos).w,d0
 		subi.w	#$C,d0
-		move.w	d0,obY(a1)
+		move.w	d0,ost_y_pos(a1)
 		jsr	(RandomNumber).l
-		move.b	d0,obAngle(a1)
+		move.b	d0,ost_angle(a1)
 		move.w	(v_framecount).w,d0
 		andi.b	#3,d0
 		bne.s	@loc_14082
-		move.b	#$E,obSubtype(a1)
+		move.b	#$E,ost_subtype(a1)
 		bra.s	@loc_14082
 ; ===========================================================================
 
@@ -27435,7 +27435,7 @@ Drown_Countdown:; Routine $A
 		bne.s	@loc_1406A
 		bset	#6,$36(a0)
 		bne.s	@loc_14082
-		move.b	d2,obSubtype(a1)
+		move.b	d2,ost_subtype(a1)
 		move.w	#$1C,drown_time(a1)
 
 	@loc_1406A:
@@ -27443,7 +27443,7 @@ Drown_Countdown:; Routine $A
 		bne.s	@loc_14082
 		bset	#6,$36(a0)
 		bne.s	@loc_14082
-		move.b	d2,obSubtype(a1)
+		move.b	d2,ost_subtype(a1)
 		move.w	#$1C,drown_time(a1)
 
 @loc_14082:
@@ -27502,7 +27502,7 @@ Map_Drown:	include "Mappings\LZ Drowning Numbers.asm"
 
 ShieldItem:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Shi_Index(pc,d0.w),d1
 		jmp	Shi_Index(pc,d1.w)
 ; ===========================================================================
@@ -27513,20 +27513,20 @@ Shi_Index:	index *
 ; ===========================================================================
 
 Shi_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Shield,obMap(a0)
-		move.b	#4,obRender(a0)
-		move.b	#1,obPriority(a0)
-		move.b	#$10,obActWid(a0)
-		tst.b	obAnim(a0)	; is object a shield?
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Shield,ost_mappings(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#1,ost_priority(a0)
+		move.b	#$10,ost_actwidth(a0)
+		tst.b	ost_anim(a0)	; is object a shield?
 		bne.s	@stars		; if not, branch
-		move.w	#$541,obGfx(a0)	; shield specific code
+		move.w	#$541,ost_tile(a0)	; shield specific code
 		rts	
 ; ===========================================================================
 
 @stars:
-		addq.b	#2,obRoutine(a0) ; goto Shi_Stars next
-		move.w	#$55C,obGfx(a0)
+		addq.b	#2,ost_routine(a0) ; goto Shi_Stars next
+		move.w	#$55C,ost_tile(a0)
 		rts	
 ; ===========================================================================
 
@@ -27535,9 +27535,9 @@ Shi_Shield:	; Routine 2
 		bne.s	@remove		; if yes, branch
 		tst.b	(v_shield).w	; does Sonic have shield?
 		beq.s	@delete		; if not, branch
-		move.w	(v_player+obX).w,obX(a0)
-		move.w	(v_player+obY).w,obY(a0)
-		move.b	(v_player+obStatus).w,obStatus(a0)
+		move.w	(v_player+ost_x_pos).w,ost_x_pos(a0)
+		move.w	(v_player+ost_y_pos).w,ost_y_pos(a0)
+		move.b	(v_player+ost_status).w,ost_status(a0)
 		lea	(Ani_Shield).l,a1
 		jsr	(AnimateSprite).l
 		jmp	(DisplaySprite).l
@@ -27553,7 +27553,7 @@ Shi_Stars:	; Routine 4
 		tst.b	(v_invinc).w	; does Sonic have invincibility?
 		beq.s	Shi_Start_Delete		; if not, branch
 		move.w	(v_trackpos).w,d0 ; get index value for tracking data
-		move.b	obAnim(a0),d1
+		move.b	ost_anim(a0),d1
 		subq.b	#1,d1
 		bra.s	@trail
 ; ===========================================================================
@@ -27588,9 +27588,9 @@ Shi_Stars:	; Routine 4
 	@b:
 		lea	(v_tracksonic).w,a1
 		lea	(a1,d0.w),a1
-		move.w	(a1)+,obX(a0)
-		move.w	(a1)+,obY(a0)
-		move.b	(v_player+obStatus).w,obStatus(a0)
+		move.w	(a1)+,ost_x_pos(a0)
+		move.w	(a1)+,ost_y_pos(a0)
+		move.b	(v_player+ost_status).w,ost_status(a0)
 		lea	(Ani_Shield).l,a1
 		jsr	(AnimateSprite).l
 		jmp	(DisplaySprite).l
@@ -27604,7 +27604,7 @@ Shi_Start_Delete:
 
 VanishSonic:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Van_Index(pc,d0.w),d1
 		jmp	Van_Index(pc,d1.w)
 ; ===========================================================================
@@ -27622,21 +27622,21 @@ Van_Main:	; Routine 0
 		rts	
 
 	@isempty:
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Vanish,obMap(a0)
-		move.b	#4,obRender(a0)
-		move.b	#1,obPriority(a0)
-		move.b	#$38,obActWid(a0)
-		move.w	#$541,obGfx(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Vanish,ost_mappings(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#1,ost_priority(a0)
+		move.b	#$38,ost_actwidth(a0)
+		move.w	#$541,ost_tile(a0)
 		move.w	#120,van_time(a0) ; set time for Sonic's disappearance to 2 seconds
 
 Van_RmvSonic:	; Routine 2
-		move.w	(v_player+obX).w,obX(a0)
-		move.w	(v_player+obY).w,obY(a0)
-		move.b	(v_player+obStatus).w,obStatus(a0)
+		move.w	(v_player+ost_x_pos).w,ost_x_pos(a0)
+		move.w	(v_player+ost_y_pos).w,ost_y_pos(a0)
+		move.b	(v_player+ost_status).w,ost_status(a0)
 		lea	(Ani_Vanish).l,a1
 		jsr	(AnimateSprite).l
-		cmpi.b	#2,obFrame(a0)
+		cmpi.b	#2,ost_frame(a0)
 		bne.s	@display
 		tst.b	(v_player).w
 		beq.s	@display
@@ -27661,7 +27661,7 @@ Van_LoadSonic:	; Routine 4
 
 Splash:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Spla_Index(pc,d0.w),d1
 		jmp	Spla_Index(pc,d1.w)
 ; ===========================================================================
@@ -27672,16 +27672,16 @@ Spla_Index:	index *
 ; ===========================================================================
 
 Spla_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Splash,obMap(a0)
-		ori.b	#4,obRender(a0)
-		move.b	#1,obPriority(a0)
-		move.b	#$10,obActWid(a0)
-		move.w	#$4259,obGfx(a0)
-		move.w	(v_player+obX).w,obX(a0) ; copy x-position from Sonic
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Splash,ost_mappings(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	#1,ost_priority(a0)
+		move.b	#$10,ost_actwidth(a0)
+		move.w	#$4259,ost_tile(a0)
+		move.w	(v_player+ost_x_pos).w,ost_x_pos(a0) ; copy x-position from Sonic
 
 Spla_Display:	; Routine 2
-		move.w	(v_waterpos1).w,obY(a0) ; copy y-position from water height
+		move.w	(v_waterpos1).w,ost_y_pos(a0) ; copy y-position from water height
 		lea	(Ani_Splash).l,a1
 		jsr	(AnimateSprite).l
 		jmp	(DisplaySprite).l
@@ -27705,7 +27705,7 @@ Map_Splash:	include "Mappings\LZ Water Splash.asm"
 
 
 Sonic_AnglePos:
-		btst	#3,obStatus(a0)
+		btst	#3,ost_status(a0)
 		beq.s	loc_14602
 		moveq	#0,d0
 		move.b	d0,($FFFFF768).w
@@ -27717,10 +27717,10 @@ loc_14602:
 		moveq	#3,d0
 		move.b	d0,($FFFFF768).w
 		move.b	d0,($FFFFF76A).w
-		move.b	obAngle(a0),d0
+		move.b	ost_angle(a0),d0
 		addi.b	#$20,d0
 		bpl.s	loc_14624
-		move.b	obAngle(a0),d0
+		move.b	ost_angle(a0),d0
 		bpl.s	loc_1461E
 		subq.b	#1,d0
 
@@ -27730,7 +27730,7 @@ loc_1461E:
 ; ===========================================================================
 
 loc_14624:
-		move.b	obAngle(a0),d0
+		move.b	ost_angle(a0),d0
 		bpl.s	loc_1462C
 		addq.b	#1,d0
 
@@ -27745,13 +27745,13 @@ loc_14630:
 		beq.w	Sonic_WalkCeiling
 		cmpi.b	#$C0,d0
 		beq.w	Sonic_WalkVertR
-		move.w	obY(a0),d2
-		move.w	obX(a0),d3
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
 		moveq	#0,d0
-		move.b	obHeight(a0),d0
+		move.b	ost_height(a0),d0
 		ext.w	d0
 		add.w	d0,d2
-		move.b	obWidth(a0),d0
+		move.b	ost_width(a0),d0
 		ext.w	d0
 		add.w	d0,d3
 		lea	($FFFFF768).w,a4
@@ -27760,13 +27760,13 @@ loc_14630:
 		moveq	#$D,d5
 		bsr.w	FindFloor
 		move.w	d1,-(sp)
-		move.w	obY(a0),d2
-		move.w	obX(a0),d3
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
 		moveq	#0,d0
-		move.b	obHeight(a0),d0
+		move.b	ost_height(a0),d0
 		ext.w	d0
 		add.w	d0,d2
-		move.b	obWidth(a0),d0
+		move.b	ost_width(a0),d0
 		ext.w	d0
 		neg.w	d0
 		add.w	d0,d3
@@ -27782,7 +27782,7 @@ loc_14630:
 		bpl.s	loc_146C0
 		cmpi.w	#-$E,d1
 		blt.s	locret_146E6
-		add.w	d1,obY(a0)
+		add.w	d1,ost_y_pos(a0)
 
 locret_146BE:
 		rts	
@@ -27793,16 +27793,16 @@ loc_146C0:
 		bgt.s	loc_146CC
 
 loc_146C6:
-		add.w	d1,obY(a0)
+		add.w	d1,ost_y_pos(a0)
 		rts	
 ; ===========================================================================
 
 loc_146CC:
 		tst.b	$38(a0)
 		bne.s	loc_146C6
-		bset	#1,obStatus(a0)
-		bclr	#5,obStatus(a0)
-		move.b	#1,obNextAni(a0)
+		bset	#1,ost_status(a0)
+		bclr	#5,ost_status(a0)
+		move.b	#1,ost_anim_next(a0)
 		rts	
 ; ===========================================================================
 
@@ -27811,46 +27811,46 @@ locret_146E6:
 ; End of function Sonic_AnglePos
 
 ; ===========================================================================
-		move.l	obX(a0),d2
-		move.w	obVelX(a0),d0
+		move.l	ost_x_pos(a0),d2
+		move.w	ost_x_vel(a0),d0
 		ext.l	d0
 		asl.l	#8,d0
 		sub.l	d0,d2
-		move.l	d2,obX(a0)
+		move.l	d2,ost_x_pos(a0)
 		move.w	#$38,d0
 		ext.l	d0
 		asl.l	#8,d0
 		sub.l	d0,d3
-		move.l	d3,obY(a0)
+		move.l	d3,ost_y_pos(a0)
 		rts	
 ; ===========================================================================
 
 locret_1470A:
 		rts	
 ; ===========================================================================
-		move.l	obY(a0),d3
-		move.w	obVelY(a0),d0
+		move.l	ost_y_pos(a0),d3
+		move.w	ost_y_vel(a0),d0
 		subi.w	#$38,d0
-		move.w	d0,obVelY(a0)
+		move.w	d0,ost_y_vel(a0)
 		ext.l	d0
 		asl.l	#8,d0
 		sub.l	d0,d3
-		move.l	d3,obY(a0)
+		move.l	d3,ost_y_pos(a0)
 		rts	
 		rts	
 ; ===========================================================================
-		move.l	obX(a0),d2
-		move.l	obY(a0),d3
-		move.w	obVelX(a0),d0
+		move.l	ost_x_pos(a0),d2
+		move.l	ost_y_pos(a0),d3
+		move.w	ost_x_vel(a0),d0
 		ext.l	d0
 		asl.l	#8,d0
 		sub.l	d0,d2
-		move.w	obVelY(a0),d0
+		move.w	ost_y_vel(a0),d0
 		ext.l	d0
 		asl.l	#8,d0
 		sub.l	d0,d3
-		move.l	d2,obX(a0)
-		move.l	d3,obY(a0)
+		move.l	d2,ost_x_pos(a0)
+		move.l	d3,ost_y_pos(a0)
 		rts	
 
 ; ---------------------------------------------------------------------------
@@ -27870,15 +27870,15 @@ Sonic_Angle:
 loc_1475E:
 		btst	#0,d2
 		bne.s	loc_1476A
-		move.b	d2,obAngle(a0)
+		move.b	d2,ost_angle(a0)
 		rts	
 ; ===========================================================================
 
 loc_1476A:
-		move.b	obAngle(a0),d2
+		move.b	ost_angle(a0),d2
 		addi.b	#$20,d2
 		andi.b	#$C0,d2
-		move.b	d2,obAngle(a0)
+		move.b	d2,ost_angle(a0)
 		rts	
 ; End of function Sonic_Angle
 
@@ -27890,14 +27890,14 @@ loc_1476A:
 
 
 Sonic_WalkVertR:
-		move.w	obY(a0),d2
-		move.w	obX(a0),d3
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
 		moveq	#0,d0
-		move.b	obWidth(a0),d0
+		move.b	ost_width(a0),d0
 		ext.w	d0
 		neg.w	d0
 		add.w	d0,d2
-		move.b	obHeight(a0),d0
+		move.b	ost_height(a0),d0
 		ext.w	d0
 		add.w	d0,d3
 		lea	($FFFFF768).w,a4
@@ -27906,13 +27906,13 @@ Sonic_WalkVertR:
 		moveq	#$D,d5
 		bsr.w	FindWall
 		move.w	d1,-(sp)
-		move.w	obY(a0),d2
-		move.w	obX(a0),d3
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
 		moveq	#0,d0
-		move.b	obWidth(a0),d0
+		move.b	ost_width(a0),d0
 		ext.w	d0
 		add.w	d0,d2
-		move.b	obHeight(a0),d0
+		move.b	ost_height(a0),d0
 		ext.w	d0
 		add.w	d0,d3
 		lea	($FFFFF76A).w,a4
@@ -27927,7 +27927,7 @@ Sonic_WalkVertR:
 		bpl.s	loc_147F2
 		cmpi.w	#-$E,d1
 		blt.w	locret_1470A
-		add.w	d1,obX(a0)
+		add.w	d1,ost_x_pos(a0)
 
 locret_147F0:
 		rts	
@@ -27938,16 +27938,16 @@ loc_147F2:
 		bgt.s	loc_147FE
 
 loc_147F8:
-		add.w	d1,obX(a0)
+		add.w	d1,ost_x_pos(a0)
 		rts	
 ; ===========================================================================
 
 loc_147FE:
 		tst.b	$38(a0)
 		bne.s	loc_147F8
-		bset	#1,obStatus(a0)
-		bclr	#5,obStatus(a0)
-		move.b	#1,obNextAni(a0)
+		bset	#1,ost_status(a0)
+		bclr	#5,ost_status(a0)
+		move.b	#1,ost_anim_next(a0)
 		rts	
 ; End of function Sonic_WalkVertR
 
@@ -27959,14 +27959,14 @@ loc_147FE:
 
 
 Sonic_WalkCeiling:
-		move.w	obY(a0),d2
-		move.w	obX(a0),d3
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
 		moveq	#0,d0
-		move.b	obHeight(a0),d0
+		move.b	ost_height(a0),d0
 		ext.w	d0
 		sub.w	d0,d2
 		eori.w	#$F,d2
-		move.b	obWidth(a0),d0
+		move.b	ost_width(a0),d0
 		ext.w	d0
 		add.w	d0,d3
 		lea	($FFFFF768).w,a4
@@ -27975,14 +27975,14 @@ Sonic_WalkCeiling:
 		moveq	#$D,d5
 		bsr.w	FindFloor
 		move.w	d1,-(sp)
-		move.w	obY(a0),d2
-		move.w	obX(a0),d3
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
 		moveq	#0,d0
-		move.b	obHeight(a0),d0
+		move.b	ost_height(a0),d0
 		ext.w	d0
 		sub.w	d0,d2
 		eori.w	#$F,d2
-		move.b	obWidth(a0),d0
+		move.b	ost_width(a0),d0
 		ext.w	d0
 		sub.w	d0,d3
 		lea	($FFFFF76A).w,a4
@@ -27997,7 +27997,7 @@ Sonic_WalkCeiling:
 		bpl.s	loc_14894
 		cmpi.w	#-$E,d1
 		blt.w	locret_146E6
-		sub.w	d1,obY(a0)
+		sub.w	d1,ost_y_pos(a0)
 
 locret_14892:
 		rts	
@@ -28008,16 +28008,16 @@ loc_14894:
 		bgt.s	loc_148A0
 
 loc_1489A:
-		sub.w	d1,obY(a0)
+		sub.w	d1,ost_y_pos(a0)
 		rts	
 ; ===========================================================================
 
 loc_148A0:
 		tst.b	$38(a0)
 		bne.s	loc_1489A
-		bset	#1,obStatus(a0)
-		bclr	#5,obStatus(a0)
-		move.b	#1,obNextAni(a0)
+		bset	#1,ost_status(a0)
+		bclr	#5,ost_status(a0)
+		move.b	#1,ost_anim_next(a0)
 		rts	
 ; End of function Sonic_WalkCeiling
 
@@ -28029,13 +28029,13 @@ loc_148A0:
 
 
 Sonic_WalkVertL:
-		move.w	obY(a0),d2
-		move.w	obX(a0),d3
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
 		moveq	#0,d0
-		move.b	obWidth(a0),d0
+		move.b	ost_width(a0),d0
 		ext.w	d0
 		sub.w	d0,d2
-		move.b	obHeight(a0),d0
+		move.b	ost_height(a0),d0
 		ext.w	d0
 		sub.w	d0,d3
 		eori.w	#$F,d3
@@ -28045,13 +28045,13 @@ Sonic_WalkVertL:
 		moveq	#$D,d5
 		bsr.w	FindWall
 		move.w	d1,-(sp)
-		move.w	obY(a0),d2
-		move.w	obX(a0),d3
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
 		moveq	#0,d0
-		move.b	obWidth(a0),d0
+		move.b	ost_width(a0),d0
 		ext.w	d0
 		add.w	d0,d2
-		move.b	obHeight(a0),d0
+		move.b	ost_height(a0),d0
 		ext.w	d0
 		sub.w	d0,d3
 		eori.w	#$F,d3
@@ -28067,7 +28067,7 @@ Sonic_WalkVertL:
 		bpl.s	loc_14936
 		cmpi.w	#-$E,d1
 		blt.w	locret_1470A
-		sub.w	d1,obX(a0)
+		sub.w	d1,ost_x_pos(a0)
 
 locret_14934:
 		rts	
@@ -28078,16 +28078,16 @@ loc_14936:
 		bgt.s	loc_14942
 
 loc_1493C:
-		sub.w	d1,obX(a0)
+		sub.w	d1,ost_x_pos(a0)
 		rts	
 ; ===========================================================================
 
 loc_14942:
 		tst.b	$38(a0)
 		bne.s	loc_1493C
-		bset	#1,obStatus(a0)
-		bclr	#5,obStatus(a0)
-		move.b	#1,obNextAni(a0)
+		bset	#1,ost_status(a0)
+		bclr	#5,ost_status(a0)
+		move.b	#1,ost_anim_next(a0)
 		rts	
 ; End of function Sonic_WalkVertL
 
@@ -28138,7 +28138,7 @@ FindNearestTile:
 
 @specialtile:
 		andi.w	#$7F,d1
-		btst	#6,obRender(a0) ; is object "behind a loop"?
+		btst	#6,ost_render(a0) ; is object "behind a loop"?
 		beq.s	@treatasnormal	; if not, branch
 		addq.w	#1,d1
 		cmpi.w	#$29,d1
@@ -28583,13 +28583,13 @@ loc_14CD6:
 
 
 Sonic_WalkSpeed:
-		move.l	obX(a0),d3
-		move.l	obY(a0),d2
-		move.w	obVelX(a0),d1
+		move.l	ost_x_pos(a0),d3
+		move.l	ost_y_pos(a0),d2
+		move.w	ost_x_vel(a0),d1
 		ext.l	d1
 		asl.l	#8,d1
 		add.l	d1,d3
-		move.w	obVelY(a0),d1
+		move.w	ost_y_vel(a0),d1
 		ext.l	d1
 		asl.l	#8,d1
 		add.l	d1,d2
@@ -28659,13 +28659,13 @@ sub_14D48:
 
 
 Sonic_HitFloor:
-		move.w	obY(a0),d2
-		move.w	obX(a0),d3
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
 		moveq	#0,d0
-		move.b	obHeight(a0),d0
+		move.b	ost_height(a0),d0
 		ext.w	d0
 		add.w	d0,d2
-		move.b	obWidth(a0),d0
+		move.b	ost_width(a0),d0
 		ext.w	d0
 		add.w	d0,d3
 		lea	(v_anglebuffer).w,a4
@@ -28674,13 +28674,13 @@ Sonic_HitFloor:
 		moveq	#$D,d5
 		bsr.w	FindFloor
 		move.w	d1,-(sp)
-		move.w	obY(a0),d2
-		move.w	obX(a0),d3
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
 		moveq	#0,d0
-		move.b	obHeight(a0),d0
+		move.b	ost_height(a0),d0
 		ext.w	d0
 		add.w	d0,d2
-		move.b	obWidth(a0),d0
+		move.b	ost_width(a0),d0
 		ext.w	d0
 		sub.w	d0,d3
 		lea	($FFFFF76A).w,a4
@@ -28709,8 +28709,8 @@ locret_14DE6:
 ; End of function Sonic_HitFloor
 
 ; ===========================================================================
-		move.w	obY(a0),d2
-		move.w	obX(a0),d3
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
 
 loc_14DF0:
 		addi.w	#$A,d2
@@ -28748,13 +28748,13 @@ locret_14E16:
 
 
 ObjFloorDist:
-		move.w	obX(a0),d3
+		move.w	ost_x_pos(a0),d3
 
 
 ObjFloorDist2:
-		move.w	obY(a0),d2
+		move.w	ost_y_pos(a0),d2
 		moveq	#0,d0
-		move.b	obHeight(a0),d0
+		move.b	ost_height(a0),d0
 		ext.w	d0
 		add.w	d0,d2
 		lea	(v_anglebuffer).w,a4
@@ -28778,13 +28778,13 @@ ObjFloorDist2:
 
 
 sub_14E50:
-		move.w	obY(a0),d2
-		move.w	obX(a0),d3
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
 		moveq	#0,d0
-		move.b	obWidth(a0),d0
+		move.b	ost_width(a0),d0
 		ext.w	d0
 		sub.w	d0,d2
-		move.b	obHeight(a0),d0
+		move.b	ost_height(a0),d0
 		ext.w	d0
 		add.w	d0,d3
 		lea	(v_anglebuffer).w,a4
@@ -28793,13 +28793,13 @@ sub_14E50:
 		moveq	#$E,d5
 		bsr.w	FindWall
 		move.w	d1,-(sp)
-		move.w	obY(a0),d2
-		move.w	obX(a0),d3
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
 		moveq	#0,d0
-		move.b	obWidth(a0),d0
+		move.b	ost_width(a0),d0
 		ext.w	d0
 		add.w	d0,d2
-		move.b	obHeight(a0),d0
+		move.b	ost_height(a0),d0
 		ext.w	d0
 		add.w	d0,d3
 		lea	($FFFFF76A).w,a4
@@ -28818,8 +28818,8 @@ sub_14E50:
 
 
 sub_14EB4:
-		move.w	obY(a0),d2
-		move.w	obX(a0),d3
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
 
 loc_14EBC:
 		addi.w	#$A,d3
@@ -28841,8 +28841,8 @@ loc_14EBC:
 
 
 ObjHitWallRight:
-		add.w	obX(a0),d3
-		move.w	obY(a0),d2
+		add.w	ost_x_pos(a0),d3
+		move.w	ost_y_pos(a0),d2
 		lea	(v_anglebuffer).w,a4
 		move.b	#0,(a4)
 		movea.w	#$10,a3
@@ -28868,14 +28868,14 @@ locret_14F06:
 
 
 Sonic_DontRunOnWalls:
-		move.w	obY(a0),d2
-		move.w	obX(a0),d3
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
 		moveq	#0,d0
-		move.b	obHeight(a0),d0
+		move.b	ost_height(a0),d0
 		ext.w	d0
 		sub.w	d0,d2
 		eori.w	#$F,d2
-		move.b	obWidth(a0),d0
+		move.b	ost_width(a0),d0
 		ext.w	d0
 		add.w	d0,d3
 		lea	(v_anglebuffer).w,a4
@@ -28884,14 +28884,14 @@ Sonic_DontRunOnWalls:
 		moveq	#$E,d5
 		bsr.w	FindFloor
 		move.w	d1,-(sp)
-		move.w	obY(a0),d2
-		move.w	obX(a0),d3
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
 		moveq	#0,d0
-		move.b	obHeight(a0),d0
+		move.b	ost_height(a0),d0
 		ext.w	d0
 		sub.w	d0,d2
 		eori.w	#$F,d2
-		move.b	obWidth(a0),d0
+		move.b	ost_width(a0),d0
 		ext.w	d0
 		sub.w	d0,d3
 		lea	($FFFFF76A).w,a4
@@ -28905,8 +28905,8 @@ Sonic_DontRunOnWalls:
 ; End of function Sonic_DontRunOnWalls
 
 ; ===========================================================================
-		move.w	obY(a0),d2
-		move.w	obX(a0),d3
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
 
 loc_14F7C:
 		subi.w	#$A,d2
@@ -28923,10 +28923,10 @@ loc_14F7C:
 
 
 ObjHitCeiling:
-		move.w	obY(a0),d2
-		move.w	obX(a0),d3
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
 		moveq	#0,d0
-		move.b	obHeight(a0),d0
+		move.b	ost_height(a0),d0
 		ext.w	d0
 		sub.w	d0,d2
 		eori.w	#$F,d2
@@ -28947,13 +28947,13 @@ locret_14FD4:
 ; ===========================================================================
 
 loc_14FD6:
-		move.w	obY(a0),d2
-		move.w	obX(a0),d3
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
 		moveq	#0,d0
-		move.b	obWidth(a0),d0
+		move.b	ost_width(a0),d0
 		ext.w	d0
 		sub.w	d0,d2
-		move.b	obHeight(a0),d0
+		move.b	ost_height(a0),d0
 		ext.w	d0
 		sub.w	d0,d3
 		eori.w	#$F,d3
@@ -28963,13 +28963,13 @@ loc_14FD6:
 		moveq	#$E,d5
 		bsr.w	FindWall
 		move.w	d1,-(sp)
-		move.w	obY(a0),d2
-		move.w	obX(a0),d3
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
 		moveq	#0,d0
-		move.b	obWidth(a0),d0
+		move.b	ost_width(a0),d0
 		ext.w	d0
 		add.w	d0,d2
-		move.b	obHeight(a0),d0
+		move.b	ost_height(a0),d0
 		ext.w	d0
 		sub.w	d0,d3
 		eori.w	#$F,d3
@@ -28990,8 +28990,8 @@ loc_14FD6:
 
 
 Sonic_HitWall:
-		move.w	obY(a0),d2
-		move.w	obX(a0),d3
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
 
 loc_1504A:
 		subi.w	#$A,d3
@@ -29013,8 +29013,8 @@ loc_1504A:
 
 
 ObjHitWallLeft:
-		add.w	obX(a0),d3
-		move.w	obY(a0),d2
+		add.w	ost_x_pos(a0),d3
+		move.w	ost_y_pos(a0),d2
 		; Engine bug: colliding with left walls is erratic with this function.
 		; The cause is this: a missing instruction to flip collision on the found
 		; 16x16 block; this one:
@@ -29042,7 +29042,7 @@ locret_15098:
 
 Junction:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Jun_Index(pc,d0.w),d1
 		jmp	Jun_Index(pc,d1.w)
 ; ===========================================================================
@@ -29058,7 +29058,7 @@ jun_switch:	equ $38		; which switch will reverse the disc
 ; ===========================================================================
 
 Jun_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 		move.w	#1,d1
 		movea.l	a0,a1
 		bra.s	@makeitem
@@ -29068,75 +29068,75 @@ Jun_Main:	; Routine 0
 		bsr.w	FindFreeObj
 		bne.s	@fail
 		move.b	#id_Junction,0(a1)
-		addq.b	#4,obRoutine(a1) ; goto Jun_Display next
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
-		move.b	#3,obPriority(a1)
-		move.b	#$10,obFrame(a1) ; use large circular sprite
+		addq.b	#4,ost_routine(a1) ; goto Jun_Display next
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
+		move.b	#3,ost_priority(a1)
+		move.b	#$10,ost_frame(a1) ; use large circular sprite
 
 @makeitem:
-		move.l	#Map_Jun,obMap(a1)
-		move.w	#$4348,obGfx(a1)
-		ori.b	#4,obRender(a1)
-		move.b	#$38,obActWid(a1)
+		move.l	#Map_Jun,ost_mappings(a1)
+		move.w	#$4348,ost_tile(a1)
+		ori.b	#4,ost_render(a1)
+		move.b	#$38,ost_actwidth(a1)
 
 	@fail:
 		dbf	d1,@repeat
 
-		move.b	#$30,obActWid(a0)
-		move.b	#4,obPriority(a0)
+		move.b	#$30,ost_actwidth(a0)
+		move.b	#4,ost_priority(a0)
 		move.w	#$3C,$30(a0)
 		move.b	#1,jun_frame(a0)
-		move.b	obSubtype(a0),jun_switch(a0)
+		move.b	ost_subtype(a0),jun_switch(a0)
 
 Jun_Action:	; Routine 2
 		bsr.w	Jun_ChkSwitch
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.w	Jun_Display
 		move.w	#$30,d1
 		move.w	d1,d2
 		move.w	d2,d3
 		addq.w	#1,d3
-		move.w	obX(a0),d4
+		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject
-		btst	#5,obStatus(a0)	; is Sonic pushing the disc?
+		btst	#5,ost_status(a0)	; is Sonic pushing the disc?
 		beq.w	Jun_Display	; if not, branch
 
 		lea	(v_player).w,a1
 		moveq	#$E,d1
-		move.w	obX(a1),d0
-		cmp.w	obX(a0),d0	; is Sonic to the left of the disc?
+		move.w	ost_x_pos(a1),d0
+		cmp.w	ost_x_pos(a0),d0	; is Sonic to the left of the disc?
 		bcs.s	@isleft		; if yes, branch
 		moveq	#7,d1		
 
 	@isleft:
-		cmp.b	obFrame(a0),d1	; is the gap next to Sonic?
+		cmp.b	ost_frame(a0),d1	; is the gap next to Sonic?
 		bne.s	Jun_Display	; if not, branch
 
 		move.b	d1,$32(a0)
-		addq.b	#4,obRoutine(a0) ; goto Jun_Release next
+		addq.b	#4,ost_routine(a0) ; goto Jun_Release next
 		move.b	#1,(f_lockmulti).w ; lock controls
-		move.b	#id_Roll,obAnim(a1) ; make Sonic use "rolling" animation
-		move.w	#$800,obInertia(a1)
-		move.w	#0,obVelX(a1)
-		move.w	#0,obVelY(a1)
-		bclr	#5,obStatus(a0)
-		bclr	#5,obStatus(a1)
-		bset	#1,obStatus(a1)
-		move.w	obX(a1),d2
-		move.w	obY(a1),d3
+		move.b	#id_Roll,ost_anim(a1) ; make Sonic use "rolling" animation
+		move.w	#$800,ost_inertia(a1)
+		move.w	#0,ost_x_vel(a1)
+		move.w	#0,ost_y_vel(a1)
+		bclr	#5,ost_status(a0)
+		bclr	#5,ost_status(a1)
+		bset	#1,ost_status(a1)
+		move.w	ost_x_pos(a1),d2
+		move.w	ost_y_pos(a1),d3
 		bsr.w	Jun_ChgPos
-		add.w	d2,obX(a1)
-		add.w	d3,obY(a1)
-		asr	obX(a1)
-		asr	obY(a1)
+		add.w	d2,ost_x_pos(a1)
+		add.w	d3,ost_y_pos(a1)
+		asr	ost_x_pos(a1)
+		asr	ost_y_pos(a1)
 
 Jun_Display:	; Routine 4
 		bra.w	RememberState
 ; ===========================================================================
 
 Jun_Release:	; Routine 6
-		move.b	obFrame(a0),d0
+		move.b	ost_frame(a0),d0
 		cmpi.b	#4,d0		; is gap pointing down?
 		beq.s	@release	; if yes, branch
 		cmpi.b	#7,d0		; is gap pointing right?
@@ -29146,16 +29146,16 @@ Jun_Release:	; Routine 6
 		cmp.b	$32(a0),d0
 		beq.s	@dontrelease
 		lea	(v_player).w,a1
-		move.w	#0,obVelX(a1)
-		move.w	#$800,obVelY(a1)
+		move.w	#0,ost_x_vel(a1)
+		move.w	#$800,ost_y_vel(a1)
 		cmpi.b	#4,d0
 		beq.s	@isdown
-		move.w	#$800,obVelX(a1)
-		move.w	#$800,obVelY(a1)
+		move.w	#$800,ost_x_vel(a1)
+		move.w	#$800,ost_y_vel(a1)
 
 	@isdown:
 		clr.b	(f_lockmulti).w	; unlock controls
-		subq.b	#4,obRoutine(a0)
+		subq.b	#4,ost_routine(a0)
 
 	@dontrelease:
 		bsr.s	Jun_ChkSwitch
@@ -29183,14 +29183,14 @@ Jun_ChkSwitch:
 		clr.b	jun_reverse(a0)	; set to "not yet pressed"
 
 @animate:
-		subq.b	#1,obTimeFrame(a0) ; decrement frame timer
+		subq.b	#1,ost_anim_time(a0) ; decrement frame timer
 		bpl.s	@nochange	; if time remains, branch
-		move.b	#7,obTimeFrame(a0)
+		move.b	#7,ost_anim_time(a0)
 		move.b	jun_frame(a0),d1
-		move.b	obFrame(a0),d0
+		move.b	ost_frame(a0),d0
 		add.b	d1,d0
 		andi.b	#$F,d0
-		move.b	d0,obFrame(a0)	; update frame
+		move.b	d0,ost_frame(a0)	; update frame
 
 	@nochange:
 		rts	
@@ -29203,17 +29203,17 @@ Jun_ChkSwitch:
 Jun_ChgPos:
 		lea	(v_player).w,a1
 		moveq	#0,d0
-		move.b	obFrame(a0),d0
+		move.b	ost_frame(a0),d0
 		add.w	d0,d0
 		lea	@data(pc,d0.w),a2
 		move.b	(a2)+,d0
 		ext.w	d0
-		add.w	obX(a0),d0
-		move.w	d0,obX(a1)
+		add.w	ost_x_pos(a0),d0
+		move.w	d0,ost_x_pos(a1)
 		move.b	(a2)+,d0
 		ext.w	d0
-		add.w	obY(a0),d0
-		move.w	d0,obY(a1)
+		add.w	ost_y_pos(a0),d0
+		move.w	d0,ost_y_pos(a1)
 		rts	
 
 
@@ -29234,7 +29234,7 @@ Map_Jun:	include "Mappings\SBZ Rotating Disc Junction.asm"
 
 RunningDisc:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Disc_Index(pc,d0.w),d1
 		jmp	Disc_Index(pc,d1.w)
 ; ===========================================================================
@@ -29247,32 +29247,32 @@ disc_origY:	equ $30		; original y-axis position
 ; ===========================================================================
 
 Disc_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Disc,obMap(a0)
-		move.w	#$C344,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#4,obPriority(a0)
-		move.b	#8,obActWid(a0)
-		move.w	obX(a0),disc_origX(a0)
-		move.w	obY(a0),disc_origY(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Disc,ost_mappings(a0)
+		move.w	#$C344,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#4,ost_priority(a0)
+		move.b	#8,ost_actwidth(a0)
+		move.w	ost_x_pos(a0),disc_origX(a0)
+		move.w	ost_y_pos(a0),disc_origY(a0)
 		move.b	#$18,$34(a0)
 		move.b	#$48,$38(a0)
-		move.b	obSubtype(a0),d1 ; get object type
+		move.b	ost_subtype(a0),d1 ; get object type
 		andi.b	#$F,d1		; read only the	2nd digit
 		beq.s	@typeis0	; branch if 0
 		move.b	#$10,$34(a0)
 		move.b	#$38,$38(a0)
 
 	@typeis0:
-		move.b	obSubtype(a0),d1 ; get object type
+		move.b	ost_subtype(a0),d1 ; get object type
 		andi.b	#$F0,d1		; read only the	1st digit
 		ext.w	d1
 		asl.w	#3,d1
 		move.w	d1,$36(a0)
-		move.b	obStatus(a0),d0
+		move.b	ost_status(a0),d0
 		ror.b	#2,d0
 		andi.b	#$C0,d0
-		move.b	d0,obAngle(a0)
+		move.b	d0,ost_angle(a0)
 
 Disc_Action:	; Routine 2
 		bsr.w	Disc_MoveSonic
@@ -29286,17 +29286,17 @@ Disc_MoveSonic:
 		move.w	d2,d3
 		add.w	d3,d3
 		lea	(v_player).w,a1
-		move.w	obX(a1),d0
+		move.w	ost_x_pos(a1),d0
 		sub.w	disc_origX(a0),d0
 		add.w	d2,d0
 		cmp.w	d3,d0
 		bcc.s	loc_155A8
-		move.w	obY(a1),d1
+		move.w	ost_y_pos(a1),d1
 		sub.w	disc_origY(a0),d1
 		add.w	d2,d1
 		cmp.w	d3,d1
 		bcc.s	loc_155A8
-		btst	#1,obStatus(a1)
+		btst	#1,ost_status(a1)
 		beq.s	loc_155B8
 		clr.b	$3A(a0)
 		rts	
@@ -29316,29 +29316,29 @@ loc_155B8:
 		tst.b	$3A(a0)
 		bne.s	loc_155E2
 		move.b	#1,$3A(a0)
-		btst	#2,obStatus(a1)
+		btst	#2,ost_status(a1)
 		bne.s	loc_155D0
-		clr.b	obAnim(a1)
+		clr.b	ost_anim(a1)
 
 loc_155D0:
-		bclr	#5,obStatus(a1)
-		move.b	#1,obNextAni(a1)
+		bclr	#5,ost_status(a1)
+		move.b	#1,ost_anim_next(a1)
 		move.b	#1,$38(a1)
 
 loc_155E2:
-		move.w	obInertia(a1),d0
+		move.w	ost_inertia(a1),d0
 		tst.w	$36(a0)
 		bpl.s	loc_15608
 		cmpi.w	#-$400,d0
 		ble.s	loc_155FA
-		move.w	#-$400,obInertia(a1)
+		move.w	#-$400,ost_inertia(a1)
 		rts	
 ; ===========================================================================
 
 loc_155FA:
 		cmpi.w	#-$F00,d0
 		bge.s	locret_15606
-		move.w	#-$F00,obInertia(a1)
+		move.w	#-$F00,ost_inertia(a1)
 
 locret_15606:
 		rts	
@@ -29347,14 +29347,14 @@ locret_15606:
 loc_15608:
 		cmpi.w	#$400,d0
 		bge.s	loc_15616
-		move.w	#$400,obInertia(a1)
+		move.w	#$400,ost_inertia(a1)
 		rts	
 ; ===========================================================================
 
 loc_15616:
 		cmpi.w	#$F00,d0
 		ble.s	locret_15622
-		move.w	#$F00,obInertia(a1)
+		move.w	#$F00,ost_inertia(a1)
 
 locret_15622:
 		rts	
@@ -29362,8 +29362,8 @@ locret_15622:
 
 Disc_MoveSpot:
 		move.w	$36(a0),d0
-		add.w	d0,obAngle(a0)
-		move.b	obAngle(a0),d0
+		add.w	d0,ost_angle(a0)
+		move.b	ost_angle(a0),d0
 		jsr	(CalcSine).l
 		move.w	disc_origY(a0),d2
 		move.w	disc_origX(a0),d3
@@ -29377,8 +29377,8 @@ Disc_MoveSpot:
 		swap	d5
 		add.w	d2,d4
 		add.w	d3,d5
-		move.w	d4,obY(a0)
-		move.w	d5,obX(a0)
+		move.w	d4,ost_y_pos(a0)
+		move.w	d5,ost_x_pos(a0)
 		rts	
 ; ===========================================================================
 
@@ -29397,7 +29397,7 @@ Map_Disc:	include "Mappings\SBZ Running Disc.asm"
 
 Conveyor:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Conv_Index(pc,d0.w),d1
 		jmp	Conv_Index(pc,d1.w)
 ; ===========================================================================
@@ -29410,15 +29410,15 @@ conv_width:	equ $38
 ; ===========================================================================
 
 Conv_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 		move.b	#128,conv_width(a0) ; set width to 128 pixels
-		move.b	obSubtype(a0),d1 ; get object type
+		move.b	ost_subtype(a0),d1 ; get object type
 		andi.b	#$F,d1		; read only the	2nd digit
 		beq.s	@typeis0	; if zero, branch
 		move.b	#56,conv_width(a0) ; set width to 56 pixels
 
 	@typeis0:
-		move.b	obSubtype(a0),d1 ; get object type
+		move.b	ost_subtype(a0),d1 ; get object type
 		andi.b	#$F0,d1		; read only the	1st digit
 		ext.w	d1
 		asr.w	#4,d1
@@ -29439,20 +29439,20 @@ Conv_Action:	; Routine 2
 		move.w	d2,d3
 		add.w	d3,d3
 		lea	(v_player).w,a1
-		move.w	obX(a1),d0
-		sub.w	obX(a0),d0
+		move.w	ost_x_pos(a1),d0
+		sub.w	ost_x_pos(a0),d0
 		add.w	d2,d0
 		cmp.w	d3,d0
 		bcc.s	@notonconveyor
-		move.w	obY(a1),d1
-		sub.w	obY(a0),d1
+		move.w	ost_y_pos(a1),d1
+		sub.w	ost_y_pos(a0),d1
 		addi.w	#$30,d1
 		cmpi.w	#$30,d1
 		bcc.s	@notonconveyor
-		btst	#1,obStatus(a1)
+		btst	#1,ost_status(a1)
 		bne.s	@notonconveyor
 		move.w	conv_speed(a0),d0
-		add.w	d0,obX(a1)
+		add.w	d0,ost_x_pos(a1)
 
 	@notonconveyor:
 		rts	
@@ -29462,7 +29462,7 @@ Conv_Action:	; Routine 2
 
 SpinPlatform:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Spin_Index(pc,d0.w),d1
 		jmp	Spin_Index(pc,d1.w)
 ; ===========================================================================
@@ -29476,26 +29476,26 @@ spin_timelen:	equ $32		; time between changes (general)
 ; ===========================================================================
 
 Spin_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Trap,obMap(a0)
-		move.w	#$4492,obGfx(a0)
-		ori.b	#4,obRender(a0)
-		move.b	#$80,obActWid(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Trap,ost_mappings(a0)
+		move.w	#$4492,ost_tile(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	#$80,ost_actwidth(a0)
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		andi.w	#$F,d0
 		mulu.w	#$3C,d0
 		move.w	d0,spin_timelen(a0)
-		tst.b	obSubtype(a0)	; is subtype $8x?
+		tst.b	ost_subtype(a0)	; is subtype $8x?
 		bpl.s	Spin_Trapdoor	; if not, branch
 
-		addq.b	#2,obRoutine(a0) ; goto Spin_Spinner next
-		move.l	#Map_Spin,obMap(a0)
-		move.w	#$4DF,obGfx(a0)
-		move.b	#$10,obActWid(a0)
-		move.b	#2,obAnim(a0)
+		addq.b	#2,ost_routine(a0) ; goto Spin_Spinner next
+		move.l	#Map_Spin,ost_mappings(a0)
+		move.w	#$4DF,ost_tile(a0)
+		move.b	#$10,ost_actwidth(a0)
+		move.b	#2,ost_anim(a0)
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0 ; get object type
+		move.b	ost_subtype(a0),d0 ; get object type
 		move.w	d0,d1
 		andi.w	#$F,d0		; read only the	2nd digit
 		mulu.w	#6,d0		; multiply by 6
@@ -29514,32 +29514,32 @@ Spin_Trapdoor:	; Routine 2
 		bpl.s	@animate	; if time remains, branch
 
 		move.w	spin_timelen(a0),spin_timer(a0)
-		bchg	#0,obAnim(a0)
-		tst.b	obRender(a0)
+		bchg	#0,ost_anim(a0)
+		tst.b	ost_render(a0)
 		bpl.s	@animate
 		sfx	sfx_Door,0,0,0	; play door sound
 
 	@animate:
 		lea	(Ani_Spin).l,a1
 		jsr	(AnimateSprite).l
-		tst.b	obFrame(a0)	; is frame number 0 displayed?
+		tst.b	ost_frame(a0)	; is frame number 0 displayed?
 		bne.s	@notsolid	; if not, branch
 		move.w	#$4B,d1
 		move.w	#$C,d2
 		move.w	d2,d3
 		addq.w	#1,d3
-		move.w	obX(a0),d4
+		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject
 		bra.w	RememberState
 ; ===========================================================================
 
 @notsolid:
-		btst	#3,obStatus(a0) ; is Sonic standing on the trapdoor?
+		btst	#3,ost_status(a0) ; is Sonic standing on the trapdoor?
 		beq.s	@display	; if not, branch
 		lea	(v_player).w,a1
-		bclr	#3,obStatus(a1)
-		bclr	#3,obStatus(a0)
-		clr.b	obSolid(a0)
+		bclr	#3,ost_status(a1)
+		bclr	#3,ost_status(a0)
+		clr.b	ost_solid(a0)
 
 	@display:
 		bra.w	RememberState
@@ -29558,29 +29558,29 @@ Spin_Spinner:	; Routine 4
 		bpl.s	@animate
 		move.w	spin_timelen(a0),spin_timer(a0)
 		clr.b	$34(a0)
-		bchg	#0,obAnim(a0)
+		bchg	#0,ost_anim(a0)
 
 	@animate:
 		lea	(Ani_Spin).l,a1
 		jsr	(AnimateSprite).l
-		tst.b	obFrame(a0)	; check	if frame number	0 is displayed
+		tst.b	ost_frame(a0)	; check	if frame number	0 is displayed
 		bne.s	@notsolid2	; if not, branch
 		move.w	#$1B,d1
 		move.w	#7,d2
 		move.w	d2,d3
 		addq.w	#1,d3
-		move.w	obX(a0),d4
+		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject
 		bra.w	RememberState
 ; ===========================================================================
 
 @notsolid2:
-		btst	#3,obStatus(a0)
+		btst	#3,ost_status(a0)
 		beq.s	@display
 		lea	(v_player).w,a1
-		bclr	#3,obStatus(a1)
-		bclr	#3,obStatus(a0)
-		clr.b	obSolid(a0)
+		bclr	#3,ost_status(a1)
+		bclr	#3,ost_status(a0)
+		clr.b	ost_solid(a0)
 
 	@display:
 		bra.w	RememberState
@@ -29595,7 +29595,7 @@ Map_Spin:	include "Mappings\SBZ Spinning Platforms.asm"
 
 Saws:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Saw_Index(pc,d0.w),d1
 		jmp	Saw_Index(pc,d1.w)
 ; ===========================================================================
@@ -29609,21 +29609,21 @@ saw_here:	equ $3D		; flag set when the ground saw appears
 ; ===========================================================================
 
 Saw_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Saw,obMap(a0)
-		move.w	#$43B5,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#4,obPriority(a0)
-		move.b	#$20,obActWid(a0)
-		move.w	obX(a0),saw_origX(a0)
-		move.w	obY(a0),saw_origY(a0)
-		cmpi.b	#3,obSubtype(a0) ; is object a ground saw?
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Saw,ost_mappings(a0)
+		move.w	#$43B5,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#4,ost_priority(a0)
+		move.b	#$20,ost_actwidth(a0)
+		move.w	ost_x_pos(a0),saw_origX(a0)
+		move.w	ost_y_pos(a0),saw_origY(a0)
+		cmpi.b	#3,ost_subtype(a0) ; is object a ground saw?
 		bcc.s	Saw_Action	; if yes, branch
-		move.b	#$A2,obColType(a0)
+		move.b	#$A2,ost_col_type(a0)
 
 Saw_Action:	; Routine 2
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		andi.w	#7,d0
 		add.w	d0,d0
 		move.w	@index(pc,d0.w),d1
@@ -29650,7 +29650,7 @@ Saw_Action:	; Routine 2
 		move.w	#$60,d1
 		moveq	#0,d0
 		move.b	(v_oscillate+$E).w,d0
-		btst	#0,obStatus(a0)
+		btst	#0,ost_status(a0)
 		beq.s	@noflip01
 		neg.w	d0
 		add.w	d1,d0
@@ -29658,15 +29658,15 @@ Saw_Action:	; Routine 2
 	@noflip01:
 		move.w	saw_origX(a0),d1
 		sub.w	d0,d1
-		move.w	d1,obX(a0)	; move saw sideways
+		move.w	d1,ost_x_pos(a0)	; move saw sideways
 
-		subq.b	#1,obTimeFrame(a0)
+		subq.b	#1,ost_anim_time(a0)
 		bpl.s	@sameframe01
-		move.b	#2,obTimeFrame(a0) ; time between frame changes
-		bchg	#0,obFrame(a0)	; change frame
+		move.b	#2,ost_anim_time(a0) ; time between frame changes
+		bchg	#0,ost_frame(a0)	; change frame
 
 	@sameframe01:
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.s	@nosound01
 		move.w	(v_framecount).w,d0
 		andi.w	#$F,d0
@@ -29681,7 +29681,7 @@ Saw_Action:	; Routine 2
 		move.w	#$30,d1
 		moveq	#0,d0
 		move.b	(v_oscillate+6).w,d0
-		btst	#0,obStatus(a0)
+		btst	#0,ost_status(a0)
 		beq.s	@noflip02
 		neg.w	d0
 		addi.w	#$80,d0
@@ -29689,14 +29689,14 @@ Saw_Action:	; Routine 2
 	@noflip02:
 		move.w	saw_origY(a0),d1
 		sub.w	d0,d1
-		move.w	d1,obY(a0)	; move saw vertically
-		subq.b	#1,obTimeFrame(a0)
+		move.w	d1,ost_y_pos(a0)	; move saw vertically
+		subq.b	#1,ost_anim_time(a0)
 		bpl.s	@sameframe02
-		move.b	#2,obTimeFrame(a0)
-		bchg	#0,obFrame(a0)
+		move.b	#2,ost_anim_time(a0)
+		bchg	#0,ost_frame(a0)
 
 	@sameframe02:
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.s	@nosound02
 		move.b	(v_oscillate+6).w,d0
 		cmpi.b	#$18,d0
@@ -29711,22 +29711,22 @@ Saw_Action:	; Routine 2
 		tst.b	saw_here(a0)	; has the saw appeared already?
 		bne.s	@here03		; if yes, branch
 
-		move.w	(v_player+obX).w,d0
+		move.w	(v_player+ost_x_pos).w,d0
 		subi.w	#$C0,d0
 		bcs.s	@nosaw03x
-		sub.w	obX(a0),d0
+		sub.w	ost_x_pos(a0),d0
 		bcs.s	@nosaw03x
-		move.w	(v_player+obY).w,d0
+		move.w	(v_player+ost_y_pos).w,d0
 		subi.w	#$80,d0
-		cmp.w	obY(a0),d0
+		cmp.w	ost_y_pos(a0),d0
 		bcc.s	@nosaw03y
 		addi.w	#$100,d0
-		cmp.w	obY(a0),d0
+		cmp.w	ost_y_pos(a0),d0
 		bcs.s	@nosaw03y
 		move.b	#1,saw_here(a0)
-		move.w	#$600,obVelX(a0) ; move object to the right
-		move.b	#$A2,obColType(a0)
-		move.b	#2,obFrame(a0)
+		move.w	#$600,ost_x_vel(a0) ; move object to the right
+		move.b	#$A2,ost_col_type(a0)
+		move.b	#2,ost_frame(a0)
 		sfx	sfx_Saw,0,0,0		; play saw sound
 
 	@nosaw03x:
@@ -29738,11 +29738,11 @@ Saw_Action:	; Routine 2
 
 @here03:
 		jsr	(SpeedToPos).l
-		move.w	obX(a0),saw_origX(a0)
-		subq.b	#1,obTimeFrame(a0)
+		move.w	ost_x_pos(a0),saw_origX(a0)
+		subq.b	#1,ost_anim_time(a0)
 		bpl.s	@sameframe03
-		move.b	#2,obTimeFrame(a0)
-		bchg	#0,obFrame(a0)
+		move.b	#2,ost_anim_time(a0)
+		bchg	#0,ost_frame(a0)
 
 	@sameframe03:
 		rts	
@@ -29751,21 +29751,21 @@ Saw_Action:	; Routine 2
 @type04:
 		tst.b	saw_here(a0)
 		bne.s	@here04
-		move.w	(v_player+obX).w,d0
+		move.w	(v_player+ost_x_pos).w,d0
 		addi.w	#$E0,d0
-		sub.w	obX(a0),d0
+		sub.w	ost_x_pos(a0),d0
 		bcc.s	@nosaw04x
-		move.w	(v_player+obY).w,d0
+		move.w	(v_player+ost_y_pos).w,d0
 		subi.w	#$80,d0
-		cmp.w	obY(a0),d0
+		cmp.w	ost_y_pos(a0),d0
 		bcc.s	@nosaw04y
 		addi.w	#$100,d0
-		cmp.w	obY(a0),d0
+		cmp.w	ost_y_pos(a0),d0
 		bcs.s	@nosaw04y
 		move.b	#1,saw_here(a0)
-		move.w	#-$600,obVelX(a0) ; move object to the left
-		move.b	#$A2,obColType(a0)
-		move.b	#2,obFrame(a0)
+		move.w	#-$600,ost_x_vel(a0) ; move object to the left
+		move.b	#$A2,ost_col_type(a0)
+		move.b	#2,ost_frame(a0)
 		sfx	sfx_Saw,0,0,0		; play saw sound
 
 	@nosaw04x:
@@ -29777,11 +29777,11 @@ Saw_Action:	; Routine 2
 
 @here04:
 		jsr	(SpeedToPos).l
-		move.w	obX(a0),saw_origX(a0)
-		subq.b	#1,obTimeFrame(a0)
+		move.w	ost_x_pos(a0),saw_origX(a0)
+		subq.b	#1,ost_anim_time(a0)
 		bpl.s	@sameframe04
-		move.b	#2,obTimeFrame(a0)
-		bchg	#0,obFrame(a0)
+		move.b	#2,ost_anim_time(a0)
+		bchg	#0,ost_frame(a0)
 
 	@sameframe04:
 		rts	
@@ -29794,7 +29794,7 @@ Map_Saw:	include "Mappings\SBZ Saws.asm"
 
 ScrapStomp:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Sto_Index(pc,d0.w),d1
 		jmp	Sto_Index(pc,d1.w)
 ; ===========================================================================
@@ -29815,18 +29815,18 @@ Sto_Var:	dc.b  $40,  $C,	$80,   1 ; width, height, ????,	type number
 ; ===========================================================================
 
 Sto_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		lsr.w	#2,d0
 		andi.w	#$1C,d0
 		lea	Sto_Var(pc,d0.w),a3
-		move.b	(a3)+,obActWid(a0)
+		move.b	(a3)+,ost_actwidth(a0)
 		move.b	(a3)+,sto_height(a0)
 		lsr.w	#2,d0
-		move.b	d0,obFrame(a0)
-		move.l	#Map_Stomp,obMap(a0)
-		move.w	#$22C0,obGfx(a0)
+		move.b	d0,ost_frame(a0)
+		move.l	#Map_Stomp,ost_mappings(a0)
+		move.w	#$22C0,ost_tile(a0)
 		cmpi.b	#id_LZ,(v_zone).w ; check if level is LZ/SBZ3
 		bne.s	@isSBZ12	; if not, branch
 		bset	#0,(v_obj6B).w
@@ -29835,7 +29835,7 @@ Sto_Main:	; Routine 0
 @chkdel:
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
-		move.b	obRespawnNo(a0),d0
+		move.b	ost_respawn(a0),d0
 		beq.s	@delete
 		bclr	#7,2(a2,d0.w)
 
@@ -29844,12 +29844,12 @@ Sto_Main:	; Routine 0
 ; ===========================================================================
 
 @isSBZ3:
-		move.w	#$41F0,obGfx(a0)
-		cmpi.w	#$A80,obX(a0)
+		move.w	#$41F0,ost_tile(a0)
+		cmpi.w	#$A80,ost_x_pos(a0)
 		bne.s	@isSBZ12
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
-		move.b	obRespawnNo(a0),d0
+		move.b	ost_respawn(a0),d0
 		beq.s	@isSBZ12
 		btst	#0,2(a2,d0.w)
 		beq.s	@isSBZ12
@@ -29858,43 +29858,43 @@ Sto_Main:	; Routine 0
 ; ===========================================================================
 
 @isSBZ12:
-		ori.b	#4,obRender(a0)
-		move.b	#4,obPriority(a0)
-		move.w	obX(a0),sto_origX(a0)
-		move.w	obY(a0),sto_origY(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	#4,ost_priority(a0)
+		move.w	ost_x_pos(a0),sto_origX(a0)
+		move.w	ost_y_pos(a0),sto_origY(a0)
 		moveq	#0,d0
 		move.b	(a3)+,d0
 		move.w	d0,$3C(a0)
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		bpl.s	Sto_Action
 		andi.b	#$F,d0
 		move.b	d0,$3E(a0)
-		move.b	(a3),obSubtype(a0)
+		move.b	(a3),ost_subtype(a0)
 		cmpi.b	#5,(a3)
 		bne.s	@chkgone
-		bset	#4,obRender(a0)
+		bset	#4,ost_render(a0)
 
 	@chkgone:
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
-		move.b	obRespawnNo(a0),d0
+		move.b	ost_respawn(a0),d0
 		beq.s	Sto_Action
 		bclr	#7,2(a2,d0.w)
 
 Sto_Action:	; Routine 2
-		move.w	obX(a0),-(sp)
+		move.w	ost_x_pos(a0),-(sp)
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		andi.w	#$F,d0
 		add.w	d0,d0
 		move.w	@index(pc,d0.w),d1
 		jsr	@index(pc,d1.w)
 		move.w	(sp)+,d4
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.s	@chkdel
 		moveq	#0,d1
-		move.b	obActWid(a0),d1
+		move.b	ost_actwidth(a0),d1
 		addi.w	#$B,d1
 		moveq	#0,d2
 		move.b	sto_height(a0),d2
@@ -29912,7 +29912,7 @@ Sto_Action:	; Routine 2
 		clr.b	(v_obj6B).w
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
-		move.b	obRespawnNo(a0),d0
+		move.b	ost_respawn(a0),d0
 		beq.s	@delete
 		bclr	#7,2(a2,d0.w)
 
@@ -29950,7 +29950,7 @@ Sto_Action:	; Routine 2
 
 	@loc_15DC2:
 		move.w	$3A(a0),d0
-		btst	#0,obStatus(a0)
+		btst	#0,ost_status(a0)
 		beq.s	@noflip01
 		neg.w	d0
 		addi.w	#$80,d0
@@ -29958,17 +29958,17 @@ Sto_Action:	; Routine 2
 	@noflip01:
 		move.w	sto_origX(a0),d1
 		sub.w	d0,d1
-		move.w	d1,obX(a0)
+		move.w	d1,ost_x_pos(a0)
 		rts	
 ; ===========================================================================
 
 @loc_15DE0:
-		addq.b	#1,obSubtype(a0)
+		addq.b	#1,ost_subtype(a0)
 		move.w	#$B4,$36(a0)
 		clr.b	sto_active(a0)
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
-		move.b	obRespawnNo(a0),d0
+		move.b	ost_respawn(a0),d0
 		beq.s	@loc_15DC2
 		bset	#0,2(a2,d0.w)
 		bra.s	@loc_15DC2
@@ -29988,7 +29988,7 @@ Sto_Action:	; Routine 2
 
 	@loc_15E1E:
 		move.w	$3A(a0),d0
-		btst	#0,obStatus(a0)
+		btst	#0,ost_status(a0)
 		beq.s	@noflip02
 		neg.w	d0
 		addi.w	#$80,d0
@@ -29996,16 +29996,16 @@ Sto_Action:	; Routine 2
 	@noflip02:
 		move.w	sto_origX(a0),d1
 		sub.w	d0,d1
-		move.w	d1,obX(a0)
+		move.w	d1,ost_x_pos(a0)
 		rts	
 ; ===========================================================================
 
 @loc_15E3C:
-		subq.b	#1,obSubtype(a0)
+		subq.b	#1,ost_subtype(a0)
 		clr.b	sto_active(a0)
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
-		move.b	obRespawnNo(a0),d0
+		move.b	ost_respawn(a0),d0
 		beq.s	@loc_15E1E
 		bclr	#0,2(a2,d0.w)
 		bra.s	@loc_15E1E
@@ -30035,7 +30035,7 @@ Sto_Action:	; Routine 2
 
 @loc_15E8E:
 		move.w	$3A(a0),d0
-		btst	#0,obStatus(a0)
+		btst	#0,ost_status(a0)
 		beq.s	@noflip03
 		neg.w	d0
 		addi.w	#$38,d0
@@ -30043,7 +30043,7 @@ Sto_Action:	; Routine 2
 	@noflip03:
 		move.w	sto_origY(a0),d1
 		add.w	d0,d1
-		move.w	d1,obY(a0)
+		move.w	d1,ost_y_pos(a0)
 		rts	
 ; ===========================================================================
 
@@ -30078,7 +30078,7 @@ Sto_Action:	; Routine 2
 
 @loc_15EF0:
 		move.w	$3A(a0),d0
-		btst	#0,obStatus(a0)
+		btst	#0,ost_status(a0)
 		beq.s	@noflip04
 		neg.w	d0
 		addi.w	#$38,d0
@@ -30086,7 +30086,7 @@ Sto_Action:	; Routine 2
 	@noflip04:
 		move.w	sto_origY(a0),d1
 		add.w	d0,d1
-		move.w	d1,obY(a0)
+		move.w	d1,ost_y_pos(a0)
 		rts	
 ; ===========================================================================
 
@@ -30101,15 +30101,15 @@ Sto_Action:	; Routine 2
 		move.b	#1,sto_active(a0)
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
-		move.b	obRespawnNo(a0),d0
+		move.b	ost_respawn(a0),d0
 		beq.s	@loc_15F3E
 		bset	#0,2(a2,d0.w)
 
 @loc_15F3E:
-		subi.l	#$10000,obX(a0)
-		addi.l	#$8000,obY(a0)
-		move.w	obX(a0),sto_origX(a0)
-		cmpi.w	#$980,obX(a0)
+		subi.l	#$10000,ost_x_pos(a0)
+		addi.l	#$8000,ost_y_pos(a0)
+		move.w	ost_x_pos(a0),sto_origX(a0)
+		cmpi.w	#$980,ost_x_pos(a0)
 		beq.s	@loc_15F5E
 
 @locret_15F5C:
@@ -30117,7 +30117,7 @@ Sto_Action:	; Routine 2
 ; ===========================================================================
 
 @loc_15F5E:
-		clr.b	obSubtype(a0)
+		clr.b	ost_subtype(a0)
 		clr.b	sto_active(a0)
 		rts	
 		
@@ -30129,7 +30129,7 @@ Map_Stomp:	include "Mappings\SBZ Stomper & Sliding Doors.asm"
 
 VanishPlatform:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	VanP_Index(pc,d0.w),d1
 		jmp	VanP_Index(pc,d1.w)
 ; ===========================================================================
@@ -30144,14 +30144,14 @@ vanp_timelen:	equ $32		; time between events (general)
 ; ===========================================================================
 
 VanP_Main:	; Routine 0
-		addq.b	#6,obRoutine(a0)
-		move.l	#Map_VanP,obMap(a0)
-		move.w	#$44C3,obGfx(a0)
-		ori.b	#4,obRender(a0)
-		move.b	#$10,obActWid(a0)
-		move.b	#4,obPriority(a0)
+		addq.b	#6,ost_routine(a0)
+		move.l	#Map_VanP,ost_mappings(a0)
+		move.w	#$44C3,ost_tile(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	#$10,ost_actwidth(a0)
+		move.b	#4,ost_priority(a0)
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0 ; get object type
+		move.b	ost_subtype(a0),d0 ; get object type
 		andi.w	#$F,d0		; read only the	2nd digit
 		addq.w	#1,d0		; add 1
 		lsl.w	#7,d0		; multiply by $80
@@ -30160,7 +30160,7 @@ VanP_Main:	; Routine 0
 		move.w	d0,vanp_timer(a0)
 		move.w	d0,vanp_timelen(a0)
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0 ; get object type
+		move.b	ost_subtype(a0),d0 ; get object type
 		andi.w	#$F0,d0		; read only the	1st digit
 		addi.w	#$80,d1
 		mulu.w	d1,d0
@@ -30174,7 +30174,7 @@ loc_16068:	; Routine 6
 		sub.w	$36(a0),d0
 		and.w	$38(a0),d0
 		bne.s	@animate
-		subq.b	#4,obRoutine(a0) ; goto VanP_Vanish next
+		subq.b	#4,ost_routine(a0) ; goto VanP_Vanish next
 		bra.s	VanP_Vanish
 ; ===========================================================================
 
@@ -30189,43 +30189,43 @@ VanP_Appear:	; Routine 4
 		subq.w	#1,vanp_timer(a0)
 		bpl.s	@wait
 		move.w	#127,vanp_timer(a0)
-		tst.b	obAnim(a0)	; is platform vanishing?
+		tst.b	ost_anim(a0)	; is platform vanishing?
 		beq.s	@isvanishing	; if yes, branch
 		move.w	vanp_timelen(a0),vanp_timer(a0)
 
 	@isvanishing:
-		bchg	#0,obAnim(a0)
+		bchg	#0,ost_anim(a0)
 
 	@wait:
 		lea	(Ani_Van).l,a1
 		jsr	(AnimateSprite).l
-		btst	#1,obFrame(a0)	; has platform vanished?
+		btst	#1,ost_frame(a0)	; has platform vanished?
 		bne.s	@notsolid	; if yes, branch
-		cmpi.b	#2,obRoutine(a0)
+		cmpi.b	#2,ost_routine(a0)
 		bne.s	@loc_160D6
 		moveq	#0,d1
-		move.b	obActWid(a0),d1
+		move.b	ost_actwidth(a0),d1
 		jsr	(PlatformObject).l
 		bra.w	RememberState
 ; ===========================================================================
 
 @loc_160D6:
 		moveq	#0,d1
-		move.b	obActWid(a0),d1
+		move.b	ost_actwidth(a0),d1
 		jsr	(ExitPlatform).l
-		move.w	obX(a0),d2
+		move.w	ost_x_pos(a0),d2
 		jsr	(MvSonicOnPtfm2).l
 		bra.w	RememberState
 ; ===========================================================================
 
 @notsolid:
-		btst	#3,obStatus(a0)
+		btst	#3,ost_status(a0)
 		beq.s	@display
 		lea	(v_player).w,a1
-		bclr	#3,obStatus(a1)
-		bclr	#3,obStatus(a0)
-		move.b	#2,obRoutine(a0)
-		clr.b	obSolid(a0)
+		bclr	#3,ost_status(a1)
+		bclr	#3,ost_status(a0)
+		move.b	#2,ost_routine(a0)
+		clr.b	ost_solid(a0)
 
 	@display:
 		bra.w	RememberState
@@ -30239,7 +30239,7 @@ Map_VanP:	include "Mappings\SBZ Vanishing Platform.asm"
 
 Electro:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Elec_Index(pc,d0.w),d1
 		jmp	Elec_Index(pc,d1.w)
 ; ===========================================================================
@@ -30251,13 +30251,13 @@ elec_freq:	equ $34		; frequency
 ; ===========================================================================
 
 Elec_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Elec,obMap(a0)
-		move.w	#$47E,obGfx(a0)
-		ori.b	#4,obRender(a0)
-		move.b	#$28,obActWid(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Elec,ost_mappings(a0)
+		move.w	#$47E,ost_tile(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	#$28,ost_actwidth(a0)
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0 ; read object type
+		move.b	ost_subtype(a0),d0 ; read object type
 		lsl.w	#4,d0		; multiply by $10
 		subq.w	#1,d0
 		move.w	d0,elec_freq(a0)
@@ -30267,18 +30267,18 @@ Elec_Shock:	; Routine 2
 		and.w	elec_freq(a0),d0 ; is it time to zap?
 		bne.s	@animate	; if not, branch
 
-		move.b	#1,obAnim(a0)	; run "zap" animation
-		tst.b	obRender(a0)
+		move.b	#1,ost_anim(a0)	; run "zap" animation
+		tst.b	ost_render(a0)
 		bpl.s	@animate
 		sfx	sfx_Electric,0,0,0	; play electricity sound
 
 	@animate:
 		lea	(Ani_Elec).l,a1
 		jsr	(AnimateSprite).l
-		move.b	#0,obColType(a0)
-		cmpi.b	#4,obFrame(a0)	; is 4th frame displayed?
+		move.b	#0,ost_col_type(a0)
+		cmpi.b	#4,ost_frame(a0)	; is 4th frame displayed?
 		bne.s	@display	; if not, branch
-		move.b	#$A4,obColType(a0) ; if yes, make object hurt Sonic
+		move.b	#$A4,ost_col_type(a0) ; if yes, make object hurt Sonic
 
 	@display:
 		bra.w	RememberState
@@ -30292,7 +30292,7 @@ Map_Elec:	include "Mappings\SBZ Electric Orb.asm"
 
 SpinConvey:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	SpinC_Index(pc,d0.w),d1
 		jsr	SpinC_Index(pc,d1.w)
 		out_of_range.s	loc_1629A,$30(a0)
@@ -30323,16 +30323,16 @@ SpinC_Index:	index *
 ; ===========================================================================
 
 SpinC_Main:	; Routine 0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		bmi.w	loc_16380
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Spin,obMap(a0)
-		move.w	#$4DF,obGfx(a0)
-		move.b	#$10,obActWid(a0)
-		ori.b	#4,obRender(a0)
-		move.b	#4,obPriority(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Spin,ost_mappings(a0)
+		move.w	#$4DF,ost_tile(a0)
+		move.b	#$10,ost_actwidth(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	#4,ost_priority(a0)
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		move.w	d0,d1
 		lsr.w	#3,d0
 		andi.w	#$1E,d0
@@ -30369,12 +30369,12 @@ loc_16356:
 		move.w	2(a2,d1.w),$36(a0)
 		tst.w	d1
 		bne.s	loc_1636C
-		move.b	#1,obAnim(a0)
+		move.b	#1,ost_anim(a0)
 
 loc_1636C:
 		cmpi.w	#8,d1
 		bne.s	loc_16378
-		move.b	#0,obAnim(a0)
+		move.b	#0,ost_anim(a0)
 
 loc_16378:
 		bsr.w	LCon_ChangeDir
@@ -30407,10 +30407,10 @@ SpinC_Loop:
 
 SpinC_LoadPform:
 		move.b	#id_SpinConvey,0(a1)
-		move.w	(a2)+,obX(a1)
-		move.w	(a2)+,obY(a1)
+		move.w	(a2)+,ost_x_pos(a1)
+		move.w	(a2)+,ost_y_pos(a1)
 		move.w	(a2)+,d0
-		move.b	d0,obSubtype(a1)
+		move.b	d0,ost_subtype(a1)
 
 loc_163D0:
 		dbf	d1,SpinC_Loop
@@ -30422,9 +30422,9 @@ loc_163D0:
 loc_163D8:	; Routine 2
 		lea	(Ani_SpinConvey).l,a1
 		jsr	(AnimateSprite).l
-		tst.b	obFrame(a0)
+		tst.b	ost_frame(a0)
 		bne.s	loc_16404
-		move.w	obX(a0),-(sp)
+		move.w	ost_x_pos(a0),-(sp)
 		bsr.w	loc_16424
 		move.w	#$1B,d1
 		move.w	#7,d2
@@ -30435,21 +30435,21 @@ loc_163D8:	; Routine 2
 ; ===========================================================================
 
 loc_16404:
-		btst	#3,obStatus(a0)
+		btst	#3,ost_status(a0)
 		beq.s	loc_16420
 		lea	(v_objspace).w,a1
-		bclr	#3,obStatus(a1)
-		bclr	#3,obStatus(a0)
-		clr.b	obSolid(a0)
+		bclr	#3,ost_status(a1)
+		bclr	#3,ost_status(a0)
+		clr.b	ost_solid(a0)
 
 loc_16420:
 		bra.w	loc_16424
 
 loc_16424:
-		move.w	obX(a0),d0
+		move.w	ost_x_pos(a0),d0
 		cmp.w	$34(a0),d0
 		bne.s	loc_16484
-		move.w	obY(a0),d0
+		move.w	ost_y_pos(a0),d0
 		cmp.w	$36(a0),d0
 		bne.s	loc_16484
 		moveq	#0,d1
@@ -30471,12 +30471,12 @@ loc_16456:
 		move.w	2(a1,d1.w),$36(a0)
 		tst.w	d1
 		bne.s	loc_16474
-		move.b	#1,obAnim(a0)
+		move.b	#1,ost_anim(a0)
 
 loc_16474:
 		cmpi.w	#8,d1
 		bne.s	loc_16480
-		move.b	#0,obAnim(a0)
+		move.b	#0,ost_anim(a0)
 
 loc_16480:
 		bsr.w	LCon_ChangeDir
@@ -30507,7 +30507,7 @@ word_16516:	dc.w $10, $1C80, $1C14,	$5E0, $1CEF, $572, $1CEF, $5B0,	$1C14, $61E
 
 Girder:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Gird_Index(pc,d0.w),d1
 		jmp	Gird_Index(pc,d1.w)
 ; ===========================================================================
@@ -30524,19 +30524,19 @@ gird_delay:	equ $3A		; delay for movement
 ; ===========================================================================
 
 Gird_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Gird,obMap(a0)
-		move.w	#$42F0,obGfx(a0)
-		ori.b	#4,obRender(a0)
-		move.b	#4,obPriority(a0)
-		move.b	#$60,obActWid(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Gird,ost_mappings(a0)
+		move.w	#$42F0,ost_tile(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	#4,ost_priority(a0)
+		move.b	#$60,ost_actwidth(a0)
 		move.b	#$18,gird_height(a0)
-		move.w	obX(a0),gird_origX(a0)
-		move.w	obY(a0),gird_origY(a0)
+		move.w	ost_x_pos(a0),gird_origX(a0)
+		move.w	ost_y_pos(a0),gird_origY(a0)
 		bsr.w	Gird_ChgMove
 
 Gird_Action:	; Routine 2
-		move.w	obX(a0),-(sp)
+		move.w	ost_x_pos(a0),-(sp)
 		tst.w	gird_delay(a0)
 		beq.s	@beginmove
 		subq.w	#1,gird_delay(a0)
@@ -30550,10 +30550,10 @@ Gird_Action:	; Routine 2
 
 	@solid:
 		move.w	(sp)+,d4
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.s	@chkdel
 		moveq	#0,d1
-		move.b	obActWid(a0),d1
+		move.b	ost_actwidth(a0),d1
 		addi.w	#$B,d1
 		moveq	#0,d2
 		move.b	gird_height(a0),d2
@@ -30574,8 +30574,8 @@ Gird_ChgMove:
 		andi.w	#$18,d0
 		lea	(@settings).l,a1
 		lea	(a1,d0.w),a1
-		move.w	(a1)+,obVelX(a0)
-		move.w	(a1)+,obVelY(a0)
+		move.w	(a1)+,ost_x_vel(a0)
+		move.w	(a1)+,ost_y_vel(a0)
 		move.w	(a1)+,gird_time(a0)
 		addq.b	#8,gird_set(a0)	; use next settings
 		move.w	#7,gird_delay(a0)
@@ -30595,7 +30595,7 @@ Map_Gird:	include "Mappings\SBZ Girder Block.asm"
 
 Teleport:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Tele_Index(pc,d0.w),d1
 		jsr	Tele_Index(pc,d1.w)
 		out_of_range.s	@delete
@@ -30612,8 +30612,8 @@ Tele_Index:	index *
 ; ===========================================================================
 
 Tele_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.b	obSubtype(a0),d0
+		addq.b	#2,ost_routine(a0)
+		move.b	ost_subtype(a0),d0
 		add.w	d0,d0
 		andi.w	#$1E,d0
 		lea	Tele_Data(pc),a2
@@ -30625,39 +30625,39 @@ Tele_Main:	; Routine 0
 
 loc_166C8:	; Routine 2
 		lea	(v_player).w,a1
-		move.w	obX(a1),d0
-		sub.w	obX(a0),d0
-		btst	#0,obStatus(a0)
+		move.w	ost_x_pos(a1),d0
+		sub.w	ost_x_pos(a0),d0
+		btst	#0,ost_status(a0)
 		beq.s	loc_166E0
 		addi.w	#$F,d0
 
 loc_166E0:
 		cmpi.w	#$10,d0
 		bcc.s	locret_1675C
-		move.w	obY(a1),d1
-		sub.w	obY(a0),d1
+		move.w	ost_y_pos(a1),d1
+		sub.w	ost_y_pos(a0),d1
 		addi.w	#$20,d1
 		cmpi.w	#$40,d1
 		bcc.s	locret_1675C
 		tst.b	(f_lockmulti).w
 		bne.s	locret_1675C
-		cmpi.b	#7,obSubtype(a0)
+		cmpi.b	#7,ost_subtype(a0)
 		bne.s	loc_1670E
 		cmpi.w	#50,(v_rings).w
 		bcs.s	locret_1675C
 
 loc_1670E:
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 		move.b	#$81,(f_lockmulti).w ; lock controls
-		move.b	#id_Roll,obAnim(a1) ; use Sonic's rolling animation
-		move.w	#$800,obInertia(a1)
-		move.w	#0,obVelX(a1)
-		move.w	#0,obVelY(a1)
-		bclr	#5,obStatus(a0)
-		bclr	#5,obStatus(a1)
-		bset	#1,obStatus(a1)
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
+		move.b	#id_Roll,ost_anim(a1) ; use Sonic's rolling animation
+		move.w	#$800,ost_inertia(a1)
+		move.w	#0,ost_x_vel(a1)
+		move.w	#0,ost_y_vel(a1)
+		bclr	#5,ost_status(a0)
+		bclr	#5,ost_status(a1)
+		bset	#1,ost_status(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		clr.b	$32(a0)
 		sfx	sfx_Roll,0,0,0	; play Sonic rolling sound
 
@@ -30671,13 +30671,13 @@ loc_1675E:	; Routine 4
 		addq.b	#2,$32(a0)
 		jsr	(CalcSine).l
 		asr.w	#5,d0
-		move.w	obY(a0),d2
+		move.w	ost_y_pos(a0),d2
 		sub.w	d0,d2
-		move.w	d2,obY(a1)
+		move.w	d2,ost_y_pos(a1)
 		cmpi.b	#$80,$32(a0)
 		bne.s	locret_16796
 		bsr.w	sub_1681C
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 		sfx	sfx_Teleport,0,0,0	; play teleport sound
 
 locret_16796:
@@ -30689,8 +30689,8 @@ loc_16798:	; Routine 6
 		lea	(v_player).w,a1
 		subq.b	#1,$2E(a0)
 		bpl.s	loc_167DA
-		move.w	$36(a0),obX(a1)
-		move.w	$38(a0),obY(a1)
+		move.w	$36(a0),ost_x_pos(a1)
+		move.w	$38(a0),ost_y_pos(a1)
 		moveq	#0,d1
 		move.b	$3A(a0),d1
 		addq.b	#4,d1
@@ -30709,27 +30709,27 @@ loc_167C2:
 ; ===========================================================================
 
 loc_167DA:
-		move.l	obX(a1),d2
-		move.l	obY(a1),d3
-		move.w	obVelX(a1),d0
+		move.l	ost_x_pos(a1),d2
+		move.l	ost_y_pos(a1),d3
+		move.w	ost_x_vel(a1),d0
 		ext.l	d0
 		asl.l	#8,d0
 		add.l	d0,d2
-		move.w	obVelY(a1),d0
+		move.w	ost_y_vel(a1),d0
 		ext.l	d0
 		asl.l	#8,d0
 		add.l	d0,d3
-		move.l	d2,obX(a1)
-		move.l	d3,obY(a1)
+		move.l	d2,ost_x_pos(a1)
+		move.l	d3,ost_y_pos(a1)
 		rts	
 ; ===========================================================================
 
 loc_16800:
-		andi.w	#$7FF,obY(a1)
-		clr.b	obRoutine(a0)
+		andi.w	#$7FF,ost_y_pos(a1)
+		clr.b	ost_routine(a0)
 		clr.b	(f_lockmulti).w
-		move.w	#0,obVelX(a1)
-		move.w	#$200,obVelY(a1)
+		move.w	#0,ost_x_vel(a1)
+		move.w	#$200,ost_y_vel(a1)
 		rts	
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
@@ -30739,7 +30739,7 @@ sub_1681C:
 		moveq	#0,d0
 		move.w	#$1000,d2
 		move.w	$36(a0),d0
-		sub.w	obX(a1),d0
+		sub.w	ost_x_pos(a1),d0
 		bge.s	loc_16830
 		neg.w	d0
 		neg.w	d2
@@ -30748,7 +30748,7 @@ loc_16830:
 		moveq	#0,d1
 		move.w	#$1000,d3
 		move.w	$38(a0),d1
-		sub.w	obY(a1),d1
+		sub.w	ost_y_pos(a1),d1
 		bge.s	loc_16844
 		neg.w	d1
 		neg.w	d3
@@ -30758,19 +30758,19 @@ loc_16844:
 		bcs.s	loc_1687A
 		moveq	#0,d1
 		move.w	$38(a0),d1
-		sub.w	obY(a1),d1
+		sub.w	ost_y_pos(a1),d1
 		swap	d1
 		divs.w	d3,d1
 		moveq	#0,d0
 		move.w	$36(a0),d0
-		sub.w	obX(a1),d0
+		sub.w	ost_x_pos(a1),d0
 		beq.s	loc_16866
 		swap	d0
 		divs.w	d1,d0
 
 loc_16866:
-		move.w	d0,obVelX(a1)
-		move.w	d3,obVelY(a1)
+		move.w	d0,ost_x_vel(a1)
+		move.w	d3,ost_y_vel(a1)
 		tst.w	d1
 		bpl.s	loc_16874
 		neg.w	d1
@@ -30783,19 +30783,19 @@ loc_16874:
 loc_1687A:
 		moveq	#0,d0
 		move.w	$36(a0),d0
-		sub.w	obX(a1),d0
+		sub.w	ost_x_pos(a1),d0
 		swap	d0
 		divs.w	d2,d0
 		moveq	#0,d1
 		move.w	$38(a0),d1
-		sub.w	obY(a1),d1
+		sub.w	ost_y_pos(a1),d1
 		beq.s	loc_16898
 		swap	d1
 		divs.w	d0,d1
 
 loc_16898:
-		move.w	d1,obVelY(a1)
-		move.w	d2,obVelX(a1)
+		move.w	d1,ost_y_vel(a1)
+		move.w	d2,ost_x_vel(a1)
 		tst.w	d0
 		bpl.s	loc_168A6
 		neg.w	d0
@@ -30842,7 +30842,7 @@ Tele_Data:	index *
 
 Caterkiller:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Cat_Index(pc,d0.w),d1
 		jmp	Cat_Index(pc,d1.w)
 ; ===========================================================================
@@ -30863,31 +30863,31 @@ locret_16950:
 ; ===========================================================================
 
 Cat_Main:	; Routine 0
-		move.b	#7,obHeight(a0)
-		move.b	#8,obWidth(a0)
+		move.b	#7,ost_height(a0)
+		move.b	#8,ost_width(a0)
 		jsr	(ObjectFall).l
 		jsr	(ObjFloorDist).l
 		tst.w	d1
 		bpl.s	locret_16950
-		add.w	d1,obY(a0)
-		clr.w	obVelY(a0)
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Cat,obMap(a0)
-		move.w	#$22B0,obGfx(a0)
+		add.w	d1,ost_y_pos(a0)
+		clr.w	ost_y_vel(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Cat,ost_mappings(a0)
+		move.w	#$22B0,ost_tile(a0)
 		cmpi.b	#id_SBZ,(v_zone).w ; if level is SBZ, branch
 		beq.s	@isscrapbrain
-		move.w	#$24FF,obGfx(a0) ; MZ specific code
+		move.w	#$24FF,ost_tile(a0) ; MZ specific code
 
 	@isscrapbrain:
-		andi.b	#3,obRender(a0)
-		ori.b	#4,obRender(a0)
-		move.b	obRender(a0),obStatus(a0)
-		move.b	#4,obPriority(a0)
-		move.b	#8,obActWid(a0)
-		move.b	#$B,obColType(a0)
-		move.w	obX(a0),d2
+		andi.b	#3,ost_render(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	ost_render(a0),ost_status(a0)
+		move.b	#4,ost_priority(a0)
+		move.b	#8,ost_actwidth(a0)
+		move.b	#$B,ost_col_type(a0)
+		move.w	ost_x_pos(a0),d2
 		moveq	#$C,d5
-		btst	#0,obStatus(a0)
+		btst	#0,ost_status(a0)
 		beq.s	@noflip
 		neg.w	d5
 
@@ -30906,19 +30906,19 @@ Cat_Loop:
 			bne.w	Cat_ChkGone
 		endc
 		move.b	#id_Caterkiller,0(a1) ; load body segment object
-		move.b	d6,obRoutine(a1) ; goto Cat_BodySeg1 or Cat_BodySeg2 next
+		move.b	d6,ost_routine(a1) ; goto Cat_BodySeg1 or Cat_BodySeg2 next
 		addq.b	#2,d6		; alternate between the two
-		move.l	obMap(a0),obMap(a1)
-		move.w	obGfx(a0),obGfx(a1)
-		move.b	#5,obPriority(a1)
-		move.b	#8,obActWid(a1)
-		move.b	#$CB,obColType(a1)
+		move.l	ost_mappings(a0),ost_mappings(a1)
+		move.w	ost_tile(a0),ost_tile(a1)
+		move.b	#5,ost_priority(a1)
+		move.b	#8,ost_actwidth(a1)
+		move.b	#$CB,ost_col_type(a1)
 		add.w	d5,d2
-		move.w	d2,obX(a1)
-		move.w	obY(a0),obY(a1)
-		move.b	obStatus(a0),obStatus(a1)
-		move.b	obStatus(a0),obRender(a1)
-		move.b	#8,obFrame(a1)
+		move.w	d2,ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
+		move.b	ost_status(a0),ost_status(a1)
+		move.b	ost_status(a0),ost_render(a1)
+		move.b	#8,ost_frame(a1)
 		move.l	a2,cat_parent(a1)
 		move.b	d4,cat_parent(a1)
 		addq.b	#4,d4
@@ -30931,18 +30931,18 @@ Cat_Loop:
 		clr.b	cat_parent(a0)
 
 Cat_Head:	; Routine 2
-		tst.b	obStatus(a0)
+		tst.b	ost_status(a0)
 		bmi.w	loc_16C96
 		moveq	#0,d0
-		move.b	ob2ndRout(a0),d0
+		move.b	ost_routine2(a0),d0
 		move.w	Cat_Index2(pc,d0.w),d1
 		jsr	Cat_Index2(pc,d1.w)
 		move.b	$2B(a0),d1
 		bpl.s	@display
 		lea	(Ani_Cat).l,a1
-		move.b	obAngle(a0),d0
+		move.b	ost_angle(a0),d0
 		andi.w	#$7F,d0
-		addq.b	#4,obAngle(a0)
+		addq.b	#4,ost_angle(a0)
 		move.b	(a1,d0.w),d0
 		bpl.s	@animate
 		bclr	#7,$2B(a0)
@@ -30951,7 +30951,7 @@ Cat_Head:	; Routine 2
 	@animate:
 		andi.b	#$10,d1
 		add.b	d1,d0
-		move.b	d0,obFrame(a0)
+		move.b	d0,ost_frame(a0)
 
 	@display:
 		out_of_range	Cat_ChkGone
@@ -30960,12 +30960,12 @@ Cat_Head:	; Routine 2
 	Cat_ChkGone:
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
-		move.b	obRespawnNo(a0),d0
+		move.b	ost_respawn(a0),d0
 		beq.s	@delete
 		bclr	#7,2(a2,d0.w)
 
 	@delete:
-		move.b	#$A,obRoutine(a0)	; goto Cat_Delete next
+		move.b	#$A,ost_routine(a0)	; goto Cat_Delete next
 		rts	
 ; ===========================================================================
 
@@ -30984,14 +30984,14 @@ Cat_Index2:	index *
 ; ===========================================================================
 
 @move:
-		addq.b	#2,ob2ndRout(a0)
+		addq.b	#2,ost_routine2(a0)
 		move.b	#$10,$2A(a0)
-		move.w	#-$C0,obVelX(a0)
-		move.w	#$40,obInertia(a0)
+		move.w	#-$C0,ost_x_vel(a0)
+		move.w	#$40,ost_inertia(a0)
 		bchg	#4,$2B(a0)
 		bne.s	loc_16AFC
-		clr.w	obVelX(a0)
-		neg.w	obInertia(a0)
+		clr.w	ost_x_vel(a0)
+		neg.w	ost_inertia(a0)
 
 loc_16AFC:
 		bset	#7,$2B(a0)
@@ -31000,16 +31000,16 @@ loc_16B02:
 		subq.b	#1,$2A(a0)
 		bmi.s	@loc_16B5E
 		if Revision=0
-		move.l	obX(a0),-(sp)
-		move.l	obX(a0),d2
+		move.l	ost_x_pos(a0),-(sp)
+		move.l	ost_x_pos(a0),d2
 		else
-			tst.w	obVelX(a0)
+			tst.w	ost_x_vel(a0)
 			beq.s	@notmoving
-			move.l	obX(a0),d2
+			move.l	ost_x_pos(a0),d2
 			move.l	d2,d3
 		endc
-		move.w	obVelX(a0),d0
-		btst	#0,obStatus(a0)
+		move.w	ost_x_vel(a0),d0
+		btst	#0,ost_status(a0)
 		beq.s	@noflip
 		neg.w	d0
 
@@ -31017,7 +31017,7 @@ loc_16B02:
 		ext.l	d0
 		asl.l	#8,d0
 		add.l	d0,d2
-		move.l	d2,obX(a0)
+		move.l	d2,ost_x_pos(a0)
 		if Revision=0
 		jsr	(ObjFloorDist).l
 		move.l	(sp)+,d2
@@ -31025,20 +31025,20 @@ loc_16B02:
 		blt.s	@loc_16B70
 		cmpi.w	#$C,d1
 		bge.s	@loc_16B70
-		add.w	d1,obY(a0)
+		add.w	d1,ost_y_pos(a0)
 		swap	d2
-		cmp.w	obX(a0),d2
+		cmp.w	ost_x_pos(a0),d2
 		beq.s	@notmoving
 		else
 			swap	d3
-			cmp.w	obX(a0),d3
+			cmp.w	ost_x_pos(a0),d3
 			beq.s	@notmoving
 			jsr	(ObjFloorDist).l
 			cmpi.w	#-8,d1
 			blt.s	@loc_16B70
 			cmpi.w	#$C,d1
 			bge.s	@loc_16B70
-			add.w	d1,obY(a0)
+			add.w	d1,ost_y_pos(a0)
 		endc
 		moveq	#0,d0
 		move.b	cat_parent(a0),d0
@@ -31051,22 +31051,22 @@ loc_16B02:
 ; ===========================================================================
 
 @loc_16B5E:
-		subq.b	#2,ob2ndRout(a0)
+		subq.b	#2,ost_routine2(a0)
 		move.b	#7,$2A(a0)
 		if Revision=0
-		move.w	#0,obVelX(a0)
+		move.w	#0,ost_x_vel(a0)
 		else
-			clr.w	obVelX(a0)
-			clr.w	obInertia(a0)
+			clr.w	ost_x_vel(a0)
+			clr.w	ost_inertia(a0)
 		endc
 		rts	
 ; ===========================================================================
 
 @loc_16B70:
 		if Revision=0
-		move.l	d2,obX(a0)
-		bchg	#0,obStatus(a0)
-		move.b	obStatus(a0),obRender(a0)
+		move.l	d2,ost_x_pos(a0)
+		bchg	#0,ost_status(a0)
+		move.b	ost_status(a0),ost_render(a0)
 		moveq	#0,d0
 		move.b	cat_parent(a0),d0
 		move.b	#$80,$2C(a0,d0.w)
@@ -31074,18 +31074,18 @@ loc_16B02:
 			moveq	#0,d0
 			move.b	cat_parent(a0),d0
 			move.b	#$80,$2C(a0,d0)
-			neg.w	obX+2(a0)
+			neg.w	ost_x_pos+2(a0)
 			beq.s	@loc_1730A
-			btst	#0,obStatus(a0)
+			btst	#0,ost_status(a0)
 			beq.s	@loc_1730A
-			subq.w	#1,obX(a0)
+			subq.w	#1,ost_x_pos(a0)
 			addq.b	#1,cat_parent(a0)
 			moveq	#0,d0
 			move.b	cat_parent(a0),d0
 			clr.b	$2C(a0,d0)
 	@loc_1730A:
-			bchg	#0,obStatus(a0)
-			move.b	obStatus(a0),obRender(a0)
+			bchg	#0,ost_status(a0)
+			move.b	ost_status(a0),ost_render(a0)
 		endc
 		addq.b	#1,cat_parent(a0)
 		andi.b	#$F,cat_parent(a0)
@@ -31097,37 +31097,37 @@ Cat_BodySeg2:	; Routine 6
 		move.b	$2B(a1),$2B(a0)
 		bpl.s	Cat_BodySeg1
 		lea	(Ani_Cat).l,a1
-		move.b	obAngle(a0),d0
+		move.b	ost_angle(a0),d0
 		andi.w	#$7F,d0
-		addq.b	#4,obAngle(a0)
+		addq.b	#4,ost_angle(a0)
 		tst.b	4(a1,d0.w)
 		bpl.s	Cat_AniBody
-		addq.b	#4,obAngle(a0)
+		addq.b	#4,ost_angle(a0)
 
 Cat_AniBody:
 		move.b	(a1,d0.w),d0
 		addq.b	#8,d0
-		move.b	d0,obFrame(a0)
+		move.b	d0,ost_frame(a0)
 
 Cat_BodySeg1:	; Routine 4, 8
 		movea.l	cat_parent(a0),a1
-		tst.b	obStatus(a0)
+		tst.b	ost_status(a0)
 		bmi.w	loc_16C90
 		move.b	$2B(a1),$2B(a0)
-		move.b	ob2ndRout(a1),ob2ndRout(a0)
+		move.b	ost_routine2(a1),ost_routine2(a0)
 		beq.w	loc_16C64
-		move.w	obInertia(a1),obInertia(a0)
-		move.w	obVelX(a1),d0
+		move.w	ost_inertia(a1),ost_inertia(a0)
+		move.w	ost_x_vel(a1),d0
 		if Revision=0
-		add.w	obInertia(a1),d0
+		add.w	ost_inertia(a1),d0
 		else
-			add.w	obInertia(a0),d0
+			add.w	ost_inertia(a0),d0
 		endc
-		move.w	d0,obVelX(a0)
-		move.l	obX(a0),d2
+		move.w	d0,ost_x_vel(a0)
+		move.l	ost_x_pos(a0),d2
 		move.l	d2,d3
-		move.w	obVelX(a0),d0
-		btst	#0,obStatus(a0)
+		move.w	ost_x_vel(a0),d0
+		btst	#0,ost_status(a0)
 		beq.s	loc_16C0C
 		neg.w	d0
 
@@ -31135,9 +31135,9 @@ loc_16C0C:
 		ext.l	d0
 		asl.l	#8,d0
 		add.l	d0,d2
-		move.l	d2,obX(a0)
+		move.l	d2,ost_x_pos(a0)
 		swap	d3
-		cmp.w	obX(a0),d3
+		cmp.w	ost_x_pos(a0),d3
 		beq.s	loc_16C64
 		moveq	#0,d0
 		move.b	cat_parent(a0),d0
@@ -31146,25 +31146,25 @@ loc_16C0C:
 		bne.s	loc_16C50
 		if Revision=0
 		swap	d3
-		move.l	d3,obX(a0)
+		move.l	d3,ost_x_pos(a0)
 		move.b	d1,$2C(a0,d0.w)
 		else
 			move.b	d1,$2C(a0,d0)
-			neg.w	obX+2(a0)
+			neg.w	ost_x_pos+2(a0)
 			beq.s	locj_173E4
-			btst	#0,obStatus(a0)
+			btst	#0,ost_status(a0)
 			beq.s	locj_173E4
-			cmpi.w	#-$C0,obVelX(a0)
+			cmpi.w	#-$C0,ost_x_vel(a0)
 			bne.s	locj_173E4
-			subq.w	#1,obX(a0)
+			subq.w	#1,ost_x_pos(a0)
 			addq.b	#1,cat_parent(a0)
 			moveq	#0,d0
 			move.b	cat_parent(a0),d0
 			clr.b	$2C(a0,d0)
 	locj_173E4:
 		endc
-		bchg	#0,obStatus(a0)
-		move.b	obStatus(a0),1(a0)
+		bchg	#0,ost_status(a0)
+		move.b	ost_status(a0),1(a0)
 		addq.b	#1,cat_parent(a0)
 		andi.b	#$F,cat_parent(a0)
 		bra.s	loc_16C64
@@ -31172,21 +31172,21 @@ loc_16C0C:
 
 loc_16C50:
 		ext.w	d1
-		add.w	d1,obY(a0)
+		add.w	d1,ost_y_pos(a0)
 		addq.b	#1,cat_parent(a0)
 		andi.b	#$F,cat_parent(a0)
 		move.b	d1,$2C(a0,d0.w)
 
 loc_16C64:
-		cmpi.b	#$C,obRoutine(a1)
+		cmpi.b	#$C,ost_routine(a1)
 		beq.s	loc_16C90
 		cmpi.b	#id_ExplosionItem,0(a1)
 		beq.s	loc_16C7C
-		cmpi.b	#$A,obRoutine(a1)
+		cmpi.b	#$A,ost_routine(a1)
 		bne.s	loc_16C82
 
 loc_16C7C:
-		move.b	#$A,obRoutine(a0)
+		move.b	#$A,ost_routine(a0)
 
 loc_16C82:
 		jmp	(DisplaySprite).l
@@ -31196,34 +31196,34 @@ Cat_FragSpeed:	dc.w -$200, -$180, $180, $200
 ; ===========================================================================
 
 loc_16C90:
-		bset	#7,obStatus(a1)
+		bset	#7,ost_status(a1)
 
 loc_16C96:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Cat_FragSpeed-2(pc,d0.w),d0
-		btst	#0,obStatus(a0)
+		btst	#0,ost_status(a0)
 		beq.s	loc_16CAA
 		neg.w	d0
 
 loc_16CAA:
-		move.w	d0,obVelX(a0)
-		move.w	#-$400,obVelY(a0)
-		move.b	#$C,obRoutine(a0)
-		andi.b	#$F8,obFrame(a0)
+		move.w	d0,ost_x_vel(a0)
+		move.w	#-$400,ost_y_vel(a0)
+		move.b	#$C,ost_routine(a0)
+		andi.b	#$F8,ost_frame(a0)
 
 loc_16CC0:	; Routine $C
 		jsr	(ObjectFall).l
-		tst.w	obVelY(a0)
+		tst.w	ost_y_vel(a0)
 		bmi.s	loc_16CE0
 		jsr	(ObjFloorDist).l
 		tst.w	d1
 		bpl.s	loc_16CE0
-		add.w	d1,obY(a0)
-		move.w	#-$400,obVelY(a0)
+		add.w	d1,ost_y_pos(a0)
+		move.w	#-$400,ost_y_vel(a0)
 
 loc_16CE0:
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.w	Cat_ChkGone
 		jmp	(DisplaySprite).l
 
@@ -31236,7 +31236,7 @@ Map_Cat:	include "Mappings\Caterkiller.asm"
 
 Lamppost:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Lamp_Index(pc,d0.w),d1
 		jsr	Lamp_Index(pc,d1.w)
 		jmp	(RememberState).l
@@ -31253,29 +31253,29 @@ lamp_time:	equ $36		; length of time to twirl the lamp
 ; ===========================================================================
 
 Lamp_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Lamp,obMap(a0)
-		move.w	#$7A0,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#8,obActWid(a0)
-		move.b	#5,obPriority(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Lamp,ost_mappings(a0)
+		move.w	#$7A0,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#8,ost_actwidth(a0)
+		move.b	#5,ost_priority(a0)
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
-		move.b	obRespawnNo(a0),d0
+		move.b	ost_respawn(a0),d0
 		bclr	#7,2(a2,d0.w)
 		btst	#0,2(a2,d0.w)
 		bne.s	@red
 		move.b	(v_lastlamp).w,d1
 		andi.b	#$7F,d1
-		move.b	obSubtype(a0),d2 ; get lamppost number
+		move.b	ost_subtype(a0),d2 ; get lamppost number
 		andi.b	#$7F,d2
 		cmp.b	d2,d1		; is this a "new" lamppost?
 		bcs.s	Lamp_Blue	; if yes, branch
 
 @red:
 		bset	#0,2(a2,d0.w)
-		move.b	#4,obRoutine(a0) ; goto Lamp_Finish next
-		move.b	#3,obFrame(a0)	; use red lamppost frame
+		move.b	#4,ost_routine(a0) ; goto Lamp_Finish next
+		move.b	#3,ost_frame(a0)	; use red lamppost frame
 		rts	
 ; ===========================================================================
 
@@ -31286,54 +31286,54 @@ Lamp_Blue:	; Routine 2
 		bmi.w	@donothing
 		move.b	(v_lastlamp).w,d1
 		andi.b	#$7F,d1
-		move.b	obSubtype(a0),d2
+		move.b	ost_subtype(a0),d2
 		andi.b	#$7F,d2
 		cmp.b	d2,d1		; is this a "new" lamppost?
 		bcs.s	@chkhit		; if yes, branch
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
-		move.b	obRespawnNo(a0),d0
+		move.b	ost_respawn(a0),d0
 		bset	#0,2(a2,d0.w)
-		move.b	#4,obRoutine(a0)
-		move.b	#3,obFrame(a0)
+		move.b	#4,ost_routine(a0)
+		move.b	#3,ost_frame(a0)
 		bra.w	@donothing
 ; ===========================================================================
 
 @chkhit:
-		move.w	(v_player+obX).w,d0
-		sub.w	obX(a0),d0
+		move.w	(v_player+ost_x_pos).w,d0
+		sub.w	ost_x_pos(a0),d0
 		addq.w	#8,d0
 		cmpi.w	#$10,d0
 		bcc.w	@donothing
-		move.w	(v_player+obY).w,d0
-		sub.w	obY(a0),d0
+		move.w	(v_player+ost_y_pos).w,d0
+		sub.w	ost_y_pos(a0),d0
 		addi.w	#$40,d0
 		cmpi.w	#$68,d0
 		bcc.s	@donothing
 
 		sfx	sfx_Lamppost,0,0,0	; play lamppost sound
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 		jsr	(FindFreeObj).l
 		bne.s	@fail
 		move.b	#id_Lamppost,0(a1)	; load twirling	lamp object
-		move.b	#6,obRoutine(a1) ; goto Lamp_Twirl next
-		move.w	obX(a0),lamp_origX(a1)
-		move.w	obY(a0),lamp_origY(a1)
+		move.b	#6,ost_routine(a1) ; goto Lamp_Twirl next
+		move.w	ost_x_pos(a0),lamp_origX(a1)
+		move.w	ost_y_pos(a0),lamp_origY(a1)
 		subi.w	#$18,lamp_origY(a1)
-		move.l	#Map_Lamp,obMap(a1)
-		move.w	#$7A0,obGfx(a1)
-		move.b	#4,obRender(a1)
-		move.b	#8,obActWid(a1)
-		move.b	#4,obPriority(a1)
-		move.b	#2,obFrame(a1)	; use "ball only" frame
+		move.l	#Map_Lamp,ost_mappings(a1)
+		move.w	#$7A0,ost_tile(a1)
+		move.b	#4,ost_render(a1)
+		move.b	#8,ost_actwidth(a1)
+		move.b	#4,ost_priority(a1)
+		move.b	#2,ost_frame(a1)	; use "ball only" frame
 		move.w	#$20,lamp_time(a1)
 
 	@fail:
-		move.b	#1,obFrame(a0)	; use "post only" frame
+		move.b	#1,ost_frame(a0)	; use "post only" frame
 		bsr.w	Lamp_StoreInfo
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
-		move.b	obRespawnNo(a0),d0
+		move.b	ost_respawn(a0),d0
 		bset	#0,2(a2,d0.w)
 
 	@donothing:
@@ -31347,21 +31347,21 @@ Lamp_Finish:	; Routine 4
 Lamp_Twirl:	; Routine 6
 		subq.w	#1,lamp_time(a0) ; decrement timer
 		bpl.s	@continue	; if time remains, keep twirling
-		move.b	#4,obRoutine(a0) ; goto Lamp_Finish next
+		move.b	#4,ost_routine(a0) ; goto Lamp_Finish next
 
 	@continue:
-		move.b	obAngle(a0),d0
-		subi.b	#$10,obAngle(a0)
+		move.b	ost_angle(a0),d0
+		subi.b	#$10,ost_angle(a0)
 		subi.b	#$40,d0
 		jsr	(CalcSine).l
 		muls.w	#$C00,d1
 		swap	d1
 		add.w	lamp_origX(a0),d1
-		move.w	d1,obX(a0)
+		move.w	d1,ost_x_pos(a0)
 		muls.w	#$C00,d0
 		swap	d0
 		add.w	lamp_origY(a0),d0
-		move.w	d0,obY(a0)
+		move.w	d0,ost_y_pos(a0)
 		rts	
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
@@ -31369,10 +31369,10 @@ Lamp_Twirl:	; Routine 6
 ; ---------------------------------------------------------------------------
 
 Lamp_StoreInfo:
-		move.b	obSubtype(a0),(v_lastlamp).w 	; lamppost number
+		move.b	ost_subtype(a0),(v_lastlamp).w 	; lamppost number
 		move.b	(v_lastlamp).w,($FFFFFE31).w
-		move.w	obX(a0),($FFFFFE32).w		; x-position
-		move.w	obY(a0),($FFFFFE34).w		; y-position
+		move.w	ost_x_pos(a0),($FFFFFE32).w		; x-position
+		move.w	ost_y_pos(a0),($FFFFFE34).w		; y-position
 		move.w	(v_rings).w,($FFFFFE36).w 	; rings
 		move.b	(v_lifecount).w,($FFFFFE54).w 	; lives
 		move.l	(v_time).w,($FFFFFE38).w 	; time
@@ -31400,8 +31400,8 @@ Lamp_StoreInfo:
 
 Lamp_LoadInfo:
 		move.b	($FFFFFE31).w,(v_lastlamp).w
-		move.w	($FFFFFE32).w,(v_player+obX).w
-		move.w	($FFFFFE34).w,(v_player+obY).w
+		move.w	($FFFFFE32).w,(v_player+ost_x_pos).w
+		move.w	($FFFFFE34).w,(v_player+ost_y_pos).w
 		move.w	($FFFFFE36).w,(v_rings).w
 		move.b	($FFFFFE54).w,(v_lifecount).w
 		clr.w	(v_rings).w
@@ -31446,7 +31446,7 @@ Map_Lamp:	include "Mappings\Lamppost.asm"
 
 HiddenBonus:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Bonus_Index(pc,d0.w),d1
 		jmp	Bonus_Index(pc,d1.w)
 ; ===========================================================================
@@ -31462,13 +31462,13 @@ Bonus_Main:	; Routine 0
 		move.w	d2,d3
 		add.w	d3,d3
 		lea	(v_player).w,a1
-		move.w	obX(a1),d0
-		sub.w	obX(a0),d0
+		move.w	ost_x_pos(a1),d0
+		sub.w	ost_x_pos(a0),d0
 		add.w	d2,d0
 		cmp.w	d3,d0
 		bcc.s	@chkdel
-		move.w	obY(a1),d1
-		sub.w	obY(a0),d1
+		move.w	ost_y_pos(a1),d1
+		sub.w	ost_y_pos(a0),d1
 		add.w	d2,d1
 		cmp.w	d3,d1
 		bcc.s	@chkdel
@@ -31476,17 +31476,17 @@ Bonus_Main:	; Routine 0
 		bne.s	@chkdel
 		tst.b	(f_bigring).w
 		bne.s	@chkdel
-		addq.b	#2,obRoutine(a0)
-		move.l	#Map_Bonus,obMap(a0)
-		move.w	#$84B6,obGfx(a0)
-		ori.b	#4,obRender(a0)
-		move.b	#0,obPriority(a0)
-		move.b	#$10,obActWid(a0)
-		move.b	obSubtype(a0),obFrame(a0)
+		addq.b	#2,ost_routine(a0)
+		move.l	#Map_Bonus,ost_mappings(a0)
+		move.w	#$84B6,ost_tile(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	#0,ost_priority(a0)
+		move.b	#$10,ost_actwidth(a0)
+		move.b	ost_subtype(a0),ost_frame(a0)
 		move.w	#119,bonus_timelen(a0) ; set display time to 2 seconds
 		sfx	sfx_Bonus,0,0,0	; play bonus sound
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		add.w	d0,d0
 		move.w	@points(pc,d0.w),d0 ; load bonus points array
 		jsr	(AddPoints).l
@@ -31522,7 +31522,7 @@ Map_Bonus:	include "Mappings\Hidden Bonus Points.asm"
 
 CreditsText:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Cred_Index(pc,d0.w),d1
 		jmp	Cred_Index(pc,d1.w)
 ; ===========================================================================
@@ -31532,21 +31532,21 @@ Cred_Index:	index *
 ; ===========================================================================
 
 Cred_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.w	#$120,obX(a0)
-		move.w	#$F0,obScreenY(a0)
-		move.l	#Map_Cred,obMap(a0)
-		move.w	#$5A0,obGfx(a0)
+		addq.b	#2,ost_routine(a0)
+		move.w	#$120,ost_x_pos(a0)
+		move.w	#$F0,ost_y_screen(a0)
+		move.l	#Map_Cred,ost_mappings(a0)
+		move.w	#$5A0,ost_tile(a0)
 		move.w	(v_creditsnum).w,d0 ; load credits index number
-		move.b	d0,obFrame(a0)	; display appropriate sprite
-		move.b	#0,obRender(a0)
-		move.b	#0,obPriority(a0)
+		move.b	d0,ost_frame(a0)	; display appropriate sprite
+		move.b	#0,ost_render(a0)
+		move.b	#0,ost_priority(a0)
 
 		cmpi.b	#id_Title,(v_gamemode).w ; is the mode #4 (title screen)?
 		bne.s	Cred_Display	; if not, branch
 
-		move.w	#$A6,obGfx(a0)
-		move.b	#$A,obFrame(a0)	; display "SONIC TEAM PRESENTS"
+		move.w	#$A6,ost_tile(a0)
+		move.b	#$A,ost_frame(a0)	; display "SONIC TEAM PRESENTS"
 		tst.b	(f_creditscheat).w ; is hidden credits cheat on?
 		beq.s	Cred_Display	; if not, branch
 		cmpi.b	#btnABC+btnDn,(v_jpadhold1).w ; is A+B+C+Down being pressed? ($72)
@@ -31567,7 +31567,7 @@ Map_Cred:	include "Mappings\Credits & Sonic Team Presents.asm"
 
 BossGreenHill:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	BGHZ_Index(pc,d0.w),d1
 		jmp	BGHZ_Index(pc,d1.w)
 ; ===========================================================================
@@ -31594,36 +31594,36 @@ BGHZ_Loop:
 		bne.s	loc_17772
 
 BGHZ_LoadBoss:
-		move.b	(a2)+,obRoutine(a1)
+		move.b	(a2)+,ost_routine(a1)
 		move.b	#id_BossGreenHill,0(a1)
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
-		move.l	#Map_Eggman,obMap(a1)
-		move.w	#$400,obGfx(a1)
-		move.b	#4,obRender(a1)
-		move.b	#$20,obActWid(a1)
-		move.b	#3,obPriority(a1)
-		move.b	(a2)+,obAnim(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
+		move.l	#Map_Eggman,ost_mappings(a1)
+		move.w	#$400,ost_tile(a1)
+		move.b	#4,ost_render(a1)
+		move.b	#$20,ost_actwidth(a1)
+		move.b	#3,ost_priority(a1)
+		move.b	(a2)+,ost_anim(a1)
 		move.l	a0,$34(a1)
 		dbf	d1,BGHZ_Loop	; repeat sequence 2 more times
 
 loc_17772:
-		move.w	obX(a0),$30(a0)
-		move.w	obY(a0),$38(a0)
-		move.b	#$F,obColType(a0)
-		move.b	#8,obColProp(a0) ; set number of hits to 8
+		move.w	ost_x_pos(a0),$30(a0)
+		move.w	ost_y_pos(a0),$38(a0)
+		move.b	#$F,ost_col_type(a0)
+		move.b	#8,ost_col_property(a0) ; set number of hits to 8
 
 BGHZ_ShipMain:	; Routine 2
 		moveq	#0,d0
-		move.b	ob2ndRout(a0),d0
+		move.b	ost_routine2(a0),d0
 		move.w	BGHZ_ShipIndex(pc,d0.w),d1
 		jsr	BGHZ_ShipIndex(pc,d1.w)
 		lea	(Ani_Eggman).l,a1
 		jsr	(AnimateSprite).l
-		move.b	obStatus(a0),d0
+		move.b	ost_status(a0),d0
 		andi.b	#3,d0
-		andi.b	#$FC,obRender(a0)
-		or.b	d0,obRender(a0)
+		andi.b	#$FC,ost_render(a0)
+		or.b	d0,ost_render(a0)
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 BGHZ_ShipIndex:	index *
@@ -31637,26 +31637,26 @@ BGHZ_ShipIndex:	index *
 ; ===========================================================================
 
 BGHZ_ShipStart:
-		move.w	#$100,obVelY(a0) ; move ship down
+		move.w	#$100,ost_y_vel(a0) ; move ship down
 		bsr.w	BossMove
 		cmpi.w	#$338,$38(a0)
 		bne.s	loc_177E6
-		move.w	#0,obVelY(a0)	; stop ship
-		addq.b	#2,ob2ndRout(a0) ; goto next routine
+		move.w	#0,ost_y_vel(a0)	; stop ship
+		addq.b	#2,ost_routine2(a0) ; goto next routine
 
 loc_177E6:
 		move.b	$3F(a0),d0
 		jsr	(CalcSine).l
 		asr.w	#6,d0
 		add.w	$38(a0),d0
-		move.w	d0,obY(a0)
-		move.w	$30(a0),obX(a0)
+		move.w	d0,ost_y_pos(a0)
+		move.w	$30(a0),ost_x_pos(a0)
 		addq.b	#2,$3F(a0)
-		cmpi.b	#8,ob2ndRout(a0)
+		cmpi.b	#8,ost_routine2(a0)
 		bcc.s	locret_1784A
-		tst.b	obStatus(a0)
+		tst.b	ost_status(a0)
 		bmi.s	loc_1784C
-		tst.b	obColType(a0)
+		tst.b	ost_col_type(a0)
 		bne.s	locret_1784A
 		tst.b	$3E(a0)
 		bne.s	BGHZ_ShipFlash
@@ -31674,7 +31674,7 @@ loc_1783C:
 		move.w	d0,(a1)		; load colour stored in	d0
 		subq.b	#1,$3E(a0)
 		bne.s	locret_1784A
-		move.b	#$F,obColType(a0)
+		move.b	#$F,ost_col_type(a0)
 
 locret_1784A:
 		rts	
@@ -31683,7 +31683,7 @@ locret_1784A:
 loc_1784C:
 		moveq	#100,d0
 		bsr.w	AddPoints
-		move.b	#8,ob2ndRout(a0)
+		move.b	#8,ost_routine2(a0)
 		move.w	#$B3,$3C(a0)
 		rts	
 
@@ -31701,18 +31701,18 @@ BossDefeated:
 		jsr	(FindFreeObj).l
 		bne.s	locret_178A2
 		move.b	#id_ExplosionBomb,0(a1)	; load explosion object
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		jsr	(RandomNumber).l
 		move.w	d0,d1
 		moveq	#0,d1
 		move.b	d0,d1
 		lsr.b	#2,d1
 		subi.w	#$20,d1
-		add.w	d1,obX(a1)
+		add.w	d1,ost_x_pos(a1)
 		lsr.w	#8,d0
 		lsr.b	#3,d0
-		add.w	d0,obY(a1)
+		add.w	d0,ost_y_pos(a1)
 
 locret_178A2:
 		rts	
@@ -31728,11 +31728,11 @@ locret_178A2:
 BossMove:
 		move.l	$30(a0),d2
 		move.l	$38(a0),d3
-		move.w	obVelX(a0),d0
+		move.w	ost_x_vel(a0),d0
 		ext.l	d0
 		asl.l	#8,d0
 		add.l	d0,d2
-		move.w	obVelY(a0),d0
+		move.w	ost_y_vel(a0),d0
 		ext.l	d0
 		asl.l	#8,d0
 		add.l	d0,d3
@@ -31745,19 +31745,19 @@ BossMove:
 
 
 BGHZ_MakeBall:
-		move.w	#-$100,obVelX(a0)
-		move.w	#-$40,obVelY(a0)
+		move.w	#-$100,ost_x_vel(a0)
+		move.w	#-$40,ost_y_vel(a0)
 		bsr.w	BossMove
 		cmpi.w	#$2A00,$30(a0)
 		bne.s	loc_17916
-		move.w	#0,obVelX(a0)
-		move.w	#0,obVelY(a0)
-		addq.b	#2,ob2ndRout(a0)
+		move.w	#0,ost_x_vel(a0)
+		move.w	#0,ost_y_vel(a0)
+		addq.b	#2,ost_routine2(a0)
 		jsr	(FindNextFreeObj).l
 		bne.s	loc_17910
 		move.b	#id_BossBall,0(a1) ; load swinging ball object
-		move.w	$30(a0),obX(a1)
-		move.w	$38(a0),obY(a1)
+		move.w	$30(a0),ost_x_pos(a1)
+		move.w	$38(a0),ost_y_pos(a1)
 		move.l	a0,$34(a1)
 
 loc_17910:
@@ -31770,18 +31770,18 @@ loc_17916:
 BGHZ_ShipMove:
 		subq.w	#1,$3C(a0)
 		bpl.s	BGHZ_Reverse
-		addq.b	#2,ob2ndRout(a0)
+		addq.b	#2,ost_routine2(a0)
 		move.w	#$3F,$3C(a0)
-		move.w	#$100,obVelX(a0) ; move the ship sideways
+		move.w	#$100,ost_x_vel(a0) ; move the ship sideways
 		cmpi.w	#$2A00,$30(a0)
 		bne.s	BGHZ_Reverse
 		move.w	#$7F,$3C(a0)
-		move.w	#$40,obVelX(a0)
+		move.w	#$40,ost_x_vel(a0)
 
 BGHZ_Reverse:
-		btst	#0,obStatus(a0)
+		btst	#0,ost_status(a0)
 		bne.s	loc_17950
-		neg.w	obVelX(a0)	; reverse direction of the ship
+		neg.w	ost_x_vel(a0)	; reverse direction of the ship
 
 loc_17950:
 		bra.w	loc_177E6
@@ -31795,10 +31795,10 @@ loc_17954:
 ; ===========================================================================
 
 loc_17960:
-		bchg	#0,obStatus(a0)
+		bchg	#0,ost_status(a0)
 		move.w	#$3F,$3C(a0)
-		subq.b	#2,ob2ndRout(a0)
-		move.w	#0,obVelX(a0)
+		subq.b	#2,ost_routine2(a0)
+		move.w	#0,ost_x_vel(a0)
 
 loc_17976:
 		bra.w	loc_177E6
@@ -31811,10 +31811,10 @@ loc_1797A:
 ; ===========================================================================
 
 loc_17984:
-		bset	#0,obStatus(a0)
-		bclr	#7,obStatus(a0)
-		clr.w	obVelX(a0)
-		addq.b	#2,ob2ndRout(a0)
+		bset	#0,ost_status(a0)
+		bclr	#7,ost_status(a0)
+		clr.w	ost_x_vel(a0)
+		addq.b	#2,ost_routine2(a0)
 		move.w	#-$26,$3C(a0)
 		tst.b	(v_bossstatus).w
 		bne.s	locret_179AA
@@ -31828,12 +31828,12 @@ loc_179AC:
 		addq.w	#1,$3C(a0)
 		beq.s	loc_179BC
 		bpl.s	loc_179C2
-		addi.w	#$18,obVelY(a0)
+		addi.w	#$18,ost_y_vel(a0)
 		bra.s	loc_179EE
 ; ===========================================================================
 
 loc_179BC:
-		clr.w	obVelY(a0)
+		clr.w	ost_y_vel(a0)
 		bra.s	loc_179EE
 ; ===========================================================================
 
@@ -31843,17 +31843,17 @@ loc_179C2:
 		beq.s	loc_179E0
 		cmpi.w	#$38,$3C(a0)
 		bcs.s	loc_179EE
-		addq.b	#2,ob2ndRout(a0)
+		addq.b	#2,ost_routine2(a0)
 		bra.s	loc_179EE
 ; ===========================================================================
 
 loc_179DA:
-		subq.w	#8,obVelY(a0)
+		subq.w	#8,ost_y_vel(a0)
 		bra.s	loc_179EE
 ; ===========================================================================
 
 loc_179E0:
-		clr.w	obVelY(a0)
+		clr.w	ost_y_vel(a0)
 		music	bgm_GHZ,0,0,0		; play GHZ music
 
 loc_179EE:
@@ -31862,8 +31862,8 @@ loc_179EE:
 ; ===========================================================================
 
 loc_179F6:
-		move.w	#$400,obVelX(a0)
-		move.w	#-$40,obVelY(a0)
+		move.w	#$400,ost_x_vel(a0)
+		move.w	#-$40,ost_y_vel(a0)
 		cmpi.w	#$2AC0,(v_limitright2).w
 		beq.s	loc_17A10
 		addq.w	#2,(v_limitright2).w
@@ -31871,7 +31871,7 @@ loc_179F6:
 ; ===========================================================================
 
 loc_17A10:
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.s	BGHZ_ShipDel
 
 loc_17A16:
@@ -31887,7 +31887,7 @@ BGHZ_FaceMain:	; Routine 4
 		moveq	#0,d0
 		moveq	#1,d1
 		movea.l	$34(a0),a1
-		move.b	ob2ndRout(a1),d0
+		move.b	ost_routine2(a1),d0
 		subq.b	#4,d0
 		bne.s	loc_17A3E
 		cmpi.w	#$2A00,$30(a1)
@@ -31902,23 +31902,23 @@ loc_17A3E:
 ; ===========================================================================
 
 loc_17A46:
-		tst.b	obColType(a1)
+		tst.b	ost_col_type(a1)
 		bne.s	loc_17A50
 		moveq	#5,d1
 		bra.s	loc_17A5A
 ; ===========================================================================
 
 loc_17A50:
-		cmpi.b	#4,(v_player+obRoutine).w
+		cmpi.b	#4,(v_player+ost_routine).w
 		bcs.s	loc_17A5A
 		moveq	#4,d1
 
 loc_17A5A:
-		move.b	d1,obAnim(a0)
+		move.b	d1,ost_anim(a0)
 		subq.b	#2,d0
 		bne.s	BGHZ_FaceDisp
-		move.b	#6,obAnim(a0)
-		tst.b	obRender(a0)
+		move.b	#6,ost_anim(a0)
+		tst.b	ost_render(a0)
 		bpl.s	BGHZ_FaceDel
 
 BGHZ_FaceDisp:
@@ -31930,20 +31930,20 @@ BGHZ_FaceDel:
 ; ===========================================================================
 
 BGHZ_FlameMain:	; Routine 6
-		move.b	#7,obAnim(a0)
+		move.b	#7,ost_anim(a0)
 		movea.l	$34(a0),a1
-		cmpi.b	#$C,ob2ndRout(a1)
+		cmpi.b	#$C,ost_routine2(a1)
 		bne.s	loc_17A96
-		move.b	#$B,obAnim(a0)
-		tst.b	obRender(a0)
+		move.b	#$B,ost_anim(a0)
+		tst.b	ost_render(a0)
 		bpl.s	BGHZ_FlameDel
 		bra.s	BGHZ_FlameDisp
 ; ===========================================================================
 
 loc_17A96:
-		move.w	obVelX(a1),d0
+		move.w	ost_x_vel(a1),d0
 		beq.s	BGHZ_FlameDisp
-		move.b	#8,obAnim(a0)
+		move.b	#8,ost_anim(a0)
 
 BGHZ_FlameDisp:
 		bra.s	BGHZ_Display
@@ -31955,15 +31955,15 @@ BGHZ_FlameDel:
 
 BGHZ_Display:
 		movea.l	$34(a0),a1
-		move.w	obX(a1),obX(a0)
-		move.w	obY(a1),obY(a0)
-		move.b	obStatus(a1),obStatus(a0)
+		move.w	ost_x_pos(a1),ost_x_pos(a0)
+		move.w	ost_y_pos(a1),ost_y_pos(a0)
+		move.b	ost_status(a1),ost_status(a0)
 		lea	(Ani_Eggman).l,a1
 		jsr	(AnimateSprite).l
-		move.b	obStatus(a0),d0
+		move.b	ost_status(a0),d0
 		andi.b	#3,d0
-		andi.b	#$FC,obRender(a0)
-		or.b	d0,obRender(a0)
+		andi.b	#$FC,ost_render(a0)
+		or.b	d0,ost_render(a0)
 		jmp	(DisplaySprite).l
 ; ---------------------------------------------------------------------------
 ; Object 48 - ball on a	chain that Eggman swings (GHZ)
@@ -31971,7 +31971,7 @@ BGHZ_Display:
 
 BossBall:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	GBall_Index(pc,d0.w),d1
 		jmp	GBall_Index(pc,d1.w)
 ; ===========================================================================
@@ -31984,12 +31984,12 @@ GBall_Index:	index *
 ; ===========================================================================
 
 GBall_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.w	#$4080,obAngle(a0)
+		addq.b	#2,ost_routine(a0)
+		move.w	#$4080,ost_angle(a0)
 		move.w	#-$200,$3E(a0)
-		move.l	#Map_BossItems,obMap(a0)
-		move.w	#$46C,obGfx(a0)
-		lea	obSubtype(a0),a2
+		move.l	#Map_BossItems,ost_mappings(a0)
+		move.w	#$46C,ost_tile(a0)
+		lea	ost_subtype(a0),a2
 		move.b	#0,(a2)+
 		moveq	#5,d1
 		movea.l	a0,a1
@@ -31999,14 +31999,14 @@ GBall_Main:	; Routine 0
 GBall_MakeLinks:
 		jsr	(FindNextFreeObj).l
 		bne.s	GBall_MakeBall
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	#id_BossBall,0(a1) ; load chain link object
-		move.b	#6,obRoutine(a1)
-		move.l	#Map_Swing_GHZ,obMap(a1)
-		move.w	#$380,obGfx(a1)
-		move.b	#1,obFrame(a1)
-		addq.b	#1,obSubtype(a0)
+		move.b	#6,ost_routine(a1)
+		move.l	#Map_Swing_GHZ,ost_mappings(a1)
+		move.w	#$380,ost_tile(a1)
+		move.b	#1,ost_frame(a1)
+		addq.b	#1,ost_subtype(a0)
 
 loc_17B60:
 		move.w	a1,d5
@@ -32014,19 +32014,19 @@ loc_17B60:
 		lsr.w	#6,d5
 		andi.w	#$7F,d5
 		move.b	d5,(a2)+
-		move.b	#4,obRender(a1)
-		move.b	#8,obActWid(a1)
-		move.b	#6,obPriority(a1)
+		move.b	#4,ost_render(a1)
+		move.b	#8,ost_actwidth(a1)
+		move.b	#6,ost_priority(a1)
 		move.l	$34(a0),$34(a1)
 		dbf	d1,GBall_MakeLinks ; repeat sequence 5 more times
 
 GBall_MakeBall:
-		move.b	#8,obRoutine(a1)
-		move.l	#Map_GBall,obMap(a1) ; load different mappings for final link
-		move.w	#$43AA,obGfx(a1) ; use different graphics
-		move.b	#1,obFrame(a1)
-		move.b	#5,obPriority(a1)
-		move.b	#$81,obColType(a1) ; make object hurt Sonic
+		move.b	#8,ost_routine(a1)
+		move.l	#Map_GBall,ost_mappings(a1) ; load different mappings for final link
+		move.w	#$43AA,ost_tile(a1) ; use different graphics
+		move.b	#1,ost_frame(a1)
+		move.b	#5,ost_priority(a1)
+		move.b	#$81,ost_col_type(a1) ; make object hurt Sonic
 		rts	
 ; ===========================================================================
 
@@ -32036,7 +32036,7 @@ GBall_PosData:	dc.b 0,	$10, $20, $30, $40, $60	; y-position data for links and	g
 
 GBall_Base:	; Routine 2
 		lea	(GBall_PosData).l,a3
-		lea	obSubtype(a0),a2
+		lea	ost_subtype(a0),a2
 		moveq	#0,d6
 		move.b	(a2)+,d6
 
@@ -32057,9 +32057,9 @@ loc_17BE0:
 		cmp.b	$3C(a1),d0
 		bne.s	loc_17BFA
 		movea.l	$34(a0),a1
-		cmpi.b	#6,ob2ndRout(a1)
+		cmpi.b	#6,ost_routine2(a1)
 		bne.s	loc_17BFA
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 
 loc_17BFA:
 		cmpi.w	#$20,$32(a0)
@@ -32068,7 +32068,7 @@ loc_17BFA:
 
 GBall_Display:
 		bsr.w	sub_17C2A
-		move.b	obAngle(a0),d0
+		move.b	ost_angle(a0),d0
 		jsr	(Swing_Move2).l
 		jmp	(DisplaySprite).l
 ; ===========================================================================
@@ -32083,20 +32083,20 @@ GBall_Display2:	; Routine 4
 
 sub_17C2A:
 		movea.l	$34(a0),a1
-		addi.b	#$20,obAniFrame(a0)
+		addi.b	#$20,ost_anim_frame(a0)
 		bcc.s	loc_17C3C
-		bchg	#0,obFrame(a0)
+		bchg	#0,ost_frame(a0)
 
 loc_17C3C:
-		move.w	obX(a1),$3A(a0)
-		move.w	obY(a1),d0
+		move.w	ost_x_pos(a1),$3A(a0)
+		move.w	ost_y_pos(a1),d0
 		add.w	$32(a0),d0
 		move.w	d0,$38(a0)
-		move.b	obStatus(a1),obStatus(a0)
-		tst.b	obStatus(a1)
+		move.b	ost_status(a1),ost_status(a0)
+		tst.b	ost_status(a1)
 		bpl.s	locret_17C66
 		move.b	#id_ExplosionBomb,0(a0)
-		move.b	#0,obRoutine(a0)
+		move.b	#0,ost_routine(a0)
 
 locret_17C66:
 		rts	
@@ -32106,10 +32106,10 @@ locret_17C66:
 
 loc_17C68:	; Routine 6
 		movea.l	$34(a0),a1
-		tst.b	obStatus(a1)
+		tst.b	ost_status(a1)
 		bpl.s	GBall_Display3
 		move.b	#id_ExplosionBomb,0(a0)
-		move.b	#0,obRoutine(a0)
+		move.b	#0,ost_routine(a0)
 
 GBall_Display3:
 		jmp	(DisplaySprite).l
@@ -32117,21 +32117,21 @@ GBall_Display3:
 
 GBall_ChkVanish:; Routine 8
 		moveq	#0,d0
-		tst.b	obFrame(a0)
+		tst.b	ost_frame(a0)
 		bne.s	GBall_Vanish
 		addq.b	#1,d0
 
 GBall_Vanish:
-		move.b	d0,obFrame(a0)
+		move.b	d0,ost_frame(a0)
 		movea.l	$34(a0),a1
-		tst.b	obStatus(a1)
+		tst.b	ost_status(a1)
 		bpl.s	GBall_Display4
-		move.b	#0,obColType(a0)
+		move.b	#0,ost_col_type(a0)
 		bsr.w	BossDefeated
 		subq.b	#1,$3C(a0)
 		bpl.s	GBall_Display4
 		move.b	#id_ExplosionBomb,(a0)
-		move.b	#0,obRoutine(a0)
+		move.b	#0,ost_routine(a0)
 
 GBall_Display4:
 		jmp	(DisplaySprite).l
@@ -32146,7 +32146,7 @@ Map_BossItems:	include "Mappings\Boss Extras.asm"
 
 BossLabyrinth:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Obj77_Index(pc,d0.w),d1
 		jmp	Obj77_Index(pc,d1.w)
 ; ===========================================================================
@@ -32162,13 +32162,13 @@ Obj77_ObjData:	dc.b 2,	0		; routine number, animation
 ; ===========================================================================
 
 Obj77_Main:	; Routine 0
-		move.w	#$1E10,obX(a0)
-		move.w	#$5C0,obY(a0)
-		move.w	obX(a0),$30(a0)
-		move.w	obY(a0),$38(a0)
-		move.b	#$F,obColType(a0)
-		move.b	#8,obColProp(a0) ; set number of hits to 8
-		move.b	#4,obPriority(a0)
+		move.w	#$1E10,ost_x_pos(a0)
+		move.w	#$5C0,ost_y_pos(a0)
+		move.w	ost_x_pos(a0),$30(a0)
+		move.w	ost_y_pos(a0),$38(a0)
+		move.b	#$F,ost_col_type(a0)
+		move.b	#8,ost_col_property(a0) ; set number of hits to 8
+		move.b	#4,ost_priority(a0)
 		lea	Obj77_ObjData(pc),a2
 		movea.l	a0,a1
 		moveq	#2,d1
@@ -32179,34 +32179,34 @@ Obj77_Loop:
 		jsr	(FindNextFreeObj).l
 		bne.s	Obj77_ShipMain
 		move.b	#id_BossLabyrinth,0(a1)
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
 
 Obj77_LoadBoss:
-		bclr	#0,obStatus(a0)
-		clr.b	ob2ndRout(a1)
-		move.b	(a2)+,obRoutine(a1)
-		move.b	(a2)+,obAnim(a1)
-		move.b	obPriority(a0),obPriority(a1)
-		move.l	#Map_Eggman,obMap(a1)
-		move.w	#$400,obGfx(a1)
-		move.b	#4,obRender(a1)
-		move.b	#$20,obActWid(a1)
+		bclr	#0,ost_status(a0)
+		clr.b	ost_routine2(a1)
+		move.b	(a2)+,ost_routine(a1)
+		move.b	(a2)+,ost_anim(a1)
+		move.b	ost_priority(a0),ost_priority(a1)
+		move.l	#Map_Eggman,ost_mappings(a1)
+		move.w	#$400,ost_tile(a1)
+		move.b	#4,ost_render(a1)
+		move.b	#$20,ost_actwidth(a1)
 		move.l	a0,$34(a1)
 		dbf	d1,Obj77_Loop
 
 Obj77_ShipMain:	; Routine 2
 		lea	(v_player).w,a1
 		moveq	#0,d0
-		move.b	ob2ndRout(a0),d0
+		move.b	ost_routine2(a0),d0
 		move.w	Obj77_ShipIndex(pc,d0.w),d1
 		jsr	Obj77_ShipIndex(pc,d1.w)
 		lea	(Ani_Eggman).l,a1
 		jsr	(AnimateSprite).l
 		moveq	#3,d0
-		and.b	obStatus(a0),d0
-		andi.b	#$FC,obRender(a0)
-		or.b	d0,obRender(a0)
+		and.b	ost_status(a0),d0
+		andi.b	#$FC,ost_render(a0)
+		or.b	d0,ost_render(a0)
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 Obj77_ShipIndex:index *
@@ -32221,24 +32221,24 @@ Obj77_ShipIndex:index *
 ; ===========================================================================
 
 loc_17F1E:
-		move.w	obX(a1),d0
+		move.w	ost_x_pos(a1),d0
 		cmpi.w	#$1DA0,d0
 		bcs.s	loc_17F38
-		move.w	#-$180,obVelY(a0)
-		move.w	#$60,obVelX(a0)
-		addq.b	#2,ob2ndRout(a0)
+		move.w	#-$180,ost_y_vel(a0)
+		move.w	#$60,ost_x_vel(a0)
+		addq.b	#2,ost_routine2(a0)
 
 loc_17F38:
 		bsr.w	BossMove
-		move.w	$38(a0),obY(a0)
-		move.w	$30(a0),obX(a0)
+		move.w	$38(a0),ost_y_pos(a0)
+		move.w	$30(a0),ost_x_pos(a0)
 
 loc_17F48:
 		tst.b	standonobject(a0)
 		bne.s	loc_17F8E
-		tst.b	obStatus(a0)
+		tst.b	ost_status(a0)
 		bmi.s	loc_17F92
-		tst.b	obColType(a0)
+		tst.b	ost_col_type(a0)
 		bne.s	locret_17F8C
 		tst.b	$3E(a0)
 		bne.s	loc_17F70
@@ -32256,7 +32256,7 @@ loc_17F7E:
 		move.w	d0,(a1)
 		subq.b	#1,$3E(a0)
 		bne.s	locret_17F8C
-		move.b	#$F,obColType(a0)
+		move.b	#$F,ost_col_type(a0)
 
 locret_17F8C:
 		rts	
@@ -32278,21 +32278,21 @@ loc_17FA0:
 		cmpi.w	#$1E48,$30(a0)
 		bcs.s	loc_17FB6
 		move.w	#$1E48,$30(a0)
-		clr.w	obVelX(a0)
+		clr.w	ost_x_vel(a0)
 		addq.w	#1,d0
 
 loc_17FB6:
 		cmpi.w	#$500,$38(a0)
 		bgt.s	loc_17FCA
 		move.w	#$500,$38(a0)
-		clr.w	obVelY(a0)
+		clr.w	ost_y_vel(a0)
 		addq.w	#1,d0
 
 loc_17FCA:
 		bne.s	loc_17FDC
-		move.w	#$140,obVelX(a0)
-		move.w	#-$200,obVelY(a0)
-		addq.b	#2,ob2ndRout(a0)
+		move.w	#$140,ost_x_vel(a0)
+		move.w	#-$200,ost_y_vel(a0)
+		addq.b	#2,ost_routine2(a0)
 
 loc_17FDC:
 		bra.w	loc_17F38
@@ -32303,20 +32303,20 @@ loc_17FE0:
 		cmpi.w	#$1E70,$30(a0)
 		bcs.s	loc_17FF6
 		move.w	#$1E70,$30(a0)
-		clr.w	obVelX(a0)
+		clr.w	ost_x_vel(a0)
 		addq.w	#1,d0
 
 loc_17FF6:
 		cmpi.w	#$4C0,$38(a0)
 		bgt.s	loc_1800A
 		move.w	#$4C0,$38(a0)
-		clr.w	obVelY(a0)
+		clr.w	ost_y_vel(a0)
 		addq.w	#1,d0
 
 loc_1800A:
 		bne.s	loc_1801A
-		move.w	#-$180,obVelY(a0)
-		addq.b	#2,ob2ndRout(a0)
+		move.w	#-$180,ost_y_vel(a0)
+		addq.b	#2,ost_routine2(a0)
 		clr.b	$3F(a0)
 
 loc_1801A:
@@ -32327,26 +32327,26 @@ loc_1801E:
 		cmpi.w	#$100,$38(a0)
 		bgt.s	loc_1804E
 		move.w	#$100,$38(a0)
-		move.w	#$140,obVelX(a0)
-		move.w	#-$80,obVelY(a0)
+		move.w	#$140,ost_x_vel(a0)
+		move.w	#-$80,ost_y_vel(a0)
 		tst.b	standonobject(a0)
 		beq.s	loc_18046
-		asl	obVelX(a0)
-		asl	obVelY(a0)
+		asl	ost_x_vel(a0)
+		asl	ost_y_vel(a0)
 
 loc_18046:
-		addq.b	#2,ob2ndRout(a0)
+		addq.b	#2,ost_routine2(a0)
 		bra.w	loc_17F38
 ; ===========================================================================
 
 loc_1804E:
-		bset	#0,obStatus(a0)
+		bset	#0,ost_status(a0)
 		addq.b	#2,$3F(a0)
 		move.b	$3F(a0),d0
 		jsr	(CalcSine).l
 		tst.w	d1
 		bpl.s	loc_1806C
-		bclr	#0,obStatus(a0)
+		bclr	#0,ost_status(a0)
 
 loc_1806C:
 		asr.w	#4,d0
@@ -32354,10 +32354,10 @@ loc_1806C:
 		clr.w	d0
 		add.l	$30(a0),d0
 		swap	d0
-		move.w	d0,obX(a0)
-		move.w	obVelY(a0),d0
-		move.w	(v_player+obY).w,d1
-		sub.w	obY(a0),d1
+		move.w	d0,ost_x_pos(a0)
+		move.w	ost_y_vel(a0),d0
+		move.w	(v_player+ost_y_pos).w,d1
+		sub.w	ost_y_pos(a0),d1
 		bcs.s	loc_180A2
 		subi.w	#$48,d1
 		bcs.s	loc_180A2
@@ -32378,7 +32378,7 @@ loc_180A2:
 
 loc_180AE:
 		add.l	d0,$38(a0)
-		move.w	$38(a0),obY(a0)
+		move.w	$38(a0),ost_y_pos(a0)
 		bra.w	loc_17F48
 ; ===========================================================================
 
@@ -32387,20 +32387,20 @@ loc_180BC:
 		cmpi.w	#$1F4C,$30(a0)
 		bcs.s	loc_180D2
 		move.w	#$1F4C,$30(a0)
-		clr.w	obVelX(a0)
+		clr.w	ost_x_vel(a0)
 		addq.w	#1,d0
 
 loc_180D2:
 		cmpi.w	#$C0,$38(a0)
 		bgt.s	loc_180E6
 		move.w	#$C0,$38(a0)
-		clr.w	obVelY(a0)
+		clr.w	ost_y_vel(a0)
 		addq.w	#1,d0
 
 loc_180E6:
 		bne.s	loc_180F2
-		addq.b	#2,ob2ndRout(a0)
-		bclr	#0,obStatus(a0)
+		addq.b	#2,ost_routine2(a0)
+		bclr	#0,ost_status(a0)
 
 loc_180F2:
 		bra.w	loc_17F38
@@ -32409,9 +32409,9 @@ loc_180F2:
 loc_180F6:
 		tst.b	standonobject(a0)
 		bne.s	loc_18112
-		cmpi.w	#$1EC8,obX(a1)
+		cmpi.w	#$1EC8,ost_x_pos(a1)
 		blt.s	loc_18126
-		cmpi.w	#$F0,obY(a1)
+		cmpi.w	#$F0,ost_y_pos(a1)
 		bgt.s	loc_18126
 		move.b	#$32,$3C(a0)
 
@@ -32421,8 +32421,8 @@ loc_18112:
 		else
 			clr.b	(f_lockscreen).w
 		endc
-		bset	#0,obStatus(a0)
-		addq.b	#2,ob2ndRout(a0)
+		bset	#0,ost_status(a0)
+		addq.b	#2,ost_routine2(a0)
 
 loc_18126:
 		bra.w	loc_17F38
@@ -32436,10 +32436,10 @@ loc_1812A:
 
 loc_18136:
 		clr.b	$3C(a0)
-		move.w	#$400,obVelX(a0)
-		move.w	#-$40,obVelY(a0)
+		move.w	#$400,ost_x_vel(a0)
+		move.w	#-$40,ost_y_vel(a0)
 		clr.b	standonobject(a0)
-		addq.b	#2,ob2ndRout(a0)
+		addq.b	#2,ost_routine2(a0)
 
 loc_1814E:
 		bra.w	loc_17F38
@@ -32453,7 +32453,7 @@ loc_18152:
 ; ===========================================================================
 
 loc_18160:
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.s	Obj77_ShipDel
 
 loc_18166:
@@ -32470,7 +32470,7 @@ Obj77_FaceMain:	; Routine 4
 		cmp.b	(a0),d0
 		bne.s	Obj77_FaceDel
 		moveq	#0,d0
-		move.b	ob2ndRout(a1),d0
+		move.b	ost_routine2(a1),d0
 		moveq	#1,d1
 		tst.b	standonobject(a0)
 		beq.s	loc_1818C
@@ -32479,23 +32479,23 @@ Obj77_FaceMain:	; Routine 4
 ; ===========================================================================
 
 loc_1818C:
-		tst.b	obColType(a1)
+		tst.b	ost_col_type(a1)
 		bne.s	loc_18196
 		moveq	#5,d1
 		bra.s	loc_181A0
 ; ===========================================================================
 
 loc_18196:
-		cmpi.b	#4,(v_player+obRoutine).w
+		cmpi.b	#4,(v_player+ost_routine).w
 		bcs.s	loc_181A0
 		moveq	#4,d1
 
 loc_181A0:
-		move.b	d1,obAnim(a0)
+		move.b	d1,ost_anim(a0)
 		cmpi.b	#$E,d0
 		bne.s	loc_181B6
-		move.b	#6,obAnim(a0)
-		tst.b	obRender(a0)
+		move.b	#6,ost_anim(a0)
+		tst.b	ost_render(a0)
 		bpl.s	Obj77_FaceDel
 
 loc_181B6:
@@ -32507,21 +32507,21 @@ Obj77_FaceDel:
 ; ===========================================================================
 
 Obj77_FlameMain:; Routine 6
-		move.b	#7,obAnim(a0)
+		move.b	#7,ost_anim(a0)
 		movea.l	$34(a0),a1
 		move.b	(a1),d0
 		cmp.b	(a0),d0
 		bne.s	Obj77_FlameDel
-		cmpi.b	#$E,ob2ndRout(a1)
+		cmpi.b	#$E,ost_routine2(a1)
 		bne.s	loc_181F0
-		move.b	#$B,obAnim(a0)
+		move.b	#$B,ost_anim(a0)
 		tst.b	1(a0)
 		bpl.s	Obj77_FlameDel
 		bra.s	loc_181F0
 ; ===========================================================================
-		tst.w	obVelX(a1)
+		tst.w	ost_x_vel(a1)
 		beq.s	loc_181F0
-		move.b	#8,obAnim(a0)
+		move.b	#8,ost_anim(a0)
 
 loc_181F0:
 		bra.s	Obj77_Display
@@ -32535,13 +32535,13 @@ Obj77_Display:
 		lea	(Ani_Eggman).l,a1
 		jsr	(AnimateSprite).l
 		movea.l	$34(a0),a1
-		move.w	obX(a1),obX(a0)
-		move.w	obY(a1),obY(a0)
-		move.b	obStatus(a1),obStatus(a0)
+		move.w	ost_x_pos(a1),ost_x_pos(a0)
+		move.w	ost_y_pos(a1),ost_y_pos(a0)
+		move.b	ost_status(a1),ost_status(a0)
 		moveq	#3,d0
-		and.b	obStatus(a0),d0
-		andi.b	#$FC,obRender(a0)
-		or.b	d0,obRender(a0)
+		and.b	ost_status(a0),d0
+		andi.b	#$FC,ost_render(a0)
+		or.b	d0,ost_render(a0)
 		jmp	(DisplaySprite).l
 ; ---------------------------------------------------------------------------
 ; Object 73 - Eggman (MZ)
@@ -32549,7 +32549,7 @@ Obj77_Display:
 
 BossMarble:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Obj73_Index(pc,d0.w),d1
 		jmp	Obj73_Index(pc,d1.w)
 ; ===========================================================================
@@ -32567,10 +32567,10 @@ Obj73_ObjData:	dc.b 2,	0, 4		; routine number, animation, priority
 ; ===========================================================================
 
 Obj73_Main:	; Routine 0
-		move.w	obX(a0),$30(a0)
-		move.w	obY(a0),$38(a0)
-		move.b	#$F,obColType(a0)
-		move.b	#8,obColProp(a0) ; set number of hits to 8
+		move.w	ost_x_pos(a0),$30(a0)
+		move.w	ost_y_pos(a0),$38(a0)
+		move.b	#$F,ost_col_type(a0)
+		move.b	#8,ost_col_property(a0) ; set number of hits to 8
 		lea	Obj73_ObjData(pc),a2
 		movea.l	a0,a1
 		moveq	#3,d1
@@ -32581,33 +32581,33 @@ Obj73_Loop:
 		jsr	(FindNextFreeObj).l
 		bne.s	Obj73_ShipMain
 		move.b	#id_BossMarble,0(a1)
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
 
 Obj73_LoadBoss:
-		bclr	#0,obStatus(a0)
-		clr.b	ob2ndRout(a1)
-		move.b	(a2)+,obRoutine(a1)
-		move.b	(a2)+,obAnim(a1)
-		move.b	(a2)+,obPriority(a1)
-		move.l	#Map_Eggman,obMap(a1)
-		move.w	#$400,obGfx(a1)
-		move.b	#4,obRender(a1)
-		move.b	#$20,obActWid(a1)
+		bclr	#0,ost_status(a0)
+		clr.b	ost_routine2(a1)
+		move.b	(a2)+,ost_routine(a1)
+		move.b	(a2)+,ost_anim(a1)
+		move.b	(a2)+,ost_priority(a1)
+		move.l	#Map_Eggman,ost_mappings(a1)
+		move.w	#$400,ost_tile(a1)
+		move.b	#4,ost_render(a1)
+		move.b	#$20,ost_actwidth(a1)
 		move.l	a0,$34(a1)
 		dbf	d1,Obj73_Loop	; repeat sequence 3 more times
 
 Obj73_ShipMain:	; Routine 2
 		moveq	#0,d0
-		move.b	ob2ndRout(a0),d0
+		move.b	ost_routine2(a0),d0
 		move.w	Obj73_ShipIndex(pc,d0.w),d1
 		jsr	Obj73_ShipIndex(pc,d1.w)
 		lea	(Ani_Eggman).l,a1
 		jsr	(AnimateSprite).l
 		moveq	#3,d0
-		and.b	obStatus(a0),d0
-		andi.b	#$FC,obRender(a0)
-		or.b	d0,obRender(a0)
+		and.b	ost_status(a0),d0
+		andi.b	#$FC,ost_render(a0)
+		or.b	d0,ost_render(a0)
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 Obj73_ShipIndex:index *
@@ -32623,27 +32623,27 @@ loc_18302:
 		addq.b	#2,$3F(a0)
 		jsr	(CalcSine).l
 		asr.w	#2,d0
-		move.w	d0,obVelY(a0)
-		move.w	#-$100,obVelX(a0)
+		move.w	d0,ost_y_vel(a0)
+		move.w	#-$100,ost_x_vel(a0)
 		bsr.w	BossMove
 		cmpi.w	#$1910,$30(a0)
 		bne.s	loc_18334
-		addq.b	#2,ob2ndRout(a0)
-		clr.b	obSubtype(a0)
-		clr.l	obVelX(a0)
+		addq.b	#2,ost_routine2(a0)
+		clr.b	ost_subtype(a0)
+		clr.l	ost_x_vel(a0)
 
 loc_18334:
 		jsr	(RandomNumber).l
 		move.b	d0,$34(a0)
 
 loc_1833E:
-		move.w	$38(a0),obY(a0)
-		move.w	$30(a0),obX(a0)
-		cmpi.b	#4,ob2ndRout(a0)
+		move.w	$38(a0),ost_y_pos(a0)
+		move.w	$30(a0),ost_x_pos(a0)
+		cmpi.b	#4,ost_routine2(a0)
 		bcc.s	locret_18390
-		tst.b	obStatus(a0)
+		tst.b	ost_status(a0)
 		bmi.s	loc_18392
-		tst.b	obColType(a0)
+		tst.b	ost_col_type(a0)
 		bne.s	locret_18390
 		tst.b	$3E(a0)
 		bne.s	loc_18374
@@ -32661,7 +32661,7 @@ loc_18382:
 		move.w	d0,(a1)
 		subq.b	#1,$3E(a0)
 		bne.s	locret_18390
-		move.b	#$F,obColType(a0)
+		move.b	#$F,ost_col_type(a0)
 
 locret_18390:
 		rts	
@@ -32670,18 +32670,18 @@ locret_18390:
 loc_18392:
 		moveq	#100,d0
 		bsr.w	AddPoints
-		move.b	#4,ob2ndRout(a0)
+		move.b	#4,ost_routine2(a0)
 		move.w	#$B4,$3C(a0)
-		clr.w	obVelX(a0)
+		clr.w	ost_x_vel(a0)
 		rts	
 ; ===========================================================================
 
 loc_183AA:
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		move.w	off_183C2(pc,d0.w),d0
 		jsr	off_183C2(pc,d0.w)
-		andi.b	#6,obSubtype(a0)
+		andi.b	#6,ost_subtype(a0)
 		bra.w	loc_1833E
 ; ===========================================================================
 off_183C2:	index *
@@ -32692,7 +32692,7 @@ off_183C2:	index *
 ; ===========================================================================
 
 loc_183CA:
-		tst.w	obVelX(a0)
+		tst.w	ost_x_vel(a0)
 		bne.s	loc_183FE
 		moveq	#$40,d0
 		cmpi.w	#$22C,$38(a0)
@@ -32701,22 +32701,22 @@ loc_183CA:
 		neg.w	d0
 
 loc_183DE:
-		move.w	d0,obVelY(a0)
+		move.w	d0,ost_y_vel(a0)
 		bra.w	BossMove
 ; ===========================================================================
 
 loc_183E6:
-		move.w	#$200,obVelX(a0)
-		move.w	#$100,obVelY(a0)
-		btst	#0,obStatus(a0)
+		move.w	#$200,ost_x_vel(a0)
+		move.w	#$100,ost_y_vel(a0)
+		btst	#0,ost_status(a0)
 		bne.s	loc_183FE
-		neg.w	obVelX(a0)
+		neg.w	ost_x_vel(a0)
 
 loc_183FE:
 		cmpi.b	#$18,$3E(a0)
 		bcc.s	Obj73_MakeLava
 		bsr.w	BossMove
-		subq.w	#4,obVelY(a0)
+		subq.w	#4,ost_y_vel(a0)
 
 Obj73_MakeLava:
 		subq.b	#1,$34(a0)
@@ -32724,15 +32724,15 @@ Obj73_MakeLava:
 		jsr	(FindFreeObj).l
 		bne.s	loc_1844A
 		move.b	#id_LavaBall,0(a1) ; load lava ball object
-		move.w	#$2E8,obY(a1)	; set Y	position
+		move.w	#$2E8,ost_y_pos(a1)	; set Y	position
 		jsr	(RandomNumber).l
 		andi.l	#$FFFF,d0
 		divu.w	#$50,d0
 		swap	d0
 		addi.w	#$1878,d0
-		move.w	d0,obX(a1)
+		move.w	d0,ost_x_pos(a1)
 		lsr.b	#7,d1
-		move.w	#$FF,obSubtype(a1)
+		move.w	#$FF,ost_subtype(a1)
 
 loc_1844A:
 		jsr	(RandomNumber).l
@@ -32741,7 +32741,7 @@ loc_1844A:
 		move.b	d0,$34(a0)
 
 loc_1845C:
-		btst	#0,obStatus(a0)
+		btst	#0,ost_status(a0)
 		beq.s	loc_18474
 		cmpi.w	#$1910,$30(a0)
 		blt.s	locret_1849C
@@ -32755,14 +32755,14 @@ loc_18474:
 		move.w	#$1830,$30(a0)
 
 loc_18482:
-		clr.w	obVelX(a0)
-		move.w	#-$180,obVelY(a0)
+		clr.w	ost_x_vel(a0)
+		move.w	#-$180,ost_y_vel(a0)
 		cmpi.w	#$22C,$38(a0)
 		bcc.s	loc_18498
-		neg.w	obVelY(a0)
+		neg.w	ost_y_vel(a0)
 
 loc_18498:
-		addq.b	#2,obSubtype(a0)
+		addq.b	#2,ost_subtype(a0)
 
 locret_1849C:
 		rts	
@@ -32774,23 +32774,23 @@ Obj73_MakeLava2:
 		subi.w	#$22C,d0
 		bgt.s	locret_184F4
 		move.w	#$22C,d0
-		tst.w	obVelY(a0)
+		tst.w	ost_y_vel(a0)
 		beq.s	loc_184EA
-		clr.w	obVelY(a0)
+		clr.w	ost_y_vel(a0)
 		move.w	#$50,$3C(a0)
-		bchg	#0,obStatus(a0)
+		bchg	#0,ost_status(a0)
 		jsr	(FindFreeObj).l
 		bne.s	loc_184EA
-		move.w	$30(a0),obX(a1)
-		move.w	$38(a0),obY(a1)
-		addi.w	#$18,obY(a1)
+		move.w	$30(a0),ost_x_pos(a1)
+		move.w	$38(a0),ost_y_pos(a1)
+		addi.w	#$18,ost_y_pos(a1)
 		move.b	#id_BossFire,(a1)	; load lava ball object
-		move.b	#1,obSubtype(a1)
+		move.b	#1,ost_subtype(a1)
 
 loc_184EA:
 		subq.w	#1,$3C(a0)
 		bne.s	locret_184F4
-		addq.b	#2,obSubtype(a0)
+		addq.b	#2,ost_subtype(a0)
 
 locret_184F4:
 		rts	
@@ -32803,15 +32803,15 @@ loc_184F6:
 ; ===========================================================================
 
 loc_18500:
-		bset	#0,obStatus(a0)
-		bclr	#7,obStatus(a0)
-		clr.w	obVelX(a0)
-		addq.b	#2,ob2ndRout(a0)
+		bset	#0,ost_status(a0)
+		bclr	#7,ost_status(a0)
+		clr.w	ost_x_vel(a0)
+		addq.b	#2,ost_routine2(a0)
 		move.w	#-$26,$3C(a0)
 		tst.b	(v_bossstatus).w
 		bne.s	locret_1852A
 		move.b	#1,(v_bossstatus).w
-		clr.w	obVelY(a0)
+		clr.w	ost_y_vel(a0)
 
 locret_1852A:
 		rts	
@@ -32823,12 +32823,12 @@ loc_1852C:
 		bpl.s	loc_1854E
 		cmpi.w	#$270,$38(a0)
 		bcc.s	loc_18544
-		addi.w	#$18,obVelY(a0)
+		addi.w	#$18,ost_y_vel(a0)
 		bra.s	loc_1857A
 ; ===========================================================================
 
 loc_18544:
-		clr.w	obVelY(a0)
+		clr.w	ost_y_vel(a0)
 		clr.w	$3C(a0)
 		bra.s	loc_1857A
 ; ===========================================================================
@@ -32839,17 +32839,17 @@ loc_1854E:
 		beq.s	loc_1856C
 		cmpi.w	#$38,$3C(a0)
 		bcs.s	loc_1857A
-		addq.b	#2,ob2ndRout(a0)
+		addq.b	#2,ost_routine2(a0)
 		bra.s	loc_1857A
 ; ===========================================================================
 
 loc_18566:
-		subq.w	#8,obVelY(a0)
+		subq.w	#8,ost_y_vel(a0)
 		bra.s	loc_1857A
 ; ===========================================================================
 
 loc_1856C:
-		clr.w	obVelY(a0)
+		clr.w	ost_y_vel(a0)
 		music	bgm_MZ,0,0,0		; play MZ music
 
 loc_1857A:
@@ -32858,8 +32858,8 @@ loc_1857A:
 ; ===========================================================================
 
 loc_18582:
-		move.w	#$500,obVelX(a0)
-		move.w	#-$40,obVelY(a0)
+		move.w	#$500,ost_x_vel(a0)
+		move.w	#-$40,ost_y_vel(a0)
 		cmpi.w	#$1960,(v_limitright2).w
 		bcc.s	loc_1859C
 		addq.w	#2,(v_limitright2).w
@@ -32867,7 +32867,7 @@ loc_18582:
 ; ===========================================================================
 
 loc_1859C:
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.s	Obj73_ShipDel
 
 loc_185A2:
@@ -32883,12 +32883,12 @@ Obj73_FaceMain:	; Routine 4
 		moveq	#0,d0
 		moveq	#1,d1
 		movea.l	$34(a0),a1
-		move.b	ob2ndRout(a1),d0
+		move.b	ost_routine2(a1),d0
 		subq.w	#2,d0
 		bne.s	loc_185D2
-		btst	#1,obSubtype(a1)
+		btst	#1,ost_subtype(a1)
 		beq.s	loc_185DA
-		tst.w	obVelY(a1)
+		tst.w	ost_y_vel(a1)
 		bne.s	loc_185DA
 		moveq	#4,d1
 		bra.s	loc_185EE
@@ -32902,23 +32902,23 @@ loc_185D2:
 ; ===========================================================================
 
 loc_185DA:
-		tst.b	obColType(a1)
+		tst.b	ost_col_type(a1)
 		bne.s	loc_185E4
 		moveq	#5,d1
 		bra.s	loc_185EE
 ; ===========================================================================
 
 loc_185E4:
-		cmpi.b	#4,(v_player+obRoutine).w
+		cmpi.b	#4,(v_player+ost_routine).w
 		bcs.s	loc_185EE
 		moveq	#4,d1
 
 loc_185EE:
-		move.b	d1,obAnim(a0)
+		move.b	d1,ost_anim(a0)
 		subq.b	#4,d0
 		bne.s	loc_18602
-		move.b	#6,obAnim(a0)
-		tst.b	obRender(a0)
+		move.b	#6,ost_anim(a0)
+		tst.b	ost_render(a0)
 		bpl.s	Obj73_FaceDel
 
 loc_18602:
@@ -32930,20 +32930,20 @@ Obj73_FaceDel:
 ; ===========================================================================
 
 Obj73_FlameMain:; Routine 6
-		move.b	#7,obAnim(a0)
+		move.b	#7,ost_anim(a0)
 		movea.l	$34(a0),a1
-		cmpi.b	#8,ob2ndRout(a1)
+		cmpi.b	#8,ost_routine2(a1)
 		blt.s	loc_1862A
-		move.b	#$B,obAnim(a0)
-		tst.b	obRender(a0)
+		move.b	#$B,ost_anim(a0)
+		tst.b	ost_render(a0)
 		bpl.s	Obj73_FlameDel
 		bra.s	loc_18636
 ; ===========================================================================
 
 loc_1862A:
-		tst.w	obVelX(a1)
+		tst.w	ost_x_vel(a1)
 		beq.s	loc_18636
-		move.b	#8,obAnim(a0)
+		move.b	#8,ost_anim(a0)
 
 loc_18636:
 		bra.s	Obj73_Display
@@ -32959,27 +32959,27 @@ Obj73_Display:
 
 loc_1864A:
 		movea.l	$34(a0),a1
-		move.w	obX(a1),obX(a0)
-		move.w	obY(a1),obY(a0)
-		move.b	obStatus(a1),obStatus(a0)
+		move.w	ost_x_pos(a1),ost_x_pos(a0)
+		move.w	ost_y_pos(a1),ost_y_pos(a0)
+		move.b	ost_status(a1),ost_status(a0)
 		moveq	#3,d0
-		and.b	obStatus(a0),d0
-		andi.b	#$FC,obRender(a0)
-		or.b	d0,obRender(a0)
+		and.b	ost_status(a0),d0
+		andi.b	#$FC,ost_render(a0)
+		or.b	d0,ost_render(a0)
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 
 Obj73_TubeMain:	; Routine 8
 		movea.l	$34(a0),a1
-		cmpi.b	#8,ob2ndRout(a1)
+		cmpi.b	#8,ost_routine2(a1)
 		bne.s	loc_18688
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.s	Obj73_TubeDel
 
 loc_18688:
-		move.l	#Map_BossItems,obMap(a0)
-		move.w	#$246C,obGfx(a0)
-		move.b	#4,obFrame(a0)
+		move.l	#Map_BossItems,ost_mappings(a0)
+		move.w	#$246C,ost_tile(a0)
+		move.b	#4,ost_frame(a0)
 		bra.s	loc_1864A
 ; ===========================================================================
 
@@ -32991,7 +32991,7 @@ Obj73_TubeDel:
 
 BossFire:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Obj74_Index(pc,d0.w),d0
 		jsr	Obj74_Index(pc,d0.w)
 		jmp	(DisplaySprite).l
@@ -33004,19 +33004,19 @@ Obj74_Index:	index *
 ; ===========================================================================
 
 Obj74_Main:	; Routine 0
-		move.b	#8,obHeight(a0)
-		move.b	#8,obWidth(a0)
-		move.l	#Map_Fire,obMap(a0)
-		move.w	#$345,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#5,obPriority(a0)
-		move.w	obY(a0),$38(a0)
-		move.b	#8,obActWid(a0)
-		addq.b	#2,obRoutine(a0)
-		tst.b	obSubtype(a0)
+		move.b	#8,ost_height(a0)
+		move.b	#8,ost_width(a0)
+		move.l	#Map_Fire,ost_mappings(a0)
+		move.w	#$345,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#5,ost_priority(a0)
+		move.w	ost_y_pos(a0),$38(a0)
+		move.b	#8,ost_actwidth(a0)
+		addq.b	#2,ost_routine(a0)
+		tst.b	ost_subtype(a0)
 		bne.s	loc_1870A
-		move.b	#$8B,obColType(a0)
-		addq.b	#2,obRoutine(a0)
+		move.b	#$8B,ost_col_type(a0)
+		addq.b	#2,ost_routine(a0)
 		bra.w	loc_18886
 ; ===========================================================================
 
@@ -33026,13 +33026,13 @@ loc_1870A:
 
 Obj74_Action:	; Routine 2
 		moveq	#0,d0
-		move.b	ob2ndRout(a0),d0
+		move.b	ost_routine2(a0),d0
 		move.w	Obj74_Index2(pc,d0.w),d0
 		jsr	Obj74_Index2(pc,d0.w)
 		jsr	(SpeedToPos).l
 		lea	(Ani_Fire).l,a1
 		jsr	(AnimateSprite).l
-		cmpi.w	#$2E8,obY(a0)
+		cmpi.w	#$2E8,ost_y_pos(a0)
 		bhi.s	Obj74_Delete
 		rts	
 ; ===========================================================================
@@ -33048,29 +33048,29 @@ Obj74_Index2:	index *
 ; ===========================================================================
 
 Obj74_Drop:
-		bset	#1,obStatus(a0)
+		bset	#1,ost_status(a0)
 		subq.b	#1,$29(a0)
 		bpl.s	locret_18780
-		move.b	#$8B,obColType(a0)
-		clr.b	obSubtype(a0)
-		addi.w	#$18,obVelY(a0)
-		bclr	#1,obStatus(a0)
+		move.b	#$8B,ost_col_type(a0)
+		clr.b	ost_subtype(a0)
+		addi.w	#$18,ost_y_vel(a0)
+		bclr	#1,ost_status(a0)
 		bsr.w	ObjFloorDist
 		tst.w	d1
 		bpl.s	locret_18780
-		addq.b	#2,ob2ndRout(a0)
+		addq.b	#2,ost_routine2(a0)
 
 locret_18780:
 		rts	
 ; ===========================================================================
 
 Obj74_MakeFlame:
-		subq.w	#2,obY(a0)
-		bset	#7,obGfx(a0)
-		move.w	#$A0,obVelX(a0)
-		clr.w	obVelY(a0)
-		move.w	obX(a0),$30(a0)
-		move.w	obY(a0),$38(a0)
+		subq.w	#2,ost_y_pos(a0)
+		bset	#7,ost_tile(a0)
+		move.w	#$A0,ost_x_vel(a0)
+		clr.w	ost_y_vel(a0)
+		move.w	ost_x_pos(a0),$30(a0)
+		move.w	ost_y_pos(a0),$38(a0)
 		move.b	#3,$29(a0)
 		jsr	(FindNextFreeObj).l
 		bne.s	loc_187CA
@@ -33085,11 +33085,11 @@ Obj74_Loop:
 		move.l	(a2)+,(a3)+
 		dbf	d0,Obj74_Loop
 
-		neg.w	obVelX(a1)
-		addq.b	#2,ob2ndRout(a1)
+		neg.w	ost_x_vel(a1)
+		addq.b	#2,ost_routine2(a1)
 
 loc_187CA:
-		addq.b	#2,ob2ndRout(a0)
+		addq.b	#2,ost_routine2(a0)
 		rts	
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
@@ -33098,10 +33098,10 @@ loc_187CA:
 Obj74_Duplicate2:
 		jsr	(FindNextFreeObj).l
 		bne.s	locret_187EE
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	#id_BossFire,(a1)
-		move.w	#$67,obSubtype(a1)
+		move.w	#$67,ost_subtype(a1)
 
 locret_187EE:
 		rts	
@@ -33113,7 +33113,7 @@ Obj74_Duplicate:
 		bsr.w	ObjFloorDist
 		tst.w	d1
 		bpl.s	loc_18826
-		move.w	obX(a0),d0
+		move.w	ost_x_pos(a0),d0
 		cmpi.w	#$1940,d0
 		bgt.s	loc_1882C
 		move.w	$30(a0),d1
@@ -33124,27 +33124,27 @@ Obj74_Duplicate:
 		cmp.w	d0,d1
 		beq.s	loc_1881E
 		bsr.s	Obj74_Duplicate2
-		move.w	obX(a0),$32(a0)
+		move.w	ost_x_pos(a0),$32(a0)
 
 loc_1881E:
-		move.w	obX(a0),$30(a0)
+		move.w	ost_x_pos(a0),$30(a0)
 		rts	
 ; ===========================================================================
 
 loc_18826:
-		addq.b	#2,ob2ndRout(a0)
+		addq.b	#2,ost_routine2(a0)
 		rts	
 ; ===========================================================================
 
 loc_1882C:
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 		rts	
 ; ===========================================================================
 
 Obj74_FallEdge:
-		bclr	#1,obStatus(a0)
-		addi.w	#$24,obVelY(a0)	; make flame fall
-		move.w	obX(a0),d0
+		bclr	#1,ost_status(a0)
+		addi.w	#$24,ost_y_vel(a0)	; make flame fall
+		move.w	ost_x_pos(a0),d0
 		sub.w	$32(a0),d0
 		bpl.s	loc_1884A
 		neg.w	d0
@@ -33152,7 +33152,7 @@ Obj74_FallEdge:
 loc_1884A:
 		cmpi.w	#$12,d0
 		bne.s	loc_18856
-		bclr	#7,obGfx(a0)
+		bclr	#7,ost_tile(a0)
 
 loc_18856:
 		bsr.w	ObjFloorDist
@@ -33160,11 +33160,11 @@ loc_18856:
 		bpl.s	locret_1887E
 		subq.b	#1,$29(a0)
 		beq.s	Obj74_Delete2
-		clr.w	obVelY(a0)
-		move.w	$32(a0),obX(a0)
-		move.w	$38(a0),obY(a0)
-		bset	#7,obGfx(a0)
-		subq.b	#2,ob2ndRout(a0)
+		clr.w	ost_y_vel(a0)
+		move.w	$32(a0),ost_x_pos(a0)
+		move.w	$38(a0),ost_y_pos(a0)
+		bset	#7,ost_tile(a0)
+		subq.b	#2,ost_routine2(a0)
 
 locret_1887E:
 		rts	
@@ -33175,12 +33175,12 @@ Obj74_Delete2:
 ; ===========================================================================
 
 loc_18886:	; Routine 4
-		bset	#7,obGfx(a0)
+		bset	#7,ost_tile(a0)
 		subq.b	#1,$29(a0)
 		bne.s	Obj74_Animate
-		move.b	#1,obAnim(a0)
-		subq.w	#4,obY(a0)
-		clr.b	obColType(a0)
+		move.b	#1,ost_anim(a0)
+		subq.w	#4,ost_y_pos(a0)
+		clr.b	ost_col_type(a0)
 
 Obj74_Animate:
 		lea	(Ani_Fire).l,a1
@@ -33199,7 +33199,7 @@ Obj74_Delete3:	; Routine 6
 
 BossStarLight:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Obj7A_Index(pc,d0.w),d1
 		jmp	Obj7A_Index(pc,d1.w)
 ; ===========================================================================
@@ -33217,12 +33217,12 @@ Obj7A_ObjData:	dc.b 2,	0, 4		; routine number, animation, priority
 ; ===========================================================================
 
 Obj7A_Main:
-		move.w	#$2188,obX(a0)
-		move.w	#$228,obY(a0)
-		move.w	obX(a0),$30(a0)
-		move.w	obY(a0),$38(a0)
-		move.b	#$F,obColType(a0)
-		move.b	#8,obColProp(a0) ; set number of hits to 8
+		move.w	#$2188,ost_x_pos(a0)
+		move.w	#$228,ost_y_pos(a0)
+		move.w	ost_x_pos(a0),$30(a0)
+		move.w	ost_y_pos(a0),$38(a0)
+		move.b	#$F,ost_col_type(a0)
+		move.b	#8,ost_col_property(a0) ; set number of hits to 8
 		lea	Obj7A_ObjData(pc),a2
 		movea.l	a0,a1
 		moveq	#3,d1
@@ -33233,19 +33233,19 @@ Obj7A_Loop:
 		jsr	(FindNextFreeObj).l
 		bne.s	loc_1895C
 		move.b	#id_BossStarLight,0(a1)
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
 
 Obj7A_LoadBoss:
-		bclr	#0,obStatus(a0)
-		clr.b	ob2ndRout(a1)
-		move.b	(a2)+,obRoutine(a1)
-		move.b	(a2)+,obAnim(a1)
-		move.b	(a2)+,obPriority(a1)
-		move.l	#Map_Eggman,obMap(a1)
-		move.w	#$400,obGfx(a1)
-		move.b	#4,obRender(a1)
-		move.b	#$20,obActWid(a1)
+		bclr	#0,ost_status(a0)
+		clr.b	ost_routine2(a1)
+		move.b	(a2)+,ost_routine(a1)
+		move.b	(a2)+,ost_anim(a1)
+		move.b	(a2)+,ost_priority(a1)
+		move.l	#Map_Eggman,ost_mappings(a1)
+		move.w	#$400,ost_tile(a1)
+		move.b	#4,ost_render(a1)
+		move.b	#$20,ost_actwidth(a1)
 		move.l	a0,$34(a1)
 		dbf	d1,Obj7A_Loop	; repeat sequence 3 more times
 
@@ -33258,7 +33258,7 @@ loc_1895C:
 loc_18968:
 		cmp.b	(a1),d0
 		bne.s	loc_18974
-		tst.b	obSubtype(a1)
+		tst.b	ost_subtype(a1)
 		beq.s	loc_18974
 		move.w	a1,(a2)+
 
@@ -33268,15 +33268,15 @@ loc_18974:
 
 Obj7A_ShipMain:	; Routine 2
 		moveq	#0,d0
-		move.b	ob2ndRout(a0),d0
+		move.b	ost_routine2(a0),d0
 		move.w	Obj7A_ShipIndex(pc,d0.w),d0
 		jsr	Obj7A_ShipIndex(pc,d0.w)
 		lea	(Ani_Eggman).l,a1
 		jsr	(AnimateSprite).l
 		moveq	#3,d0
-		and.b	obStatus(a0),d0
-		andi.b	#$FC,obRender(a0)
-		or.b	d0,obRender(a0)
+		and.b	ost_status(a0),d0
+		andi.b	#$FC,ost_render(a0)
+		or.b	d0,ost_render(a0)
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 Obj7A_ShipIndex:index *
@@ -33289,10 +33289,10 @@ Obj7A_ShipIndex:index *
 ; ===========================================================================
 
 loc_189B8:
-		move.w	#-$100,obVelX(a0)
+		move.w	#-$100,ost_x_vel(a0)
 		cmpi.w	#$2120,$30(a0)
 		bcc.s	loc_189CA
-		addq.b	#2,ob2ndRout(a0)
+		addq.b	#2,ost_routine2(a0)
 
 loc_189CA:
 		bsr.w	BossMove
@@ -33301,22 +33301,22 @@ loc_189CA:
 		jsr	(CalcSine).l
 		asr.w	#6,d0
 		add.w	$38(a0),d0
-		move.w	d0,obY(a0)
-		move.w	$30(a0),obX(a0)
+		move.w	d0,ost_y_pos(a0)
+		move.w	$30(a0),ost_x_pos(a0)
 		bra.s	loc_189FE
 ; ===========================================================================
 
 loc_189EE:
 		bsr.w	BossMove
-		move.w	$38(a0),obY(a0)
-		move.w	$30(a0),obX(a0)
+		move.w	$38(a0),ost_y_pos(a0)
+		move.w	$30(a0),ost_x_pos(a0)
 
 loc_189FE:
-		cmpi.b	#6,ob2ndRout(a0)
+		cmpi.b	#6,ost_routine2(a0)
 		bcc.s	locret_18A44
-		tst.b	obStatus(a0)
+		tst.b	ost_status(a0)
 		bmi.s	loc_18A46
-		tst.b	obColType(a0)
+		tst.b	ost_col_type(a0)
 		bne.s	locret_18A44
 		tst.b	$3E(a0)
 		bne.s	loc_18A28
@@ -33334,7 +33334,7 @@ loc_18A36:
 		move.w	d0,(a1)
 		subq.b	#1,$3E(a0)
 		bne.s	locret_18A44
-		move.b	#$F,obColType(a0)
+		move.b	#$F,ost_col_type(a0)
 
 locret_18A44:
 		rts	
@@ -33343,18 +33343,18 @@ locret_18A44:
 loc_18A46:
 		moveq	#100,d0
 		bsr.w	AddPoints
-		move.b	#6,ob2ndRout(a0)
+		move.b	#6,ost_routine2(a0)
 		move.b	#$78,$3C(a0)
-		clr.w	obVelX(a0)
+		clr.w	ost_x_vel(a0)
 		rts	
 ; ===========================================================================
 
 loc_18A5E:
 		move.w	$30(a0),d0
-		move.w	#$200,obVelX(a0)
-		btst	#0,obStatus(a0)
+		move.w	#$200,ost_x_vel(a0)
+		btst	#0,ost_status(a0)
 		bne.s	loc_18A7C
-		neg.w	obVelX(a0)
+		neg.w	ost_x_vel(a0)
 		cmpi.w	#$2008,d0
 		bgt.s	loc_18A88
 		bra.s	loc_18A82
@@ -33365,7 +33365,7 @@ loc_18A7C:
 		blt.s	loc_18A88
 
 loc_18A82:
-		bchg	#0,obStatus(a0)
+		bchg	#0,ost_status(a0)
 
 loc_18A88:
 		move.w	8(a0),d0
@@ -33373,14 +33373,14 @@ loc_18A88:
 		moveq	#2,d2
 		lea	$2A(a0),a2
 		moveq	#$28,d4
-		tst.w	obVelX(a0)
+		tst.w	ost_x_vel(a0)
 		bpl.s	loc_18A9E
 		neg.w	d4
 
 loc_18A9E:
 		move.w	(a2)+,d1
 		movea.l	d1,a3
-		btst	#3,obStatus(a3)
+		btst	#3,ost_status(a3)
 		bne.s	loc_18AB4
 		move.w	8(a3),d3
 		add.w	d4,d3
@@ -33390,13 +33390,13 @@ loc_18A9E:
 loc_18AB4:
 		dbf	d2,loc_18A9E
 
-		move.b	d2,obSubtype(a0)
+		move.b	d2,ost_subtype(a0)
 		bra.w	loc_189CA
 ; ===========================================================================
 
 loc_18AC0:
-		move.b	d2,obSubtype(a0)
-		addq.b	#2,ob2ndRout(a0)
+		move.b	d2,ost_subtype(a0)
+		addq.b	#2,ost_routine2(a0)
 		move.b	#$28,$3C(a0)
 		bra.w	loc_189CA
 ; ===========================================================================
@@ -33405,7 +33405,7 @@ Obj7A_MakeBall:
 		cmpi.b	#$28,$3C(a0)
 		bne.s	loc_18B36
 		moveq	#-1,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		ext.w	d0
 		bmi.s	loc_18B40
 		subq.w	#2,d0
@@ -33429,10 +33429,10 @@ loc_18AFA:
 		movea.l	(sp)+,a0
 		bne.s	loc_18B40
 		move.b	#id_BossSpikeball,(a1) ; load spiked ball object
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
-		addi.w	#$20,obY(a1)
-		move.b	obStatus(a2),obStatus(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
+		addi.w	#$20,ost_y_pos(a1)
+		move.b	ost_status(a2),ost_status(a1)
 		move.l	a2,$3C(a1)
 
 loc_18B36:
@@ -33442,7 +33442,7 @@ loc_18B36:
 ; ===========================================================================
 
 loc_18B40:
-		subq.b	#2,ob2ndRout(a0)
+		subq.b	#2,ost_routine2(a0)
 		bra.w	loc_189CA
 ; ===========================================================================
 
@@ -33453,11 +33453,11 @@ loc_18B48:
 ; ===========================================================================
 
 loc_18B52:
-		addq.b	#2,ob2ndRout(a0)
-		clr.w	obVelY(a0)
-		bset	#0,obStatus(a0)
-		bclr	#7,obStatus(a0)
-		clr.w	obVelX(a0)
+		addq.b	#2,ost_routine2(a0)
+		clr.w	ost_y_vel(a0)
+		bset	#0,ost_status(a0)
+		bclr	#7,ost_status(a0)
+		clr.w	ost_x_vel(a0)
 		move.b	#-$18,$3C(a0)
 		tst.b	(v_bossstatus).w
 		bne.s	loc_18B7C
@@ -33471,12 +33471,12 @@ loc_18B80:
 		addq.b	#1,$3C(a0)
 		beq.s	loc_18B90
 		bpl.s	loc_18B96
-		addi.w	#$18,obVelY(a0)
+		addi.w	#$18,ost_y_vel(a0)
 		bra.s	loc_18BC2
 ; ===========================================================================
 
 loc_18B90:
-		clr.w	obVelY(a0)
+		clr.w	ost_y_vel(a0)
 		bra.s	loc_18BC2
 ; ===========================================================================
 
@@ -33486,17 +33486,17 @@ loc_18B96:
 		beq.s	loc_18BB4
 		cmpi.b	#$2A,$3C(a0)
 		bcs.s	loc_18BC2
-		addq.b	#2,ob2ndRout(a0)
+		addq.b	#2,ost_routine2(a0)
 		bra.s	loc_18BC2
 ; ===========================================================================
 
 loc_18BAE:
-		subq.w	#8,obVelY(a0)
+		subq.w	#8,ost_y_vel(a0)
 		bra.s	loc_18BC2
 ; ===========================================================================
 
 loc_18BB4:
-		clr.w	obVelY(a0)
+		clr.w	ost_y_vel(a0)
 		music	bgm_SLZ,0,0,0		; play SLZ music
 
 loc_18BC2:
@@ -33504,8 +33504,8 @@ loc_18BC2:
 ; ===========================================================================
 
 loc_18BC6:
-		move.w	#$400,obVelX(a0)
-		move.w	#-$40,obVelY(a0)
+		move.w	#$400,ost_x_vel(a0)
+		move.w	#-$40,ost_y_vel(a0)
 		cmpi.w	#$2160,(v_limitright2).w
 		bcc.s	loc_18BE0
 		addq.w	#2,(v_limitright2).w
@@ -33513,7 +33513,7 @@ loc_18BC6:
 ; ===========================================================================
 
 loc_18BE0:
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.w	Obj7A_Delete
 
 loc_18BE8:
@@ -33525,7 +33525,7 @@ Obj7A_FaceMain:	; Routine 4
 		moveq	#0,d0
 		moveq	#1,d1
 		movea.l	$34(a0),a1
-		move.b	ob2ndRout(a1),d0
+		move.b	ost_routine2(a1),d0
 		cmpi.b	#6,d0
 		bmi.s	loc_18C06
 		moveq	#$A,d1
@@ -33533,23 +33533,23 @@ Obj7A_FaceMain:	; Routine 4
 ; ===========================================================================
 
 loc_18C06:
-		tst.b	obColType(a1)
+		tst.b	ost_col_type(a1)
 		bne.s	loc_18C10
 		moveq	#5,d1
 		bra.s	loc_18C1A
 ; ===========================================================================
 
 loc_18C10:
-		cmpi.b	#4,(v_player+obRoutine).w
+		cmpi.b	#4,(v_player+ost_routine).w
 		bcs.s	loc_18C1A
 		moveq	#4,d1
 
 loc_18C1A:
-		move.b	d1,obAnim(a0)
+		move.b	d1,ost_anim(a0)
 		cmpi.b	#$A,d0
 		bne.s	loc_18C32
-		move.b	#6,obAnim(a0)
-		tst.b	obRender(a0)
+		move.b	#6,ost_anim(a0)
+		tst.b	ost_render(a0)
 		bpl.w	Obj7A_Delete
 
 loc_18C32:
@@ -33557,22 +33557,22 @@ loc_18C32:
 ; ===========================================================================
 
 Obj7A_FlameMain:; Routine 6
-		move.b	#8,obAnim(a0)
+		move.b	#8,ost_anim(a0)
 		movea.l	$34(a0),a1
-		cmpi.b	#$A,ob2ndRout(a1)
+		cmpi.b	#$A,ost_routine2(a1)
 		bne.s	loc_18C56
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.w	Obj7A_Delete
-		move.b	#$B,obAnim(a0)
+		move.b	#$B,ost_anim(a0)
 		bra.s	loc_18C6C
 ; ===========================================================================
 
 loc_18C56:
-		cmpi.b	#8,ob2ndRout(a1)
+		cmpi.b	#8,ost_routine2(a1)
 		bgt.s	loc_18C6C
-		cmpi.b	#4,ob2ndRout(a1)
+		cmpi.b	#4,ost_routine2(a1)
 		blt.s	loc_18C6C
-		move.b	#7,obAnim(a0)
+		move.b	#7,ost_anim(a0)
 
 loc_18C6C:
 		lea	(Ani_Eggman).l,a1
@@ -33580,27 +33580,27 @@ loc_18C6C:
 
 loc_18C78:
 		movea.l	$34(a0),a1
-		move.w	obX(a1),obX(a0)
-		move.w	obY(a1),obY(a0)
-		move.b	obStatus(a1),obStatus(a0)
+		move.w	ost_x_pos(a1),ost_x_pos(a0)
+		move.w	ost_y_pos(a1),ost_y_pos(a0)
+		move.b	ost_status(a1),ost_status(a0)
 		moveq	#3,d0
-		and.b	obStatus(a0),d0
-		andi.b	#$FC,obRender(a0)
-		or.b	d0,obRender(a0)
+		and.b	ost_status(a0),d0
+		andi.b	#$FC,ost_render(a0)
+		or.b	d0,ost_render(a0)
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 
 Obj7A_TubeMain:	; Routine 8
 		movea.l	$34(a0),a1
-		cmpi.b	#$A,ob2ndRout(a1)
+		cmpi.b	#$A,ost_routine2(a1)
 		bne.s	loc_18CB8
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.w	Obj7A_Delete
 
 loc_18CB8:
-		move.l	#Map_BossItems,obMap(a0)
-		move.w	#$246C,obGfx(a0)
-		move.b	#3,obFrame(a0)
+		move.l	#Map_BossItems,ost_mappings(a0)
+		move.w	#$246C,ost_tile(a0)
+		move.b	#3,ost_frame(a0)
 		bra.s	loc_18C78
 ; ---------------------------------------------------------------------------
 ; Object 7B - exploding	spikeys	that Eggman drops (SLZ)
@@ -33608,7 +33608,7 @@ loc_18CB8:
 
 BossSpikeball:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Obj7B_Index(pc,d0.w),d0
 		jsr	Obj7B_Index(pc,d0.w)
 		move.w	$30(a0),d0
@@ -33632,32 +33632,32 @@ Obj7B_Index:	index *
 ; ===========================================================================
 
 Obj7B_Main:	; Routine 0
-		move.l	#Map_SSawBall,obMap(a0)
-		move.w	#$518,obGfx(a0)
-		move.b	#1,obFrame(a0)
-		ori.b	#4,obRender(a0)
-		move.b	#4,obPriority(a0)
-		move.b	#$8B,obColType(a0)
-		move.b	#$C,obActWid(a0)
+		move.l	#Map_SSawBall,ost_mappings(a0)
+		move.w	#$518,ost_tile(a0)
+		move.b	#1,ost_frame(a0)
+		ori.b	#4,ost_render(a0)
+		move.b	#4,ost_priority(a0)
+		move.b	#$8B,ost_col_type(a0)
+		move.b	#$C,ost_actwidth(a0)
 		movea.l	$3C(a0),a1
-		move.w	obX(a1),$30(a0)
-		move.w	obY(a1),$34(a0)
-		bset	#0,obStatus(a0)
-		move.w	obX(a0),d0
-		cmp.w	obX(a1),d0
+		move.w	ost_x_pos(a1),$30(a0)
+		move.w	ost_y_pos(a1),$34(a0)
+		bset	#0,ost_status(a0)
+		move.w	ost_x_pos(a0),d0
+		cmp.w	ost_x_pos(a1),d0
 		bgt.s	loc_18D68
-		bclr	#0,obStatus(a0)
+		bclr	#0,ost_status(a0)
 		move.b	#2,$3A(a0)
 
 loc_18D68:
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 
 Obj7B_Fall:	; Routine 2
 		jsr	(ObjectFall).l
 		movea.l	$3C(a0),a1
 		lea	(word_19018).l,a2
 		moveq	#0,d0
-		move.b	obFrame(a1),d0
+		move.b	ost_frame(a1),d0
 		move.w	8(a0),d1
 		sub.w	$30(a0),d1
 		bcc.s	loc_18D8E
@@ -33667,18 +33667,18 @@ loc_18D8E:
 		add.w	d0,d0
 		move.w	$34(a0),d1
 		add.w	(a2,d0.w),d1
-		cmp.w	obY(a0),d1
+		cmp.w	ost_y_pos(a0),d1
 		bgt.s	locret_18DC4
 		movea.l	$3C(a0),a1
 		moveq	#2,d1
-		btst	#0,obStatus(a0)
+		btst	#0,ost_status(a0)
 		beq.s	loc_18DAE
 		moveq	#0,d1
 
 loc_18DAE:
-		move.w	#$F0,obSubtype(a0)
-		move.b	#10,obDelayAni(a0)	; set frame duration to	10 frames
-		move.b	obDelayAni(a0),obTimeFrame(a0)
+		move.w	#$F0,ost_subtype(a0)
+		move.b	#10,ost_anim_delay(a0)	; set frame duration to	10 frames
+		move.b	ost_anim_delay(a0),ost_anim_time(a0)
 		bra.w	loc_18FA2
 ; ===========================================================================
 
@@ -33708,26 +33708,26 @@ loc_18DDA:
 		move.w	#-$80,d2
 
 loc_18E00:
-		move.w	d1,obVelY(a0)
-		move.w	d2,obVelX(a0)
-		move.w	obX(a0),d0
+		move.w	d1,ost_y_vel(a0)
+		move.w	d2,ost_x_vel(a0)
+		move.w	ost_x_pos(a0),d0
 		sub.w	$30(a0),d0
 		bcc.s	loc_18E16
-		neg.w	obVelX(a0)
+		neg.w	ost_x_vel(a0)
 
 loc_18E16:
-		move.b	#1,obFrame(a0)
-		move.w	#$20,obSubtype(a0)
-		addq.b	#2,obRoutine(a0)
+		move.b	#1,ost_frame(a0)
+		move.w	#$20,ost_subtype(a0)
+		addq.b	#2,ost_routine(a0)
 		bra.w	loc_18EAA
 ; ===========================================================================
 
 loc_18E2A:
 		lea	(word_19018).l,a2
 		moveq	#0,d0
-		move.b	obFrame(a1),d0
+		move.b	ost_frame(a1),d0
 		move.w	#$28,d2
-		move.w	obX(a0),d1
+		move.w	ost_x_pos(a0),d1
 		sub.w	$30(a0),d1
 		bcc.s	loc_18E48
 		neg.w	d2
@@ -33737,33 +33737,33 @@ loc_18E48:
 		add.w	d0,d0
 		move.w	$34(a0),d1
 		add.w	(a2,d0.w),d1
-		move.w	d1,obY(a0)
+		move.w	d1,ost_y_pos(a0)
 		add.w	$30(a0),d2
-		move.w	d2,obX(a0)
-		clr.w	obY+2(a0)
-		clr.w	obX+2(a0)
-		subq.w	#1,obSubtype(a0)
+		move.w	d2,ost_x_pos(a0)
+		clr.w	ost_y_pos+2(a0)
+		clr.w	ost_x_pos+2(a0)
+		subq.w	#1,ost_subtype(a0)
 		bne.s	loc_18E7A
-		move.w	#$20,obSubtype(a0)
-		move.b	#8,obRoutine(a0)
+		move.w	#$20,ost_subtype(a0)
+		move.b	#8,ost_routine(a0)
 		rts	
 ; ===========================================================================
 
 loc_18E7A:
-		cmpi.w	#$78,obSubtype(a0)
+		cmpi.w	#$78,ost_subtype(a0)
 		bne.s	loc_18E88
-		move.b	#5,obDelayAni(a0)
+		move.b	#5,ost_anim_delay(a0)
 
 loc_18E88:
-		cmpi.w	#$3C,obSubtype(a0)
+		cmpi.w	#$3C,ost_subtype(a0)
 		bne.s	loc_18E96
-		move.b	#2,obDelayAni(a0)
+		move.b	#2,ost_anim_delay(a0)
 
 loc_18E96:
-		subq.b	#1,obTimeFrame(a0)
+		subq.b	#1,ost_anim_time(a0)
 		bgt.s	locret_18EA8
-		bchg	#0,obFrame(a0)
-		move.b	obDelayAni(a0),obTimeFrame(a0)
+		bchg	#0,ost_frame(a0)
+		move.b	ost_anim_delay(a0),ost_anim_time(a0)
 
 locret_18EA8:
 		rts	
@@ -33785,10 +33785,10 @@ loc_18EB4:
 ; ===========================================================================
 
 loc_18EC0:
-		move.w	obX(a1),d0
-		move.w	obY(a1),d1
-		move.w	obX(a0),d2
-		move.w	obY(a0),d3
+		move.w	ost_x_pos(a1),d0
+		move.w	ost_y_pos(a1),d1
+		move.w	ost_x_pos(a0),d2
+		move.w	ost_y_pos(a0),d3
 		lea	byte_19022(pc),a2
 		lea	byte_19026(pc),a3
 		move.b	(a2)+,d4
@@ -33823,22 +33823,22 @@ loc_18EC0:
 		add.w	d4,d3
 		cmp.w	d3,d1
 		bcs.s	loc_18F38
-		addq.b	#2,obRoutine(a0)
-		clr.w	obSubtype(a0)
-		clr.b	obColType(a1)
-		subq.b	#1,obColProp(a1)
+		addq.b	#2,ost_routine(a0)
+		clr.w	ost_subtype(a0)
+		clr.b	ost_col_type(a1)
+		subq.b	#1,ost_col_property(a1)
 		bne.s	loc_18F38
-		bset	#7,obStatus(a1)
-		clr.w	obVelX(a0)
-		clr.w	obVelY(a0)
+		bset	#7,ost_status(a1)
+		clr.w	ost_x_vel(a0)
+		clr.w	ost_y_vel(a0)
 
 loc_18F38:
-		tst.w	obVelY(a0)
+		tst.w	ost_y_vel(a0)
 		bpl.s	loc_18F5C
 		jsr	(ObjectFall).l
 		move.w	$34(a0),d0
 		subi.w	#$2F,d0
-		cmp.w	obY(a0),d0
+		cmp.w	ost_y_pos(a0),d0
 		bgt.s	loc_18F58
 		jsr	(ObjectFall).l
 
@@ -33851,8 +33851,8 @@ loc_18F5C:
 		movea.l	$3C(a0),a1
 		lea	(word_19018).l,a2
 		moveq	#0,d0
-		move.b	obFrame(a1),d0
-		move.w	obX(a0),d1
+		move.b	ost_frame(a1),d0
+		move.w	ost_x_pos(a0),d1
 		sub.w	$30(a0),d1
 		bcc.s	loc_18F7E
 		addq.w	#2,d0
@@ -33861,48 +33861,48 @@ loc_18F7E:
 		add.w	d0,d0
 		move.w	$34(a0),d1
 		add.w	(a2,d0.w),d1
-		cmp.w	obY(a0),d1
+		cmp.w	ost_y_pos(a0),d1
 		bgt.s	loc_18F58
 		movea.l	$3C(a0),a1
 		moveq	#2,d1
-		tst.w	obVelX(a0)
+		tst.w	ost_x_vel(a0)
 		bmi.s	loc_18F9C
 		moveq	#0,d1
 
 loc_18F9C:
-		move.w	#0,obSubtype(a0)
+		move.w	#0,ost_subtype(a0)
 
 loc_18FA2:
 		move.b	d1,$3A(a1)
 		move.b	d1,$3A(a0)
-		cmp.b	obFrame(a1),d1
+		cmp.b	ost_frame(a1),d1
 		beq.s	loc_19008
-		bclr	#3,obStatus(a1)
+		bclr	#3,ost_status(a1)
 		beq.s	loc_19008
-		clr.b	ob2ndRout(a1)
-		move.b	#2,obRoutine(a1)
+		clr.b	ost_routine2(a1)
+		move.b	#2,ost_routine(a1)
 		lea	(v_objspace).w,a2
-		move.w	obVelY(a0),obVelY(a2)
-		neg.w	obVelY(a2)
-		cmpi.b	#1,obFrame(a1)
+		move.w	ost_y_vel(a0),ost_y_vel(a2)
+		neg.w	ost_y_vel(a2)
+		cmpi.b	#1,ost_frame(a1)
 		bne.s	loc_18FDC
-		asr	obVelY(a2)
+		asr	ost_y_vel(a2)
 
 loc_18FDC:
-		bset	#1,obStatus(a2)
-		bclr	#3,obStatus(a2)
+		bset	#1,ost_status(a2)
+		bclr	#3,ost_status(a2)
 		clr.b	$3C(a2)
 		move.l	a0,-(sp)
 		lea	(a2),a0
 		jsr	(Sonic_ChkRoll).l
 		movea.l	(sp)+,a0
-		move.b	#2,obRoutine(a2)
+		move.b	#2,ost_routine(a2)
 		sfx	sfx_Spring,0,0,0	; play "spring" sound
 
 loc_19008:
-		clr.w	obVelX(a0)
-		clr.w	obVelY(a0)
-		addq.b	#2,obRoutine(a0)
+		clr.w	ost_x_vel(a0)
+		clr.w	ost_y_vel(a0)
+		addq.b	#2,ost_routine(a0)
 		bra.w	loc_18E7A
 ; ===========================================================================
 word_19018:	dc.w -8, -$1C, -$2F, -$1C, -8
@@ -33915,14 +33915,14 @@ byte_19026:	dc.b 8,	$F0, 8,	$F0
 
 Obj7B_Explode:	; Routine 8
 		move.b	#id_ExplosionBomb,(a0)
-		clr.b	obRoutine(a0)
-		cmpi.w	#$20,obSubtype(a0)
+		clr.b	ost_routine(a0)
+		cmpi.w	#$20,ost_subtype(a0)
 		beq.s	Obj7B_MakeFrag
 		rts	
 ; ===========================================================================
 
 Obj7B_MakeFrag:
-		move.w	$34(a0),obY(a0)
+		move.w	$34(a0),ost_y_pos(a0)
 		moveq	#3,d1
 		lea	Obj7B_FragSpeed(pc),a2
 
@@ -33930,18 +33930,18 @@ Obj7B_Loop:
 		jsr	(FindFreeObj).l
 		bne.s	loc_1909A
 		move.b	#id_BossSpikeball,(a1) ; load shrapnel object
-		move.b	#$A,obRoutine(a1)
-		move.l	#Map_BSBall,obMap(a1)
-		move.b	#3,obPriority(a1)
-		move.w	#$518,obGfx(a1)
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
-		move.w	(a2)+,obVelX(a1)
-		move.w	(a2)+,obVelY(a1)
-		move.b	#$98,obColType(a1)
-		ori.b	#4,obRender(a1)
-		bset	#7,obRender(a1)
-		move.b	#$C,obActWid(a1)
+		move.b	#$A,ost_routine(a1)
+		move.l	#Map_BSBall,ost_mappings(a1)
+		move.b	#3,ost_priority(a1)
+		move.w	#$518,ost_tile(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
+		move.w	(a2)+,ost_x_vel(a1)
+		move.w	(a2)+,ost_y_vel(a1)
+		move.b	#$98,ost_col_type(a1)
+		ori.b	#4,ost_render(a1)
+		bset	#7,ost_render(a1)
+		move.b	#$C,ost_actwidth(a1)
 
 loc_1909A:
 		dbf	d1,Obj7B_Loop	; repeat sequence 3 more times
@@ -33956,13 +33956,13 @@ Obj7B_FragSpeed:dc.w -$100, -$340	; horizontal, vertical
 
 Obj7B_MoveFrag:	; Routine $A
 		jsr	(SpeedToPos).l
-		move.w	obX(a0),$30(a0)
-		move.w	obY(a0),$34(a0)
-		addi.w	#$18,obVelY(a0)
+		move.w	ost_x_pos(a0),$30(a0)
+		move.w	ost_y_pos(a0),$34(a0)
+		addi.w	#$18,ost_y_vel(a0)
 		moveq	#4,d0
 		and.w	(v_vbla_word).w,d0
 		lsr.w	#2,d0
-		move.b	d0,obFrame(a0)
+		move.b	d0,ost_frame(a0)
 		tst.b	1(a0)
 		bpl.w	Obj7A_Delete
 		rts	
@@ -33986,7 +33986,7 @@ Map_BSBall:
 
 BossSpringYard:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Obj75_Index(pc,d0.w),d1
 		jmp	Obj75_Index(pc,d1.w)
 ; ===========================================================================
@@ -34004,12 +34004,12 @@ Obj75_ObjData:	dc.b 2,	0, 5		; routine number, animation, priority
 ; ===========================================================================
 
 Obj75_Main:	; Routine 0
-		move.w	#$2DB0,obX(a0)
-		move.w	#$4DA,obY(a0)
-		move.w	obX(a0),$30(a0)
-		move.w	obY(a0),$38(a0)
-		move.b	#$F,obColType(a0)
-		move.b	#8,obColProp(a0) ; set number of hits to 8
+		move.w	#$2DB0,ost_x_pos(a0)
+		move.w	#$4DA,ost_y_pos(a0)
+		move.w	ost_x_pos(a0),$30(a0)
+		move.w	ost_y_pos(a0),$38(a0)
+		move.b	#$F,ost_col_type(a0)
+		move.b	#8,ost_col_property(a0) ; set number of hits to 8
 		lea	Obj75_ObjData(pc),a2
 		movea.l	a0,a1
 		moveq	#3,d1
@@ -34020,33 +34020,33 @@ Obj75_Loop:
 		jsr	(FindNextFreeObj).l
 		bne.s	Obj75_ShipMain
 		move.b	#id_BossSpringYard,(a1)
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
 
 Obj75_LoadBoss:
-		bclr	#0,obStatus(a0)
-		clr.b	ob2ndRout(a1)
-		move.b	(a2)+,obRoutine(a1)
-		move.b	(a2)+,obAnim(a1)
-		move.b	(a2)+,obPriority(a1)
-		move.l	#Map_Eggman,obMap(a1)
-		move.w	#$400,obGfx(a1)
-		move.b	#4,obRender(a1)
-		move.b	#$20,obActWid(a1)
+		bclr	#0,ost_status(a0)
+		clr.b	ost_routine2(a1)
+		move.b	(a2)+,ost_routine(a1)
+		move.b	(a2)+,ost_anim(a1)
+		move.b	(a2)+,ost_priority(a1)
+		move.l	#Map_Eggman,ost_mappings(a1)
+		move.w	#$400,ost_tile(a1)
+		move.b	#4,ost_render(a1)
+		move.b	#$20,ost_actwidth(a1)
 		move.l	a0,$34(a1)
 		dbf	d1,Obj75_Loop	; repeat sequence 3 more times
 
 Obj75_ShipMain:	; Routine 2
 		moveq	#0,d0
-		move.b	ob2ndRout(a0),d0
+		move.b	ost_routine2(a0),d0
 		move.w	Obj75_ShipIndex(pc,d0.w),d1
 		jsr	Obj75_ShipIndex(pc,d1.w)
 		lea	(Ani_Eggman).l,a1
 		jsr	(AnimateSprite).l
 		moveq	#3,d0
-		and.b	obStatus(a0),d0
-		andi.b	#$FC,obRender(a0)
-		or.b	d0,obRender(a0)
+		and.b	ost_status(a0),d0
+		andi.b	#$FC,ost_render(a0)
+		or.b	d0,ost_render(a0)
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 Obj75_ShipIndex:index *
@@ -34059,33 +34059,33 @@ Obj75_ShipIndex:index *
 ; ===========================================================================
 
 loc_191CC:
-		move.w	#-$100,obVelX(a0)
+		move.w	#-$100,ost_x_vel(a0)
 		cmpi.w	#$2D38,$30(a0)
 		bcc.s	loc_191DE
-		addq.b	#2,ob2ndRout(a0)
+		addq.b	#2,ost_routine2(a0)
 
 loc_191DE:
 		move.b	$3F(a0),d0
 		addq.b	#2,$3F(a0)
 		jsr	(CalcSine).l
 		asr.w	#2,d0
-		move.w	d0,obVelY(a0)
+		move.w	d0,ost_y_vel(a0)
 
 loc_191F2:
 		bsr.w	BossMove
-		move.w	$38(a0),obY(a0)
-		move.w	$30(a0),obX(a0)
+		move.w	$38(a0),ost_y_pos(a0)
+		move.w	$30(a0),ost_x_pos(a0)
 
 loc_19202:
 		move.w	8(a0),d0
 		subi.w	#$2C00,d0
 		lsr.w	#5,d0
 		move.b	d0,$34(a0)
-		cmpi.b	#6,ob2ndRout(a0)
+		cmpi.b	#6,ost_routine2(a0)
 		bcc.s	locret_19256
-		tst.b	obStatus(a0)
+		tst.b	ost_status(a0)
 		bmi.s	loc_19258
-		tst.b	obColType(a0)
+		tst.b	ost_col_type(a0)
 		bne.s	locret_19256
 		tst.b	$3E(a0)
 		bne.s	loc_1923A
@@ -34103,7 +34103,7 @@ loc_19248:
 		move.w	d0,(a1)
 		subq.b	#1,$3E(a0)
 		bne.s	locret_19256
-		move.b	#$F,obColType(a0)
+		move.b	#$F,ost_col_type(a0)
 
 locret_19256:
 		rts	
@@ -34112,18 +34112,18 @@ locret_19256:
 loc_19258:
 		moveq	#100,d0
 		bsr.w	AddPoints
-		move.b	#6,ob2ndRout(a0)
+		move.b	#6,ost_routine2(a0)
 		move.w	#$B4,$3C(a0)
-		clr.w	obVelX(a0)
+		clr.w	ost_x_vel(a0)
 		rts	
 ; ===========================================================================
 
 loc_19270:
 		move.w	$30(a0),d0
-		move.w	#$140,obVelX(a0)
-		btst	#0,obStatus(a0)
+		move.w	#$140,ost_x_vel(a0)
+		btst	#0,ost_status(a0)
 		bne.s	loc_1928E
-		neg.w	obVelX(a0)
+		neg.w	ost_x_vel(a0)
 		cmpi.w	#$2C08,d0
 		bgt.s	loc_1929E
 		bra.s	loc_19294
@@ -34134,7 +34134,7 @@ loc_1928E:
 		blt.s	loc_1929E
 
 loc_19294:
-		bchg	#0,obStatus(a0)
+		bchg	#0,ost_status(a0)
 		clr.b	standonobject(a0)
 
 loc_1929E:
@@ -34149,7 +34149,7 @@ loc_192AE:
 		bgt.s	loc_192E8
 		tst.b	standonobject(a0)
 		bne.s	loc_192E8
-		move.w	(v_player+obX).w,d1
+		move.w	(v_player+ost_x_pos).w,d1
 		subi.w	#$2C00,d1
 		asr.w	#5,d1
 		cmp.b	$34(a0),d1
@@ -34160,9 +34160,9 @@ loc_192AE:
 		addi.w	#$2C10,d0
 		move.w	d0,$30(a0)
 		bsr.w	Obj75_FindBlocks
-		addq.b	#2,ob2ndRout(a0)
-		clr.w	obSubtype(a0)
-		clr.w	obVelX(a0)
+		addq.b	#2,ost_routine2(a0)
+		clr.w	ost_subtype(a0)
+		clr.w	ost_x_vel(a0)
 
 loc_192E8:
 		bra.w	loc_191DE
@@ -34170,7 +34170,7 @@ loc_192E8:
 
 loc_192EC:
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		move.w	off_192FA(pc,d0.w),d0
 		jmp	off_192FA(pc,d0.w)
 ; ===========================================================================
@@ -34182,7 +34182,7 @@ off_192FA:	index *
 ; ===========================================================================
 
 loc_19302:
-		move.w	#$180,obVelY(a0)
+		move.w	#$180,ost_y_vel(a0)
 		move.w	$38(a0),d0
 		cmpi.w	#$556,d0
 		bcs.s	loc_19344
@@ -34198,8 +34198,8 @@ loc_19302:
 		move.w	#$32,$3C(a0)
 
 loc_1933C:
-		clr.w	obVelY(a0)
-		addq.b	#2,obSubtype(a0)
+		clr.w	ost_y_vel(a0)
+		addq.b	#2,ost_subtype(a0)
 
 loc_19344:
 		bra.w	loc_191F2
@@ -34208,11 +34208,11 @@ loc_19344:
 loc_19348:
 		subq.w	#1,$3C(a0)
 		bpl.s	loc_19366
-		addq.b	#2,obSubtype(a0)
-		move.w	#-$800,obVelY(a0)
+		addq.b	#2,ost_subtype(a0)
+		move.w	#-$800,ost_y_vel(a0)
 		tst.w	$36(a0)
 		bne.s	loc_19362
-		asr	obVelY(a0)
+		asr	ost_y_vel(a0)
 
 loc_19362:
 		moveq	#0,d0
@@ -34230,8 +34230,8 @@ loc_19366:
 
 loc_1937C:
 		add.w	$38(a0),d0
-		move.w	d0,obY(a0)
-		move.w	$30(a0),obX(a0)
+		move.w	d0,ost_y_pos(a0)
+		move.w	$30(a0),ost_x_pos(a0)
 		bra.w	loc_19202
 ; ===========================================================================
 
@@ -34250,15 +34250,15 @@ loc_1939C:
 		move.w	#$2D,$3C(a0)
 
 loc_193B4:
-		addq.b	#2,obSubtype(a0)
-		clr.w	obVelY(a0)
+		addq.b	#2,ost_subtype(a0)
+		clr.w	ost_y_vel(a0)
 		bra.s	loc_193CC
 ; ===========================================================================
 
 loc_193BE:
-		cmpi.w	#-$40,obVelY(a0)
+		cmpi.w	#-$40,ost_y_vel(a0)
 		bge.s	loc_193CC
-		addi.w	#$C,obVelY(a0)
+		addi.w	#$C,ost_y_vel(a0)
 
 loc_193CC:
 		bra.w	loc_191F2
@@ -34283,7 +34283,7 @@ loc_193EE:
 		cmpi.w	#-$1E,$3C(a0)
 		bne.s	loc_19406
 		clr.b	$29(a0)
-		subq.b	#2,ob2ndRout(a0)
+		subq.b	#2,ost_routine2(a0)
 		move.b	#-1,standonobject(a0)
 		bra.s	loc_19446
 ; ===========================================================================
@@ -34315,7 +34315,7 @@ loc_19424:
 
 loc_19438:
 		add.w	$38(a0),d0
-		move.w	d0,obY(a0)
+		move.w	d0,ost_y_pos(a0)
 		move.w	$30(a0),8(a0)
 
 loc_19446:
@@ -34334,7 +34334,7 @@ Obj75_FindBlocks:
 Obj75_FindLoop:
 		cmp.b	(a1),d1		; is object a SYZ boss block?
 		bne.s	loc_1946A	; if not, branch
-		cmp.b	obSubtype(a1),d2
+		cmp.b	ost_subtype(a1),d2
 		bne.s	loc_1946A
 		move.w	a1,$36(a0)
 		bra.s	locret_19472
@@ -34357,11 +34357,11 @@ loc_19474:
 ; ===========================================================================
 
 loc_1947E:
-		addq.b	#2,ob2ndRout(a0)
-		clr.w	obVelY(a0)
-		bset	#0,obStatus(a0)
-		bclr	#7,obStatus(a0)
-		clr.w	obVelX(a0)
+		addq.b	#2,ost_routine2(a0)
+		clr.w	ost_y_vel(a0)
+		bset	#0,ost_status(a0)
+		bclr	#7,ost_status(a0)
+		clr.w	ost_x_vel(a0)
 		move.w	#-1,$3C(a0)
 		tst.b	(v_bossstatus).w
 		bne.s	loc_194A8
@@ -34375,12 +34375,12 @@ loc_194AC:
 		addq.w	#1,$3C(a0)
 		beq.s	loc_194BC
 		bpl.s	loc_194C2
-		addi.w	#$18,obVelY(a0)
+		addi.w	#$18,ost_y_vel(a0)
 		bra.s	loc_194EE
 ; ===========================================================================
 
 loc_194BC:
-		clr.w	obVelY(a0)
+		clr.w	ost_y_vel(a0)
 		bra.s	loc_194EE
 ; ===========================================================================
 
@@ -34390,17 +34390,17 @@ loc_194C2:
 		beq.s	loc_194E0
 		cmpi.w	#$2A,$3C(a0)
 		bcs.s	loc_194EE
-		addq.b	#2,ob2ndRout(a0)
+		addq.b	#2,ost_routine2(a0)
 		bra.s	loc_194EE
 ; ===========================================================================
 
 loc_194DA:
-		subq.w	#8,obVelY(a0)
+		subq.w	#8,ost_y_vel(a0)
 		bra.s	loc_194EE
 ; ===========================================================================
 
 loc_194E0:
-		clr.w	obVelY(a0)
+		clr.w	ost_y_vel(a0)
 		music	bgm_SYZ,0,0,0		; play SYZ music
 
 loc_194EE:
@@ -34408,8 +34408,8 @@ loc_194EE:
 ; ===========================================================================
 
 loc_194F2:
-		move.w	#$400,obVelX(a0)
-		move.w	#-$40,obVelY(a0)
+		move.w	#$400,ost_x_vel(a0)
+		move.w	#-$40,ost_y_vel(a0)
 		cmpi.w	#$2D40,(v_limitright2).w
 		bcc.s	loc_1950C
 		addq.w	#2,(v_limitright2).w
@@ -34417,7 +34417,7 @@ loc_194F2:
 ; ===========================================================================
 
 loc_1950C:
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.s	Obj75_ShipDelete
 
 loc_19512:
@@ -34433,10 +34433,10 @@ Obj75_FaceMain:	; Routine 4
 		moveq	#1,d1
 		movea.l	$34(a0),a1
 		moveq	#0,d0
-		move.b	ob2ndRout(a1),d0
+		move.b	ost_routine2(a1),d0
 		move.w	off_19546(pc,d0.w),d0
 		jsr	off_19546(pc,d0.w)
-		move.b	d1,obAnim(a0)
+		move.b	d1,ost_anim(a0)
 		move.b	(a0),d0
 		cmp.b	(a1),d0
 		bne.s	Obj75_FaceDelete
@@ -34467,7 +34467,7 @@ loc_19556:
 
 loc_1955A:
 		moveq	#0,d0
-		move.b	obSubtype(a1),d0
+		move.b	ost_subtype(a1),d0
 		move.w	off_19568(pc,d0.w),d0
 		jmp	off_19568(pc,d0.w)
 ; ===========================================================================
@@ -34486,14 +34486,14 @@ loc_19572:
 		moveq	#6,d1
 
 loc_19574:
-		tst.b	obColType(a1)
+		tst.b	ost_col_type(a1)
 		bne.s	loc_1957E
 		moveq	#5,d1
 		rts	
 ; ===========================================================================
 
 loc_1957E:
-		cmpi.b	#4,(v_player+obRoutine).w
+		cmpi.b	#4,(v_player+ost_routine).w
 		bcs.s	locret_19588
 		moveq	#4,d1
 
@@ -34502,20 +34502,20 @@ locret_19588:
 ; ===========================================================================
 
 Obj75_FlameMain:; Routine 6
-		move.b	#7,obAnim(a0)
+		move.b	#7,ost_anim(a0)
 		movea.l	$34(a0),a1
-		cmpi.b	#$A,ob2ndRout(a1)
+		cmpi.b	#$A,ost_routine2(a1)
 		bne.s	loc_195AA
-		move.b	#$B,obAnim(a0)
+		move.b	#$B,ost_anim(a0)
 		tst.b	1(a0)
 		bpl.s	Obj75_FlameDelete
 		bra.s	loc_195B6
 ; ===========================================================================
 
 loc_195AA:
-		tst.w	obVelX(a1)
+		tst.w	ost_x_vel(a1)
 		beq.s	loc_195B6
-		move.b	#8,obAnim(a0)
+		move.b	#8,ost_anim(a0)
 
 loc_195B6:
 		bra.s	loc_195BE
@@ -34529,37 +34529,37 @@ loc_195BE:
 		lea	(Ani_Eggman).l,a1
 		jsr	(AnimateSprite).l
 		movea.l	$34(a0),a1
-		move.w	obX(a1),obX(a0)
-		move.w	obY(a1),obY(a0)
+		move.w	ost_x_pos(a1),ost_x_pos(a0)
+		move.w	ost_y_pos(a1),ost_y_pos(a0)
 
 loc_195DA:
-		move.b	obStatus(a1),obStatus(a0)
+		move.b	ost_status(a1),ost_status(a0)
 		moveq	#3,d0
-		and.b	obStatus(a0),d0
-		andi.b	#$FC,obRender(a0)
-		or.b	d0,obRender(a0)
+		and.b	ost_status(a0),d0
+		andi.b	#$FC,ost_render(a0)
+		or.b	d0,ost_render(a0)
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 
 Obj75_SpikeMain:; Routine 8
-		move.l	#Map_BossItems,obMap(a0)
-		move.w	#$246C,obGfx(a0)
-		move.b	#5,obFrame(a0)
+		move.l	#Map_BossItems,ost_mappings(a0)
+		move.w	#$246C,ost_tile(a0)
+		move.b	#5,ost_frame(a0)
 		movea.l	$34(a0),a1
-		cmpi.b	#$A,ob2ndRout(a1)
+		cmpi.b	#$A,ost_routine2(a1)
 		bne.s	loc_1961C
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.s	Obj75_SpikeDelete
 
 loc_1961C:
-		move.w	obX(a1),obX(a0)
-		move.w	obY(a1),obY(a0)
+		move.w	ost_x_pos(a1),ost_x_pos(a0)
+		move.w	ost_y_pos(a1),ost_y_pos(a0)
 		move.w	$3C(a0),d0
-		cmpi.b	#4,ob2ndRout(a1)
+		cmpi.b	#4,ost_routine2(a1)
 		bne.s	loc_19652
-		cmpi.b	#6,obSubtype(a1)
+		cmpi.b	#6,ost_subtype(a1)
 		beq.s	loc_1964C
-		tst.b	obSubtype(a1)
+		tst.b	ost_subtype(a1)
 		bne.s	loc_19658
 		cmpi.w	#$94,d0
 		bge.s	loc_19658
@@ -34579,16 +34579,16 @@ loc_19652:
 loc_19658:
 		move.w	d0,$3C(a0)
 		asr.w	#2,d0
-		add.w	d0,obY(a0)
-		move.b	#8,obActWid(a0)
-		move.b	#$C,obHeight(a0)
-		clr.b	obColType(a0)
+		add.w	d0,ost_y_pos(a0)
+		move.b	#8,ost_actwidth(a0)
+		move.b	#$C,ost_height(a0)
+		clr.b	ost_col_type(a0)
 		movea.l	$34(a0),a1
-		tst.b	obColType(a1)
+		tst.b	ost_col_type(a1)
 		beq.s	loc_19688
 		tst.b	$29(a1)
 		bne.s	loc_19688
-		move.b	#$84,obColType(a0)
+		move.b	#$84,ost_col_type(a0)
 
 loc_19688:
 		bra.w	loc_195DA
@@ -34602,7 +34602,7 @@ Obj75_SpikeDelete:
 
 BossBlock:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Obj76_Index(pc,d0.w),d1
 		jmp	Obj76_Index(pc,d1.w)
 ; ===========================================================================
@@ -34626,18 +34626,18 @@ Obj76_Loop:
 
 Obj76_MakeBlock:
 		move.b	#id_BossBlock,(a1)
-		move.l	#Map_BossBlock,obMap(a1)
-		move.w	#$4000,obGfx(a1)
-		move.b	#4,obRender(a1)
-		move.b	#$10,obActWid(a1)
-		move.b	#$10,obHeight(a1)
-		move.b	#3,obPriority(a1)
-		move.w	d5,obX(a1)	; set x-position
-		move.w	#$582,obY(a1)
-		move.w	d4,obSubtype(a1)
+		move.l	#Map_BossBlock,ost_mappings(a1)
+		move.w	#$4000,ost_tile(a1)
+		move.b	#4,ost_render(a1)
+		move.b	#$10,ost_actwidth(a1)
+		move.b	#$10,ost_height(a1)
+		move.b	#3,ost_priority(a1)
+		move.w	d5,ost_x_pos(a1)	; set x-position
+		move.w	#$582,ost_y_pos(a1)
+		move.w	d4,ost_subtype(a1)
 		addi.w	#$101,d4
 		addi.w	#$20,d5		; add $20 to next x-position
-		addq.b	#2,obRoutine(a1)
+		addq.b	#2,ost_routine(a1)
 		dbf	d6,Obj76_Loop	; repeat sequence 9 more times
 
 Obj76_ExitLoop:
@@ -34646,7 +34646,7 @@ Obj76_ExitLoop:
 
 Obj76_Action:	; Routine 2
 		move.b	$29(a0),d0
-		cmp.b	obSubtype(a0),d0
+		cmp.b	ost_subtype(a0),d0
 		beq.s	Obj76_Solid
 		tst.b	d0
 		bmi.s	loc_19718
@@ -34658,17 +34658,17 @@ loc_19712:
 
 loc_19718:
 		movea.l	$34(a0),a1
-		tst.b	obColProp(a1)
+		tst.b	ost_col_property(a1)
 		beq.s	loc_19712
-		move.w	obX(a1),obX(a0)
-		move.w	obY(a1),obY(a0)
-		addi.w	#$2C,obY(a0)
+		move.w	ost_x_pos(a1),ost_x_pos(a0)
+		move.w	ost_y_pos(a1),ost_y_pos(a0)
+		addi.w	#$2C,ost_y_pos(a0)
 		cmpa.w	a0,a1
 		bcs.s	Obj76_Display
-		move.w	obVelY(a1),d0
+		move.w	ost_y_vel(a1),d0
 		ext.l	d0
 		asr.l	#8,d0
-		add.w	d0,obY(a0)
+		add.w	d0,ost_y_pos(a0)
 		bra.s	Obj76_Display
 ; ===========================================================================
 
@@ -34676,7 +34676,7 @@ Obj76_Solid:
 		move.w	#$1B,d1
 		move.w	#$10,d2
 		move.w	#$11,d3
-		move.w	obX(a0),d4
+		move.w	ost_x_pos(a0),d4
 		jsr	(SolidObject).l
 
 Obj76_Display:
@@ -34684,7 +34684,7 @@ Obj76_Display:
 ; ===========================================================================
 
 loc_19762:	; Routine 4
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.s	Obj76_Delete
 		jsr	(ObjectFall).l
 		jmp	(DisplaySprite).l
@@ -34702,9 +34702,9 @@ Obj76_Break:
 		moveq	#1,d4
 		moveq	#3,d1
 		moveq	#$38,d2
-		addq.b	#2,obRoutine(a0)
-		move.b	#8,obActWid(a0)
-		move.b	#8,obHeight(a0)
+		addq.b	#2,ost_routine(a0)
+		move.b	#8,ost_actwidth(a0)
+		move.b	#8,ost_height(a0)
 		lea	(a0),a1
 		bra.s	Obj76_MakeFrag
 ; ===========================================================================
@@ -34725,13 +34725,13 @@ loc_197AA:
 		move.l	(a2)+,(a3)+
 		dbf	d3,loc_197AA
 
-		move.w	(a4)+,obVelX(a1)
-		move.w	(a4)+,obVelY(a1)
+		move.w	(a4)+,ost_x_vel(a1)
+		move.w	(a4)+,ost_y_vel(a1)
 		move.w	(a5)+,d3
-		add.w	d3,obX(a1)
+		add.w	d3,ost_x_pos(a1)
 		move.w	(a5)+,d3
-		add.w	d3,obY(a1)
-		move.b	d4,obFrame(a1)
+		add.w	d3,ost_y_pos(a1)
+		move.b	d4,ost_frame(a1)
 		addq.w	#1,d4
 		dbf	d1,Obj76_LoopFrag ; repeat sequence 3 more times
 
@@ -34760,7 +34760,7 @@ loc_1982C:
 
 ScrapEggman:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	SEgg_Index(pc,d0.w),d1
 		jmp	SEgg_Index(pc,d1.w)
 ; ===========================================================================
@@ -34775,40 +34775,40 @@ SEgg_ObjData:	dc.b id_SEgg_Eggman,	0, 3		; routine number, animation, priority
 
 SEgg_Main:	; Routine 0
 		lea	SEgg_ObjData(pc),a2
-		move.w	#$2160,obX(a0)
-		move.w	#$5A4,obY(a0)
-		move.b	#$F,obColType(a0)
-		move.b	#$10,obColProp(a0)
-		bclr	#0,obStatus(a0)
-		clr.b	ob2ndRout(a0)
-		move.b	(a2)+,obRoutine(a0)
-		move.b	(a2)+,obAnim(a0)
-		move.b	(a2)+,obPriority(a0)
-		move.l	#Map_SEgg,obMap(a0)
-		move.w	#$400,obGfx(a0)
-		move.b	#4,obRender(a0)
-		bset	#7,obRender(a0)
-		move.b	#$20,obActWid(a0)
+		move.w	#$2160,ost_x_pos(a0)
+		move.w	#$5A4,ost_y_pos(a0)
+		move.b	#$F,ost_col_type(a0)
+		move.b	#$10,ost_col_property(a0)
+		bclr	#0,ost_status(a0)
+		clr.b	ost_routine2(a0)
+		move.b	(a2)+,ost_routine(a0)
+		move.b	(a2)+,ost_anim(a0)
+		move.b	(a2)+,ost_priority(a0)
+		move.l	#Map_SEgg,ost_mappings(a0)
+		move.w	#$400,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		bset	#7,ost_render(a0)
+		move.b	#$20,ost_actwidth(a0)
 		jsr	(FindNextFreeObj).l
 		bne.s	SEgg_Eggman
 		move.l	a0,$34(a1)
 		move.b	#id_ScrapEggman,(a1) ; load switch object
-		move.w	#$2130,obX(a1)
-		move.w	#$5BC,obY(a1)
-		clr.b	ob2ndRout(a0)
-		move.b	(a2)+,obRoutine(a1)
-		move.b	(a2)+,obAnim(a1)
-		move.b	(a2)+,obPriority(a1)
-		move.l	#Map_But,obMap(a1)
-		move.w	#$4A4,obGfx(a1)
-		move.b	#4,obRender(a1)
-		bset	#7,obRender(a1)
-		move.b	#$10,obActWid(a1)
-		move.b	#0,obFrame(a1)
+		move.w	#$2130,ost_x_pos(a1)
+		move.w	#$5BC,ost_y_pos(a1)
+		clr.b	ost_routine2(a0)
+		move.b	(a2)+,ost_routine(a1)
+		move.b	(a2)+,ost_anim(a1)
+		move.b	(a2)+,ost_priority(a1)
+		move.l	#Map_But,ost_mappings(a1)
+		move.w	#$4A4,ost_tile(a1)
+		move.b	#4,ost_render(a1)
+		bset	#7,ost_render(a1)
+		move.b	#$10,ost_actwidth(a1)
+		move.b	#0,ost_frame(a1)
 
 SEgg_Eggman:	; Routine 2
 		moveq	#0,d0
-		move.b	ob2ndRout(a0),d0
+		move.b	ost_routine2(a0),d0
 		move.w	SEgg_EggIndex(pc,d0.w),d1
 		jsr	SEgg_EggIndex(pc,d1.w)
 		lea	Ani_SEgg(pc),a1
@@ -34823,13 +34823,13 @@ SEgg_EggIndex:	index *
 ; ===========================================================================
 
 SEgg_ChkSonic:
-		move.w	obX(a0),d0
-		sub.w	(v_player+obX).w,d0
+		move.w	ost_x_pos(a0),d0
+		sub.w	(v_player+ost_x_pos).w,d0
 		cmpi.w	#128,d0		; is Sonic within 128 pixels of	Eggman?
 		bcc.s	loc_19934	; if not, branch
-		addq.b	#2,ob2ndRout(a0)
+		addq.b	#2,ost_routine2(a0)
 		move.w	#180,$3C(a0)	; set delay to 3 seconds
-		move.b	#1,obAnim(a0)
+		move.b	#1,ost_anim(a0)
 
 loc_19934:
 		jmp	(SpeedToPos).l
@@ -34838,9 +34838,9 @@ loc_19934:
 SEgg_PreLeap:
 		subq.w	#1,$3C(a0)	; subtract 1 from time delay
 		bne.s	loc_19954	; if time remains, branch
-		addq.b	#2,ob2ndRout(a0)
-		move.b	#2,obAnim(a0)
-		addq.w	#4,obY(a0)
+		addq.b	#2,ost_routine2(a0)
+		move.b	#2,ost_anim(a0)
+		addq.w	#4,ost_y_pos(a0)
 		move.w	#15,$3C(a0)
 
 loc_19954:
@@ -34851,29 +34851,29 @@ SEgg_Leap:
 		subq.w	#1,$3C(a0)
 		bgt.s	loc_199D0
 		bne.s	loc_1996A
-		move.w	#-$FC,obVelX(a0) ; make Eggman leap
-		move.w	#-$3C0,obVelY(a0)
+		move.w	#-$FC,ost_x_vel(a0) ; make Eggman leap
+		move.w	#-$3C0,ost_y_vel(a0)
 
 loc_1996A:
-		cmpi.w	#$2132,obX(a0)
+		cmpi.w	#$2132,ost_x_pos(a0)
 		bgt.s	loc_19976
-		clr.w	obVelX(a0)
+		clr.w	ost_x_vel(a0)
 
 loc_19976:
-		addi.w	#$24,obVelY(a0)
-		tst.w	obVelY(a0)
+		addi.w	#$24,ost_y_vel(a0)
+		tst.w	ost_y_vel(a0)
 		bmi.s	SEgg_FindBlocks
-		cmpi.w	#$595,obY(a0)
+		cmpi.w	#$595,ost_y_pos(a0)
 		bcs.s	SEgg_FindBlocks
-		move.w	#$5357,obSubtype(a0)
-		cmpi.w	#$59B,obY(a0)
+		move.w	#$5357,ost_subtype(a0)
+		cmpi.w	#$59B,ost_y_pos(a0)
 		bcs.s	SEgg_FindBlocks
-		move.w	#$59B,obY(a0)
-		clr.w	obVelY(a0)
+		move.w	#$59B,ost_y_pos(a0)
+		clr.w	ost_y_vel(a0)
 
 SEgg_FindBlocks:
-		move.w	obVelX(a0),d0
-		or.w	obVelY(a0),d0
+		move.w	ost_x_vel(a0),d0
+		or.w	ost_y_vel(a0),d0
 		bne.s	loc_199D0
 		lea	(v_objspace).w,a1 ; start at the first object RAM
 		moveq	#$3E,d0
@@ -34885,9 +34885,9 @@ SEgg_FindLoop:
 		dbeq	d0,SEgg_FindLoop ; if not, repeat (max	$3E times)
 
 		bne.s	loc_199D0
-		move.w	#$474F,obSubtype(a1) ; set block to disintegrate
-		addq.b	#2,ob2ndRout(a0)
-		move.b	#1,obAnim(a0)
+		move.w	#$474F,ost_subtype(a1) ; set block to disintegrate
+		addq.b	#2,ost_routine2(a0)
+		move.b	#1,ost_anim(a0)
 
 loc_199D0:
 		bra.w	loc_19934
@@ -34895,7 +34895,7 @@ loc_199D0:
 
 SEgg_Switch:	; Routine 4
 		moveq	#0,d0
-		move.b	ob2ndRout(a0),d0
+		move.b	ost_routine2(a0),d0
 		move.w	SEgg_SwIndex(pc,d0.w),d0
 		jmp	SEgg_SwIndex(pc,d0.w)
 ; ===========================================================================
@@ -34906,10 +34906,10 @@ SEgg_SwIndex:	index *
 
 loc_199E6:
 		movea.l	$34(a0),a1
-		cmpi.w	#$5357,obSubtype(a1)
+		cmpi.w	#$5357,ost_subtype(a1)
 		bne.s	SEgg_SwDisplay
-		move.b	#1,obFrame(a0)
-		addq.b	#2,ob2ndRout(a0)
+		move.b	#1,ost_frame(a0)
+		addq.b	#2,ost_routine2(a0)
 
 SEgg_SwDisplay:
 		jmp	(DisplaySprite).l
@@ -34923,7 +34923,7 @@ Map_SEgg:	include "Mappings\SBZ2 Eggman.asm"
 
 FalseFloor:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	FFloor_Index(pc,d0.w),d1
 		jmp	FFloor_Index(pc,d1.w)
 ; ===========================================================================
@@ -34937,12 +34937,12 @@ FFloor_Index:	index *
 ; ===========================================================================
 
 FFloor_Main:	; Routine 0
-		move.w	#$2080,obX(a0)
-		move.w	#$5D0,obY(a0)
-		move.b	#$80,obActWid(a0)
-		move.b	#$10,obHeight(a0)
-		move.b	#4,obRender(a0)
-		bset	#7,obRender(a0)
+		move.w	#$2080,ost_x_pos(a0)
+		move.w	#$5D0,ost_y_pos(a0)
+		move.b	#$80,ost_actwidth(a0)
+		move.b	#$10,ost_height(a0)
+		move.b	#4,ost_render(a0)
+		bset	#7,ost_render(a0)
 		moveq	#0,d4
 		move.w	#$2010,d5
 		moveq	#7,d6
@@ -34953,40 +34953,40 @@ FFloor_MakeBlock:
 		bne.s	FFloor_ExitMake
 		move.w	a1,(a2)+
 		move.b	#id_FalseFloor,(a1) ; load block object
-		move.l	#Map_FFloor,obMap(a1)
-		move.w	#$4518,obGfx(a1)
-		move.b	#4,obRender(a1)
-		move.b	#$10,obActWid(a1)
-		move.b	#$10,obHeight(a1)
-		move.b	#3,obPriority(a1)
-		move.w	d5,obX(a1)	; set X	position
-		move.w	#$5D0,obY(a1)
+		move.l	#Map_FFloor,ost_mappings(a1)
+		move.w	#$4518,ost_tile(a1)
+		move.b	#4,ost_render(a1)
+		move.b	#$10,ost_actwidth(a1)
+		move.b	#$10,ost_height(a1)
+		move.b	#3,ost_priority(a1)
+		move.w	d5,ost_x_pos(a1)	; set X	position
+		move.w	#$5D0,ost_y_pos(a1)
 		addi.w	#$20,d5		; add $20 for next X position
-		move.b	#8,obRoutine(a1)
+		move.b	#8,ost_routine(a1)
 		dbf	d6,FFloor_MakeBlock ; repeat sequence 7 more times
 
 FFloor_ExitMake:
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 		rts	
 ; ===========================================================================
 
 FFloor_ChkBreak:; Routine 2
-		cmpi.w	#$474F,obSubtype(a0) ; is object set to disintegrate?
+		cmpi.w	#$474F,ost_subtype(a0) ; is object set to disintegrate?
 		bne.s	FFloor_Solid	; if not, branch
-		clr.b	obFrame(a0)
-		addq.b	#2,obRoutine(a0) ; next subroutine
+		clr.b	ost_frame(a0)
+		addq.b	#2,ost_routine(a0) ; next subroutine
 
 FFloor_Solid:
 		moveq	#0,d0
-		move.b	obFrame(a0),d0
+		move.b	ost_frame(a0),d0
 		neg.b	d0
 		ext.w	d0
 		addq.w	#8,d0
 		asl.w	#4,d0
 		move.w	#$2100,d4
 		sub.w	d0,d4
-		move.b	d0,obActWid(a0)
-		move.w	d4,obX(a0)
+		move.b	d0,ost_actwidth(a0)
+		move.w	d4,ost_x_pos(a0)
 		moveq	#$B,d1
 		add.w	d0,d1
 		moveq	#$10,d2
@@ -34995,17 +34995,17 @@ FFloor_Solid:
 ; ===========================================================================
 
 loc_19C36:	; Routine 4
-		subi.b	#$E,obTimeFrame(a0)
+		subi.b	#$E,ost_anim_time(a0)
 		bcc.s	FFloor_Solid2
 		moveq	#-1,d0
-		move.b	obFrame(a0),d0
+		move.b	ost_frame(a0),d0
 		ext.w	d0
 		add.w	d0,d0
 		move.w	$30(a0,d0.w),d0
 		movea.l	d0,a1
-		move.w	#$474F,obSubtype(a1)
-		addq.b	#1,obFrame(a0)
-		cmpi.b	#8,obFrame(a0)
+		move.w	#$474F,ost_subtype(a1)
+		addq.b	#1,ost_frame(a0)
+		cmpi.b	#8,ost_frame(a0)
 		beq.s	loc_19C62
 
 FFloor_Solid2:
@@ -35013,19 +35013,19 @@ FFloor_Solid2:
 ; ===========================================================================
 
 loc_19C62:	; Routine 6
-		bclr	#3,obStatus(a0)
-		bclr	#3,(v_player+obStatus).w
+		bclr	#3,ost_status(a0)
+		bclr	#3,(v_player+ost_status).w
 		bra.w	loc_1982C
 ; ===========================================================================
 
 loc_19C72:	; Routine 8
-		cmpi.w	#$474F,obSubtype(a0) ; is object set to disintegrate?
+		cmpi.w	#$474F,ost_subtype(a0) ; is object set to disintegrate?
 		beq.s	FFloor_Break	; if yes, branch
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 
 loc_19C80:	; Routine $A
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.w	loc_1982C
 		jsr	(ObjectFall).l
 		jmp	(DisplaySprite).l
@@ -35037,9 +35037,9 @@ FFloor_Break:
 		moveq	#1,d4
 		moveq	#3,d1
 		moveq	#$38,d2
-		addq.b	#2,obRoutine(a0)
-		move.b	#8,obActWid(a0)
-		move.b	#8,obHeight(a0)
+		addq.b	#2,ost_routine(a0)
+		move.b	#8,ost_actwidth(a0)
+		move.b	#8,ost_height(a0)
 		lea	(a0),a1
 		bra.s	FFloor_MakeFrag
 ; ===========================================================================
@@ -35060,12 +35060,12 @@ loc_19CC4:
 		move.l	(a2)+,(a3)+
 		dbf	d3,loc_19CC4
 
-		move.w	(a4)+,obVelY(a1)
+		move.w	(a4)+,ost_y_vel(a1)
 		move.w	(a5)+,d3
-		add.w	d3,obX(a1)
+		add.w	d3,ost_x_pos(a1)
 		move.w	(a5)+,d3
-		add.w	d3,obY(a1)
-		move.b	d4,obFrame(a1)
+		add.w	d3,ost_y_pos(a1)
+		move.b	d4,ost_frame(a1)
 		addq.w	#1,d4
 		dbf	d1,FFloor_LoopFrag ; repeat sequence 3 more times
 
@@ -35092,7 +35092,7 @@ Obj85_Delete:
 
 BossFinal:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Obj85_Index(pc,d0.w),d0
 		jmp	Obj85_Index(pc,d0.w)
 ; ===========================================================================
@@ -35140,21 +35140,21 @@ Obj85_Loop:
 
 Obj85_LoadBoss:
 		move.b	#id_BossFinal,(a1)
-		move.w	(a2)+,obX(a1)
-		move.w	(a2)+,obY(a1)
-		move.w	(a2)+,obGfx(a1)
-		move.l	(a2)+,obMap(a1)
-		move.b	(a3)+,obRoutine(a1)
-		move.b	(a3)+,obAnim(a1)
-		move.b	(a3)+,obPriority(a1)
+		move.w	(a2)+,ost_x_pos(a1)
+		move.w	(a2)+,ost_y_pos(a1)
+		move.w	(a2)+,ost_tile(a1)
+		move.l	(a2)+,ost_mappings(a1)
+		move.b	(a3)+,ost_routine(a1)
+		move.b	(a3)+,ost_anim(a1)
+		move.b	(a3)+,ost_priority(a1)
 		if Revision=0
-		move.b	(a3)+,obWidth(a1)
+		move.b	(a3)+,ost_width(a1)
 		else
-			move.b	(a3)+,obActWid(a1)
+			move.b	(a3)+,ost_actwidth(a1)
 		endc
-		move.b	(a3)+,obHeight(a1)
-		move.b	#4,obRender(a1)
-		bset	#7,obRender(a0)
+		move.b	(a3)+,ost_height(a1)
+		move.b	#4,ost_render(a1)
+		bset	#7,ost_render(a0)
 		move.l	a0,$34(a1)
 		dbf	d1,Obj85_Loop
 
@@ -35175,13 +35175,13 @@ loc_19E3E:
 		move.w	a1,(a2)+
 		move.b	#id_EggmanCylinder,(a1) ; load crushing	cylinder object
 		move.l	a0,$34(a1)
-		move.b	d2,obSubtype(a1)
+		move.b	d2,ost_subtype(a1)
 		addq.w	#2,d2
 		dbf	d1,loc_19E3E
 
 loc_19E5A:
 		move.w	#0,$34(a0)
-		move.b	#8,obColProp(a0) ; set number of hits to 8
+		move.b	#8,ost_col_property(a0) ; set number of hits to 8
 		move.w	#-1,$30(a0)
 
 Obj85_Eggman:	; Routine 2
@@ -35247,17 +35247,17 @@ loc_19EC6:
 loc_19F10:
 		tst.w	$32(a0)
 		bmi.w	loc_19FA6
-		bclr	#0,obStatus(a0)
-		move.w	(v_player+obX).w,d0
-		sub.w	obX(a0),d0
+		bclr	#0,ost_status(a0)
+		move.w	(v_player+ost_x_pos).w,d0
+		sub.w	ost_x_pos(a0),d0
 		bcs.s	loc_19F2E
-		bset	#0,obStatus(a0)
+		bset	#0,ost_status(a0)
 
 loc_19F2E:
 		move.w	#$2B,d1
 		move.w	#$14,d2
 		move.w	#$14,d3
-		move.w	obX(a0),d4
+		move.w	ost_x_pos(a0),d4
 		jsr	(SolidObject).l
 		tst.w	d4
 		bgt.s	loc_19F50
@@ -35270,30 +35270,30 @@ loc_19F48:
 
 loc_19F50:
 		addq.w	#7,(v_random).w
-		cmpi.b	#id_Roll,(v_player+obAnim).w
+		cmpi.b	#id_Roll,(v_player+ost_anim).w
 		bne.s	loc_19F48
 		move.w	#$300,d0
-		btst	#0,obStatus(a0)
+		btst	#0,ost_status(a0)
 		bne.s	loc_19F6A
 		neg.w	d0
 
 loc_19F6A:
-		move.w	d0,(v_player+obVelX).w
+		move.w	d0,(v_player+ost_x_vel).w
 		tst.b	$35(a0)
 		bne.s	loc_19F88
-		subq.b	#1,obColProp(a0)
+		subq.b	#1,ost_col_property(a0)
 		move.b	#$64,$35(a0)
 		sfx	sfx_HitBoss,0,0,0	; play boss damage sound
 
 loc_19F88:
 		subq.b	#1,$35(a0)
 		beq.s	loc_19F96
-		move.b	#3,obAnim(a0)
+		move.b	#3,ost_anim(a0)
 		bra.s	loc_19F9C
 ; ===========================================================================
 
 loc_19F96:
-		move.b	#1,obAnim(a0)
+		move.b	#1,ost_anim(a0)
 
 loc_19F9C:
 		lea	Ani_SEgg(pc),a1
@@ -35301,7 +35301,7 @@ loc_19F9C:
 ; ===========================================================================
 
 loc_19FA6:
-		tst.b	obColProp(a0)
+		tst.b	ost_col_property(a0)
 		beq.s	loc_19FBC
 		addq.b	#2,$34(a0)
 		move.w	#-1,$30(a0)
@@ -35316,9 +35316,9 @@ loc_19FBC:
 			bsr.w	AddPoints
 		endc
 		move.b	#6,$34(a0)
-		move.w	#$25C0,obX(a0)
-		move.w	#$53C,obY(a0)
-		move.b	#$14,obHeight(a0)
+		move.w	#$25C0,ost_x_pos(a0)
+		move.w	#$53C,ost_y_pos(a0)
+		move.b	#$14,ost_height(a0)
 		rts	
 ; ===========================================================================
 word_19FD6:	dc.w 0,	2, 2, 4, 4, 6, 6, 0
@@ -35357,25 +35357,25 @@ loc_1A020:
 
 loc_1A02A:
 		if Revision=0
-		move.b	#$30,obWidth(a0)
+		move.b	#$30,ost_width(a0)
 		else
-			move.b	#$30,obActWid(a0)
+			move.b	#$30,ost_actwidth(a0)
 		endc
-		bset	#0,obStatus(a0)
+		bset	#0,ost_status(a0)
 		jsr	(SpeedToPos).l
-		move.b	#6,obFrame(a0)
-		addi.w	#$10,obVelY(a0)
-		cmpi.w	#$59C,obY(a0)
+		move.b	#6,ost_frame(a0)
+		addi.w	#$10,ost_y_vel(a0)
+		cmpi.w	#$59C,ost_y_pos(a0)
 		bcs.s	loc_1A070
-		move.w	#$59C,obY(a0)
+		move.w	#$59C,ost_y_pos(a0)
 		addq.b	#2,$34(a0)
 		if Revision=0
-		move.b	#$20,obWidth(a0)
+		move.b	#$20,ost_width(a0)
 		else
-			move.b	#$20,obActWid(a0)
+			move.b	#$20,ost_actwidth(a0)
 		endc
-		move.w	#$100,obVelX(a0)
-		move.w	#-$100,obVelY(a0)
+		move.w	#$100,ost_x_vel(a0)
+		move.w	#-$100,ost_y_vel(a0)
 		addq.b	#2,(v_dle_routine).w
 
 loc_1A070:
@@ -35383,49 +35383,49 @@ loc_1A070:
 ; ===========================================================================
 
 loc_1A074:
-		bset	#0,obStatus(a0)
-		move.b	#4,obAnim(a0)
+		bset	#0,ost_status(a0)
+		move.b	#4,ost_anim(a0)
 		jsr	(SpeedToPos).l
-		addi.w	#$10,obVelY(a0)
-		cmpi.w	#$5A3,obY(a0)
+		addi.w	#$10,ost_y_vel(a0)
+		cmpi.w	#$5A3,ost_y_pos(a0)
 		bcs.s	loc_1A09A
-		move.w	#-$40,obVelY(a0)
+		move.w	#-$40,ost_y_vel(a0)
 
 loc_1A09A:
-		move.w	#$400,obVelX(a0)
-		move.w	obX(a0),d0
-		sub.w	(v_player+obX).w,d0
+		move.w	#$400,ost_x_vel(a0)
+		move.w	ost_x_pos(a0),d0
+		sub.w	(v_player+ost_x_pos).w,d0
 		bpl.s	loc_1A0B4
-		move.w	#$500,obVelX(a0)
+		move.w	#$500,ost_x_vel(a0)
 		bra.w	loc_1A0F2
 ; ===========================================================================
 
 loc_1A0B4:
 		subi.w	#$70,d0
 		bcs.s	loc_1A0F2
-		subi.w	#$100,obVelX(a0)
+		subi.w	#$100,ost_x_vel(a0)
 		subq.w	#8,d0
 		bcs.s	loc_1A0F2
-		subi.w	#$100,obVelX(a0)
+		subi.w	#$100,ost_x_vel(a0)
 		subq.w	#8,d0
 		bcs.s	loc_1A0F2
-		subi.w	#$80,obVelX(a0)
+		subi.w	#$80,ost_x_vel(a0)
 		subq.w	#8,d0
 		bcs.s	loc_1A0F2
-		subi.w	#$80,obVelX(a0)
+		subi.w	#$80,ost_x_vel(a0)
 		subq.w	#8,d0
 		bcs.s	loc_1A0F2
-		subi.w	#$80,obVelX(a0)
+		subi.w	#$80,ost_x_vel(a0)
 		subi.w	#$38,d0
 		bcs.s	loc_1A0F2
-		clr.w	obVelX(a0)
+		clr.w	ost_x_vel(a0)
 
 loc_1A0F2:
-		cmpi.w	#$26A0,obX(a0)
+		cmpi.w	#$26A0,ost_x_pos(a0)
 		bcs.s	loc_1A110
-		move.w	#$26A0,obX(a0)
-		move.w	#$240,obVelX(a0)
-		move.w	#-$4C0,obVelY(a0)
+		move.w	#$26A0,ost_x_pos(a0)
+		move.w	#$240,ost_x_vel(a0)
+		move.w	#-$4C0,ost_y_vel(a0)
 		addq.b	#2,$34(a0)
 
 loc_1A110:
@@ -35434,26 +35434,26 @@ loc_1A110:
 
 loc_1A112:
 		jsr	(SpeedToPos).l
-		cmpi.w	#$26E0,obX(a0)
+		cmpi.w	#$26E0,ost_x_pos(a0)
 		bcs.s	loc_1A124
-		clr.w	obVelX(a0)
+		clr.w	ost_x_vel(a0)
 
 loc_1A124:
-		addi.w	#$34,obVelY(a0)
-		tst.w	obVelY(a0)
+		addi.w	#$34,ost_y_vel(a0)
+		tst.w	ost_y_vel(a0)
 		bmi.s	loc_1A142
-		cmpi.w	#$592,obY(a0)
+		cmpi.w	#$592,ost_y_pos(a0)
 		bcs.s	loc_1A142
-		move.w	#$592,obY(a0)
-		clr.w	obVelY(a0)
+		move.w	#$592,ost_y_pos(a0)
+		clr.w	ost_y_vel(a0)
 
 loc_1A142:
-		move.w	obVelX(a0),d0
-		or.w	obVelY(a0),d0
+		move.w	ost_x_vel(a0),d0
+		or.w	ost_y_vel(a0),d0
 		bne.s	loc_1A15C
 		addq.b	#2,$34(a0)
-		move.w	#-$180,obVelY(a0)
-		move.b	#1,obColProp(a0)
+		move.w	#-$180,ost_y_vel(a0)
+		move.b	#1,ost_col_property(a0)
 
 loc_1A15C:
 		lea	Ani_SEgg(pc),a1
@@ -35470,7 +35470,7 @@ loc_1A172:
 		move.w	#$1B,d1
 		move.w	#$70,d2
 		move.w	#$71,d3
-		move.w	obX(a0),d4
+		move.w	ost_x_pos(a0),d4
 		jmp	(SolidObject).l
 ; ===========================================================================
 
@@ -35479,16 +35479,16 @@ locret_1A190:
 ; ===========================================================================
 
 loc_1A192:
-		move.l	#Map_Eggman,obMap(a0)
-		move.w	#$400,obGfx(a0)
-		move.b	#0,obAnim(a0)
-		bset	#0,obStatus(a0)
+		move.l	#Map_Eggman,ost_mappings(a0)
+		move.w	#$400,ost_tile(a0)
+		move.b	#0,ost_anim(a0)
+		bset	#0,ost_status(a0)
 		jsr	(SpeedToPos).l
-		cmpi.w	#$544,obY(a0)
+		cmpi.w	#$544,ost_y_pos(a0)
 		bcc.s	loc_1A1D0
-		move.w	#$180,obVelX(a0)
-		move.w	#-$18,obVelY(a0)
-		move.b	#$F,obColType(a0)
+		move.w	#$180,ost_x_vel(a0)
+		move.w	#-$18,ost_y_vel(a0)
+		move.b	#$F,ost_col_type(a0)
 		addq.b	#2,$34(a0)
 
 loc_1A1D0:
@@ -35496,11 +35496,11 @@ loc_1A1D0:
 ; ===========================================================================
 
 loc_1A1D4:
-		bset	#0,obStatus(a0)
+		bset	#0,ost_status(a0)
 		jsr	(SpeedToPos).l
 		tst.w	$30(a0)
 		bne.s	loc_1A1FC
-		tst.b	obColType(a0)
+		tst.b	ost_col_type(a0)
 		bne.s	loc_1A216
 		move.w	#$1E,$30(a0)
 		sfx	sfx_HitBoss,0,0,0	; play boss damage sound
@@ -35508,34 +35508,34 @@ loc_1A1D4:
 loc_1A1FC:
 		subq.w	#1,$30(a0)
 		bne.s	loc_1A216
-		tst.b	obStatus(a0)
+		tst.b	ost_status(a0)
 		bpl.s	loc_1A210
-		move.w	#$60,obVelY(a0)
+		move.w	#$60,ost_y_vel(a0)
 		bra.s	loc_1A216
 ; ===========================================================================
 
 loc_1A210:
-		move.b	#$F,obColType(a0)
+		move.b	#$F,ost_col_type(a0)
 
 loc_1A216:
-		cmpi.w	#$2790,(v_player+obX).w
+		cmpi.w	#$2790,(v_player+ost_x_pos).w
 		blt.s	loc_1A23A
 		move.b	#1,(f_lockctrl).w
 		move.w	#0,(v_jpadhold2).w
-		clr.w	(v_player+obInertia).w
-		tst.w	obVelY(a0)
+		clr.w	(v_player+ost_inertia).w
+		tst.w	ost_y_vel(a0)
 		bpl.s	loc_1A248
 		move.w	#$100,(v_jpadhold2).w
 
 loc_1A23A:
-		cmpi.w	#$27E0,(v_player+obX).w
+		cmpi.w	#$27E0,(v_player+ost_x_pos).w
 		blt.s	loc_1A248
-		move.w	#$27E0,(v_player+obX).w
+		move.w	#$27E0,(v_player+ost_x_pos).w
 
 loc_1A248:
-		cmpi.w	#$2900,obX(a0)
+		cmpi.w	#$2900,ost_x_pos(a0)
 		bcs.s	loc_1A260
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bmi.s	loc_1A260
 		move.b	#$18,(v_gamemode).w
 		bra.w	Obj85_Delete
@@ -35550,16 +35550,16 @@ loc_1A264:	; Routine 4
 		move.b	(a1),d0
 		cmp.b	(a0),d0
 		bne.w	Obj85_Delete
-		move.b	#7,obAnim(a0)
+		move.b	#7,ost_anim(a0)
 		cmpi.b	#$C,$34(a1)
 		bge.s	loc_1A280
 		bra.s	loc_1A2A6
 ; ===========================================================================
 
 loc_1A280:
-		tst.w	obVelX(a1)
+		tst.w	ost_x_vel(a1)
 		beq.s	loc_1A28C
-		move.b	#$B,obAnim(a0)
+		move.b	#$B,ost_anim(a0)
 
 loc_1A28C:
 		lea	Ani_Eggman(pc),a1
@@ -35567,16 +35567,16 @@ loc_1A28C:
 
 loc_1A296:
 		movea.l	$34(a0),a1
-		move.w	obX(a1),obX(a0)
-		move.w	obY(a1),obY(a0)
+		move.w	ost_x_pos(a1),ost_x_pos(a0)
+		move.w	ost_y_pos(a1),ost_y_pos(a0)
 
 loc_1A2A6:
 		movea.l	$34(a0),a1
-		move.b	obStatus(a1),obStatus(a0)
+		move.b	ost_status(a1),ost_status(a0)
 		moveq	#3,d0
-		and.b	obStatus(a0),d0
-		andi.b	#$FC,obRender(a0)
-		or.b	d0,obRender(a0)
+		and.b	ost_status(a0),d0
+		andi.b	#$FC,ost_render(a0)
+		or.b	d0,ost_render(a0)
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 
@@ -35585,19 +35585,19 @@ loc_1A2C6:	; Routine 6
 		move.b	(a1),d0
 		cmp.b	(a0),d0
 		bne.w	Obj85_Delete
-		cmpi.l	#Map_Eggman,obMap(a1)
+		cmpi.l	#Map_Eggman,ost_mappings(a1)
 		beq.s	loc_1A2E4
-		move.b	#$A,obFrame(a0)
+		move.b	#$A,ost_frame(a0)
 		bra.s	loc_1A2A6
 ; ===========================================================================
 
 loc_1A2E4:
-		move.b	#1,obAnim(a0)
-		tst.b	obColProp(a1)
+		move.b	#1,ost_anim(a0)
+		tst.b	ost_col_property(a1)
 		ble.s	loc_1A312
-		move.b	#6,obAnim(a0)
-		move.l	#Map_Eggman,obMap(a0)
-		move.w	#$400,obGfx(a0)
+		move.b	#6,ost_anim(a0)
+		move.l	#Map_Eggman,ost_mappings(a0)
+		move.w	#$400,ost_tile(a0)
 		lea	Ani_Eggman(pc),a1
 		jsr	(AnimateSprite).l
 		bra.w	loc_1A296
@@ -35607,35 +35607,35 @@ loc_1A312:
 		tst.b	1(a0)
 		bpl.w	Obj85_Delete
 		bsr.w	BossDefeated
-		move.b	#2,obPriority(a0)
-		move.b	#0,obAnim(a0)
-		move.l	#Map_FZDamaged,obMap(a0)
-		move.w	#$3A0,obGfx(a0)
+		move.b	#2,ost_priority(a0)
+		move.b	#0,ost_anim(a0)
+		move.l	#Map_FZDamaged,ost_mappings(a0)
+		move.w	#$3A0,ost_tile(a0)
 		lea	Ani_FZEgg(pc),a1
 		jsr	(AnimateSprite).l
 		bra.w	loc_1A296
 ; ===========================================================================
 
 loc_1A346:	; Routine 8
-		bset	#0,obStatus(a0)
+		bset	#0,ost_status(a0)
 		movea.l	$34(a0),a1
-		cmpi.l	#Map_Eggman,obMap(a1)
+		cmpi.l	#Map_Eggman,ost_mappings(a1)
 		beq.s	loc_1A35E
 		bra.w	loc_1A2A6
 ; ===========================================================================
 
 loc_1A35E:
-		move.w	obX(a1),obX(a0)
-		move.w	obY(a1),obY(a0)
-		tst.b	obTimeFrame(a0)
+		move.w	ost_x_pos(a1),ost_x_pos(a0)
+		move.w	ost_y_pos(a1),ost_y_pos(a0)
+		tst.b	ost_anim_time(a0)
 		bne.s	loc_1A376
-		move.b	#$14,obTimeFrame(a0)
+		move.b	#$14,ost_anim_time(a0)
 
 loc_1A376:
-		subq.b	#1,obTimeFrame(a0)
+		subq.b	#1,ost_anim_time(a0)
 		bgt.s	loc_1A38A
-		addq.b	#1,obFrame(a0)
-		cmpi.b	#2,obFrame(a0)
+		addq.b	#1,ost_frame(a0)
+		cmpi.b	#2,ost_frame(a0)
 		bgt.w	Obj85_Delete
 
 loc_1A38A:
@@ -35643,11 +35643,11 @@ loc_1A38A:
 ; ===========================================================================
 
 loc_1A38E:	; Routine $A
-		move.b	#$B,obFrame(a0)
-		move.w	(v_player+obX).w,d0
-		sub.w	obX(a0),d0
+		move.b	#$B,ost_frame(a0)
+		move.w	(v_player+ost_x_pos).w,d0
+		sub.w	ost_x_pos(a0),d0
 		bcs.s	loc_1A3A6
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.w	Obj85_Delete
 
 loc_1A3A6:
@@ -35655,12 +35655,12 @@ loc_1A3A6:
 ; ===========================================================================
 
 loc_1A3AC:	; Routine $C
-		move.b	#0,obFrame(a0)
-		bset	#0,obStatus(a0)
+		move.b	#0,ost_frame(a0)
+		bset	#0,ost_status(a0)
 		movea.l	$34(a0),a1
 		cmpi.b	#$C,$34(a1)
 		bne.s	loc_1A3D0
-		cmpi.l	#Map_Eggman,obMap(a1)
+		cmpi.l	#Map_Eggman,ost_mappings(a1)
 		beq.w	Obj85_Delete
 
 loc_1A3D0:
@@ -35680,7 +35680,7 @@ Obj84_Delete:
 
 EggmanCylinder:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Obj84_Index(pc,d0.w),d0
 		jmp	Obj84_Index(pc,d0.w)
 ; ===========================================================================
@@ -35698,61 +35698,61 @@ Obj84_PosData:	dc.w $24D0, $620
 Obj84_Main:	; Routine
 		lea	Obj84_PosData(pc),a1
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		add.w	d0,d0
 		adda.w	d0,a1
-		move.b	#4,obRender(a0)
-		bset	#7,obRender(a0)
-		bset	#4,obRender(a0)
-		move.w	#$300,obGfx(a0)
-		move.l	#Map_EggCyl,obMap(a0)
-		move.w	(a1)+,obX(a0)
-		move.w	(a1),obY(a0)
+		move.b	#4,ost_render(a0)
+		bset	#7,ost_render(a0)
+		bset	#4,ost_render(a0)
+		move.w	#$300,ost_tile(a0)
+		move.l	#Map_EggCyl,ost_mappings(a0)
+		move.w	(a1)+,ost_x_pos(a0)
+		move.w	(a1),ost_y_pos(a0)
 		move.w	(a1)+,$38(a0)
-		move.b	#$20,obHeight(a0)
-		move.b	#$60,obWidth(a0)
-		move.b	#$20,obActWid(a0)
-		move.b	#$60,obHeight(a0)
-		move.b	#3,obPriority(a0)
-		addq.b	#2,obRoutine(a0)
+		move.b	#$20,ost_height(a0)
+		move.b	#$60,ost_width(a0)
+		move.b	#$20,ost_actwidth(a0)
+		move.b	#$60,ost_height(a0)
+		move.b	#3,ost_priority(a0)
+		addq.b	#2,ost_routine(a0)
 
 loc_1A4CE:	; Routine 2
-		cmpi.b	#2,obSubtype(a0)
+		cmpi.b	#2,ost_subtype(a0)
 		ble.s	loc_1A4DC
-		bset	#1,obRender(a0)
+		bset	#1,ost_render(a0)
 
 loc_1A4DC:
 		clr.l	$3C(a0)
 		tst.b	$29(a0)
 		beq.s	loc_1A4EA
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 
 loc_1A4EA:
 		move.l	$3C(a0),d0
 		move.l	$38(a0),d1
 		add.l	d0,d1
 		swap	d1
-		move.w	d1,obY(a0)
-		cmpi.b	#4,obRoutine(a0)
+		move.w	d1,ost_y_pos(a0)
+		cmpi.b	#4,ost_routine(a0)
 		bne.s	loc_1A524
 		tst.w	$30(a0)
 		bpl.s	loc_1A524
 		moveq	#-$A,d0
-		cmpi.b	#2,obSubtype(a0)
+		cmpi.b	#2,ost_subtype(a0)
 		ble.s	loc_1A514
 		moveq	#$E,d0
 
 loc_1A514:
 		add.w	d0,d1
 		movea.l	$34(a0),a1
-		move.w	d1,obY(a1)
-		move.w	obX(a0),obX(a1)
+		move.w	d1,ost_y_pos(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
 
 loc_1A524:
 		move.w	#$2B,d1
 		move.w	#$60,d2
 		move.w	#$61,d3
-		move.w	obX(a0),d4
+		move.w	ost_x_pos(a0),d4
 		jsr	(SolidObject).l
 		moveq	#0,d0
 		move.w	$3C(a0),d1
@@ -35774,13 +35774,13 @@ loc_1A550:
 		add.w	d1,d0
 
 loc_1A55C:
-		move.b	d0,obFrame(a0)
-		move.w	(v_player+obX).w,d0
-		sub.w	obX(a0),d0
+		move.b	d0,ost_frame(a0)
+		move.w	(v_player+ost_x_pos).w,d0
+		sub.w	ost_x_pos(a0),d0
 		bmi.s	loc_1A578
 		subi.w	#$140,d0
 		bmi.s	loc_1A578
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.w	Obj84_Delete
 
 loc_1A578:
@@ -35789,7 +35789,7 @@ loc_1A578:
 
 loc_1A57E:	; Routine 4
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		move.w	off_1A590(pc,d0.w),d0
 		jsr	off_1A590(pc,d0.w)
 		bra.w	loc_1A4EA
@@ -35805,7 +35805,7 @@ loc_1A598:
 		tst.b	$29(a0)
 		bne.s	loc_1A5D4
 		movea.l	$34(a0),a1
-		tst.b	obColProp(a1)
+		tst.b	ost_col_property(a1)
 		bne.s	loc_1A5B4
 		bsr.w	BossDefeated
 		subi.l	#$10000,$3C(a0)
@@ -35817,7 +35817,7 @@ loc_1A5B4:
 		movea.l	$34(a0),a1
 		subq.w	#1,$32(a1)
 		clr.w	$30(a1)
-		subq.b	#2,obRoutine(a0)
+		subq.b	#2,ost_routine(a0)
 		rts	
 ; ===========================================================================
 
@@ -35839,11 +35839,11 @@ locret_1A602:
 ; ===========================================================================
 
 loc_1A604:
-		bset	#1,obRender(a0)
+		bset	#1,ost_render(a0)
 		tst.b	$29(a0)
 		bne.s	loc_1A646
 		movea.l	$34(a0),a1
-		tst.b	obColProp(a1)
+		tst.b	ost_col_property(a1)
 		bne.s	loc_1A626
 		bsr.w	BossDefeated
 		addi.l	#$10000,$3C(a0)
@@ -35855,7 +35855,7 @@ loc_1A626:
 		movea.l	$34(a0),a1
 		subq.w	#1,$32(a1)
 		clr.w	$30(a1)
-		subq.b	#2,obRoutine(a0)
+		subq.b	#2,ost_routine(a0)
 		rts	
 ; ===========================================================================
 
@@ -35883,7 +35883,7 @@ Map_EggCyl:	include "Mappings\FZ Cylinders.asm"
 
 BossPlasma:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Obj86_Index(pc,d0.w),d0
 		jmp	Obj86_Index(pc,d0.w)
 ; ===========================================================================
@@ -35896,47 +35896,47 @@ Obj86_Index:	index *
 ; ===========================================================================
 
 Obj86_Main:	; Routine 0
-		move.w	#$2588,obX(a0)
-		move.w	#$53C,obY(a0)
-		move.w	#$300,obGfx(a0)
-		move.l	#Map_PLaunch,obMap(a0)
-		move.b	#0,obAnim(a0)
-		move.b	#3,obPriority(a0)
-		move.b	#8,obWidth(a0)
-		move.b	#8,obHeight(a0)
-		move.b	#4,obRender(a0)
-		bset	#7,obRender(a0)
-		addq.b	#2,obRoutine(a0)
+		move.w	#$2588,ost_x_pos(a0)
+		move.w	#$53C,ost_y_pos(a0)
+		move.w	#$300,ost_tile(a0)
+		move.l	#Map_PLaunch,ost_mappings(a0)
+		move.b	#0,ost_anim(a0)
+		move.b	#3,ost_priority(a0)
+		move.b	#8,ost_width(a0)
+		move.b	#8,ost_height(a0)
+		move.b	#4,ost_render(a0)
+		bset	#7,ost_render(a0)
+		addq.b	#2,ost_routine(a0)
 
 Obj86_Generator:; Routine 2
 		movea.l	$34(a0),a1
 		cmpi.b	#6,$34(a1)
 		bne.s	loc_1A850
 		move.b	#id_ExplosionBomb,(a0)
-		move.b	#0,obRoutine(a0)
+		move.b	#0,ost_routine(a0)
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 
 loc_1A850:
-		move.b	#0,obAnim(a0)
+		move.b	#0,ost_anim(a0)
 		tst.b	$29(a0)
 		beq.s	loc_1A86C
-		addq.b	#2,obRoutine(a0)
-		move.b	#1,obAnim(a0)
-		move.b	#$3E,obSubtype(a0)
+		addq.b	#2,ost_routine(a0)
+		move.b	#1,ost_anim(a0)
+		move.b	#$3E,ost_subtype(a0)
 
 loc_1A86C:
 		move.w	#$13,d1
 		move.w	#8,d2
 		move.w	#$11,d3
-		move.w	obX(a0),d4
+		move.w	ost_x_pos(a0),d4
 		jsr	(SolidObject).l
-		move.w	(v_player+obX).w,d0
-		sub.w	obX(a0),d0
+		move.w	(v_player+ost_x_pos).w,d0
+		sub.w	ost_x_pos(a0),d0
 		bmi.s	loc_1A89A
 		subi.w	#$140,d0
 		bmi.s	loc_1A89A
-		tst.b	obRender(a0)
+		tst.b	ost_render(a0)
 		bpl.w	Obj84_Delete
 
 loc_1A89A:
@@ -35960,18 +35960,18 @@ Obj86_Loop:
 		jsr	(FindNextFreeObj).l
 		bne.w	loc_1A954
 		move.b	#id_BossPlasma,(a1)
-		move.w	obX(a0),obX(a1)
-		move.w	#$53C,obY(a1)
-		move.b	#8,obRoutine(a1)
-		move.w	#$2300,obGfx(a1)
-		move.l	#Map_Plasma,obMap(a1)
-		move.b	#$C,obHeight(a1)
-		move.b	#$C,obWidth(a1)
-		move.b	#0,obColType(a1)
-		move.b	#3,obPriority(a1)
-		move.w	#$3E,obSubtype(a1)
-		move.b	#4,obRender(a1)
-		bset	#7,obRender(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	#$53C,ost_y_pos(a1)
+		move.b	#8,ost_routine(a1)
+		move.w	#$2300,ost_tile(a1)
+		move.l	#Map_Plasma,ost_mappings(a1)
+		move.b	#$C,ost_height(a1)
+		move.b	#$C,ost_width(a1)
+		move.b	#0,ost_col_type(a1)
+		move.b	#3,ost_priority(a1)
+		move.w	#$3E,ost_subtype(a1)
+		move.b	#4,ost_render(a1)
+		bset	#7,ost_render(a1)
 		move.l	a0,$34(a1)
 		jsr	(RandomNumber).l
 		move.w	$32(a0),d1
@@ -35988,17 +35988,17 @@ Obj86_Loop:
 loc_1A954:
 		tst.w	$32(a0)
 		bne.s	loc_1A95E
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 
 loc_1A95E:
 		bra.w	loc_1A86C
 ; ===========================================================================
 
 loc_1A962:	; Routine 6
-		move.b	#2,obAnim(a0)
+		move.b	#2,ost_anim(a0)
 		tst.w	$38(a0)
 		bne.s	loc_1A97E
-		move.b	#2,obRoutine(a0)
+		move.b	#2,ost_routine(a0)
 		movea.l	$34(a0),a1
 		move.w	#-1,$32(a1)
 
@@ -36008,7 +36008,7 @@ loc_1A97E:
 
 loc_1A982:	; Routine 8
 		moveq	#0,d0
-		move.b	ob2ndRout(a0),d0
+		move.b	ost_routine2(a0),d0
 		move.w	Obj86_Index2(pc,d0.w),d0
 		jsr	Obj86_Index2(pc,d0.w)
 		lea	Ani_Plasma(pc),a1
@@ -36023,39 +36023,39 @@ Obj86_Index2:	index *
 
 loc_1A9A6:
 		move.w	$30(a0),d0
-		sub.w	obX(a0),d0
+		sub.w	ost_x_pos(a0),d0
 		asl.w	#4,d0
-		move.w	d0,obVelX(a0)
-		move.w	#$B4,obSubtype(a0)
-		addq.b	#2,ob2ndRout(a0)
+		move.w	d0,ost_x_vel(a0)
+		move.w	#$B4,ost_subtype(a0)
+		addq.b	#2,ost_routine2(a0)
 		rts	
 ; ===========================================================================
 
 loc_1A9C0:
-		tst.w	obVelX(a0)
+		tst.w	ost_x_vel(a0)
 		beq.s	loc_1A9E6
 		jsr	(SpeedToPos).l
-		move.w	obX(a0),d0
+		move.w	ost_x_pos(a0),d0
 		sub.w	$30(a0),d0
 		bcc.s	loc_1A9E6
-		clr.w	obVelX(a0)
-		add.w	d0,obX(a0)
+		clr.w	ost_x_vel(a0)
+		add.w	d0,ost_x_pos(a0)
 		movea.l	$34(a0),a1
 		subq.w	#1,$32(a1)
 
 loc_1A9E6:
-		move.b	#0,obAnim(a0)
-		subq.w	#1,obSubtype(a0)
+		move.b	#0,ost_anim(a0)
+		subq.w	#1,ost_subtype(a0)
 		bne.s	locret_1AA1C
-		addq.b	#2,ob2ndRout(a0)
-		move.b	#1,obAnim(a0)
-		move.b	#$9A,obColType(a0)
-		move.w	#$B4,obSubtype(a0)
+		addq.b	#2,ost_routine2(a0)
+		move.b	#1,ost_anim(a0)
+		move.b	#$9A,ost_col_type(a0)
+		move.w	#$B4,ost_subtype(a0)
 		moveq	#0,d0
-		move.w	(v_player+obX).w,d0
-		sub.w	obX(a0),d0
-		move.w	d0,obVelX(a0)
-		move.w	#$140,obVelY(a0)
+		move.w	(v_player+ost_x_pos).w,d0
+		sub.w	ost_x_pos(a0),d0
+		move.w	d0,ost_x_vel(a0)
+		move.w	#$140,ost_y_vel(a0)
 
 locret_1AA1C:
 		rts	
@@ -36063,9 +36063,9 @@ locret_1AA1C:
 
 loc_1AA1E:
 		jsr	(SpeedToPos).l
-		cmpi.w	#$5E0,obY(a0)
+		cmpi.w	#$5E0,ost_y_pos(a0)
 		bcc.s	loc_1AA34
-		subq.w	#1,obSubtype(a0)
+		subq.w	#1,ost_subtype(a0)
 		beq.s	loc_1AA34
 		rts	
 ; ===========================================================================
@@ -36086,7 +36086,7 @@ Map_Plasma:	include "Mappings\FZ Plasma Balls.asm"
 
 Prison:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Pri_Index(pc,d0.w),d1
 		jsr	Pri_Index(pc,d1.w)
 		out_of_range.s	@delete
@@ -36114,23 +36114,23 @@ Pri_Var:	dc.b 2,	$20, 4,	0	; routine, width, priority, frame
 ; ===========================================================================
 
 Pri_Main:	; Routine 0
-		move.l	#Map_Pri,obMap(a0)
-		move.w	#$49D,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.w	obY(a0),pri_origY(a0)
+		move.l	#Map_Pri,ost_mappings(a0)
+		move.w	#$49D,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.w	ost_y_pos(a0),pri_origY(a0)
 		moveq	#0,d0
-		move.b	obSubtype(a0),d0
+		move.b	ost_subtype(a0),d0
 		lsl.w	#2,d0
 		lea	Pri_Var(pc,d0.w),a1
-		move.b	(a1)+,obRoutine(a0)
-		move.b	(a1)+,obActWid(a0)
-		move.b	(a1)+,obPriority(a0)
-		move.b	(a1)+,obFrame(a0)
+		move.b	(a1)+,ost_routine(a0)
+		move.b	(a1)+,ost_actwidth(a0)
+		move.b	(a1)+,ost_priority(a0)
+		move.b	(a1)+,ost_frame(a0)
 		cmpi.w	#8,d0		; is object type number	02?
 		bne.s	@not02		; if not, branch
 
-		move.b	#6,obColType(a0)
-		move.b	#8,obColProp(a0)
+		move.b	#6,ost_col_type(a0)
+		move.b	#8,ost_col_property(a0)
 
 	@not02:
 		rts	
@@ -36142,19 +36142,19 @@ Pri_BodyMain:	; Routine 2
 		move.w	#$2B,d1
 		move.w	#$18,d2
 		move.w	#$18,d3
-		move.w	obX(a0),d4
+		move.w	ost_x_pos(a0),d4
 		jmp	(SolidObject).l
 ; ===========================================================================
 
 @chkopened:
-		tst.b	ob2ndRout(a0)	; has the prison been opened?
+		tst.b	ost_routine2(a0)	; has the prison been opened?
 		beq.s	@open		; if yes, branch
-		clr.b	ob2ndRout(a0)
-		bclr	#3,(v_player+obStatus).w
-		bset	#1,(v_player+obStatus).w
+		clr.b	ost_routine2(a0)
+		bclr	#3,(v_player+ost_status).w
+		bset	#1,(v_player+ost_status).w
 
 	@open:
-		move.b	#2,obFrame(a0)	; use frame number 2 (destroyed	prison)
+		move.b	#2,ost_frame(a0)	; use frame number 2 (destroyed	prison)
 		rts	
 ; ===========================================================================
 
@@ -36162,24 +36162,24 @@ Pri_Switched:	; Routine 4
 		move.w	#$17,d1
 		move.w	#8,d2
 		move.w	#8,d3
-		move.w	obX(a0),d4
+		move.w	ost_x_pos(a0),d4
 		jsr	(SolidObject).l
 		lea	(Ani_Pri).l,a1
 		jsr	(AnimateSprite).l
-		move.w	pri_origY(a0),obY(a0)
-		tst.b	ob2ndRout(a0)	; has prison already been opened?
+		move.w	pri_origY(a0),ost_y_pos(a0)
+		tst.b	ost_routine2(a0)	; has prison already been opened?
 		beq.s	@open2		; if yes, branch
 
-		addq.w	#8,obY(a0)
-		move.b	#$A,obRoutine(a0)
-		move.w	#60,obTimeFrame(a0) ; set time between animal spawns
+		addq.w	#8,ost_y_pos(a0)
+		move.b	#$A,ost_routine(a0)
+		move.w	#60,ost_anim_time(a0) ; set time between animal spawns
 		clr.b	(f_timecount).w	; stop time counter
 		clr.b	(f_lockscreen).w ; lock screen position
 		move.b	#1,(f_lockctrl).w ; lock controls
 		move.w	#(btnR<<8),(v_jpadhold2).w ; make Sonic run to the right
-		clr.b	ob2ndRout(a0)
-		bclr	#3,(v_player+obStatus).w
-		bset	#1,(v_player+obStatus).w
+		clr.b	ost_routine2(a0)
+		bclr	#3,(v_player+ost_status).w
+		bset	#1,(v_player+ost_status).w
 
 	@open2:
 		rts	
@@ -36192,30 +36192,30 @@ Pri_Explosion:	; Routine 6, 8, $A
 		jsr	(FindFreeObj).l
 		bne.s	@noexplosion
 		move.b	#id_ExplosionBomb,0(a1) ; load explosion object
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		jsr	(RandomNumber).l
 		moveq	#0,d1
 		move.b	d0,d1
 		lsr.b	#2,d1
 		subi.w	#$20,d1
-		add.w	d1,obX(a1)
+		add.w	d1,ost_x_pos(a1)
 		lsr.w	#8,d0
 		lsr.b	#3,d0
-		add.w	d0,obY(a1)
+		add.w	d0,ost_y_pos(a1)
 
 	@noexplosion:
-		subq.w	#1,obTimeFrame(a0)
+		subq.w	#1,ost_anim_time(a0)
 		beq.s	@makeanimal
 		rts	
 ; ===========================================================================
 
 @makeanimal:
 		move.b	#2,(v_bossstatus).w
-		move.b	#$C,obRoutine(a0)	; replace explosions with animals
-		move.b	#6,obFrame(a0)
-		move.w	#150,obTimeFrame(a0)
-		addi.w	#$20,obY(a0)
+		move.b	#$C,ost_routine(a0)	; replace explosions with animals
+		move.b	#6,ost_frame(a0)
+		move.w	#150,ost_anim_time(a0)
+		addi.w	#$20,ost_y_pos(a0)
 		moveq	#7,d6
 		move.w	#$9A,d5
 		moveq	#-$1C,d4
@@ -36224,9 +36224,9 @@ Pri_Explosion:	; Routine 6, 8, $A
 		jsr	(FindFreeObj).l
 		bne.s	@fail
 		move.b	#id_Animals,0(a1) ; load animal object
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
-		add.w	d4,obX(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
+		add.w	d4,ost_x_pos(a1)
 		addq.w	#7,d4
 		move.w	d5,$36(a1)
 		subq.w	#8,d5
@@ -36243,8 +36243,8 @@ Pri_Animals:	; Routine $C
 		jsr	(FindFreeObj).l
 		bne.s	@noanimal
 		move.b	#id_Animals,0(a1) ; load animal object
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		jsr	(RandomNumber).l
 		andi.w	#$1F,d0
 		subq.w	#6,d0
@@ -36253,14 +36253,14 @@ Pri_Animals:	; Routine $C
 		neg.w	d0
 
 	@ispositive:
-		add.w	d0,obX(a1)
+		add.w	d0,ost_x_pos(a1)
 		move.w	#$C,$36(a1)
 
 	@noanimal:
-		subq.w	#1,obTimeFrame(a0)
+		subq.w	#1,ost_anim_time(a0)
 		bne.s	@wait
-		addq.b	#2,obRoutine(a0)
-		move.w	#180,obTimeFrame(a0)
+		addq.b	#2,ost_routine(a0)
+		move.w	#180,ost_anim_time(a0)
 
 	@wait:
 		rts	
@@ -36288,7 +36288,7 @@ Ani_Pri:	include "Animations\Prison Capsule.asm"
 Map_Pri:	include "Mappings\Prison Capsule.asm"
 
 ; ---------------------------------------------------------------------------
-; Subroutine to react to obColType(a0)
+; Subroutine to react to ost_col_type(a0)
 ; ---------------------------------------------------------------------------
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
@@ -36296,14 +36296,14 @@ Map_Pri:	include "Mappings\Prison Capsule.asm"
 
 ReactToItem:
 		nop	
-		move.w	obX(a0),d2	; load Sonic's x-axis position
-		move.w	obY(a0),d3	; load Sonic's y-axis position
+		move.w	ost_x_pos(a0),d2	; load Sonic's x-axis position
+		move.w	ost_y_pos(a0),d3	; load Sonic's y-axis position
 		subq.w	#8,d2
 		moveq	#0,d5
-		move.b	obHeight(a0),d5	; load Sonic's height
+		move.b	ost_height(a0),d5	; load Sonic's height
 		subq.b	#3,d5
 		sub.w	d5,d3
-		cmpi.b	#id_frame_Duck,obFrame(a0) ; is Sonic ducking?
+		cmpi.b	#id_frame_Duck,ost_frame(a0) ; is Sonic ducking?
 		bne.s	@notducking	; if not, branch
 		addi.w	#$C,d3
 		moveq	#$A,d5
@@ -36315,9 +36315,9 @@ ReactToItem:
 		move.w	#$5F,d6
 
 @loop:
-		tst.b	obRender(a1)
+		tst.b	ost_render(a1)
 		bpl.s	@next
-		move.b	obColType(a1),d0 ; load collision type
+		move.b	ost_col_type(a1),d0 ; load collision type
 		bne.s	@proximity	; if nonzero, branch
 
 	@next:
@@ -36372,7 +36372,7 @@ ReactToItem:
 		lea	@sizes-2(pc,d0.w),a2
 		moveq	#0,d1
 		move.b	(a2)+,d1
-		move.w	obX(a1),d0
+		move.w	ost_x_pos(a1),d0
 		sub.w	d1,d0
 		sub.w	d2,d0
 		bcc.s	@outsidex	; branch if not touching
@@ -36389,7 +36389,7 @@ ReactToItem:
 @withinx:
 		moveq	#0,d1
 		move.b	(a2)+,d1
-		move.w	obY(a1),d0
+		move.w	ost_y_pos(a1),d0
 		sub.w	d1,d0
 		sub.w	d3,d0
 		bcc.s	@outsidey	; branch if not touching
@@ -36405,49 +36405,49 @@ ReactToItem:
 
 @withiny:
 	@chktype:
-		move.b	obColType(a1),d1 ; load collision type
-		andi.b	#$C0,d1		; is obColType $40 or higher?
+		move.b	ost_col_type(a1),d1 ; load collision type
+		andi.b	#$C0,d1		; is ost_col_type $40 or higher?
 		beq.w	React_Enemy	; if not, branch
-		cmpi.b	#$C0,d1		; is obColType $C0 or higher?
+		cmpi.b	#$C0,d1		; is ost_col_type $C0 or higher?
 		beq.w	React_Special	; if yes, branch
-		tst.b	d1		; is obColType $80-$BF?
+		tst.b	d1		; is ost_col_type $80-$BF?
 		bmi.w	React_ChkHurt	; if yes, branch
 
-; obColType is $40-$7F (powerups)
+; ost_col_type is $40-$7F (powerups)
 
-		move.b	obColType(a1),d0
+		move.b	ost_col_type(a1),d0
 		andi.b	#$3F,d0
 		cmpi.b	#6,d0		; is collision type $46	?
 		beq.s	React_Monitor	; if yes, branch
 		cmpi.w	#90,$30(a0)	; is Sonic invincible?
 		bcc.w	@invincible	; if yes, branch
-		addq.b	#2,obRoutine(a1) ; advance the object's routine counter
+		addq.b	#2,ost_routine(a1) ; advance the object's routine counter
 
 	@invincible:
 		rts	
 ; ===========================================================================
 
 React_Monitor:
-		tst.w	obVelY(a0)	; is Sonic moving upwards?
+		tst.w	ost_y_vel(a0)	; is Sonic moving upwards?
 		bpl.s	@movingdown	; if not, branch
 
-		move.w	obY(a0),d0
+		move.w	ost_y_pos(a0),d0
 		subi.w	#$10,d0
-		cmp.w	obY(a1),d0
+		cmp.w	ost_y_pos(a1),d0
 		bcs.s	@donothing
-		neg.w	obVelY(a0)	; reverse Sonic's vertical speed
-		move.w	#-$180,obVelY(a1)
-		tst.b	ob2ndRout(a1)
+		neg.w	ost_y_vel(a0)	; reverse Sonic's vertical speed
+		move.w	#-$180,ost_y_vel(a1)
+		tst.b	ost_routine2(a1)
 		bne.s	@donothing
-		addq.b	#4,ob2ndRout(a1) ; advance the monitor's routine counter
+		addq.b	#4,ost_routine2(a1) ; advance the monitor's routine counter
 		rts	
 ; ===========================================================================
 
 @movingdown:
-		cmpi.b	#id_Roll,obAnim(a0) ; is Sonic rolling/jumping?
+		cmpi.b	#id_Roll,ost_anim(a0) ; is Sonic rolling/jumping?
 		bne.s	@donothing
-		neg.w	obVelY(a0)	; reverse Sonic's y-motion
-		addq.b	#2,obRoutine(a1) ; advance the monitor's routine counter
+		neg.w	ost_y_vel(a0)	; reverse Sonic's y-motion
+		addq.b	#2,ost_routine(a1) ; advance the monitor's routine counter
 
 	@donothing:
 		rts	
@@ -36456,28 +36456,28 @@ React_Monitor:
 React_Enemy:
 		tst.b	(v_invinc).w	; is Sonic invincible?
 		bne.s	@donthurtsonic	; if yes, branch
-		cmpi.b	#id_Roll,obAnim(a0) ; is Sonic rolling/jumping?
+		cmpi.b	#id_Roll,ost_anim(a0) ; is Sonic rolling/jumping?
 		bne.w	React_ChkHurt	; if not, branch
 
 	@donthurtsonic:
-		tst.b	obColProp(a1)
+		tst.b	ost_col_property(a1)
 		beq.s	@breakenemy
 
-		neg.w	obVelX(a0)	; repel Sonic
-		neg.w	obVelY(a0)
-		asr	obVelX(a0)
-		asr	obVelY(a0)
-		move.b	#0,obColType(a1)
-		subq.b	#1,obColProp(a1)
+		neg.w	ost_x_vel(a0)	; repel Sonic
+		neg.w	ost_y_vel(a0)
+		asr	ost_x_vel(a0)
+		asr	ost_y_vel(a0)
+		move.b	#0,ost_col_type(a1)
+		subq.b	#1,ost_col_property(a1)
 		bne.s	@flagnotclear
-		bset	#7,obStatus(a1)
+		bset	#7,ost_status(a1)
 
 	@flagnotclear:
 		rts	
 ; ===========================================================================
 
 @breakenemy:
-		bset	#7,obStatus(a1)
+		bset	#7,ost_status(a1)
 		moveq	#0,d0
 		move.w	(v_itembonus).w,d0
 		addq.w	#2,(v_itembonus).w ; add 2 to item bonus counter
@@ -36496,22 +36496,22 @@ React_Enemy:
 	@lessthan16:
 		bsr.w	AddPoints
 		move.b	#id_ExplosionItem,0(a1) ; change object to explosion
-		move.b	#0,obRoutine(a1)
-		tst.w	obVelY(a0)
+		move.b	#0,ost_routine(a1)
+		tst.w	ost_y_vel(a0)
 		bmi.s	@bouncedown
-		move.w	obY(a0),d0
-		cmp.w	obY(a1),d0
+		move.w	ost_y_pos(a0),d0
+		cmp.w	ost_y_pos(a1),d0
 		bcc.s	@bounceup
-		neg.w	obVelY(a0)
+		neg.w	ost_y_vel(a0)
 		rts	
 ; ===========================================================================
 
 	@bouncedown:
-		addi.w	#$100,obVelY(a0)
+		addi.w	#$100,ost_y_vel(a0)
 		rts	
 
 	@bounceup:
-		subi.w	#$100,obVelY(a0)
+		subi.w	#$100,ost_y_vel(a0)
 		rts	
 
 @points:	dc.w 10, 20, 50, 100	; points awarded div 10
@@ -36519,7 +36519,7 @@ React_Enemy:
 ; ===========================================================================
 
 React_Caterkiller:
-		bset	#7,obStatus(a1)
+		bset	#7,ost_status(a1)
 
 React_ChkHurt:
 		tst.b	(v_invinc).w	; is Sonic invincible?
@@ -36555,31 +36555,31 @@ HurtSonic:
 		jsr	(FindFreeObj).l
 		bne.s	@hasshield
 		move.b	#id_RingLoss,0(a1) ; load bouncing multi rings object
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
 
 	@hasshield:
 		move.b	#0,(v_shield).w	; remove shield
-		move.b	#4,obRoutine(a0)
+		move.b	#4,ost_routine(a0)
 		bsr.w	Sonic_ResetOnFloor
-		bset	#1,obStatus(a0)
-		move.w	#-$400,obVelY(a0) ; make Sonic bounce away from the object
-		move.w	#-$200,obVelX(a0)
-		btst	#6,obStatus(a0)	; is Sonic underwater?
+		bset	#1,ost_status(a0)
+		move.w	#-$400,ost_y_vel(a0) ; make Sonic bounce away from the object
+		move.w	#-$200,ost_x_vel(a0)
+		btst	#6,ost_status(a0)	; is Sonic underwater?
 		beq.s	@isdry		; if not, branch
 
-		move.w	#-$200,obVelY(a0) ; slower bounce
-		move.w	#-$100,obVelX(a0)
+		move.w	#-$200,ost_y_vel(a0) ; slower bounce
+		move.w	#-$100,ost_x_vel(a0)
 
 	@isdry:
-		move.w	obX(a0),d0
-		cmp.w	obX(a2),d0
+		move.w	ost_x_pos(a0),d0
+		cmp.w	ost_x_pos(a2),d0
 		bcs.s	@isleft		; if Sonic is left of the object, branch
-		neg.w	obVelX(a0)	; if Sonic is right of the object, reverse
+		neg.w	ost_x_vel(a0)	; if Sonic is right of the object, reverse
 
 	@isleft:
-		move.w	#0,obInertia(a0)
-		move.b	#id_Hurt,obAnim(a0)
+		move.w	#0,ost_inertia(a0)
+		move.b	#id_Hurt,ost_anim(a0)
 		move.w	#120,$30(a0)	; set temp invincible time to 2 seconds
 		move.w	#sfx_Death,d0	; load normal damage sound
 		cmpi.b	#id_Spikes,(a2)	; was damage caused by spikes?
@@ -36609,15 +36609,15 @@ KillSonic:
 		tst.w	(v_debuguse).w	; is debug mode	active?
 		bne.s	@dontdie	; if yes, branch
 		move.b	#0,(v_invinc).w	; remove invincibility
-		move.b	#6,obRoutine(a0)
+		move.b	#6,ost_routine(a0)
 		bsr.w	Sonic_ResetOnFloor
-		bset	#1,obStatus(a0)
-		move.w	#-$700,obVelY(a0)
-		move.w	#0,obVelX(a0)
-		move.w	#0,obInertia(a0)
-		move.w	obY(a0),$38(a0)
-		move.b	#id_Death,obAnim(a0)
-		bset	#7,obGfx(a0)
+		bset	#1,ost_status(a0)
+		move.w	#-$700,ost_y_vel(a0)
+		move.w	#0,ost_x_vel(a0)
+		move.w	#0,ost_inertia(a0)
+		move.w	ost_y_pos(a0),$38(a0)
+		move.b	#id_Death,ost_anim(a0)
+		bset	#7,ost_tile(a0)
 		move.w	#sfx_Death,d0	; play normal death sound
 		cmpi.b	#id_Spikes,(a2)	; check	if you were killed by spikes
 		bne.s	@sound
@@ -36636,7 +36636,7 @@ KillSonic:
 
 
 React_Special:
-		move.b	obColType(a1),d1
+		move.b	ost_col_type(a1),d1
 		andi.b	#$3F,d1
 		cmpi.b	#$B,d1		; is collision type $CB	?
 		beq.s	@caterkiller	; if yes, branch
@@ -36657,9 +36657,9 @@ React_Special:
 		sub.w	d0,d5
 		cmpi.w	#8,d5
 		bcc.s	@normalenemy
-		move.w	obX(a1),d0
+		move.w	ost_x_pos(a1),d0
 		subq.w	#4,d0
-		btst	#0,obStatus(a1)
+		btst	#0,ost_status(a1)
 		beq.s	@noflip
 		subi.w	#$10,d0
 
@@ -36684,7 +36684,7 @@ React_Special:
 ; ===========================================================================
 
 @D7orE1:
-		addq.b	#1,obColProp(a1)
+		addq.b	#1,ost_col_property(a1)
 		rts	
 ; End of function React_Special
 
@@ -37194,8 +37194,8 @@ SS_ChkEmldRepeat:
 SS_LoadData:
 		lsl.w	#2,d0
 		lea	SS_StartLoc(pc,d0.w),a1
-		move.w	(a1)+,(v_player+obX).w
-		move.w	(a1)+,(v_player+obY).w
+		move.w	(a1)+,(v_player+ost_x_pos).w
+		move.w	(a1)+,(v_player+ost_y_pos).w
 		movea.l	SS_LayoutIndex(pc,d0.w),a0
 		lea	($FF4000).l,a1
 		move.w	#0,d0
@@ -37425,7 +37425,7 @@ SonicSpecial:
 
 Obj09_Normal:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	Obj09_Index(pc,d0.w),d1
 		jmp	Obj09_Index(pc,d1.w)
 ; ===========================================================================
@@ -37437,16 +37437,16 @@ Obj09_Index:	index *
 ; ===========================================================================
 
 Obj09_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.b	#$E,obHeight(a0)
-		move.b	#7,obWidth(a0)
-		move.l	#Map_Sonic,obMap(a0)
-		move.w	#$780,obGfx(a0)
-		move.b	#4,obRender(a0)
-		move.b	#0,obPriority(a0)
-		move.b	#id_Roll,obAnim(a0)
-		bset	#2,obStatus(a0)
-		bset	#1,obStatus(a0)
+		addq.b	#2,ost_routine(a0)
+		move.b	#$E,ost_height(a0)
+		move.b	#7,ost_width(a0)
+		move.l	#Map_Sonic,ost_mappings(a0)
+		move.w	#$780,ost_tile(a0)
+		move.b	#4,ost_render(a0)
+		move.b	#0,ost_priority(a0)
+		move.b	#id_Roll,ost_anim(a0)
+		bset	#2,ost_status(a0)
+		bset	#1,ost_status(a0)
 
 Obj09_ChkDebug:	; Routine 2
 		tst.w	(f_debugmode).w	; is debug mode	cheat enabled?
@@ -37458,7 +37458,7 @@ Obj09_ChkDebug:	; Routine 2
 Obj09_NoDebug:
 		move.b	#0,$30(a0)
 		moveq	#0,d0
-		move.b	obStatus(a0),d0
+		move.b	ost_status(a0),d0
 		andi.w	#2,d0
 		move.w	Obj09_Modes(pc,d0.w),d1
 		jsr	Obj09_Modes(pc,d1.w)
@@ -37510,7 +37510,7 @@ loc_1BA78:
 		move.b	(v_jpadhold2).w,d0
 		andi.b	#btnL+btnR,d0
 		bne.s	loc_1BAA8
-		move.w	obInertia(a0),d0
+		move.w	ost_inertia(a0),d0
 		beq.s	loc_1BAA8
 		bmi.s	loc_1BA9A
 		subi.w	#$C,d0
@@ -37518,7 +37518,7 @@ loc_1BA78:
 		move.w	#0,d0
 
 loc_1BA94:
-		move.w	d0,obInertia(a0)
+		move.w	d0,ost_inertia(a0)
 		bra.s	loc_1BAA8
 ; ===========================================================================
 
@@ -37528,7 +37528,7 @@ loc_1BA9A:
 		move.w	#0,d0
 
 loc_1BAA4:
-		move.w	d0,obInertia(a0)
+		move.w	d0,ost_inertia(a0)
 
 loc_1BAA8:
 		move.b	(v_ssangle).w,d0
@@ -37536,19 +37536,19 @@ loc_1BAA8:
 		andi.b	#$C0,d0
 		neg.b	d0
 		jsr	(CalcSine).l
-		muls.w	obInertia(a0),d1
-		add.l	d1,obX(a0)
-		muls.w	obInertia(a0),d0
-		add.l	d0,obY(a0)
+		muls.w	ost_inertia(a0),d1
+		add.l	d1,ost_x_pos(a0)
+		muls.w	ost_inertia(a0),d0
+		add.l	d0,ost_y_pos(a0)
 		movem.l	d0-d1,-(sp)
-		move.l	obY(a0),d2
-		move.l	obX(a0),d3
+		move.l	ost_y_pos(a0),d2
+		move.l	ost_x_pos(a0),d3
 		bsr.w	sub_1BCE8
 		beq.s	loc_1BAF2
 		movem.l	(sp)+,d0-d1
-		sub.l	d1,obX(a0)
-		sub.l	d0,obY(a0)
-		move.w	#0,obInertia(a0)
+		sub.l	d1,ost_x_pos(a0)
+		sub.l	d0,ost_y_pos(a0)
+		move.w	#0,ost_inertia(a0)
 		rts	
 ; ===========================================================================
 
@@ -37562,8 +37562,8 @@ loc_1BAF2:
 
 
 Obj09_MoveLeft:
-		bset	#0,obStatus(a0)
-		move.w	obInertia(a0),d0
+		bset	#0,ost_status(a0)
+		move.w	ost_inertia(a0),d0
 		beq.s	loc_1BB06
 		bpl.s	loc_1BB1A
 
@@ -37574,7 +37574,7 @@ loc_1BB06:
 		move.w	#-$800,d0
 
 loc_1BB14:
-		move.w	d0,obInertia(a0)
+		move.w	d0,ost_inertia(a0)
 		rts	
 ; ===========================================================================
 
@@ -37584,7 +37584,7 @@ loc_1BB1A:
 		nop	
 
 loc_1BB22:
-		move.w	d0,obInertia(a0)
+		move.w	d0,ost_inertia(a0)
 		rts	
 ; End of function Obj09_MoveLeft
 
@@ -37593,8 +37593,8 @@ loc_1BB22:
 
 
 Obj09_MoveRight:
-		bclr	#0,obStatus(a0)
-		move.w	obInertia(a0),d0
+		bclr	#0,ost_status(a0)
+		move.w	ost_inertia(a0),d0
 		bmi.s	loc_1BB48
 		addi.w	#$C,d0
 		cmpi.w	#$800,d0
@@ -37602,7 +37602,7 @@ Obj09_MoveRight:
 		move.w	#$800,d0
 
 loc_1BB42:
-		move.w	d0,obInertia(a0)
+		move.w	d0,ost_inertia(a0)
 		bra.s	locret_1BB54
 ; ===========================================================================
 
@@ -37612,7 +37612,7 @@ loc_1BB48:
 		nop	
 
 loc_1BB50:
-		move.w	d0,obInertia(a0)
+		move.w	d0,ost_inertia(a0)
 
 locret_1BB54:
 		rts	
@@ -37633,11 +37633,11 @@ Obj09_Jump:
 		jsr	(CalcSine).l
 		muls.w	#$680,d1
 		asr.l	#8,d1
-		move.w	d1,obVelX(a0)
+		move.w	d1,ost_x_vel(a0)
 		muls.w	#$680,d0
 		asr.l	#8,d0
-		move.w	d0,obVelY(a0)
-		bset	#1,obStatus(a0)
+		move.w	d0,ost_y_vel(a0)
+		bset	#1,ost_status(a0)
 		sfx	sfx_Jump,0,0,0	; play jumping sound
 
 Obj09_NoJump:
@@ -37657,12 +37657,12 @@ nullsub_2:
 ; unused subroutine to limit Sonic's upward vertical speed
 ; ---------------------------------------------------------------------------
 		move.w	#-$400,d1
-		cmp.w	obVelY(a0),d1
+		cmp.w	ost_y_vel(a0),d1
 		ble.s	locret_1BBB4
 		move.b	(v_jpadhold2).w,d0
 		andi.b	#btnABC,d0
 		bne.s	locret_1BBB4
-		move.w	d1,obVelY(a0)
+		move.w	d1,ost_y_vel(a0)
 
 locret_1BBB4:
 		rts	
@@ -37674,8 +37674,8 @@ locret_1BBB4:
 
 
 SS_FixCamera:
-		move.w	obY(a0),d2
-		move.w	obX(a0),d3
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
 		move.w	(v_screenposx).w,d0
 		subi.w	#$A0,d3
 		bcs.s	loc_1BBCE
@@ -37706,7 +37706,7 @@ loc_1BBF4:
 		blt.s	loc_1BC12
 		move.w	#0,(v_ssrotate).w
 		move.w	#$4000,(v_ssangle).w
-		addq.b	#2,obRoutine(a0)
+		addq.b	#2,ost_routine(a0)
 		move.w	#$3C,$38(a0)
 
 loc_1BC12:
@@ -37734,17 +37734,17 @@ loc_1BC40:
 
 
 Obj09_Fall:
-		move.l	obY(a0),d2
-		move.l	obX(a0),d3
+		move.l	ost_y_pos(a0),d2
+		move.l	ost_x_pos(a0),d3
 		move.b	(v_ssangle).w,d0
 		andi.b	#$FC,d0
 		jsr	(CalcSine).l
-		move.w	obVelX(a0),d4
+		move.w	ost_x_vel(a0),d4
 		ext.l	d4
 		asl.l	#8,d4
 		muls.w	#$2A,d0
 		add.l	d4,d0
-		move.w	obVelY(a0),d4
+		move.w	ost_y_vel(a0),d4
 		ext.l	d4
 		asl.l	#8,d4
 		muls.w	#$2A,d1
@@ -37754,14 +37754,14 @@ Obj09_Fall:
 		beq.s	loc_1BCB0
 		sub.l	d0,d3
 		moveq	#0,d0
-		move.w	d0,obVelX(a0)
-		bclr	#1,obStatus(a0)
+		move.w	d0,ost_x_vel(a0)
+		bclr	#1,ost_status(a0)
 		add.l	d1,d2
 		bsr.w	sub_1BCE8
 		beq.s	loc_1BCC6
 		sub.l	d1,d2
 		moveq	#0,d1
-		move.w	d1,obVelY(a0)
+		move.w	d1,ost_y_vel(a0)
 		rts	
 ; ===========================================================================
 
@@ -37771,23 +37771,23 @@ loc_1BCB0:
 		beq.s	loc_1BCD4
 		sub.l	d1,d2
 		moveq	#0,d1
-		move.w	d1,obVelY(a0)
-		bclr	#1,obStatus(a0)
+		move.w	d1,ost_y_vel(a0)
+		bclr	#1,ost_status(a0)
 
 loc_1BCC6:
 		asr.l	#8,d0
 		asr.l	#8,d1
-		move.w	d0,obVelX(a0)
-		move.w	d1,obVelY(a0)
+		move.w	d0,ost_x_vel(a0)
+		move.w	d1,ost_y_vel(a0)
 		rts	
 ; ===========================================================================
 
 loc_1BCD4:
 		asr.l	#8,d0
 		asr.l	#8,d1
-		move.w	d0,obVelX(a0)
-		move.w	d1,obVelY(a0)
-		bset	#1,obStatus(a0)
+		move.w	d0,ost_x_vel(a0)
+		move.w	d1,ost_y_vel(a0)
+		bset	#1,ost_status(a0)
 		rts	
 ; End of function Obj09_Fall
 
@@ -37857,13 +37857,13 @@ loc_1BD46:
 Obj09_ChkItems:
 		lea	($FF0000).l,a1
 		moveq	#0,d4
-		move.w	obY(a0),d4
+		move.w	ost_y_pos(a0),d4
 		addi.w	#$50,d4
 		divu.w	#$18,d4
 		mulu.w	#$80,d4
 		adda.l	d4,a1
 		moveq	#0,d4
-		move.w	obX(a0),d4
+		move.w	ost_x_pos(a0),d4
 		addi.w	#$20,d4
 		divu.w	#$18,d4
 		adda.w	d4,a1
@@ -38015,17 +38015,17 @@ Obj09_ChkBumper:
 		andi.w	#$7F,d2
 		mulu.w	#$18,d2
 		subi.w	#$44,d2
-		sub.w	obX(a0),d1
-		sub.w	obY(a0),d2
+		sub.w	ost_x_pos(a0),d1
+		sub.w	ost_y_pos(a0),d2
 		jsr	(CalcAngle).l
 		jsr	(CalcSine).l
 		muls.w	#-$700,d1
 		asr.l	#8,d1
-		move.w	d1,obVelX(a0)
+		move.w	d1,ost_x_vel(a0)
 		muls.w	#-$700,d0
 		asr.l	#8,d0
-		move.w	d0,obVelY(a0)
-		bset	#1,obStatus(a0)
+		move.w	d0,ost_y_vel(a0)
+		bset	#1,ost_status(a0)
 		bsr.w	SS_RemoveCollectedItem
 		bne.s	Obj09_BumpSnd
 		move.b	#2,(a2)
@@ -38040,7 +38040,7 @@ Obj09_BumpSnd:
 Obj09_GOAL:
 		cmpi.b	#$27,d0		; is the item a	"GOAL"?
 		bne.s	Obj09_UPblock
-		addq.b	#2,obRoutine(a0) ; run routine "Obj09_ExitStage"
+		addq.b	#2,ost_routine(a0) ; run routine "Obj09_ExitStage"
 		sfx	sfx_SSGoal,0,0,0	; play "GOAL" sound
 		rts	
 ; ===========================================================================
@@ -38747,7 +38747,7 @@ AniArt_GiantRing:
 
 HUD:
 		moveq	#0,d0
-		move.b	obRoutine(a0),d0
+		move.b	ost_routine(a0),d0
 		move.w	HUD_Index(pc,d0.w),d1
 		jmp	HUD_Index(pc,d1.w)
 ; ===========================================================================
@@ -38757,18 +38757,18 @@ HUD_Index:	index *
 ; ===========================================================================
 
 HUD_Main:	; Routine 0
-		addq.b	#2,obRoutine(a0)
-		move.w	#$90,obX(a0)
-		move.w	#$108,obScreenY(a0)
-		move.l	#Map_HUD,obMap(a0)
-		move.w	#$6CA,obGfx(a0)
-		move.b	#0,obRender(a0)
-		move.b	#0,obPriority(a0)
+		addq.b	#2,ost_routine(a0)
+		move.w	#$90,ost_x_pos(a0)
+		move.w	#$108,ost_y_screen(a0)
+		move.l	#Map_HUD,ost_mappings(a0)
+		move.w	#$6CA,ost_tile(a0)
+		move.b	#0,ost_render(a0)
+		move.b	#0,ost_priority(a0)
 
 HUD_Flash:	; Routine 2
 		tst.w	(v_rings).w	; do you have any rings?
 		beq.s	@norings	; if not, branch
-		clr.b	obFrame(a0)	; make all counters yellow
+		clr.b	ost_frame(a0)	; make all counters yellow
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 
@@ -38782,7 +38782,7 @@ HUD_Flash:	; Routine 2
 		addq.w	#2,d0		; make time counter flash red
 
 	@display:
-		move.b	d0,obFrame(a0)
+		move.b	d0,ost_frame(a0)
 		jmp	DisplaySprite
 		
 Map_HUD:	include "Mappings\HUD Score, Time & Rings.asm"
@@ -39047,11 +39047,11 @@ HudDb_XY:
 		locVRAM	$DC40		; set VRAM address
 		move.w	(v_screenposx).w,d1 ; load camera x-position
 		swap	d1
-		move.w	(v_player+obX).w,d1 ; load Sonic's x-position
+		move.w	(v_player+ost_x_pos).w,d1 ; load Sonic's x-position
 		bsr.s	HudDb_XY2
 		move.w	(v_screenposy).w,d1 ; load camera y-position
 		swap	d1
-		move.w	(v_player+obY).w,d1 ; load Sonic's y-position
+		move.w	(v_player+ost_y_pos).w,d1 ; load Sonic's y-position
 ; End of function HudDb_XY
 
 
@@ -39456,11 +39456,11 @@ Debug_Main:	; Routine 0
 		move.w	(v_limitbtm1).w,(v_limitbtmdb).w ; buffer level y-boundary
 		move.w	#0,(v_limittop2).w
 		move.w	#$720,(v_limitbtm1).w
-		andi.w	#$7FF,(v_player+obY).w
+		andi.w	#$7FF,(v_player+ost_y_pos).w
 		andi.w	#$7FF,(v_screenposy).w
 		andi.w	#$3FF,(v_bgscreenposy).w
-		move.b	#0,obFrame(a0)
-		move.b	#id_Walk,obAnim(a0)
+		move.b	#0,ost_frame(a0)
+		move.b	#id_Walk,ost_anim(a0)
 		cmpi.b	#id_Special,(v_gamemode).w ; is game mode $10 (special stage)?
 		bne.s	@islevel	; if not, branch
 
@@ -39540,8 +39540,8 @@ loc_1D01C:
 		addq.w	#1,d1
 		swap	d1
 		asr.l	#4,d1
-		move.l	obY(a0),d2
-		move.l	obX(a0),d3
+		move.l	ost_y_pos(a0),d2
+		move.l	ost_x_pos(a0),d3
 		btst	#bitUp,d4	; is up	being pressed?
 		beq.s	loc_1D03C	; if not, branch
 		sub.l	d1,d2
@@ -39569,8 +39569,8 @@ loc_1D05E:
 		add.l	d1,d3
 
 loc_1D066:
-		move.l	d2,obY(a0)
-		move.l	d3,obX(a0)
+		move.l	d2,ost_y_pos(a0)
+		move.l	d3,ost_x_pos(a0)
 
 Debug_ChgItem:
 		btst	#bitA,(v_jpadhold1).w ; is button A pressed?
@@ -39600,16 +39600,16 @@ Debug_ChgItem:
 		beq.s	@backtonormal	; if not, branch
 		jsr	(FindFreeObj).l
 		bne.s	@backtonormal
-		move.w	obX(a0),obX(a1)
-		move.w	obY(a0),obY(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	4(a0),0(a1)	; create object
-		move.b	obRender(a0),obRender(a1)
-		move.b	obRender(a0),obStatus(a1)
-		andi.b	#$7F,obStatus(a1)
+		move.b	ost_render(a0),ost_render(a1)
+		move.b	ost_render(a0),ost_status(a1)
+		andi.b	#$7F,ost_status(a1)
 		moveq	#0,d0
 		move.b	(v_debugitem).w,d0
 		lsl.w	#3,d0
-		move.b	4(a2,d0.w),obSubtype(a1)
+		move.b	4(a2,d0.w),ost_subtype(a1)
 		rts	
 ; ===========================================================================
 
@@ -39618,11 +39618,11 @@ Debug_ChgItem:
 		beq.s	@stayindebug	; if not, branch
 		moveq	#0,d0
 		move.w	d0,(v_debuguse).w ; deactivate debug mode
-		move.l	#Map_Sonic,(v_player+obMap).w
-		move.w	#$780,(v_player+obGfx).w
-		move.b	d0,(v_player+obAnim).w
-		move.w	d0,obX+2(a0)
-		move.w	d0,obY+2(a0)
+		move.l	#Map_Sonic,(v_player+ost_mappings).w
+		move.w	#$780,(v_player+ost_tile).w
+		move.b	d0,(v_player+ost_anim).w
+		move.w	d0,ost_x_pos+2(a0)
+		move.w	d0,ost_y_pos+2(a0)
 		move.w	(v_limittopdb).w,(v_limittop2).w ; restore level boundaries
 		move.w	(v_limitbtmdb).w,(v_limitbtm1).w
 		cmpi.b	#id_Special,(v_gamemode).w ; are you in the special stage?
@@ -39630,11 +39630,11 @@ Debug_ChgItem:
 
 		clr.w	(v_ssangle).w
 		move.w	#$40,(v_ssrotate).w ; set new level rotation speed
-		move.l	#Map_Sonic,(v_player+obMap).w
-		move.w	#$780,(v_player+obGfx).w
-		move.b	#id_Roll,(v_player+obAnim).w
-		bset	#2,(v_player+obStatus).w
-		bset	#1,(v_player+obStatus).w
+		move.l	#Map_Sonic,(v_player+ost_mappings).w
+		move.w	#$780,(v_player+ost_tile).w
+		move.b	#id_Roll,(v_player+ost_anim).w
+		bset	#2,(v_player+ost_status).w
+		bset	#1,(v_player+ost_status).w
 
 	@stayindebug:
 		rts	
@@ -39648,9 +39648,9 @@ Debug_ShowItem:
 		moveq	#0,d0
 		move.b	(v_debugitem).w,d0
 		lsl.w	#3,d0
-		move.l	(a2,d0.w),obMap(a0) ; load mappings for item
-		move.w	6(a2,d0.w),obGfx(a0) ; load VRAM setting for item
-		move.b	5(a2,d0.w),obFrame(a0) ; load frame number for item
+		move.l	(a2,d0.w),ost_mappings(a0) ; load mappings for item
+		move.w	6(a2,d0.w),ost_tile(a0) ; load VRAM setting for item
+		move.b	5(a2,d0.w),ost_frame(a0) ; load frame number for item
 		rts	
 ; End of function Debug_ShowItem
 ; ---------------------------------------------------------------------------
@@ -39880,398 +39880,8 @@ lhead:	macro plc1,lvlgfx,plc2,sixteen,twofivesix,music,pal
 	even
 
 ;	* music and level gfx are actually set elsewhere, so these values are useless
-; ---------------------------------------------------------------------------
-; Pattern load cues
-; ---------------------------------------------------------------------------
-ArtLoadCues:
-			index *
-ptr_PLC_Main:		ptr PLC_Main
-			ptr PLC_Main2
-			ptr PLC_Explode
-			ptr PLC_GameOver
-PLC_Levels:
-			ptr PLC_GHZ
-			ptr PLC_GHZ2
-			ptr PLC_LZ
-			ptr PLC_LZ2
-			ptr PLC_MZ
-			ptr PLC_MZ2
-			ptr PLC_SLZ
-			ptr PLC_SLZ2
-			ptr PLC_SYZ
-			ptr PLC_SYZ2
-			ptr PLC_SBZ
-			ptr PLC_SBZ2
-			zonewarning PLC_Levels,4
-			ptr PLC_TitleCard
-			ptr PLC_Boss
-			ptr PLC_Signpost
-			ptr PLC_Warp
-			ptr PLC_SpecialStage
-PLC_Animals:
-			ptr PLC_GHZAnimals
-			ptr PLC_LZAnimals
-			ptr PLC_MZAnimals
-			ptr PLC_SLZAnimals
-			ptr PLC_SYZAnimals
-			ptr PLC_SBZAnimals
-			zonewarning PLC_Animals,2
-			ptr PLC_SSResult
-			ptr PLC_Ending
-			ptr PLC_TryAgain
-			ptr PLC_EggmanSBZ2
-			ptr PLC_FZBoss
 
-plcm:	macro gfx,vram
-	dc.l gfx
-	dc.w vram
-	endm
-
-; ---------------------------------------------------------------------------
-; Pattern load cues - standard block 1
-; ---------------------------------------------------------------------------
-PLC_Main:	dc.w ((PLC_Mainend-PLC_Main-2)/6)-1
-		plcm	Nem_Lamp, $F400		; lamppost
-		plcm	Nem_Hud, $D940		; HUD
-		plcm	Nem_Lives, $FA80	; lives	counter
-		plcm	Nem_Ring, $F640 	; rings
-		plcm	Nem_Points, $F2E0	; points from enemy
-	PLC_Mainend:
-; ---------------------------------------------------------------------------
-; Pattern load cues - standard block 2
-; ---------------------------------------------------------------------------
-PLC_Main2:	dc.w ((PLC_Main2end-PLC_Main2-2)/6)-1
-		plcm	Nem_Monitors, $D000	; monitors
-		plcm	Nem_Shield, $A820	; shield
-		plcm	Nem_Stars, $AB80	; invincibility	stars
-	PLC_Main2end:
-; ---------------------------------------------------------------------------
-; Pattern load cues - explosion
-; ---------------------------------------------------------------------------
-PLC_Explode:	dc.w ((PLC_Explodeend-PLC_Explode-2)/6)-1
-		plcm	Nem_Explode, $B400	; explosion
-	PLC_Explodeend:
-; ---------------------------------------------------------------------------
-; Pattern load cues - game/time	over
-; ---------------------------------------------------------------------------
-PLC_GameOver:	dc.w ((PLC_GameOverend-PLC_GameOver-2)/6)-1
-		plcm	Nem_GameOver, $ABC0	; game/time over
-	PLC_GameOverend:
-; ---------------------------------------------------------------------------
-; Pattern load cues - Green Hill
-; ---------------------------------------------------------------------------
-PLC_GHZ:	dc.w ((PLC_GHZ2-PLC_GHZ-2)/6)-1
-		plcm	Nem_GHZ_1st, 0		; GHZ main patterns
-		plcm	Nem_GHZ_2nd, $39A0	; GHZ secondary	patterns
-		plcm	Nem_Stalk, $6B00	; flower stalk
-		plcm	Nem_PplRock, $7A00	; purple rock
-		plcm	Nem_Crabmeat, $8000	; crabmeat enemy
-		plcm	Nem_Buzz, $8880		; buzz bomber enemy
-		plcm	Nem_Chopper, $8F60	; chopper enemy
-		plcm	Nem_Newtron, $9360	; newtron enemy
-		plcm	Nem_Motobug, $9E00	; motobug enemy
-		plcm	Nem_Spikes, $A360	; spikes
-		plcm	Nem_HSpring, $A460	; horizontal spring
-		plcm	Nem_VSpring, $A660	; vertical spring
-
-PLC_GHZ2:	dc.w ((PLC_GHZ2end-PLC_GHZ2-2)/6)-1
-		plcm	Nem_Swing, $7000	; swinging platform
-		plcm	Nem_Bridge, $71C0	; bridge
-		plcm	Nem_SpikePole, $7300	; spiked pole
-		plcm	Nem_Ball, $7540		; giant	ball
-		plcm	Nem_GhzWall1, $A1E0	; breakable wall
-		plcm	Nem_GhzWall2, $6980	; normal wall
-	PLC_GHZ2end:
-; ---------------------------------------------------------------------------
-; Pattern load cues - Labyrinth
-; ---------------------------------------------------------------------------
-PLC_LZ:		dc.w ((PLC_LZ2-PLC_LZ-2)/6)-1
-		plcm	Nem_LZ,0		; LZ main patterns
-		plcm	Nem_LzBlock1, $3C00	; block
-		plcm	Nem_LzBlock2, $3E00	; blocks
-		plcm	Nem_Splash, $4B20	; waterfalls and splash
-		plcm	Nem_Water, $6000	; water	surface
-		plcm	Nem_LzSpikeBall, $6200	; spiked ball
-		plcm	Nem_FlapDoor, $6500	; flapping door
-		plcm	Nem_Bubbles, $6900	; bubbles and numbers
-		plcm	Nem_LzBlock3, $7780	; block
-		plcm	Nem_LzDoor1, $7880	; vertical door
-		plcm	Nem_Harpoon, $7980	; harpoon
-		plcm	Nem_Burrobot, $94C0	; burrobot enemy
-
-PLC_LZ2:	dc.w ((PLC_LZ2end-PLC_LZ2-2)/6)-1
-		plcm	Nem_LzPole, $7BC0	; pole that breaks
-		plcm	Nem_LzDoor2, $7CC0	; large	horizontal door
-		plcm	Nem_LzWheel, $7EC0	; wheel
-		plcm	Nem_Gargoyle, $5D20	; gargoyle head
-		if Revision=0
-		plcm	Nem_LzSonic, $8800	; Sonic	holding	his breath
-		else
-		endc
-		plcm	Nem_LzPlatfm, $89E0	; rising platform
-		plcm	Nem_Orbinaut, $8CE0	; orbinaut enemy
-		plcm	Nem_Jaws, $90C0		; jaws enemy
-		plcm	Nem_LzSwitch, $A1E0	; switch
-		plcm	Nem_Cork, $A000		; cork block
-		plcm	Nem_Spikes, $A360	; spikes
-		plcm	Nem_HSpring, $A460	; horizontal spring
-		plcm	Nem_VSpring, $A660	; vertical spring
-	PLC_LZ2end:
-; ---------------------------------------------------------------------------
-; Pattern load cues - Marble
-; ---------------------------------------------------------------------------
-PLC_MZ:		dc.w ((PLC_MZ2-PLC_MZ-2)/6)-1
-		plcm	Nem_MZ,0		; MZ main patterns
-		plcm	Nem_MzMetal, $6000	; metal	blocks
-		plcm	Nem_MzFire, $68A0	; fireballs
-		plcm	Nem_Swing, $7000	; swinging platform
-		plcm	Nem_MzGlass, $71C0	; green	glassy block
-		plcm	Nem_Lava, $7500		; lava
-		plcm	Nem_Buzz, $8880		; buzz bomber enemy
-		plcm	Nem_Yadrin, $8F60	; yadrin enemy
-		plcm	Nem_Basaran, $9700	; basaran enemy
-		plcm	Nem_Cater, $9FE0	; caterkiller enemy
-
-PLC_MZ2:	dc.w ((PLC_MZ2end-PLC_MZ2-2)/6)-1
-		plcm	Nem_MzSwitch, $A260	; switch
-		plcm	Nem_Spikes, $A360	; spikes
-		plcm	Nem_HSpring, $A460	; horizontal spring
-		plcm	Nem_VSpring, $A660	; vertical spring
-		plcm	Nem_MzBlock, $5700	; green	stone block
-	PLC_MZ2end:
-; ---------------------------------------------------------------------------
-; Pattern load cues - Star Light
-; ---------------------------------------------------------------------------
-PLC_SLZ:	dc.w ((PLC_SLZ2-PLC_SLZ-2)/6)-1
-		plcm	Nem_SLZ,0		; SLZ main patterns
-		plcm	Nem_Bomb, $8000		; bomb enemy
-		plcm	Nem_Orbinaut, $8520	; orbinaut enemy
-		plcm	Nem_MzFire, $9000	; fireballs
-		plcm	Nem_SlzBlock, $9C00	; block
-		plcm	Nem_SlzWall, $A260	; breakable wall
-		plcm	Nem_Spikes, $A360	; spikes
-		plcm	Nem_HSpring, $A460	; horizontal spring
-		plcm	Nem_VSpring, $A660	; vertical spring
-
-PLC_SLZ2:	dc.w ((PLC_SLZ2end-PLC_SLZ2-2)/6)-1
-		plcm	Nem_Seesaw, $6E80	; seesaw
-		plcm	Nem_Fan, $7400		; fan
-		plcm	Nem_Pylon, $7980	; foreground pylon
-		plcm	Nem_SlzSwing, $7B80	; swinging platform
-		plcm	Nem_SlzCannon, $9B00	; fireball launcher
-		plcm	Nem_SlzSpike, $9E00	; spikeball
-	PLC_SLZ2end:
-; ---------------------------------------------------------------------------
-; Pattern load cues - Spring Yard
-; ---------------------------------------------------------------------------
-PLC_SYZ:	dc.w ((PLC_SYZ2-PLC_SYZ-2)/6)-1
-		plcm	Nem_SYZ,0		; SYZ main patterns
-		plcm	Nem_Crabmeat, $8000	; crabmeat enemy
-		plcm	Nem_Buzz, $8880		; buzz bomber enemy
-		plcm	Nem_Yadrin, $8F60	; yadrin enemy
-		plcm	Nem_Roller, $9700	; roller enemy
-
-PLC_SYZ2:	dc.w ((PLC_SYZ2end-PLC_SYZ2-2)/6)-1
-		plcm	Nem_Bumper, $7000	; bumper
-		plcm	Nem_SyzSpike1, $72C0	; large	spikeball
-		plcm	Nem_SyzSpike2, $7740	; small	spikeball
-		plcm	Nem_Cater, $9FE0	; caterkiller enemy
-		plcm	Nem_LzSwitch, $A1E0	; switch
-		plcm	Nem_Spikes, $A360	; spikes
-		plcm	Nem_HSpring, $A460	; horizontal spring
-		plcm	Nem_VSpring, $A660	; vertical spring
-	PLC_SYZ2end:
-; ---------------------------------------------------------------------------
-; Pattern load cues - Scrap Brain
-; ---------------------------------------------------------------------------
-PLC_SBZ:	dc.w ((PLC_SBZ2-PLC_SBZ-2)/6)-1
-		plcm	Nem_SBZ,0		; SBZ main patterns
-		plcm	Nem_Stomper, $5800	; moving platform and stomper
-		plcm	Nem_SbzDoor1, $5D00	; door
-		plcm	Nem_Girder, $5E00	; girder
-		plcm	Nem_BallHog, $6040	; ball hog enemy
-		plcm	Nem_SbzWheel1, $6880	; spot on large	wheel
-		plcm	Nem_SbzWheel2, $6900	; wheel	that grabs Sonic
-		plcm	Nem_SyzSpike1, $7220	; large	spikeball
-		plcm	Nem_Cutter, $76A0	; pizza	cutter
-		plcm	Nem_FlamePipe, $7B20	; flaming pipe
-		plcm	Nem_SbzFloor, $7EA0	; collapsing floor
-		plcm	Nem_SbzBlock, $9860	; vanishing block
-
-PLC_SBZ2:	dc.w ((PLC_SBZ2end-PLC_SBZ2-2)/6)-1
-		plcm	Nem_Cater, $5600	; caterkiller enemy
-		plcm	Nem_Bomb, $8000		; bomb enemy
-		plcm	Nem_Orbinaut, $8520	; orbinaut enemy
-		plcm	Nem_SlideFloor, $8C00	; floor	that slides away
-		plcm	Nem_SbzDoor2, $8DE0	; horizontal door
-		plcm	Nem_Electric, $8FC0	; electric orb
-		plcm	Nem_TrapDoor, $9240	; trapdoor
-		plcm	Nem_SbzFloor, $7F20	; collapsing floor
-		plcm	Nem_SpinPform, $9BE0	; small	spinning platform
-		plcm	Nem_LzSwitch, $A1E0	; switch
-		plcm	Nem_Spikes, $A360	; spikes
-		plcm	Nem_HSpring, $A460	; horizontal spring
-		plcm	Nem_VSpring, $A660	; vertical spring
-	PLC_SBZ2end:
-; ---------------------------------------------------------------------------
-; Pattern load cues - title card
-; ---------------------------------------------------------------------------
-PLC_TitleCard:	dc.w ((PLC_TitleCardend-PLC_TitleCard-2)/6)-1
-		plcm	Nem_TitleCard, $B000
-	PLC_TitleCardend:
-; ---------------------------------------------------------------------------
-; Pattern load cues - act 3 boss
-; ---------------------------------------------------------------------------
-PLC_Boss:	dc.w ((PLC_Bossend-PLC_Boss-2)/6)-1
-		plcm	Nem_Eggman, $8000	; Eggman main patterns
-		plcm	Nem_Weapons, $8D80	; Eggman's weapons
-		plcm	Nem_Prison, $93A0	; prison capsule
-		plcm	Nem_Bomb, $A300		; bomb enemy ((gets overwritten)
-		plcm	Nem_SlzSpike, $A300	; spikeball ((SLZ boss)
-		plcm	Nem_Exhaust, $A540	; exhaust flame
-	PLC_Bossend:
-; ---------------------------------------------------------------------------
-; Pattern load cues - act 1/2 signpost
-; ---------------------------------------------------------------------------
-PLC_Signpost:	dc.w ((PLC_Signpostend-PLC_Signpost-2)/6)-1
-		plcm	Nem_SignPost, $D000	; signpost
-		plcm	Nem_Bonus, $96C0	; hidden bonus points
-		plcm	Nem_BigFlash, $8C40	; giant	ring flash effect
-	PLC_Signpostend:
-; ---------------------------------------------------------------------------
-; Pattern load cues - beta special stage warp effect
-; ---------------------------------------------------------------------------
-PLC_Warp:
-		if Revision=0
-		dc.w ((PLC_Warpend-PLC_Warp-2)/6)-1
-		plcm	Nem_Warp, $A820
-		else
-		endc
-	PLC_Warpend:
-; ---------------------------------------------------------------------------
-; Pattern load cues - special stage
-; ---------------------------------------------------------------------------
-PLC_SpecialStage:	dc.w ((PLC_SpeStageend-PLC_SpecialStage-2)/6)-1
-		plcm	Nem_SSBgCloud, 0	; bubble and cloud background
-		plcm	Nem_SSBgFish, $A20	; bird and fish	background
-		plcm	Nem_SSWalls, $2840	; walls
-		plcm	Nem_Bumper, $4760	; bumper
-		plcm	Nem_SSGOAL, $4A20	; GOAL block
-		plcm	Nem_SSUpDown, $4C60	; UP and DOWN blocks
-		plcm	Nem_SSRBlock, $5E00	; R block
-		plcm	Nem_SS1UpBlock, $6E00	; 1UP block
-		plcm	Nem_SSEmStars, $7E00	; emerald collection stars
-		plcm	Nem_SSRedWhite, $8E00	; red and white	block
-		plcm	Nem_SSGhost, $9E00	; ghost	block
-		plcm	Nem_SSWBlock, $AE00	; W block
-		plcm	Nem_SSGlass, $BE00	; glass	block
-		plcm	Nem_SSEmerald, $EE00	; emeralds
-		plcm	Nem_SSZone1, $F2E0	; ZONE 1 block
-		plcm	Nem_SSZone2, $F400	; ZONE 2 block
-		plcm	Nem_SSZone3, $F520	; ZONE 3 block
-	PLC_SpeStageend:
-		plcm	Nem_SSZone4, $F2E0	; ZONE 4 block
-		plcm	Nem_SSZone5, $F400	; ZONE 5 block
-		plcm	Nem_SSZone6, $F520	; ZONE 6 block
-; ---------------------------------------------------------------------------
-; Pattern load cues - GHZ animals
-; ---------------------------------------------------------------------------
-PLC_GHZAnimals:	dc.w ((PLC_GHZAnimalsend-PLC_GHZAnimals-2)/6)-1
-		plcm	Nem_Rabbit, $B000	; rabbit
-		plcm	Nem_Flicky, $B240	; flicky
-	PLC_GHZAnimalsend:
-; ---------------------------------------------------------------------------
-; Pattern load cues - LZ animals
-; ---------------------------------------------------------------------------
-PLC_LZAnimals:	dc.w ((PLC_LZAnimalsend-PLC_LZAnimals-2)/6)-1
-		plcm	Nem_BlackBird, $B000	; blackbird
-		plcm	Nem_Seal, $B240		; seal
-	PLC_LZAnimalsend:
-; ---------------------------------------------------------------------------
-; Pattern load cues - MZ animals
-; ---------------------------------------------------------------------------
-PLC_MZAnimals:	dc.w ((PLC_MZAnimalsend-PLC_MZAnimals-2)/6)-1
-		plcm	Nem_Squirrel, $B000	; squirrel
-		plcm	Nem_Seal, $B240		; seal
-	PLC_MZAnimalsend:
-; ---------------------------------------------------------------------------
-; Pattern load cues - SLZ animals
-; ---------------------------------------------------------------------------
-PLC_SLZAnimals:	dc.w ((PLC_SLZAnimalsend-PLC_SLZAnimals-2)/6)-1
-		plcm	Nem_Pig, $B000		; pig
-		plcm	Nem_Flicky, $B240	; flicky
-	PLC_SLZAnimalsend:
-; ---------------------------------------------------------------------------
-; Pattern load cues - SYZ animals
-; ---------------------------------------------------------------------------
-PLC_SYZAnimals:	dc.w ((PLC_SYZAnimalsend-PLC_SYZAnimals-2)/6)-1
-		plcm	Nem_Pig, $B000		; pig
-		plcm	Nem_Chicken, $B240	; chicken
-	PLC_SYZAnimalsend:
-; ---------------------------------------------------------------------------
-; Pattern load cues - SBZ animals
-; ---------------------------------------------------------------------------
-PLC_SBZAnimals:	dc.w ((PLC_SBZAnimalsend-PLC_SBZAnimals-2)/6)-1
-		plcm	Nem_Rabbit, $B000		; rabbit
-		plcm	Nem_Chicken, $B240	; chicken
-	PLC_SBZAnimalsend:
-; ---------------------------------------------------------------------------
-; Pattern load cues - special stage results screen
-; ---------------------------------------------------------------------------
-PLC_SSResult:dc.w ((PLC_SpeStResultend-PLC_SSResult-2)/6)-1
-		plcm	Nem_ResultEm, $A820	; emeralds
-		plcm	Nem_MiniSonic, $AA20	; mini Sonic
-	PLC_SpeStResultend:
-; ---------------------------------------------------------------------------
-; Pattern load cues - ending sequence
-; ---------------------------------------------------------------------------
-PLC_Ending:	dc.w ((PLC_Endingend-PLC_Ending-2)/6)-1
-		plcm	Nem_GHZ_1st,0		; GHZ main patterns
-		plcm	Nem_GHZ_2nd, $39A0	; GHZ secondary	patterns
-		plcm	Nem_Stalk, $6B00	; flower stalk
-		plcm	Nem_EndFlower, $7400	; flowers
-		plcm	Nem_EndEm, $78A0	; emeralds
-		plcm	Nem_EndSonic, $7C20	; Sonic
-		if Revision=0
-		plcm	Nem_EndEggman, $A480	; Eggman's death ((unused)
-		else
-		endc
-		plcm	Nem_Rabbit, $AA60	; rabbit
-		plcm	Nem_Chicken, $ACA0	; chicken
-		plcm	Nem_BlackBird, $AE60	; blackbird
-		plcm	Nem_Seal, $B0A0		; seal
-		plcm	Nem_Pig, $B260		; pig
-		plcm	Nem_Flicky, $B4A0	; flicky
-		plcm	Nem_Squirrel, $B660	; squirrel
-		plcm	Nem_EndStH, $B8A0	; "SONIC THE HEDGEHOG"
-	PLC_Endingend:
-; ---------------------------------------------------------------------------
-; Pattern load cues - "TRY AGAIN" and "END" screens
-; ---------------------------------------------------------------------------
-PLC_TryAgain:	dc.w ((PLC_TryAgainend-PLC_TryAgain-2)/6)-1
-		plcm	Nem_EndEm, $78A0	; emeralds
-		plcm	Nem_TryAgain, $7C20	; Eggman
-		plcm	Nem_CreditText, $B400	; credits alphabet
-	PLC_TryAgainend:
-; ---------------------------------------------------------------------------
-; Pattern load cues - Eggman on SBZ 2
-; ---------------------------------------------------------------------------
-PLC_EggmanSBZ2:	dc.w ((PLC_EggmanSBZ2end-PLC_EggmanSBZ2-2)/6)-1
-		plcm	Nem_SbzBlock, $A300	; block
-		plcm	Nem_Sbz2Eggman, $8000	; Eggman
-		plcm	Nem_LzSwitch, $9400	; switch
-	PLC_EggmanSBZ2end:
-; ---------------------------------------------------------------------------
-; Pattern load cues - final boss
-; ---------------------------------------------------------------------------
-PLC_FZBoss:	dc.w ((PLC_FZBossend-PLC_FZBoss-2)/6)-1
-		plcm	Nem_FzEggman, $7400	; Eggman after boss
-		plcm	Nem_FzBoss, $6000	; FZ boss
-		plcm	Nem_Eggman, $8000	; Eggman main patterns
-		plcm	Nem_Sbz2Eggman, $8E00	; Eggman without ship
-		plcm	Nem_Exhaust, $A540	; exhaust flame
-	PLC_FZBossend:
-		even
+ArtLoadCues:	include "Pattern Load Cues.asm"
 
 
 		align	$200,$FF
@@ -40548,7 +40158,7 @@ Nem_Newtron:	incbin	"artnem\Enemy Newtron.bin"
 		even
 Nem_Yadrin:	incbin	"artnem\Enemy Yadrin.bin"
 		even
-Nem_Basaran:	incbin	"artnem\Enemy Basaran.bin"
+Nem_Batbrain:	incbin	"artnem\Enemy Basaran.bin"
 		even
 Nem_Splats:	incbin	"artnem\Enemy Splats.bin"
 		even

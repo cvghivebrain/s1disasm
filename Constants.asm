@@ -95,34 +95,36 @@ bitDn:		equ 1
 bitUp:		equ 0
 
 ; Object variables
-obRender:	equ 1	; bitfield for x/y flip, display mode
-obGfx:		equ 2	; palette line & VRAM setting (2 bytes)
-obMap:		equ 4	; mappings address (4 bytes)
-obX:		equ 8	; x-axis position (2-4 bytes)
-obScreenY:	equ $A	; y-axis position for screen-fixed items (2 bytes)
-obY:		equ $C	; y-axis position (2-4 bytes)
-obVelX:		equ $10	; x-axis velocity (2 bytes)
-obVelY:		equ $12	; y-axis velocity (2 bytes)
-obInertia:	equ $14	; potential speed (2 bytes)
-obHeight:	equ $16	; height/2
-obWidth:	equ $17	; width/2
-obPriority:	equ $18	; sprite stack priority -- 0 is front
-obActWid:	equ $19	; action width
-obFrame:	equ $1A	; current frame displayed
-obAniFrame:	equ $1B	; current frame in animation script
-obAnim:		equ $1C	; current animation
-obNextAni:	equ $1D	; next animation
-obTimeFrame:	equ $1E	; time to next frame
-obDelayAni:	equ $1F	; time to delay animation
-obColType:	equ $20	; collision response type
-obColProp:	equ $21	; collision extra property
-obStatus:	equ $22	; orientation or mode
-obRespawnNo:	equ $23	; respawn list index number
-obRoutine:	equ $24	; routine number
-ob2ndRout:	equ $25	; secondary routine number
-obAngle:	equ $26	; angle
-obSubtype:	equ $28	; object subtype
-obSolid:	equ ob2ndRout ; solid status flag
+ost_render:		equ 1	; bitfield for x/y flip, display mode
+ost_tile:		equ 2	; palette line & VRAM setting (2 bytes)
+ost_mappings:		equ 4	; mappings address (4 bytes)
+ost_x_pos:		equ 8	; x-axis position (2 bytes)
+ost_x_sub:		equ $A	; x-axis subpixel position (2 bytes)
+ost_y_screen:		equ $A	; y-axis position for screen-fixed items (2 bytes)
+ost_y_pos:		equ $C	; y-axis position (2 bytes)
+ost_y_sub:		equ $E	; y-axis subpixel position (2 bytes)
+ost_x_vel:		equ $10	; x-axis velocity (2 bytes)
+ost_y_vel:		equ $12	; y-axis velocity (2 bytes)
+ost_inertia:		equ $14	; potential speed (2 bytes)
+ost_height:		equ $16	; height/2
+ost_width:		equ $17	; width/2
+ost_priority:		equ $18	; sprite stack priority -- 0 is front
+ost_actwidth:		equ $19	; action width/2
+ost_frame:		equ $1A	; current frame displayed
+ost_anim_frame:		equ $1B	; current frame in animation script
+ost_anim:		equ $1C	; current animation
+ost_anim_next:		equ $1D	; next animation
+ost_anim_time:		equ $1E	; time to next frame
+ost_anim_delay:		equ $1F	; time to delay animation
+ost_col_type:		equ $20	; collision response type
+ost_col_property:	equ $21	; collision extra property
+ost_status:		equ $22	; orientation or mode
+ost_respawn:		equ $23	; respawn list index number
+ost_routine:		equ $24	; routine number
+ost_routine2:		equ $25	; secondary routine number
+ost_solid:		equ $25 ; solid status flag
+ost_angle:		equ $26	; angle
+ost_subtype:		equ $28	; object subtype
 
 ; Object variables used by Sonic
 flashtime:	equ $30	; time between flashes after getting hit

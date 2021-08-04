@@ -30,10 +30,10 @@ copyTilemap:	macro source,loc,width,height
 ; ---------------------------------------------------------------------------
 
 out_of_range:	macro exit,pos
-		if (narg=2)
+		if narg=2
 		move.w	pos,d0		; get object position (if specified as not obX)
 		else
-		move.w	obX(a0),d0	; get object position
+		move.w	ost_x_pos(a0),d0 ; get object position
 		endc
 		andi.w	#$FF80,d0	; round down to nearest $80
 		move.w	(v_screenposx).w,d1 ; get screen position
