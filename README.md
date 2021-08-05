@@ -11,4 +11,4 @@ Differences with the disassembly on the [Sonic Retro Github page](https://github
 * __spritemap__ & __piece__ macros - Creates sprite mappings.
 * Z80 macros - See [axm68k](https://github.com/cvghivebrain/axm68k).
 * Different labels used for object status table.
-** Constants used for render flags.
+  * Constants used for render flags.
