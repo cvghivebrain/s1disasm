@@ -5678,182 +5678,9 @@ Cont_GotoLevel:
 		rts	
 ; ===========================================================================
 
-; ---------------------------------------------------------------------------
-; Object 80 - Continue screen elements
-; ---------------------------------------------------------------------------
+ContScrItem:	include "Objects\Continue Screen Items.asm"
+ContSonic:	include "Objects\Continue Screen Sonic.asm"
 
-ContScrItem:
-		moveq	#0,d0
-		move.b	$24(a0),d0
-		move.w	CSI_Index(pc,d0.w),d1
-		jmp	CSI_Index(pc,d1.w)
-; ===========================================================================
-CSI_Index:	index *
-		ptr CSI_Main
-		ptr CSI_Display
-		ptr CSI_MakeMiniSonic
-		ptr CSI_ChkDel
-; ===========================================================================
-
-CSI_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
-		move.l	#Map_ContScr,ost_mappings(a0)
-		move.w	#$8500,ost_tile(a0)
-		move.b	#0,ost_render(a0)
-		move.b	#$3C,ost_actwidth(a0)
-		move.w	#$120,ost_x_pos(a0)
-		move.w	#$C0,ost_y_screen(a0)
-		move.w	#0,(v_rings).w	; clear rings
-
-CSI_Display:	; Routine 2
-		jmp	(DisplaySprite).l
-; ===========================================================================
-
-	CSI_MiniSonicPos:
-		dc.w $116, $12A, $102, $13E, $EE, $152, $DA, $166, $C6
-		dc.w $17A, $B2,	$18E, $9E, $1A2, $8A
-
-CSI_MakeMiniSonic:
-		; Routine 4
-		movea.l	a0,a1
-		lea	(CSI_MiniSonicPos).l,a2
-		moveq	#0,d1
-		move.b	(v_continues).w,d1
-		subq.b	#2,d1
-		bcc.s	CSI_MoreThan1
-		jmp	(DeleteObject).l	; cancel if you have 0-1 continues
-
-	CSI_MoreThan1:
-		moveq	#1,d3
-		cmpi.b	#14,d1		; do you have fewer than 16 continues
-		bcs.s	CSI_FewerThan16	; if yes, branch
-
-		moveq	#0,d3
-		moveq	#14,d1		; cap at 15 mini-Sonics
-
-	CSI_FewerThan16:
-		move.b	d1,d2
-		andi.b	#1,d2
-
-CSI_MiniSonicLoop:
-		move.b	#id_ContScrItem,0(a1) ; load mini-Sonic object
-		move.w	(a2)+,ost_x_pos(a1)	; use above data for x-axis position
-		tst.b	d2		; do you have an even number of continues?
-		beq.s	CSI_Even	; if yes, branch
-		subi.w	#$A,ost_x_pos(a1)	; shift mini-Sonics slightly to the right
-
-	CSI_Even:
-		move.w	#$D0,ost_y_screen(a1)
-		move.b	#6,ost_frame(a1)
-		move.b	#6,ost_routine(a1)
-		move.l	#Map_ContScr,ost_mappings(a1)
-		move.w	#$8551,ost_tile(a1)
-		move.b	#0,ost_render(a1)
-		lea	$40(a1),a1
-		dbf	d1,CSI_MiniSonicLoop ; repeat for number of continues
-
-		lea	-$40(a1),a1
-		move.b	d3,ost_subtype(a1)
-
-CSI_ChkDel:	; Routine 6
-		tst.b	ost_subtype(a0)	; do you have 16 or more continues?
-		beq.s	CSI_Animate	; if yes, branch
-		cmpi.b	#6,(v_player+ost_routine).w ; is Sonic running?
-		bcs.s	CSI_Animate	; if not, branch
-		move.b	(v_vbla_byte).w,d0
-		andi.b	#1,d0
-		bne.s	CSI_Animate
-		tst.w	(v_player+ost_x_vel).w ; is Sonic running?
-		bne.s	CSI_Delete	; if yes, goto delete
-		rts	
-
-CSI_Animate:
-		move.b	(v_vbla_byte).w,d0
-		andi.b	#$F,d0
-		bne.s	CSI_Display2
-		bchg	#0,ost_frame(a0)
-
-	CSI_Display2:
-		jmp	(DisplaySprite).l
-; ===========================================================================
-
-CSI_Delete:
-		jmp	(DeleteObject).l
-; ---------------------------------------------------------------------------
-; Object 81 - Sonic on the continue screen
-; ---------------------------------------------------------------------------
-
-ContSonic:
-		moveq	#0,d0
-		move.b	ost_routine(a0),d0
-		move.w	CSon_Index(pc,d0.w),d1
-		jsr	CSon_Index(pc,d1.w)
-		jmp	(DisplaySprite).l
-; ===========================================================================
-CSon_Index:	index *
-		ptr CSon_Main
-		ptr CSon_ChkLand
-		ptr CSon_Animate
-		ptr CSon_Run
-; ===========================================================================
-
-CSon_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
-		move.w	#$A0,ost_x_pos(a0)
-		move.w	#$C0,ost_y_pos(a0)
-		move.l	#Map_Sonic,ost_mappings(a0)
-		move.w	#$780,ost_tile(a0)
-		move.b	#4,ost_render(a0)
-		move.b	#2,ost_priority(a0)
-		move.b	#id_Float3,ost_anim(a0) ; use "floating" animation
-		move.w	#$400,ost_y_vel(a0) ; make Sonic fall from above
-
-CSon_ChkLand:	; Routine 2
-		cmpi.w	#$1A0,ost_y_pos(a0)	; has Sonic landed yet?
-		bne.s	CSon_ShowFall	; if not, branch
-
-		addq.b	#2,ost_routine(a0)
-		clr.w	ost_y_vel(a0)	; stop Sonic falling
-		move.l	#Map_ContScr,ost_mappings(a0)
-		move.w	#$8500,ost_tile(a0)
-		move.b	#id_Walk,ost_anim(a0)
-		bra.s	CSon_Animate
-
-CSon_ShowFall:
-		jsr	(SpeedToPos).l
-		jsr	(Sonic_Animate).l
-		jmp	(Sonic_LoadGfx).l
-; ===========================================================================
-
-CSon_Animate:	; Routine 4
-		tst.b	(v_jpadpress1).w ; is Start button pressed?
-		bmi.s	CSon_GetUp	; if yes, branch
-		lea	(AniScript_CSon).l,a1
-		jmp	(AnimateSprite).l
-
-CSon_GetUp:
-		addq.b	#2,ost_routine(a0)
-		move.l	#Map_Sonic,ost_mappings(a0)
-		move.w	#$780,ost_tile(a0)
-		move.b	#id_Float4,ost_anim(a0) ; use "getting up" animation
-		clr.w	ost_inertia(a0)
-		subq.w	#8,ost_y_pos(a0)
-		sfx	bgm_Fade,0,1,1 ; fade out music
-
-CSon_Run:	; Routine 6
-		cmpi.w	#$800,ost_inertia(a0) ; check Sonic's inertia
-		bne.s	CSon_AddInertia	; if too low, branch
-		move.w	#$1000,ost_x_vel(a0) ; move Sonic to the right
-		bra.s	CSon_ShowRun
-
-CSon_AddInertia:
-		addi.w	#$20,ost_inertia(a0) ; increase inertia
-
-CSon_ShowRun:
-		jsr	(SpeedToPos).l
-		jsr	(Sonic_Animate).l
-		jmp	(Sonic_LoadGfx).l
-		
 AniScript_CSon:	include "Animations\Continue Screen Sonic.asm"
 Map_ContScr:	include "Mappings\Continue Screen.asm"
 
@@ -6088,277 +5915,11 @@ End_MoveSonExit:
 
 ; ===========================================================================
 
-; ---------------------------------------------------------------------------
-; Object 87 - Sonic on ending sequence
-; ---------------------------------------------------------------------------
-
-EndSonic:
-		moveq	#0,d0
-		move.b	ost_routine2(a0),d0
-		move.w	ESon_Index(pc,d0.w),d1
-		jsr	ESon_Index(pc,d1.w)
-		jmp	(DisplaySprite).l
-; ===========================================================================
-ESon_Index:	index *
-		ptr ESon_Main
-		ptr ESon_MakeEmeralds
-		ptr Obj87_Animate
-		ptr Obj87_LookUp
-		ptr Obj87_ClrObjRam
-		ptr Obj87_Animate
-		ptr Obj87_MakeLogo
-		ptr Obj87_Animate
-		ptr Obj87_Leap
-		ptr Obj87_Animate
-
-eson_time:	equ $30	; time to wait between events
-; ===========================================================================
-
-ESon_Main:	; Routine 0
-		cmpi.b	#6,(v_emeralds).w ; do you have all 6 emeralds?
-		beq.s	ESon_Main2	; if yes, branch
-		addi.b	#$10,ost_routine2(a0) ; else, skip emerald sequence
-		move.w	#216,eson_time(a0)
-		rts	
-; ===========================================================================
-
-ESon_Main2:
-		addq.b	#2,ost_routine2(a0)
-		move.l	#Map_ESon,ost_mappings(a0)
-		move.w	#$3E1,ost_tile(a0)
-		move.b	#4,ost_render(a0)
-		clr.b	ost_status(a0)
-		move.b	#2,ost_priority(a0)
-		move.b	#0,ost_frame(a0)
-		move.w	#80,eson_time(a0) ; set duration for Sonic to pause
-
-ESon_MakeEmeralds:
-		; Routine 2
-		subq.w	#1,eson_time(a0) ; subtract 1 from duration
-		bne.s	ESon_Wait
-		addq.b	#2,ost_routine2(a0)
-		move.w	#1,ost_anim(a0)
-		move.b	#id_EndChaos,(v_objspace+$400).w ; load chaos emeralds objects
-
-	ESon_Wait:
-		rts	
-; ===========================================================================
-
-Obj87_LookUp:	; Routine 6
-		cmpi.w	#$2000,((v_objspace&$FFFFFF)+$400+$3C).l
-		bne.s	locret_5480
-		move.w	#1,(f_restart).w ; set level to	restart	(causes	flash)
-		move.w	#90,eson_time(a0)
-		addq.b	#2,ost_routine2(a0)
-
-locret_5480:
-		rts	
-; ===========================================================================
-
-Obj87_ClrObjRam:
-		; Routine 8
-		subq.w	#1,eson_time(a0)
-		bne.s	ESon_Wait2
-		lea	(v_objspace+$400).w,a1
-		move.w	#$FF,d1
-
-Obj87_ClrLoop:
-		clr.l	(a1)+
-		dbf	d1,Obj87_ClrLoop ; clear the object RAM
-		move.w	#1,(f_restart).w
-		addq.b	#2,ost_routine2(a0)
-		move.b	#1,ost_anim(a0)
-		move.w	#60,eson_time(a0)
-
-ESon_Wait2:
-		rts	
-; ===========================================================================
-
-Obj87_MakeLogo:	; Routine $C
-		subq.w	#1,eson_time(a0)
-		bne.s	ESon_Wait3
-		addq.b	#2,ost_routine2(a0)
-		move.w	#180,eson_time(a0)
-		move.b	#2,ost_anim(a0)
-		move.b	#id_EndSTH,(v_objspace+$400).w ; load "SONIC THE HEDGEHOG" object
-
-ESon_Wait3:
-		rts	
-; ===========================================================================
-
-Obj87_Animate:	; Rountine 4, $A, $E, $12
-		lea	(AniScript_ESon).l,a1
-		jmp	(AnimateSprite).l
-; ===========================================================================
-
-Obj87_Leap:	; Routine $10
-		subq.w	#1,eson_time(a0)
-		bne.s	ESon_Wait4
-		addq.b	#2,ost_routine2(a0)
-		move.l	#Map_ESon,ost_mappings(a0)
-		move.w	#$3E1,ost_tile(a0)
-		move.b	#4,ost_render(a0)
-		clr.b	ost_status(a0)
-		move.b	#2,ost_priority(a0)
-		move.b	#5,ost_frame(a0)
-		move.b	#2,ost_anim(a0)	; use "leaping"	animation
-		move.b	#id_EndSTH,(v_objspace+$400).w ; load "SONIC THE HEDGEHOG" object
-		bra.s	Obj87_Animate
-; ===========================================================================
-
-ESon_Wait4:
-		rts	
-
+EndSonic:	include "Objects\Ending Sonic.asm"
 AniScript_ESon:	include "Animations\Ending Sonic.asm"
 
-; ---------------------------------------------------------------------------
-; Object 88 - chaos emeralds on	the ending sequence
-; ---------------------------------------------------------------------------
-
-EndChaos:
-		moveq	#0,d0
-		move.b	ost_routine(a0),d0
-		move.w	ECha_Index(pc,d0.w),d1
-		jsr	ECha_Index(pc,d1.w)
-		jmp	(DisplaySprite).l
-; ===========================================================================
-ECha_Index:	index *
-		ptr ECha_Main
-		ptr ECha_Move
-
-echa_origX:	equ $38	; x-axis centre of emerald circle (2 bytes)
-echa_origY:	equ $3A	; y-axis centre of emerald circle (2 bytes)
-echa_radius:	equ $3C	; radius (2 bytes)
-echa_angle:	equ $3E	; angle for rotation (2 bytes)
-; ===========================================================================
-
-ECha_Main:	; Routine 0
-		cmpi.b	#2,(v_player+ost_frame).w ; this isn't `id_frame_Wait1`: `v_player` is Object 88, which has its own frames
-		beq.s	ECha_CreateEms
-		addq.l	#4,sp
-		rts	
-; ===========================================================================
-
-ECha_CreateEms:
-		move.w	(v_player+ost_x_pos).w,ost_x_pos(a0) ; match X position with Sonic
-		move.w	(v_player+ost_y_pos).w,ost_y_pos(a0) ; match Y position with Sonic
-		movea.l	a0,a1
-		moveq	#0,d3
-		moveq	#1,d2
-		moveq	#5,d1
-
-	ECha_LoadLoop:
-		move.b	#id_EndChaos,(a1) ; load chaos emerald object
-		addq.b	#2,ost_routine(a1)
-		move.l	#Map_ECha,ost_mappings(a1)
-		move.w	#$3C5,ost_tile(a1)
-		move.b	#4,ost_render(a1)
-		move.b	#1,ost_priority(a1)
-		move.w	ost_x_pos(a0),echa_origX(a1)
-		move.w	ost_y_pos(a0),echa_origY(a1)
-		move.b	d2,ost_anim(a1)
-		move.b	d2,ost_frame(a1)
-		addq.b	#1,d2
-		move.b	d3,ost_angle(a1)
-		addi.b	#$100/6,d3	; angle between each emerald
-		lea	$40(a1),a1
-		dbf	d1,ECha_LoadLoop ; repeat 5 more times
-
-ECha_Move:	; Routine 2
-		move.w	echa_angle(a0),d0
-		add.w	d0,ost_angle(a0)
-		move.b	ost_angle(a0),d0
-		jsr	(CalcSine).l
-		moveq	#0,d4
-		move.b	echa_radius(a0),d4
-		muls.w	d4,d1
-		asr.l	#8,d1
-		muls.w	d4,d0
-		asr.l	#8,d0
-		add.w	echa_origX(a0),d1
-		add.w	echa_origY(a0),d0
-		move.w	d1,ost_x_pos(a0)
-		move.w	d0,ost_y_pos(a0)
-
-	ECha_Expand:
-		cmpi.w	#$2000,echa_radius(a0)
-		beq.s	ECha_Rotate
-		addi.w	#$20,echa_radius(a0) ; expand circle of emeralds
-
-	ECha_Rotate:
-		cmpi.w	#$2000,echa_angle(a0)
-		beq.s	ECha_Rise
-		addi.w	#$20,echa_angle(a0) ; move emeralds around the centre
-
-	ECha_Rise:
-		cmpi.w	#$140,echa_origY(a0)
-		beq.s	ECha_End
-		subq.w	#1,echa_origY(a0) ; make circle rise
-
-ECha_End:
-		rts	
-; ---------------------------------------------------------------------------
-; Object 89 - "SONIC THE HEDGEHOG" text	on the ending sequence
-; ---------------------------------------------------------------------------
-
-EndSTH:
-		moveq	#0,d0
-		move.b	$24(a0),d0
-		move.w	ESth_Index(pc,d0.w),d1
-		if Revision=0
-		jmp	ESth_Index(pc,d1.w)
-		else
-		jsr	ESth_Index(pc,d1.w)
-		jmp	(DisplaySprite).l
-		endc
-; ===========================================================================
-ESth_Index:	index *
-		ptr ESth_Main
-		ptr ESth_Move
-		ptr ESth_GotoCredits
-
-esth_time:	equ $30		; time until exit
-; ===========================================================================
-
-ESth_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
-		move.w	#-$20,ost_x_pos(a0)	; object starts	outside	the level boundary
-		move.w	#$D8,ost_y_screen(a0)
-		move.l	#Map_ESTH,ost_mappings(a0)
-		move.w	#$5C5,ost_tile(a0)
-		move.b	#0,ost_render(a0)
-		move.b	#0,ost_priority(a0)
-
-ESth_Move:	; Routine 2
-		cmpi.w	#$C0,ost_x_pos(a0)	; has object reached $C0?
-		beq.s	ESth_Delay	; if yes, branch
-		addi.w	#$10,ost_x_pos(a0)	; move object to the right
-		if Revision=0
-		bra.w	DisplaySprite
-		else
-		rts
-		endc
-
-ESth_Delay:
-		addq.b	#2,ost_routine(a0)
-		if Revision=0
-		move.w	#120,esth_time(a0) ; set duration for delay (2 seconds)
-		else
-		move.w	#300,esth_time(a0) ; set duration for delay (5 seconds)
-		endc
-
-ESth_GotoCredits:
-		; Routine 4
-		subq.w	#1,esth_time(a0) ; subtract 1 from duration
-		bpl.s	ESth_Wait
-		move.b	#id_Credits,(v_gamemode).w ; exit to credits
-
-	ESth_Wait:
-		if Revision=0
-		bra.w	DisplaySprite
-		else
-		rts
-		endc
+EndChaos:	include "Objects\Ending Chaos Emeralds.asm"
+EndSTH:		include "Objects\Ending StH Text.asm"
 		
 Map_ESon:	include "Mappings\Ending Sonic.asm"
 Map_ECha:	include "Mappings\Ending Chaos Emeralds.asm"
@@ -6560,182 +6121,11 @@ TryAg_Exit:
 
 ; ===========================================================================
 
-; ---------------------------------------------------------------------------
-; Object 8B - Eggman on "TRY AGAIN" and "END"	screens
-; ---------------------------------------------------------------------------
-
-EndEggman:
-		moveq	#0,d0
-		move.b	ost_routine(a0),d0
-		move.w	EEgg_Index(pc,d0.w),d1
-		jsr	EEgg_Index(pc,d1.w)
-		jmp	(DisplaySprite).l
-; ===========================================================================
-EEgg_Index:	index *
-		ptr EEgg_Main
-		ptr EEgg_Animate
-		ptr EEgg_Juggle
-		ptr EEgg_Wait
-
-eegg_time:	equ $30		; time between juggle motions
-; ===========================================================================
-
-EEgg_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
-		move.w	#$120,ost_x_pos(a0)
-		move.w	#$F4,ost_y_screen(a0)
-		move.l	#Map_EEgg,ost_mappings(a0)
-		move.w	#$3E1,ost_tile(a0)
-		move.b	#0,ost_render(a0)
-		move.b	#2,ost_priority(a0)
-		move.b	#2,ost_anim(a0)	; use "END" animation
-		cmpi.b	#6,(v_emeralds).w ; do you have all 6 emeralds?
-		beq.s	EEgg_Animate	; if yes, branch
-
-		move.b	#id_CreditsText,(v_objspace+$C0).w ; load credits object
-		move.w	#9,(v_creditsnum).w ; use "TRY AGAIN" text
-		move.b	#id_TryChaos,(v_objspace+$800).w ; load emeralds object on "TRY AGAIN" screen
-		move.b	#0,ost_anim(a0)	; use "TRY AGAIN" animation
-
-EEgg_Animate:	; Routine 2
-		lea	(Ani_EEgg).l,a1
-		jmp	(AnimateSprite).l
-; ===========================================================================
-
-EEgg_Juggle:	; Routine 4
-		addq.b	#2,ost_routine(a0)
-		moveq	#2,d0
-		btst	#0,ost_anim(a0)
-		beq.s	@noflip
-		neg.w	d0
-
-	@noflip:
-		lea	(v_objspace+$800).w,a1 ; get RAM address for emeralds
-		moveq	#5,d1
-
-@emeraldloop:
-		move.b	d0,$3E(a1)
-		move.w	d0,d2
-		asl.w	#3,d2
-		add.b	d2,ost_angle(a1)
-		lea	$40(a1),a1
-		dbf	d1,@emeraldloop
-		addq.b	#1,ost_frame(a0)
-		move.w	#112,eegg_time(a0)
-
-EEgg_Wait:	; Routine 6
-		subq.w	#1,eegg_time(a0) ; decrement timer
-		bpl.s	@nochg		; branch if time remains
-		bchg	#0,ost_anim(a0)
-		move.b	#2,ost_routine(a0) ; goto EEgg_Animate next
-
-	@nochg:
-		rts	
-
+EndEggman:	include "Objects\Ending Eggman Try Again.asm"
 Ani_EEgg:	include "Animations\Ending Eggman Try Again.asm"
 
-; ---------------------------------------------------------------------------
-; Object 8C - chaos emeralds on	the "TRY AGAIN"	screen
-; ---------------------------------------------------------------------------
+TryChaos:	include "Objects\Ending Chaos Emeralds Try Again.asm"
 
-TryChaos:
-		moveq	#0,d0
-		move.b	ost_routine(a0),d0
-		move.w	TCha_Index(pc,d0.w),d1
-		jsr	TCha_Index(pc,d1.w)
-		jmp	(DisplaySprite).l
-; ===========================================================================
-TCha_Index:	index *
-		ptr TCha_Main
-		ptr TCha_Move
-; ===========================================================================
-
-TCha_Main:	; Routine 0
-		movea.l	a0,a1
-		moveq	#0,d2
-		moveq	#0,d3
-		moveq	#5,d1
-		sub.b	(v_emeralds).w,d1
-
-@makeemerald:
-		move.b	#id_TryChaos,(a1) ; load emerald object
-		addq.b	#2,ost_routine(a1)
-		move.l	#Map_ECha,ost_mappings(a1)
-		move.w	#$3C5,ost_tile(a1)
-		move.b	#0,ost_render(a1)
-		move.b	#1,ost_priority(a1)
-		move.w	#$104,ost_x_pos(a1)
-		move.w	#$120,$38(a1)
-		move.w	#$EC,ost_y_screen(a1)
-		move.w	ost_y_screen(a1),$3A(a1)
-		move.b	#$1C,$3C(a1)
-		lea	(v_emldlist).w,a3
-
-	@chkemerald:
-		moveq	#0,d0
-		move.b	(v_emeralds).w,d0
-		subq.w	#1,d0
-		bcs.s	@loc_5B42
-
-	@chkloop:
-		cmp.b	(a3,d0.w),d2
-		bne.s	@notgot
-		addq.b	#1,d2
-		bra.s	@chkemerald
-; ===========================================================================
-
-	@notgot:
-		dbf	d0,@chkloop
-
-@loc_5B42:
-		move.b	d2,ost_frame(a1)
-		addq.b	#1,ost_frame(a1)
-		addq.b	#1,d2
-		move.b	#$80,ost_angle(a1)
-		move.b	d3,ost_anim_time(a1)
-		move.b	d3,ost_anim_delay(a1)
-		addi.w	#10,d3
-		lea	$40(a1),a1
-		dbf	d1,@makeemerald	; repeat 5 times
-
-TCha_Move:	; Routine 2
-		tst.w	$3E(a0)
-		beq.s	locret_5BBA
-		tst.b	ost_anim_time(a0)
-		beq.s	loc_5B78
-		subq.b	#1,ost_anim_time(a0)
-		bne.s	loc_5B80
-
-loc_5B78:
-		move.w	$3E(a0),d0
-		add.w	d0,ost_angle(a0)
-
-loc_5B80:
-		move.b	ost_angle(a0),d0
-		beq.s	loc_5B8C
-		cmpi.b	#$80,d0
-		bne.s	loc_5B96
-
-loc_5B8C:
-		clr.w	$3E(a0)
-		move.b	ost_anim_delay(a0),ost_anim_time(a0)
-
-loc_5B96:
-		jsr	(CalcSine).l
-		moveq	#0,d4
-		move.b	$3C(a0),d4
-		muls.w	d4,d1
-		asr.l	#8,d1
-		muls.w	d4,d0
-		asr.l	#8,d0
-		add.w	$38(a0),d1
-		add.w	$3A(a0),d0
-		move.w	d1,ost_x_pos(a0)
-		move.w	d0,ost_y_screen(a0)
-
-locret_5BBA:
-		rts	
-		
 Map_EEgg:	include "Mappings\Ending Eggman Try Again.asm"
 
 ; ---------------------------------------------------------------------------
@@ -6841,9 +6231,6 @@ LevelSizeArray:
 ; Ending start location array
 ; ---------------------------------------------------------------------------
 EndingStLocArray:
-; ---------------------------------------------------------------------------
-; Ending start location array
-; ---------------------------------------------------------------------------
 
 		incbin	"startpos\ghz1 (Credits demo 1).bin"
 		incbin	"startpos\mz2 (Credits demo).bin"
@@ -6925,9 +6312,6 @@ SetScreen:
 ; Sonic start location array
 ; ---------------------------------------------------------------------------
 StartLocArray:
-; ---------------------------------------------------------------------------
-; Sonic start location array
-; ---------------------------------------------------------------------------
 
 		incbin	"startpos\ghz1.bin"
 		incbin	"startpos\ghz2.bin"
@@ -7965,9 +7349,6 @@ LevelSizeArray:
 ; Ending start location array
 ; ---------------------------------------------------------------------------
 EndingStLocArray:
-; ---------------------------------------------------------------------------
-; Ending start location array
-; ---------------------------------------------------------------------------
 
 		incbin	"startpos\ghz1 (Credits demo 1).bin"
 		incbin	"startpos\mz2 (Credits demo).bin"
@@ -8049,9 +7430,6 @@ SetScreen:
 ; Sonic start location array
 ; ---------------------------------------------------------------------------
 StartLocArray:
-; ---------------------------------------------------------------------------
-; Sonic start location array
-; ---------------------------------------------------------------------------
 
 		incbin	"startpos\ghz1.bin"
 		incbin	"startpos\ghz2.bin"
@@ -11083,7 +10461,7 @@ Bridge:
 		move.w	Bri_Index(pc,d0.w),d1
 		jmp	Bri_Index(pc,d1.w)
 ; ===========================================================================
-Bri_Index:	index *
+Bri_Index:	index *,,2
 		ptr Bri_Main
 		ptr Bri_Action
 		ptr Bri_Platform
@@ -11095,8 +10473,8 @@ Bri_Index:	index *
 Bri_Main:	; Routine 0
 		addq.b	#2,ost_routine(a0)
 		move.l	#Map_Bri,ost_mappings(a0)
-		move.w	#$438E,ost_tile(a0)
-		move.b	#4,ost_render(a0)
+		move.w	#tile_Nem_Bridge+tile_pal3,ost_tile(a0)
+		move.b	#render_rel,ost_render(a0)
 		move.b	#3,ost_priority(a0)
 		move.b	#$80,ost_actwidth(a0)
 		move.w	ost_y_pos(a0),d2
@@ -11136,14 +10514,14 @@ Bri_Main:	; Routine 0
 		lsr.w	#6,d5
 		andi.w	#$7F,d5
 		move.b	d5,(a2)+
-		move.b	#$A,ost_routine(a1)
+		move.b	#id_Bri_Display,ost_routine(a1)
 		move.b	d4,0(a1)	; load bridge object (d4 = $11)
 		move.w	d2,ost_y_pos(a1)
 		move.w	d2,$3C(a1)
 		move.w	d3,ost_x_pos(a1)
 		move.l	#Map_Bri,ost_mappings(a1)
-		move.w	#$438E,ost_tile(a1)
-		move.b	#4,ost_render(a1)
+		move.w	#tile_Nem_Bridge+tile_pal3,ost_tile(a1)
+		move.b	#render_rel,ost_render(a1)
 		move.b	#3,ost_priority(a1)
 		move.b	#8,ost_actwidth(a1)
 		addi.w	#$10,d3
@@ -11544,7 +10922,7 @@ SwingingPlatform:
 		move.w	Swing_Index(pc,d0.w),d1
 		jmp	Swing_Index(pc,d1.w)
 ; ===========================================================================
-Swing_Index:	index *
+Swing_Index:	index *,,2
 		ptr Swing_Main
 		ptr Swing_SetSolid
 		ptr Swing_Action2
@@ -11560,8 +10938,8 @@ swing_origY:	equ $38		; original y-axis position
 Swing_Main:	; Routine 0
 		addq.b	#2,ost_routine(a0)
 		move.l	#Map_Swing_GHZ,ost_mappings(a0) ; GHZ and MZ specific code
-		move.w	#$4380,ost_tile(a0)
-		move.b	#4,ost_render(a0)
+		move.w	#tile_Nem_Swing+tile_pal3,ost_tile(a0)
+		move.b	#render_rel,ost_render(a0)
 		move.b	#3,ost_priority(a0)
 		move.b	#$18,ost_actwidth(a0)
 		move.b	#8,ost_height(a0)
@@ -11571,7 +10949,7 @@ Swing_Main:	; Routine 0
 		bne.s	@notSLZ
 
 		move.l	#Map_Swing_SLZ,ost_mappings(a0) ; SLZ specific code
-		move.w	#$43DC,ost_tile(a0)
+		move.w	#tile_Nem_SlzSwing+tile_pal3,ost_tile(a0)
 		move.b	#$20,ost_actwidth(a0)
 		move.b	#$10,ost_height(a0)
 		move.b	#$99,ost_col_type(a0)
@@ -11581,11 +10959,11 @@ Swing_Main:	; Routine 0
 		bne.s	@length
 
 		move.l	#Map_BBall,ost_mappings(a0) ; SBZ specific code
-		move.w	#$391,ost_tile(a0)
+		move.w	#tile_Nem_BigSpike_SBZ,ost_tile(a0)
 		move.b	#$18,ost_actwidth(a0)
 		move.b	#$18,ost_height(a0)
 		move.b	#$86,ost_col_type(a0)
-		move.b	#$C,ost_routine(a0) ; goto Swing_Action next
+		move.b	#id_Swing_Action,ost_routine(a0) ; goto Swing_Action next
 
 @length:
 		move.b	0(a0),d4
@@ -11619,7 +10997,7 @@ Swing_Main:	; Routine 0
 		move.l	ost_mappings(a0),ost_mappings(a1)
 		move.w	ost_tile(a0),ost_tile(a1)
 		bclr	#6,ost_tile(a1)
-		move.b	#4,ost_render(a1)
+		move.b	#render_rel,ost_render(a1)
 		move.b	#4,ost_priority(a1)
 		move.b	#8,ost_actwidth(a1)
 		move.b	#1,ost_frame(a1)
@@ -11645,7 +11023,7 @@ Swing_Main:	; Routine 0
 		btst	#4,d1		; is object type $1X ?
 		beq.s	@not1X	; if not, branch
 		move.l	#Map_GBall,ost_mappings(a0) ; use GHZ ball mappings
-		move.w	#$43AA,ost_tile(a0)
+		move.w	#tile_Nem_Ball+tile_pal3,ost_tile(a0)
 		move.b	#1,ost_frame(a0)
 		move.b	#2,ost_priority(a0)
 		move.b	#$81,ost_col_type(a0) ; make object hurt when touched
@@ -11839,448 +11217,10 @@ Swing_Display:	; Routine $A
 Map_Swing_GHZ:	include "Mappings\GHZ & MZ Swinging Platforms.asm"
 Map_Swing_SLZ:	include "Mappings\SLZ Swinging Platforms.asm"
 
-; ---------------------------------------------------------------------------
-; Object 17 - helix of spikes on a pole	(GHZ)
-; ---------------------------------------------------------------------------
-
-Helix:
-		moveq	#0,d0
-		move.b	ost_routine(a0),d0
-		move.w	Hel_Index(pc,d0.w),d1
-		jmp	Hel_Index(pc,d1.w)
-; ===========================================================================
-Hel_Index:	index *
-		ptr Hel_Main
-		ptr Hel_Action
-		ptr Hel_Action
-		ptr Hel_Delete
-		ptr Hel_Display
-
-hel_frame:	equ $3E		; start frame (different for each spike)
-
-;		$29-38 are used for child object addresses
-; ===========================================================================
-
-Hel_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
-		move.l	#Map_Hel,ost_mappings(a0)
-		move.w	#$4398,ost_tile(a0)
-		move.b	#7,ost_status(a0)
-		move.b	#4,ost_render(a0)
-		move.b	#3,ost_priority(a0)
-		move.b	#8,ost_actwidth(a0)
-		move.w	ost_y_pos(a0),d2
-		move.w	ost_x_pos(a0),d3
-		move.b	0(a0),d4
-		lea	ost_subtype(a0),a2 ; move helix length to a2
-		moveq	#0,d1
-		move.b	(a2),d1		; move helix length to d1
-		move.b	#0,(a2)+	; clear subtype
-		move.w	d1,d0
-		lsr.w	#1,d0
-		lsl.w	#4,d0
-		sub.w	d0,d3		; d3 is x-axis position of leftmost spike
-		subq.b	#2,d1
-		bcs.s	Hel_Action	; skip to action if length is only 1
-		moveq	#0,d6
-
-Hel_Build:
-		bsr.w	FindFreeObj
-		bne.s	Hel_Action
-		addq.b	#1,ost_subtype(a0)
-		move.w	a1,d5
-		subi.w	#$D000,d5
-		lsr.w	#6,d5
-		andi.w	#$7F,d5
-		move.b	d5,(a2)+	; copy child address to parent RAM
-		move.b	#8,ost_routine(a1)
-		move.b	d4,0(a1)
-		move.w	d2,ost_y_pos(a1)
-		move.w	d3,ost_x_pos(a1)
-		move.l	ost_mappings(a0),ost_mappings(a1)
-		move.w	#$4398,ost_tile(a1)
-		move.b	#4,ost_render(a1)
-		move.b	#3,ost_priority(a1)
-		move.b	#8,ost_actwidth(a1)
-		move.b	d6,hel_frame(a1)
-		addq.b	#1,d6
-		andi.b	#7,d6
-		addi.w	#$10,d3
-		cmp.w	ost_x_pos(a0),d3	; is this spike in the centre?
-		bne.s	Hel_NotCentre	; if not, branch
-
-		move.b	d6,hel_frame(a0) ; set parent spike frame
-		addq.b	#1,d6
-		andi.b	#7,d6
-		addi.w	#$10,d3		; skip to next spike
-		addq.b	#1,ost_subtype(a0)
-
-	Hel_NotCentre:
-		dbf	d1,Hel_Build ; repeat d1 times (helix length)
-
-Hel_Action:	; Routine 2, 4
-		bsr.w	Hel_RotateSpikes
-		bsr.w	DisplaySprite
-		bra.w	Hel_ChkDel
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Hel_RotateSpikes:
-		move.b	(v_ani0_frame).w,d0
-		move.b	#0,ost_col_type(a0) ; make object harmless
-		add.b	hel_frame(a0),d0
-		andi.b	#7,d0
-		move.b	d0,ost_frame(a0)	; change current frame
-		bne.s	locret_7DA6
-		move.b	#$84,ost_col_type(a0) ; make object harmful
-
-locret_7DA6:
-		rts	
-; End of function Hel_RotateSpikes
-
-; ===========================================================================
-
-Hel_ChkDel:
-		out_of_range	Hel_DelAll
-		rts	
-; ===========================================================================
-
-Hel_DelAll:
-		moveq	#0,d2
-		lea	ost_subtype(a0),a2 ; move helix length to a2
-		move.b	(a2)+,d2	; move helix length to d2
-		subq.b	#2,d2
-		bcs.s	Hel_Delete
-
-	Hel_DelLoop:
-		moveq	#0,d0
-		move.b	(a2)+,d0
-		lsl.w	#6,d0
-		addi.l	#v_objspace&$FFFFFF,d0
-		movea.l	d0,a1		; get child address
-		bsr.w	DeleteChild	; delete object
-		dbf	d2,Hel_DelLoop ; repeat d2 times (helix length)
-
-Hel_Delete:	; Routine 6
-		bsr.w	DeleteObject
-		rts	
-; ===========================================================================
-
-Hel_Display:	; Routine 8
-		bsr.w	Hel_RotateSpikes
-		bra.w	DisplaySprite
-		
+Helix:		include "Objects\GHZ Spiked Helix Pole.asm"
 Map_Hel:	include "Mappings\GHZ Spiked Helix Pole.asm"
 
-; ---------------------------------------------------------------------------
-; Object 18 - platforms	(GHZ, SYZ, SLZ)
-; ---------------------------------------------------------------------------
-
-BasicPlatform:
-		moveq	#0,d0
-		move.b	ost_routine(a0),d0
-		move.w	Plat_Index(pc,d0.w),d1
-		jmp	Plat_Index(pc,d1.w)
-; ===========================================================================
-Plat_Index:	index *
-		ptr Plat_Main
-		ptr Plat_Solid
-		ptr Plat_Action2
-		ptr Plat_Delete
-		ptr Plat_Action
-; ===========================================================================
-
-Plat_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
-		move.w	#$4000,ost_tile(a0)
-		move.l	#Map_Plat_GHZ,ost_mappings(a0)
-		move.b	#$20,ost_actwidth(a0)
-		cmpi.b	#id_SYZ,(v_zone).w ; check if level is SYZ
-		bne.s	@notSYZ
-
-		move.l	#Map_Plat_SYZ,ost_mappings(a0) ; SYZ specific code
-		move.b	#$20,ost_actwidth(a0)
-
-	@notSYZ:
-		cmpi.b	#id_SLZ,(v_zone).w ; check if level is SLZ
-		bne.s	@notSLZ
-		move.l	#Map_Plat_SLZ,ost_mappings(a0) ; SLZ specific code
-		move.b	#$20,ost_actwidth(a0)
-		move.w	#$4000,ost_tile(a0)
-		move.b	#3,ost_subtype(a0)
-
-	@notSLZ:
-		move.b	#4,ost_render(a0)
-		move.b	#4,ost_priority(a0)
-		move.w	ost_y_pos(a0),$2C(a0)
-		move.w	ost_y_pos(a0),$34(a0)
-		move.w	ost_x_pos(a0),$32(a0)
-		move.w	#$80,ost_angle(a0)
-		moveq	#0,d1
-		move.b	ost_subtype(a0),d0
-		cmpi.b	#$A,d0		; is object type $A (large platform)?
-		bne.s	@setframe	; if not, branch
-		addq.b	#1,d1		; use frame #1
-		move.b	#$20,ost_actwidth(a0) ; set width
-
-	@setframe:
-		move.b	d1,ost_frame(a0)	; set frame to d1
-
-Plat_Solid:	; Routine 2
-		tst.b	$38(a0)
-		beq.s	loc_7EE0
-		subq.b	#4,$38(a0)
-
-	loc_7EE0:
-		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
-		bsr.w	PlatformObject
-
-Plat_Action:	; Routine 8
-		bsr.w	Plat_Move
-		bsr.w	Plat_Nudge
-		bsr.w	DisplaySprite
-		bra.w	Plat_ChkDel
-; ===========================================================================
-
-Plat_Action2:	; Routine 4
-		cmpi.b	#$40,$38(a0)
-		beq.s	loc_7F06
-		addq.b	#4,$38(a0)
-
-	loc_7F06:
-		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
-		bsr.w	ExitPlatform
-		move.w	ost_x_pos(a0),-(sp)
-		bsr.w	Plat_Move
-		bsr.w	Plat_Nudge
-		move.w	(sp)+,d2
-		bsr.w	MvSonicOnPtfm2
-		bsr.w	DisplaySprite
-		bra.w	Plat_ChkDel
-
-		rts
-
-; ---------------------------------------------------------------------------
-; Subroutine to	move platform slightly when you	stand on it
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Plat_Nudge:
-		move.b	$38(a0),d0
-		bsr.w	CalcSine
-		move.w	#$400,d1
-		muls.w	d1,d0
-		swap	d0
-		add.w	$2C(a0),d0
-		move.w	d0,ost_y_pos(a0)
-		rts	
-; End of function Plat_Nudge
-
-; ---------------------------------------------------------------------------
-; Subroutine to	move platforms
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Plat_Move:
-		moveq	#0,d0
-		move.b	ost_subtype(a0),d0
-		andi.w	#$F,d0
-		add.w	d0,d0
-		move.w	@index(pc,d0.w),d1
-		jmp	@index(pc,d1.w)
-; End of function Plat_Move
-
-; ===========================================================================
-@index:		index *
-		ptr @type00
-		ptr @type01
-		ptr @type02
-		ptr @type03
-		ptr @type04
-		ptr @type05
-		ptr @type06
-		ptr @type07
-		ptr @type08
-		ptr @type00
-		ptr @type0A
-		ptr @type0B
-		ptr @type0C
-; ===========================================================================
-
-@type00:
-		rts			; platform 00 doesn't move
-; ===========================================================================
-
-@type05:
-		move.w	$32(a0),d0
-		move.b	ost_angle(a0),d1	; load platform-motion variable
-		neg.b	d1		; reverse platform-motion
-		addi.b	#$40,d1
-		bra.s	@type01_move
-; ===========================================================================
-
-@type01:
-		move.w	$32(a0),d0
-		move.b	ost_angle(a0),d1	; load platform-motion variable
-		subi.b	#$40,d1
-
-	@type01_move:
-		ext.w	d1
-		add.w	d1,d0
-		move.w	d0,ost_x_pos(a0)	; change position on x-axis
-		bra.w	@chgmotion
-; ===========================================================================
-
-@type0C:
-		move.w	$34(a0),d0
-		move.b	(v_oscillate+$E).w,d1 ; load platform-motion variable
-		neg.b	d1		; reverse platform-motion
-		addi.b	#$30,d1
-		bra.s	@type02_move
-; ===========================================================================
-
-@type0B:
-		move.w	$34(a0),d0
-		move.b	(v_oscillate+$E).w,d1 ; load platform-motion variable
-		subi.b	#$30,d1
-		bra.s	@type02_move
-; ===========================================================================
-
-@type06:
-		move.w	$34(a0),d0
-		move.b	ost_angle(a0),d1	; load platform-motion variable
-		neg.b	d1		; reverse platform-motion
-		addi.b	#$40,d1
-		bra.s	@type02_move
-; ===========================================================================
-
-@type02:
-		move.w	$34(a0),d0
-		move.b	ost_angle(a0),d1	; load platform-motion variable
-		subi.b	#$40,d1
-
-	@type02_move:
-		ext.w	d1
-		add.w	d1,d0
-		move.w	d0,$2C(a0)	; change position on y-axis
-		bra.w	@chgmotion
-; ===========================================================================
-
-@type03:
-		tst.w	$3A(a0)		; is time delay	set?
-		bne.s	@type03_wait	; if yes, branch
-		btst	#3,ost_status(a0)	; is Sonic standing on the platform?
-		beq.s	@type03_nomove	; if not, branch
-		move.w	#30,$3A(a0)	; set time delay to 0.5	seconds
-
-	@type03_nomove:
-		rts	
-
-	@type03_wait:
-		subq.w	#1,$3A(a0)	; subtract 1 from time
-		bne.s	@type03_nomove	; if time is > 0, branch
-		move.w	#32,$3A(a0)
-		addq.b	#1,ost_subtype(a0) ; change to type 04 (falling)
-		rts	
-; ===========================================================================
-
-@type04:
-		tst.w	$3A(a0)
-		beq.s	@loc_8048
-		subq.w	#1,$3A(a0)
-		bne.s	@loc_8048
-		btst	#3,ost_status(a0)
-		beq.s	@loc_8042
-		bset	#1,ost_status(a1)
-		bclr	#3,ost_status(a1)
-		move.b	#2,ost_routine(a1)
-		bclr	#3,ost_status(a0)
-		clr.b	$25(a0)
-		move.w	ost_y_vel(a0),ost_y_vel(a1)
-
-	@loc_8042:
-		move.b	#8,ost_routine(a0)
-
-	@loc_8048:
-		move.l	$2C(a0),d3
-		move.w	ost_y_vel(a0),d0
-		ext.l	d0
-		asl.l	#8,d0
-		add.l	d0,d3
-		move.l	d3,$2C(a0)
-		addi.w	#$38,ost_y_vel(a0)
-		move.w	(v_limitbtm2).w,d0
-		addi.w	#$E0,d0
-		cmp.w	$2C(a0),d0
-		bcc.s	@locret_8074
-		move.b	#6,ost_routine(a0)
-
-	@locret_8074:
-		rts	
-; ===========================================================================
-
-@type07:
-		tst.w	$3A(a0)		; is time delay	set?
-		bne.s	@type07_wait	; if yes, branch
-		lea	(f_switch).w,a2	; load switch statuses
-		moveq	#0,d0
-		move.b	ost_subtype(a0),d0 ; move object type ($x7) to d0
-		lsr.w	#4,d0		; divide d0 by 8, round	down
-		tst.b	(a2,d0.w)	; has switch no. d0 been pressed?
-		beq.s	@type07_nomove	; if not, branch
-		move.w	#60,$3A(a0)	; set time delay to 1 second
-
-	@type07_nomove:
-		rts	
-
-	@type07_wait:
-		subq.w	#1,$3A(a0)	; subtract 1 from time delay
-		bne.s	@type07_nomove	; if time is > 0, branch
-		addq.b	#1,ost_subtype(a0) ; change to type 08
-		rts	
-; ===========================================================================
-
-@type08:
-		subq.w	#2,$2C(a0)	; move platform	up
-		move.w	$34(a0),d0
-		subi.w	#$200,d0
-		cmp.w	$2C(a0),d0	; has platform moved $200 pixels?
-		bne.s	@type08_nostop	; if not, branch
-		clr.b	ost_subtype(a0)	; change to type 00 (stop moving)
-
-	@type08_nostop:
-		rts	
-; ===========================================================================
-
-@type0A:
-		move.w	$34(a0),d0
-		move.b	ost_angle(a0),d1	; load platform-motion variable
-		subi.b	#$40,d1
-		ext.w	d1
-		asr.w	#1,d1
-		add.w	d1,d0
-		move.w	d0,$2C(a0)	; change position on y-axis
-
-@chgmotion:
-		move.b	(v_oscillate+$1A).w,$26(a0) ; update platform-movement variable
-		rts	
-; ===========================================================================
-
-Plat_ChkDel:
-		out_of_range.s	Plat_Delete,$32(a0)
-		rts	
-; ===========================================================================
-
-Plat_Delete:	; Routine 6
-		bra.w	DeleteObject
-		
+BasicPlatform:	include "Objects\Platforms.asm"		
 Map_Plat_Unused:include "Mappings\Unused Platforms.asm"
 Map_Plat_GHZ:	include "Mappings\GHZ Platforms.asm"
 Map_Plat_SYZ:	include "Mappings\SYZ Platforms.asm"
@@ -12305,7 +11245,7 @@ CollapseLedge:
 		move.w	Ledge_Index(pc,d0.w),d1
 		jmp	Ledge_Index(pc,d1.w)
 ; ===========================================================================
-Ledge_Index:	index *
+Ledge_Index:	index *,,2
 		ptr Ledge_Main
 		ptr Ledge_Touch
 		ptr Ledge_Collapse
@@ -12320,7 +11260,7 @@ ledge_collapse_flag:	equ $3A		; collapse flag
 Ledge_Main:	; Routine 0
 		addq.b	#2,ost_routine(a0)
 		move.l	#Map_Ledge,ost_mappings(a0)
-		move.w	#$4000,ost_tile(a0)
+		move.w	#0+tile_pal3,ost_tile(a0)
 		ori.b	#4,ost_render(a0)
 		move.b	#4,ost_priority(a0)
 		move.b	#7,ledge_timedelay(a0) ; set time delay for collapse
@@ -12387,7 +11327,7 @@ loc_82D0:
 
 loc_82FC:
 		move.b	#0,ledge_collapse_flag(a0)
-		move.b	#6,ost_routine(a0) ; run "Ledge_Display" routine
+		move.b	#id_Ledge_Display,ost_routine(a0) ; run "Ledge_Display" routine
 
 locret_8308:
 		rts	
@@ -12414,7 +11354,7 @@ CollapseFloor:
 		move.w	CFlo_Index(pc,d0.w),d1
 		jmp	CFlo_Index(pc,d1.w)
 ; ===========================================================================
-CFlo_Index:	index *
+CFlo_Index:	index *,,2
 		ptr CFlo_Main
 		ptr CFlo_Touch
 		ptr CFlo_Collapse
@@ -12429,17 +11369,17 @@ cflo_collapse_flag:	equ $3A
 CFlo_Main:	; Routine 0
 		addq.b	#2,ost_routine(a0)
 		move.l	#Map_CFlo,ost_mappings(a0)
-		move.w	#$42B8,ost_tile(a0)
+		move.w	#$2B8+tile_pal3,ost_tile(a0)
 		cmpi.b	#id_SLZ,(v_zone).w ; check if level is SLZ
 		bne.s	@notSLZ
 
-		move.w	#$44E0,ost_tile(a0) ; SLZ specific code
+		move.w	#tile_Nem_SlzBlock+tile_pal3,ost_tile(a0) ; SLZ specific code
 		addq.b	#2,ost_frame(a0)
 
 	@notSLZ:
 		cmpi.b	#id_SBZ,(v_zone).w ; check if level is SBZ
 		bne.s	@notSBZ
-		move.w	#$43F5,ost_tile(a0) ; SBZ specific code
+		move.w	#tile_Nem_SbzFloor+tile_pal3,ost_tile(a0) ; SBZ specific code
 
 	@notSBZ:
 		ori.b	#4,ost_render(a0)
@@ -12513,7 +11453,7 @@ loc_8402:
 
 loc_842E:
 		move.b	#0,cflo_collapse_flag(a0)
-		move.b	#6,ost_routine(a0) ; run "CFlo_Display" routine
+		move.b	#id_CFlo_Display,ost_routine(a0) ; run "CFlo_Display" routine
 
 locret_843A:
 		rts	
@@ -12576,7 +11516,7 @@ loc_84AA:
 		addq.w	#5,a3
 
 loc_84B2:
-		move.b	#6,ost_routine(a1)
+		move.b	#id_Ledge_Display,ost_routine(a1)
 		move.b	d4,0(a1)
 		move.l	a3,ost_mappings(a1)
 		move.b	d5,ost_render(a1)
@@ -12652,207 +11592,13 @@ Ledge_SlopeData:
 Map_Ledge:	include "Mappings\GHZ Collapsing Ledge.asm"
 Map_CFlo:	include "Mappings\Collapsing Floors & Blocks.asm"
 
-; ---------------------------------------------------------------------------
-; Object 1C - scenery (GHZ bridge stump, SLZ lava thrower)
-; ---------------------------------------------------------------------------
-
-Scenery:
-		moveq	#0,d0
-		move.b	ost_routine(a0),d0
-		move.w	Scen_Index(pc,d0.w),d1
-		jmp	Scen_Index(pc,d1.w)
-; ===========================================================================
-Scen_Index:	index *
-		ptr Scen_Main
-		ptr Scen_ChkDel
-; ===========================================================================
-
-Scen_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
-		moveq	#0,d0
-		move.b	ost_subtype(a0),d0 ; copy object subtype to d0
-		mulu.w	#$A,d0		; multiply by $A
-		lea	Scen_Values(pc,d0.w),a1
-		move.l	(a1)+,ost_mappings(a0)
-		move.w	(a1)+,ost_tile(a0)
-		ori.b	#4,ost_render(a0)
-		move.b	(a1)+,ost_frame(a0)
-		move.b	(a1)+,ost_actwidth(a0)
-		move.b	(a1)+,ost_priority(a0)
-		move.b	(a1)+,ost_col_type(a0)
-
-Scen_ChkDel:	; Routine 2
-		out_of_range	DeleteObject
-		bra.w	DisplaySprite
-; ===========================================================================
-; ---------------------------------------------------------------------------
-; Variables for	object $1C are stored in an array
-; ---------------------------------------------------------------------------
-Scen_Values:	dc.l Map_Scen		; mappings address
-		dc.w $44D8		; VRAM setting
-		dc.b 0,	8, 2, 0		; frame, width,	priority, collision response
-		dc.l Map_Scen
-		dc.w $44D8
-		dc.b 0,	8, 2, 0
-		dc.l Map_Scen
-		dc.w $44D8
-		dc.b 0,	8, 2, 0
-		dc.l Map_Bri
-		dc.w $438E
-		dc.b 1,	$10, 1,	0
-		even
-		
+Scenery:	include "Objects\GHZ Bridge Stump & SLZ Fireball Launcher.asm"
 Map_Scen:	include "Mappings\SLZ Fireball Launcher.asm"
 
-; ---------------------------------------------------------------------------
-; Object 1D - switch that activates when Sonic touches it
-; (this	is not used anywhere in	the game)
-; ---------------------------------------------------------------------------
-
-MagicSwitch:
-		moveq	#0,d0
-		move.b	ost_routine(a0),d0
-		move.w	Swi_Index(pc,d0.w),d1
-		jmp	Swi_Index(pc,d1.w)
-; ===========================================================================
-Swi_Index:	index *
-		ptr Swi_Main
-		ptr Swi_Action
-		ptr Swi_Delete
-
-swi_origY:	equ $30		; original y-axis position
-; ===========================================================================
-
-Swi_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
-		move.l	#Map_Swi,ost_mappings(a0)
-		move.w	#$4000,ost_tile(a0)
-		move.b	#4,ost_render(a0)
-		move.w	ost_y_pos(a0),swi_origY(a0) ; save position on y-axis
-		move.b	#$10,ost_actwidth(a0)
-		move.b	#5,ost_priority(a0)
-
-Swi_Action:	; Routine 2
-		move.w	swi_origY(a0),ost_y_pos(a0) ; restore position on y-axis
-		move.w	#$10,d1
-		bsr.w	Swi_ChkTouch	; check if Sonic touches the switch
-		beq.s	Swi_ChkDel	; if not, branch
-
-		addq.w	#2,ost_y_pos(a0)	; move object 2	pixels
-		moveq	#1,d0
-		move.w	d0,(f_switch).w	; set switch 0 as "pressed"
-
-Swi_ChkDel:
-		bsr.w	DisplaySprite
-		out_of_range	Swi_Delete
-		rts	
-; ===========================================================================
-
-Swi_Delete:	; Routine 4
-		bsr.w	DeleteObject
-		rts	
-
-; ---------------------------------------------------------------------------
-; Subroutine to	check if Sonic touches the object
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Swi_ChkTouch:
-		lea	(v_player).w,a1
-		move.w	ost_x_pos(a1),d0
-		sub.w	ost_x_pos(a0),d0
-		add.w	d1,d0
-		bmi.s	Swi_NoTouch
-		add.w	d1,d1
-		cmp.w	d1,d0
-		bcc.s	Swi_NoTouch
-		move.w	ost_y_pos(a1),d2
-		move.b	ost_height(a1),d1
-		ext.w	d1
-		add.w	d2,d1
-		move.w	ost_y_pos(a0),d0
-		subi.w	#$10,d0
-		sub.w	d1,d0
-		bhi.s	Swi_NoTouch
-		cmpi.w	#-$10,d0
-		bcs.s	Swi_NoTouch
-		moveq	#-1,d0		; Sonic has touched it
-		rts	
-; ===========================================================================
-
-Swi_NoTouch:
-		moveq	#0,d0		; Sonic hasn't touched it
-		rts	
-; End of function Swi_ChkTouch
-
+MagicSwitch:	include "Objects\Unused Switch.asm"
 Map_Swi:	include "Mappings\Unused Switch.asm"
 
-; ---------------------------------------------------------------------------
-; Object 2A - small vertical door (SBZ)
-; ---------------------------------------------------------------------------
-
-AutoDoor:
-		moveq	#0,d0
-		move.b	ost_routine(a0),d0
-		move.w	ADoor_Index(pc,d0.w),d1
-		jmp	ADoor_Index(pc,d1.w)
-; ===========================================================================
-ADoor_Index:	index *
-		ptr ADoor_Main
-		ptr ADoor_OpenShut
-; ===========================================================================
-
-ADoor_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
-		move.l	#Map_ADoor,ost_mappings(a0)
-		move.w	#$42E8,ost_tile(a0)
-		ori.b	#4,ost_render(a0)
-		move.b	#8,ost_actwidth(a0)
-		move.b	#4,ost_priority(a0)
-
-ADoor_OpenShut:	; Routine 2
-		move.w	#$40,d1		; set range for door detection
-		clr.b	ost_anim(a0)	; use "closing"	animation
-		move.w	(v_player+ost_x_pos).w,d0
-		add.w	d1,d0
-		cmp.w	ost_x_pos(a0),d0
-		bcs.s	ADoor_Animate
-		sub.w	d1,d0
-		sub.w	d1,d0
-		cmp.w	ost_x_pos(a0),d0	; is Sonic > $40 pixels from door?
-		bcc.s	ADoor_Animate	; close door
-		add.w	d1,d0
-		cmp.w	ost_x_pos(a0),d0	; is Sonic left of the door?
-		bcc.s	loc_899A	; if yes, branch
-		btst	#0,ost_status(a0)
-		bne.s	ADoor_Animate
-		bra.s	ADoor_Open
-; ===========================================================================
-
-loc_899A:
-		btst	#0,ost_status(a0)
-		beq.s	ADoor_Animate
-
-ADoor_Open:
-		move.b	#1,ost_anim(a0)	; use "opening"	animation
-
-ADoor_Animate:
-		lea	(Ani_ADoor).l,a1
-		bsr.w	AnimateSprite
-		tst.b	ost_frame(a0)	; is the door open?
-		bne.s	@remember	; if yes, branch
-		move.w	#$11,d1
-		move.w	#$20,d2
-		move.w	d2,d3
-		addq.w	#1,d3
-		move.w	ost_x_pos(a0),d4
-		bsr.w	SolidObject
-
-	@remember:
-		bra.w	RememberState
-
+AutoDoor:	include "Objects\SBZ Door.asm"
 Ani_ADoor:	include "Animations\SBZ Door.asm"
 Map_ADoor:	include "Mappings\SBZ Door.asm"
 
@@ -12979,200 +11725,11 @@ loc_8B48:
 
 ; ===========================================================================
 
-; ---------------------------------------------------------------------------
-; Object 1E - Ball Hog enemy (SBZ)
-; ---------------------------------------------------------------------------
-
-BallHog:
-		moveq	#0,d0
-		move.b	ost_routine(a0),d0
-		move.w	Hog_Index(pc,d0.w),d1
-		jmp	Hog_Index(pc,d1.w)
-; ===========================================================================
-Hog_Index:	index *
-		ptr Hog_Main
-		ptr Hog_Action
-
-hog_launchflag:	equ $32		; 0 to launch a cannonball
-; ===========================================================================
-
-Hog_Main:	; Routine 0
-		move.b	#$13,ost_height(a0)
-		move.b	#8,ost_width(a0)
-		move.l	#Map_Hog,ost_mappings(a0)
-		move.w	#$2302,ost_tile(a0)
-		move.b	#4,ost_render(a0)
-		move.b	#4,ost_priority(a0)
-		move.b	#5,ost_col_type(a0)
-		move.b	#$C,ost_actwidth(a0)
-		bsr.w	ObjectFall
-		jsr	(ObjFloorDist).l	; find floor
-		tst.w	d1
-		bpl.s	@floornotfound
-		add.w	d1,ost_y_pos(a0)
-		move.w	#0,ost_y_vel(a0)
-		addq.b	#2,ost_routine(a0)
-
-	@floornotfound:
-		rts	
-; ===========================================================================
-
-Hog_Action:	; Routine 2
-		lea	(Ani_Hog).l,a1
-		bsr.w	AnimateSprite
-		cmpi.b	#1,ost_frame(a0)	; is final frame (01) displayed?
-		bne.s	@setlaunchflag	; if not, branch
-		tst.b	hog_launchflag(a0)	; is it	set to launch cannonball?
-		beq.s	@makeball	; if yes, branch
-		bra.s	@remember
-; ===========================================================================
-
-@setlaunchflag:
-		clr.b	hog_launchflag(a0)	; set to launch	cannonball
-
-@remember:
-		bra.w	RememberState
-; ===========================================================================
-
-@makeball:
-		move.b	#1,hog_launchflag(a0)
-		bsr.w	FindFreeObj
-		bne.s	@fail
-		move.b	#id_Cannonball,0(a1) ; load cannonball object ($20)
-		move.w	ost_x_pos(a0),ost_x_pos(a1)
-		move.w	ost_y_pos(a0),ost_y_pos(a1)
-		move.w	#-$100,ost_x_vel(a1) ; cannonball bounces to the left
-		move.w	#0,ost_y_vel(a1)
-		moveq	#-4,d0
-		btst	#0,ost_status(a0)	; is Ball Hog facing right?
-		beq.s	@noflip		; if not, branch
-		neg.w	d0
-		neg.w	ost_x_vel(a1)	; cannonball bounces to	the right
-
-	@noflip:
-		add.w	d0,ost_x_pos(a1)
-		addi.w	#$C,ost_y_pos(a1)
-		move.b	ost_subtype(a0),ost_subtype(a1) ; copy object type from Ball Hog
-
-	@fail:
-		bra.s	@remember
-; ---------------------------------------------------------------------------
-; Object 20 - cannonball that Ball Hog throws (SBZ)
-; ---------------------------------------------------------------------------
-
-Cannonball:
-		moveq	#0,d0
-		move.b	ost_routine(a0),d0
-		move.w	Cbal_Index(pc,d0.w),d1
-		jmp	Cbal_Index(pc,d1.w)
-; ===========================================================================
-Cbal_Index:	index *
-		ptr Cbal_Main
-		ptr Cbal_Bounce
-
-cbal_time:	equ $30		; time until the cannonball explodes (2 bytes)
-; ===========================================================================
-
-Cbal_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
-		move.b	#7,ost_height(a0)
-		move.l	#Map_Hog,ost_mappings(a0)
-		move.w	#$2302,ost_tile(a0)
-		move.b	#4,ost_render(a0)
-		move.b	#3,ost_priority(a0)
-		move.b	#$87,ost_col_type(a0)
-		move.b	#8,ost_actwidth(a0)
-		moveq	#0,d0
-		move.b	ost_subtype(a0),d0 ; move subtype to d0
-		mulu.w	#60,d0		; multiply by 60 frames	(1 second)
-		move.w	d0,cbal_time(a0) ; set explosion time
-		move.b	#4,ost_frame(a0)
-
-Cbal_Bounce:	; Routine 2
-		jsr	(ObjectFall).l
-		tst.w	ost_y_vel(a0)
-		bmi.s	Cbal_ChkExplode
-		jsr	(ObjFloorDist).l
-		tst.w	d1		; has ball hit the floor?
-		bpl.s	Cbal_ChkExplode	; if not, branch
-
-		add.w	d1,ost_y_pos(a0)
-		move.w	#-$300,ost_y_vel(a0) ; bounce
-		tst.b	d3
-		beq.s	Cbal_ChkExplode
-		bmi.s	loc_8CA4
-		tst.w	ost_x_vel(a0)
-		bpl.s	Cbal_ChkExplode
-		neg.w	ost_x_vel(a0)
-		bra.s	Cbal_ChkExplode
-; ===========================================================================
-
-loc_8CA4:
-		tst.w	ost_x_vel(a0)
-		bmi.s	Cbal_ChkExplode
-		neg.w	ost_x_vel(a0)
-
-Cbal_ChkExplode:
-		subq.w	#1,cbal_time(a0) ; subtract 1 from explosion time
-		bpl.s	Cbal_Animate	; if time is > 0, branch
-
-	Cbal_Explode:
-		move.b	#id_MissileDissolve,0(a0)
-		move.b	#id_ExplosionBomb,0(a0)	; change object	to an explosion	($3F)
-		move.b	#0,ost_routine(a0) ; reset routine counter
-		bra.w	ExplosionBomb	; jump to explosion code
-; ===========================================================================
-
-Cbal_Animate:
-		subq.b	#1,ost_anim_time(a0) ; subtract 1 from frame duration
-		bpl.s	Cbal_Display
-		move.b	#5,ost_anim_time(a0) ; set frame duration to 5 frames
-		bchg	#0,ost_frame(a0)	; change frame
-
-Cbal_Display:
-		bsr.w	DisplaySprite
-		move.w	(v_limitbtm2).w,d0
-		addi.w	#$E0,d0
-		cmp.w	ost_y_pos(a0),d0	; has object fallen off	the level?
-		bcs.w	DeleteObject	; if yes, branch
-		rts	
-; ---------------------------------------------------------------------------
-; Object 24 - buzz bomber missile vanishing (unused?)
-; ---------------------------------------------------------------------------
+BallHog:	include "Objects\Ball Hog.asm"
+Cannonball:	include "Objects\Ball Hog Cannonball.asm"
 
 MissileDissolve:
-		moveq	#0,d0
-		move.b	ost_routine(a0),d0
-		move.w	MDis_Index(pc,d0.w),d1
-		jmp	MDis_Index(pc,d1.w)
-; ===========================================================================
-MDis_Index:	index *
-		ptr MDis_Main
-		ptr MDis_Animate
-; ===========================================================================
-
-MDis_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
-		move.l	#Map_MisDissolve,ost_mappings(a0)
-		move.w	#$41C,ost_tile(a0)
-		move.b	#4,ost_render(a0)
-		move.b	#1,ost_priority(a0)
-		move.b	#0,ost_col_type(a0)
-		move.b	#$C,ost_actwidth(a0)
-		move.b	#9,ost_anim_time(a0)
-		move.b	#0,ost_frame(a0)
-		sfx	sfx_A5,0,0,0		 ; play sound
-
-MDis_Animate:	; Routine 2
-		subq.b	#1,ost_anim_time(a0) ; subtract 1 from frame duration
-		bpl.s	@display
-		move.b	#9,ost_anim_time(a0) ; set frame duration to 9 frames
-		addq.b	#1,ost_frame(a0)	; next frame
-		cmpi.b	#4,ost_frame(a0)	; has animation completed?
-		beq.w	DeleteObject	; if yes, branch
-
-	@display:
-		bra.w	DisplaySprite
+		include "Objects\Buzz Bomber Missile Vanishing.asm"
 ; ===========================================================================
 
 ; ---------------------------------------------------------------------------
@@ -13185,7 +11742,7 @@ ExplosionItem:
 		move.w	ExItem_Index(pc,d0.w),d1
 		jmp	ExItem_Index(pc,d1.w)
 ; ===========================================================================
-ExItem_Index:	index *
+ExItem_Index:	index *,,2
 		ptr ExItem_Animal
 		ptr ExItem_Main
 		ptr ExItem_Animate
@@ -13203,8 +11760,8 @@ ExItem_Animal:	; Routine 0
 ExItem_Main:	; Routine 2
 		addq.b	#2,ost_routine(a0)
 		move.l	#Map_ExplodeItem,ost_mappings(a0)
-		move.w	#$5A0,ost_tile(a0)
-		move.b	#4,ost_render(a0)
+		move.w	#tile_Nem_Explode,ost_tile(a0)
+		move.b	#render_rel,ost_render(a0)
 		move.b	#1,ost_priority(a0)
 		move.b	#0,ost_col_type(a0)
 		move.b	#$C,ost_actwidth(a0)
@@ -13233,7 +11790,7 @@ ExplosionBomb:
 		move.w	ExBom_Index(pc,d0.w),d1
 		jmp	ExBom_Index(pc,d1.w)
 ; ===========================================================================
-ExBom_Index:	index *
+ExBom_Index:	index *,,2
 		ptr ExBom_Main
 		ptr ExItem_Animate
 ; ===========================================================================
@@ -13241,8 +11798,8 @@ ExBom_Index:	index *
 ExBom_Main:	; Routine 0
 		addq.b	#2,ost_routine(a0)
 		move.l	#Map_ExplodeBomb,ost_mappings(a0)
-		move.w	#$5A0,ost_tile(a0)
-		move.b	#4,ost_render(a0)
+		move.w	#tile_Nem_Explode,ost_tile(a0)
+		move.b	#render_rel,ost_render(a0)
 		move.b	#1,ost_priority(a0)
 		move.b	#0,ost_col_type(a0)
 		move.b	#$C,ost_actwidth(a0)
@@ -13256,888 +11813,19 @@ Map_MisDissolve:include "Mappings\Buzz Bomber Missile Vanishing.asm"
 Map_ExplodeItem:include "Mappings\Explosions.asm"
 ;Map_ExplodeBomb: - see Mappings\Explosions.asm
 
-; ---------------------------------------------------------------------------
-; Object 28 - animals
-; ---------------------------------------------------------------------------
-
-Animals:
-		moveq	#0,d0
-		move.b	ost_routine(a0),d0
-		move.w	Anml_Index(pc,d0.w),d1
-		jmp	Anml_Index(pc,d1.w)
-; ===========================================================================
-Anml_Index:	index *
-		ptr Anml_Ending
-		ptr loc_912A
-		ptr loc_9184
-		ptr loc_91C0
-		ptr loc_9184
-		ptr loc_9184
-		ptr loc_9184
-		ptr loc_91C0
-		ptr loc_9184
-		ptr loc_9240
-		ptr loc_9260
-		ptr loc_9260
-		ptr loc_9280
-		ptr loc_92BA
-		ptr loc_9314
-		ptr loc_9332
-		ptr loc_9314
-		ptr loc_9332
-		ptr loc_9314
-		ptr loc_9370
-		ptr loc_92D6
-
-Anml_VarIndex:	dc.b 0,	5, 2, 3, 6, 3, 4, 5, 4,	1, 0, 1
-
-Anml_Variables:	dc.w $FE00, $FC00
-		dc.l Map_Animal1
-		dc.w $FE00, $FD00	; horizontal speed, vertical speed
-		dc.l Map_Animal2	; mappings address
-		dc.w $FE80, $FD00
-		dc.l Map_Animal1
-		dc.w $FEC0, $FE80
-		dc.l Map_Animal2
-		dc.w $FE40, $FD00
-		dc.l Map_Animal3
-		dc.w $FD00, $FC00
-		dc.l Map_Animal2
-		dc.w $FD80, $FC80
-		dc.l Map_Animal3
-
-Anml_EndSpeed:	dc.w $FBC0, $FC00, $FBC0, $FC00, $FBC0,	$FC00, $FD00, $FC00
-		dc.w $FD00, $FC00, $FE80, $FD00, $FE80,	$FD00, $FEC0, $FE80
-		dc.w $FE40, $FD00, $FE00, $FD00, $FD80,	$FC80
-
-Anml_EndMap:	dc.l Map_Animal2, Map_Animal2, Map_Animal2, Map_Animal1, Map_Animal1
-		dc.l Map_Animal1, Map_Animal1, Map_Animal2, Map_Animal3, Map_Animal2
-		dc.l Map_Animal3
-
-Anml_EndVram:	dc.w $5A5, $5A5, $5A5, $553, $553, $573, $573, $585, $593
-		dc.w $565, $5B3
-; ===========================================================================
-
-Anml_Ending:	; Routine 0
-		tst.b	ost_subtype(a0)	; did animal come from a destroyed enemy?
-		beq.w	Anml_FromEnemy	; if yes, branch
-		moveq	#0,d0
-		move.b	ost_subtype(a0),d0 ; move object type to d0
-		add.w	d0,d0		; multiply d0 by 2
-		move.b	d0,ost_routine(a0) ; move d0 to routine counter
-		subi.w	#$14,d0
-		move.w	Anml_EndVram(pc,d0.w),ost_tile(a0)
-		add.w	d0,d0
-		move.l	Anml_EndMap(pc,d0.w),ost_mappings(a0)
-		lea	Anml_EndSpeed(pc),a1
-		move.w	(a1,d0.w),$32(a0) ; load horizontal speed
-		move.w	(a1,d0.w),ost_x_vel(a0)
-		move.w	2(a1,d0.w),$34(a0) ; load vertical speed
-		move.w	2(a1,d0.w),ost_y_vel(a0)
-		move.b	#$C,ost_height(a0)
-		move.b	#4,ost_render(a0)
-		bset	#0,ost_render(a0)
-		move.b	#6,ost_priority(a0)
-		move.b	#8,ost_actwidth(a0)
-		move.b	#7,ost_anim_time(a0)
-		bra.w	DisplaySprite
-; ===========================================================================
-
-Anml_FromEnemy:
-		addq.b	#2,ost_routine(a0)
-		bsr.w	RandomNumber
-		andi.w	#1,d0
-		moveq	#0,d1
-		move.b	(v_zone).w,d1
-		add.w	d1,d1
-		add.w	d0,d1
-		lea	Anml_VarIndex(pc),a1
-		move.b	(a1,d1.w),d0
-		move.b	d0,$30(a0)
-		lsl.w	#3,d0
-		lea	Anml_Variables(pc),a1
-		adda.w	d0,a1
-		move.w	(a1)+,$32(a0)	; load horizontal speed
-		move.w	(a1)+,$34(a0)	; load vertical	speed
-		move.l	(a1)+,ost_mappings(a0)	; load mappings
-		move.w	#$580,ost_tile(a0)	; VRAM setting for 1st animal
-		btst	#0,$30(a0)	; is 1st animal	used?
-		beq.s	loc_90C0	; if yes, branch
-		move.w	#$592,ost_tile(a0)	; VRAM setting for 2nd animal
-
-loc_90C0:
-		move.b	#$C,ost_height(a0)
-		move.b	#4,ost_render(a0)
-		bset	#0,ost_render(a0)
-		move.b	#6,ost_priority(a0)
-		move.b	#8,ost_actwidth(a0)
-		move.b	#7,ost_anim_time(a0)
-		move.b	#2,ost_frame(a0)
-		move.w	#-$400,ost_y_vel(a0)
-		tst.b	(v_bossstatus).w
-		bne.s	loc_911C
-		bsr.w	FindFreeObj
-		bne.s	Anml_Display
-		move.b	#id_Points,0(a1) ; load points object
-		move.w	ost_x_pos(a0),ost_x_pos(a1)
-		move.w	ost_y_pos(a0),ost_y_pos(a1)
-		move.w	$3E(a0),d0
-		lsr.w	#1,d0
-		move.b	d0,ost_frame(a1)
-
-Anml_Display:
-		bra.w	DisplaySprite
-; ===========================================================================
-
-loc_911C:
-		move.b	#$12,ost_routine(a0)
-		clr.w	ost_x_vel(a0)
-		bra.w	DisplaySprite
-; ===========================================================================
-
-loc_912A:
-		tst.b	ost_render(a0)
-		bpl.w	DeleteObject
-		bsr.w	ObjectFall
-		tst.w	ost_y_vel(a0)
-		bmi.s	loc_9180
-		jsr	(ObjFloorDist).l
-		tst.w	d1
-		bpl.s	loc_9180
-		add.w	d1,ost_y_pos(a0)
-		move.w	$32(a0),ost_x_vel(a0)
-		move.w	$34(a0),ost_y_vel(a0)
-		move.b	#1,ost_frame(a0)
-		move.b	$30(a0),d0
-		add.b	d0,d0
-		addq.b	#4,d0
-		move.b	d0,ost_routine(a0)
-		tst.b	(v_bossstatus).w
-		beq.s	loc_9180
-		btst	#4,(v_vbla_byte).w
-		beq.s	loc_9180
-		neg.w	ost_x_vel(a0)
-		bchg	#0,ost_render(a0)
-
-loc_9180:
-		bra.w	DisplaySprite
-; ===========================================================================
-
-loc_9184:
-		bsr.w	ObjectFall
-		move.b	#1,ost_frame(a0)
-		tst.w	ost_y_vel(a0)
-		bmi.s	loc_91AE
-		move.b	#0,ost_frame(a0)
-		jsr	(ObjFloorDist).l
-		tst.w	d1
-		bpl.s	loc_91AE
-		add.w	d1,ost_y_pos(a0)
-		move.w	$34(a0),ost_y_vel(a0)
-
-loc_91AE:
-		tst.b	ost_subtype(a0)
-		bne.s	loc_9224
-		tst.b	ost_render(a0)
-		bpl.w	DeleteObject
-		bra.w	DisplaySprite
-; ===========================================================================
-
-loc_91C0:
-		bsr.w	SpeedToPos
-		addi.w	#$18,ost_y_vel(a0)
-		tst.w	ost_y_vel(a0)
-		bmi.s	loc_91FC
-		jsr	(ObjFloorDist).l
-		tst.w	d1
-		bpl.s	loc_91FC
-		add.w	d1,ost_y_pos(a0)
-		move.w	$34(a0),ost_y_vel(a0)
-		tst.b	ost_subtype(a0)
-		beq.s	loc_91FC
-		cmpi.b	#$A,ost_subtype(a0)
-		beq.s	loc_91FC
-		neg.w	ost_x_vel(a0)
-		bchg	#0,ost_render(a0)
-
-loc_91FC:
-		subq.b	#1,ost_anim_time(a0)
-		bpl.s	loc_9212
-		move.b	#1,ost_anim_time(a0)
-		addq.b	#1,ost_frame(a0)
-		andi.b	#1,ost_frame(a0)
-
-loc_9212:
-		tst.b	ost_subtype(a0)
-		bne.s	loc_9224
-		tst.b	ost_render(a0)
-		bpl.w	DeleteObject
-		bra.w	DisplaySprite
-; ===========================================================================
-
-loc_9224:
-		move.w	ost_x_pos(a0),d0
-		sub.w	(v_player+ost_x_pos).w,d0
-		bcs.s	loc_923C
-		subi.w	#$180,d0
-		bpl.s	loc_923C
-		tst.b	ost_render(a0)
-		bpl.w	DeleteObject
-
-loc_923C:
-		bra.w	DisplaySprite
-; ===========================================================================
-
-loc_9240:
-		tst.b	ost_render(a0)
-		bpl.w	DeleteObject
-		subq.w	#1,$36(a0)
-		bne.w	loc_925C
-		move.b	#2,ost_routine(a0)
-		move.b	#3,ost_priority(a0)
-
-loc_925C:
-		bra.w	DisplaySprite
-; ===========================================================================
-
-loc_9260:
-		bsr.w	sub_9404
-		bcc.s	loc_927C
-		move.w	$32(a0),ost_x_vel(a0)
-		move.w	$34(a0),ost_y_vel(a0)
-		move.b	#$E,ost_routine(a0)
-		bra.w	loc_91C0
-; ===========================================================================
-
-loc_927C:
-		bra.w	loc_9224
-; ===========================================================================
-
-loc_9280:
-		bsr.w	sub_9404
-		bpl.s	loc_92B6
-		clr.w	ost_x_vel(a0)
-		clr.w	$32(a0)
-		bsr.w	SpeedToPos
-		addi.w	#$18,ost_y_vel(a0)
-		bsr.w	loc_93C4
-		bsr.w	loc_93EC
-		subq.b	#1,ost_anim_time(a0)
-		bpl.s	loc_92B6
-		move.b	#1,ost_anim_time(a0)
-		addq.b	#1,ost_frame(a0)
-		andi.b	#1,ost_frame(a0)
-
-loc_92B6:
-		bra.w	loc_9224
-; ===========================================================================
-
-loc_92BA:
-		bsr.w	sub_9404
-		bpl.s	loc_9310
-		move.w	$32(a0),ost_x_vel(a0)
-		move.w	$34(a0),ost_y_vel(a0)
-		move.b	#4,ost_routine(a0)
-		bra.w	loc_9184
-; ===========================================================================
-
-loc_92D6:
-		bsr.w	ObjectFall
-		move.b	#1,ost_frame(a0)
-		tst.w	ost_y_vel(a0)
-		bmi.s	loc_9310
-		move.b	#0,ost_frame(a0)
-		jsr	(ObjFloorDist).l
-		tst.w	d1
-		bpl.s	loc_9310
-		not.b	$29(a0)
-		bne.s	loc_9306
-		neg.w	ost_x_vel(a0)
-		bchg	#0,ost_render(a0)
-
-loc_9306:
-		add.w	d1,ost_y_pos(a0)
-		move.w	$34(a0),ost_y_vel(a0)
-
-loc_9310:
-		bra.w	loc_9224
-; ===========================================================================
-
-loc_9314:
-		bsr.w	sub_9404
-		bpl.s	loc_932E
-		clr.w	ost_x_vel(a0)
-		clr.w	$32(a0)
-		bsr.w	ObjectFall
-		bsr.w	loc_93C4
-		bsr.w	loc_93EC
-
-loc_932E:
-		bra.w	loc_9224
-; ===========================================================================
-
-loc_9332:
-		bsr.w	sub_9404
-		bpl.s	loc_936C
-		bsr.w	ObjectFall
-		move.b	#1,ost_frame(a0)
-		tst.w	ost_y_vel(a0)
-		bmi.s	loc_936C
-		move.b	#0,ost_frame(a0)
-		jsr	(ObjFloorDist).l
-		tst.w	d1
-		bpl.s	loc_936C
-		neg.w	ost_x_vel(a0)
-		bchg	#0,ost_render(a0)
-		add.w	d1,ost_y_pos(a0)
-		move.w	$34(a0),ost_y_vel(a0)
-
-loc_936C:
-		bra.w	loc_9224
-; ===========================================================================
-
-loc_9370:
-		bsr.w	sub_9404
-		bpl.s	loc_93C0
-		bsr.w	SpeedToPos
-		addi.w	#$18,ost_y_vel(a0)
-		tst.w	ost_y_vel(a0)
-		bmi.s	loc_93AA
-		jsr	(ObjFloorDist).l
-		tst.w	d1
-		bpl.s	loc_93AA
-		not.b	$29(a0)
-		bne.s	loc_93A0
-		neg.w	ost_x_vel(a0)
-		bchg	#0,ost_render(a0)
-
-loc_93A0:
-		add.w	d1,ost_y_pos(a0)
-		move.w	$34(a0),ost_y_vel(a0)
-
-loc_93AA:
-		subq.b	#1,ost_anim_time(a0)
-		bpl.s	loc_93C0
-		move.b	#1,ost_anim_time(a0)
-		addq.b	#1,ost_frame(a0)
-		andi.b	#1,ost_frame(a0)
-
-loc_93C0:
-		bra.w	loc_9224
-; ===========================================================================
-
-loc_93C4:
-		move.b	#1,ost_frame(a0)
-		tst.w	ost_y_vel(a0)
-		bmi.s	locret_93EA
-		move.b	#0,ost_frame(a0)
-		jsr	(ObjFloorDist).l
-		tst.w	d1
-		bpl.s	locret_93EA
-		add.w	d1,ost_y_pos(a0)
-		move.w	$34(a0),ost_y_vel(a0)
-
-locret_93EA:
-		rts	
-; ===========================================================================
-
-loc_93EC:
-		bset	#0,ost_render(a0)
-		move.w	ost_x_pos(a0),d0
-		sub.w	(v_player+ost_x_pos).w,d0
-		bcc.s	locret_9402
-		bclr	#0,ost_render(a0)
-
-locret_9402:
-		rts	
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-sub_9404:
-		move.w	(v_player+ost_x_pos).w,d0
-		sub.w	ost_x_pos(a0),d0
-		subi.w	#$B8,d0
-		rts	
-; End of function sub_9404
-; ---------------------------------------------------------------------------
-; Object 29 - points that appear when you destroy something
-; ---------------------------------------------------------------------------
-
-Points:
-		moveq	#0,d0
-		move.b	ost_routine(a0),d0
-		move.w	Poi_Index(pc,d0.w),d1
-		jsr	Poi_Index(pc,d1.w)
-		bra.w	DisplaySprite
-; ===========================================================================
-Poi_Index:	index *
-		ptr Poi_Main
-		ptr Poi_Slower
-; ===========================================================================
-
-Poi_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
-		move.l	#Map_Points,ost_mappings(a0)
-		move.w	#$2797,ost_tile(a0)
-		move.b	#4,ost_render(a0)
-		move.b	#1,ost_priority(a0)
-		move.b	#8,ost_actwidth(a0)
-		move.w	#-$300,ost_y_vel(a0) ; move object upwards
-
-Poi_Slower:	; Routine 2
-		tst.w	ost_y_vel(a0)	; is object moving?
-		bpl.w	DeleteObject	; if not, delete
-		bsr.w	SpeedToPos
-		addi.w	#$18,ost_y_vel(a0)	; reduce object	speed
-		rts	
+Animals:	include "Objects\Animals.asm"
+Points:		include "Objects\Points.asm"
 Map_Animal1:	include "Mappings\Animals 1.asm"
 Map_Animal2:	include "Mappings\Animals 2.asm"
 Map_Animal3:	include "Mappings\Animals 3.asm"
 Map_Points:	include "Mappings\Points.asm"
 
-; ---------------------------------------------------------------------------
-; Object 1F - Crabmeat enemy (GHZ, SYZ)
-; ---------------------------------------------------------------------------
-
-Crabmeat:
-		moveq	#0,d0
-		move.b	ost_routine(a0),d0
-		move.w	Crab_Index(pc,d0.w),d1
-		jmp	Crab_Index(pc,d1.w)
-; ===========================================================================
-Crab_Index:	index *,,2
-		ptr Crab_Main
-		ptr Crab_Action
-		ptr Crab_Delete
-		ptr Crab_BallMain
-		ptr Crab_BallMove
-
-crab_timedelay:	equ $30
-crab_mode:	equ $32
-; ===========================================================================
-
-Crab_Main:	; Routine 0
-		move.b	#$10,ost_height(a0)
-		move.b	#8,ost_width(a0)
-		move.l	#Map_Crab,ost_mappings(a0)
-		move.w	#$400,ost_tile(a0)
-		move.b	#4,ost_render(a0)
-		move.b	#3,ost_priority(a0)
-		move.b	#6,ost_col_type(a0)
-		move.b	#$15,ost_actwidth(a0)
-		bsr.w	ObjectFall
-		jsr	(ObjFloorDist).l	; find floor
-		tst.w	d1
-		bpl.s	@floornotfound
-		add.w	d1,ost_y_pos(a0)
-		move.b	d3,ost_angle(a0)
-		move.w	#0,ost_y_vel(a0)
-		addq.b	#2,ost_routine(a0)
-
-	@floornotfound:
-		rts	
-; ===========================================================================
-
-Crab_Action:	; Routine 2
-		moveq	#0,d0
-		move.b	ost_routine2(a0),d0
-		move.w	@index(pc,d0.w),d1
-		jsr	@index(pc,d1.w)
-		lea	(Ani_Crab).l,a1
-		bsr.w	AnimateSprite
-		bra.w	RememberState
-; ===========================================================================
-@index:		index *
-		ptr @waittofire
-		ptr @walkonfloor
-; ===========================================================================
-
-@waittofire:
-		subq.w	#1,crab_timedelay(a0) ; subtract 1 from time delay
-		bpl.s	@dontmove
-		tst.b	ost_render(a0)
-		bpl.s	@movecrab
-		bchg	#1,crab_mode(a0)
-		bne.s	@fire
-
-	@movecrab:
-		addq.b	#2,ost_routine2(a0)
-		move.w	#127,crab_timedelay(a0) ; set time delay to approx 2 seconds
-		move.w	#$80,ost_x_vel(a0)	; move Crabmeat	to the right
-		bsr.w	Crab_SetAni
-		addq.b	#3,d0
-		move.b	d0,ost_anim(a0)
-		bchg	#0,ost_status(a0)
-		bne.s	@noflip
-		neg.w	ost_x_vel(a0)	; change direction
-
-	@dontmove:
-	@noflip:
-		rts	
-; ===========================================================================
-
-@fire:
-		move.w	#59,crab_timedelay(a0)
-		move.b	#6,ost_anim(a0)	; use firing animation
-		bsr.w	FindFreeObj
-		bne.s	@failleft
-		move.b	#id_Crabmeat,0(a1) ; load left fireball
-		move.b	#id_Crab_BallMain,ost_routine(a1)
-		move.w	ost_x_pos(a0),ost_x_pos(a1)
-		subi.w	#$10,ost_x_pos(a1)
-		move.w	ost_y_pos(a0),ost_y_pos(a1)
-		move.w	#-$100,ost_x_vel(a1)
-
-	@failleft:
-		bsr.w	FindFreeObj
-		bne.s	@failright
-		move.b	#id_Crabmeat,0(a1) ; load right fireball
-		move.b	#id_Crab_BallMain,ost_routine(a1)
-		move.w	ost_x_pos(a0),ost_x_pos(a1)
-		addi.w	#$10,ost_x_pos(a1)
-		move.w	ost_y_pos(a0),ost_y_pos(a1)
-		move.w	#$100,ost_x_vel(a1)
-
-	@failright:
-		rts	
-; ===========================================================================
-
-@walkonfloor:
-		subq.w	#1,crab_timedelay(a0)
-		bmi.s	loc_966E
-		bsr.w	SpeedToPos
-		bchg	#0,crab_mode(a0)
-		bne.s	loc_9654
-		move.w	ost_x_pos(a0),d3
-		addi.w	#$10,d3
-		btst	#0,ost_status(a0)
-		beq.s	loc_9640
-		subi.w	#$20,d3
-
-loc_9640:
-		jsr	(ObjFloorDist2).l
-		cmpi.w	#-8,d1
-		blt.s	loc_966E
-		cmpi.w	#$C,d1
-		bge.s	loc_966E
-		rts	
-; ===========================================================================
-
-loc_9654:
-		jsr	(ObjFloorDist).l
-		add.w	d1,ost_y_pos(a0)
-		move.b	d3,ost_angle(a0)
-		bsr.w	Crab_SetAni
-		addq.b	#3,d0
-		move.b	d0,ost_anim(a0)
-		rts	
-; ===========================================================================
-
-loc_966E:
-		subq.b	#2,ost_routine2(a0)
-		move.w	#59,crab_timedelay(a0)
-		move.w	#0,ost_x_vel(a0)
-		bsr.w	Crab_SetAni
-		move.b	d0,ost_anim(a0)
-		rts	
-; ---------------------------------------------------------------------------
-; Subroutine to	set the	correct	animation for a	Crabmeat
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Crab_SetAni:
-		moveq	#0,d0
-		move.b	ost_angle(a0),d3
-		bmi.s	loc_96A4
-		cmpi.b	#6,d3
-		bcs.s	locret_96A2
-		moveq	#1,d0
-		btst	#0,ost_status(a0)
-		bne.s	locret_96A2
-		moveq	#2,d0
-
-locret_96A2:
-		rts	
-; ===========================================================================
-
-loc_96A4:
-		cmpi.b	#-6,d3
-		bhi.s	locret_96B6
-		moveq	#2,d0
-		btst	#0,ost_status(a0)
-		bne.s	locret_96B6
-		moveq	#1,d0
-
-locret_96B6:
-		rts	
-; End of function Crab_SetAni
-
-; ===========================================================================
-
-Crab_Delete:	; Routine 4
-		bsr.w	DeleteObject
-		rts	
-; ===========================================================================
-; ---------------------------------------------------------------------------
-; Sub-object - missile that the	Crabmeat throws
-; ---------------------------------------------------------------------------
-
-Crab_BallMain:	; Routine 6
-		addq.b	#2,ost_routine(a0)
-		move.l	#Map_Crab,ost_mappings(a0)
-		move.w	#$400,ost_tile(a0)
-		move.b	#4,ost_render(a0)
-		move.b	#3,ost_priority(a0)
-		move.b	#$87,ost_col_type(a0)
-		move.b	#8,ost_actwidth(a0)
-		move.w	#-$400,ost_y_vel(a0)
-		move.b	#7,ost_anim(a0)
-
-Crab_BallMove:	; Routine 8
-		lea	(Ani_Crab).l,a1
-		bsr.w	AnimateSprite
-		bsr.w	ObjectFall
-		bsr.w	DisplaySprite
-		move.w	(v_limitbtm2).w,d0
-		addi.w	#$E0,d0
-		cmp.w	ost_y_pos(a0),d0	; has object moved below the level boundary?
-		bcs.s	@delete		; if yes, branch
-		rts	
-
-	@delete:
-		bra.w	DeleteObject
-
+Crabmeat:	include "Objects\Crabmeat.asm"
 Ani_Crab:	include "Animations\Crabmeat.asm"
 Map_Crab:	include "Mappings\Crabmeat.asm"
 
-; ---------------------------------------------------------------------------
-; Object 22 - Buzz Bomber enemy	(GHZ, MZ, SYZ)
-; ---------------------------------------------------------------------------
-
-BuzzBomber:
-		moveq	#0,d0
-		move.b	ost_routine(a0),d0
-		move.w	Buzz_Index(pc,d0.w),d1
-		jmp	Buzz_Index(pc,d1.w)
-; ===========================================================================
-Buzz_Index:	index *
-		ptr Buzz_Main
-		ptr Buzz_Action
-		ptr Buzz_Delete
-
-buzz_timedelay:	equ $32
-buzz_buzzstatus:	equ $34
-buzz_parent:	equ $3C
-; ===========================================================================
-
-Buzz_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
-		move.l	#Map_Buzz,ost_mappings(a0)
-		move.w	#$444,ost_tile(a0)
-		move.b	#4,ost_render(a0)
-		move.b	#3,ost_priority(a0)
-		move.b	#8,ost_col_type(a0)
-		move.b	#$18,ost_actwidth(a0)
-
-Buzz_Action:	; Routine 2
-		moveq	#0,d0
-		move.b	ost_routine2(a0),d0
-		move.w	@index(pc,d0.w),d1
-		jsr	@index(pc,d1.w)
-		lea	(Ani_Buzz).l,a1
-		bsr.w	AnimateSprite
-		bra.w	RememberState
-; ===========================================================================
-@index:		index *
-		ptr @move
-		ptr @chknearsonic
-; ===========================================================================
-
-@move:
-		subq.w	#1,buzz_timedelay(a0) ; subtract 1 from time delay
-		bpl.s	@noflip		; if time remains, branch
-		btst	#1,buzz_buzzstatus(a0) ; is Buzz Bomber near Sonic?
-		bne.s	@fire		; if yes, branch
-		addq.b	#2,ost_routine2(a0)
-		move.w	#127,buzz_timedelay(a0) ; set time delay to just over 2 seconds
-		move.w	#$400,ost_x_vel(a0) ; move Buzz Bomber to the right
-		move.b	#1,ost_anim(a0)	; use "flying" animation
-		btst	#0,ost_status(a0)	; is Buzz Bomber facing	left?
-		bne.s	@noflip		; if not, branch
-		neg.w	ost_x_vel(a0)	; move Buzz Bomber to the left
-
-	@noflip:
-		rts	
-; ===========================================================================
-
-	@fire:
-		bsr.w	FindFreeObj
-		bne.s	@fail
-		move.b	#id_Missile,0(a1) ; load missile object
-		move.w	ost_x_pos(a0),ost_x_pos(a1)
-		move.w	ost_y_pos(a0),ost_y_pos(a1)
-		addi.w	#$1C,ost_y_pos(a1)
-		move.w	#$200,ost_y_vel(a1) ; move missile downwards
-		move.w	#$200,ost_x_vel(a1) ; move missile to the right
-		move.w	#$18,d0
-		btst	#0,ost_status(a0)	; is Buzz Bomber facing	left?
-		bne.s	@noflip2	; if not, branch
-		neg.w	d0
-		neg.w	ost_x_vel(a1)	; move missile to the left
-
-	@noflip2:
-		add.w	d0,ost_x_pos(a1)
-		move.b	ost_status(a0),ost_status(a1)
-		move.w	#$E,buzz_timedelay(a1)
-		move.l	a0,buzz_parent(a1)
-		move.b	#1,buzz_buzzstatus(a0) ; set to "already fired" to prevent refiring
-		move.w	#59,buzz_timedelay(a0)
-		move.b	#2,ost_anim(a0)	; use "firing" animation
-
-	@fail:
-		rts	
-; ===========================================================================
-
-@chknearsonic:
-		subq.w	#1,buzz_timedelay(a0) ; subtract 1 from time delay
-		bmi.s	@chgdirection
-		bsr.w	SpeedToPos
-		tst.b	buzz_buzzstatus(a0)
-		bne.s	@keepgoing
-		move.w	(v_player+ost_x_pos).w,d0
-		sub.w	ost_x_pos(a0),d0
-		bpl.s	@isleft
-		neg.w	d0
-
-	@isleft:
-		cmpi.w	#$60,d0		; is Buzz Bomber within	$60 pixels of Sonic?
-		bcc.s	@keepgoing	; if not, branch
-		tst.b	ost_render(a0)
-		bpl.s	@keepgoing
-		move.b	#2,buzz_buzzstatus(a0) ; set Buzz Bomber to "near Sonic"
-		move.w	#29,buzz_timedelay(a0) ; set time delay to half a second
-		bra.s	@stop
-; ===========================================================================
-
-	@chgdirection:
-		move.b	#0,buzz_buzzstatus(a0) ; set Buzz Bomber to "normal"
-		bchg	#0,ost_status(a0)	; change direction
-		move.w	#59,buzz_timedelay(a0)
-
-	@stop:
-		subq.b	#2,ost_routine2(a0)
-		move.w	#0,ost_x_vel(a0)	; stop Buzz Bomber moving
-		move.b	#0,ost_anim(a0)	; use "hovering" animation
-
-@keepgoing:
-		rts	
-; ===========================================================================
-
-Buzz_Delete:	; Routine 4
-		bsr.w	DeleteObject
-		rts	
-; ---------------------------------------------------------------------------
-; Object 23 - missile that Buzz	Bomber throws
-; ---------------------------------------------------------------------------
-
-Missile:
-		moveq	#0,d0
-		move.b	ost_routine(a0),d0
-		move.w	Msl_Index(pc,d0.w),d1
-		jmp	Msl_Index(pc,d1.w)
-; ===========================================================================
-Msl_Index:	index *
-		ptr Msl_Main
-		ptr Msl_Animate
-		ptr Msl_FromBuzz
-		ptr Msl_Delete
-		ptr Msl_FromNewt
-
-msl_parent:	equ $3C
-; ===========================================================================
-
-Msl_Main:	; Routine 0
-		subq.w	#1,$32(a0)
-		bpl.s	Msl_ChkCancel
-		addq.b	#2,ost_routine(a0)
-		move.l	#Map_Missile,ost_mappings(a0)
-		move.w	#$2444,ost_tile(a0)
-		move.b	#4,ost_render(a0)
-		move.b	#3,ost_priority(a0)
-		move.b	#8,ost_actwidth(a0)
-		andi.b	#3,ost_status(a0)
-		tst.b	ost_subtype(a0)	; was object created by	a Newtron?
-		beq.s	Msl_Animate	; if not, branch
-
-		move.b	#8,ost_routine(a0) ; run "Msl_FromNewt" routine
-		move.b	#$87,ost_col_type(a0)
-		move.b	#1,ost_anim(a0)
-		bra.s	Msl_Animate2
-; ===========================================================================
-
-Msl_Animate:	; Routine 2
-		bsr.s	Msl_ChkCancel
-		lea	(Ani_Missile).l,a1
-		bsr.w	AnimateSprite
-		bra.w	DisplaySprite
-
-; ---------------------------------------------------------------------------
-; Subroutine to	check if the Buzz Bomber which fired the missile has been
-; destroyed, and if it has, then cancel	the missile
-; ---------------------------------------------------------------------------
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Msl_ChkCancel:
-		movea.l	msl_parent(a0),a1
-		cmpi.b	#id_ExplosionItem,0(a1) ; has Buzz Bomber been destroyed?
-		beq.s	Msl_Delete	; if yes, branch
-		rts	
-; End of function Msl_ChkCancel
-
-; ===========================================================================
-
-Msl_FromBuzz:	; Routine 4
-		btst	#7,ost_status(a0)
-		bne.s	@explode
-		move.b	#$87,ost_col_type(a0)
-		move.b	#1,ost_anim(a0)
-		bsr.w	SpeedToPos
-		lea	(Ani_Missile).l,a1
-		bsr.w	AnimateSprite
-		bsr.w	DisplaySprite
-		move.w	(v_limitbtm2).w,d0
-		addi.w	#$E0,d0
-		cmp.w	ost_y_pos(a0),d0	; has object moved below the level boundary?
-		bcs.s	Msl_Delete	; if yes, branch
-		rts	
-; ===========================================================================
-
-	@explode:
-		move.b	#id_MissileDissolve,0(a0) ; change object to an explosion (Obj24)
-		move.b	#0,ost_routine(a0)
-		bra.w	MissileDissolve
-; ===========================================================================
-
-Msl_Delete:	; Routine 6
-		bsr.w	DeleteObject
-		rts	
-; ===========================================================================
-
-Msl_FromNewt:	; Routine 8
-		tst.b	ost_render(a0)
-		bpl.s	Msl_Delete
-		bsr.w	SpeedToPos
-
-Msl_Animate2:
-		lea	(Ani_Missile).l,a1
-		bsr.w	AnimateSprite
-		bsr.w	DisplaySprite
-		rts	
-
+BuzzBomber:	include "Objects\Buzz Bomber.asm"
+Missile:	include "Objects\Buzz Bomber Missile.asm"
 Ani_Buzz:	include "Animations\Buzz Bomber.asm"
 Ani_Missile:	include "Animations\Buzz Bomber Missile.asm"
 Map_Buzz:	include "Mappings\Buzz Bomber.asm"
@@ -31255,7 +28943,7 @@ lamp_time:	equ $36		; length of time to twirl the lamp
 Lamp_Main:	; Routine 0
 		addq.b	#2,ost_routine(a0)
 		move.l	#Map_Lamp,ost_mappings(a0)
-		move.w	#$7A0,ost_tile(a0)
+		move.w	#tile_Nem_Lamp,ost_tile(a0)
 		move.b	#4,ost_render(a0)
 		move.b	#8,ost_actwidth(a0)
 		move.b	#5,ost_priority(a0)
@@ -40096,11 +37784,11 @@ Nem_SlzCannon:	incbin	"artnem\SLZ Cannon.bin"
 ; ---------------------------------------------------------------------------
 Nem_Bumper:	incbin	"artnem\SYZ Bumper.bin"
 		even
-Nem_SyzSpike2:	incbin	"artnem\SYZ Small Spikeball.bin"
+Nem_SmallSpike:	incbin	"artnem\SYZ Small Spikeball.bin"
 		even
 Nem_LzSwitch:	incbin	"artnem\Switch.bin"
 		even
-Nem_SyzSpike1:	incbin	"artnem\SYZ Large Spikeball.bin"
+Nem_BigSpike:	incbin	"artnem\SYZ Large Spikeball.bin"
 		even
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - SBZ stuff
