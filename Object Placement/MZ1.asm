@@ -46,14 +46,14 @@
 		objpos $0A80,$054C,id_Lamppost,$01,rem
 		objpos $0AD0,$03F8,id_Button,$80
 		objpos $0B00,$02F8,id_LavaTag,$02
-		objpos $0B10,$036C,id_Basaran,$00,rem
+		objpos $0B10,$036C,id_Batbrain,$00,rem
 		objpos $0B20,$02E8,id_LargeGrass,$15
 		objpos $0B34,$0500,id_Spikes,$12
 		objpos $0B40,$03F4,id_Spikes,$01
-		objpos $0B60,$036C,id_Basaran,$00,rem
+		objpos $0B60,$036C,id_Batbrain,$00,rem
 		objpos $0B60,$0510,id_Invisibarrier,$31
 		objpos $0B60,$05A7,id_GlassBlock,$01
-		objpos $0BA0,$036C,id_Basaran,$00,rem
+		objpos $0BA0,$036C,id_Batbrain,$00,rem
 		objpos $0BD0,$03F0,id_MarbleBrick,$00
 		objpos $0C00,$02E8,id_LargeGrass,$15
 		objpos $0C00,$02F8,id_LavaTag,$02
@@ -110,11 +110,11 @@
 		objpos $0FB0,$0510,id_MarbleBrick,$02
 		objpos $1008,$0550,id_Rings,$13,rem
 		objpos $1010,$03D0,id_MarbleBrick,$00
-		objpos $1030,$032C,id_Basaran,$00,rem
+		objpos $1030,$032C,id_Batbrain,$00,rem
 		objpos $1030,$043C,id_ChainStomp,$11
 		objpos $1050,$0330,id_MarbleBrick,$00
 		objpos $1050,$035C,id_ChainStomp,$23
-		objpos $1070,$032C,id_Basaran,$00,rem
+		objpos $1070,$032C,id_Batbrain,$00,rem
 		objpos $1070,$03F0,id_Invisibarrier,$11
 		objpos $1090,$0408,id_MovingBlock,$41
 		objpos $10C0,$033C,id_ChainStomp,$02

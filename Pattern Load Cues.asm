@@ -42,15 +42,17 @@ PLC_Animals:
 plcm:	macro gfx,vram,suffix
 	dc.l gfx
 	dc.w vram
-	if ~def(tile_\gfx)
-	tile_\gfx: equ vram/$20
-	elseif narg=3
+	if narg=3
 	tile_\gfx\_\suffix: equ vram/$20
 	else
+		if ~def(tile_\gfx)
+		tile_\gfx: equ vram/$20
+		endc
 	endc
 	endm
 
 vram_crabmeat:	equ $8000
+vram_bomb:	equ $8000
 vram_orbinaut:	equ $8520
 vram_buzz:	equ $8880
 vram_yadrin:	equ $8F60
@@ -176,7 +178,7 @@ PLC_MZ2:	dc.w ((PLC_MZ2end-PLC_MZ2-2)/6)-1
 ; ---------------------------------------------------------------------------
 PLC_SLZ:	dc.w ((PLC_SLZ2-PLC_SLZ-2)/6)-1
 		plcm	Nem_SLZ,0		; SLZ main patterns
-		plcm	Nem_Bomb, $8000		; bomb enemy
+		plcm	Nem_Bomb, vram_bomb		; bomb enemy
 		plcm	Nem_Orbinaut, vram_orbinaut	; orbinaut enemy
 		plcm	Nem_MzFire, $9000	; fireballs
 		plcm	Nem_SlzBlock, $9C00	; block
@@ -232,7 +234,7 @@ PLC_SBZ:	dc.w ((PLC_SBZ2-PLC_SBZ-2)/6)-1
 
 PLC_SBZ2:	dc.w ((PLC_SBZ2end-PLC_SBZ2-2)/6)-1
 		plcm	Nem_Cater, $5600	; caterkiller enemy
-		plcm	Nem_Bomb, $8000		; bomb enemy
+		plcm	Nem_Bomb, vram_bomb		; bomb enemy
 		plcm	Nem_Orbinaut, vram_orbinaut	; orbinaut enemy
 		plcm	Nem_SlideFloor, $8C00	; floor	that slides away
 		plcm	Nem_SbzDoor2, $8DE0	; horizontal door

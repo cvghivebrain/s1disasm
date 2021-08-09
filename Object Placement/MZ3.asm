@@ -39,12 +39,12 @@
 		objpos $0280,$04E8,id_CollapseFloor,$01
 		objpos $0290,$031C,id_ChainStomp,$23
 		objpos $02D0,$031C,id_ChainStomp,$23
-		objpos $02D0,$046C,id_Basaran,$00,rem
+		objpos $02D0,$046C,id_Batbrain,$00,rem
 		objpos $02D0,$04F0,id_MarbleBrick,$00
 		objpos $02F0,$0150,id_BuzzBomber,$00,rem
 		objpos $02F0,$0690,id_PushBlock,$00,rem
 		objpos $0310,$054C,id_Caterkiller,$00,rem
-		objpos $0320,$048C,id_Basaran,$00,rem
+		objpos $0320,$048C,id_Batbrain,$00,rem
 		objpos $0338,$06A8,id_Rings,$13,rem
 		objpos $0380,$06E8,id_LavaTag,$02
 		objpos $03B0,$06A0,id_MarbleBrick,$00
@@ -138,12 +138,12 @@
 		objpos $0EE0,$06F4,id_Spikes,$01
 		objpos $0F30,$049C,id_ChainStomp,$11
 		objpos $0F60,$0698,id_GlassBlock,$01
-		objpos $0F90,$048C,id_Basaran,$00,rem
+		objpos $0F90,$048C,id_Batbrain,$00,rem
 		objpos $0F94,$06F2,id_Rings,$11,rem
 		objpos $0FA0,$0354,id_Spikes,$01
 		objpos $0FD0,$0650,id_MarbleBrick,$00
 		objpos $0FD4,$06A0,id_Rings,$11,rem
-		objpos $0FE0,$048C,id_Basaran,$00,rem
+		objpos $0FE0,$048C,id_Batbrain,$00,rem
 		objpos $0FE0,$06D4,id_Spikes,$01
 		objpos $0FE8,$0578,id_Spikes,$10,xflip
 		objpos $0FF0,$0650,id_MarbleBrick,$00
@@ -154,15 +154,15 @@
 		objpos $1060,$069A,id_GlassBlock,$02
 		objpos $1080,$0598,id_LavaTag,$02
 		objpos $1094,$06F2,id_Rings,$11,rem
-		objpos $1098,$030C,id_Basaran,$00,rem
-		objpos $1098,$040C,id_Basaran,$00,rem
+		objpos $1098,$030C,id_Batbrain,$00,rem
+		objpos $1098,$040C,id_Batbrain,$00,rem
 		objpos $10C0,$0394,id_Spikes,$01
-		objpos $10C0,$040C,id_Basaran,$00,rem
+		objpos $10C0,$040C,id_Batbrain,$00,rem
 		objpos $10D0,$0650,id_MarbleBrick,$00
 		objpos $10D4,$06A0,id_Rings,$11,rem
-		objpos $10E0,$030C,id_Basaran,$00,rem
+		objpos $10E0,$030C,id_Batbrain,$00,rem
 		objpos $10E0,$06D4,id_Spikes,$01
-		objpos $10E8,$040C,id_Basaran,$00,rem
+		objpos $10E8,$040C,id_Batbrain,$00,rem
 		objpos $10F0,$0650,id_MarbleBrick,$00
 		objpos $1108,$0514,id_Rings,$12,rem
 		objpos $1110,$06F0,id_SmashBlock,$00
@@ -174,12 +174,12 @@
 		objpos $1160,$0710,id_Invisibarrier,$31
 		objpos $1160,$07A7,id_GlassBlock,$01
 		objpos $1180,$0598,id_LavaTag,$02
-		objpos $1198,$040C,id_Basaran,$00,rem
-		objpos $11A0,$030C,id_Basaran,$00,rem
+		objpos $1198,$040C,id_Batbrain,$00,rem
+		objpos $11A0,$030C,id_Batbrain,$00,rem
 		objpos $11C0,$0394,id_Spikes,$01
-		objpos $11C0,$040C,id_Basaran,$00,rem
-		objpos $11E8,$040C,id_Basaran,$00,rem
-		objpos $11F0,$030C,id_Basaran,$00,rem
+		objpos $11C0,$040C,id_Batbrain,$00,rem
+		objpos $11E8,$040C,id_Batbrain,$00,rem
+		objpos $11F0,$030C,id_Batbrain,$00,rem
 		objpos $1200,$0598,id_LavaTag,$00
 		objpos $1208,$0514,id_Rings,$12,rem
 		objpos $1210,$07B8,id_MovingBlock,$02
@@ -202,19 +202,19 @@
 		objpos $13A0,$04EC,id_Caterkiller,$00,xflip,rem
 		objpos $13E8,$02A8,id_Rings,$12,rem
 		objpos $1418,$07C0,id_Spikes,$10
-		objpos $1438,$063C,id_Basaran,$00,rem
+		objpos $1438,$063C,id_Batbrain,$00,rem
 		objpos $1448,$0550,id_Spikes,$52,xflip
-		objpos $1450,$048C,id_Basaran,$00,rem
+		objpos $1450,$048C,id_Batbrain,$00,rem
 		objpos $1450,$0710,id_Rings,$14,rem
-		objpos $1458,$063C,id_Basaran,$00,rem
+		objpos $1458,$063C,id_Batbrain,$00,rem
 		objpos $1468,$0670,id_Rings,$12,rem
-		objpos $1478,$063C,id_Basaran,$00,rem
+		objpos $1478,$063C,id_Batbrain,$00,rem
 		objpos $1488,$0590,id_Spikes,$52,xflip
-		objpos $1498,$063C,id_Basaran,$00,rem
-		objpos $14A0,$048C,id_Basaran,$00,rem
+		objpos $1498,$063C,id_Batbrain,$00,rem
+		objpos $14A0,$048C,id_Batbrain,$00,rem
 		objpos $14A8,$02D8,id_LavaMaker,$40
 		objpos $14B8,$04F4,id_Rings,$12,rem
-		objpos $14B8,$063C,id_Basaran,$00,rem
+		objpos $14B8,$063C,id_Batbrain,$00,rem
 		objpos $14C0,$02FC,id_LavaTag,$01
 		objpos $14C8,$05D0,id_Spikes,$52,xflip
 		objpos $14D8,$02D8,id_LavaMaker,$51
