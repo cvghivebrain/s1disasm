@@ -157,7 +157,7 @@ PLC_LZ2:	dc.w ((PLC_LZ2end-PLC_LZ2-2)/6)-1
 PLC_MZ:		dc.w ((PLC_MZ2-PLC_MZ-2)/6)-1
 		plcm	Nem_MZ,0		; MZ main patterns
 		plcm	Nem_MzMetal, $6000	; metal	blocks
-		plcm	Nem_MzFire, $68A0	; fireballs
+		plcm	Nem_Fireball, $68A0	; fireballs
 		plcm	Nem_Swing, $7000	; swinging platform
 		plcm	Nem_MzGlass, $71C0	; green	glassy block
 		plcm	Nem_Lava, $7500		; lava
@@ -180,7 +180,7 @@ PLC_SLZ:	dc.w ((PLC_SLZ2-PLC_SLZ-2)/6)-1
 		plcm	Nem_SLZ,0		; SLZ main patterns
 		plcm	Nem_Bomb, vram_bomb		; bomb enemy
 		plcm	Nem_Orbinaut, vram_orbinaut	; orbinaut enemy
-		plcm	Nem_MzFire, $9000	; fireballs
+		plcm	Nem_Fireball, $9000,SLZ	; fireballs
 		plcm	Nem_SlzBlock, $9C00	; block
 		plcm	Nem_SlzWall, $A260	; breakable wall
 		plcm	Nem_Spikes, vram_spikes	; spikes
@@ -233,7 +233,7 @@ PLC_SBZ:	dc.w ((PLC_SBZ2-PLC_SBZ-2)/6)-1
 		plcm	Nem_SbzBlock, $9860	; vanishing block
 
 PLC_SBZ2:	dc.w ((PLC_SBZ2end-PLC_SBZ2-2)/6)-1
-		plcm	Nem_Cater, $5600	; caterkiller enemy
+		plcm	Nem_Cater, $5600, SBZ	; caterkiller enemy
 		plcm	Nem_Bomb, vram_bomb		; bomb enemy
 		plcm	Nem_Orbinaut, vram_orbinaut	; orbinaut enemy
 		plcm	Nem_SlideFloor, $8C00	; floor	that slides away
@@ -260,8 +260,8 @@ PLC_Boss:	dc.w ((PLC_Bossend-PLC_Boss-2)/6)-1
 		plcm	Nem_Eggman, $8000	; Eggman main patterns
 		plcm	Nem_Weapons, $8D80	; Eggman's weapons
 		plcm	Nem_Prison, $93A0	; prison capsule
-		plcm	Nem_Bomb, $A300		; bomb enemy ((gets overwritten)
-		plcm	Nem_SlzSpike, $A300	; spikeball ((SLZ boss)
+		plcm	Nem_Bomb, $A300,Boss		; bomb enemy (partially overwritten - shrapnel remains)
+		plcm	Nem_SlzSpike, $A300,Boss	; spikeball (SLZ boss)
 		plcm	Nem_Exhaust, $A540	; exhaust flame
 	PLC_Bossend:
 ; ---------------------------------------------------------------------------

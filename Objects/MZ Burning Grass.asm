@@ -19,7 +19,7 @@ gfire_origX:	equ $2A
 GFire_Main:	; Routine 0
 		addq.b	#2,ost_routine(a0)
 		move.l	#Map_Fire,ost_mappings(a0)
-		move.w	#tile_Nem_MzFire,ost_tile(a0)
+		move.w	#tile_Nem_Fireball,ost_tile(a0)
 		move.w	ost_x_pos(a0),gfire_origX(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#1,ost_priority(a0)
