@@ -402,7 +402,7 @@ PLC_FZBoss:	dc.w ((PLC_FZBossend-PLC_FZBoss-2)/6)-1
 		plcm	Nem_FzEggman, $7400	; Eggman after boss
 		plcm	Nem_FzBoss, $6000	; FZ boss
 		plcm	Nem_Eggman, $8000	; Eggman main patterns
-		plcm	Nem_Sbz2Eggman, $8E00	; Eggman without ship
+		plcm	Nem_Sbz2Eggman, $8E00,FZ	; Eggman without ship
 		plcm	Nem_Exhaust, $A540	; exhaust flame
 	PLC_FZBossend:
 		even

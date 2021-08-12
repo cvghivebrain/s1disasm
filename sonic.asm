@@ -300,7 +300,7 @@ Z80_Startup_end:
 
 GameProgram:
 		tst.w	(vdp_control_port).l
-		btst	#6,($A1000D).l
+		btst	#6,(port_e_control).l
 		beq.s	CheckSumCheck
 		cmpi.l	#'init',(v_init).w ; has checksum routine already run?
 		beq.w	GameInit	; if yes, branch
@@ -1234,228 +1234,7 @@ TilemapToVRAM:
 		rts	
 ; End of function TilemapToVRAM
 
-; ---------------------------------------------------------------------------
-; Nemesis decompression	subroutine, decompresses art directly to VRAM
-; Inputs:
-; a0 = art address
-
-; For format explanation see http://info.sonicretro.org/Nemesis_compression
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
-; Nemesis decompression to VRAM
-NemDec:
-		movem.l	d0-a1/a3-a5,-(sp)
-		lea	(NemPCD_WriteRowToVDP).l,a3	; write all data to the same location
-		lea	(vdp_data_port).l,a4	; specifically, to the VDP data port
-		bra.s	NemDecMain
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
-; Nemesis decompression subroutine, decompresses art to RAM
-; Inputs:
-; a0 = art address
-; a4 = destination RAM address
-NemDecToRAM:
-		movem.l	d0-a1/a3-a5,-(sp)
-		lea	(NemPCD_WriteRowToRAM).l,a3 ; advance to the next location after each write
-
-NemDecMain:
-		lea	(v_ngfx_buffer).w,a1
-		move.w	(a0)+,d2	; get number of patterns
-		lsl.w	#1,d2
-		bcc.s	loc_146A	; branch if the sign bit isn't set
-		adda.w	#NemPCD_WriteRowToVDP_XOR-NemPCD_WriteRowToVDP,a3	; otherwise the file uses XOR mode
-
-loc_146A:
-		lsl.w	#2,d2	; get number of 8-pixel rows in the uncompressed data
-		movea.w	d2,a5	; and store it in a5 because there aren't any spare data registers
-		moveq	#8,d3	; 8 pixels in a pattern row
-		moveq	#0,d2
-		moveq	#0,d4
-		bsr.w	NemDec_BuildCodeTable
-		move.b	(a0)+,d5	; get first byte of compressed data
-		asl.w	#8,d5	; shift up by a byte
-		move.b	(a0)+,d5	; get second byte of compressed data
-		move.w	#$10,d6	; set initial shift value
-		bsr.s	NemDec_ProcessCompressedData
-		movem.l	(sp)+,d0-a1/a3-a5
-		rts	
-; End of function NemDec
-
-; ---------------------------------------------------------------------------
-; Part of the Nemesis decompressor, processes the actual compressed data
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-NemDec_ProcessCompressedData:
-		move.w	d6,d7
-		subq.w	#8,d7	; get shift value
-		move.w	d5,d1
-		lsr.w	d7,d1	; shift so that high bit of the code is in bit position 7
-		cmpi.b	#%11111100,d1	; are the high 6 bits set?
-		bcc.s	NemPCD_InlineData	; if they are, it signifies inline data
-		andi.w	#$FF,d1
-		add.w	d1,d1
-		move.b	(a1,d1.w),d0	; get the length of the code in bits
-		ext.w	d0
-		sub.w	d0,d6	; subtract from shift value so that the next code is read next time around
-		cmpi.w	#9,d6	; does a new byte need to be read?
-		bcc.s	loc_14B2	; if not, branch
-		addq.w	#8,d6
-		asl.w	#8,d5
-		move.b	(a0)+,d5	; read next byte
-
-loc_14B2:
-		move.b	1(a1,d1.w),d1
-		move.w	d1,d0
-		andi.w	#$F,d1	; get palette index for pixel
-		andi.w	#$F0,d0
-
-NemPCD_ProcessCompressedData:
-		lsr.w	#4,d0	; get repeat count
-
-NemPCD_WritePixel:
-		lsl.l	#4,d4	; shift up by a nybble
-		or.b	d1,d4	; write pixel
-		subq.w	#1,d3	; has an entire 8-pixel row been written?
-		bne.s	NemPCD_WritePixel_Loop	; if not, loop
-		jmp	(a3)	; otherwise, write the row to its destination, by doing a dynamic jump to NemPCD_WriteRowToVDP, NemDec_WriteAndAdvance, NemPCD_WriteRowToVDP_XOR, or NemDec_WriteAndAdvance_XOR
-; End of function NemDec_ProcessCompressedData
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-NemPCD_NewRow:
-		moveq	#0,d4	; reset row
-		moveq	#8,d3	; reset nybble counter
-
-NemPCD_WritePixel_Loop:
-		dbf	d0,NemPCD_WritePixel
-		bra.s	NemDec_ProcessCompressedData
-; ===========================================================================
-
-NemPCD_InlineData:
-		subq.w	#6,d6	; 6 bits needed to signal inline data
-		cmpi.w	#9,d6
-		bcc.s	loc_14E4
-		addq.w	#8,d6
-		asl.w	#8,d5
-		move.b	(a0)+,d5
-
-loc_14E4:
-		subq.w	#7,d6	; and 7 bits needed for the inline data itself
-		move.w	d5,d1
-		lsr.w	d6,d1	; shift so that low bit of the code is in bit position 0
-		move.w	d1,d0
-		andi.w	#$F,d1	; get palette index for pixel
-		andi.w	#$70,d0	; high nybble is repeat count for pixel
-		cmpi.w	#9,d6
-		bcc.s	NemPCD_ProcessCompressedData
-		addq.w	#8,d6
-		asl.w	#8,d5
-		move.b	(a0)+,d5
-		bra.s	NemPCD_ProcessCompressedData
-; End of function NemPCD_NewRow
-
-; ===========================================================================
-
-NemPCD_WriteRowToVDP:
-		move.l	d4,(a4)	; write 8-pixel row
-		subq.w	#1,a5
-		move.w	a5,d4	; have all the 8-pixel rows been written?
-		bne.s	NemPCD_NewRow	; if not, branch
-		rts		; otherwise the decompression is finished
-; ===========================================================================
-NemPCD_WriteRowToVDP_XOR:
-		eor.l	d4,d2	; XOR the previous row by the current row
-		move.l	d2,(a4)	; and write the result
-		subq.w	#1,a5
-		move.w	a5,d4
-		bne.s	NemPCD_NewRow
-		rts	
-; ===========================================================================
-
-NemPCD_WriteRowToRAM:
-		move.l	d4,(a4)+
-		subq.w	#1,a5
-		move.w	a5,d4
-		bne.s	NemPCD_NewRow
-		rts	
-; ===========================================================================
-NemPCD_WriteRowToRAM_XOR:
-		eor.l	d4,d2
-		move.l	d2,(a4)+
-		subq.w	#1,a5
-		move.w	a5,d4
-		bne.s	NemPCD_NewRow
-		rts	
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-; ---------------------------------------------------------------------------
-; Part of the Nemesis decompressor, builds the code table (in RAM)
-; ---------------------------------------------------------------------------
-
-
-NemDec_BuildCodeTable:
-		move.b	(a0)+,d0	; read first byte
-
-NemBCT_ChkEnd:
-		cmpi.b	#$FF,d0	; has the end of the code table description been reached?
-		bne.s	NemBCT_NewPALIndex	; if not, branch
-		rts	; otherwise, this subroutine's work is done
-; ===========================================================================
-
-NemBCT_NewPALIndex:
-		move.w	d0,d7
-
-NemBCT_Loop:
-		move.b	(a0)+,d0	; read next byte
-		cmpi.b	#$80,d0	; sign bit being set signifies a new palette index
-		bcc.s	NemBCT_ChkEnd	; a bmi could have been used instead of a compare and bcc
-		
-		move.b	d0,d1
-		andi.w	#$F,d7	; get palette index
-		andi.w	#$70,d1	; get repeat count for palette index
-		or.w	d1,d7	; combine the two
-		andi.w	#$F,d0	; get the length of the code in bits
-		move.b	d0,d1
-		lsl.w	#8,d1
-		or.w	d1,d7	; combine with palette index and repeat count to form code table entry
-		moveq	#8,d1
-		sub.w	d0,d1	; is the code 8 bits long?
-		bne.s	NemBCT_ShortCode	; if not, a bit of extra processing is needed
-		move.b	(a0)+,d0	; get code
-		add.w	d0,d0	; each code gets a word-sized entry in the table
-		move.w	d7,(a1,d0.w)	; store the entry for the code
-		bra.s	NemBCT_Loop	; repeat
-; ===========================================================================
-
-; the Nemesis decompressor uses prefix-free codes (no valid code is a prefix of a longer code)
-; e.g. if 10 is a valid 2-bit code, 110 is a valid 3-bit code but 100 isn't
-; also, when the actual compressed data is processed the high bit of each code is in bit position 7
-; so the code needs to be bit-shifted appropriately over here before being used as a code table index
-; additionally, the code needs multiple entries in the table because no masking is done during compressed data processing
-; so if 11000 is a valid code then all indices of the form 11000XXX need to have the same entry
-NemBCT_ShortCode:
-		move.b	(a0)+,d0	; get code
-		lsl.w	d1,d0	; get index into code table
-		add.w	d0,d0	; shift so that high bit is in bit position 7
-		moveq	#1,d5
-		lsl.w	d1,d5
-		subq.w	#1,d5	; d5 = 2^d1 - 1
-
-NemBCT_ShortCode_Loop:
-		move.w	d7,(a1,d0.w)	; store entry
-		addq.w	#2,d0	; increment index
-		dbf	d5,NemBCT_ShortCode_Loop	; repeat for required number of entries
-		bra.s	NemBCT_Loop
-; End of function NemDec_BuildCodeTable
-
+NemDec:		include "Includes\Nemesis Decompression.asm"
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to load pattern load cues (aka to queue pattern load requests)
@@ -1692,368 +1471,8 @@ QuickPLC:
 		rts	
 ; End of function QuickPLC
 
-; ---------------------------------------------------------------------------
-; Enigma decompression algorithm
-
-; input:
-;	d0 = starting art tile (added to each 8x8 before writing to destination)
-;	a0 = source address
-;	a1 = destination address
-
-; usage:
-;	lea	(source).l,a0
-;	lea	(destination).l,a1
-;	move.w	#arttile,d0
-;	bsr.w	EniDec
-
-; See http://www.segaretro.org/Enigma_compression for format description
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-EniDec:
-		movem.l	d0-d7/a1-a5,-(sp)
-		movea.w	d0,a3		; store starting art tile
-		move.b	(a0)+,d0
-		ext.w	d0
-		movea.w	d0,a5		; store number of bits in inline copy value
-		move.b	(a0)+,d4
-		lsl.b	#3,d4		; store PCCVH flags bitfield
-		movea.w	(a0)+,a2
-		adda.w	a3,a2		; store incremental copy word
-		movea.w	(a0)+,a4
-		adda.w	a3,a4		; store literal copy word
-		move.b	(a0)+,d5
-		asl.w	#8,d5
-		move.b	(a0)+,d5	; get first word in format list
-		moveq	#16,d6		; initial shift value
-; loc_173E:
-Eni_Loop:
-		moveq	#7,d0		; assume a format list entry is 7 bits
-		move.w	d6,d7
-		sub.w	d0,d7
-		move.w	d5,d1
-		lsr.w	d7,d1
-		andi.w	#$7F,d1		; get format list entry
-		move.w	d1,d2		; and copy it
-		cmpi.w	#$40,d1		; is the high bit of the entry set?
-		bhs.s	@sevenbitentry
-		moveq	#6,d0		; if it isn't, the entry is actually 6 bits
-		lsr.w	#1,d2
-; loc_1758:
-@sevenbitentry:
-		bsr.w	EniDec_FetchByte
-		andi.w	#$F,d2		; get repeat count
-		lsr.w	#4,d1
-		add.w	d1,d1
-		jmp	EniDec_Index(pc,d1.w)
-; End of function EniDec
-
-; ===========================================================================
-; loc_1768:
-EniDec_00:
-@loop:		move.w	a2,(a1)+	; copy incremental copy word
-		addq.w	#1,a2		; increment it
-		dbf	d2,@loop	; repeat
-		bra.s	Eni_Loop
-; ===========================================================================
-; loc_1772:
-EniDec_01:
-@loop:		move.w	a4,(a1)+	; copy literal copy word
-		dbf	d2,@loop	; repeat
-		bra.s	Eni_Loop
-; ===========================================================================
-; loc_177A:
-EniDec_100:
-		bsr.w	EniDec_FetchInlineValue
-; loc_177E:
-@loop:		move.w	d1,(a1)+	; copy inline value
-		dbf	d2,@loop	; repeat
-
-		bra.s	Eni_Loop
-; ===========================================================================
-; loc_1786:
-EniDec_101:
-		bsr.w	EniDec_FetchInlineValue
-; loc_178A:
-@loop:		move.w	d1,(a1)+	; copy inline value
-		addq.w	#1,d1		; increment
-		dbf	d2,@loop	; repeat
-
-		bra.s	Eni_Loop
-; ===========================================================================
-; loc_1794:
-EniDec_110:
-		bsr.w	EniDec_FetchInlineValue
-; loc_1798:
-@loop:		move.w	d1,(a1)+	; copy inline value
-		subq.w	#1,d1		; decrement
-		dbf	d2,@loop	; repeat
-
-		bra.s	Eni_Loop
-; ===========================================================================
-; loc_17A2:
-EniDec_111:
-		cmpi.w	#$F,d2
-		beq.s	EniDec_Done
-; loc_17A8:
-@loop:		bsr.w	EniDec_FetchInlineValue	; fetch new inline value
-		move.w	d1,(a1)+	; copy it
-		dbf	d2,@loop	; and repeat
-
-		bra.s	Eni_Loop
-; ===========================================================================
-; loc_17B4:
-EniDec_Index:
-		bra.s	EniDec_00
-		bra.s	EniDec_00
-		bra.s	EniDec_01
-		bra.s	EniDec_01
-		bra.s	EniDec_100
-		bra.s	EniDec_101
-		bra.s	EniDec_110
-		bra.s	EniDec_111
-; ===========================================================================
-; loc_17C4:
-EniDec_Done:
-		subq.w	#1,a0		; go back by one byte
-		cmpi.w	#16,d6		; were we going to start on a completely new byte?
-		bne.s	@notnewbyte	; if not, branch
-		subq.w	#1,a0		; and another one if needed
-; loc_17CE:
-@notnewbyte:
-		move.w	a0,d0
-		lsr.w	#1,d0		; are we on an odd byte?
-		bcc.s	@evenbyte	; if not, branch
-		addq.w	#1,a0		; ensure we're on an even byte
-; loc_17D6:
-@evenbyte:
-		movem.l	(sp)+,d0-d7/a1-a5
-		rts	
-
-; ---------------------------------------------------------------------------
-; Part of the Enigma decompressor
-; Fetches an inline copy value and stores it in d1
-; ---------------------------------------------------------------------------
-
-; =============== S U B R O U T I N E =======================================
-
-; loc_17DC:
-EniDec_FetchInlineValue:
-		move.w	a3,d3		; copy starting art tile
-		move.b	d4,d1		; copy PCCVH bitfield
-		add.b	d1,d1		; is the priority bit set?
-		bcc.s	@skippriority	; if not, branch
-		subq.w	#1,d6
-		btst	d6,d5		; is the priority bit set in the inline render flags?
-		beq.s	@skippriority	; if not, branch
-		ori.w	#$8000,d3	; otherwise set priority bit in art tile
-; loc_17EE:
-@skippriority:
-		add.b	d1,d1		; is the high palette line bit set?
-		bcc.s	@skiphighpal	; if not, branch
-		subq.w	#1,d6
-		btst	d6,d5
-		beq.s	@skiphighpal
-		addi.w	#$4000,d3	; set second palette line bit
-; loc_17FC:
-@skiphighpal:
-		add.b	d1,d1		; is the low palette line bit set?
-		bcc.s	@skiplowpal	; if not, branch
-		subq.w	#1,d6
-		btst	d6,d5
-		beq.s	@skiplowpal
-		addi.w	#$2000,d3	; set first palette line bit
-; loc_180A:
-@skiplowpal:
-		add.b	d1,d1		; is the vertical flip flag set?
-		bcc.s	@skipyflip	; if not, branch
-		subq.w	#1,d6
-		btst	d6,d5
-		beq.s	@skipyflip
-		ori.w	#$1000,d3	; set Y-flip bit
-; loc_1818:
-@skipyflip:
-		add.b	d1,d1		; is the horizontal flip flag set?
-		bcc.s	@skipxflip	; if not, branch
-		subq.w	#1,d6
-		btst	d6,d5
-		beq.s	@skipxflip
-		ori.w	#$800,d3	; set X-flip bit
-; loc_1826:
-@skipxflip:
-		move.w	d5,d1
-		move.w	d6,d7
-		sub.w	a5,d7		; subtract length in bits of inline copy value
-		bcc.s	@enoughbits	; branch if a new word doesn't need to be read
-		move.w	d7,d6
-		addi.w	#16,d6
-		neg.w	d7		; calculate bit deficit
-		lsl.w	d7,d1		; and make space for that many bits
-		move.b	(a0),d5		; get next byte
-		rol.b	d7,d5		; and rotate the required bits into the lowest positions
-		add.w	d7,d7
-		and.w	EniDec_Masks-2(pc,d7.w),d5
-		add.w	d5,d1		; combine upper bits with lower bits
-; loc_1844:
-@maskvalue:
-		move.w	a5,d0		; get length in bits of inline copy value
-		add.w	d0,d0
-		and.w	EniDec_Masks-2(pc,d0.w),d1	; mask value appropriately
-		add.w	d3,d1		; add starting art tile
-		move.b	(a0)+,d5
-		lsl.w	#8,d5
-		move.b	(a0)+,d5	; get next word
-		rts	
-; ===========================================================================
-; loc_1856:
-@enoughbits:
-		beq.s	@justenough	; if the word has been exactly exhausted, branch
-		lsr.w	d7,d1	; get inline copy value
-		move.w	a5,d0
-		add.w	d0,d0
-		and.w	EniDec_Masks-2(pc,d0.w),d1	; and mask it appropriately
-		add.w	d3,d1	; add starting art tile
-		move.w	a5,d0
-		bra.s	EniDec_FetchByte
-; ===========================================================================
-; loc_1868:
-@justenough:
-		moveq	#16,d6	; reset shift value
-		bra.s	@maskvalue
-; ===========================================================================
-; word_186C:
-EniDec_Masks:
-		dc.w	 1,    3,    7,   $F
-		dc.w   $1F,  $3F,  $7F,  $FF
-		dc.w  $1FF, $3FF, $7FF, $FFF
-		dc.w $1FFF,$3FFF,$7FFF,$FFFF
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-; sub_188C:
-EniDec_FetchByte:
-		sub.w	d0,d6	; subtract length of current entry from shift value so that next entry is read next time around
-		cmpi.w	#9,d6	; does a new byte need to be read?
-		bhs.s	@locret	; if not, branch
-		addq.w	#8,d6
-		asl.w	#8,d5
-		move.b	(a0)+,d5
-@locret:
-		rts	
-; End of function EniDec_FetchByte
-; ---------------------------------------------------------------------------
-; Kosinski decompression algorithm
-
-; input:
-;	a0 = source address
-;	a1 = destination address
-
-; usage:
-;	lea	(source).l,a0
-;	lea	(destination).l,a1
-;	bsr.w	KosDec
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-KosDec:
-
-		subq.l	#2,sp	; make space for 2 bytes on the stack
-		move.b	(a0)+,1(sp)
-		move.b	(a0)+,(sp)
-		move.w	(sp),d5	; get first description field
-		moveq	#$F,d4	; set to loop for 16 bits
-
-Kos_Loop:
-		lsr.w	#1,d5	; shift bit into the c flag
-		move	sr,d6
-		dbf	d4,@chkbit
-		move.b	(a0)+,1(sp)
-		move.b	(a0)+,(sp)
-		move.w	(sp),d5
-		moveq	#$F,d4
-
-	@chkbit:
-		move	d6,ccr	; was the bit set?
-		bcc.s	Kos_RLE	; if not, branch
-
-		move.b	(a0)+,(a1)+ ; copy byte as-is
-		bra.s	Kos_Loop
-; ===========================================================================
-
-Kos_RLE:
-		moveq	#0,d3
-		lsr.w	#1,d5	; get next bit
-		move	sr,d6
-		dbf	d4,@chkbit
-		move.b	(a0)+,1(sp)
-		move.b	(a0)+,(sp)
-		move.w	(sp),d5
-		moveq	#$F,d4
-
-	@chkbit:
-		move	d6,ccr	; was the bit set?
-		bcs.s	Kos_SeparateRLE ; if yes, branch
-
-		lsr.w	#1,d5	; shift bit into the x flag
-		dbf	d4,@loop1
-		move.b	(a0)+,1(sp)
-		move.b	(a0)+,(sp)
-		move.w	(sp),d5
-		moveq	#$F,d4
-
-	@loop1:
-		roxl.w	#1,d3	; get high repeat count bit
-		lsr.w	#1,d5
-		dbf	d4,@loop2
-		move.b	(a0)+,1(sp)
-		move.b	(a0)+,(sp)
-		move.w	(sp),d5
-		moveq	#$F,d4
-
-	@loop2:
-		roxl.w	#1,d3	; get low repeat count bit
-		addq.w	#1,d3	; increment repeat count
-		moveq	#-1,d2
-		move.b	(a0)+,d2 ; calculate offset
-		bra.s	Kos_RLELoop
-; ===========================================================================
-
-Kos_SeparateRLE:
-		move.b	(a0)+,d0 ; get first byte
-		move.b	(a0)+,d1 ; get second byte
-		moveq	#-1,d2
-		move.b	d1,d2
-		lsl.w	#5,d2
-		move.b	d0,d2	; calculate offset
-		andi.w	#7,d1	; does a third byte need to be read?
-		beq.s	Kos_SeparateRLE2 ; if yes, branch
-		move.b	d1,d3	; copy repeat count
-		addq.w	#1,d3	; increment
-
-Kos_RLELoop:
-		move.b	(a1,d2.w),d0 ; copy appropriate byte
-		move.b	d0,(a1)+ ; repeat
-		dbf	d3,Kos_RLELoop
-		bra.s	Kos_Loop
-; ===========================================================================
-
-Kos_SeparateRLE2:
-		move.b	(a0)+,d1
-		beq.s	Kos_Done ; 0 indicates end of compressed data
-		cmpi.b	#1,d1
-		beq.w	Kos_Loop ; 1 indicates new description to be read
-		move.b	d1,d3	; otherwise, copy repeat count
-		bra.s	Kos_RLELoop
-; ===========================================================================
-
-Kos_Done:
-		addq.l	#2,sp	; restore stack pointer
-		rts	
-; End of function KosDec
+EniDec:		include "Includes\Enigma Decompression.asm"
+KosDec:		include "Includes\Kosinski Decompression.asm"
 
 ; ---------------------------------------------------------------------------
 ; Palette cycling routine loading subroutine
@@ -2323,15 +1742,15 @@ locret_1B64:
 		rts	
 ; End of function PalCycle_SBZ
 
-Pal_TitleCyc:	incbin	"palette\Cycle - Title Screen Water.bin"
-Pal_GHZCyc:	incbin	"palette\Cycle - GHZ.bin"
-Pal_LZCyc1:	incbin	"palette\Cycle - LZ Waterfall.bin"
-Pal_LZCyc2:	incbin	"palette\Cycle - LZ Conveyor Belt.bin"
-Pal_LZCyc3:	incbin	"palette\Cycle - LZ Conveyor Belt Underwater.bin"
-Pal_SBZ3Cyc1:	incbin	"palette\Cycle - SBZ3 Waterfall.bin"
-Pal_SLZCyc:	incbin	"palette\Cycle - SLZ.bin"
-Pal_SYZCyc1:	incbin	"palette\Cycle - SYZ1.bin"
-Pal_SYZCyc2:	incbin	"palette\Cycle - SYZ2.bin"
+Pal_TitleCyc:	incbin	"Palettes\Cycle - Title Screen Water.bin"
+Pal_GHZCyc:	incbin	"Palettes\Cycle - GHZ.bin"
+Pal_LZCyc1:	incbin	"Palettes\Cycle - LZ Waterfall.bin"
+Pal_LZCyc2:	incbin	"Palettes\Cycle - LZ Conveyor Belt.bin"
+Pal_LZCyc3:	incbin	"Palettes\Cycle - LZ Conveyor Belt Underwater.bin"
+Pal_SBZ3Cyc1:	incbin	"Palettes\Cycle - SBZ3 Waterfall.bin"
+Pal_SLZCyc:	incbin	"Palettes\Cycle - SLZ.bin"
+Pal_SYZCyc1:	incbin	"Palettes\Cycle - SYZ1.bin"
+Pal_SYZCyc2:	incbin	"Palettes\Cycle - SYZ2.bin"
 
 ; ---------------------------------------------------------------------------
 ; Scrap Brain Zone palette cycling script
@@ -2370,16 +1789,16 @@ Pal_SBZCycList2:
 end_SBZCycList2:
 	even
 
-Pal_SBZCyc1:	incbin	"palette\Cycle - SBZ 1.bin"
-Pal_SBZCyc2:	incbin	"palette\Cycle - SBZ 2.bin"
-Pal_SBZCyc3:	incbin	"palette\Cycle - SBZ 3.bin"
-Pal_SBZCyc4:	incbin	"palette\Cycle - SBZ 4.bin"
-Pal_SBZCyc5:	incbin	"palette\Cycle - SBZ 5.bin"
-Pal_SBZCyc6:	incbin	"palette\Cycle - SBZ 6.bin"
-Pal_SBZCyc7:	incbin	"palette\Cycle - SBZ 7.bin"
-Pal_SBZCyc8:	incbin	"palette\Cycle - SBZ 8.bin"
-Pal_SBZCyc9:	incbin	"palette\Cycle - SBZ 9.bin"
-Pal_SBZCyc10:	incbin	"palette\Cycle - SBZ 10.bin"
+Pal_SBZCyc1:	incbin	"Palettes\Cycle - SBZ 1.bin"
+Pal_SBZCyc2:	incbin	"Palettes\Cycle - SBZ 2.bin"
+Pal_SBZCyc3:	incbin	"Palettes\Cycle - SBZ 3.bin"
+Pal_SBZCyc4:	incbin	"Palettes\Cycle - SBZ 4.bin"
+Pal_SBZCyc5:	incbin	"Palettes\Cycle - SBZ 5.bin"
+Pal_SBZCyc6:	incbin	"Palettes\Cycle - SBZ 6.bin"
+Pal_SBZCyc7:	incbin	"Palettes\Cycle - SBZ 7.bin"
+Pal_SBZCyc8:	incbin	"Palettes\Cycle - SBZ 8.bin"
+Pal_SBZCyc9:	incbin	"Palettes\Cycle - SBZ 9.bin"
+Pal_SBZCyc10:	incbin	"Palettes\Cycle - SBZ 10.bin"
 ; ---------------------------------------------------------------------------
 ; Subroutine to	fade in from black
 ; ---------------------------------------------------------------------------
@@ -2862,8 +2281,8 @@ loc_20BC:
 
 ; ===========================================================================
 
-Pal_Sega1:	incbin	"palette\Sega1.bin"
-Pal_Sega2:	incbin	"palette\Sega2.bin"
+Pal_Sega1:	incbin	"Palettes\Sega1.bin"
+Pal_Sega2:	incbin	"Palettes\Sega2.bin"
 
 ; ---------------------------------------------------------------------------
 ; Subroutines to load palettes
@@ -2956,84 +2375,63 @@ PalLoad4_Water:
 ; ---------------------------------------------------------------------------
 
 palp:	macro paladdress,ramaddress,colours
+	id_\paladdress:	equ (*-PalPointers)/8
 	dc.l paladdress
 	dc.w ramaddress, (colours>>1)-1
 	endm
 
 PalPointers:
 
-; palette address, RAM address, colours
+; palette address, RAM address, number of colours
 
-ptr_Pal_SegaBG:		palp	Pal_SegaBG,v_pal_dry,$40		; 0 - Sega logo
-ptr_Pal_Title:		palp	Pal_Title,v_pal_dry,$40		; 1 - title screen
-ptr_Pal_LevelSel:	palp	Pal_LevelSel,v_pal_dry,$40		; 2 - level select
-ptr_Pal_Sonic:		palp	Pal_Sonic,v_pal_dry,$10		; 3 - Sonic
+		palp	Pal_SegaBG,v_pal_dry,$40	; 0 - Sega logo
+		palp	Pal_Title,v_pal_dry,$40		; 1 - title screen
+		palp	Pal_LevelSel,v_pal_dry,$40	; 2 - level select
+		palp	Pal_Sonic,v_pal_dry,$10		; 3 - Sonic
 Pal_Levels:
-ptr_Pal_GHZ:		palp	Pal_GHZ,v_pal_dry+$20, $30		; 4 - GHZ
-ptr_Pal_LZ:		palp	Pal_LZ,v_pal_dry+$20,$30		; 5 - LZ
-ptr_Pal_MZ:		palp	Pal_MZ,v_pal_dry+$20,$30		; 6 - MZ
-ptr_Pal_SLZ:		palp	Pal_SLZ,v_pal_dry+$20,$30		; 7 - SLZ
-ptr_Pal_SYZ:		palp	Pal_SYZ,v_pal_dry+$20,$30		; 8 - SYZ
-ptr_Pal_SBZ1:		palp	Pal_SBZ1,v_pal_dry+$20,$30		; 9 - SBZ1
+		palp	Pal_GHZ,v_pal_dry+$20, $30	; 4 - GHZ
+		palp	Pal_LZ,v_pal_dry+$20,$30	; 5 - LZ
+		palp	Pal_MZ,v_pal_dry+$20,$30	; 6 - MZ
+		palp	Pal_SLZ,v_pal_dry+$20,$30	; 7 - SLZ
+		palp	Pal_SYZ,v_pal_dry+$20,$30	; 8 - SYZ
+		palp	Pal_SBZ1,v_pal_dry+$20,$30	; 9 - SBZ1
 			zonewarning Pal_Levels,8
-ptr_Pal_Special:	palp	Pal_Special,v_pal_dry,$40		; $A (10) - special stage
-ptr_Pal_LZWater:	palp	Pal_LZWater,v_pal_dry,$40		; $B (11) - LZ underwater
-ptr_Pal_SBZ3:		palp	Pal_SBZ3,v_pal_dry+$20,$30		; $C (12) - SBZ3
-ptr_Pal_SBZ3Water:	palp	Pal_SBZ3Water,v_pal_dry,$40		; $D (13) - SBZ3 underwater
-ptr_Pal_SBZ2:		palp	Pal_SBZ2,v_pal_dry+$20,$30		; $E (14) - SBZ2
-ptr_Pal_LZSonWater:	palp	Pal_LZSonWater,v_pal_dry,$10	; $F (15) - LZ Sonic underwater
-ptr_Pal_SBZ3SonWat:	palp	Pal_SBZ3SonWat,v_pal_dry,$10	; $10 (16) - SBZ3 Sonic underwater
-ptr_Pal_SSResult:	palp	Pal_SSResult,v_pal_dry,$40		; $11 (17) - special stage results
-ptr_Pal_Continue:	palp	Pal_Continue,v_pal_dry,$20		; $12 (18) - special stage results continue
-ptr_Pal_Ending:		palp	Pal_Ending,v_pal_dry,$40		; $13 (19) - ending sequence
+		palp	Pal_Special,v_pal_dry,$40	; $A (10) - special stage
+		palp	Pal_LZWater,v_pal_dry,$40	; $B (11) - LZ underwater
+		palp	Pal_SBZ3,v_pal_dry+$20,$30	; $C (12) - SBZ3
+		palp	Pal_SBZ3Water,v_pal_dry,$40	; $D (13) - SBZ3 underwater
+		palp	Pal_SBZ2,v_pal_dry+$20,$30	; $E (14) - SBZ2
+		palp	Pal_LZSonWater,v_pal_dry,$10	; $F (15) - LZ Sonic underwater
+		palp	Pal_SBZ3SonWat,v_pal_dry,$10	; $10 (16) - SBZ3 Sonic underwater
+		palp	Pal_SSResult,v_pal_dry,$40	; $11 (17) - special stage results
+		palp	Pal_Continue,v_pal_dry,$20	; $12 (18) - special stage results continue
+		palp	Pal_Ending,v_pal_dry,$40	; $13 (19) - ending sequence
 			even
-
-
-palid_SegaBG:		equ (ptr_Pal_SegaBG-PalPointers)/8
-palid_Title:		equ (ptr_Pal_Title-PalPointers)/8
-palid_LevelSel:		equ (ptr_Pal_LevelSel-PalPointers)/8
-palid_Sonic:		equ (ptr_Pal_Sonic-PalPointers)/8
-palid_GHZ:		equ (ptr_Pal_GHZ-PalPointers)/8
-palid_LZ:		equ (ptr_Pal_LZ-PalPointers)/8
-palid_MZ:		equ (ptr_Pal_MZ-PalPointers)/8
-palid_SLZ:		equ (ptr_Pal_SLZ-PalPointers)/8
-palid_SYZ:		equ (ptr_Pal_SYZ-PalPointers)/8
-palid_SBZ1:		equ (ptr_Pal_SBZ1-PalPointers)/8
-palid_Special:		equ (ptr_Pal_Special-PalPointers)/8
-palid_LZWater:		equ (ptr_Pal_LZWater-PalPointers)/8
-palid_SBZ3:		equ (ptr_Pal_SBZ3-PalPointers)/8
-palid_SBZ3Water:	equ (ptr_Pal_SBZ3Water-PalPointers)/8
-palid_SBZ2:		equ (ptr_Pal_SBZ2-PalPointers)/8
-palid_LZSonWater:	equ (ptr_Pal_LZSonWater-PalPointers)/8
-palid_SBZ3SonWat:	equ (ptr_Pal_SBZ3SonWat-PalPointers)/8
-palid_SSResult:		equ (ptr_Pal_SSResult-PalPointers)/8
-palid_Continue:		equ (ptr_Pal_Continue-PalPointers)/8
-palid_Ending:		equ (ptr_Pal_Ending-PalPointers)/8
 
 ; ---------------------------------------------------------------------------
 ; Palette data
 ; ---------------------------------------------------------------------------
 
-Pal_SegaBG:	incbin	"palette\Sega Background.bin"
-Pal_Title:	incbin	"palette\Title Screen.bin"
-Pal_LevelSel:	incbin	"palette\Level Select.bin"
-Pal_Sonic:	incbin	"palette\Sonic.bin"
-Pal_GHZ:	incbin	"palette\Green Hill Zone.bin"
-Pal_LZ:		incbin	"palette\Labyrinth Zone.bin"
-Pal_LZWater:	incbin	"palette\Labyrinth Zone Underwater.bin"
-Pal_MZ:		incbin	"palette\Marble Zone.bin"
-Pal_SLZ:	incbin	"palette\Star Light Zone.bin"
-Pal_SYZ:	incbin	"palette\Spring Yard Zone.bin"
-Pal_SBZ1:	incbin	"palette\SBZ Act 1.bin"
-Pal_SBZ2:	incbin	"palette\SBZ Act 2.bin"
-Pal_Special:	incbin	"palette\Special Stage.bin"
-Pal_SBZ3:	incbin	"palette\SBZ Act 3.bin"
-Pal_SBZ3Water:	incbin	"palette\SBZ Act 3 Underwater.bin"
-Pal_LZSonWater:	incbin	"palette\Sonic - LZ Underwater.bin"
-Pal_SBZ3SonWat:	incbin	"palette\Sonic - SBZ3 Underwater.bin"
-Pal_SSResult:	incbin	"palette\Special Stage Results.bin"
-Pal_Continue:	incbin	"palette\Special Stage Continue Bonus.bin"
-Pal_Ending:	incbin	"palette\Ending.bin"
+Pal_SegaBG:	incbin	"Palettes\Sega Background.bin"
+Pal_Title:	incbin	"Palettes\Title Screen.bin"
+Pal_LevelSel:	incbin	"Palettes\Level Select.bin"
+Pal_Sonic:	incbin	"Palettes\Sonic.bin"
+Pal_GHZ:	incbin	"Palettes\Green Hill Zone.bin"
+Pal_LZ:		incbin	"Palettes\Labyrinth Zone.bin"
+Pal_LZWater:	incbin	"Palettes\Labyrinth Zone Underwater.bin"
+Pal_MZ:		incbin	"Palettes\Marble Zone.bin"
+Pal_SLZ:	incbin	"Palettes\Star Light Zone.bin"
+Pal_SYZ:	incbin	"Palettes\Spring Yard Zone.bin"
+Pal_SBZ1:	incbin	"Palettes\SBZ Act 1.bin"
+Pal_SBZ2:	incbin	"Palettes\SBZ Act 2.bin"
+Pal_Special:	incbin	"Palettes\Special Stage.bin"
+Pal_SBZ3:	incbin	"Palettes\SBZ Act 3.bin"
+Pal_SBZ3Water:	incbin	"Palettes\SBZ Act 3 Underwater.bin"
+Pal_LZSonWater:	incbin	"Palettes\Sonic - LZ Underwater.bin"
+Pal_SBZ3SonWat:	incbin	"Palettes\Sonic - SBZ3 Underwater.bin"
+Pal_SSResult:	incbin	"Palettes\Special Stage Results.bin"
+Pal_Continue:	incbin	"Palettes\Special Stage Continue Bonus.bin"
+Pal_Ending:	incbin	"Palettes\Ending.bin"
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	wait for VBlank routines to complete
@@ -3255,7 +2653,7 @@ GM_Sega:
 		endc
 
 	@loadpal:
-		moveq	#palid_SegaBG,d0
+		moveq	#id_Pal_SegaBG,d0
 		bsr.w	PalLoad2	; load Sega logo palette
 		move.w	#-$A,(v_pcyc_num).w
 		move.w	#0,(v_pcyc_time).w
@@ -3339,7 +2737,7 @@ GM_Title:
 		move.l	d0,(a1)+
 		dbf	d1,Tit_ClrPal	; fill palette with 0 (black)
 
-		moveq	#palid_Sonic,d0	; load Sonic's palette
+		moveq	#id_Pal_Sonic,d0	; load Sonic's palette
 		bsr.w	PalLoad1
 		move.b	#id_CreditsText,(v_objspace+$80).w ; load "SONIC TEAM PRESENTS" object
 		jsr	(ExecuteObjects).l
@@ -3399,7 +2797,7 @@ GM_Title:
 		locVRAM	0
 		lea	(Nem_GHZ_1st).l,a0 ; load GHZ patterns
 		bsr.w	NemDec
-		moveq	#palid_Title,d0	; load title screen palette
+		moveq	#id_Pal_Title,d0	; load title screen palette
 		bsr.w	PalLoad1
 		sfx	bgm_Title,0,1,1	; play title screen music
 		move.b	#0,(f_debugmode).w ; disable debug mode
@@ -3518,7 +2916,7 @@ Tit_ChkLevSel:
 		btst	#bitA,(v_jpadhold1).w ; check if A is pressed
 		beq.w	PlayLevel	; if not, play level
 
-		moveq	#palid_LevelSel,d0
+		moveq	#id_Pal_LevelSel,d0
 		bsr.w	PalLoad2	; load level select palette
 		lea	(v_hscrolltablebuffer).w,a1
 		moveq	#0,d0
@@ -4050,15 +3448,15 @@ Level_ClrRam:
 Level_LoadPal:
 		move.w	#30,(v_air).w
 		enable_ints
-		moveq	#palid_Sonic,d0
+		moveq	#id_Pal_Sonic,d0
 		bsr.w	PalLoad2	; load Sonic's palette
 		cmpi.b	#id_LZ,(v_zone).w ; is level LZ?
 		bne.s	Level_GetBgm	; if not, branch
 
-		moveq	#palid_LZSonWater,d0 ; palette number $F (LZ)
+		moveq	#id_Pal_LZSonWater,d0 ; palette number $F (LZ)
 		cmpi.b	#3,(v_act).w	; is act number 3?
 		bne.s	Level_WaterPal	; if not, branch
-		moveq	#palid_SBZ3SonWat,d0 ; palette number $10 (SBZ3)
+		moveq	#id_Pal_SBZ3SonWat,d0 ; palette number $10 (SBZ3)
 
 	Level_WaterPal:
 		bsr.w	PalLoad3_Water	; load underwater palette
@@ -4100,7 +3498,7 @@ Level_TtlCardLoop:
 		jsr	(Hud_Base).l	; load basic HUD gfx
 
 	Level_SkipTtlCard:
-		moveq	#palid_Sonic,d0
+		moveq	#id_Pal_Sonic,d0
 		bsr.w	PalLoad1	; load Sonic's palette
 		bsr.w	LevelSizeLoad
 		bsr.w	DeformLayers
@@ -4184,10 +3582,10 @@ Level_Demo:
 Level_ChkWaterPal:
 		cmpi.b	#id_LZ,(v_zone).w ; is level LZ/SBZ3?
 		bne.s	Level_Delay	; if not, branch
-		moveq	#palid_LZWater,d0 ; palette $B (LZ underwater)
+		moveq	#id_Pal_LZWater,d0 ; palette $B (LZ underwater)
 		cmpi.b	#3,(v_act).w	; is level SBZ3?
 		bne.s	Level_WtrNotSbz	; if not, branch
-		moveq	#palid_SBZ3Water,d0 ; palette $D (SBZ3 underwater)
+		moveq	#id_Pal_SBZ3Water,d0 ; palette $D (SBZ3 underwater)
 
 	Level_WtrNotSbz:
 		bsr.w	PalLoad4_Water
@@ -5147,7 +4545,7 @@ GM_Special:
 
 		clr.b	(f_wtr_state).w
 		clr.w	(f_restart).w
-		moveq	#palid_Special,d0
+		moveq	#id_Pal_Special,d0
 		bsr.w	PalLoad1	; load special stage palette
 		jsr	(SS_Load).l		; load SS layout data
 		move.l	#0,(v_screenposx).w
@@ -5248,7 +4646,7 @@ loc_47D4:
 		bsr.w	NemDec
 		jsr	(Hud_Base).l
 		enable_ints
-		moveq	#palid_SSResult,d0
+		moveq	#id_Pal_SSResult,d0
 		bsr.w	PalLoad2	; load results screen palette
 		moveq	#id_PLC_Main,d0
 		bsr.w	NewPLC
@@ -5474,9 +4872,9 @@ byte_4A3C:	dc.b 3,	0, 7, $92, 3, 0, 7, $90, 3, 0, 7, $8E, 3, 0, 7,	$8C
 byte_4ABC:	dc.b $10, 1, $18, 0, $18, 1, $20, 0, $20, 1, $28, 0, $28, 1
 		even
 
-Pal_SSCyc1:	incbin	"palette\Cycle - Special Stage 1.bin"
+Pal_SSCyc1:	incbin	"Palettes\Cycle - Special Stage 1.bin"
 		even
-Pal_SSCyc2:	incbin	"palette\Cycle - Special Stage 2.bin"
+Pal_SSCyc2:	incbin	"Palettes\Cycle - Special Stage 2.bin"
 		even
 
 ; ---------------------------------------------------------------------------
@@ -5617,7 +5015,7 @@ GM_Continue:
 		bsr.w	NemDec
 		moveq	#10,d1
 		jsr	(ContScrCounter).l	; run countdown	(start from 10)
-		moveq	#palid_Continue,d0
+		moveq	#id_Pal_Continue,d0
 		bsr.w	PalLoad1	; load continue	screen palette
 		music	bgm_Continue,0,1,1	; play continue	music
 		move.w	#659,(v_demolength).w ; set time delay to 11 seconds
@@ -5756,7 +5154,7 @@ End_LoadData:
 		lea	(Kos_EndFlowers).l,a0 ;	load extra flower patterns
 		lea	($FFFF9400).w,a1 ; RAM address to buffer the patterns
 		bsr.w	KosDec
-		moveq	#palid_Sonic,d0
+		moveq	#id_Pal_Sonic,d0
 		bsr.w	PalLoad1	; load Sonic's palette
 		music	bgm_Ending,0,1,0	; play ending sequence music
 		btst	#bitA,(v_jpadhold1).w ; is button A pressed?
@@ -5859,7 +5257,7 @@ End_ChkEmerald:
 		lea	(v_lvllayout).w,a4
 		move.w	#$4000,d2
 		bsr.w	DrawChunks
-		moveq	#palid_Ending,d0
+		moveq	#id_Pal_Ending,d0
 		bsr.w	PalLoad1	; load ending palette
 		bsr.w	PaletteWhiteIn
 		bra.w	End_MainLoop
@@ -5962,7 +5360,7 @@ GM_Credits:
 		move.l	d0,(a1)+
 		dbf	d1,Cred_ClrPal ; fill palette with black
 
-		moveq	#palid_Sonic,d0
+		moveq	#id_Pal_Sonic,d0
 		bsr.w	PalLoad1	; load Sonic's palette
 		move.b	#id_CreditsText,(v_objspace+$80).w ; load credits object
 		jsr	(ExecuteObjects).l
@@ -6090,7 +5488,7 @@ TryAgainEnd:
 		move.l	d0,(a1)+
 		dbf	d1,TryAg_ClrPal ; fill palette with black
 
-		moveq	#palid_Ending,d0
+		moveq	#id_Pal_Ending,d0
 		bsr.w	PalLoad1	; load ending palette
 		clr.w	(v_pal_dry_dup+$40).w
 		move.b	#id_EndEggman,(v_objspace+$80).w ; load Eggman object
@@ -9643,7 +9041,7 @@ LevelDataLoad:
 		andi.w	#$FF,d0
 		cmpi.w	#(id_LZ<<8)+3,(v_zone).w ; is level SBZ3 (LZ4) ?
 		bne.s	@notSBZ3	; if not, branch
-		moveq	#palid_SBZ3,d0	; use SB3 palette
+		moveq	#id_Pal_SBZ3,d0	; use SB3 palette
 
 	@notSBZ3:
 		cmpi.w	#(id_SBZ<<8)+1,(v_zone).w ; is level SBZ2?
@@ -9652,7 +9050,7 @@ LevelDataLoad:
 		bne.s	@normalpal	; if not, branch
 
 	@isSBZorFZ:
-		moveq	#palid_SBZ2,d0	; use SBZ2/FZ palette
+		moveq	#id_Pal_SBZ2,d0	; use SBZ2/FZ palette
 
 	@normalpal:
 		bsr.w	PalLoad1	; load palette (based on d0)
@@ -13491,7 +12889,7 @@ MotoBug:
 		move.w	Moto_Index(pc,d0.w),d1
 		jmp	Moto_Index(pc,d1.w)
 ; ===========================================================================
-Moto_Index:	index *
+Moto_Index:	index *,,2
 		ptr Moto_Main
 		ptr Moto_Action
 		ptr Moto_Animate
@@ -13500,8 +12898,8 @@ Moto_Index:	index *
 
 Moto_Main:	; Routine 0
 		move.l	#Map_Moto,ost_mappings(a0)
-		move.w	#$4F0,ost_tile(a0)
-		move.b	#4,ost_render(a0)
+		move.w	#tile_Nem_Motobug,ost_tile(a0)
+		move.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)
 		move.b	#$14,ost_actwidth(a0)
 		tst.b	ost_anim(a0)	; is object a smoke trail?
@@ -17809,1374 +17207,26 @@ loc_1982C:
 ScrapEggman:	include "Objects\SBZ2 Eggman.asm"
 Ani_SEgg:	include "Animations\SBZ2 Eggman.asm"
 Map_SEgg:	include "Mappings\SBZ2 Eggman.asm"
-
-; ---------------------------------------------------------------------------
-; Object 83 - blocks that disintegrate when Eggman presses a switch (SBZ2)
-; ---------------------------------------------------------------------------
-
-FalseFloor:
-		moveq	#0,d0
-		move.b	ost_routine(a0),d0
-		move.w	FFloor_Index(pc,d0.w),d1
-		jmp	FFloor_Index(pc,d1.w)
-; ===========================================================================
-FFloor_Index:	index *
-		ptr FFloor_Main
-		ptr FFloor_ChkBreak
-		ptr loc_19C36
-		ptr loc_19C62
-		ptr loc_19C72
-		ptr loc_19C80
-; ===========================================================================
-
-FFloor_Main:	; Routine 0
-		move.w	#$2080,ost_x_pos(a0)
-		move.w	#$5D0,ost_y_pos(a0)
-		move.b	#$80,ost_actwidth(a0)
-		move.b	#$10,ost_height(a0)
-		move.b	#4,ost_render(a0)
-		bset	#7,ost_render(a0)
-		moveq	#0,d4
-		move.w	#$2010,d5
-		moveq	#7,d6
-		lea	$30(a0),a2
-
-FFloor_MakeBlock:
-		jsr	(FindFreeObj).l
-		bne.s	FFloor_ExitMake
-		move.w	a1,(a2)+
-		move.b	#id_FalseFloor,(a1) ; load block object
-		move.l	#Map_FFloor,ost_mappings(a1)
-		move.w	#$4518,ost_tile(a1)
-		move.b	#4,ost_render(a1)
-		move.b	#$10,ost_actwidth(a1)
-		move.b	#$10,ost_height(a1)
-		move.b	#3,ost_priority(a1)
-		move.w	d5,ost_x_pos(a1)	; set X	position
-		move.w	#$5D0,ost_y_pos(a1)
-		addi.w	#$20,d5		; add $20 for next X position
-		move.b	#8,ost_routine(a1)
-		dbf	d6,FFloor_MakeBlock ; repeat sequence 7 more times
-
-FFloor_ExitMake:
-		addq.b	#2,ost_routine(a0)
-		rts	
-; ===========================================================================
-
-FFloor_ChkBreak:; Routine 2
-		cmpi.w	#$474F,ost_subtype(a0) ; is object set to disintegrate?
-		bne.s	FFloor_Solid	; if not, branch
-		clr.b	ost_frame(a0)
-		addq.b	#2,ost_routine(a0) ; next subroutine
-
-FFloor_Solid:
-		moveq	#0,d0
-		move.b	ost_frame(a0),d0
-		neg.b	d0
-		ext.w	d0
-		addq.w	#8,d0
-		asl.w	#4,d0
-		move.w	#$2100,d4
-		sub.w	d0,d4
-		move.b	d0,ost_actwidth(a0)
-		move.w	d4,ost_x_pos(a0)
-		moveq	#$B,d1
-		add.w	d0,d1
-		moveq	#$10,d2
-		moveq	#$11,d3
-		jmp	(SolidObject).l
-; ===========================================================================
-
-loc_19C36:	; Routine 4
-		subi.b	#$E,ost_anim_time(a0)
-		bcc.s	FFloor_Solid2
-		moveq	#-1,d0
-		move.b	ost_frame(a0),d0
-		ext.w	d0
-		add.w	d0,d0
-		move.w	$30(a0,d0.w),d0
-		movea.l	d0,a1
-		move.w	#$474F,ost_subtype(a1)
-		addq.b	#1,ost_frame(a0)
-		cmpi.b	#8,ost_frame(a0)
-		beq.s	loc_19C62
-
-FFloor_Solid2:
-		bra.s	FFloor_Solid
-; ===========================================================================
-
-loc_19C62:	; Routine 6
-		bclr	#3,ost_status(a0)
-		bclr	#3,(v_player+ost_status).w
-		bra.w	loc_1982C
-; ===========================================================================
-
-loc_19C72:	; Routine 8
-		cmpi.w	#$474F,ost_subtype(a0) ; is object set to disintegrate?
-		beq.s	FFloor_Break	; if yes, branch
-		jmp	(DisplaySprite).l
-; ===========================================================================
-
-loc_19C80:	; Routine $A
-		tst.b	ost_render(a0)
-		bpl.w	loc_1982C
-		jsr	(ObjectFall).l
-		jmp	(DisplaySprite).l
-; ===========================================================================
-
-FFloor_Break:
-		lea	FFloor_FragSpeed(pc),a4
-		lea	FFloor_FragPos(pc),a5
-		moveq	#1,d4
-		moveq	#3,d1
-		moveq	#$38,d2
-		addq.b	#2,ost_routine(a0)
-		move.b	#8,ost_actwidth(a0)
-		move.b	#8,ost_height(a0)
-		lea	(a0),a1
-		bra.s	FFloor_MakeFrag
-; ===========================================================================
-
-FFloor_LoopFrag:
-		jsr	(FindNextFreeObj).l
-		bne.s	FFloor_BreakSnd
-
-FFloor_MakeFrag:
-		lea	(a0),a2
-		lea	(a1),a3
-		moveq	#3,d3
-
-loc_19CC4:
-		move.l	(a2)+,(a3)+
-		move.l	(a2)+,(a3)+
-		move.l	(a2)+,(a3)+
-		move.l	(a2)+,(a3)+
-		dbf	d3,loc_19CC4
-
-		move.w	(a4)+,ost_y_vel(a1)
-		move.w	(a5)+,d3
-		add.w	d3,ost_x_pos(a1)
-		move.w	(a5)+,d3
-		add.w	d3,ost_y_pos(a1)
-		move.b	d4,ost_frame(a1)
-		addq.w	#1,d4
-		dbf	d1,FFloor_LoopFrag ; repeat sequence 3 more times
-
-FFloor_BreakSnd:
-		sfx	sfx_WallSmash,0,0,0	; play smashing sound
-		jmp	(DisplaySprite).l
-; ===========================================================================
-FFloor_FragSpeed:dc.w $80, 0
-		dc.w $120, $C0
-FFloor_FragPos:	dc.w -8, -8
-		dc.w $10, 0
-		dc.w 0,	$10
-		dc.w $10, $10
-		
+FalseFloor:	include "Objects\SBZ2 Blocks That Eggman Breaks.asm"
 Map_FFloor:	include "Mappings\SBZ2 Blocks That Eggman Breaks.asm"
 
-; ---------------------------------------------------------------------------
-; Object 85 - Eggman (FZ)
-; ---------------------------------------------------------------------------
-
-Obj85_Delete:
-		jmp	(DeleteObject).l
-; ===========================================================================
-
-BossFinal:
-		moveq	#0,d0
-		move.b	ost_routine(a0),d0
-		move.w	Obj85_Index(pc,d0.w),d0
-		jmp	Obj85_Index(pc,d0.w)
-; ===========================================================================
-Obj85_Index:	index *
-		ptr Obj85_Main
-		ptr Obj85_Eggman
-		ptr loc_1A38E
-		ptr loc_1A346
-		ptr loc_1A2C6
-		ptr loc_1A3AC
-		ptr loc_1A264
-
-Obj85_ObjData:	dc.w $100, $100, $470	; X pos, Y pos,	VRAM setting
-		dc.l Map_SEgg		; mappings pointer
-		dc.w $25B0, $590, $300
-		dc.l Map_EggCyl
-		dc.w $26E0, $596, $3A0
-		dc.l Map_FZLegs
-		dc.w $26E0, $596, $470
-		dc.l Map_SEgg
-		dc.w $26E0, $596, $400
-		dc.l Map_Eggman
-		dc.w $26E0, $596, $400
-		dc.l Map_Eggman
-
-Obj85_ObjData2:	dc.b 2,	0, 4, $20, $19	; routine num, animation, sprite priority, width, height
-		dc.b 4,	0, 1, $12, 8
-		dc.b 6,	0, 3, 0, 0
-		dc.b 8,	0, 3, 0, 0
-		dc.b $A, 0, 3, $20, $20
-		dc.b $C, 0, 3, 0, 0
-; ===========================================================================
-
-Obj85_Main:	; Routine 0
-		lea	Obj85_ObjData(pc),a2
-		lea	Obj85_ObjData2(pc),a3
-		movea.l	a0,a1
-		moveq	#5,d1
-		bra.s	Obj85_LoadBoss
-; ===========================================================================
-
-Obj85_Loop:
-		jsr	(FindNextFreeObj).l
-		bne.s	loc_19E20
-
-Obj85_LoadBoss:
-		move.b	#id_BossFinal,(a1)
-		move.w	(a2)+,ost_x_pos(a1)
-		move.w	(a2)+,ost_y_pos(a1)
-		move.w	(a2)+,ost_tile(a1)
-		move.l	(a2)+,ost_mappings(a1)
-		move.b	(a3)+,ost_routine(a1)
-		move.b	(a3)+,ost_anim(a1)
-		move.b	(a3)+,ost_priority(a1)
-		if Revision=0
-		move.b	(a3)+,ost_width(a1)
-		else
-			move.b	(a3)+,ost_actwidth(a1)
-		endc
-		move.b	(a3)+,ost_height(a1)
-		move.b	#4,ost_render(a1)
-		bset	#7,ost_render(a0)
-		move.l	a0,$34(a1)
-		dbf	d1,Obj85_Loop
-
-loc_19E20:
-		lea	$36(a0),a2
-		jsr	(FindFreeObj).l
-		bne.s	loc_19E5A
-		move.b	#id_BossPlasma,(a1) ; load energy ball object
-		move.w	a1,(a2)
-		move.l	a0,$34(a1)
-		lea	$38(a0),a2
-		moveq	#0,d2
-		moveq	#3,d1
-
-loc_19E3E:
-		jsr	(FindNextFreeObj).l
-		bne.s	loc_19E5A
-		move.w	a1,(a2)+
-		move.b	#id_EggmanCylinder,(a1) ; load crushing	cylinder object
-		move.l	a0,$34(a1)
-		move.b	d2,ost_subtype(a1)
-		addq.w	#2,d2
-		dbf	d1,loc_19E3E
-
-loc_19E5A:
-		move.w	#0,$34(a0)
-		move.b	#8,ost_col_property(a0) ; set number of hits to 8
-		move.w	#-1,$30(a0)
-
-Obj85_Eggman:	; Routine 2
-		moveq	#0,d0
-		move.b	$34(a0),d0
-		move.w	off_19E80(pc,d0.w),d0
-		jsr	off_19E80(pc,d0.w)
-		jmp	(DisplaySprite).l
-; ===========================================================================
-off_19E80:	index *
-		ptr loc_19E90
-		ptr loc_19EA8
-		ptr loc_19FE6
-		ptr loc_1A02A
-		ptr loc_1A074
-		ptr loc_1A112
-		ptr loc_1A192
-		ptr loc_1A1D4
-; ===========================================================================
-
-loc_19E90:
-		tst.l	(v_plc_buffer).w
-		bne.s	loc_19EA2
-		cmpi.w	#$2450,(v_screenposx).w
-		bcs.s	loc_19EA2
-		addq.b	#2,$34(a0)
-
-loc_19EA2:
-		addq.l	#1,(v_random).w
-		rts	
-; ===========================================================================
-
-loc_19EA8:
-		tst.w	$30(a0)
-		bpl.s	loc_19F10
-		clr.w	$30(a0)
-		jsr	(RandomNumber).l
-		andi.w	#$C,d0
-		move.w	d0,d1
-		addq.w	#2,d1
-		tst.l	d0
-		bpl.s	loc_19EC6
-		exg	d1,d0
-
-loc_19EC6:
-		lea	word_19FD6(pc),a1
-		move.w	(a1,d0.w),d0
-		move.w	(a1,d1.w),d1
-		move.w	d0,$30(a0)
-		moveq	#-1,d2
-		move.w	$38(a0,d0.w),d2
-		movea.l	d2,a1
-		move.b	#-1,$29(a1)
-		move.w	#-1,$30(a1)
-		move.w	$38(a0,d1.w),d2
-		movea.l	d2,a1
-		move.b	#1,$29(a1)
-		move.w	#0,$30(a1)
-		move.w	#1,$32(a0)
-		clr.b	$35(a0)
-		sfx	sfx_Rumbling,0,0,0	; play rumbling sound
-
-loc_19F10:
-		tst.w	$32(a0)
-		bmi.w	loc_19FA6
-		bclr	#0,ost_status(a0)
-		move.w	(v_player+ost_x_pos).w,d0
-		sub.w	ost_x_pos(a0),d0
-		bcs.s	loc_19F2E
-		bset	#0,ost_status(a0)
-
-loc_19F2E:
-		move.w	#$2B,d1
-		move.w	#$14,d2
-		move.w	#$14,d3
-		move.w	ost_x_pos(a0),d4
-		jsr	(SolidObject).l
-		tst.w	d4
-		bgt.s	loc_19F50
-
-loc_19F48:
-		tst.b	$35(a0)
-		bne.s	loc_19F88
-		bra.s	loc_19F96
-; ===========================================================================
-
-loc_19F50:
-		addq.w	#7,(v_random).w
-		cmpi.b	#id_Roll,(v_player+ost_anim).w
-		bne.s	loc_19F48
-		move.w	#$300,d0
-		btst	#0,ost_status(a0)
-		bne.s	loc_19F6A
-		neg.w	d0
-
-loc_19F6A:
-		move.w	d0,(v_player+ost_x_vel).w
-		tst.b	$35(a0)
-		bne.s	loc_19F88
-		subq.b	#1,ost_col_property(a0)
-		move.b	#$64,$35(a0)
-		sfx	sfx_HitBoss,0,0,0	; play boss damage sound
-
-loc_19F88:
-		subq.b	#1,$35(a0)
-		beq.s	loc_19F96
-		move.b	#3,ost_anim(a0)
-		bra.s	loc_19F9C
-; ===========================================================================
-
-loc_19F96:
-		move.b	#1,ost_anim(a0)
-
-loc_19F9C:
-		lea	Ani_SEgg(pc),a1
-		jmp	(AnimateSprite).l
-; ===========================================================================
-
-loc_19FA6:
-		tst.b	ost_col_property(a0)
-		beq.s	loc_19FBC
-		addq.b	#2,$34(a0)
-		move.w	#-1,$30(a0)
-		clr.w	$32(a0)
-		rts	
-; ===========================================================================
-
-loc_19FBC:
-		if Revision=0
-		else
-			moveq	#100,d0
-			bsr.w	AddPoints
-		endc
-		move.b	#6,$34(a0)
-		move.w	#$25C0,ost_x_pos(a0)
-		move.w	#$53C,ost_y_pos(a0)
-		move.b	#$14,ost_height(a0)
-		rts	
-; ===========================================================================
-word_19FD6:	dc.w 0,	2, 2, 4, 4, 6, 6, 0
-; ===========================================================================
-
-loc_19FE6:
-		moveq	#-1,d0
-		move.w	$36(a0),d0
-		movea.l	d0,a1
-		tst.w	$30(a0)
-		bpl.s	loc_1A000
-		clr.w	$30(a0)
-		move.b	#-1,$29(a1)
-		bsr.s	loc_1A020
-
-loc_1A000:
-		moveq	#$F,d0
-		and.w	(v_vbla_word).w,d0
-		bne.s	loc_1A00A
-		bsr.s	loc_1A020
-
-loc_1A00A:
-		tst.w	$32(a0)
-		beq.s	locret_1A01E
-		subq.b	#2,$34(a0)
-		move.w	#-1,$30(a0)
-		clr.w	$32(a0)
-
-locret_1A01E:
-		rts	
-; ===========================================================================
-
-loc_1A020:
-		sfx	sfx_Electric,1,0,0	; play electricity sound
-; ===========================================================================
-
-loc_1A02A:
-		if Revision=0
-		move.b	#$30,ost_width(a0)
-		else
-			move.b	#$30,ost_actwidth(a0)
-		endc
-		bset	#0,ost_status(a0)
-		jsr	(SpeedToPos).l
-		move.b	#6,ost_frame(a0)
-		addi.w	#$10,ost_y_vel(a0)
-		cmpi.w	#$59C,ost_y_pos(a0)
-		bcs.s	loc_1A070
-		move.w	#$59C,ost_y_pos(a0)
-		addq.b	#2,$34(a0)
-		if Revision=0
-		move.b	#$20,ost_width(a0)
-		else
-			move.b	#$20,ost_actwidth(a0)
-		endc
-		move.w	#$100,ost_x_vel(a0)
-		move.w	#-$100,ost_y_vel(a0)
-		addq.b	#2,(v_dle_routine).w
-
-loc_1A070:
-		bra.w	loc_1A166
-; ===========================================================================
-
-loc_1A074:
-		bset	#0,ost_status(a0)
-		move.b	#4,ost_anim(a0)
-		jsr	(SpeedToPos).l
-		addi.w	#$10,ost_y_vel(a0)
-		cmpi.w	#$5A3,ost_y_pos(a0)
-		bcs.s	loc_1A09A
-		move.w	#-$40,ost_y_vel(a0)
-
-loc_1A09A:
-		move.w	#$400,ost_x_vel(a0)
-		move.w	ost_x_pos(a0),d0
-		sub.w	(v_player+ost_x_pos).w,d0
-		bpl.s	loc_1A0B4
-		move.w	#$500,ost_x_vel(a0)
-		bra.w	loc_1A0F2
-; ===========================================================================
-
-loc_1A0B4:
-		subi.w	#$70,d0
-		bcs.s	loc_1A0F2
-		subi.w	#$100,ost_x_vel(a0)
-		subq.w	#8,d0
-		bcs.s	loc_1A0F2
-		subi.w	#$100,ost_x_vel(a0)
-		subq.w	#8,d0
-		bcs.s	loc_1A0F2
-		subi.w	#$80,ost_x_vel(a0)
-		subq.w	#8,d0
-		bcs.s	loc_1A0F2
-		subi.w	#$80,ost_x_vel(a0)
-		subq.w	#8,d0
-		bcs.s	loc_1A0F2
-		subi.w	#$80,ost_x_vel(a0)
-		subi.w	#$38,d0
-		bcs.s	loc_1A0F2
-		clr.w	ost_x_vel(a0)
-
-loc_1A0F2:
-		cmpi.w	#$26A0,ost_x_pos(a0)
-		bcs.s	loc_1A110
-		move.w	#$26A0,ost_x_pos(a0)
-		move.w	#$240,ost_x_vel(a0)
-		move.w	#-$4C0,ost_y_vel(a0)
-		addq.b	#2,$34(a0)
-
-loc_1A110:
-		bra.s	loc_1A15C
-; ===========================================================================
-
-loc_1A112:
-		jsr	(SpeedToPos).l
-		cmpi.w	#$26E0,ost_x_pos(a0)
-		bcs.s	loc_1A124
-		clr.w	ost_x_vel(a0)
-
-loc_1A124:
-		addi.w	#$34,ost_y_vel(a0)
-		tst.w	ost_y_vel(a0)
-		bmi.s	loc_1A142
-		cmpi.w	#$592,ost_y_pos(a0)
-		bcs.s	loc_1A142
-		move.w	#$592,ost_y_pos(a0)
-		clr.w	ost_y_vel(a0)
-
-loc_1A142:
-		move.w	ost_x_vel(a0),d0
-		or.w	ost_y_vel(a0),d0
-		bne.s	loc_1A15C
-		addq.b	#2,$34(a0)
-		move.w	#-$180,ost_y_vel(a0)
-		move.b	#1,ost_col_property(a0)
-
-loc_1A15C:
-		lea	Ani_SEgg(pc),a1
-		jsr	(AnimateSprite).l
-
-loc_1A166:
-		cmpi.w	#$2700,(v_limitright2).w
-		bge.s	loc_1A172
-		addq.w	#2,(v_limitright2).w
-
-loc_1A172:
-		cmpi.b	#$C,$34(a0)
-		bge.s	locret_1A190
-		move.w	#$1B,d1
-		move.w	#$70,d2
-		move.w	#$71,d3
-		move.w	ost_x_pos(a0),d4
-		jmp	(SolidObject).l
-; ===========================================================================
-
-locret_1A190:
-		rts	
-; ===========================================================================
-
-loc_1A192:
-		move.l	#Map_Eggman,ost_mappings(a0)
-		move.w	#$400,ost_tile(a0)
-		move.b	#0,ost_anim(a0)
-		bset	#0,ost_status(a0)
-		jsr	(SpeedToPos).l
-		cmpi.w	#$544,ost_y_pos(a0)
-		bcc.s	loc_1A1D0
-		move.w	#$180,ost_x_vel(a0)
-		move.w	#-$18,ost_y_vel(a0)
-		move.b	#$F,ost_col_type(a0)
-		addq.b	#2,$34(a0)
-
-loc_1A1D0:
-		bra.w	loc_1A15C
-; ===========================================================================
-
-loc_1A1D4:
-		bset	#0,ost_status(a0)
-		jsr	(SpeedToPos).l
-		tst.w	$30(a0)
-		bne.s	loc_1A1FC
-		tst.b	ost_col_type(a0)
-		bne.s	loc_1A216
-		move.w	#$1E,$30(a0)
-		sfx	sfx_HitBoss,0,0,0	; play boss damage sound
-
-loc_1A1FC:
-		subq.w	#1,$30(a0)
-		bne.s	loc_1A216
-		tst.b	ost_status(a0)
-		bpl.s	loc_1A210
-		move.w	#$60,ost_y_vel(a0)
-		bra.s	loc_1A216
-; ===========================================================================
-
-loc_1A210:
-		move.b	#$F,ost_col_type(a0)
-
-loc_1A216:
-		cmpi.w	#$2790,(v_player+ost_x_pos).w
-		blt.s	loc_1A23A
-		move.b	#1,(f_lockctrl).w
-		move.w	#0,(v_jpadhold2).w
-		clr.w	(v_player+ost_inertia).w
-		tst.w	ost_y_vel(a0)
-		bpl.s	loc_1A248
-		move.w	#$100,(v_jpadhold2).w
-
-loc_1A23A:
-		cmpi.w	#$27E0,(v_player+ost_x_pos).w
-		blt.s	loc_1A248
-		move.w	#$27E0,(v_player+ost_x_pos).w
-
-loc_1A248:
-		cmpi.w	#$2900,ost_x_pos(a0)
-		bcs.s	loc_1A260
-		tst.b	ost_render(a0)
-		bmi.s	loc_1A260
-		move.b	#$18,(v_gamemode).w
-		bra.w	Obj85_Delete
-; ===========================================================================
-
-loc_1A260:
-		bra.w	loc_1A15C
-; ===========================================================================
-
-loc_1A264:	; Routine 4
-		movea.l	$34(a0),a1
-		move.b	(a1),d0
-		cmp.b	(a0),d0
-		bne.w	Obj85_Delete
-		move.b	#7,ost_anim(a0)
-		cmpi.b	#$C,$34(a1)
-		bge.s	loc_1A280
-		bra.s	loc_1A2A6
-; ===========================================================================
-
-loc_1A280:
-		tst.w	ost_x_vel(a1)
-		beq.s	loc_1A28C
-		move.b	#$B,ost_anim(a0)
-
-loc_1A28C:
-		lea	Ani_Eggman(pc),a1
-		jsr	(AnimateSprite).l
-
-loc_1A296:
-		movea.l	$34(a0),a1
-		move.w	ost_x_pos(a1),ost_x_pos(a0)
-		move.w	ost_y_pos(a1),ost_y_pos(a0)
-
-loc_1A2A6:
-		movea.l	$34(a0),a1
-		move.b	ost_status(a1),ost_status(a0)
-		moveq	#3,d0
-		and.b	ost_status(a0),d0
-		andi.b	#$FC,ost_render(a0)
-		or.b	d0,ost_render(a0)
-		jmp	(DisplaySprite).l
-; ===========================================================================
-
-loc_1A2C6:	; Routine 6
-		movea.l	$34(a0),a1
-		move.b	(a1),d0
-		cmp.b	(a0),d0
-		bne.w	Obj85_Delete
-		cmpi.l	#Map_Eggman,ost_mappings(a1)
-		beq.s	loc_1A2E4
-		move.b	#$A,ost_frame(a0)
-		bra.s	loc_1A2A6
-; ===========================================================================
-
-loc_1A2E4:
-		move.b	#1,ost_anim(a0)
-		tst.b	ost_col_property(a1)
-		ble.s	loc_1A312
-		move.b	#6,ost_anim(a0)
-		move.l	#Map_Eggman,ost_mappings(a0)
-		move.w	#$400,ost_tile(a0)
-		lea	Ani_Eggman(pc),a1
-		jsr	(AnimateSprite).l
-		bra.w	loc_1A296
-; ===========================================================================
-
-loc_1A312:
-		tst.b	1(a0)
-		bpl.w	Obj85_Delete
-		bsr.w	BossDefeated
-		move.b	#2,ost_priority(a0)
-		move.b	#0,ost_anim(a0)
-		move.l	#Map_FZDamaged,ost_mappings(a0)
-		move.w	#$3A0,ost_tile(a0)
-		lea	Ani_FZEgg(pc),a1
-		jsr	(AnimateSprite).l
-		bra.w	loc_1A296
-; ===========================================================================
-
-loc_1A346:	; Routine 8
-		bset	#0,ost_status(a0)
-		movea.l	$34(a0),a1
-		cmpi.l	#Map_Eggman,ost_mappings(a1)
-		beq.s	loc_1A35E
-		bra.w	loc_1A2A6
-; ===========================================================================
-
-loc_1A35E:
-		move.w	ost_x_pos(a1),ost_x_pos(a0)
-		move.w	ost_y_pos(a1),ost_y_pos(a0)
-		tst.b	ost_anim_time(a0)
-		bne.s	loc_1A376
-		move.b	#$14,ost_anim_time(a0)
-
-loc_1A376:
-		subq.b	#1,ost_anim_time(a0)
-		bgt.s	loc_1A38A
-		addq.b	#1,ost_frame(a0)
-		cmpi.b	#2,ost_frame(a0)
-		bgt.w	Obj85_Delete
-
-loc_1A38A:
-		bra.w	loc_1A296
-; ===========================================================================
-
-loc_1A38E:	; Routine $A
-		move.b	#$B,ost_frame(a0)
-		move.w	(v_player+ost_x_pos).w,d0
-		sub.w	ost_x_pos(a0),d0
-		bcs.s	loc_1A3A6
-		tst.b	ost_render(a0)
-		bpl.w	Obj85_Delete
-
-loc_1A3A6:
-		jmp	(DisplaySprite).l
-; ===========================================================================
-
-loc_1A3AC:	; Routine $C
-		move.b	#0,ost_frame(a0)
-		bset	#0,ost_status(a0)
-		movea.l	$34(a0),a1
-		cmpi.b	#$C,$34(a1)
-		bne.s	loc_1A3D0
-		cmpi.l	#Map_Eggman,ost_mappings(a1)
-		beq.w	Obj85_Delete
-
-loc_1A3D0:
-		bra.w	loc_1A2A6
-
+;BossFinal:
+		include "Objects\FZ Boss.asm"
 Ani_FZEgg:	include "Animations\FZ Eggman.asm"
 Map_FZDamaged:	include "Mappings\FZ Eggman in Damaged Ship.asm"
 Map_FZLegs:	include "Mappings\FZ Eggman Ship Legs.asm"
 
-; ---------------------------------------------------------------------------
-; Object 84 - cylinder Eggman hides in (FZ)
-; ---------------------------------------------------------------------------
-
-Obj84_Delete:
-		jmp	(DeleteObject).l
-; ===========================================================================
-
-EggmanCylinder:
-		moveq	#0,d0
-		move.b	ost_routine(a0),d0
-		move.w	Obj84_Index(pc,d0.w),d0
-		jmp	Obj84_Index(pc,d0.w)
-; ===========================================================================
-Obj84_Index:	index *
-		ptr Obj84_Main
-		ptr loc_1A4CE
-		ptr loc_1A57E
-
-Obj84_PosData:	dc.w $24D0, $620
-		dc.w $2550, $620
-		dc.w $2490, $4C0
-		dc.w $2510, $4C0
-; ===========================================================================
-
-Obj84_Main:	; Routine
-		lea	Obj84_PosData(pc),a1
-		moveq	#0,d0
-		move.b	ost_subtype(a0),d0
-		add.w	d0,d0
-		adda.w	d0,a1
-		move.b	#4,ost_render(a0)
-		bset	#7,ost_render(a0)
-		bset	#4,ost_render(a0)
-		move.w	#$300,ost_tile(a0)
-		move.l	#Map_EggCyl,ost_mappings(a0)
-		move.w	(a1)+,ost_x_pos(a0)
-		move.w	(a1),ost_y_pos(a0)
-		move.w	(a1)+,$38(a0)
-		move.b	#$20,ost_height(a0)
-		move.b	#$60,ost_width(a0)
-		move.b	#$20,ost_actwidth(a0)
-		move.b	#$60,ost_height(a0)
-		move.b	#3,ost_priority(a0)
-		addq.b	#2,ost_routine(a0)
-
-loc_1A4CE:	; Routine 2
-		cmpi.b	#2,ost_subtype(a0)
-		ble.s	loc_1A4DC
-		bset	#1,ost_render(a0)
-
-loc_1A4DC:
-		clr.l	$3C(a0)
-		tst.b	$29(a0)
-		beq.s	loc_1A4EA
-		addq.b	#2,ost_routine(a0)
-
-loc_1A4EA:
-		move.l	$3C(a0),d0
-		move.l	$38(a0),d1
-		add.l	d0,d1
-		swap	d1
-		move.w	d1,ost_y_pos(a0)
-		cmpi.b	#4,ost_routine(a0)
-		bne.s	loc_1A524
-		tst.w	$30(a0)
-		bpl.s	loc_1A524
-		moveq	#-$A,d0
-		cmpi.b	#2,ost_subtype(a0)
-		ble.s	loc_1A514
-		moveq	#$E,d0
-
-loc_1A514:
-		add.w	d0,d1
-		movea.l	$34(a0),a1
-		move.w	d1,ost_y_pos(a1)
-		move.w	ost_x_pos(a0),ost_x_pos(a1)
-
-loc_1A524:
-		move.w	#$2B,d1
-		move.w	#$60,d2
-		move.w	#$61,d3
-		move.w	ost_x_pos(a0),d4
-		jsr	(SolidObject).l
-		moveq	#0,d0
-		move.w	$3C(a0),d1
-		bpl.s	loc_1A550
-		neg.w	d1
-		subq.w	#8,d1
-		bcs.s	loc_1A55C
-		addq.b	#1,d0
-		asr.w	#4,d1
-		add.w	d1,d0
-		bra.s	loc_1A55C
-; ===========================================================================
-
-loc_1A550:
-		subi.w	#$27,d1
-		bcs.s	loc_1A55C
-		addq.b	#1,d0
-		asr.w	#4,d1
-		add.w	d1,d0
-
-loc_1A55C:
-		move.b	d0,ost_frame(a0)
-		move.w	(v_player+ost_x_pos).w,d0
-		sub.w	ost_x_pos(a0),d0
-		bmi.s	loc_1A578
-		subi.w	#$140,d0
-		bmi.s	loc_1A578
-		tst.b	ost_render(a0)
-		bpl.w	Obj84_Delete
-
-loc_1A578:
-		jmp	(DisplaySprite).l
-; ===========================================================================
-
-loc_1A57E:	; Routine 4
-		moveq	#0,d0
-		move.b	ost_subtype(a0),d0
-		move.w	off_1A590(pc,d0.w),d0
-		jsr	off_1A590(pc,d0.w)
-		bra.w	loc_1A4EA
-; ===========================================================================
-off_1A590:	index *
-		ptr loc_1A598
-		ptr loc_1A598
-		ptr loc_1A604
-		ptr loc_1A604
-; ===========================================================================
-
-loc_1A598:
-		tst.b	$29(a0)
-		bne.s	loc_1A5D4
-		movea.l	$34(a0),a1
-		tst.b	ost_col_property(a1)
-		bne.s	loc_1A5B4
-		bsr.w	BossDefeated
-		subi.l	#$10000,$3C(a0)
-
-loc_1A5B4:
-		addi.l	#$20000,$3C(a0)
-		bcc.s	locret_1A602
-		clr.l	$3C(a0)
-		movea.l	$34(a0),a1
-		subq.w	#1,$32(a1)
-		clr.w	$30(a1)
-		subq.b	#2,ost_routine(a0)
-		rts	
-; ===========================================================================
-
-loc_1A5D4:
-		cmpi.w	#-$10,$3C(a0)
-		bge.s	loc_1A5E4
-		subi.l	#$28000,$3C(a0)
-
-loc_1A5E4:
-		subi.l	#$8000,$3C(a0)
-		cmpi.w	#-$A0,$3C(a0)
-		bgt.s	locret_1A602
-		clr.w	$3E(a0)
-		move.w	#-$A0,$3C(a0)
-		clr.b	$29(a0)
-
-locret_1A602:
-		rts	
-; ===========================================================================
-
-loc_1A604:
-		bset	#1,ost_render(a0)
-		tst.b	$29(a0)
-		bne.s	loc_1A646
-		movea.l	$34(a0),a1
-		tst.b	ost_col_property(a1)
-		bne.s	loc_1A626
-		bsr.w	BossDefeated
-		addi.l	#$10000,$3C(a0)
-
-loc_1A626:
-		subi.l	#$20000,$3C(a0)
-		bcc.s	locret_1A674
-		clr.l	$3C(a0)
-		movea.l	$34(a0),a1
-		subq.w	#1,$32(a1)
-		clr.w	$30(a1)
-		subq.b	#2,ost_routine(a0)
-		rts	
-; ===========================================================================
-
-loc_1A646:
-		cmpi.w	#$10,$3C(a0)
-		blt.s	loc_1A656
-		addi.l	#$28000,$3C(a0)
-
-loc_1A656:
-		addi.l	#$8000,$3C(a0)
-		cmpi.w	#$A0,$3C(a0)
-		blt.s	locret_1A674
-		clr.w	$3E(a0)
-		move.w	#$A0,$3C(a0)
-		clr.b	$29(a0)
-
-locret_1A674:
-		rts	
-		
+;EggmanCylinder:
+		include "Objects\FZ Cylinders.asm"
 Map_EggCyl:	include "Mappings\FZ Cylinders.asm"
 
-; ---------------------------------------------------------------------------
-; Object 86 - energy balls (FZ)
-; ---------------------------------------------------------------------------
-
-BossPlasma:
-		moveq	#0,d0
-		move.b	ost_routine(a0),d0
-		move.w	Obj86_Index(pc,d0.w),d0
-		jmp	Obj86_Index(pc,d0.w)
-; ===========================================================================
-Obj86_Index:	index *
-		ptr Obj86_Main
-		ptr Obj86_Generator
-		ptr Obj86_MakeBalls
-		ptr loc_1A962
-		ptr loc_1A982
-; ===========================================================================
-
-Obj86_Main:	; Routine 0
-		move.w	#$2588,ost_x_pos(a0)
-		move.w	#$53C,ost_y_pos(a0)
-		move.w	#$300,ost_tile(a0)
-		move.l	#Map_PLaunch,ost_mappings(a0)
-		move.b	#0,ost_anim(a0)
-		move.b	#3,ost_priority(a0)
-		move.b	#8,ost_width(a0)
-		move.b	#8,ost_height(a0)
-		move.b	#4,ost_render(a0)
-		bset	#7,ost_render(a0)
-		addq.b	#2,ost_routine(a0)
-
-Obj86_Generator:; Routine 2
-		movea.l	$34(a0),a1
-		cmpi.b	#6,$34(a1)
-		bne.s	loc_1A850
-		move.b	#id_ExplosionBomb,(a0)
-		move.b	#0,ost_routine(a0)
-		jmp	(DisplaySprite).l
-; ===========================================================================
-
-loc_1A850:
-		move.b	#0,ost_anim(a0)
-		tst.b	$29(a0)
-		beq.s	loc_1A86C
-		addq.b	#2,ost_routine(a0)
-		move.b	#1,ost_anim(a0)
-		move.b	#$3E,ost_subtype(a0)
-
-loc_1A86C:
-		move.w	#$13,d1
-		move.w	#8,d2
-		move.w	#$11,d3
-		move.w	ost_x_pos(a0),d4
-		jsr	(SolidObject).l
-		move.w	(v_player+ost_x_pos).w,d0
-		sub.w	ost_x_pos(a0),d0
-		bmi.s	loc_1A89A
-		subi.w	#$140,d0
-		bmi.s	loc_1A89A
-		tst.b	ost_render(a0)
-		bpl.w	Obj84_Delete
-
-loc_1A89A:
-		lea	Ani_PLaunch(pc),a1
-		jsr	(AnimateSprite).l
-		jmp	(DisplaySprite).l
-; ===========================================================================
-
-Obj86_MakeBalls:; Routine 4
-		tst.b	$29(a0)
-		beq.w	loc_1A954
-		clr.b	$29(a0)
-		add.w	$30(a0),d0
-		andi.w	#$1E,d0
-		adda.w	d0,a2
-		addq.w	#4,$30(a0)
-		clr.w	$32(a0)
-		moveq	#3,d2
-
-Obj86_Loop:
-		jsr	(FindNextFreeObj).l
-		bne.w	loc_1A954
-		move.b	#id_BossPlasma,(a1)
-		move.w	ost_x_pos(a0),ost_x_pos(a1)
-		move.w	#$53C,ost_y_pos(a1)
-		move.b	#8,ost_routine(a1)
-		move.w	#$2300,ost_tile(a1)
-		move.l	#Map_Plasma,ost_mappings(a1)
-		move.b	#$C,ost_height(a1)
-		move.b	#$C,ost_width(a1)
-		move.b	#0,ost_col_type(a1)
-		move.b	#3,ost_priority(a1)
-		move.w	#$3E,ost_subtype(a1)
-		move.b	#4,ost_render(a1)
-		bset	#7,ost_render(a1)
-		move.l	a0,$34(a1)
-		jsr	(RandomNumber).l
-		move.w	$32(a0),d1
-		muls.w	#-$4F,d1
-		addi.w	#$2578,d1
-		andi.w	#$1F,d0
-		subi.w	#$10,d0
-		add.w	d1,d0
-		move.w	d0,$30(a1)
-		addq.w	#1,$32(a0)
-		move.w	$32(a0),$38(a0)
-		dbf	d2,Obj86_Loop	; repeat sequence 3 more times
-
-loc_1A954:
-		tst.w	$32(a0)
-		bne.s	loc_1A95E
-		addq.b	#2,ost_routine(a0)
-
-loc_1A95E:
-		bra.w	loc_1A86C
-; ===========================================================================
-
-loc_1A962:	; Routine 6
-		move.b	#2,ost_anim(a0)
-		tst.w	$38(a0)
-		bne.s	loc_1A97E
-		move.b	#2,ost_routine(a0)
-		movea.l	$34(a0),a1
-		move.w	#-1,$32(a1)
-
-loc_1A97E:
-		bra.w	loc_1A86C
-; ===========================================================================
-
-loc_1A982:	; Routine 8
-		moveq	#0,d0
-		move.b	ost_routine2(a0),d0
-		move.w	Obj86_Index2(pc,d0.w),d0
-		jsr	Obj86_Index2(pc,d0.w)
-		lea	Ani_Plasma(pc),a1
-		jsr	(AnimateSprite).l
-		jmp	(DisplaySprite).l
-; ===========================================================================
-Obj86_Index2:	index *
-		ptr loc_1A9A6
-		ptr loc_1A9C0
-		ptr loc_1AA1E
-; ===========================================================================
-
-loc_1A9A6:
-		move.w	$30(a0),d0
-		sub.w	ost_x_pos(a0),d0
-		asl.w	#4,d0
-		move.w	d0,ost_x_vel(a0)
-		move.w	#$B4,ost_subtype(a0)
-		addq.b	#2,ost_routine2(a0)
-		rts	
-; ===========================================================================
-
-loc_1A9C0:
-		tst.w	ost_x_vel(a0)
-		beq.s	loc_1A9E6
-		jsr	(SpeedToPos).l
-		move.w	ost_x_pos(a0),d0
-		sub.w	$30(a0),d0
-		bcc.s	loc_1A9E6
-		clr.w	ost_x_vel(a0)
-		add.w	d0,ost_x_pos(a0)
-		movea.l	$34(a0),a1
-		subq.w	#1,$32(a1)
-
-loc_1A9E6:
-		move.b	#0,ost_anim(a0)
-		subq.w	#1,ost_subtype(a0)
-		bne.s	locret_1AA1C
-		addq.b	#2,ost_routine2(a0)
-		move.b	#1,ost_anim(a0)
-		move.b	#$9A,ost_col_type(a0)
-		move.w	#$B4,ost_subtype(a0)
-		moveq	#0,d0
-		move.w	(v_player+ost_x_pos).w,d0
-		sub.w	ost_x_pos(a0),d0
-		move.w	d0,ost_x_vel(a0)
-		move.w	#$140,ost_y_vel(a0)
-
-locret_1AA1C:
-		rts	
-; ===========================================================================
-
-loc_1AA1E:
-		jsr	(SpeedToPos).l
-		cmpi.w	#$5E0,ost_y_pos(a0)
-		bcc.s	loc_1AA34
-		subq.w	#1,ost_subtype(a0)
-		beq.s	loc_1AA34
-		rts	
-; ===========================================================================
-
-loc_1AA34:
-		movea.l	$34(a0),a1
-		subq.w	#1,$38(a1)
-		bra.w	Obj84_Delete
-
+BossPlasma:	include "Objects\FZ Plasma Balls.asm"
 Ani_PLaunch:	include "Animations\FZ Plasma Launcher.asm"
 Map_PLaunch:	include "Mappings\FZ Plasma Launcher.asm"
 Ani_Plasma:	include "Animations\FZ Plasma Balls.asm"
 Map_Plasma:	include "Mappings\FZ Plasma Balls.asm"
 
-; ---------------------------------------------------------------------------
-; Object 3E - prison capsule
-; ---------------------------------------------------------------------------
-
-Prison:
-		moveq	#0,d0
-		move.b	ost_routine(a0),d0
-		move.w	Pri_Index(pc,d0.w),d1
-		jsr	Pri_Index(pc,d1.w)
-		out_of_range.s	@delete
-		jmp	(DisplaySprite).l
-
-	@delete:
-		jmp	(DeleteObject).l
-; ===========================================================================
-Pri_Index:	index *
-		ptr Pri_Main
-		ptr Pri_BodyMain
-		ptr Pri_Switched
-		ptr Pri_Explosion
-		ptr Pri_Explosion
-		ptr Pri_Explosion
-		ptr Pri_Animals
-		ptr Pri_EndAct
-
-pri_origY:	equ $30		; original y-axis position
-
-Pri_Var:	dc.b 2,	$20, 4,	0	; routine, width, priority, frame
-		dc.b 4,	$C, 5, 1
-		dc.b 6,	$10, 4,	3
-		dc.b 8,	$10, 3,	5
-; ===========================================================================
-
-Pri_Main:	; Routine 0
-		move.l	#Map_Pri,ost_mappings(a0)
-		move.w	#$49D,ost_tile(a0)
-		move.b	#4,ost_render(a0)
-		move.w	ost_y_pos(a0),pri_origY(a0)
-		moveq	#0,d0
-		move.b	ost_subtype(a0),d0
-		lsl.w	#2,d0
-		lea	Pri_Var(pc,d0.w),a1
-		move.b	(a1)+,ost_routine(a0)
-		move.b	(a1)+,ost_actwidth(a0)
-		move.b	(a1)+,ost_priority(a0)
-		move.b	(a1)+,ost_frame(a0)
-		cmpi.w	#8,d0		; is object type number	02?
-		bne.s	@not02		; if not, branch
-
-		move.b	#6,ost_col_type(a0)
-		move.b	#8,ost_col_property(a0)
-
-	@not02:
-		rts	
-; ===========================================================================
-
-Pri_BodyMain:	; Routine 2
-		cmpi.b	#2,(v_bossstatus).w
-		beq.s	@chkopened
-		move.w	#$2B,d1
-		move.w	#$18,d2
-		move.w	#$18,d3
-		move.w	ost_x_pos(a0),d4
-		jmp	(SolidObject).l
-; ===========================================================================
-
-@chkopened:
-		tst.b	ost_routine2(a0)	; has the prison been opened?
-		beq.s	@open		; if yes, branch
-		clr.b	ost_routine2(a0)
-		bclr	#3,(v_player+ost_status).w
-		bset	#1,(v_player+ost_status).w
-
-	@open:
-		move.b	#2,ost_frame(a0)	; use frame number 2 (destroyed	prison)
-		rts	
-; ===========================================================================
-
-Pri_Switched:	; Routine 4
-		move.w	#$17,d1
-		move.w	#8,d2
-		move.w	#8,d3
-		move.w	ost_x_pos(a0),d4
-		jsr	(SolidObject).l
-		lea	(Ani_Pri).l,a1
-		jsr	(AnimateSprite).l
-		move.w	pri_origY(a0),ost_y_pos(a0)
-		tst.b	ost_routine2(a0)	; has prison already been opened?
-		beq.s	@open2		; if yes, branch
-
-		addq.w	#8,ost_y_pos(a0)
-		move.b	#$A,ost_routine(a0)
-		move.w	#60,ost_anim_time(a0) ; set time between animal spawns
-		clr.b	(f_timecount).w	; stop time counter
-		clr.b	(f_lockscreen).w ; lock screen position
-		move.b	#1,(f_lockctrl).w ; lock controls
-		move.w	#(btnR<<8),(v_jpadhold2).w ; make Sonic run to the right
-		clr.b	ost_routine2(a0)
-		bclr	#3,(v_player+ost_status).w
-		bset	#1,(v_player+ost_status).w
-
-	@open2:
-		rts	
-; ===========================================================================
-
-Pri_Explosion:	; Routine 6, 8, $A
-		moveq	#7,d0
-		and.b	(v_vbla_byte).w,d0
-		bne.s	@noexplosion
-		jsr	(FindFreeObj).l
-		bne.s	@noexplosion
-		move.b	#id_ExplosionBomb,0(a1) ; load explosion object
-		move.w	ost_x_pos(a0),ost_x_pos(a1)
-		move.w	ost_y_pos(a0),ost_y_pos(a1)
-		jsr	(RandomNumber).l
-		moveq	#0,d1
-		move.b	d0,d1
-		lsr.b	#2,d1
-		subi.w	#$20,d1
-		add.w	d1,ost_x_pos(a1)
-		lsr.w	#8,d0
-		lsr.b	#3,d0
-		add.w	d0,ost_y_pos(a1)
-
-	@noexplosion:
-		subq.w	#1,ost_anim_time(a0)
-		beq.s	@makeanimal
-		rts	
-; ===========================================================================
-
-@makeanimal:
-		move.b	#2,(v_bossstatus).w
-		move.b	#$C,ost_routine(a0)	; replace explosions with animals
-		move.b	#6,ost_frame(a0)
-		move.w	#150,ost_anim_time(a0)
-		addi.w	#$20,ost_y_pos(a0)
-		moveq	#7,d6
-		move.w	#$9A,d5
-		moveq	#-$1C,d4
-
-	@loop:
-		jsr	(FindFreeObj).l
-		bne.s	@fail
-		move.b	#id_Animals,0(a1) ; load animal object
-		move.w	ost_x_pos(a0),ost_x_pos(a1)
-		move.w	ost_y_pos(a0),ost_y_pos(a1)
-		add.w	d4,ost_x_pos(a1)
-		addq.w	#7,d4
-		move.w	d5,$36(a1)
-		subq.w	#8,d5
-		dbf	d6,@loop	; repeat 7 more	times
-
-	@fail:
-		rts	
-; ===========================================================================
-
-Pri_Animals:	; Routine $C
-		moveq	#7,d0
-		and.b	(v_vbla_byte).w,d0
-		bne.s	@noanimal
-		jsr	(FindFreeObj).l
-		bne.s	@noanimal
-		move.b	#id_Animals,0(a1) ; load animal object
-		move.w	ost_x_pos(a0),ost_x_pos(a1)
-		move.w	ost_y_pos(a0),ost_y_pos(a1)
-		jsr	(RandomNumber).l
-		andi.w	#$1F,d0
-		subq.w	#6,d0
-		tst.w	d1
-		bpl.s	@ispositive
-		neg.w	d0
-
-	@ispositive:
-		add.w	d0,ost_x_pos(a1)
-		move.w	#$C,$36(a1)
-
-	@noanimal:
-		subq.w	#1,ost_anim_time(a0)
-		bne.s	@wait
-		addq.b	#2,ost_routine(a0)
-		move.w	#180,ost_anim_time(a0)
-
-	@wait:
-		rts	
-; ===========================================================================
-
-Pri_EndAct:	; Routine $E
-		moveq	#$3E,d0
-		moveq	#id_Animals,d1
-		moveq	#$40,d2
-		lea	(v_objspace+$40).w,a1 ; load object RAM
-
-	@findanimal:
-		cmp.b	(a1),d1		; is object $28	(animal) loaded?
-		beq.s	@found		; if yes, branch
-		adda.w	d2,a1		; next object RAM
-		dbf	d0,@findanimal	; repeat $3E times
-
-		jsr	(GotThroughAct).l
-		jmp	(DeleteObject).l
-
-	@found:
-		rts	
-
+Prison:		include "Objects\Prison Capsule.asm"
 Ani_Pri:	include "Animations\Prison Capsule.asm"
 Map_Pri:	include "Mappings\Prison Capsule.asm"
 
@@ -20305,725 +18355,7 @@ Map_SS_Up:	include "Mappings\Special Stage Up.asm"
 Map_SS_Down:	include "Mappings\Special Stage Down.asm"
 Map_SS_Chaos:	include "Mappings\Special Stage Chaos Emeralds.asm"
 
-; ---------------------------------------------------------------------------
-; Object 09 - Sonic (special stage)
-; ---------------------------------------------------------------------------
-
-SonicSpecial:
-		tst.w	(v_debuguse).w	; is debug mode	being used?
-		beq.s	Obj09_Normal	; if not, branch
-		bsr.w	SS_FixCamera
-		bra.w	DebugMode
-; ===========================================================================
-
-Obj09_Normal:
-		moveq	#0,d0
-		move.b	ost_routine(a0),d0
-		move.w	Obj09_Index(pc,d0.w),d1
-		jmp	Obj09_Index(pc,d1.w)
-; ===========================================================================
-Obj09_Index:	index *
-		ptr Obj09_Main
-		ptr Obj09_ChkDebug
-		ptr Obj09_ExitStage
-		ptr Obj09_Exit2
-; ===========================================================================
-
-Obj09_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
-		move.b	#$E,ost_height(a0)
-		move.b	#7,ost_width(a0)
-		move.l	#Map_Sonic,ost_mappings(a0)
-		move.w	#$780,ost_tile(a0)
-		move.b	#4,ost_render(a0)
-		move.b	#0,ost_priority(a0)
-		move.b	#id_Roll,ost_anim(a0)
-		bset	#2,ost_status(a0)
-		bset	#1,ost_status(a0)
-
-Obj09_ChkDebug:	; Routine 2
-		tst.w	(f_debugmode).w	; is debug mode	cheat enabled?
-		beq.s	Obj09_NoDebug	; if not, branch
-		btst	#bitB,(v_jpadpress1).w ; is button B pressed?
-		beq.s	Obj09_NoDebug	; if not, branch
-		move.w	#1,(v_debuguse).w ; change Sonic into a ring
-
-Obj09_NoDebug:
-		move.b	#0,$30(a0)
-		moveq	#0,d0
-		move.b	ost_status(a0),d0
-		andi.w	#2,d0
-		move.w	Obj09_Modes(pc,d0.w),d1
-		jsr	Obj09_Modes(pc,d1.w)
-		jsr	(Sonic_LoadGfx).l
-		jmp	(DisplaySprite).l
-; ===========================================================================
-Obj09_Modes:	index *
-		ptr Obj09_OnWall
-		ptr Obj09_InAir
-; ===========================================================================
-
-Obj09_OnWall:
-		bsr.w	Obj09_Jump
-		bsr.w	Obj09_Move
-		bsr.w	Obj09_Fall
-		bra.s	Obj09_Display
-; ===========================================================================
-
-Obj09_InAir:
-		bsr.w	nullsub_2
-		bsr.w	Obj09_Move
-		bsr.w	Obj09_Fall
-
-Obj09_Display:
-		bsr.w	Obj09_ChkItems
-		bsr.w	Obj09_ChkItems2
-		jsr	(SpeedToPos).l
-		bsr.w	SS_FixCamera
-		move.w	(v_ssangle).w,d0
-		add.w	(v_ssrotate).w,d0
-		move.w	d0,(v_ssangle).w
-		jsr	(Sonic_Animate).l
-		rts	
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Obj09_Move:
-		btst	#bitL,(v_jpadhold2).w ; is left being pressed?
-		beq.s	Obj09_ChkRight	; if not, branch
-		bsr.w	Obj09_MoveLeft
-
-Obj09_ChkRight:
-		btst	#bitR,(v_jpadhold2).w ; is right being pressed?
-		beq.s	loc_1BA78	; if not, branch
-		bsr.w	Obj09_MoveRight
-
-loc_1BA78:
-		move.b	(v_jpadhold2).w,d0
-		andi.b	#btnL+btnR,d0
-		bne.s	loc_1BAA8
-		move.w	ost_inertia(a0),d0
-		beq.s	loc_1BAA8
-		bmi.s	loc_1BA9A
-		subi.w	#$C,d0
-		bcc.s	loc_1BA94
-		move.w	#0,d0
-
-loc_1BA94:
-		move.w	d0,ost_inertia(a0)
-		bra.s	loc_1BAA8
-; ===========================================================================
-
-loc_1BA9A:
-		addi.w	#$C,d0
-		bcc.s	loc_1BAA4
-		move.w	#0,d0
-
-loc_1BAA4:
-		move.w	d0,ost_inertia(a0)
-
-loc_1BAA8:
-		move.b	(v_ssangle).w,d0
-		addi.b	#$20,d0
-		andi.b	#$C0,d0
-		neg.b	d0
-		jsr	(CalcSine).l
-		muls.w	ost_inertia(a0),d1
-		add.l	d1,ost_x_pos(a0)
-		muls.w	ost_inertia(a0),d0
-		add.l	d0,ost_y_pos(a0)
-		movem.l	d0-d1,-(sp)
-		move.l	ost_y_pos(a0),d2
-		move.l	ost_x_pos(a0),d3
-		bsr.w	sub_1BCE8
-		beq.s	loc_1BAF2
-		movem.l	(sp)+,d0-d1
-		sub.l	d1,ost_x_pos(a0)
-		sub.l	d0,ost_y_pos(a0)
-		move.w	#0,ost_inertia(a0)
-		rts	
-; ===========================================================================
-
-loc_1BAF2:
-		movem.l	(sp)+,d0-d1
-		rts	
-; End of function Obj09_Move
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Obj09_MoveLeft:
-		bset	#0,ost_status(a0)
-		move.w	ost_inertia(a0),d0
-		beq.s	loc_1BB06
-		bpl.s	loc_1BB1A
-
-loc_1BB06:
-		subi.w	#$C,d0
-		cmpi.w	#-$800,d0
-		bgt.s	loc_1BB14
-		move.w	#-$800,d0
-
-loc_1BB14:
-		move.w	d0,ost_inertia(a0)
-		rts	
-; ===========================================================================
-
-loc_1BB1A:
-		subi.w	#$40,d0
-		bcc.s	loc_1BB22
-		nop	
-
-loc_1BB22:
-		move.w	d0,ost_inertia(a0)
-		rts	
-; End of function Obj09_MoveLeft
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Obj09_MoveRight:
-		bclr	#0,ost_status(a0)
-		move.w	ost_inertia(a0),d0
-		bmi.s	loc_1BB48
-		addi.w	#$C,d0
-		cmpi.w	#$800,d0
-		blt.s	loc_1BB42
-		move.w	#$800,d0
-
-loc_1BB42:
-		move.w	d0,ost_inertia(a0)
-		bra.s	locret_1BB54
-; ===========================================================================
-
-loc_1BB48:
-		addi.w	#$40,d0
-		bcc.s	loc_1BB50
-		nop	
-
-loc_1BB50:
-		move.w	d0,ost_inertia(a0)
-
-locret_1BB54:
-		rts	
-; End of function Obj09_MoveRight
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Obj09_Jump:
-		move.b	(v_jpadpress2).w,d0
-		andi.b	#btnABC,d0	; is A,	B or C pressed?
-		beq.s	Obj09_NoJump	; if not, branch
-		move.b	(v_ssangle).w,d0
-		andi.b	#$FC,d0
-		neg.b	d0
-		subi.b	#$40,d0
-		jsr	(CalcSine).l
-		muls.w	#$680,d1
-		asr.l	#8,d1
-		move.w	d1,ost_x_vel(a0)
-		muls.w	#$680,d0
-		asr.l	#8,d0
-		move.w	d0,ost_y_vel(a0)
-		bset	#1,ost_status(a0)
-		sfx	sfx_Jump,0,0,0	; play jumping sound
-
-Obj09_NoJump:
-		rts	
-; End of function Obj09_Jump
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-nullsub_2:
-		rts	
-; End of function nullsub_2
-
-; ===========================================================================
-; ---------------------------------------------------------------------------
-; unused subroutine to limit Sonic's upward vertical speed
-; ---------------------------------------------------------------------------
-		move.w	#-$400,d1
-		cmp.w	ost_y_vel(a0),d1
-		ble.s	locret_1BBB4
-		move.b	(v_jpadhold2).w,d0
-		andi.b	#btnABC,d0
-		bne.s	locret_1BBB4
-		move.w	d1,ost_y_vel(a0)
-
-locret_1BBB4:
-		rts	
-; ---------------------------------------------------------------------------
-; Subroutine to	fix the	camera on Sonic's position (special stage)
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-SS_FixCamera:
-		move.w	ost_y_pos(a0),d2
-		move.w	ost_x_pos(a0),d3
-		move.w	(v_screenposx).w,d0
-		subi.w	#$A0,d3
-		bcs.s	loc_1BBCE
-		sub.w	d3,d0
-		sub.w	d0,(v_screenposx).w
-
-loc_1BBCE:
-		move.w	(v_screenposy).w,d0
-		subi.w	#$70,d2
-		bcs.s	locret_1BBDE
-		sub.w	d2,d0
-		sub.w	d0,(v_screenposy).w
-
-locret_1BBDE:
-		rts	
-; End of function SS_FixCamera
-
-; ===========================================================================
-
-Obj09_ExitStage:
-		addi.w	#$40,(v_ssrotate).w
-		cmpi.w	#$1800,(v_ssrotate).w
-		bne.s	loc_1BBF4
-		move.b	#id_Level,(v_gamemode).w
-
-loc_1BBF4:
-		cmpi.w	#$3000,(v_ssrotate).w
-		blt.s	loc_1BC12
-		move.w	#0,(v_ssrotate).w
-		move.w	#$4000,(v_ssangle).w
-		addq.b	#2,ost_routine(a0)
-		move.w	#$3C,$38(a0)
-
-loc_1BC12:
-		move.w	(v_ssangle).w,d0
-		add.w	(v_ssrotate).w,d0
-		move.w	d0,(v_ssangle).w
-		jsr	(Sonic_Animate).l
-		jsr	(Sonic_LoadGfx).l
-		bsr.w	SS_FixCamera
-		jmp	(DisplaySprite).l
-; ===========================================================================
-
-Obj09_Exit2:
-		subq.w	#1,$38(a0)
-		bne.s	loc_1BC40
-		move.b	#id_Level,(v_gamemode).w
-
-loc_1BC40:
-		jsr	(Sonic_Animate).l
-		jsr	(Sonic_LoadGfx).l
-		bsr.w	SS_FixCamera
-		jmp	(DisplaySprite).l
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Obj09_Fall:
-		move.l	ost_y_pos(a0),d2
-		move.l	ost_x_pos(a0),d3
-		move.b	(v_ssangle).w,d0
-		andi.b	#$FC,d0
-		jsr	(CalcSine).l
-		move.w	ost_x_vel(a0),d4
-		ext.l	d4
-		asl.l	#8,d4
-		muls.w	#$2A,d0
-		add.l	d4,d0
-		move.w	ost_y_vel(a0),d4
-		ext.l	d4
-		asl.l	#8,d4
-		muls.w	#$2A,d1
-		add.l	d4,d1
-		add.l	d0,d3
-		bsr.w	sub_1BCE8
-		beq.s	loc_1BCB0
-		sub.l	d0,d3
-		moveq	#0,d0
-		move.w	d0,ost_x_vel(a0)
-		bclr	#1,ost_status(a0)
-		add.l	d1,d2
-		bsr.w	sub_1BCE8
-		beq.s	loc_1BCC6
-		sub.l	d1,d2
-		moveq	#0,d1
-		move.w	d1,ost_y_vel(a0)
-		rts	
-; ===========================================================================
-
-loc_1BCB0:
-		add.l	d1,d2
-		bsr.w	sub_1BCE8
-		beq.s	loc_1BCD4
-		sub.l	d1,d2
-		moveq	#0,d1
-		move.w	d1,ost_y_vel(a0)
-		bclr	#1,ost_status(a0)
-
-loc_1BCC6:
-		asr.l	#8,d0
-		asr.l	#8,d1
-		move.w	d0,ost_x_vel(a0)
-		move.w	d1,ost_y_vel(a0)
-		rts	
-; ===========================================================================
-
-loc_1BCD4:
-		asr.l	#8,d0
-		asr.l	#8,d1
-		move.w	d0,ost_x_vel(a0)
-		move.w	d1,ost_y_vel(a0)
-		bset	#1,ost_status(a0)
-		rts	
-; End of function Obj09_Fall
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-sub_1BCE8:
-		lea	($FF0000).l,a1
-		moveq	#0,d4
-		swap	d2
-		move.w	d2,d4
-		swap	d2
-		addi.w	#$44,d4
-		divu.w	#$18,d4
-		mulu.w	#$80,d4
-		adda.l	d4,a1
-		moveq	#0,d4
-		swap	d3
-		move.w	d3,d4
-		swap	d3
-		addi.w	#$14,d4
-		divu.w	#$18,d4
-		adda.w	d4,a1
-		moveq	#0,d5
-		move.b	(a1)+,d4
-		bsr.s	sub_1BD30
-		move.b	(a1)+,d4
-		bsr.s	sub_1BD30
-		adda.w	#$7E,a1
-		move.b	(a1)+,d4
-		bsr.s	sub_1BD30
-		move.b	(a1)+,d4
-		bsr.s	sub_1BD30
-		tst.b	d5
-		rts	
-; End of function sub_1BCE8
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-sub_1BD30:
-		beq.s	locret_1BD44
-		cmpi.b	#$28,d4
-		beq.s	locret_1BD44
-		cmpi.b	#$3A,d4
-		bcs.s	loc_1BD46
-		cmpi.b	#$4B,d4
-		bcc.s	loc_1BD46
-
-locret_1BD44:
-		rts	
-; ===========================================================================
-
-loc_1BD46:
-		move.b	d4,$30(a0)
-		move.l	a1,$32(a0)
-		moveq	#-1,d5
-		rts	
-; End of function sub_1BD30
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Obj09_ChkItems:
-		lea	($FF0000).l,a1
-		moveq	#0,d4
-		move.w	ost_y_pos(a0),d4
-		addi.w	#$50,d4
-		divu.w	#$18,d4
-		mulu.w	#$80,d4
-		adda.l	d4,a1
-		moveq	#0,d4
-		move.w	ost_x_pos(a0),d4
-		addi.w	#$20,d4
-		divu.w	#$18,d4
-		adda.w	d4,a1
-		move.b	(a1),d4
-		bne.s	Obj09_ChkCont
-		tst.b	$3A(a0)
-		bne.w	Obj09_MakeGhostSolid
-		moveq	#0,d4
-		rts	
-; ===========================================================================
-
-Obj09_ChkCont:
-		cmpi.b	#$3A,d4		; is the item a	ring?
-		bne.s	Obj09_Chk1Up
-		bsr.w	SS_RemoveCollectedItem
-		bne.s	Obj09_GetCont
-		move.b	#1,(a2)
-		move.l	a1,4(a2)
-
-Obj09_GetCont:
-		jsr	(CollectRing).l
-		cmpi.w	#50,(v_rings).w	; check if you have 50 rings
-		bcs.s	Obj09_NoCont
-		bset	#0,(v_lifecount).w
-		bne.s	Obj09_NoCont
-		addq.b	#1,(v_continues).w ; add 1 to number of continues
-		music	sfx_Continue,0,0,0	; play extra continue sound
-
-Obj09_NoCont:
-		moveq	#0,d4
-		rts	
-; ===========================================================================
-
-Obj09_Chk1Up:
-		cmpi.b	#$28,d4		; is the item an extra life?
-		bne.s	Obj09_ChkEmer
-		bsr.w	SS_RemoveCollectedItem
-		bne.s	Obj09_Get1Up
-		move.b	#3,(a2)
-		move.l	a1,4(a2)
-
-Obj09_Get1Up:
-		addq.b	#1,(v_lives).w	; add 1 to number of lives
-		addq.b	#1,(f_lifecount).w ; update the lives counter
-		music	bgm_ExtraLife,0,0,0	; play extra life music
-		moveq	#0,d4
-		rts	
-; ===========================================================================
-
-Obj09_ChkEmer:
-		cmpi.b	#$3B,d4		; is the item an emerald?
-		bcs.s	Obj09_ChkGhost
-		cmpi.b	#$40,d4
-		bhi.s	Obj09_ChkGhost
-		bsr.w	SS_RemoveCollectedItem
-		bne.s	Obj09_GetEmer
-		move.b	#5,(a2)
-		move.l	a1,4(a2)
-
-Obj09_GetEmer:
-		cmpi.b	#6,(v_emeralds).w ; do you have all the emeralds?
-		beq.s	Obj09_NoEmer	; if yes, branch
-		subi.b	#$3B,d4
-		moveq	#0,d0
-		move.b	(v_emeralds).w,d0
-		lea	(v_emldlist).w,a2
-		move.b	d4,(a2,d0.w)
-		addq.b	#1,(v_emeralds).w ; add 1 to number of emeralds
-
-Obj09_NoEmer:
-		sfx	bgm_Emerald,0,0,0 ;	play emerald music
-		moveq	#0,d4
-		rts	
-; ===========================================================================
-
-Obj09_ChkGhost:
-		cmpi.b	#$41,d4		; is the item a	ghost block?
-		bne.s	Obj09_ChkGhostTag
-		move.b	#1,$3A(a0)	; mark the ghost block as "passed"
-
-Obj09_ChkGhostTag:
-		cmpi.b	#$4A,d4		; is the item a	switch for ghost blocks?
-		bne.s	Obj09_NoGhost
-		cmpi.b	#1,$3A(a0)	; have the ghost blocks	been passed?
-		bne.s	Obj09_NoGhost	; if not, branch
-		move.b	#2,$3A(a0)	; mark the ghost blocks	as "solid"
-
-Obj09_NoGhost:
-		moveq	#-1,d4
-		rts	
-; ===========================================================================
-
-Obj09_MakeGhostSolid:
-		cmpi.b	#2,$3A(a0)	; is the ghost marked as "solid"?
-		bne.s	Obj09_GhostNotSolid ; if not, branch
-		lea	($FF1020).l,a1
-		moveq	#$3F,d1
-
-Obj09_GhostLoop2:
-		moveq	#$3F,d2
-
-Obj09_GhostLoop:
-		cmpi.b	#$41,(a1)	; is the item a	ghost block?
-		bne.s	Obj09_NoReplace	; if not, branch
-		move.b	#$2C,(a1)	; replace ghost	block with a solid block
-
-Obj09_NoReplace:
-		addq.w	#1,a1
-		dbf	d2,Obj09_GhostLoop
-		lea	$40(a1),a1
-		dbf	d1,Obj09_GhostLoop2
-
-Obj09_GhostNotSolid:
-		clr.b	$3A(a0)
-		moveq	#0,d4
-		rts	
-; End of function Obj09_ChkItems
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Obj09_ChkItems2:
-		move.b	$30(a0),d0
-		bne.s	Obj09_ChkBumper
-		subq.b	#1,$36(a0)
-		bpl.s	loc_1BEA0
-		move.b	#0,$36(a0)
-
-loc_1BEA0:
-		subq.b	#1,$37(a0)
-		bpl.s	locret_1BEAC
-		move.b	#0,$37(a0)
-
-locret_1BEAC:
-		rts	
-; ===========================================================================
-
-Obj09_ChkBumper:
-		cmpi.b	#$25,d0		; is the item a	bumper?
-		bne.s	Obj09_GOAL
-		move.l	$32(a0),d1
-		subi.l	#$FF0001,d1
-		move.w	d1,d2
-		andi.w	#$7F,d1
-		mulu.w	#$18,d1
-		subi.w	#$14,d1
-		lsr.w	#7,d2
-		andi.w	#$7F,d2
-		mulu.w	#$18,d2
-		subi.w	#$44,d2
-		sub.w	ost_x_pos(a0),d1
-		sub.w	ost_y_pos(a0),d2
-		jsr	(CalcAngle).l
-		jsr	(CalcSine).l
-		muls.w	#-$700,d1
-		asr.l	#8,d1
-		move.w	d1,ost_x_vel(a0)
-		muls.w	#-$700,d0
-		asr.l	#8,d0
-		move.w	d0,ost_y_vel(a0)
-		bset	#1,ost_status(a0)
-		bsr.w	SS_RemoveCollectedItem
-		bne.s	Obj09_BumpSnd
-		move.b	#2,(a2)
-		move.l	$32(a0),d0
-		subq.l	#1,d0
-		move.l	d0,4(a2)
-
-Obj09_BumpSnd:
-		sfx	sfx_Bumper,1,0,0	; play bumper sound
-; ===========================================================================
-
-Obj09_GOAL:
-		cmpi.b	#$27,d0		; is the item a	"GOAL"?
-		bne.s	Obj09_UPblock
-		addq.b	#2,ost_routine(a0) ; run routine "Obj09_ExitStage"
-		sfx	sfx_SSGoal,0,0,0	; play "GOAL" sound
-		rts	
-; ===========================================================================
-
-Obj09_UPblock:
-		cmpi.b	#$29,d0		; is the item an "UP" block?
-		bne.s	Obj09_DOWNblock
-		tst.b	$36(a0)
-		bne.w	Obj09_NoGlass
-		move.b	#$1E,$36(a0)
-		btst	#6,($FFFFF783).w
-		beq.s	Obj09_UPsnd
-		asl	(v_ssrotate).w	; increase stage rotation speed
-		movea.l	$32(a0),a1
-		subq.l	#1,a1
-		move.b	#$2A,(a1)	; change item to a "DOWN" block
-
-Obj09_UPsnd:
-		sfx	sfx_SSItem,1,0,0	; play up/down sound
-; ===========================================================================
-
-Obj09_DOWNblock:
-		cmpi.b	#$2A,d0		; is the item a	"DOWN" block?
-		bne.s	Obj09_Rblock
-		tst.b	$36(a0)
-		bne.w	Obj09_NoGlass
-		move.b	#$1E,$36(a0)
-		btst	#6,(v_ssrotate+1).w
-		bne.s	Obj09_DOWNsnd
-		asr	(v_ssrotate).w	; reduce stage rotation speed
-		movea.l	$32(a0),a1
-		subq.l	#1,a1
-		move.b	#$29,(a1)	; change item to an "UP" block
-
-Obj09_DOWNsnd:
-		sfx	sfx_SSItem,1,0,0	; play up/down sound
-; ===========================================================================
-
-Obj09_Rblock:
-		cmpi.b	#$2B,d0		; is the item an "R" block?
-		bne.s	Obj09_ChkGlass
-		tst.b	$37(a0)
-		bne.w	Obj09_NoGlass
-		move.b	#$1E,$37(a0)
-		bsr.w	SS_RemoveCollectedItem
-		bne.s	Obj09_RevStage
-		move.b	#4,(a2)
-		move.l	$32(a0),d0
-		subq.l	#1,d0
-		move.l	d0,4(a2)
-
-Obj09_RevStage:
-		neg.w	(v_ssrotate).w	; reverse stage rotation
-		sfx	sfx_SSItem,1,0,0	; play sound
-; ===========================================================================
-
-Obj09_ChkGlass:
-		cmpi.b	#$2D,d0		; is the item a	glass block?
-		beq.s	Obj09_Glass	; if yes, branch
-		cmpi.b	#$2E,d0
-		beq.s	Obj09_Glass
-		cmpi.b	#$2F,d0
-		beq.s	Obj09_Glass
-		cmpi.b	#$30,d0
-		bne.s	Obj09_NoGlass	; if not, branch
-
-Obj09_Glass:
-		bsr.w	SS_RemoveCollectedItem
-		bne.s	Obj09_GlassSnd
-		move.b	#6,(a2)
-		movea.l	$32(a0),a1
-		subq.l	#1,a1
-		move.l	a1,4(a2)
-		move.b	(a1),d0
-		addq.b	#1,d0		; change glass type when touched
-		cmpi.b	#$30,d0
-		bls.s	Obj09_GlassUpdate ; if glass is	still there, branch
-		clr.b	d0		; remove the glass block when it's destroyed
-
-Obj09_GlassUpdate:
-		move.b	d0,4(a2)	; update the stage layout
-
-Obj09_GlassSnd:
-		sfx	sfx_SSGlass,1,0,0	; play glass block sound
-; ===========================================================================
-
-Obj09_NoGlass:
-		rts	
-; End of function Obj09_ChkItems2
-
+SonicSpecial:	include "Objects\Special Stage Sonic.asm"
 ; ---------------------------------------------------------------------------
 ; Object 10 - blank
 ; ---------------------------------------------------------------------------
@@ -22762,14 +20094,14 @@ lhead:	macro plc1,lvlgfx,plc2,sixteen,twofivesix,music,pal
 ;		1st PLC				2nd PLC				256x256 data			palette
 ;				level gfx*			16x16 data			music*
 
-	lhead	id_PLC_GHZ,	Nem_GHZ_2nd,	id_PLC_GHZ2,	Blk16_GHZ,	Blk256_GHZ,	bgm_GHZ,	palid_GHZ	; Green Hill
-	lhead	id_PLC_LZ,	Nem_LZ,		id_PLC_LZ2,	Blk16_LZ,	Blk256_LZ,	bgm_LZ,		palid_LZ	; Labyrinth
-	lhead	id_PLC_MZ,	Nem_MZ,		id_PLC_MZ2,	Blk16_MZ,	Blk256_MZ,	bgm_MZ,		palid_MZ	; Marble
-	lhead	id_PLC_SLZ,	Nem_SLZ,	id_PLC_SLZ2,	Blk16_SLZ,	Blk256_SLZ,	bgm_SLZ,	palid_SLZ	; Star Light
-	lhead	id_PLC_SYZ,	Nem_SYZ,	id_PLC_SYZ2,	Blk16_SYZ,	Blk256_SYZ,	bgm_SYZ,	palid_SYZ	; Spring Yard
-	lhead	id_PLC_SBZ,	Nem_SBZ,	id_PLC_SBZ2,	Blk16_SBZ,	Blk256_SBZ,	bgm_SBZ,	palid_SBZ1	; Scrap Brain
+	lhead	id_PLC_GHZ,	Nem_GHZ_2nd,	id_PLC_GHZ2,	Blk16_GHZ,	Blk256_GHZ,	bgm_GHZ,	id_Pal_GHZ	; Green Hill
+	lhead	id_PLC_LZ,	Nem_LZ,		id_PLC_LZ2,	Blk16_LZ,	Blk256_LZ,	bgm_LZ,		id_Pal_LZ	; Labyrinth
+	lhead	id_PLC_MZ,	Nem_MZ,		id_PLC_MZ2,	Blk16_MZ,	Blk256_MZ,	bgm_MZ,		id_Pal_MZ	; Marble
+	lhead	id_PLC_SLZ,	Nem_SLZ,	id_PLC_SLZ2,	Blk16_SLZ,	Blk256_SLZ,	bgm_SLZ,	id_Pal_SLZ	; Star Light
+	lhead	id_PLC_SYZ,	Nem_SYZ,	id_PLC_SYZ2,	Blk16_SYZ,	Blk256_SYZ,	bgm_SYZ,	id_Pal_SYZ	; Spring Yard
+	lhead	id_PLC_SBZ,	Nem_SBZ,	id_PLC_SBZ2,	Blk16_SBZ,	Blk256_SBZ,	bgm_SBZ,	id_Pal_SBZ1	; Scrap Brain
 	zonewarning LevelHeaders,$10
-	lhead	0,		Nem_GHZ_2nd,	0,		Blk16_GHZ,	Blk256_GHZ,	bgm_SBZ,	palid_Ending	; Ending
+	lhead	0,		Nem_GHZ_2nd,	0,		Blk16_GHZ,	Blk256_GHZ,	bgm_SBZ,	id_Pal_Ending	; Ending
 	even
 
 ;	* music and level gfx are actually set elsewhere, so these values are useless
