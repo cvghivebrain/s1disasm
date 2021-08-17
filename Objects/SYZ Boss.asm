@@ -152,7 +152,7 @@ loc_1928E:
 
 loc_19294:
 		bchg	#0,ost_status(a0)
-		clr.b	standonobject(a0)
+		clr.b	ost_sonic_on_obj(a0)
 
 loc_1929E:
 		subi.w	#$2C10,d0
@@ -164,7 +164,7 @@ loc_1929E:
 loc_192AE:
 		subq.w	#1,d0
 		bgt.s	loc_192E8
-		tst.b	standonobject(a0)
+		tst.b	ost_sonic_on_obj(a0)
 		bne.s	loc_192E8
 		move.w	(v_player+ost_x_pos).w,d1
 		subi.w	#$2C00,d1
@@ -241,7 +241,7 @@ loc_19366:
 		cmpi.w	#$1E,$3C(a0)
 		bgt.s	loc_1937C
 		moveq	#2,d0
-		btst	#1,standonobject(a0)
+		btst	#1,ost_sonic_on_obj(a0)
 		beq.s	loc_1937C
 		neg.w	d0
 
@@ -301,7 +301,7 @@ loc_193EE:
 		bne.s	loc_19406
 		clr.b	$29(a0)
 		subq.b	#2,ost_routine2(a0)
-		move.b	#-1,standonobject(a0)
+		move.b	#-1,ost_sonic_on_obj(a0)
 		bra.s	loc_19446
 ; ===========================================================================
 
@@ -326,7 +326,7 @@ loc_19424:
 		tst.w	$36(a0)
 		beq.s	loc_19438
 		moveq	#2,d0
-		btst	#0,standonobject(a0)
+		btst	#0,ost_sonic_on_obj(a0)
 		beq.s	loc_19438
 		neg.w	d0
 

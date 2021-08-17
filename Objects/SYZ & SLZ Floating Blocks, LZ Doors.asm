@@ -266,7 +266,7 @@ FBlock_Action:	; Routine 2
 ; ===========================================================================
 
 @loc_104C8:
-		addq.b	#1,$28(a0)
+		addq.b	#1,ost_subtype(a0)
 		clr.b	$38(a0)
 		lea	(v_objstate).w,a2
 		moveq	#0,d0

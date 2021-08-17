@@ -284,7 +284,7 @@ Solid_ResetFloor:
 		beq.s	@notonobj	; if not, branch
 
 		moveq	#0,d0
-		move.b	standonobject(a1),d0	; get object being stood on
+		move.b	ost_sonic_on_obj(a1),d0	; get object being stood on
 		lsl.w	#6,d0
 		addi.l	#(v_objspace&$FFFFFF),d0
 		movea.l	d0,a2
@@ -296,7 +296,7 @@ Solid_ResetFloor:
 		subi.w	#$D000,d0
 		lsr.w	#6,d0
 		andi.w	#$7F,d0
-		move.b	d0,standonobject(a1)	; set object being stood on
+		move.b	d0,ost_sonic_on_obj(a1)	; set object being stood on
 		move.b	#0,ost_angle(a1)	; clear Sonic's angle
 		move.w	#0,ost_y_vel(a1)	; stop Sonic
 		move.w	ost_x_vel(a1),ost_inertia(a1)

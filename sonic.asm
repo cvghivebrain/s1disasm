@@ -157,10 +157,10 @@ PortA_Ok:
 		lea	SetupValues(pc),a5	; Load setup values array address.
 		movem.w	(a5)+,d5-d7
 		movem.l	(a5)+,a0-a4
-		move.b	-$10FF(a1),d0	; get hardware version (from $A10001)
+		move.b	console_version-z80_bus_request(a1),d0	; get hardware version (from $A10001)
 		andi.b	#$F,d0
 		beq.s	SkipSecurity	; If the console has no TMSS, skip the security stuff.
-		move.l	#'SEGA',$2F00(a1) ; move "SEGA" to TMSS register ($A14000)
+		move.l	#'SEGA',tmss_sega-z80_bus_request(a1) ; move "SEGA" to TMSS register ($A14000)
 
 SkipSecurity:
 		move.w	(a4),d0	; clear write-pending flag in VDP to prevent issues if the 68k has been reset in the middle of writing a command long word to the VDP.
@@ -347,32 +347,31 @@ GameInit:
 
 MainGameLoop:
 		move.b	(v_gamemode).w,d0 ; load Game Mode
-		andi.w	#$1C,d0	; limit Game Mode value to $1C max (change to a maximum of 7C to add more game modes)
+		andi.w	#$1C,d0		; limit Game Mode value to $1C max (change to a maximum of 7C to add more game modes)
 		jsr	GameModeArray(pc,d0.w) ; jump to apt location in ROM
 		bra.s	MainGameLoop	; loop indefinitely
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Main game mode array
 ; ---------------------------------------------------------------------------
+gmptr:		macro
+		id_\1:	equ *-GameModeArray
+		if narg=1
+		bra.w	GM_\1
+		else
+		bra.w	GM_\2
+		endc
+		endm
 
 GameModeArray:
-
-ptr_GM_Sega:	bra.w	GM_Sega		; Sega Screen ($00)
-
-ptr_GM_Title:	bra.w	GM_Title	; Title	Screen ($04)
-
-ptr_GM_Demo:	bra.w	GM_Level	; Demo Mode ($08)
-
-ptr_GM_Level:	bra.w	GM_Level	; Normal Level ($0C)
-
-ptr_GM_Special:	bra.w	GM_Special	; Special Stage	($10)
-
-ptr_GM_Cont:	bra.w	GM_Continue	; Continue Screen ($14)
-
-ptr_GM_Ending:	bra.w	GM_Ending	; End of game sequence ($18)
-
-ptr_GM_Credits:	bra.w	GM_Credits	; Credits ($1C)
-
+		gmptr Sega		; Sega Screen ($00)
+		gmptr Title		; Title	Screen ($04)
+		gmptr Demo,Level	; Demo Mode ($08)
+		gmptr Level		; Normal Level ($0C)
+		gmptr Special		; Special Stage	($10)
+		gmptr Continue		; Continue Screen ($14)
+		gmptr Ending		; End of game sequence ($18)
+		gmptr Credits		; Credits ($1C)
 		rts	
 ; ===========================================================================
 
@@ -1474,274 +1473,7 @@ QuickPLC:
 EniDec:		include "Includes\Enigma Decompression.asm"
 KosDec:		include "Includes\Kosinski Decompression.asm"
 
-; ---------------------------------------------------------------------------
-; Palette cycling routine loading subroutine
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-PaletteCycle:
-		moveq	#0,d2
-		moveq	#0,d0
-		move.b	(v_zone).w,d0	; get level number
-		add.w	d0,d0
-		move.w	PCycle_Index(pc,d0.w),d0
-		jmp	PCycle_Index(pc,d0.w) ; jump to relevant palette routine
-; End of function PaletteCycle
-
-; ===========================================================================
-; ---------------------------------------------------------------------------
-; Palette cycling routines
-; ---------------------------------------------------------------------------
-PCycle_Index:	index *
-		ptr PCycle_GHZ
-		ptr PCycle_LZ
-		ptr PCycle_MZ
-		ptr PalCycle_SLZ
-		ptr PalCycle_SYZ
-		ptr PalCycle_SBZ
-		zonewarning PCycle_Index,2
-		ptr PCycle_GHZ		; Ending
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-PCycle_Title:
-		lea	(Pal_TitleCyc).l,a0
-		bra.s	PCycGHZ_Go
-; ===========================================================================
-
-PCycle_GHZ:
-		lea	(Pal_GHZCyc).l,a0
-
-PCycGHZ_Go:
-		subq.w	#1,(v_pcyc_time).w ; decrement timer
-		bpl.s	PCycGHZ_Skip	; if time remains, branch
-
-		move.w	#5,(v_pcyc_time).w ; reset timer to 5 frames
-		move.w	(v_pcyc_num).w,d0 ; get cycle number
-		addq.w	#1,(v_pcyc_num).w ; increment cycle number
-		andi.w	#3,d0		; if cycle > 3, reset to 0
-		lsl.w	#3,d0
-		lea	(v_pal_dry+$50).w,a1
-		move.l	(a0,d0.w),(a1)+
-		move.l	4(a0,d0.w),(a1)	; copy palette data to RAM
-
-PCycGHZ_Skip:
-		rts	
-; End of function PCycle_GHZ
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-PCycle_LZ:
-; Waterfalls
-		subq.w	#1,(v_pcyc_time).w ; decrement timer
-		bpl.s	PCycLZ_Skip1	; if time remains, branch
-
-		move.w	#2,(v_pcyc_time).w ; reset timer to 2 frames
-		move.w	(v_pcyc_num).w,d0
-		addq.w	#1,(v_pcyc_num).w ; increment cycle number
-		andi.w	#3,d0		; if cycle > 3, reset to 0
-		lsl.w	#3,d0
-		lea	(Pal_LZCyc1).l,a0
-		cmpi.b	#3,(v_act).w	; check if level is SBZ3
-		bne.s	PCycLZ_NotSBZ3
-		lea	(Pal_SBZ3Cyc1).l,a0 ; load SBZ3	palette instead
-
-	PCycLZ_NotSBZ3:
-		lea	(v_pal_dry+$56).w,a1
-		move.l	(a0,d0.w),(a1)+
-		move.l	4(a0,d0.w),(a1)
-		lea	(v_pal_water+$56).w,a1
-		move.l	(a0,d0.w),(a1)+
-		move.l	4(a0,d0.w),(a1)
-
-PCycLZ_Skip1:
-; Conveyor belts
-		move.w	(v_framecount).w,d0
-		andi.w	#7,d0
-		move.b	PCycLZ_Seq(pc,d0.w),d0 ; get byte from palette sequence
-		beq.s	PCycLZ_Skip2	; if byte is 0, branch
-		moveq	#1,d1
-		tst.b	(f_conveyrev).w	; have conveyor belts been reversed?
-		beq.s	PCycLZ_NoRev	; if not, branch
-		neg.w	d1
-
-	PCycLZ_NoRev:
-		move.w	(v_pal_buffer).w,d0
-		andi.w	#3,d0
-		add.w	d1,d0
-		cmpi.w	#3,d0
-		bcs.s	loc_1A0A
-		move.w	d0,d1
-		moveq	#0,d0
-		tst.w	d1
-		bpl.s	loc_1A0A
-		moveq	#2,d0
-
-loc_1A0A:
-		move.w	d0,(v_pal_buffer).w
-		add.w	d0,d0
-		move.w	d0,d1
-		add.w	d0,d0
-		add.w	d1,d0
-		lea	(Pal_LZCyc2).l,a0
-		lea	(v_pal_dry+$76).w,a1
-		move.l	(a0,d0.w),(a1)+
-		move.w	4(a0,d0.w),(a1)
-		lea	(Pal_LZCyc3).l,a0
-		lea	(v_pal_water+$76).w,a1
-		move.l	(a0,d0.w),(a1)+
-		move.w	4(a0,d0.w),(a1)
-
-PCycLZ_Skip2:
-		rts	
-; End of function PCycle_LZ
-
-; ===========================================================================
-PCycLZ_Seq:	dc.b 1,	0, 0, 1, 0, 0, 1, 0
-; ===========================================================================
-
-PCycle_MZ:
-		rts	
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-PalCycle_SLZ:
-		subq.w	#1,(v_pcyc_time).w
-		bpl.s	locret_1A80
-		move.w	#7,(v_pcyc_time).w
-		move.w	(v_pcyc_num).w,d0
-		addq.w	#1,d0
-		cmpi.w	#6,d0
-		bcs.s	loc_1A60
-		moveq	#0,d0
-
-loc_1A60:
-		move.w	d0,(v_pcyc_num).w
-		move.w	d0,d1
-		add.w	d1,d1
-		add.w	d1,d0
-		add.w	d0,d0
-		lea	(Pal_SLZCyc).l,a0
-		lea	(v_pal_dry+$56).w,a1
-		move.w	(a0,d0.w),(a1)
-		move.l	2(a0,d0.w),4(a1)
-
-locret_1A80:
-		rts	
-; End of function PalCycle_SLZ
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-PalCycle_SYZ:
-		subq.w	#1,(v_pcyc_time).w
-		bpl.s	locret_1AC6
-		move.w	#5,(v_pcyc_time).w
-		move.w	(v_pcyc_num).w,d0
-		addq.w	#1,(v_pcyc_num).w
-		andi.w	#3,d0
-		lsl.w	#2,d0
-		move.w	d0,d1
-		add.w	d0,d0
-		lea	(Pal_SYZCyc1).l,a0
-		lea	(v_pal_dry+$6E).w,a1
-		move.l	(a0,d0.w),(a1)+
-		move.l	4(a0,d0.w),(a1)
-		lea	(Pal_SYZCyc2).l,a0
-		lea	(v_pal_dry+$76).w,a1
-		move.w	(a0,d1.w),(a1)
-		move.w	2(a0,d1.w),4(a1)
-
-locret_1AC6:
-		rts	
-; End of function PalCycle_SYZ
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-PalCycle_SBZ:
-		lea	(Pal_SBZCycList1).l,a2
-		tst.b	(v_act).w
-		beq.s	loc_1ADA
-		lea	(Pal_SBZCycList2).l,a2
-
-loc_1ADA:
-		lea	(v_pal_buffer).w,a1
-		move.w	(a2)+,d1
-
-loc_1AE0:
-		subq.b	#1,(a1)
-		bmi.s	loc_1AEA
-		addq.l	#2,a1
-		addq.l	#6,a2
-		bra.s	loc_1B06
-; ===========================================================================
-
-loc_1AEA:
-		move.b	(a2)+,(a1)+
-		move.b	(a1),d0
-		addq.b	#1,d0
-		cmp.b	(a2)+,d0
-		bcs.s	loc_1AF6
-		moveq	#0,d0
-
-loc_1AF6:
-		move.b	d0,(a1)+
-		andi.w	#$F,d0
-		add.w	d0,d0
-		movea.w	(a2)+,a0
-		movea.w	(a2)+,a3
-		move.w	(a0,d0.w),(a3)
-
-loc_1B06:
-		dbf	d1,loc_1AE0
-		subq.w	#1,(v_pcyc_time).w
-		bpl.s	locret_1B64
-		lea	(Pal_SBZCyc4).l,a0
-		move.w	#1,(v_pcyc_time).w
-		tst.b	(v_act).w
-		beq.s	loc_1B2E
-		lea	(Pal_SBZCyc10).l,a0
-		move.w	#0,(v_pcyc_time).w
-
-loc_1B2E:
-		moveq	#-1,d1
-		tst.b	(f_conveyrev).w
-		beq.s	loc_1B38
-		neg.w	d1
-
-loc_1B38:
-		move.w	(v_pcyc_num).w,d0
-		andi.w	#3,d0
-		add.w	d1,d0
-		cmpi.w	#3,d0
-		bcs.s	loc_1B52
-		move.w	d0,d1
-		moveq	#0,d0
-		tst.w	d1
-		bpl.s	loc_1B52
-		moveq	#2,d0
-
-loc_1B52:
-		move.w	d0,(v_pcyc_num).w
-		add.w	d0,d0
-		lea	(v_pal_dry+$58).w,a1
-		move.l	(a0,d0.w),(a1)+
-		move.w	4(a0,d0.w),(a1)
-
-locret_1B64:
-		rts	
-; End of function PalCycle_SBZ
-
+PaletteCycle:	include "Includes\PaletteCycle.asm"
 Pal_TitleCyc:	incbin	"Palettes\Cycle - Title Screen Water.bin"
 Pal_GHZCyc:	incbin	"Palettes\Cycle - GHZ.bin"
 Pal_LZCyc1:	incbin	"Palettes\Cycle - LZ Waterfall.bin"
@@ -2501,7 +2233,7 @@ CalcSine:
 
 ; ===========================================================================
 
-Sine_Data:	incbin	"misc\sinewave.bin"	; values for a 360º sine wave
+Sine_Data:	incbin	"misc\sinewave.bin"	; values for a 360? sine wave
 
 ; ===========================================================================
 
@@ -9850,7 +9582,7 @@ DLE_Ending:
 		rts	
 
 ; ---------------------------------------------------------------------------
-; Object 11 - GHZ bridge
+; Object 11 - GHZ bridge (max length $11)
 ; ---------------------------------------------------------------------------
 
 Bridge:
@@ -10007,7 +9739,7 @@ loc_74AE:
 		btst	#3,ost_status(a1)
 		beq.s	loc_74DC
 		moveq	#0,d0
-		move.b	standonobject(a1),d0
+		move.b	ost_sonic_on_obj(a1),d0
 		lsl.w	#6,d0
 		addi.l	#v_objspace&$FFFFFF,d0
 		movea.l	d0,a2
@@ -10022,7 +9754,7 @@ loc_74DC:
 		subi.w	#-$3000,d0
 		lsr.w	#6,d0
 		andi.w	#$7F,d0
-		move.b	d0,standonobject(a1)
+		move.b	d0,ost_sonic_on_obj(a1)
 		move.b	#0,ost_angle(a1)
 		move.w	#0,ost_y_vel(a1)
 		move.w	ost_x_vel(a1),ost_inertia(a1)
@@ -10523,7 +10255,7 @@ loc_7B78:
 
 
 Obj48_Move:
-		tst.b	standonobject(a0)
+		tst.b	ost_sonic_on_obj(a0)
 		bne.s	loc_7B9C
 		move.w	$3E(a0),d0
 		addq.w	#8,d0
@@ -10531,7 +10263,7 @@ Obj48_Move:
 		add.w	d0,ost_angle(a0)
 		cmpi.w	#$200,d0
 		bne.s	loc_7BB6
-		move.b	#1,standonobject(a0)
+		move.b	#1,ost_sonic_on_obj(a0)
 		bra.s	loc_7BB6
 ; ===========================================================================
 
@@ -10542,7 +10274,7 @@ loc_7B9C:
 		add.w	d0,ost_angle(a0)
 		cmpi.w	#-$200,d0
 		bne.s	loc_7BB6
-		move.b	#0,standonobject(a0)
+		move.b	#0,ost_sonic_on_obj(a0)
 
 loc_7BB6:
 		move.b	ost_angle(a0),d0
@@ -10659,7 +10391,7 @@ Ledge_Main:	; Routine 0
 		addq.b	#2,ost_routine(a0)
 		move.l	#Map_Ledge,ost_mappings(a0)
 		move.w	#0+tile_pal3,ost_tile(a0)
-		ori.b	#4,ost_render(a0)
+		ori.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)
 		move.b	#7,ledge_timedelay(a0) ; set time delay for collapse
 		move.b	#$64,ost_actwidth(a0)
@@ -12922,9 +12654,9 @@ MusicList2:
 ; ---------------------------------------------------------------------------
 
 Sonic_Display:
-		move.w	flashtime(a0),d0
+		move.w	ost_sonic_flash_rate(a0),d0
 		beq.s	@display
-		subq.w	#1,flashtime(a0)
+		subq.w	#1,ost_sonic_flash_rate(a0)
 		lsr.w	#3,d0
 		bcc.s	@chkinvincible
 
@@ -12934,9 +12666,9 @@ Sonic_Display:
 	@chkinvincible:
 		tst.b	(v_invinc).w	; does Sonic have invincibility?
 		beq.s	@chkshoes	; if not, branch
-		tst.w	invtime(a0)	; check	time remaining for invinciblity
+		tst.w	ost_sonic_inv_time(a0)	; check	time remaining for invinciblity
 		beq.s	@chkshoes	; if no	time remains, branch
-		subq.w	#1,invtime(a0)	; subtract 1 from time
+		subq.w	#1,ost_sonic_inv_time(a0)	; subtract 1 from time
 		bne.s	@chkshoes
 		tst.b	(f_lockscreen).w
 		bne.s	@removeinvincible
@@ -12959,9 +12691,9 @@ Sonic_Display:
 	@chkshoes:
 		tst.b	(v_shoes).w	; does Sonic have speed	shoes?
 		beq.s	@exit		; if not, branch
-		tst.w	shoetime(a0)	; check	time remaining
+		tst.w	ost_sonic_shoe_time(a0)	; check	time remaining
 		beq.s	@exit
-		subq.w	#1,shoetime(a0)	; subtract 1 from time
+		subq.w	#1,ost_sonic_shoe_time(a0)	; subtract 1 from time
 		bne.s	@exit
 		move.w	#$600,(v_sonspeedmax).w ; restore Sonic's speed
 		move.w	#$C,(v_sonspeedacc).w ; restore Sonic's acceleration
@@ -13133,7 +12865,7 @@ Sonic_Move:
 		btst	#3,ost_status(a0)
 		beq.s	Sonic_Balance
 		moveq	#0,d0
-		move.b	standonobject(a0),d0
+		move.b	ost_sonic_on_obj(a0),d0
 		lsl.w	#6,d0
 		lea	(v_objspace).w,a1
 		lea	(a1,d0.w),a1

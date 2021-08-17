@@ -44,16 +44,6 @@ vram_sonic:	equ $F000	; Sonic graphics
 vram_sprites:	equ $F800	; sprite table
 vram_hscroll:	equ $FC00	; horizontal scroll table
 
-; Game modes
-id_Sega:	equ ptr_GM_Sega-GameModeArray	; $00
-id_Title:	equ ptr_GM_Title-GameModeArray	; $04
-id_Demo:	equ ptr_GM_Demo-GameModeArray	; $08
-id_Level:	equ ptr_GM_Level-GameModeArray	; $0C
-id_Special:	equ ptr_GM_Special-GameModeArray; $10
-id_Continue:	equ ptr_GM_Cont-GameModeArray	; $14
-id_Ending:	equ ptr_GM_Ending-GameModeArray	; $18
-id_Credits:	equ ptr_GM_Credits-GameModeArray; $1C
-
 ; Levels
 id_GHZ:		equ 0
 id_LZ:		equ 1
@@ -139,10 +129,11 @@ ost_angle:		equ $26	; angle
 ost_subtype:		equ $28	; object subtype
 
 ; Object variables used by Sonic
-flashtime:	equ $30	; time between flashes after getting hit
-invtime:	equ $32	; time left for invincibility
-shoetime:	equ $34	; time left for speed shoes
-standonobject:	equ $3D	; object Sonic stands on
+ost_sonic_flash_rate:	equ $30	; time between flashes after getting hit (2 bytes)
+ost_sonic_inv_time:	equ $32	; time left for invincibility (2 bytes)
+ost_sonic_shoe_time:	equ $34	; time left for speed shoes (2 bytes)
+
+ost_sonic_on_obj:	equ $3D	; OST index of object Sonic stands on
 
 ; Animation flags
 afEnd:		equ $FF	; return to beginning of animation

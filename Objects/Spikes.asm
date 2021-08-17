@@ -93,7 +93,7 @@ Spik_Hurt:
 		asl.l	#8,d0
 	else
 		; This fixes the infamous "spike bug"
-		tst.w	flashtime(a0)	; Is Sonic flashing after being hurt?
+		tst.w	ost_sonic_flash_rate(a0)	; Is Sonic flashing after being hurt?
 		bne.s	loc_CF20	; If so, skip getting hurt
 		jmp	(loc_E0).l	; This is a copy of the above code that was pushed aside for this
 loc_D5A2:

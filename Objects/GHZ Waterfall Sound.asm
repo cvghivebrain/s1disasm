@@ -14,7 +14,7 @@ WSnd_Index:	index *,,2
 
 WSnd_Main:	; Routine 0
 		addq.b	#2,ost_routine(a0)
-		move.b	#4,ost_render(a0)
+		move.b	#render_rel,ost_render(a0)
 
 WSnd_PlaySnd:	; Routine 2
 		move.b	(v_vbla_byte).w,d0 ; get low byte of VBlank counter
