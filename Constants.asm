@@ -86,11 +86,17 @@ bitUp:		equ 0
 
 ; Object variables
 ost_render:		equ 1	; bitfield for x/y flip, display mode
-	render_xflip:	equ 1
-	render_yflip:	equ 2
-	render_rel:	equ 4
-	render_abs:	equ 0
-	render_rawmap:	equ $20
+	render_xflip:		equ 1
+	render_yflip:		equ 2
+	render_rel:		equ 4
+	render_abs:		equ 0
+	render_rawmap:		equ $20
+	render_xflip_bit:	equ 0
+	render_yflip_bit:	equ 1
+	render_rel_bit:		equ 2
+	render_rawmap_bit:	equ 5
+	render_bg_bit:		equ 6
+	render_onscreen_bit:	equ 7
 ost_tile:		equ 2	; palette line & VRAM setting (2 bytes)
 	tile_xflip:	equ $800
 	tile_yflip:	equ $1000
@@ -121,6 +127,22 @@ ost_anim_delay:		equ $1F	; time to delay animation
 ost_col_type:		equ $20	; collision response type
 ost_col_property:	equ $21	; collision extra property
 ost_status:		equ $22	; orientation or mode
+	status_xflip:		equ 1	; xflip
+	status_yflip:		equ 2	; yflip (objects only)
+	status_air:		equ 2	; Sonic is in the air (Sonic only)
+	status_jump:		equ 4	; jumping or rolling (Sonic only)
+	status_platform:	equ 8	; Sonic is standing on this (objects) / Sonic is standing on object (Sonic)
+	status_rolljump:	equ $10	; Sonic is jumping after rolling (Sonic only)
+	status_pushing:		equ $20	; Sonic is pushing this (objects) / Sonic is pushing an object (Sonic)
+	status_underwater:	equ $40	; Sonic is underwater (Sonic only)
+	status_xflip_bit:	equ 0
+	status_yflip_bit:	equ 1
+	status_air_bit:		equ 1
+	status_jump_bit:	equ 2
+	status_platform_bit:	equ 3
+	status_rolljump_bit:	equ 4
+	status_pushing_bit:	equ 5
+	status_underwater_bit:	equ 6
 ost_respawn:		equ $23	; respawn list index number
 ost_routine:		equ $24	; routine number
 ost_routine2:		equ $25	; secondary routine number
@@ -129,11 +151,17 @@ ost_angle:		equ $26	; angle
 ost_subtype:		equ $28	; object subtype
 
 ; Object variables used by Sonic
-ost_sonic_flash_rate:	equ $30	; time between flashes after getting hit (2 bytes)
+ost_sonic_flash_time:	equ $30	; time Sonic flashes for after getting hit (2 bytes)
 ost_sonic_inv_time:	equ $32	; time left for invincibility (2 bytes)
 ost_sonic_shoe_time:	equ $34	; time left for speed shoes (2 bytes)
+ost_sonic_angle_right:	equ $36 ; angle of floor on Sonic's right side
+ost_sonic_angle_left:	equ $37 ; angle of floor on Sonic's left side
+ost_sonic_sbz_disc:	equ $38 ; 1 if Sonic is stuck to SBZ disc
 
+ost_sonic_restart_time:	equ $3A ; time until level restarts (2 bytes)
+ost_sonic_jump:		equ $3C ; 1 if Sonic is jumping
 ost_sonic_on_obj:	equ $3D	; OST index of object Sonic stands on
+ost_sonic_lock_time:	equ $3E	; time left for locked controls, e.g. after hitting a spring (2 bytes)
 
 ; Animation flags
 afEnd:		equ $FF	; return to beginning of animation
