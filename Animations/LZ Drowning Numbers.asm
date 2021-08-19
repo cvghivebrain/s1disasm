@@ -30,14 +30,14 @@
 		even
 @fiveappear:	dc.b 5,	0, 1, 2, 3, 4, $A, $E, afRoutine
 		even
-@smallbubble:	dc.b $E, 0, 1, 2, afRoutine
+@smallbubble:	dc.b $E, 0, 1, 2, afRoutine			; 6
 		even
-@zeroflash:	dc.b 7,	$16, $D, $16, $D, $16, $D, afRoutine
-@oneflash:	dc.b 7,	$16, $12, $16, $12, $16, $12, afRoutine
-@twoflash:	dc.b 7,	$16, $11, $16, $11, $16, $11, afRoutine
-@threeflash:	dc.b 7,	$16, $10, $16, $10, $16, $10, afRoutine
-@fourflash:	dc.b 7,	$16, $F, $16, $F, $16, $F, afRoutine
-@fiveflash:	dc.b 7,	$16, $E, $16, $E, $16, $E, afRoutine
-@blank:		dc.b $E, afRoutine
-@mediumbubble:	dc.b $E, 1, 2, 3, 4, afRoutine
+@zeroflash:	dc.b 7,	$16, $D, $16, $D, $16, $D, afRoutine	; 7
+@oneflash:	dc.b 7,	$16, $12, $16, $12, $16, $12, afRoutine	; 8
+@twoflash:	dc.b 7,	$16, $11, $16, $11, $16, $11, afRoutine	; 9
+@threeflash:	dc.b 7,	$16, $10, $16, $10, $16, $10, afRoutine	; $A
+@fourflash:	dc.b 7,	$16, $F, $16, $F, $16, $F, afRoutine	; $B
+@fiveflash:	dc.b 7,	$16, $E, $16, $E, $16, $E, afRoutine	; $C
+@blank:		dc.b $E, afRoutine				; $D
+@mediumbubble:	dc.b $E, 1, 2, 3, 4, afRoutine			; $E
 		even

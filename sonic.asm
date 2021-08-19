@@ -9581,114 +9581,7 @@ DLE_FZend2:
 DLE_Ending:
 		rts	
 
-; ---------------------------------------------------------------------------
-; Object 11 - GHZ bridge (max length $11)
-; ---------------------------------------------------------------------------
-
-Bridge:
-		moveq	#0,d0
-		move.b	ost_routine(a0),d0
-		move.w	Bri_Index(pc,d0.w),d1
-		jmp	Bri_Index(pc,d1.w)
-; ===========================================================================
-Bri_Index:	index *,,2
-		ptr Bri_Main
-		ptr Bri_Action
-		ptr Bri_Platform
-		ptr Bri_Delete
-		ptr Bri_Delete
-		ptr Bri_Display
-; ===========================================================================
-
-Bri_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
-		move.l	#Map_Bri,ost_mappings(a0)
-		move.w	#tile_Nem_Bridge+tile_pal3,ost_tile(a0)
-		move.b	#render_rel,ost_render(a0)
-		move.b	#3,ost_priority(a0)
-		move.b	#$80,ost_actwidth(a0)
-		move.w	ost_y_pos(a0),d2
-		move.w	ost_x_pos(a0),d3
-		move.b	0(a0),d4	; copy object number ($11) to d4
-		lea	ost_subtype(a0),a2
-		moveq	#0,d1
-		move.b	(a2),d1		; copy bridge length to d1
-		move.b	#0,(a2)+	; clear bridge length
-		move.w	d1,d0
-		lsr.w	#1,d0
-		lsl.w	#4,d0
-		sub.w	d0,d3		; d3 is position of leftmost log
-		subq.b	#2,d1
-		bcs.s	Bri_Action	; don't make more if bridge has only 1 log
-
-@buildloop:
-		bsr.w	FindFreeObj
-		bne.s	Bri_Action
-		addq.b	#1,ost_subtype(a0)
-		cmp.w	ost_x_pos(a0),d3	; is this log the leftmost one?
-		bne.s	@notleftmost	; if not, branch
-
-		addi.w	#$10,d3
-		move.w	d2,ost_y_pos(a0)
-		move.w	d2,$3C(a0)
-		move.w	a0,d5
-		subi.w	#$D000,d5
-		lsr.w	#6,d5
-		andi.w	#$7F,d5
-		move.b	d5,(a2)+
-		addq.b	#1,ost_subtype(a0)
-
-	@notleftmost:
-		move.w	a1,d5
-		subi.w	#$D000,d5
-		lsr.w	#6,d5
-		andi.w	#$7F,d5
-		move.b	d5,(a2)+
-		move.b	#id_Bri_Display,ost_routine(a1)
-		move.b	d4,0(a1)	; load bridge object (d4 = $11)
-		move.w	d2,ost_y_pos(a1)
-		move.w	d2,$3C(a1)
-		move.w	d3,ost_x_pos(a1)
-		move.l	#Map_Bri,ost_mappings(a1)
-		move.w	#tile_Nem_Bridge+tile_pal3,ost_tile(a1)
-		move.b	#render_rel,ost_render(a1)
-		move.b	#3,ost_priority(a1)
-		move.b	#8,ost_actwidth(a1)
-		addi.w	#$10,d3
-		dbf	d1,@buildloop ; repeat d1 times (length of bridge)
-
-Bri_Action:	; Routine 2
-		bsr.s	Bri_Solid
-		tst.b	$3E(a0)
-		beq.s	@display
-		subq.b	#4,$3E(a0)
-		bsr.w	Bri_Bend
-
-	@display:
-		bsr.w	DisplaySprite
-		bra.w	Bri_ChkDel
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Bri_Solid:
-		moveq	#0,d1
-		move.b	ost_subtype(a0),d1
-		lsl.w	#3,d1
-		move.w	d1,d2
-		addq.w	#8,d1
-		add.w	d2,d2
-		lea	(v_player).w,a1
-		tst.w	ost_y_vel(a1)
-		bmi.w	Plat_Exit
-		move.w	ost_x_pos(a1),d0
-		sub.w	ost_x_pos(a0),d0
-		add.w	d1,d0
-		bmi.w	Plat_Exit
-		cmp.w	d2,d0
-		bcc.w	Plat_Exit
-		bra.s	Plat_NoXCheck
-; End of function Bri_Solid
+Bridge:		include "Objects\GHZ Bridge (1).asm"
 
 ; ---------------------------------------------------------------------------
 ; Platform subroutine
@@ -9827,44 +9720,13 @@ Swing_Solid:
 
 ; ===========================================================================
 
-
-Bri_Platform:	; Routine 4
-		bsr.s	Bri_WalkOff
-		bsr.w	DisplaySprite
-		bra.w	Bri_ChkDel
-
-; ---------------------------------------------------------------------------
-; Subroutine allowing Sonic to walk off a bridge
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Bri_WalkOff:
-		moveq	#0,d1
-		move.b	ost_subtype(a0),d1
-		lsl.w	#3,d1
-		move.w	d1,d2
-		addq.w	#8,d1
-		bsr.s	ExitPlatform2
-		bcc.s	locret_75BE
-		lsr.w	#4,d0
-		move.b	d0,$3F(a0)
-		move.b	$3E(a0),d0
-		cmpi.b	#$40,d0
-		beq.s	loc_75B6
-		addq.b	#4,$3E(a0)
-
-loc_75B6:
-		bsr.w	Bri_Bend
-		bsr.w	Bri_MoveSonic
-
-locret_75BE:
-		rts	
-; End of function Bri_WalkOff
+		include "Objects\GHZ Bridge (2).asm"
 
 ; ---------------------------------------------------------------------------
 ; Subroutine allowing Sonic to walk or jump off	a platform
+
+; input:
+;	d1 = platform width
 ; ---------------------------------------------------------------------------
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
@@ -9876,321 +9738,30 @@ ExitPlatform:
 ExitPlatform2:
 		add.w	d2,d2
 		lea	(v_player).w,a1
-		btst	#1,ost_status(a1)
-		bne.s	loc_75E0
+		btst	#status_air_bit,ost_status(a1) ; is Sonic in the air?
+		bne.s	loc_75E0	; if yes, branch
 		move.w	ost_x_pos(a1),d0
 		sub.w	ost_x_pos(a0),d0
 		add.w	d1,d0
-		bmi.s	loc_75E0
+		bmi.s	loc_75E0	; branch if Sonic leaves the platform
 		cmp.w	d2,d0
 		blo.s	locret_75F2
 
 loc_75E0:
-		bclr	#3,ost_status(a1)
-		move.b	#2,ost_routine(a0)
-		bclr	#3,ost_status(a0)
+		bclr	#status_platform_bit,ost_status(a1)
+		move.b	#status_jump_bit,ost_routine(a0)
+		bclr	#status_platform_bit,ost_status(a0)
 
 locret_75F2:
 		rts	
 ; End of function ExitPlatform
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Bri_MoveSonic:
-		moveq	#0,d0
-		move.b	$3F(a0),d0
-		move.b	$29(a0,d0.w),d0
-		lsl.w	#6,d0
-		addi.l	#v_objspace&$FFFFFF,d0
-		movea.l	d0,a2
-		lea	(v_player).w,a1
-		move.w	ost_y_pos(a2),d0
-		subq.w	#8,d0
-		moveq	#0,d1
-		move.b	ost_height(a1),d1
-		sub.w	d1,d0
-		move.w	d0,ost_y_pos(a1)	; change Sonic's position on y-axis
-		rts	
-; End of function Bri_MoveSonic
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Bri_Bend:
-		move.b	$3E(a0),d0
-		bsr.w	CalcSine
-		move.w	d0,d4
-		lea	(Obj11_BendData2).l,a4
-		moveq	#0,d0
-		move.b	ost_subtype(a0),d0
-		lsl.w	#4,d0
-		moveq	#0,d3
-		move.b	$3F(a0),d3
-		move.w	d3,d2
-		add.w	d0,d3
-		moveq	#0,d5
-		lea	(Obj11_BendData).l,a5
-		move.b	(a5,d3.w),d5
-		andi.w	#$F,d3
-		lsl.w	#4,d3
-		lea	(a4,d3.w),a3
-		lea	$29(a0),a2
-
-loc_765C:
-		moveq	#0,d0
-		move.b	(a2)+,d0
-		lsl.w	#6,d0
-		addi.l	#v_objspace&$FFFFFF,d0
-		movea.l	d0,a1
-		moveq	#0,d0
-		move.b	(a3)+,d0
-		addq.w	#1,d0
-		mulu.w	d5,d0
-		mulu.w	d4,d0
-		swap	d0
-		add.w	$3C(a1),d0
-		move.w	d0,ost_y_pos(a1)
-		dbf	d2,loc_765C
-		moveq	#0,d0
-		move.b	ost_subtype(a0),d0
-		moveq	#0,d3
-		move.b	$3F(a0),d3
-		addq.b	#1,d3
-		sub.b	d0,d3
-		neg.b	d3
-		bmi.s	locret_76CA
-		move.w	d3,d2
-		lsl.w	#4,d3
-		lea	(a4,d3.w),a3
-		adda.w	d2,a3
-		subq.w	#1,d2
-		bcs.s	locret_76CA
-
-loc_76A4:
-		moveq	#0,d0
-		move.b	(a2)+,d0
-		lsl.w	#6,d0
-		addi.l	#v_objspace&$FFFFFF,d0
-		movea.l	d0,a1
-		moveq	#0,d0
-		move.b	-(a3),d0
-		addq.w	#1,d0
-		mulu.w	d5,d0
-		mulu.w	d4,d0
-		swap	d0
-		add.w	$3C(a1),d0
-		move.w	d0,ost_y_pos(a1)
-		dbf	d2,loc_76A4
-
-locret_76CA:
-		rts	
-; End of function Bri_Bend
-
-; ===========================================================================
-; ---------------------------------------------------------------------------
-; GHZ bridge-bending data
-; (Defines how the bridge bends	when Sonic walks across	it)
-; ---------------------------------------------------------------------------
-Obj11_BendData:	incbin	"misc\ghzbend1.bin"
-		even
-Obj11_BendData2:incbin	"misc\ghzbend2.bin"
-		even
-
-; ===========================================================================
-
-Bri_ChkDel:
-		out_of_range	@deletebridge
-		rts	
-; ===========================================================================
-
-@deletebridge:
-		moveq	#0,d2
-		lea	ost_subtype(a0),a2 ; load bridge length
-		move.b	(a2)+,d2	; move bridge length to	d2
-		subq.b	#1,d2		; subtract 1
-		bcs.s	@delparent
-
-	@loop:
-		moveq	#0,d0
-		move.b	(a2)+,d0
-		lsl.w	#6,d0
-		addi.l	#v_objspace&$FFFFFF,d0
-		movea.l	d0,a1
-		cmp.w	a0,d0
-		beq.s	@skipdel
-		bsr.w	DeleteChild
-
-	@skipdel:
-		dbf	d2,@loop ; repeat d2 times (bridge length)
-
-@delparent:
-		bsr.w	DeleteObject
-		rts	
-; ===========================================================================
-
-Bri_Delete:	; Routine 6, 8
-		bsr.w	DeleteObject
-		rts	
-; ===========================================================================
-
-Bri_Display:	; Routine $A
-		bsr.w	DisplaySprite
-		rts	
-		
+		include "Objects\GHZ Bridge (3).asm"
 Map_Bri:	include "Mappings\GHZ Bridge.asm"
 
-; ---------------------------------------------------------------------------
-; Object 15 - swinging platforms (GHZ, MZ, SLZ)
-;	    - spiked ball on a chain (SBZ)
-; ---------------------------------------------------------------------------
-
 SwingingPlatform:
-		moveq	#0,d0
-		move.b	ost_routine(a0),d0
-		move.w	Swing_Index(pc,d0.w),d1
-		jmp	Swing_Index(pc,d1.w)
-; ===========================================================================
-Swing_Index:	index *,,2
-		ptr Swing_Main
-		ptr Swing_SetSolid
-		ptr Swing_Action2
-		ptr Swing_Delete
-		ptr Swing_Delete
-		ptr Swing_Display
-		ptr Swing_Action
-
-swing_origX:	equ $3A		; original x-axis position
-swing_origY:	equ $38		; original y-axis position
-; ===========================================================================
-
-Swing_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
-		move.l	#Map_Swing_GHZ,ost_mappings(a0) ; GHZ and MZ specific code
-		move.w	#tile_Nem_Swing+tile_pal3,ost_tile(a0)
-		move.b	#render_rel,ost_render(a0)
-		move.b	#3,ost_priority(a0)
-		move.b	#$18,ost_actwidth(a0)
-		move.b	#8,ost_height(a0)
-		move.w	ost_y_pos(a0),swing_origY(a0)
-		move.w	ost_x_pos(a0),swing_origX(a0)
-		cmpi.b	#id_SLZ,(v_zone).w ; check if level is SLZ
-		bne.s	@notSLZ
-
-		move.l	#Map_Swing_SLZ,ost_mappings(a0) ; SLZ specific code
-		move.w	#tile_Nem_SlzSwing+tile_pal3,ost_tile(a0)
-		move.b	#$20,ost_actwidth(a0)
-		move.b	#$10,ost_height(a0)
-		move.b	#$99,ost_col_type(a0)
-
-	@notSLZ:
-		cmpi.b	#id_SBZ,(v_zone).w ; check if level is SBZ
-		bne.s	@length
-
-		move.l	#Map_BBall,ost_mappings(a0) ; SBZ specific code
-		move.w	#tile_Nem_BigSpike_SBZ,ost_tile(a0)
-		move.b	#$18,ost_actwidth(a0)
-		move.b	#$18,ost_height(a0)
-		move.b	#$86,ost_col_type(a0)
-		move.b	#id_Swing_Action,ost_routine(a0) ; goto Swing_Action next
-
-@length:
-		move.b	0(a0),d4
-		moveq	#0,d1
-		lea	ost_subtype(a0),a2 ; move chain length to a2
-		move.b	(a2),d1		; move a2 to d1
-		move.w	d1,-(sp)
-		andi.w	#$F,d1
-		move.b	#0,(a2)+
-		move.w	d1,d3
-		lsl.w	#4,d3
-		addq.b	#8,d3
-		move.b	d3,$3C(a0)
-		subq.b	#8,d3
-		tst.b	ost_frame(a0)
-		beq.s	@makechain
-		addq.b	#8,d3
-		subq.w	#1,d1
-
-@makechain:
-		bsr.w	FindFreeObj
-		bne.s	@fail
-		addq.b	#1,ost_subtype(a0)
-		move.w	a1,d5
-		subi.w	#$D000,d5
-		lsr.w	#6,d5
-		andi.w	#$7F,d5
-		move.b	d5,(a2)+
-		move.b	#$A,ost_routine(a1) ; goto Swing_Display next
-		move.b	d4,0(a1)	; load swinging	object
-		move.l	ost_mappings(a0),ost_mappings(a1)
-		move.w	ost_tile(a0),ost_tile(a1)
-		bclr	#6,ost_tile(a1)
-		move.b	#render_rel,ost_render(a1)
-		move.b	#4,ost_priority(a1)
-		move.b	#8,ost_actwidth(a1)
-		move.b	#1,ost_frame(a1)
-		move.b	d3,$3C(a1)
-		subi.b	#$10,d3
-		bcc.s	@notanchor
-		move.b	#2,ost_frame(a1)
-		move.b	#3,ost_priority(a1)
-		bset	#6,ost_tile(a1)
-
-	@notanchor:
-		dbf	d1,@makechain ; repeat d1 times (chain length)
-
-	@fail:
-		move.w	a0,d5
-		subi.w	#$D000,d5
-		lsr.w	#6,d5
-		andi.w	#$7F,d5
-		move.b	d5,(a2)+
-		move.w	#$4080,ost_angle(a0)
-		move.w	#-$200,$3E(a0)
-		move.w	(sp)+,d1
-		btst	#4,d1		; is object type $1X ?
-		beq.s	@not1X	; if not, branch
-		move.l	#Map_GBall,ost_mappings(a0) ; use GHZ ball mappings
-		move.w	#tile_Nem_Ball+tile_pal3,ost_tile(a0)
-		move.b	#1,ost_frame(a0)
-		move.b	#2,ost_priority(a0)
-		move.b	#$81,ost_col_type(a0) ; make object hurt when touched
-
-	@not1X:
-		cmpi.b	#id_SBZ,(v_zone).w ; is zone SBZ?
-		beq.s	Swing_Action	; if yes, branch
-
-Swing_SetSolid:	; Routine 2
-		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
-		moveq	#0,d3
-		move.b	ost_height(a0),d3
-		bsr.w	Swing_Solid
-
-Swing_Action:	; Routine $C
-		bsr.w	Swing_Move
-		bsr.w	DisplaySprite
-		bra.w	Swing_ChkDel
-; ===========================================================================
-
-Swing_Action2:	; Routine 4
-		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
-		bsr.w	ExitPlatform
-		move.w	ost_x_pos(a0),-(sp)
-		bsr.w	Swing_Move
-		move.w	(sp)+,d2
-		moveq	#0,d3
-		move.b	ost_height(a0),d3
-		addq.b	#1,d3
-		bsr.w	MvSonicOnPtfm
-		bsr.w	DisplaySprite
-		bra.w	Swing_ChkDel
-
-		rts
-
+		include "Objects\GHZ, MZ & SLZ Swinging Platforms, SBZ Ball on Chain (1).asm"
+		
 ; ---------------------------------------------------------------------------
 ; Subroutine to	change Sonic's position with a platform
 ; ---------------------------------------------------------------------------
@@ -10241,7 +9812,7 @@ locret_7B62:
 Swing_Move:
 		move.b	(v_oscillate+$1A).w,d0
 		move.w	#$80,d1
-		btst	#0,ost_status(a0)
+		btst	#status_xflip_bit,ost_status(a0)
 		beq.s	loc_7B78
 		neg.w	d0
 		add.w	d1,d0
@@ -10280,69 +9851,7 @@ loc_7BB6:
 		move.b	ost_angle(a0),d0
 ; End of function Obj48_Move
 
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Swing_Move2:
-		bsr.w	CalcSine
-		move.w	$38(a0),d2
-		move.w	$3A(a0),d3
-		lea	ost_subtype(a0),a2
-		moveq	#0,d6
-		move.b	(a2)+,d6
-
-loc_7BCE:
-		moveq	#0,d4
-		move.b	(a2)+,d4
-		lsl.w	#6,d4
-		addi.l	#v_objspace&$FFFFFF,d4
-		movea.l	d4,a1
-		moveq	#0,d4
-		move.b	$3C(a1),d4
-		move.l	d4,d5
-		muls.w	d0,d4
-		asr.l	#8,d4
-		muls.w	d1,d5
-		asr.l	#8,d5
-		add.w	d2,d4
-		add.w	d3,d5
-		move.w	d4,ost_y_pos(a1)
-		move.w	d5,ost_x_pos(a1)
-		dbf	d6,loc_7BCE
-		rts	
-; End of function Swing_Move2
-
-; ===========================================================================
-
-Swing_ChkDel:
-		out_of_range	Swing_DelAll,$3A(a0)
-		rts	
-; ===========================================================================
-
-Swing_DelAll:
-		moveq	#0,d2
-		lea	ost_subtype(a0),a2
-		move.b	(a2)+,d2
-
-Swing_DelLoop:
-		moveq	#0,d0
-		move.b	(a2)+,d0
-		lsl.w	#6,d0
-		addi.l	#v_objspace&$FFFFFF,d0
-		movea.l	d0,a1
-		bsr.w	DeleteChild
-		dbf	d2,Swing_DelLoop ; repeat for length of	chain
-		rts	
-; ===========================================================================
-
-Swing_Delete:	; Routine 6, 8
-		bsr.w	DeleteObject
-		rts	
-; ===========================================================================
-
-Swing_Display:	; Routine $A
-		bra.w	DisplaySprite
+		include "Objects\GHZ, MZ & SLZ Swinging Platforms, SBZ Ball on Chain (2).asm"
 		
 Map_Swing_GHZ:	include "Mappings\GHZ & MZ Swinging Platforms.asm"
 Map_Swing_SLZ:	include "Mappings\SLZ Swinging Platforms.asm"
@@ -10351,7 +9860,8 @@ Helix:		include "Objects\GHZ Spiked Helix Pole.asm"
 Map_Hel:	include "Mappings\GHZ Spiked Helix Pole.asm"
 
 BasicPlatform:	include "Objects\Platforms.asm"		
-Map_Plat_Unused:include "Mappings\Unused Platforms.asm"
+Map_Plat_Unused:
+		include "Mappings\Unused Platforms.asm"
 Map_Plat_GHZ:	include "Mappings\GHZ Platforms.asm"
 Map_Plat_SYZ:	include "Mappings\SYZ Platforms.asm"
 Map_Plat_SLZ:	include "Mappings\SLZ Platforms.asm"

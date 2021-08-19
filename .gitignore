@@ -5,3 +5,5 @@ s1built.prev.bin
 smps*
 samples/*
 *.lnk
+sonic.asm_unsplit
+Unsplit.exe

@@ -14,16 +14,15 @@ Hel_Index:	index *,,2
 		ptr Hel_Delete
 		ptr Hel_Display
 
-hel_frame:	equ $3E		; start frame (different for each spike)
-
-;		$29-38 are used for child object addresses
+ost_helix_frame:	equ $3E	; start frame (different for each spike)
+ost_helix_child_list:	equ $29	; list of child OST indices (up to 15 bytes)
 ; ===========================================================================
 
 Hel_Main:	; Routine 0
 		addq.b	#2,ost_routine(a0)
 		move.l	#Map_Hel,ost_mappings(a0)
 		move.w	#tile_Nem_SpikePole+tile_pal3,ost_tile(a0)
-		move.b	#7,ost_status(a0)
+		move.b	#status_xflip+status_yflip+status_jump,ost_status(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#3,ost_priority(a0)
 		move.b	#8,ost_actwidth(a0)
@@ -47,10 +46,10 @@ Hel_Build:
 		bne.s	Hel_Action
 		addq.b	#1,ost_subtype(a0)
 		move.w	a1,d5
-		subi.w	#$D000,d5
+		subi.w	#v_objspace&$FFFF,d5
 		lsr.w	#6,d5
 		andi.w	#$7F,d5
-		move.b	d5,(a2)+	; copy child address to parent RAM
+		move.b	d5,(a2)+	; copy child OST index to byte list in parent OST
 		move.b	#id_Hel_Display,ost_routine(a1)
 		move.b	d4,0(a1)
 		move.w	d2,ost_y_pos(a1)
@@ -60,14 +59,14 @@ Hel_Build:
 		move.b	#render_rel,ost_render(a1)
 		move.b	#3,ost_priority(a1)
 		move.b	#8,ost_actwidth(a1)
-		move.b	d6,hel_frame(a1)
+		move.b	d6,ost_helix_frame(a1)
 		addq.b	#1,d6
 		andi.b	#7,d6
 		addi.w	#$10,d3
-		cmp.w	ost_x_pos(a0),d3	; is this spike in the centre?
+		cmp.w	ost_x_pos(a0),d3 ; is this spike in the centre?
 		bne.s	Hel_NotCentre	; if not, branch
 
-		move.b	d6,hel_frame(a0) ; set parent spike frame
+		move.b	d6,ost_helix_frame(a0) ; set parent spike frame
 		addq.b	#1,d6
 		andi.b	#7,d6
 		addi.w	#$10,d3		; skip to next spike
@@ -87,9 +86,9 @@ Hel_Action:	; Routine 2, 4
 Hel_RotateSpikes:
 		move.b	(v_ani0_frame).w,d0
 		move.b	#0,ost_col_type(a0) ; make object harmless
-		add.b	hel_frame(a0),d0
+		add.b	ost_helix_frame(a0),d0
 		andi.b	#7,d0
-		move.b	d0,ost_frame(a0)	; change current frame
+		move.b	d0,ost_frame(a0) ; change current frame
 		bne.s	locret_7DA6
 		move.b	#$84,ost_col_type(a0) ; make object harmful
 
