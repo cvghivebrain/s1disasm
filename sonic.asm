@@ -4279,7 +4279,7 @@ GM_Special:
 		clr.w	(f_restart).w
 		moveq	#id_Pal_Special,d0
 		bsr.w	PalLoad1	; load special stage palette
-		jsr	(SS_Load).l		; load SS layout data
+		jsr	(SS_Load).l	; load SS layout data
 		move.l	#0,(v_screenposx).w
 		move.l	#0,(v_screenposy).w
 		move.b	#id_SonicSpecial,(v_player).w ; load special stage Sonic object

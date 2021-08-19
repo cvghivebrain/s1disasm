@@ -19,9 +19,9 @@ Sign_Index:	index *,,2
 		ptr Sign_SonicRun
 		ptr Sign_Exit
 
-spintime:	equ $30		; time for signpost to spin
-sparkletime:	equ $32		; time between sparkles
-sparkle_id:	equ $34		; counter to keep track of sparkles
+ost_sign_spin_time:	equ $30	; time for signpost to spin (2 bytes)
+ost_sign_sparkle_time:	equ $32	; time between sparkles (2 bytes)
+ost_sign_sparkle_id:	equ $34	; counter to keep track of sparkles
 ; ===========================================================================
 
 Sign_Main:	; Routine 0
@@ -38,7 +38,7 @@ Sign_Touch:	; Routine 2
 		bcs.s	@notouch
 		cmpi.w	#$20,d0		; is Sonic within $20 pixels of	the signpost?
 		bcc.s	@notouch	; if not, branch
-		music	sfx_Signpost,0,0,0	; play signpost sound
+		music	sfx_Signpost,0,0,0 ; play signpost sound
 		clr.b	(f_timecount).w	; stop time counter
 		move.w	(v_limitright2).w,(v_limitleft2).w ; lock screen position
 		addq.b	#2,ost_routine(a0)
@@ -48,22 +48,22 @@ Sign_Touch:	; Routine 2
 ; ===========================================================================
 
 Sign_Spin:	; Routine 4
-		subq.w	#1,spintime(a0)	; subtract 1 from spin time
+		subq.w	#1,ost_sign_spin_time(a0)	; subtract 1 from spin time
 		bpl.s	@chksparkle	; if time remains, branch
-		move.w	#60,spintime(a0) ; set spin cycle time to 1 second
+		move.w	#60,ost_sign_spin_time(a0) ; set spin cycle time to 1 second
 		addq.b	#1,ost_anim(a0)	; next spin cycle
 		cmpi.b	#3,ost_anim(a0)	; have 3 spin cycles completed?
 		bne.s	@chksparkle	; if not, branch
 		addq.b	#2,ost_routine(a0)
 
 	@chksparkle:
-		subq.w	#1,sparkletime(a0) ; subtract 1 from time delay
+		subq.w	#1,ost_sign_sparkle_time(a0) ; subtract 1 from time delay
 		bpl.s	@fail		; if time remains, branch
-		move.w	#$B,sparkletime(a0) ; set time between sparkles to $B frames
+		move.w	#$B,ost_sign_sparkle_time(a0) ; set time between sparkles to $B frames
 		moveq	#0,d0
-		move.b	sparkle_id(a0),d0 ; get sparkle id
-		addq.b	#2,sparkle_id(a0) ; increment sparkle counter
-		andi.b	#$E,sparkle_id(a0)
+		move.b	ost_sign_sparkle_id(a0),d0 ; get sparkle id
+		addq.b	#2,ost_sign_sparkle_id(a0) ; increment sparkle counter
+		andi.b	#$E,ost_sign_sparkle_id(a0)
 		lea	Sign_SparkPos(pc,d0.w),a2 ; load sparkle position data
 		bsr.w	FindFreeObj
 		bne.s	@fail
@@ -99,7 +99,7 @@ Sign_SparkPos:	dc.b -$18,-$10		; x-position, y-position
 Sign_SonicRun:	; Routine 6
 		tst.w	(v_debuguse).w	; is debug mode	on?
 		bne.w	locret_ECEE	; if yes, branch
-		btst	#1,(v_player+ost_status).w
+		btst	#status_air_bit,(v_player+ost_status).w
 		bne.s	loc_EC70
 		move.b	#1,(f_lockctrl).w ; lock controls
 		move.w	#btnR<<8,(v_jpadhold2).w ; make Sonic run to the right
@@ -152,7 +152,7 @@ GotThroughAct:
 		move.w	(v_rings).w,d0	; load number of rings
 		mulu.w	#10,d0		; multiply by 10
 		move.w	d0,(v_ringbonus).w ; set ring bonus
-		sfx	bgm_GotThrough,0,0,0	; play "Sonic got through" music
+		sfx	bgm_GotThrough,0,0,0 ; play "Sonic got through" music
 
 locret_ECEE:
 		rts	

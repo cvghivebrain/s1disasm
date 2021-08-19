@@ -12,8 +12,8 @@ Pole_Index:	index *,,2
 		ptr Pole_Action
 		ptr Pole_Display
 
-pole_time:	equ $30		; time between grabbing the pole & breaking
-pole_grabbed:	equ $32		; flag set when Sonic grabs the pole
+ost_pole_time:		equ $30	; time between grabbing the pole & breaking (2 bytes)
+ost_pole_grabbed:	equ $32	; flag set when Sonic grabs the pole
 ; ===========================================================================
 
 Pole_Main:	; Routine 0
@@ -27,16 +27,16 @@ Pole_Main:	; Routine 0
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0 ; get object type
 		mulu.w	#60,d0		; multiply by 60 (1 second)
-		move.w	d0,pole_time(a0) ; set breakage time
+		move.w	d0,ost_pole_time(a0) ; set breakage time
 
 Pole_Action:	; Routine 2
-		tst.b	pole_grabbed(a0) ; has pole already been grabbed?
+		tst.b	ost_pole_grabbed(a0) ; has pole already been grabbed?
 		beq.s	@grab		; if not, branch
-		tst.w	pole_time(a0)
+		tst.w	ost_pole_time(a0)
 		beq.s	@moveup
-		subq.w	#1,pole_time(a0) ; decrement time until break
+		subq.w	#1,ost_pole_time(a0) ; decrement time until break
 		bne.s	@moveup
-		move.b	#1,ost_frame(a0)	; break	the pole
+		move.b	#1,ost_frame(a0) ; break the pole
 		bra.s	@release
 ; ===========================================================================
 
@@ -46,7 +46,7 @@ Pole_Action:	; Routine 2
 		subi.w	#$18,d0
 		btst	#bitUp,(v_jpadhold1).w ; is "up" pressed?
 		beq.s	@movedown	; if not, branch
-		subq.w	#1,ost_y_pos(a1)	; move Sonic up
+		subq.w	#1,ost_y_pos(a1) ; move Sonic up
 		cmp.w	ost_y_pos(a1),d0
 		bcs.s	@movedown
 		move.w	d0,ost_y_pos(a1)
@@ -55,7 +55,7 @@ Pole_Action:	; Routine 2
 		addi.w	#$24,d0
 		btst	#bitDn,(v_jpadhold1).w ; is "down" pressed?
 		beq.s	@letgo		; if not, branch
-		addq.w	#1,ost_y_pos(a1)	; move Sonic down
+		addq.w	#1,ost_y_pos(a1) ; move Sonic down
 		cmp.w	ost_y_pos(a1),d0
 		bcc.s	@letgo
 		move.w	d0,ost_y_pos(a1)
@@ -70,7 +70,7 @@ Pole_Action:	; Routine 2
 		addq.b	#2,ost_routine(a0) ; goto Pole_Display next
 		clr.b	(f_lockmulti).w
 		clr.b	(f_wtunnelallow).w
-		clr.b	pole_grabbed(a0)
+		clr.b	ost_pole_grabbed(a0)
 		bra.s	Pole_Display
 ; ===========================================================================
 
@@ -83,18 +83,18 @@ Pole_Action:	; Routine 2
 		cmp.w	ost_x_pos(a1),d0
 		bcc.s	Pole_Display
 		clr.b	ost_col_property(a0)
-		cmpi.b	#4,ost_routine(a1)
-		bcc.s	Pole_Display
+		cmpi.b	#id_Sonic_Hurt,ost_routine(a1) ; is Sonic hurt or dead?
+		bcc.s	Pole_Display	; if yes, branch
 		clr.w	ost_x_vel(a1)	; stop Sonic moving
 		clr.w	ost_y_vel(a1)	; stop Sonic moving
 		move.w	ost_x_pos(a0),d0
 		addi.w	#$14,d0
 		move.w	d0,ost_x_pos(a1)
-		bclr	#0,ost_status(a1)
+		bclr	#status_xflip_bit,ost_status(a1)
 		move.b	#id_Hang,ost_anim(a1) ; set Sonic's animation to "hanging" ($11)
 		move.b	#1,(f_lockmulti).w ; lock controls
 		move.b	#1,(f_wtunnelallow).w ; disable wind tunnel
-		move.b	#1,pole_grabbed(a0) ; begin countdown to breakage
+		move.b	#1,ost_pole_grabbed(a0) ; begin countdown to breakage
 
 Pole_Display:	; Routine 4
 		bra.w	RememberState

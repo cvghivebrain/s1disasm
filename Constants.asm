@@ -91,6 +91,7 @@ ost_render:		equ 1	; bitfield for x/y flip, display mode
 	render_rel:		equ 4
 	render_abs:		equ 0
 	render_rawmap:		equ $20
+	render_onscreen:	equ $80
 	render_xflip_bit:	equ 0
 	render_yflip_bit:	equ 1
 	render_rel_bit:		equ 2
@@ -105,6 +106,9 @@ ost_tile:		equ 2	; palette line & VRAM setting (2 bytes)
 	tile_pal3:	equ $4000
 	tile_pal4:	equ $6000
 	tile_hi:	equ $8000
+	tile_xflip_bit:	equ 3
+	tile_yflip_bit:	equ 4
+	tile_hi_bit:	equ 7
 ost_mappings:		equ 4	; mappings address (4 bytes)
 ost_x_pos:		equ 8	; x-axis position (2 bytes)
 ost_x_sub:		equ $A	; x-axis subpixel position (2 bytes)

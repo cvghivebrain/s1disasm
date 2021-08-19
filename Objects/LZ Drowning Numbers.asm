@@ -19,8 +19,14 @@ Drown_Index:	index *,,2
 		ptr Drown_Display
 		ptr Drown_Delete
 
-drown_origX:		equ $30		; original x-axis position
-drown_time:		equ $38		; time between each number changes
+ost_drown_restart_time:	equ $2C	; time to restart after Sonic drowns (2 bytes)
+ost_drown_x_start:	equ $30	; original x-axis position (2 bytes)
+ost_drown_disp_time:	equ $32	; time to display each number
+ost_drown_type:		equ $33	; bubble type
+ost_drown_extra_bub:	equ $34	; number of extra bubbles to create
+ost_drown_extra_flag:	equ $36	; flags for extra bubbles (2 bytes)
+ost_drown_num_time:	equ $38	; time between each number changes (2 bytes)
+;			equ $3A	; some sort of delay for something (2 bytes)
 ; ===========================================================================
 
 Drown_Main:	; Routine 0
@@ -37,13 +43,13 @@ Drown_Main:	; Routine 0
 		move.l	#Map_Drown,ost_mappings(a0)
 		move.w	#$440,ost_tile(a0)
 		andi.w	#$7F,d0
-		move.b	d0,$33(a0)
+		move.b	d0,ost_drown_type(a0)
 		bra.w	Drown_Countdown
 ; ===========================================================================
 
 @smallbubble:
 		move.b	d0,ost_anim(a0)
-		move.w	ost_x_pos(a0),drown_origX(a0)
+		move.w	ost_x_pos(a0),ost_drown_x_start(a0)
 		move.w	#-$88,ost_y_vel(a0)
 
 Drown_Animate:	; Routine 2
@@ -65,7 +71,7 @@ Drown_ChkWater:	; Routine 4
 @wobble:
 		tst.b	(f_wtunnelmode).w ; is Sonic in a water tunnel?
 		beq.s	@notunnel	; if not, branch
-		addq.w	#4,drown_origX(a0)
+		addq.w	#4,ost_drown_x_start(a0)
 
 	@notunnel:
 		move.b	ost_angle(a0),d0
@@ -74,7 +80,7 @@ Drown_ChkWater:	; Routine 4
 		lea	(Drown_WobbleData).l,a1
 		move.b	(a1,d0.w),d0
 		ext.w	d0
-		add.w	drown_origX(a0),d0
+		add.w	ost_drown_x_start(a0),d0
 		move.w	d0,ost_x_pos(a0)
 		bsr.s	Drown_ShowNumber
 		jsr	(SpeedToPos).l
@@ -99,8 +105,8 @@ Drown_Delete:	; Routine 8, Routine $10
 
 Drown_AirLeft:	; Routine $C
 		cmpi.w	#$C,(v_air).w	; check air remaining
-		bhi.s	Drown_AirLeft_Delete		; if higher than $C, branch
-		subq.w	#1,drown_time(a0)
+		bhi.s	Drown_AirLeft_Delete ; if higher than $C, branch
+		subq.w	#1,ost_drown_num_time(a0)
 		bne.s	@display
 		move.b	#id_Drown_Display+8,ost_routine(a0) ; goto Drown_Display next
 		addq.b	#7,ost_anim(a0)
@@ -119,16 +125,16 @@ Drown_AirLeft_Delete:
 ; ===========================================================================
 
 Drown_ShowNumber:
-		tst.w	drown_time(a0)
+		tst.w	ost_drown_num_time(a0)
 		beq.s	@nonumber
-		subq.w	#1,drown_time(a0)	; decrement timer
+		subq.w	#1,ost_drown_num_time(a0) ; decrement timer
 		bne.s	@nonumber	; if time remains, branch
 		cmpi.b	#7,ost_anim(a0)
 		bcc.s	@nonumber
 
-		move.w	#15,drown_time(a0)
+		move.w	#15,ost_drown_num_time(a0)
 		clr.w	ost_y_vel(a0)
-		move.b	#$80,ost_render(a0)
+		move.b	#render_onscreen+render_abs,ost_render(a0)
 		move.w	ost_x_pos(a0),d0
 		sub.w	(v_screenposx).w,d0
 		addi.w	#$80,d0
@@ -173,20 +179,20 @@ Drown_WobbleData:
 ; ===========================================================================
 
 Drown_Countdown:; Routine $A
-		tst.w	$2C(a0)
+		tst.w	ost_drown_restart_time(a0)
 		bne.w	@loc_13F86
-		cmpi.b	#6,(v_player+ost_routine).w
-		bcc.w	@nocountdown
-		btst	#6,(v_player+ost_status).w ; is Sonic underwater?
+		cmpi.b	#id_Sonic_Death,(v_player+ost_routine).w ; is Sonic dead?
+		bcc.w	@nocountdown	; if yes, branch
+		btst	#status_underwater_bit,(v_player+ost_status).w ; is Sonic underwater?
 		beq.w	@nocountdown	; if not, branch
 
-		subq.w	#1,drown_time(a0)	; decrement timer
+		subq.w	#1,ost_drown_num_time(a0) ; decrement timer
 		bpl.w	@nochange	; branch if time remains
-		move.w	#59,drown_time(a0)
-		move.w	#1,$36(a0)
+		move.w	#59,ost_drown_num_time(a0)
+		move.w	#1,ost_drown_extra_flag(a0)
 		jsr	(RandomNumber).l
 		andi.w	#1,d0
-		move.b	d0,$34(a0)
+		move.b	d0,ost_drown_extra_bub(a0)
 		move.w	(v_air).w,d0	; check air remaining
 		cmpi.w	#25,d0
 		beq.s	@warnsound	; play sound if	air is 25
@@ -198,13 +204,13 @@ Drown_Countdown:; Routine $A
 		bhi.s	@reduceair	; if air is above 12, branch
 
 		bne.s	@skipmusic	; if air is less than 12, branch
-		music	bgm_Drowning,0,0,0	; play countdown music
+		music	bgm_Drowning,0,0,0 ; play countdown music
 
 	@skipmusic:
-		subq.b	#1,$32(a0)
+		subq.b	#1,ost_drown_disp_time(a0)
 		bpl.s	@reduceair
-		move.b	$33(a0),$32(a0)
-		bset	#7,$36(a0)
+		move.b	ost_drown_type(a0),ost_drown_disp_time(a0)
+		bset	#7,ost_drown_extra_flag(a0)
 		bra.s	@reduceair
 ; ===========================================================================
 
@@ -219,15 +225,15 @@ Drown_Countdown:; Routine $A
 		bsr.w	ResumeMusic
 		move.b	#$81,(f_lockmulti).w ; lock controls
 		sfx	sfx_Drown,0,0,0	; play drowning sound
-		move.b	#$A,$34(a0)
-		move.w	#1,$36(a0)
-		move.w	#$78,$2C(a0)
+		move.b	#$A,ost_drown_extra_bub(a0)
+		move.w	#1,ost_drown_extra_flag(a0)
+		move.w	#$78,ost_drown_restart_time(a0)
 		move.l	a0,-(sp)
 		lea	(v_player).w,a0
 		bsr.w	Sonic_ResetOnFloor
-		move.b	#id_Drown,ost_anim(a0)	; use Sonic's drowning animation
-		bset	#1,ost_status(a0)
-		bset	#7,ost_tile(a0)
+		move.b	#id_Drown,ost_anim(a0) ; use Sonic's drowning animation
+		bset	#status_air_bit,ost_status(a0)
+		bset	#tile_hi_bit,ost_tile(a0)
 		move.w	#0,ost_y_vel(a0)
 		move.w	#0,ost_x_vel(a0)
 		move.w	#0,ost_inertia(a0)
@@ -237,9 +243,9 @@ Drown_Countdown:; Routine $A
 ; ===========================================================================
 
 @loc_13F86:
-		subq.w	#1,$2C(a0)
+		subq.w	#1,ost_drown_restart_time(a0)
 		bne.s	@loc_13F94
-		move.b	#6,(v_player+ost_routine).w
+		move.b	#id_Sonic_Death,(v_player+ost_routine).w
 		rts	
 ; ===========================================================================
 
@@ -257,7 +263,7 @@ Drown_Countdown:; Routine $A
 ; ===========================================================================
 
 @nochange:
-		tst.w	$36(a0)
+		tst.w	ost_drown_extra_flag(a0)
 		beq.w	@nocountdown
 		subq.w	#1,$3A(a0)
 		bpl.w	@nocountdown
@@ -271,7 +277,7 @@ Drown_Countdown:; Routine $A
 		move.b	#id_DrownCount,0(a1) ; load object
 		move.w	(v_player+ost_x_pos).w,ost_x_pos(a1) ; match X position to Sonic
 		moveq	#6,d0
-		btst	#0,(v_player+ost_status).w
+		btst	#status_xflip_bit,(v_player+ost_status).w
 		beq.s	@noflip
 		neg.w	d0
 		move.b	#$40,ost_angle(a1)
@@ -280,7 +286,7 @@ Drown_Countdown:; Routine $A
 		add.w	d0,ost_x_pos(a1)
 		move.w	(v_player+ost_y_pos).w,ost_y_pos(a1)
 		move.b	#6,ost_subtype(a1)
-		tst.w	$2C(a0)
+		tst.w	ost_drown_restart_time(a0)
 		beq.w	@loc_1403E
 		andi.w	#7,$3A(a0)
 		addi.w	#0,$3A(a0)
@@ -297,30 +303,30 @@ Drown_Countdown:; Routine $A
 ; ===========================================================================
 
 @loc_1403E:
-		btst	#7,$36(a0)
+		btst	#7,ost_drown_extra_flag(a0)
 		beq.s	@loc_14082
 		move.w	(v_air).w,d2
 		lsr.w	#1,d2
 		jsr	(RandomNumber).l
 		andi.w	#3,d0
 		bne.s	@loc_1406A
-		bset	#6,$36(a0)
+		bset	#6,ost_drown_extra_flag(a0)
 		bne.s	@loc_14082
 		move.b	d2,ost_subtype(a1)
-		move.w	#$1C,drown_time(a1)
+		move.w	#$1C,ost_drown_num_time(a1)
 
 	@loc_1406A:
-		tst.b	$34(a0)
+		tst.b	ost_drown_extra_bub(a0)
 		bne.s	@loc_14082
-		bset	#6,$36(a0)
+		bset	#6,ost_drown_extra_flag(a0)
 		bne.s	@loc_14082
 		move.b	d2,ost_subtype(a1)
-		move.w	#$1C,drown_time(a1)
+		move.w	#$1C,ost_drown_num_time(a1)
 
 @loc_14082:
-		subq.b	#1,$34(a0)
+		subq.b	#1,ost_drown_extra_bub(a0)
 		bpl.s	@nocountdown
-		clr.w	$36(a0)
+		clr.w	ost_drown_extra_flag(a0)
 
 @nocountdown:
 		rts	

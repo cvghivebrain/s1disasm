@@ -6,17 +6,17 @@
 
 
 Sonic_AnglePos:
-		btst	#3,ost_status(a0)
+		btst	#status_platform_bit,ost_status(a0)
 		beq.s	loc_14602
 		moveq	#0,d0
-		move.b	d0,($FFFFF768).w
+		move.b	d0,(v_angle_right).w
 		move.b	d0,(v_angle_left).w
 		rts	
 ; ===========================================================================
 
 loc_14602:
 		moveq	#3,d0
-		move.b	d0,($FFFFF768).w
+		move.b	d0,(v_angle_right).w
 		move.b	d0,(v_angle_left).w
 		move.b	ost_angle(a0),d0
 		addi.b	#$20,d0
@@ -55,7 +55,7 @@ loc_14630:
 		move.b	ost_width(a0),d0
 		ext.w	d0
 		add.w	d0,d3
-		lea	($FFFFF768).w,a4
+		lea	(v_angle_right).w,a4
 		movea.w	#$10,a3
 		move.w	#0,d6
 		moveq	#$D,d5
@@ -99,10 +99,10 @@ loc_146C6:
 ; ===========================================================================
 
 loc_146CC:
-		tst.b	$38(a0)
+		tst.b	ost_sonic_sbz_disc(a0)
 		bne.s	loc_146C6
-		bset	#1,ost_status(a0)
-		bclr	#5,ost_status(a0)
+		bset	#status_air_bit,ost_status(a0)
+		bclr	#status_pushing_bit,ost_status(a0)
 		move.b	#1,ost_anim_next(a0)
 		rts	
 ; ===========================================================================
@@ -165,7 +165,7 @@ Sonic_Angle:
 		move.b	(v_angle_left).w,d2
 		cmp.w	d0,d1
 		ble.s	loc_1475E
-		move.b	($FFFFF768).w,d2
+		move.b	(v_angle_right).w,d2
 		move.w	d0,d1
 
 loc_1475E:
@@ -201,7 +201,7 @@ Sonic_WalkVertR:
 		move.b	ost_height(a0),d0
 		ext.w	d0
 		add.w	d0,d3
-		lea	($FFFFF768).w,a4
+		lea	(v_angle_right).w,a4
 		movea.w	#$10,a3
 		move.w	#0,d6
 		moveq	#$D,d5
@@ -244,10 +244,10 @@ loc_147F8:
 ; ===========================================================================
 
 loc_147FE:
-		tst.b	$38(a0)
+		tst.b	ost_sonic_sbz_disc(a0)
 		bne.s	loc_147F8
-		bset	#1,ost_status(a0)
-		bclr	#5,ost_status(a0)
+		bset	#status_air_bit,ost_status(a0)
+		bclr	#status_pushing_bit,ost_status(a0)
 		move.b	#1,ost_anim_next(a0)
 		rts	
 ; End of function Sonic_WalkVertR
@@ -270,7 +270,7 @@ Sonic_WalkCeiling:
 		move.b	ost_width(a0),d0
 		ext.w	d0
 		add.w	d0,d3
-		lea	($FFFFF768).w,a4
+		lea	(v_angle_right).w,a4
 		movea.w	#-$10,a3
 		move.w	#$1000,d6
 		moveq	#$D,d5
@@ -314,10 +314,10 @@ loc_1489A:
 ; ===========================================================================
 
 loc_148A0:
-		tst.b	$38(a0)
+		tst.b	ost_sonic_sbz_disc(a0)
 		bne.s	loc_1489A
-		bset	#1,ost_status(a0)
-		bclr	#5,ost_status(a0)
+		bset	#status_air_bit,ost_status(a0)
+		bclr	#status_pushing_bit,ost_status(a0)
 		move.b	#1,ost_anim_next(a0)
 		rts	
 ; End of function Sonic_WalkCeiling
@@ -340,7 +340,7 @@ Sonic_WalkVertL:
 		ext.w	d0
 		sub.w	d0,d3
 		eori.w	#$F,d3
-		lea	($FFFFF768).w,a4
+		lea	(v_angle_right).w,a4
 		movea.w	#-$10,a3
 		move.w	#$800,d6
 		moveq	#$D,d5
@@ -384,10 +384,10 @@ loc_1493C:
 ; ===========================================================================
 
 loc_14942:
-		tst.b	$38(a0)
+		tst.b	ost_sonic_sbz_disc(a0)
 		bne.s	loc_1493C
-		bset	#1,ost_status(a0)
-		bclr	#5,ost_status(a0)
+		bset	#status_air_bit,ost_status(a0)
+		bclr	#status_pushing_bit,ost_status(a0)
 		move.b	#1,ost_anim_next(a0)
 		rts	
 ; End of function Sonic_WalkVertL

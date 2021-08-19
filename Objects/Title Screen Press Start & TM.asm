@@ -20,14 +20,14 @@ PSB_Main:	; Routine 0
 		move.w	#$130,ost_y_screen(a0)
 		move.l	#Map_PSB,ost_mappings(a0)
 		move.w	#$200,ost_tile(a0)
-		cmpi.b	#2,ost_frame(a0)	; is object "PRESS START"?
+		cmpi.b	#2,ost_frame(a0) ; is object "PRESS START"?
 		bcs.s	PSB_PrsStart	; if yes, branch
 
 		addq.b	#2,ost_routine(a0)
-		cmpi.b	#3,ost_frame(a0)	; is the object	"TM"?
+		cmpi.b	#3,ost_frame(a0) ; is the object "TM"?
 		bne.s	PSB_Exit	; if not, branch
 
-		move.w	#$2510,ost_tile(a0) ; "TM" specific code
+		move.w	#$510+tile_pal2,ost_tile(a0) ; "TM" specific code
 		move.w	#$170,ost_x_pos(a0)
 		move.w	#$F8,ost_y_screen(a0)
 
