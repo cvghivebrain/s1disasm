@@ -29,12 +29,12 @@ Scen_Main:	; Routine 0
 Scen_ChkDel:	; Routine 2
 		out_of_range	DeleteObject
 		bra.w	DisplaySprite
-; ===========================================================================
+		
 ; ---------------------------------------------------------------------------
 ; Variables for	object $1C are stored in an array
 ; ---------------------------------------------------------------------------
 Scen_Values:	dc.l Map_Scen		; mappings address
-		dc.w tile_Nem_SlzCannon+tile_pal3		; VRAM setting
+		dc.w tile_Nem_SlzCannon+tile_pal3 ; VRAM setting
 		dc.b 0,	8, 2, 0		; frame, width,	priority, collision response
 		dc.l Map_Scen
 		dc.w tile_Nem_SlzCannon+tile_pal3

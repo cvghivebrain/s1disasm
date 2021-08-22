@@ -24,7 +24,7 @@ Pow_Main:	; Routine 0
 		moveq	#0,d0
 		move.b	ost_anim(a0),d0	; get subtype
 		addq.b	#2,d0
-		move.b	d0,ost_frame(a0)	; use correct frame
+		move.b	d0,ost_frame(a0) ; use correct frame
 		movea.l	#Map_Monitor,a1
 		add.b	d0,d0
 		adda.w	(a1,d0.w),a1
@@ -35,7 +35,7 @@ Pow_Move:	; Routine 2
 		tst.w	ost_y_vel(a0)	; is object moving?
 		bpl.w	Pow_Checks	; if not, branch
 		bsr.w	SpeedToPos
-		addi.w	#$18,ost_y_vel(a0)	; reduce object	speed
+		addi.w	#$18,ost_y_vel(a0) ; reduce object speed
 		rts	
 ; ===========================================================================
 
@@ -57,7 +57,7 @@ Pow_ChkSonic:
 	ExtraLife:
 		addq.b	#1,(v_lives).w	; add 1 to the number of lives you have
 		addq.b	#1,(f_lifecount).w ; update the lives counter
-		music	bgm_ExtraLife,1,0,0	; play extra life music
+		music	bgm_ExtraLife,1,0,0 ; play extra life music
 ; ===========================================================================
 
 Pow_ChkShoes:
@@ -65,11 +65,11 @@ Pow_ChkShoes:
 		bne.s	Pow_ChkShield
 
 		move.b	#1,(v_shoes).w	; speed up the BG music
-		move.w	#$4B0,(v_player+$34).w	; time limit for the power-up
+		move.w	#$4B0,(v_player+ost_sonic_shoe_time).w ; time limit for the power-up
 		move.w	#$C00,(v_sonspeedmax).w ; change Sonic's top speed
 		move.w	#$18,(v_sonspeedacc).w	; change Sonic's acceleration
 		move.w	#$80,(v_sonspeeddec).w	; change Sonic's deceleration
-		music	bgm_Speedup,1,0,0		; Speed	up the music
+		music	bgm_Speedup,1,0,0 ; speed up the music
 ; ===========================================================================
 
 Pow_ChkShield:
@@ -78,7 +78,7 @@ Pow_ChkShield:
 
 		move.b	#1,(v_shield).w	; give Sonic a shield
 		move.b	#id_ShieldItem,(v_objspace+$180).w ; load shield object ($38)
-		music	sfx_Shield,1,0,0	; play shield sound
+		music	sfx_Shield,1,0,0 ; play shield sound
 ; ===========================================================================
 
 Pow_ChkInvinc:
@@ -86,7 +86,7 @@ Pow_ChkInvinc:
 		bne.s	Pow_ChkRings
 
 		move.b	#1,(v_invinc).w	; make Sonic invincible
-		move.w	#$4B0,(v_player+$32).w ; time limit for the power-up
+		move.w	#$4B0,(v_player+ost_sonic_inv_time).w ; time limit for the power-up
 		move.b	#id_ShieldItem,(v_objspace+$200).w ; load stars object ($3801)
 		move.b	#1,(v_objspace+$200+ost_anim).w
 		move.b	#id_ShieldItem,(v_objspace+$240).w ; load stars object ($3802)

@@ -57,6 +57,12 @@ Anml_EndMap:	dc.l Map_Animal2, Map_Animal2, Map_Animal2, Map_Animal1, Map_Animal
 
 Anml_EndVram:	dc.w $5A5, $5A5, $5A5, $553, $553, $573, $573, $585, $593
 		dc.w $565, $5B3
+
+ost_animal_direction:	equ $29	; animal goes left/right
+ost_animal_type:	equ $30	; type of animal (0-$B)
+ost_animal_x_vel:	equ $32	; horizontal speed (2 bytes)
+ost_animal_y_vel:	equ $34	; vertical speed (2 bytes)
+ost_animal_prison_num:	equ $36	; id num for animals in prison capsule, lets them jummp out 1 at a time (2 bytes)
 ; ===========================================================================
 
 Anml_Ending:	; Routine 0
@@ -71,13 +77,13 @@ Anml_Ending:	; Routine 0
 		add.w	d0,d0
 		move.l	Anml_EndMap(pc,d0.w),ost_mappings(a0)
 		lea	Anml_EndSpeed(pc),a1
-		move.w	(a1,d0.w),$32(a0) ; load horizontal speed
+		move.w	(a1,d0.w),ost_animal_x_vel(a0) ; load horizontal speed
 		move.w	(a1,d0.w),ost_x_vel(a0)
-		move.w	2(a1,d0.w),$34(a0) ; load vertical speed
+		move.w	2(a1,d0.w),ost_animal_y_vel(a0) ; load vertical speed
 		move.w	2(a1,d0.w),ost_y_vel(a0)
 		move.b	#$C,ost_height(a0)
 		move.b	#render_rel,ost_render(a0)
-		bset	#0,ost_render(a0)
+		bset	#render_xflip_bit,ost_render(a0)
 		move.b	#6,ost_priority(a0)
 		move.b	#8,ost_actwidth(a0)
 		move.b	#7,ost_anim_time(a0)
@@ -94,22 +100,22 @@ Anml_FromEnemy:
 		add.w	d0,d1
 		lea	Anml_VarIndex(pc),a1
 		move.b	(a1,d1.w),d0
-		move.b	d0,$30(a0)
+		move.b	d0,ost_animal_type(a0)
 		lsl.w	#3,d0
 		lea	Anml_Variables(pc),a1
 		adda.w	d0,a1
-		move.w	(a1)+,$32(a0)	; load horizontal speed
-		move.w	(a1)+,$34(a0)	; load vertical	speed
-		move.l	(a1)+,ost_mappings(a0)	; load mappings
-		move.w	#$580,ost_tile(a0)	; VRAM setting for 1st animal
-		btst	#0,$30(a0)	; is 1st animal	used?
+		move.w	(a1)+,ost_animal_x_vel(a0) ; load horizontal speed
+		move.w	(a1)+,ost_animal_y_vel(a0) ; load vertical speed
+		move.l	(a1)+,ost_mappings(a0) ; load mappings
+		move.w	#tile_Nem_Rabbit,ost_tile(a0) ; VRAM setting for 1st animal
+		btst	#0,ost_animal_type(a0) ; is 1st animal used?
 		beq.s	loc_90C0	; if yes, branch
-		move.w	#$592,ost_tile(a0)	; VRAM setting for 2nd animal
+		move.w	#tile_Nem_Flicky,ost_tile(a0) ; VRAM setting for 2nd animal
 
 loc_90C0:
 		move.b	#$C,ost_height(a0)
 		move.b	#render_rel,ost_render(a0)
-		bset	#0,ost_render(a0)
+		bset	#render_xflip_bit,ost_render(a0)
 		move.b	#6,ost_priority(a0)
 		move.b	#8,ost_actwidth(a0)
 		move.b	#7,ost_anim_time(a0)
@@ -122,7 +128,7 @@ loc_90C0:
 		move.b	#id_Points,0(a1) ; load points object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
-		move.w	$3E(a0),d0
+		move.w	ost_enemy_combo(a0),d0
 		lsr.w	#1,d0
 		move.b	d0,ost_frame(a1)
 
@@ -146,10 +152,10 @@ loc_912A:
 		tst.w	d1
 		bpl.s	loc_9180
 		add.w	d1,ost_y_pos(a0)
-		move.w	$32(a0),ost_x_vel(a0)
-		move.w	$34(a0),ost_y_vel(a0)
+		move.w	ost_animal_x_vel(a0),ost_x_vel(a0)
+		move.w	ost_animal_y_vel(a0),ost_y_vel(a0)
 		move.b	#1,ost_frame(a0)
-		move.b	$30(a0),d0
+		move.b	ost_animal_type(a0),d0
 		add.b	d0,d0
 		addq.b	#4,d0
 		move.b	d0,ost_routine(a0)
@@ -158,7 +164,7 @@ loc_912A:
 		btst	#4,(v_vbla_byte).w
 		beq.s	loc_9180
 		neg.w	ost_x_vel(a0)
-		bchg	#0,ost_render(a0)
+		bchg	#render_xflip_bit,ost_render(a0)
 
 loc_9180:
 		bra.w	DisplaySprite
@@ -174,7 +180,7 @@ loc_9184:
 		tst.w	d1
 		bpl.s	loc_91AE
 		add.w	d1,ost_y_pos(a0)
-		move.w	$34(a0),ost_y_vel(a0)
+		move.w	ost_animal_y_vel(a0),ost_y_vel(a0)
 
 loc_91AE:
 		tst.b	ost_subtype(a0)
@@ -193,13 +199,13 @@ loc_91C0:
 		tst.w	d1
 		bpl.s	loc_91FC
 		add.w	d1,ost_y_pos(a0)
-		move.w	$34(a0),ost_y_vel(a0)
+		move.w	ost_animal_y_vel(a0),ost_y_vel(a0)
 		tst.b	ost_subtype(a0)
 		beq.s	loc_91FC
 		cmpi.b	#$A,ost_subtype(a0)
 		beq.s	loc_91FC
 		neg.w	ost_x_vel(a0)
-		bchg	#0,ost_render(a0)
+		bchg	#render_xflip_bit,ost_render(a0)
 
 loc_91FC:
 		subq.b	#1,ost_anim_time(a0)
@@ -232,7 +238,7 @@ loc_923C:
 loc_9240:
 		tst.b	ost_render(a0)
 		bpl.w	DeleteObject
-		subq.w	#1,$36(a0)
+		subq.w	#1,ost_animal_prison_num(a0)
 		bne.w	loc_925C
 		move.b	#2,ost_routine(a0)
 		move.b	#3,ost_priority(a0)
@@ -244,8 +250,8 @@ loc_925C:
 loc_9260:
 		bsr.w	sub_9404
 		bcc.s	loc_927C
-		move.w	$32(a0),ost_x_vel(a0)
-		move.w	$34(a0),ost_y_vel(a0)
+		move.w	ost_animal_x_vel(a0),ost_x_vel(a0)
+		move.w	ost_animal_y_vel(a0),ost_y_vel(a0)
 		move.b	#$E,ost_routine(a0)
 		bra.w	loc_91C0
 ; ===========================================================================
@@ -258,7 +264,7 @@ loc_9280:
 		bsr.w	sub_9404
 		bpl.s	loc_92B6
 		clr.w	ost_x_vel(a0)
-		clr.w	$32(a0)
+		clr.w	ost_animal_x_vel(a0)
 		bsr.w	SpeedToPos
 		addi.w	#$18,ost_y_vel(a0)
 		bsr.w	loc_93C4
@@ -276,8 +282,8 @@ loc_92B6:
 loc_92BA:
 		bsr.w	sub_9404
 		bpl.s	loc_9310
-		move.w	$32(a0),ost_x_vel(a0)
-		move.w	$34(a0),ost_y_vel(a0)
+		move.w	ost_animal_x_vel(a0),ost_x_vel(a0)
+		move.w	ost_animal_y_vel(a0),ost_y_vel(a0)
 		move.b	#4,ost_routine(a0)
 		bra.w	loc_9184
 ; ===========================================================================
@@ -291,14 +297,14 @@ loc_92D6:
 		jsr	(ObjFloorDist).l
 		tst.w	d1
 		bpl.s	loc_9310
-		not.b	$29(a0)
+		not.b	ost_animal_direction(a0)
 		bne.s	loc_9306
 		neg.w	ost_x_vel(a0)
-		bchg	#0,ost_render(a0)
+		bchg	#render_xflip_bit,ost_render(a0)
 
 loc_9306:
 		add.w	d1,ost_y_pos(a0)
-		move.w	$34(a0),ost_y_vel(a0)
+		move.w	ost_animal_y_vel(a0),ost_y_vel(a0)
 
 loc_9310:
 		bra.w	loc_9224
@@ -308,7 +314,7 @@ loc_9314:
 		bsr.w	sub_9404
 		bpl.s	loc_932E
 		clr.w	ost_x_vel(a0)
-		clr.w	$32(a0)
+		clr.w	ost_animal_x_vel(a0)
 		bsr.w	ObjectFall
 		bsr.w	loc_93C4
 		bsr.w	loc_93EC
@@ -329,9 +335,9 @@ loc_9332:
 		tst.w	d1
 		bpl.s	loc_936C
 		neg.w	ost_x_vel(a0)
-		bchg	#0,ost_render(a0)
+		bchg	#render_xflip_bit,ost_render(a0)
 		add.w	d1,ost_y_pos(a0)
-		move.w	$34(a0),ost_y_vel(a0)
+		move.w	ost_animal_y_vel(a0),ost_y_vel(a0)
 
 loc_936C:
 		bra.w	loc_9224
@@ -347,14 +353,14 @@ loc_9370:
 		jsr	(ObjFloorDist).l
 		tst.w	d1
 		bpl.s	loc_93AA
-		not.b	$29(a0)
+		not.b	ost_animal_direction(a0)
 		bne.s	loc_93A0
 		neg.w	ost_x_vel(a0)
-		bchg	#0,ost_render(a0)
+		bchg	#render_xflip_bit,ost_render(a0)
 
 loc_93A0:
 		add.w	d1,ost_y_pos(a0)
-		move.w	$34(a0),ost_y_vel(a0)
+		move.w	ost_animal_y_vel(a0),ost_y_vel(a0)
 
 loc_93AA:
 		subq.b	#1,ost_anim_time(a0)
@@ -376,18 +382,18 @@ loc_93C4:
 		tst.w	d1
 		bpl.s	locret_93EA
 		add.w	d1,ost_y_pos(a0)
-		move.w	$34(a0),ost_y_vel(a0)
+		move.w	ost_animal_y_vel(a0),ost_y_vel(a0)
 
 locret_93EA:
 		rts	
 ; ===========================================================================
 
 loc_93EC:
-		bset	#0,ost_render(a0)
+		bset	#render_xflip_bit,ost_render(a0)
 		move.w	ost_x_pos(a0),d0
 		sub.w	(v_player+ost_x_pos).w,d0
 		bcc.s	locret_9402
-		bclr	#0,ost_render(a0)
+		bclr	#render_xflip_bit,ost_render(a0)
 
 locret_9402:
 		rts	

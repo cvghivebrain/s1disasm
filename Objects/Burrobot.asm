@@ -11,7 +11,8 @@ Burro_Index:	index *,,2
 		ptr Burro_Main
 		ptr Burro_Action
 
-burro_timedelay:	equ $30		; time between direction changes
+ost_burro_turn_time:	equ $30	; time between direction changes (2 bytes)
+;			equ $32	; flag for something
 ; ===========================================================================
 
 Burro_Main:	; Routine 0
@@ -44,13 +45,13 @@ Burro_Action:	; Routine 2
 ; ===========================================================================
 
 Burro_ChangeDir:
-		subq.w	#1,burro_timedelay(a0)
+		subq.w	#1,ost_burro_turn_time(a0)
 		bpl.s	@nochg
 		addq.b	#2,ost_routine2(a0)
-		move.w	#255,burro_timedelay(a0)
+		move.w	#255,ost_burro_turn_time(a0)
 		move.w	#$80,ost_x_vel(a0)
 		move.b	#1,ost_anim(a0)
-		bchg	#0,ost_status(a0)	; change direction the Burrobot	is facing
+		bchg	#status_xflip_bit,ost_status(a0) ; change direction the Burrobot is facing
 		beq.s	@nochg
 		neg.w	ost_x_vel(a0)	; change direction the Burrobot	is moving
 
@@ -59,14 +60,14 @@ Burro_ChangeDir:
 ; ===========================================================================
 
 Burro_Move:
-		subq.w	#1,burro_timedelay(a0)
+		subq.w	#1,ost_burro_turn_time(a0)
 		bmi.s	loc_AD84
 		bsr.w	SpeedToPos
 		bchg	#0,$32(a0)
 		bne.s	loc_AD78
 		move.w	ost_x_pos(a0),d3
 		addi.w	#$C,d3
-		btst	#0,ost_status(a0)
+		btst	#status_xflip_bit,ost_status(a0)
 		bne.s	loc_AD6A
 		subi.w	#$18,d3
 
@@ -87,7 +88,7 @@ loc_AD84:
 		btst	#2,(v_vbla_byte).w
 		beq.s	loc_ADA4
 		subq.b	#2,ost_routine2(a0)
-		move.w	#59,burro_timedelay(a0)
+		move.w	#59,ost_burro_turn_time(a0)
 		move.w	#0,ost_x_vel(a0)
 		move.b	#0,ost_anim(a0)
 		rts	
@@ -111,7 +112,7 @@ Burro_Jump:
 		add.w	d1,ost_y_pos(a0)
 		move.w	#0,ost_y_vel(a0)
 		move.b	#1,ost_anim(a0)
-		move.w	#255,burro_timedelay(a0)
+		move.w	#255,ost_burro_turn_time(a0)
 		subq.b	#2,ost_routine2(a0)
 		bsr.w	Burro_ChkSonic2
 
@@ -142,13 +143,13 @@ locret_AE20:
 
 Burro_ChkSonic2:
 		move.w	#$80,d1
-		bset	#0,ost_status(a0)
+		bset	#status_xflip_bit,ost_status(a0)
 		move.w	(v_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0
 		bcc.s	loc_AE40
 		neg.w	d0
 		neg.w	d1
-		bclr	#0,ost_status(a0)
+		bclr	#status_xflip_bit,ost_status(a0)
 
 loc_AE40:
 		cmp.w	d2,d0

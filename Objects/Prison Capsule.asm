@@ -145,7 +145,7 @@ Pri_Explosion:	; Routine 6, 8, $A
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		add.w	d4,ost_x_pos(a1)
 		addq.w	#7,d4
-		move.w	d5,$36(a1)
+		move.w	d5,ost_animal_prison_num(a1)
 		subq.w	#8,d5
 		dbf	d6,@loop	; repeat 7 more	times
 
@@ -171,7 +171,7 @@ Pri_Animals:	; Routine $C
 
 	@ispositive:
 		add.w	d0,ost_x_pos(a1)
-		move.w	#$C,$36(a1)
+		move.w	#$C,ost_animal_prison_num(a1)
 
 	@noanimal:
 		subq.w	#1,ost_anim_time(a0)

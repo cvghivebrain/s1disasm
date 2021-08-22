@@ -60,6 +60,8 @@ vram_cater:	equ $9FE0
 vram_spikes:	equ $A360
 vram_hspring:	equ $A460
 vram_vspring:	equ $A660
+vram_animal1:	equ $B000
+vram_animal2:	equ $B240
 
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - standard block 1
@@ -311,43 +313,43 @@ PLC_SpecialStage:	dc.w ((PLC_SpeStageend-PLC_SpecialStage-2)/6)-1
 ; Pattern load cues - GHZ animals
 ; ---------------------------------------------------------------------------
 PLC_GHZAnimals:	dc.w ((PLC_GHZAnimalsend-PLC_GHZAnimals-2)/6)-1
-		plcm	Nem_Rabbit, $B000	; rabbit
-		plcm	Nem_Flicky, $B240	; flicky
+		plcm	Nem_Rabbit, vram_animal1	; rabbit
+		plcm	Nem_Flicky, vram_animal2	; flicky
 	PLC_GHZAnimalsend:
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - LZ animals
 ; ---------------------------------------------------------------------------
 PLC_LZAnimals:	dc.w ((PLC_LZAnimalsend-PLC_LZAnimals-2)/6)-1
-		plcm	Nem_BlackBird, $B000	; blackbird
-		plcm	Nem_Seal, $B240		; seal
+		plcm	Nem_BlackBird, vram_animal1	; blackbird
+		plcm	Nem_Seal, vram_animal2		; seal
 	PLC_LZAnimalsend:
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - MZ animals
 ; ---------------------------------------------------------------------------
 PLC_MZAnimals:	dc.w ((PLC_MZAnimalsend-PLC_MZAnimals-2)/6)-1
-		plcm	Nem_Squirrel, $B000	; squirrel
-		plcm	Nem_Seal, $B240		; seal
+		plcm	Nem_Squirrel, vram_animal1	; squirrel
+		plcm	Nem_Seal, vram_animal2		; seal
 	PLC_MZAnimalsend:
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - SLZ animals
 ; ---------------------------------------------------------------------------
 PLC_SLZAnimals:	dc.w ((PLC_SLZAnimalsend-PLC_SLZAnimals-2)/6)-1
-		plcm	Nem_Pig, $B000		; pig
-		plcm	Nem_Flicky, $B240	; flicky
+		plcm	Nem_Pig, vram_animal1		; pig
+		plcm	Nem_Flicky, vram_animal2	; flicky
 	PLC_SLZAnimalsend:
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - SYZ animals
 ; ---------------------------------------------------------------------------
 PLC_SYZAnimals:	dc.w ((PLC_SYZAnimalsend-PLC_SYZAnimals-2)/6)-1
-		plcm	Nem_Pig, $B000		; pig
-		plcm	Nem_Chicken, $B240	; chicken
+		plcm	Nem_Pig, vram_animal1		; pig
+		plcm	Nem_Chicken, vram_animal2	; chicken
 	PLC_SYZAnimalsend:
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - SBZ animals
 ; ---------------------------------------------------------------------------
 PLC_SBZAnimals:	dc.w ((PLC_SBZAnimalsend-PLC_SBZAnimals-2)/6)-1
-		plcm	Nem_Rabbit, $B000		; rabbit
-		plcm	Nem_Chicken, $B240	; chicken
+		plcm	Nem_Rabbit, vram_animal1		; rabbit
+		plcm	Nem_Chicken, vram_animal2	; chicken
 	PLC_SBZAnimalsend:
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - special stage results screen

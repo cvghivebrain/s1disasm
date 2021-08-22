@@ -147,12 +147,14 @@ ost_status:		equ $22	; orientation or mode
 	status_rolljump_bit:	equ 4
 	status_pushing_bit:	equ 5
 	status_underwater_bit:	equ 6
+	status_onscreen_bit:	equ 7
 ost_respawn:		equ $23	; respawn list index number
 ost_routine:		equ $24	; routine number
 ost_routine2:		equ $25	; secondary routine number
 ost_solid:		equ $25 ; solid status flag
 ost_angle:		equ $26	; angle
 ost_subtype:		equ $28	; object subtype
+ost_enemy_combo:	equ $3E	; number of enemies broken in a row (0-$A) (2 bytes)
 
 ; Object variables used by Sonic
 ost_sonic_flash_time:	equ $30	; time Sonic flashes for after getting hit (2 bytes)

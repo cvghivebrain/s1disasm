@@ -14,8 +14,8 @@ Crab_Index:	index *,,2
 		ptr Crab_BallMain
 		ptr Crab_BallMove
 
-crab_timedelay:	equ $30
-crab_mode:	equ $32
+ost_crab_wait_time:	equ $30	; time until crabmeat fires (2 bytes)
+ost_crab_mode:		equ $32	; current action - 0/1 = not firing; 2/3 = firing
 ; ===========================================================================
 
 Crab_Main:	; Routine 0
@@ -28,7 +28,7 @@ Crab_Main:	; Routine 0
 		move.b	#6,ost_col_type(a0)
 		move.b	#$15,ost_actwidth(a0)
 		bsr.w	ObjectFall
-		jsr	(ObjFloorDist).l	; find floor
+		jsr	(ObjFloorDist).l ; find floor
 		tst.w	d1
 		bpl.s	@floornotfound
 		add.w	d1,ost_y_pos(a0)
@@ -55,21 +55,21 @@ Crab_Action:	; Routine 2
 ; ===========================================================================
 
 @waittofire:
-		subq.w	#1,crab_timedelay(a0) ; subtract 1 from time delay
+		subq.w	#1,ost_crab_wait_time(a0) ; subtract 1 from time delay
 		bpl.s	@dontmove
 		tst.b	ost_render(a0)
 		bpl.s	@movecrab
-		bchg	#1,crab_mode(a0)
+		bchg	#1,ost_crab_mode(a0)
 		bne.s	@fire
 
 	@movecrab:
 		addq.b	#2,ost_routine2(a0)
-		move.w	#127,crab_timedelay(a0) ; set time delay to approx 2 seconds
-		move.w	#$80,ost_x_vel(a0)	; move Crabmeat	to the right
+		move.w	#127,ost_crab_wait_time(a0) ; set time delay to approx 2 seconds
+		move.w	#$80,ost_x_vel(a0) ; move Crabmeat to the right
 		bsr.w	Crab_SetAni
 		addq.b	#3,d0
 		move.b	d0,ost_anim(a0)
-		bchg	#0,ost_status(a0)
+		bchg	#status_xflip_bit,ost_status(a0)
 		bne.s	@noflip
 		neg.w	ost_x_vel(a0)	; change direction
 
@@ -79,7 +79,7 @@ Crab_Action:	; Routine 2
 ; ===========================================================================
 
 @fire:
-		move.w	#59,crab_timedelay(a0)
+		move.w	#59,ost_crab_wait_time(a0)
 		move.b	#6,ost_anim(a0)	; use firing animation
 		bsr.w	FindFreeObj
 		bne.s	@failleft
@@ -105,14 +105,14 @@ Crab_Action:	; Routine 2
 ; ===========================================================================
 
 @walkonfloor:
-		subq.w	#1,crab_timedelay(a0)
+		subq.w	#1,ost_crab_wait_time(a0)
 		bmi.s	loc_966E
 		bsr.w	SpeedToPos
-		bchg	#0,crab_mode(a0)
+		bchg	#0,ost_crab_mode(a0)
 		bne.s	loc_9654
 		move.w	ost_x_pos(a0),d3
 		addi.w	#$10,d3
-		btst	#0,ost_status(a0)
+		btst	#status_xflip_bit,ost_status(a0)
 		beq.s	loc_9640
 		subi.w	#$20,d3
 
@@ -137,7 +137,7 @@ loc_9654:
 
 loc_966E:
 		subq.b	#2,ost_routine2(a0)
-		move.w	#59,crab_timedelay(a0)
+		move.w	#59,ost_crab_wait_time(a0)
 		move.w	#0,ost_x_vel(a0)
 		bsr.w	Crab_SetAni
 		move.b	d0,ost_anim(a0)
@@ -156,7 +156,7 @@ Crab_SetAni:
 		cmpi.b	#6,d3
 		bcs.s	locret_96A2
 		moveq	#1,d0
-		btst	#0,ost_status(a0)
+		btst	#status_xflip_bit,ost_status(a0)
 		bne.s	locret_96A2
 		moveq	#2,d0
 
@@ -168,7 +168,7 @@ loc_96A4:
 		cmpi.b	#-6,d3
 		bhi.s	locret_96B6
 		moveq	#2,d0
-		btst	#0,ost_status(a0)
+		btst	#status_xflip_bit,ost_status(a0)
 		bne.s	locret_96B6
 		moveq	#1,d0
 
@@ -204,7 +204,7 @@ Crab_BallMove:	; Routine 8
 		bsr.w	DisplaySprite
 		move.w	(v_limitbtm2).w,d0
 		addi.w	#$E0,d0
-		cmp.w	ost_y_pos(a0),d0	; has object moved below the level boundary?
+		cmp.w	ost_y_pos(a0),d0 ; has object moved below the level boundary?
 		bcs.s	@delete		; if yes, branch
 		rts	
 

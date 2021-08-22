@@ -26,5 +26,5 @@ Poi_Slower:	; Routine 2
 		tst.w	ost_y_vel(a0)	; is object moving?
 		bpl.w	DeleteObject	; if not, delete
 		bsr.w	SpeedToPos
-		addi.w	#$18,ost_y_vel(a0)	; reduce object	speed
+		addi.w	#$18,ost_y_vel(a0) ; reduce object speed
 		rts	

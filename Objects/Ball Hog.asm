@@ -11,7 +11,7 @@ Hog_Index:	index *,,2
 		ptr Hog_Main
 		ptr Hog_Action
 
-hog_launchflag:	equ $32		; 0 to launch a cannonball
+ost_hog_flag:	equ $32		; 0 to launch a cannonball
 ; ===========================================================================
 
 Hog_Main:	; Routine 0
@@ -24,7 +24,7 @@ Hog_Main:	; Routine 0
 		move.b	#5,ost_col_type(a0)
 		move.b	#$C,ost_actwidth(a0)
 		bsr.w	ObjectFall
-		jsr	(ObjFloorDist).l	; find floor
+		jsr	(ObjFloorDist).l ; find floor
 		tst.w	d1
 		bpl.s	@floornotfound
 		add.w	d1,ost_y_pos(a0)
@@ -38,22 +38,22 @@ Hog_Main:	; Routine 0
 Hog_Action:	; Routine 2
 		lea	(Ani_Hog).l,a1
 		bsr.w	AnimateSprite
-		cmpi.b	#1,ost_frame(a0)	; is final frame (01) displayed?
+		cmpi.b	#1,ost_frame(a0) ; is final frame (01) displayed?
 		bne.s	@setlaunchflag	; if not, branch
-		tst.b	hog_launchflag(a0)	; is it	set to launch cannonball?
+		tst.b	ost_hog_flag(a0) ; is it set to launch cannonball?
 		beq.s	@makeball	; if yes, branch
 		bra.s	@remember
 ; ===========================================================================
 
 @setlaunchflag:
-		clr.b	hog_launchflag(a0)	; set to launch	cannonball
+		clr.b	ost_hog_flag(a0) ; set to launch cannonball
 
 @remember:
 		bra.w	RememberState
 ; ===========================================================================
 
 @makeball:
-		move.b	#1,hog_launchflag(a0)
+		move.b	#1,ost_hog_flag(a0)
 		bsr.w	FindFreeObj
 		bne.s	@fail
 		move.b	#id_Cannonball,0(a1) ; load cannonball object ($20)
@@ -62,7 +62,7 @@ Hog_Action:	; Routine 2
 		move.w	#-$100,ost_x_vel(a1) ; cannonball bounces to the left
 		move.w	#0,ost_y_vel(a1)
 		moveq	#-4,d0
-		btst	#0,ost_status(a0)	; is Ball Hog facing right?
+		btst	#status_xflip_bit,ost_status(a0) ; is Ball Hog facing right?
 		beq.s	@noflip		; if not, branch
 		neg.w	d0
 		neg.w	ost_x_vel(a1)	; cannonball bounces to	the right

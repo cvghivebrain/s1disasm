@@ -14,7 +14,8 @@ Msl_Index:	index *,,2
 		ptr Msl_Delete
 		ptr Msl_FromNewt
 
-msl_parent:	equ $3C
+ost_missile_wait_time:	equ $32	; time delay (2 bytes)
+ost_missile_parent:	equ $3C	; address of OST of parent object (4 bytes)
 ; ===========================================================================
 
 Msl_Main:	; Routine 0
@@ -26,7 +27,7 @@ Msl_Main:	; Routine 0
 		move.b	#render_rel,ost_render(a0)
 		move.b	#3,ost_priority(a0)
 		move.b	#8,ost_actwidth(a0)
-		andi.b	#3,ost_status(a0)
+		andi.b	#status_xflip+status_yflip,ost_status(a0)
 		tst.b	ost_subtype(a0)	; was object created by	a Newtron?
 		beq.s	Msl_Animate	; if not, branch
 
@@ -50,7 +51,7 @@ Msl_Animate:	; Routine 2
 
 
 Msl_ChkCancel:
-		movea.l	msl_parent(a0),a1
+		movea.l	ost_missile_parent(a0),a1
 		cmpi.b	#id_ExplosionItem,0(a1) ; has Buzz Bomber been destroyed?
 		beq.s	Msl_Delete	; if yes, branch
 		rts	
@@ -59,7 +60,7 @@ Msl_ChkCancel:
 ; ===========================================================================
 
 Msl_FromBuzz:	; Routine 4
-		btst	#7,ost_status(a0)
+		btst	#status_onscreen_bit,ost_status(a0)
 		bne.s	@explode
 		move.b	#$87,ost_col_type(a0)
 		move.b	#1,ost_anim(a0)
@@ -69,7 +70,7 @@ Msl_FromBuzz:	; Routine 4
 		bsr.w	DisplaySprite
 		move.w	(v_limitbtm2).w,d0
 		addi.w	#$E0,d0
-		cmp.w	ost_y_pos(a0),d0	; has object moved below the level boundary?
+		cmp.w	ost_y_pos(a0),d0 ; has object moved below the level boundary?
 		bcs.s	Msl_Delete	; if yes, branch
 		rts	
 ; ===========================================================================

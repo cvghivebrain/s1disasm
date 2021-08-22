@@ -50,7 +50,7 @@ Mon_Solid:	; Routine 2
 		move.b	ost_actwidth(a0),d1
 		addi.w	#$B,d1
 		bsr.w	ExitPlatform
-		btst	#3,ost_status(a1) ; is Sonic on top of the monitor?
+		btst	#status_platform_bit,ost_status(a1) ; is Sonic on top of the monitor?
 		bne.w	@ontop		; if yes, branch
 		clr.b	ost_routine2(a0)
 		bra.w	Mon_Animate
@@ -112,21 +112,21 @@ loc_A236:
 		move.w	#0,ost_x_vel(a1)
 
 loc_A246:
-		btst	#1,ost_status(a1)
+		btst	#status_air_bit,ost_status(a1)
 		bne.s	loc_A26A
-		bset	#5,ost_status(a1)
-		bset	#5,ost_status(a0)
+		bset	#status_pushing_bit,ost_status(a1)
+		bset	#status_pushing_bit,ost_status(a0)
 		bra.s	Mon_Animate
 ; ===========================================================================
 
 loc_A25C:
-		btst	#5,ost_status(a0)
+		btst	#status_pushing_bit,ost_status(a0)
 		beq.s	Mon_Animate
 		move.w	#1,ost_anim(a1)	; clear ost_anim and set ost_anim_next to 1
 
 loc_A26A:
-		bclr	#5,ost_status(a0)
-		bclr	#5,ost_status(a1)
+		bclr	#status_pushing_bit,ost_status(a0)
+		bclr	#status_pushing_bit,ost_status(a1)
 
 Mon_Animate:	; Routine 6
 		lea	(Ani_Monitor).l,a1

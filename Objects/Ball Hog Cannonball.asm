@@ -11,7 +11,7 @@ Cbal_Index:	index *,,2
 		ptr Cbal_Main
 		ptr Cbal_Bounce
 
-cbal_time:	equ $30		; time until the cannonball explodes (2 bytes)
+ost_ball_time:	equ $30		; time until the cannonball explodes (2 bytes)
 ; ===========================================================================
 
 Cbal_Main:	; Routine 0
@@ -26,7 +26,7 @@ Cbal_Main:	; Routine 0
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0 ; move subtype to d0
 		mulu.w	#60,d0		; multiply by 60 frames	(1 second)
-		move.w	d0,cbal_time(a0) ; set explosion time
+		move.w	d0,ost_ball_time(a0) ; set explosion time
 		move.b	#4,ost_frame(a0)
 
 Cbal_Bounce:	; Routine 2
@@ -54,7 +54,7 @@ loc_8CA4:
 		neg.w	ost_x_vel(a0)
 
 Cbal_ChkExplode:
-		subq.w	#1,cbal_time(a0) ; subtract 1 from explosion time
+		subq.w	#1,ost_ball_time(a0) ; subtract 1 from explosion time
 		bpl.s	Cbal_Animate	; if time is > 0, branch
 
 	Cbal_Explode:
@@ -68,12 +68,12 @@ Cbal_Animate:
 		subq.b	#1,ost_anim_time(a0) ; subtract 1 from frame duration
 		bpl.s	Cbal_Display
 		move.b	#5,ost_anim_time(a0) ; set frame duration to 5 frames
-		bchg	#0,ost_frame(a0)	; change frame
+		bchg	#0,ost_frame(a0) ; change frame
 
 Cbal_Display:
 		bsr.w	DisplaySprite
 		move.w	(v_limitbtm2).w,d0
 		addi.w	#$E0,d0
-		cmp.w	ost_y_pos(a0),d0	; has object fallen off	the level?
+		cmp.w	ost_y_pos(a0),d0 ; has object fallen off the level?
 		bcs.w	DeleteObject	; if yes, branch
 		rts	

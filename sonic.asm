@@ -9875,115 +9875,8 @@ Obj19:
 		
 Map_GBall:	include "Mappings\GHZ Giant Ball.asm"
 
-; ---------------------------------------------------------------------------
-; Object 1A - GHZ collapsing ledge
-; ---------------------------------------------------------------------------
+CollapseLedge:	include "Objects\GHZ Collapsing Ledge (1).asm"
 
-CollapseLedge:
-		moveq	#0,d0
-		move.b	ost_routine(a0),d0
-		move.w	Ledge_Index(pc,d0.w),d1
-		jmp	Ledge_Index(pc,d1.w)
-; ===========================================================================
-Ledge_Index:	index *,,2
-		ptr Ledge_Main
-		ptr Ledge_Touch
-		ptr Ledge_Collapse
-		ptr Ledge_Display
-		ptr Ledge_Delete
-		ptr Ledge_WalkOff
-
-ledge_timedelay:	equ $38		; time between touching the ledge and it collapsing
-ledge_collapse_flag:	equ $3A		; collapse flag
-; ===========================================================================
-
-Ledge_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
-		move.l	#Map_Ledge,ost_mappings(a0)
-		move.w	#0+tile_pal3,ost_tile(a0)
-		ori.b	#render_rel,ost_render(a0)
-		move.b	#4,ost_priority(a0)
-		move.b	#7,ledge_timedelay(a0) ; set time delay for collapse
-		move.b	#$64,ost_actwidth(a0)
-		move.b	ost_subtype(a0),ost_frame(a0)
-		move.b	#$38,ost_height(a0)
-		bset	#4,ost_render(a0)
-
-Ledge_Touch:	; Routine 2
-		tst.b	ledge_collapse_flag(a0)	; is ledge collapsing?
-		beq.s	@slope		; if not, branch
-		tst.b	ledge_timedelay(a0)	; has time reached zero?
-		beq.w	Ledge_Fragment	; if yes, branch
-		subq.b	#1,ledge_timedelay(a0) ; subtract 1 from time
-
-	@slope:
-		move.w	#$30,d1
-		lea	(Ledge_SlopeData).l,a2
-		bsr.w	SlopeObject
-		bra.w	RememberState
-; ===========================================================================
-
-Ledge_Collapse:	; Routine 4
-		tst.b	ledge_timedelay(a0)
-		beq.w	loc_847A
-		move.b	#1,ledge_collapse_flag(a0)	; set collapse flag
-		subq.b	#1,ledge_timedelay(a0)
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Ledge_WalkOff:	; Routine $A
-		move.w	#$30,d1
-		bsr.w	ExitPlatform
-		move.w	#$30,d1
-		lea	(Ledge_SlopeData).l,a2
-		move.w	ost_x_pos(a0),d2
-		bsr.w	SlopeObject2
-		bra.w	RememberState
-; End of function Ledge_WalkOff
-
-; ===========================================================================
-
-Ledge_Display:	; Routine 6
-		tst.b	ledge_timedelay(a0)	; has time delay reached zero?
-		beq.s	Ledge_TimeZero	; if yes, branch
-		tst.b	ledge_collapse_flag(a0)	; is ledge collapsing?
-		bne.w	loc_82D0	; if yes, branch
-		subq.b	#1,ledge_timedelay(a0) ; subtract 1 from time
-		bra.w	DisplaySprite
-; ===========================================================================
-
-loc_82D0:
-		subq.b	#1,ledge_timedelay(a0)
-		bsr.w	Ledge_WalkOff
-		lea	(v_player).w,a1
-		btst	#3,ost_status(a1)
-		beq.s	loc_82FC
-		tst.b	ledge_timedelay(a0)
-		bne.s	locret_8308
-		bclr	#3,ost_status(a1)
-		bclr	#5,ost_status(a1)
-		move.b	#1,ost_anim_next(a1)
-
-loc_82FC:
-		move.b	#0,ledge_collapse_flag(a0)
-		move.b	#id_Ledge_Display,ost_routine(a0) ; run "Ledge_Display" routine
-
-locret_8308:
-		rts	
-; ===========================================================================
-
-Ledge_TimeZero:
-		bsr.w	ObjectFall
-		bsr.w	DisplaySprite
-		tst.b	ost_render(a0)
-		bpl.s	Ledge_Delete
-		rts	
-; ===========================================================================
-
-Ledge_Delete:	; Routine 8
-		bsr.w	DeleteObject
-		rts	
 ; ---------------------------------------------------------------------------
 ; Object 53 - collapsing floors	(MZ, SLZ, SBZ)
 ; ---------------------------------------------------------------------------
@@ -10129,7 +10022,7 @@ loc_846C:
 ; ===========================================================================
 
 Ledge_Fragment:
-		move.b	#0,ledge_collapse_flag(a0)
+		move.b	#0,ost_ledge_flag(a0)
 
 loc_847A:
 		lea	(CFlo_Data1).l,a4
@@ -10165,7 +10058,7 @@ loc_84B2:
 		move.w	ost_tile(a0),ost_tile(a1)
 		move.b	ost_priority(a0),ost_priority(a1)
 		move.b	ost_actwidth(a0),ost_actwidth(a1)
-		move.b	(a4)+,ledge_timedelay(a1)
+		move.b	(a4)+,ost_ledge_wait_time(a1)
 		cmpa.l	a0,a1
 		bhs.s	loc_84EE
 		bsr.w	DisplaySprite1
@@ -10395,7 +10288,7 @@ ExItem_Animal:	; Routine 0
 		move.b	#id_Animals,0(a1) ; load animal object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
-		move.w	$3E(a0),$3E(a1)
+		move.w	ost_enemy_combo(a0),ost_enemy_combo(a1)
 
 ExItem_Main:	; Routine 2
 		addq.b	#2,ost_routine(a0)
@@ -10407,14 +10300,14 @@ ExItem_Main:	; Routine 2
 		move.b	#$C,ost_actwidth(a0)
 		move.b	#7,ost_anim_time(a0) ; set frame duration to 7 frames
 		move.b	#0,ost_frame(a0)
-		sfx	sfx_BreakItem,0,0,0	; play breaking enemy sound
+		sfx	sfx_BreakItem,0,0,0 ; play breaking enemy sound
 
 ExItem_Animate:	; Routine 4 (2 for ExplosionBomb)
 		subq.b	#1,ost_anim_time(a0) ; subtract 1 from frame duration
 		bpl.s	@display
 		move.b	#7,ost_anim_time(a0) ; set frame duration to 7 frames
-		addq.b	#1,ost_frame(a0)	; next frame
-		cmpi.b	#5,ost_frame(a0)	; is the final frame (05) displayed?
+		addq.b	#1,ost_frame(a0) ; next frame
+		cmpi.b	#5,ost_frame(a0) ; is the final frame (05) displayed?
 		beq.w	DeleteObject	; if yes, branch
 
 	@display:
@@ -13210,12 +13103,12 @@ React_Enemy:
 		moveq	#6,d0		; max bonus is lvl6
 
 	@bonusokay:
-		move.w	d0,$3E(a1)
+		move.w	d0,ost_enemy_combo(a1)
 		move.w	@points(pc,d0.w),d0
 		cmpi.w	#$20,(v_itembonus).w ; have 16 enemies been destroyed?
 		bcs.s	@lessthan16	; if not, branch
 		move.w	#1000,d0	; fix bonus to 10000
-		move.w	#$A,$3E(a1)
+		move.w	#$A,ost_enemy_combo(a1)
 
 	@lessthan16:
 		bsr.w	AddPoints
@@ -14767,8 +14660,8 @@ HUD_Main:	; Routine 0
 		move.w	#$90,ost_x_pos(a0)
 		move.w	#$108,ost_y_screen(a0)
 		move.l	#Map_HUD,ost_mappings(a0)
-		move.w	#$6CA,ost_tile(a0)
-		move.b	#0,ost_render(a0)
+		move.w	#tile_Nem_Hud,ost_tile(a0)
+		move.b	#render_abs,ost_render(a0)
 		move.b	#0,ost_priority(a0)
 
 HUD_Flash:	; Routine 2

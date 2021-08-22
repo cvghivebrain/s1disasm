@@ -29,18 +29,18 @@ ADoor_OpenShut:	; Routine 2
 		bcs.s	ADoor_Animate
 		sub.w	d1,d0
 		sub.w	d1,d0
-		cmp.w	ost_x_pos(a0),d0	; is Sonic > $40 pixels from door?
+		cmp.w	ost_x_pos(a0),d0 ; is Sonic > $40 pixels from door?
 		bcc.s	ADoor_Animate	; close door
 		add.w	d1,d0
-		cmp.w	ost_x_pos(a0),d0	; is Sonic left of the door?
+		cmp.w	ost_x_pos(a0),d0 ; is Sonic left of the door?
 		bcc.s	loc_899A	; if yes, branch
-		btst	#0,ost_status(a0)
+		btst	#status_xflip_bit,ost_status(a0)
 		bne.s	ADoor_Animate
 		bra.s	ADoor_Open
 ; ===========================================================================
 
 loc_899A:
-		btst	#0,ost_status(a0)
+		btst	#status_xflip_bit,ost_status(a0)
 		beq.s	ADoor_Animate
 
 ADoor_Open:
