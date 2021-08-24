@@ -18,7 +18,7 @@ GMake_Index:	index *,,2
 
 gmake_time:	equ $34		; time delay (2 bytes)
 gmake_timer:	equ $32		; current time remaining (2 bytes)
-gmake_parent:	equ $3C		; address of parent object
+ost_gmake_parent:	equ $3C		; address of parent object
 ; ===========================================================================
 
 GMake_Main:	; Routine 0
@@ -56,7 +56,7 @@ GMake_MakeLava:	; Routine 6
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	ost_subtype(a0),ost_subtype(a1)
-		move.l	a0,gmake_parent(a1)
+		move.l	a0,ost_gmake_parent(a1)
 
 	@fail:
 		move.b	#1,ost_anim(a0)
@@ -67,7 +67,7 @@ GMake_MakeLava:	; Routine 6
 ; ===========================================================================
 
 	@isgeyser:
-		movea.l	gmake_parent(a0),a1 ; get parent object address
+		movea.l	ost_gmake_parent(a0),a1 ; get parent object address
 		bset	#1,ost_status(a1)
 		move.w	#-$580,ost_y_vel(a1)
 		bra.s	GMake_Display

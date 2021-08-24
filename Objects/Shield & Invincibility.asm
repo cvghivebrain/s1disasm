@@ -11,6 +11,8 @@ Shi_Index:	index *,,2
 		ptr Shi_Main
 		ptr Shi_Shield
 		ptr Shi_Stars
+
+ost_invincibility_last_pos:	equ $30	; previous position in tracking index, for invincibility trail
 ; ===========================================================================
 
 Shi_Main:	; Routine 0
@@ -21,7 +23,7 @@ Shi_Main:	; Routine 0
 		move.b	#$10,ost_actwidth(a0)
 		tst.b	ost_anim(a0)	; is object a shield?
 		bne.s	@stars		; if not, branch
-		move.w	#tile_Nem_Shield,ost_tile(a0)	; shield specific code
+		move.w	#tile_Nem_Shield,ost_tile(a0) ; shield specific code
 		rts	
 ; ===========================================================================
 
@@ -52,7 +54,7 @@ Shi_Shield:	; Routine 2
 
 Shi_Stars:	; Routine 4
 		tst.b	(v_invinc).w	; does Sonic have invincibility?
-		beq.s	Shi_Start_Delete		; if not, branch
+		beq.s	Shi_Start_Delete ; if not, branch
 		move.w	(v_trackpos).w,d0 ; get index value for tracking data
 		move.b	ost_anim(a0),d1
 		subq.b	#1,d1
@@ -61,11 +63,11 @@ Shi_Stars:	; Routine 4
 		lsl.b	#4,d1
 		addq.b	#4,d1
 		sub.b	d1,d0
-		move.b	$30(a0),d1
+		move.b	ost_invincibility_last_pos(a0),d1
 		sub.b	d1,d0
 		addq.b	#4,d1
 		andi.b	#$F,d1
-		move.b	d1,$30(a0)
+		move.b	d1,ost_invincibility_last_pos(a0)
 		bra.s	@b
 ; ===========================================================================
 
@@ -74,9 +76,9 @@ Shi_Stars:	; Routine 4
 		move.b	d1,d2
 		add.b	d1,d1
 		add.b	d2,d1		; multiply by 3
-		addq.b	#4,d1
-		sub.b	d1,d0
-		move.b	$30(a0),d1
+		addq.b	#4,d1		; add 4
+		sub.b	d1,d0		; subtract from tracking index
+		move.b	ost_invincibility_last_pos(a0),d1 ; retrieve earlier value
 		sub.b	d1,d0		; use earlier tracking data to create trail
 		addq.b	#4,d1
 		cmpi.b	#$18,d1
@@ -84,7 +86,7 @@ Shi_Stars:	; Routine 4
 		moveq	#0,d1
 
 	@a:
-		move.b	d1,$30(a0)
+		move.b	d1,ost_invincibility_last_pos(a0)
 
 	@b:
 		lea	(v_tracksonic).w,a1

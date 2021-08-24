@@ -9,11 +9,16 @@
 ; ===========================================================================
 PushB_Index:	index *,,2
 		ptr PushB_Main
-		ptr loc_BF6E
-		ptr loc_C02C
+		ptr PushB_Action
+		ptr PushB_ChkVisible
 
 PushB_Var:	dc.b $10, 0	; object width,	frame number
 		dc.b $40, 1
+
+ost_pblock_lava_speed:	equ $30	; x axis speed when block is on lava (2 bytes)
+ost_pblock_lava_flag:	equ $32	; 1 = block is on lava
+ost_pblock_x_start:	equ $34	; original x position (2 bytes)
+ost_pblock_y_start:	equ $36	; original y position (2 bytes)
 ; ===========================================================================
 
 PushB_Main:	; Routine 0
@@ -29,148 +34,151 @@ PushB_Main:	; Routine 0
 	@notLZ:
 		move.b	#render_rel,ost_render(a0)
 		move.b	#3,ost_priority(a0)
-		move.w	ost_x_pos(a0),$34(a0)
-		move.w	ost_y_pos(a0),$36(a0)
+		move.w	ost_x_pos(a0),ost_pblock_x_start(a0)
+		move.w	ost_y_pos(a0),ost_pblock_y_start(a0)
 		moveq	#0,d0
-		move.b	ost_subtype(a0),d0
+		move.b	ost_subtype(a0),d0 ; get subtype
 		add.w	d0,d0
-		andi.w	#$E,d0
-		lea	PushB_Var(pc,d0.w),a2
+		andi.w	#$E,d0		; read low nybble
+		lea	PushB_Var(pc,d0.w),a2 ; get width & frame values from array
 		move.b	(a2)+,ost_actwidth(a0)
 		move.b	(a2)+,ost_frame(a0)
-		tst.b	ost_subtype(a0)
-		beq.s	@chkgone
-		move.w	#tile_Nem_MzBlock+tile_pal3+tile_hi,ost_tile(a0)
+		tst.b	ost_subtype(a0)	; is subtype 0?
+		beq.s	@chkgone	; if yes, branch
+		move.w	#tile_Nem_MzBlock+tile_pal3+tile_hi,ost_tile(a0) ; make sprite appear in foreground
 
 	@chkgone:
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
-		beq.s	loc_BF6E
+		beq.s	PushB_Action
 		bclr	#7,2(a2,d0.w)
 		bset	#0,2(a2,d0.w)
 		bne.w	DeleteObject
 
-loc_BF6E:	; Routine 2
-		tst.b	$32(a0)
-		bne.w	loc_C046
+PushB_Action:	; Routine 2
+		tst.b	ost_pblock_lava_flag(a0) ; is block on lava?
+		bne.w	PushB_OnLava	; if yes, branch
 		moveq	#0,d1
 		move.b	ost_actwidth(a0),d1
 		addi.w	#$B,d1
 		move.w	#$10,d2
 		move.w	#$11,d3
 		move.w	ost_x_pos(a0),d4
-		bsr.w	loc_C186
+		bsr.w	PushB_Solid
 		cmpi.w	#(id_MZ<<8)+0,(v_zone).w ; is the level MZ act 1?
-		bne.s	loc_BFC6	; if not, branch
+		bne.s	PushB_Display	; if not, branch
 		bclr	#7,ost_subtype(a0)
 		move.w	ost_x_pos(a0),d0
 		cmpi.w	#$A20,d0
-		bcs.s	loc_BFC6
-		cmpi.w	#$AA1,d0
-		bcc.s	loc_BFC6
+		bcs.s	PushB_Display
+		cmpi.w	#$AA1,d0	; is block between $A20 and $AA1 on x axis?
+		bcc.s	PushB_Display	; if not, branch
+		
 		move.w	(v_obj31ypos).w,d0
 		subi.w	#$1C,d0
 		move.w	d0,ost_y_pos(a0)
 		bset	#7,(v_obj31ypos).w
 		bset	#7,ost_subtype(a0)
 
-	loc_BFC6:
-		out_of_range.s	loc_ppppp
+	PushB_Display:
+		out_of_range.s	PushB_ChkDel
 		bra.w	DisplaySprite
 ; ===========================================================================
 
-loc_ppppp:
-		out_of_range.s	loc_C016,$34(a0)
-		move.w	$34(a0),ost_x_pos(a0)
-		move.w	$36(a0),ost_y_pos(a0)
-		move.b	#4,ost_routine(a0)
-		bra.s	loc_C02C
+PushB_ChkDel:
+		out_of_range.s	PushB_ChkDel2,ost_pblock_x_start(a0)
+		move.w	ost_pblock_x_start(a0),ost_x_pos(a0)
+		move.w	ost_pblock_y_start(a0),ost_y_pos(a0)
+		move.b	#id_PushB_ChkVisible,ost_routine(a0)
+		bra.s	PushB_ChkVisible
 ; ===========================================================================
 
-loc_C016:
+PushB_ChkDel2:
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
-		beq.s	loc_C028
+		beq.s	@del
 		bclr	#0,2(a2,d0.w)
 
-loc_C028:
+	@del:
 		bra.w	DeleteObject
 ; ===========================================================================
 
-loc_C02C:	; Routine 4
-		bsr.w	ChkPartiallyVisible
-		beq.s	locret_C044
-		move.b	#2,ost_routine(a0)
-		clr.b	$32(a0)
+PushB_ChkVisible:	; Routine 4
+		bsr.w	ChkPartiallyVisible ; is block still on screen?
+		beq.s	@visible	; if yes, branch
+		move.b	#id_PushB_Action,ost_routine(a0)
+		clr.b	ost_pblock_lava_flag(a0)
 		clr.w	ost_x_vel(a0)
 		clr.w	ost_y_vel(a0)
 
-locret_C044:
+	@visible:
 		rts	
 ; ===========================================================================
 
-loc_C046:
+PushB_OnLava:
 		move.w	ost_x_pos(a0),-(sp)
 		cmpi.b	#4,ost_routine2(a0)
 		bcc.s	loc_C056
 		bsr.w	SpeedToPos
 
 loc_C056:
-		btst	#1,ost_status(a0)
-		beq.s	loc_C0A0
+		btst	#status_air_bit,ost_status(a0) ; has block been thrown into the air?
+		beq.s	PushB_OnLava2	; if not, branch
 		addi.w	#$18,ost_y_vel(a0)
 		jsr	(ObjFloorDist).l
 		tst.w	d1
 		bpl.w	loc_C09E
 		add.w	d1,ost_y_pos(a0)
-		clr.w	ost_y_vel(a0)
-		bclr	#1,ost_status(a0)
-		move.w	(a1),d0
+		clr.w	ost_y_vel(a0)	; stop block falling when it reaches the ground
+		bclr	#status_air_bit,ost_status(a0)
+		move.w	(a1),d0		; get 16x16 tile the block is on
 		andi.w	#$3FF,d0
-		cmpi.w	#$16A,d0
-		bcs.s	loc_C09E
-		move.w	$30(a0),d0
+		cmpi.w	#$16A,d0	; is it block $16A+ (lava)?
+		bcs.s	loc_C09E	; if not, branch
+		move.w	ost_pblock_lava_speed(a0),d0
 		asr.w	#3,d0
-		move.w	d0,ost_x_vel(a0)
-		move.b	#1,$32(a0)
-		clr.w	$E(a0)
+		move.w	d0,ost_x_vel(a0) ; make block float horizontally
+		move.b	#1,ost_pblock_lava_flag(a0)
+		clr.w	ost_y_sub(a0)
 
 loc_C09E:
 		bra.s	loc_C0E6
 ; ===========================================================================
 
-loc_C0A0:
+PushB_OnLava2:
 		tst.w	ost_x_vel(a0)
 		beq.w	loc_C0D6
-		bmi.s	loc_C0BC
+		bmi.s	@wall_left
+	
+	@wall_right:
 		moveq	#0,d3
 		move.b	ost_actwidth(a0),d3
 		jsr	(ObjHitWallRight).l
 		tst.w	d1		; has block touched a wall?
-		bmi.s	PushB_StopPush	; if yes, branch
+		bmi.s	PushB_Stop	; if yes, branch
 		bra.s	loc_C0E6
 ; ===========================================================================
 
-loc_C0BC:
+	@wall_left:
 		moveq	#0,d3
 		move.b	ost_actwidth(a0),d3
 		not.w	d3
 		jsr	(ObjHitWallLeft).l
 		tst.w	d1		; has block touched a wall?
-		bmi.s	PushB_StopPush	; if yes, branch
+		bmi.s	PushB_Stop	; if yes, branch
 		bra.s	loc_C0E6
 ; ===========================================================================
 
-PushB_StopPush:
-		clr.w	ost_x_vel(a0)		; stop block moving
+PushB_Stop:
+		clr.w	ost_x_vel(a0)	; stop block moving
 		bra.s	loc_C0E6
 ; ===========================================================================
 
 loc_C0D6:
 		addi.l	#$2001,ost_y_pos(a0)
-		cmpi.b	#$A0,ost_y_pos+3(a0)
+		cmpi.b	#$A0,ost_y_sub+1(a0)
 		bcc.s	loc_C104
 
 loc_C0E6:
@@ -180,17 +188,17 @@ loc_C0E6:
 		move.w	#$10,d2
 		move.w	#$11,d3
 		move.w	(sp)+,d4
-		bsr.w	loc_C186
+		bsr.w	PushB_Solid
 		bsr.s	PushB_ChkLava
-		bra.w	loc_BFC6
+		bra.w	PushB_Display
 ; ===========================================================================
 
 loc_C104:
 		move.w	(sp)+,d4
 		lea	(v_player).w,a1
-		bclr	#3,ost_status(a1)
-		bclr	#3,ost_status(a0)
-		bra.w	loc_ppppp
+		bclr	#status_platform_bit,ost_status(a1)
+		bclr	#status_platform_bit,ost_status(a0)
+		bra.w	PushB_ChkDel
 ; ===========================================================================
 
 PushB_ChkLava:
@@ -227,19 +235,19 @@ PushB_LoadLava:
 		add.w	d2,ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		addi.w	#$10,ost_y_pos(a1)
-		move.l	a0,$3C(a1)
+		move.l	a0,ost_gmake_parent(a1)
 
 locret_C184:
 		rts	
 ; ===========================================================================
 
-loc_C186:
+PushB_Solid:
 		move.b	ost_routine2(a0),d0
 		beq.w	loc_C218
 		subq.b	#2,d0
 		bne.s	loc_C1AA
 		bsr.w	ExitPlatform
-		btst	#3,ost_status(a1)
+		btst	#status_platform_bit,ost_status(a1)
 		bne.s	loc_C1A4
 		clr.b	ost_routine2(a0)
 		rts	
@@ -261,15 +269,15 @@ loc_C1AA:
 		add.w	d1,ost_y_pos(a0)
 		clr.w	ost_y_vel(a0)
 		clr.b	ost_routine2(a0)
-		move.w	(a1),d0
+		move.w	(a1),d0		; get 16x16 tile the block is on
 		andi.w	#$3FF,d0
-		cmpi.w	#$16A,d0
-		bcs.s	locret_C1F0
-		move.w	$30(a0),d0
+		cmpi.w	#$16A,d0	; is it block $16A+ (lava)?
+		bcs.s	locret_C1F0	; if not, branch
+		move.w	ost_pblock_lava_speed(a0),d0
 		asr.w	#3,d0
-		move.w	d0,ost_x_vel(a0)
-		move.b	#1,$32(a0)
-		clr.w	ost_y_pos+2(a0)
+		move.w	d0,ost_x_vel(a0) ; make block float horizontally
+		move.b	#1,ost_pblock_lava_flag(a0)
+		clr.w	ost_y_sub(a0)
 
 locret_C1F0:
 		rts	
@@ -281,7 +289,7 @@ loc_C1F2:
 		andi.w	#$C,d0
 		bne.w	locret_C2E4
 		andi.w	#-$10,ost_x_pos(a0)
-		move.w	ost_x_vel(a0),$30(a0)
+		move.w	ost_x_vel(a0),ost_pblock_lava_speed(a0)
 		clr.w	ost_x_vel(a0)
 		subq.b	#2,ost_routine2(a0)
 		rts	
@@ -292,7 +300,7 @@ loc_C218:
 		tst.w	d4
 		beq.w	locret_C2E4
 		bmi.w	locret_C2E4
-		tst.b	$32(a0)
+		tst.b	ost_pblock_lava_flag(a0)
 		beq.s	loc_C230
 		bra.w	locret_C2E4
 ; ===========================================================================
@@ -301,7 +309,7 @@ loc_C230:
 		tst.w	d0
 		beq.w	locret_C2E4
 		bmi.s	loc_C268
-		btst	#0,ost_status(a1)
+		btst	#status_xflip_bit,ost_status(a1)
 		bne.w	locret_C2E4
 		move.w	d0,-(sp)
 		moveq	#0,d3
@@ -317,7 +325,7 @@ loc_C230:
 ; ===========================================================================
 
 loc_C268:
-		btst	#0,ost_status(a1)
+		btst	#status_xflip_bit,ost_status(a1)
 		beq.s	locret_C2E4
 		move.w	d0,-(sp)
 		moveq	#0,d3
@@ -337,7 +345,7 @@ loc_C294:
 		move.w	d1,ost_inertia(a1)
 		move.w	#0,ost_x_vel(a1)
 		move.w	d0,-(sp)
-		sfx	sfx_Push,0,0,0	 ; play pushing sound
+		sfx	sfx_Push,0,0,0 ; play pushing sound
 		move.w	(sp)+,d0
 		tst.b	ost_subtype(a0)
 		bmi.s	locret_C2E4

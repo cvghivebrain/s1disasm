@@ -11,15 +11,18 @@ Spik_Index:	index *,,2
 		ptr Spik_Main
 		ptr Spik_Solid
 
-spik_origX:	equ $30		; start X position
-spik_origY:	equ $32		; start Y position
-
 Spik_Var:	dc.b 0,	$14		; frame	number,	object width
 		dc.b 1,	$10
 		dc.b 2,	4
 		dc.b 3,	$1C
 		dc.b 4,	$40
 		dc.b 5,	$10
+
+ost_spike_x_start:	equ $30	; original X position (2 bytes)
+ost_spike_y_start:	equ $32	; original Y position (2 bytes)
+ost_spike_move_dist:	equ $34	; pixel distance to move object * $100, either direction (2 bytes)
+ost_spike_move_flag:	equ $36	; flag for original or moved position (2 bytes)
+ost_spike_move_time:	equ $38	; time until object moves again (2 bytes)
 ; ===========================================================================
 
 Spik_Main:	; Routine 0
@@ -29,22 +32,22 @@ Spik_Main:	; Routine 0
 		ori.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)
 		move.b	ost_subtype(a0),d0
-		andi.b	#$F,ost_subtype(a0)
-		andi.w	#$F0,d0
+		andi.b	#$F,ost_subtype(a0) ; keep low nybble of subtype
+		andi.w	#$F0,d0		; get high nybble
 		lea	(Spik_Var).l,a1
 		lsr.w	#3,d0
-		adda.w	d0,a1
+		adda.w	d0,a1		; use high nybble of subtype to get frame & width info
 		move.b	(a1)+,ost_frame(a0)
 		move.b	(a1)+,ost_actwidth(a0)
-		move.w	ost_x_pos(a0),spik_origX(a0)
-		move.w	ost_y_pos(a0),spik_origY(a0)
+		move.w	ost_x_pos(a0),ost_spike_x_start(a0)
+		move.w	ost_y_pos(a0),ost_spike_y_start(a0)
 
 Spik_Solid:	; Routine 2
 		bsr.w	Spik_Type0x	; make the object move
 		move.w	#4,d2
-		cmpi.b	#5,ost_frame(a0)	; is object type $5x ?
+		cmpi.b	#5,ost_frame(a0) ; is object type $5x ?
 		beq.s	Spik_SideWays	; if yes, branch
-		cmpi.b	#1,ost_frame(a0)	; is object type $1x ?
+		cmpi.b	#1,ost_frame(a0) ; is object type $1x ?
 		bne.s	Spik_Upright	; if not, branch
 		move.w	#$14,d2
 
@@ -56,7 +59,7 @@ Spik_SideWays:
 		addq.w	#1,d3
 		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject
-		btst	#3,ost_status(a0)
+		btst	#status_platform_bit,ost_status(a0)
 		bne.s	Spik_Display
 		cmpi.w	#1,d4
 		beq.s	Spik_Hurt
@@ -73,7 +76,7 @@ Spik_Upright:
 		move.w	#$11,d3
 		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject
-		btst	#3,ost_status(a0)
+		btst	#status_platform_bit,ost_status(a0)
 		bne.s	Spik_Hurt
 		tst.w	d4
 		bpl.s	Spik_Display
@@ -84,8 +87,8 @@ Spik_Hurt:
 		move.l	a0,-(sp)
 		movea.l	a0,a2
 		lea	(v_player).w,a0
-		cmpi.b	#4,ost_routine(a0)
-		bcc.s	loc_CF20
+		cmpi.b	#id_Sonic_Hurt,ost_routine(a0) ; is Sonic hurt or dead?
+		bcc.s	loc_CF20	; if yes, branch
 	if Revision<>2
 		move.l	ost_y_pos(a0),d3
 		move.w	ost_y_vel(a0),d0
@@ -93,11 +96,11 @@ Spik_Hurt:
 		asl.l	#8,d0
 	else
 		; This fixes the infamous "spike bug"
-		tst.w	ost_sonic_flash_rate(a0)	; Is Sonic flashing after being hurt?
+		tst.w	ost_sonic_flash_rate(a0) ; Is Sonic flashing after being hurt?
 		bne.s	loc_CF20	; If so, skip getting hurt
 		jmp	(loc_E0).l	; This is a copy of the above code that was pushed aside for this
 loc_D5A2:
-	endif
+	endc
 		sub.l	d0,d3
 		move.l	d3,ost_y_pos(a0)
 		jsr	(HurtSonic).l
@@ -107,7 +110,7 @@ loc_CF20:
 
 Spik_Display:
 		bsr.w	DisplaySprite
-		out_of_range	DeleteObject,spik_origX(a0)
+		out_of_range	DeleteObject,ost_spike_x_start(a0)
 		rts	
 ; ===========================================================================
 
@@ -131,50 +134,50 @@ Spik_Type00:
 Spik_Type01:
 		bsr.w	Spik_Wait
 		moveq	#0,d0
-		move.b	$34(a0),d0
-		add.w	spik_origY(a0),d0
-		move.w	d0,ost_y_pos(a0)	; move the object vertically
+		move.b	ost_spike_move_dist(a0),d0
+		add.w	ost_spike_y_start(a0),d0
+		move.w	d0,ost_y_pos(a0) ; move the object vertically
 		rts	
 ; ===========================================================================
 
 Spik_Type02:
 		bsr.w	Spik_Wait
 		moveq	#0,d0
-		move.b	$34(a0),d0
-		add.w	spik_origX(a0),d0
-		move.w	d0,ost_x_pos(a0)	; move the object horizontally
+		move.b	ost_spike_move_dist(a0),d0
+		add.w	ost_spike_x_start(a0),d0
+		move.w	d0,ost_x_pos(a0) ; move the object horizontally
 		rts	
 ; ===========================================================================
 
 Spik_Wait:
-		tst.w	$38(a0)		; is time delay	= zero?
+		tst.w	ost_spike_move_time(a0) ; is time delay	= zero?
 		beq.s	loc_CFA4	; if yes, branch
-		subq.w	#1,$38(a0)	; subtract 1 from time delay
+		subq.w	#1,ost_spike_move_time(a0) ; subtract 1 from time delay
 		bne.s	locret_CFE6
 		tst.b	ost_render(a0)
 		bpl.s	locret_CFE6
-		sfx	sfx_SpikesMove,0,0,0	; play "spikes moving" sound
+		sfx	sfx_SpikesMove,0,0,0 ; play "spikes moving" sound
 		bra.s	locret_CFE6
 ; ===========================================================================
 
 loc_CFA4:
-		tst.w	$36(a0)
+		tst.w	ost_spike_move_flag(a0)
 		beq.s	loc_CFC6
-		subi.w	#$800,$34(a0)
+		subi.w	#$800,ost_spike_move_dist(a0)
 		bcc.s	locret_CFE6
-		move.w	#0,$34(a0)
-		move.w	#0,$36(a0)
-		move.w	#60,$38(a0)	; set time delay to 1 second
+		move.w	#0,ost_spike_move_dist(a0)
+		move.w	#0,ost_spike_move_flag(a0)
+		move.w	#60,ost_spike_move_time(a0) ; set time delay to 1 second
 		bra.s	locret_CFE6
 ; ===========================================================================
 
 loc_CFC6:
-		addi.w	#$800,$34(a0)
-		cmpi.w	#$2000,$34(a0)
+		addi.w	#$800,ost_spike_move_dist(a0)
+		cmpi.w	#$2000,ost_spike_move_dist(a0)
 		bcs.s	locret_CFE6
-		move.w	#$2000,$34(a0)
-		move.w	#1,$36(a0)
-		move.w	#60,$38(a0)	; set time delay to 1 second
+		move.w	#$2000,ost_spike_move_dist(a0)
+		move.w	#1,ost_spike_move_flag(a0)
+		move.w	#60,ost_spike_move_time(a0) ; set time delay to 1 second
 
 locret_CFE6:
 		rts	

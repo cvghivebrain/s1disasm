@@ -19,7 +19,7 @@ But_Main:	; Routine 0
 		cmpi.b	#id_MZ,(v_zone).w ; is level Marble Zone?
 		beq.s	But_IsMZ	; if yes, branch
 
-		move.w	#$513,ost_tile(a0)	; SYZ, LZ and SBZ specific code
+		move.w	#$513,ost_tile(a0) ; SYZ, LZ and SBZ specific code
 
 	But_IsMZ:
 		move.b	#render_rel,ost_render(a0)
@@ -35,7 +35,7 @@ But_Pressed:	; Routine 2
 		move.w	#5,d3
 		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject
-		bclr	#0,ost_frame(a0)	; use "unpressed" frame
+		bclr	#0,ost_frame(a0) ; use "unpressed" frame
 		move.b	ost_subtype(a0),d0
 		andi.w	#$F,d0
 		lea	(f_switch).w,a3
@@ -61,11 +61,11 @@ loc_BDBE:
 loc_BDC8:
 		tst.b	(a3)
 		bne.s	loc_BDD6
-		sfx	sfx_Switch,0,0,0	; play switch sound
+		sfx	sfx_Switch,0,0,0 ; play switch sound
 
 loc_BDD6:
 		bset	d3,(a3)
-		bset	#0,ost_frame(a0)	; use "pressed"	frame
+		bset	#0,ost_frame(a0) ; use "pressed" frame
 
 loc_BDDE:
 		btst	#5,ost_subtype(a0)

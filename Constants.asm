@@ -86,15 +86,18 @@ bitUp:		equ 0
 
 ; Object variables
 ost_render:		equ 1	; bitfield for x/y flip, display mode
-	render_xflip:		equ 1
-	render_yflip:		equ 2
-	render_rel:		equ 4
-	render_abs:		equ 0
-	render_rawmap:		equ $20
-	render_onscreen:	equ $80
+	render_xflip:		equ 1	; xflip
+	render_yflip:		equ 2	; yflip
+	render_rel:		equ 4	; relative screen position - coordinates are based on the level
+	render_abs:		equ 0	; absolute screen position - coordinates are based on the screen (e.g. the HUD)
+	render_useheight:	equ $10	; use ost_height to decide if object is on screen, otherwise height is assumed to be $20 (used for large objects)
+	render_rawmap:		equ $20	; sprites use raw mappings - i.e. object consists of a single sprite instead of multipart sprite mappings (e.g. broken block fragments)
+	render_bg:		equ $40	; object is behind a loop (Sonic only)
+	render_onscreen:	equ $80	; object is on screen
 	render_xflip_bit:	equ 0
 	render_yflip_bit:	equ 1
 	render_rel_bit:		equ 2
+	render_useheight_bit:	equ 4
 	render_rawmap_bit:	equ 5
 	render_bg_bit:		equ 6
 	render_onscreen_bit:	equ 7
