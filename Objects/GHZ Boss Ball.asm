@@ -13,6 +13,8 @@ GBall_Index:	index *,,2
 		ptr GBall_Display2
 		ptr loc_17C68
 		ptr GBall_ChkVanish
+
+ost_ball_parent:	equ $34	; address of OST of parent object (4 bytes)
 ; ===========================================================================
 
 GBall_Main:	; Routine 0
@@ -49,7 +51,7 @@ loc_17B60:
 		move.b	#render_rel,ost_render(a1)
 		move.b	#8,ost_actwidth(a1)
 		move.b	#6,ost_priority(a1)
-		move.l	$34(a0),$34(a1)
+		move.l	ost_ball_parent(a0),ost_ball_parent(a1)
 		dbf	d1,GBall_MakeLinks ; repeat sequence 5 more times
 
 GBall_MakeBall:
@@ -88,7 +90,7 @@ loc_17BE0:
 
 		cmp.b	$3C(a1),d0
 		bne.s	loc_17BFA
-		movea.l	$34(a0),a1
+		movea.l	ost_ball_parent(a0),a1
 		cmpi.b	#6,ost_routine2(a1)
 		bne.s	loc_17BFA
 		addq.b	#2,ost_routine(a0)
@@ -114,7 +116,7 @@ GBall_Display2:	; Routine 4
 
 
 sub_17C2A:
-		movea.l	$34(a0),a1
+		movea.l	ost_ball_parent(a0),a1
 		addi.b	#$20,ost_anim_frame(a0)
 		bcc.s	loc_17C3C
 		bchg	#0,ost_frame(a0)
@@ -137,7 +139,7 @@ locret_17C66:
 ; ===========================================================================
 
 loc_17C68:	; Routine 6
-		movea.l	$34(a0),a1
+		movea.l	ost_ball_parent(a0),a1
 		tst.b	ost_status(a1)
 		bpl.s	GBall_Display3
 		move.b	#id_ExplosionBomb,0(a0)
@@ -155,7 +157,7 @@ GBall_ChkVanish:; Routine 8
 
 GBall_Vanish:
 		move.b	d0,ost_frame(a0)
-		movea.l	$34(a0),a1
+		movea.l	ost_ball_parent(a0),a1
 		tst.b	ost_status(a1)
 		bpl.s	GBall_Display4
 		move.b	#0,ost_col_type(a0)

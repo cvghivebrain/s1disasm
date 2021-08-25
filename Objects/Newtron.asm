@@ -11,6 +11,8 @@ Newt_Index:	index *,,2
 		ptr Newt_Main
 		ptr Newt_Action
 		ptr Newt_Delete
+
+ost_newtron_fire_flag:	equ $32	; set to 1 after newtron fires a missile
 ; ===========================================================================
 
 Newt_Main:	; Routine 0
@@ -41,12 +43,12 @@ Newt_Action:	; Routine 2
 ; ===========================================================================
 
 @chkdistance:
-		bset	#0,ost_status(a0)
+		bset	#status_xflip_bit,ost_status(a0)
 		move.w	(v_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0
 		bcc.s	@sonicisright
 		neg.w	d0
-		bclr	#0,ost_status(a0)
+		bclr	#status_xflip_bit,ost_status(a0)
 
 	@sonicisright:
 		cmpi.w	#$80,d0		; is Sonic within $80 pixels of	the newtron?
@@ -66,13 +68,13 @@ Newt_Action:	; Routine 2
 ; ===========================================================================
 
 @type00:
-		cmpi.b	#4,ost_frame(a0)	; has "appearing" animation finished?
+		cmpi.b	#4,ost_frame(a0) ; has "appearing" animation finished?
 		bcc.s	@fall		; is yes, branch
-		bset	#0,ost_status(a0)
+		bset	#status_xflip_bit,ost_status(a0)
 		move.w	(v_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0
 		bcc.s	@sonicisright2
-		bclr	#0,ost_status(a0)
+		bclr	#status_xflip_bit,ost_status(a0)
 
 	@sonicisright2:
 		rts	
@@ -90,7 +92,7 @@ Newt_Action:	; Routine 2
 		bpl.s	@keepfalling	; if not, branch
 
 		add.w	d1,ost_y_pos(a0)
-		move.w	#0,ost_y_vel(a0)	; stop newtron falling
+		move.w	#0,ost_y_vel(a0) ; stop newtron falling
 		addq.b	#2,ost_routine2(a0)
 		move.b	#2,ost_anim(a0)
 		btst	#5,ost_tile(a0)
@@ -100,7 +102,7 @@ Newt_Action:	; Routine 2
 	@pppppppp:
 		move.b	#$D,ost_col_type(a0)
 		move.w	#$200,ost_x_vel(a0) ; move newtron horizontally
-		btst	#0,ost_status(a0)
+		btst	#status_xflip_bit,ost_status(a0)
 		bne.s	@keepfalling
 		neg.w	ost_x_vel(a0)
 
@@ -115,7 +117,7 @@ Newt_Action:	; Routine 2
 		blt.s	@nextroutine
 		cmpi.w	#$C,d1
 		bge.s	@nextroutine
-		add.w	d1,ost_y_pos(a0)	; match	newtron's position with floor
+		add.w	d1,ost_y_pos(a0) ; match newtron's position with floor
 		rts	
 ; ===========================================================================
 
@@ -137,9 +139,9 @@ Newt_Action:	; Routine 2
 	@firemissile:
 		cmpi.b	#2,ost_frame(a0)
 		bne.s	@fail
-		tst.b	$32(a0)
+		tst.b	ost_newtron_fire_flag(a0)
 		bne.s	@fail
-		move.b	#1,$32(a0)
+		move.b	#1,ost_newtron_fire_flag(a0)
 		bsr.w	FindFreeObj
 		bne.s	@fail
 		move.b	#id_Missile,0(a1) ; load missile object
@@ -148,7 +150,7 @@ Newt_Action:	; Routine 2
 		subq.w	#8,ost_y_pos(a1)
 		move.w	#$200,ost_x_vel(a1)
 		move.w	#$14,d0
-		btst	#0,ost_status(a0)
+		btst	#status_xflip_bit,ost_status(a0)
 		bne.s	@noflip
 		neg.w	d0
 		neg.w	ost_x_vel(a1)

@@ -22,19 +22,19 @@ Pri_Index:	index *,,2
 		ptr Pri_Animals
 		ptr Pri_EndAct
 
-pri_origY:	equ $30		; original y-axis position
+Pri_Var:	dc.b id_Pri_BodyMain, $20, 4, 0	; routine, width, priority, frame
+		dc.b id_Pri_Switched, $C, 5, 1
+		dc.b id_Pri_Explosion, $10, 4, 3
+		dc.b id_Pri_Explosion+2, $10, 3, 5
 
-Pri_Var:	dc.b id_Pri_BodyMain,	$20, 4,	0	; routine, width, priority, frame
-		dc.b id_Pri_Switched,	$C, 5, 1
-		dc.b id_Pri_Explosion,	$10, 4,	3
-		dc.b id_Pri_Explosion+2,	$10, 3,	5
+ost_prison_y_start:	equ $30	; original y position (2 bytes)
 ; ===========================================================================
 
 Pri_Main:	; Routine 0
 		move.l	#Map_Pri,ost_mappings(a0)
 		move.w	#tile_Nem_Prison,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
-		move.w	ost_y_pos(a0),pri_origY(a0)
+		move.w	ost_y_pos(a0),ost_prison_y_start(a0)
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0
 		lsl.w	#2,d0
@@ -64,14 +64,14 @@ Pri_BodyMain:	; Routine 2
 ; ===========================================================================
 
 @chkopened:
-		tst.b	ost_routine2(a0)	; has the prison been opened?
+		tst.b	ost_routine2(a0) ; has the prison been opened?
 		beq.s	@open		; if yes, branch
 		clr.b	ost_routine2(a0)
-		bclr	#3,(v_player+ost_status).w
-		bset	#1,(v_player+ost_status).w
+		bclr	#status_platform_bit,(v_player+ost_status).w
+		bset	#status_air_bit,(v_player+ost_status).w
 
 	@open:
-		move.b	#2,ost_frame(a0)	; use frame number 2 (destroyed	prison)
+		move.b	#2,ost_frame(a0) ; use frame number 2 (destroyed prison)
 		rts	
 ; ===========================================================================
 
@@ -83,8 +83,8 @@ Pri_Switched:	; Routine 4
 		jsr	(SolidObject).l
 		lea	(Ani_Pri).l,a1
 		jsr	(AnimateSprite).l
-		move.w	pri_origY(a0),ost_y_pos(a0)
-		tst.b	ost_routine2(a0)	; has prison already been opened?
+		move.w	ost_prison_y_start(a0),ost_y_pos(a0)
+		tst.b	ost_routine2(a0) ; has prison already been opened?
 		beq.s	@open2		; if yes, branch
 
 		addq.w	#8,ost_y_pos(a0)
@@ -95,8 +95,8 @@ Pri_Switched:	; Routine 4
 		move.b	#1,(f_lockctrl).w ; lock controls
 		move.w	#(btnR<<8),(v_jpadhold2).w ; make Sonic run to the right
 		clr.b	ost_routine2(a0)
-		bclr	#3,(v_player+ost_status).w
-		bset	#1,(v_player+ost_status).w
+		bclr	#status_platform_bit,(v_player+ost_status).w
+		bset	#status_air_bit,(v_player+ost_status).w
 
 	@open2:
 		rts	
@@ -129,7 +129,7 @@ Pri_Explosion:	; Routine 6, 8, $A
 
 @makeanimal:
 		move.b	#2,(v_bossstatus).w
-		move.b	#$C,ost_routine(a0)	; replace explosions with animals
+		move.b	#id_Pri_Animals,ost_routine(a0) ; replace explosions with animals
 		move.b	#6,ost_frame(a0)
 		move.w	#150,ost_anim_time(a0)
 		addi.w	#$20,ost_y_pos(a0)
@@ -145,7 +145,7 @@ Pri_Explosion:	; Routine 6, 8, $A
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		add.w	d4,ost_x_pos(a1)
 		addq.w	#7,d4
-		move.w	d5,ost_animal_prison_num(a1)
+		move.w	d5,ost_animal_prison_num(a1) ; give each animal a num so it jumps at a different time
 		subq.w	#8,d5
 		dbf	d6,@loop	; repeat 7 more	times
 

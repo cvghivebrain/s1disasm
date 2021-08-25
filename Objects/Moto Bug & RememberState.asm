@@ -12,6 +12,9 @@ Moto_Index:	index *,,2
 		ptr Moto_Action
 		ptr Moto_Animate
 		ptr Moto_Delete
+
+ost_moto_wait_time:	equ $30	; time delay before changing direction (2 bytes)
+ost_moto_smoke_time:	equ $33	; time delay between smoke puffs
 ; ===========================================================================
 
 Moto_Main:	; Routine 0
@@ -29,7 +32,7 @@ Moto_Main:	; Routine 0
 		jsr	(ObjFloorDist).l
 		tst.w	d1
 		bpl.s	@notonfloor
-		add.w	d1,ost_y_pos(a0)	; match	object's position with the floor
+		add.w	d1,ost_y_pos(a0) ; match object's position with the floor
 		move.w	#0,ost_y_vel(a0)
 		addq.b	#2,ost_routine(a0) ; goto Moto_Action next
 		bchg	#0,ost_status(a0)
@@ -73,18 +76,15 @@ RememberState:
 Moto_ActIndex:	index *
 		ptr @move
 		ptr @findfloor
-
-@time:		equ $30
-@smokedelay:	equ $33
 ; ===========================================================================
 
 @move:
-		subq.w	#1,@time(a0)	; subtract 1 from pause	time
+		subq.w	#1,ost_moto_wait_time(a0) ; subtract 1 from pause time
 		bpl.s	@wait		; if time remains, branch
 		addq.b	#2,ost_routine2(a0)
 		move.w	#-$100,ost_x_vel(a0) ; move object to the left
 		move.b	#1,ost_anim(a0)
-		bchg	#0,ost_status(a0)
+		bchg	#status_xflip_bit,ost_status(a0)
 		bne.s	@wait
 		neg.w	ost_x_vel(a0)	; change direction
 
@@ -99,10 +99,10 @@ Moto_ActIndex:	index *
 		blt.s	@pause
 		cmpi.w	#$C,d1
 		bge.s	@pause
-		add.w	d1,ost_y_pos(a0)	; match	object's position with the floor
-		subq.b	#1,@smokedelay(a0)
+		add.w	d1,ost_y_pos(a0) ; match object's position with the floor
+		subq.b	#1,ost_moto_smoke_time(a0)
 		bpl.s	@nosmoke
-		move.b	#$F,@smokedelay(a0)
+		move.b	#$F,ost_moto_smoke_time(a0)
 		bsr.w	FindFreeObj
 		bne.s	@nosmoke
 		move.b	#id_MotoBug,0(a1) ; load exhaust smoke object
@@ -116,8 +116,8 @@ Moto_ActIndex:	index *
 
 @pause:
 		subq.b	#2,ost_routine2(a0)
-		move.w	#59,@time(a0)	; set pause time to 1 second
-		move.w	#0,ost_x_vel(a0)	; stop the object moving
+		move.w	#59,ost_moto_wait_time(a0) ; set pause time to 1 second
+		move.w	#0,ost_x_vel(a0) ; stop the object moving
 		move.b	#0,ost_anim(a0)
 		rts	
 ; ===========================================================================
