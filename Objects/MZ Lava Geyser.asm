@@ -15,11 +15,14 @@ Geyser_Index:	index *,,2
 		ptr Geyser_Delete
 
 Geyser_Speeds:	dc.w $FB00, 0
+
+ost_geyser_y_start:	equ $30	; original y position (2 bytes)
+ost_geyser_parent:	equ $3C	; address of OST of parent object (4 bytes)
 ; ===========================================================================
 
 Geyser_Main:	; Routine 0
 		addq.b	#2,ost_routine(a0)
-		move.w	ost_y_pos(a0),$30(a0)
+		move.w	ost_y_pos(a0),ost_geyser_y_start(a0)
 		tst.b	ost_subtype(a0)
 		beq.s	@isgeyser
 		subi.w	#$250,ost_y_pos(a0)
@@ -61,27 +64,27 @@ Geyser_Main:	; Routine 0
 
 @activate:
 		addi.w	#$60,ost_y_pos(a1)
-		move.w	$30(a0),$30(a1)
-		addi.w	#$60,$30(a1)
+		move.w	ost_geyser_y_start(a0),ost_geyser_y_start(a1)
+		addi.w	#$60,ost_geyser_y_start(a1)
 		move.b	#$93,ost_col_type(a1)
 		move.b	#$80,ost_height(a1)
-		bset	#4,ost_render(a1)
+		bset	#render_useheight_bit,ost_render(a1)
 		addq.b	#4,ost_routine(a1)
-		move.l	a0,$3C(a1)
+		move.l	a0,ost_geyser_parent(a1)
 		tst.b	ost_subtype(a0)
 		beq.s	@sound
 		moveq	#0,d1
 		bsr.w	@loop
 		addq.b	#2,ost_routine(a1)
-		bset	#4,ost_tile(a1)
+		bset	#tile_yflip_bit,ost_tile(a1)
 		addi.w	#$100,ost_y_pos(a1)
 		move.b	#0,ost_priority(a1)
-		move.w	$30(a0),$30(a1)
-		move.l	$3C(a0),$3C(a1)
+		move.w	ost_geyser_y_start(a0),ost_geyser_y_start(a1)
+		move.l	ost_geyser_parent(a0),ost_geyser_parent(a1)
 		move.b	#0,ost_subtype(a0)
 
 	@sound:
-		sfx	sfx_Burning,0,0,0	; play flame sound
+		sfx	sfx_Burning,0,0,0 ; play flame sound
 
 Geyser_Action:	; Routine 2
 		moveq	#0,d0
@@ -103,12 +106,12 @@ Geyser_Types:	index *
 ; ===========================================================================
 
 Geyser_Type00:
-		addi.w	#$18,ost_y_vel(a0)	; increase object's falling speed
-		move.w	$30(a0),d0
+		addi.w	#$18,ost_y_vel(a0) ; increase object's falling speed
+		move.w	ost_geyser_y_start(a0),d0
 		cmp.w	ost_y_pos(a0),d0
 		bcc.s	locret_EFDA
 		addq.b	#4,ost_routine(a0)
-		movea.l	$3C(a0),a1
+		movea.l	ost_geyser_parent(a0),a1
 		move.b	#3,ost_anim(a1)
 
 locret_EFDA:
@@ -116,12 +119,12 @@ locret_EFDA:
 ; ===========================================================================
 
 Geyser_Type01:
-		addi.w	#$18,ost_y_vel(a0)	; increase object's falling speed
-		move.w	$30(a0),d0
+		addi.w	#$18,ost_y_vel(a0) ; increase object's falling speed
+		move.w	ost_geyser_y_start(a0),d0
 		cmp.w	ost_y_pos(a0),d0
 		bcc.s	locret_EFFA
 		addq.b	#4,ost_routine(a0)
-		movea.l	$3C(a0),a1
+		movea.l	ost_geyser_parent(a0),a1
 		move.b	#1,ost_anim(a1)
 
 locret_EFFA:
@@ -129,13 +132,13 @@ locret_EFFA:
 ; ===========================================================================
 
 loc_EFFC:	; Routine 4
-		movea.l	$3C(a0),a1
+		movea.l	ost_geyser_parent(a0),a1
 		cmpi.b	#6,ost_routine(a1)
 		beq.w	Geyser_Delete
 		move.w	ost_y_pos(a1),d0
 		addi.w	#$60,d0
 		move.w	d0,ost_y_pos(a0)
-		sub.w	$30(a0),d0
+		sub.w	ost_geyser_y_start(a0),d0
 		neg.w	d0
 		moveq	#8,d1
 		cmpi.w	#$40,d0

@@ -10,6 +10,9 @@
 Roll_Index:	index *,,2
 		ptr Roll_Main
 		ptr Roll_Action
+
+ost_roller_open_time:	equ $30	; time roller stays open for (2 bytes)
+ost_roller_mode:	equ $32	; +1 = roller has jumped; +$80 = roller has stopped
 ; ===========================================================================
 
 Roll_Main:	; Routine 0
@@ -19,7 +22,7 @@ Roll_Main:	; Routine 0
 		bsr.w	ObjFloorDist
 		tst.w	d1
 		bpl.s	locret_E052
-		add.w	d1,ost_y_pos(a0)	; match	roller's position with the floor
+		add.w	d1,ost_y_pos(a0) ; match roller's position with the floor
 		move.w	#0,ost_y_vel(a0)
 		addq.b	#2,ost_routine(a0)
 		move.l	#Map_Roll,ost_mappings(a0)
@@ -71,7 +74,7 @@ Roll_RollChk:
 		move.w	(v_player+ost_x_pos).w,d0
 		subi.w	#$100,d0
 		bcs.s	loc_E0D2
-		sub.w	ost_x_pos(a0),d0	; check	distance between Roller	and Sonic
+		sub.w	ost_x_pos(a0),d0 ; check distance between Roller and Sonic
 		bcs.s	loc_E0D2
 		addq.b	#4,ost_routine2(a0)
 		move.b	#2,ost_anim(a0)
@@ -86,7 +89,7 @@ loc_E0D2:
 Roll_RollNoChk:
 		cmpi.b	#2,ost_anim(a0)
 		beq.s	loc_E0F8
-		subq.w	#1,$30(a0)
+		subq.w	#1,ost_roller_open_time(a0)
 		bpl.s	locret_E0F6
 		move.b	#1,ost_anim(a0)
 		move.w	#$700,ost_x_vel(a0)
@@ -115,9 +118,9 @@ Roll_ChkJump:
 
 Roll_Jump:
 		addq.b	#2,ost_routine2(a0)
-		bset	#0,$32(a0)
+		bset	#0,ost_roller_mode(a0)
 		beq.s	locret_E12E
-		move.w	#-$600,ost_y_vel(a0)	; move Roller vertically
+		move.w	#-$600,ost_y_vel(a0) ; move Roller vertically
 
 locret_E12E:
 		rts	
@@ -130,7 +133,7 @@ Roll_MatchFloor:
 		bsr.w	ObjFloorDist
 		tst.w	d1
 		bpl.s	locret_E150
-		add.w	d1,ost_y_pos(a0)	; match	Roller's position with the floor
+		add.w	d1,ost_y_pos(a0) ; match Roller's position with the floor
 		subq.b	#2,ost_routine2(a0)
 		move.w	#0,ost_y_vel(a0)
 
@@ -141,7 +144,7 @@ locret_E150:
 
 
 Roll_Stop:
-		tst.b	$32(a0)
+		tst.b	ost_roller_mode(a0)
 		bmi.s	locret_E188
 		move.w	(v_player+ost_x_pos).w,d0
 		subi.w	#$30,d0
@@ -150,9 +153,9 @@ Roll_Stop:
 		move.b	#0,ost_anim(a0)
 		move.b	#$E,ost_col_type(a0)
 		clr.w	ost_x_vel(a0)
-		move.w	#120,$30(a0)	; set waiting time to 2	seconds
+		move.w	#120,ost_roller_open_time(a0) ; set waiting time to 2 seconds
 		move.b	#2,ost_routine2(a0)
-		bset	#7,$32(a0)
+		bset	#7,ost_roller_mode(a0)
 
 locret_E188:
 		rts	

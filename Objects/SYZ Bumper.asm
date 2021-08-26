@@ -22,7 +22,7 @@ Bump_Main:	; Routine 0
 		move.b	#$D7,ost_col_type(a0)
 
 Bump_Hit:	; Routine 2
-		tst.b	ost_col_property(a0)	; has Sonic touched the	bumper?
+		tst.b	ost_col_property(a0) ; has Sonic touched the bumper?
 		beq.w	@display	; if not, branch
 		clr.b	ost_col_property(a0)
 		lea	(v_player).w,a1
@@ -34,16 +34,16 @@ Bump_Hit:	; Routine 2
 		jsr	(CalcSine).l
 		muls.w	#-$700,d1
 		asr.l	#8,d1
-		move.w	d1,ost_x_vel(a1)	; bounce Sonic away
+		move.w	d1,ost_x_vel(a1) ; bounce Sonic away
 		muls.w	#-$700,d0
 		asr.l	#8,d0
-		move.w	d0,ost_y_vel(a1)	; bounce Sonic away
-		bset	#1,ost_status(a1)
-		bclr	#4,ost_status(a1)
-		bclr	#5,ost_status(a1)
-		clr.b	$3C(a1)
+		move.w	d0,ost_y_vel(a1) ; bounce Sonic away
+		bset	#status_air_bit,ost_status(a1)
+		bclr	#status_rolljump_bit,ost_status(a1)
+		bclr	#status_pushing_bit,ost_status(a1)
+		clr.b	ost_sonic_jump(a1)
 		move.b	#1,ost_anim(a0)	; use "hit" animation
-		sfx	sfx_Bumper,0,0,0	; play bumper sound
+		sfx	sfx_Bumper,0,0,0 ; play bumper sound
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0

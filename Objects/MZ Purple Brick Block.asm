@@ -11,7 +11,7 @@ Brick_Index:	index *,,2
 		ptr Brick_Main
 		ptr Brick_Action
 
-brick_origY:	equ $30
+ost_brick_y_start:	equ $30	; original y position (2 bytes)
 ; ===========================================================================
 
 Brick_Main:	; Routine 0
@@ -23,7 +23,7 @@ Brick_Main:	; Routine 0
 		move.b	#render_rel,ost_render(a0)
 		move.b	#3,ost_priority(a0)
 		move.b	#$10,ost_actwidth(a0)
-		move.w	ost_y_pos(a0),brick_origY(a0)
+		move.w	ost_y_pos(a0),ost_brick_y_start(a0)
 		move.w	#$5C0,$32(a0)
 
 Brick_Action:	; Routine 2
@@ -52,11 +52,11 @@ Brick_Action:	; Routine 2
 		endc
 ; ===========================================================================
 Brick_TypeIndex:index *
-		ptr Brick_Type00
-		ptr Brick_Type01
-		ptr Brick_Type02
-		ptr Brick_Type03
-		ptr Brick_Type04
+		ptr Brick_Type00 ; doesn't move
+		ptr Brick_Type01 ; wobbles
+		ptr Brick_Type02 ; wobbles and falls
+		ptr Brick_Type03 ; falls immediately
+		ptr Brick_Type04 ; wobbles slowly (it's on the lava now)
 ; ===========================================================================
 
 Brick_Type00:
@@ -72,18 +72,18 @@ Brick_Type02:
 loc_E888:
 		cmpi.w	#$90,d0		; is Sonic within $90 pixels of	the block?
 		bcc.s	Brick_Type01	; if not, resume wobbling
-		move.b	#3,ost_subtype(a0)	; if yes, make the block fall
+		move.b	#3,ost_subtype(a0) ; if yes, make the block fall
 
 Brick_Type01:
 		moveq	#0,d0
 		move.b	(v_oscillate+$16).w,d0
-		btst	#3,ost_subtype(a0)
-		beq.s	loc_E8A8
-		neg.w	d0
+		btst	#3,ost_subtype(a0) ; is subtype 8 or above?
+		beq.s	loc_E8A8	; if not, branch
+		neg.w	d0		; wobble the opposite way
 		addi.w	#$10,d0
 
 loc_E8A8:
-		move.w	brick_origY(a0),d1
+		move.w	ost_brick_y_start(a0),d1
 		sub.w	d0,d1
 		move.w	d1,ost_y_pos(a0)	; update the block's position to make it wobble
 		rts	
@@ -91,23 +91,23 @@ loc_E8A8:
 
 Brick_Type03:
 		bsr.w	SpeedToPos
-		addi.w	#$18,ost_y_vel(a0)	; increase falling speed
+		addi.w	#$18,ost_y_vel(a0) ; increase falling speed
 		bsr.w	ObjFloorDist
 		tst.w	d1		; has the block	hit the	floor?
 		bpl.w	locret_E8EE	; if not, branch
 		add.w	d1,ost_y_pos(a0)
 		clr.w	ost_y_vel(a0)	; stop the block falling
-		move.w	ost_y_pos(a0),brick_origY(a0)
-		move.b	#4,ost_subtype(a0)
+		move.w	ost_y_pos(a0),ost_brick_y_start(a0)
+		move.b	#4,ost_subtype(a0) ; final subtype - slow wobble
 		move.w	(a1),d0
 		andi.w	#$3FF,d0
 		if Revision=0
-		cmpi.w	#$2E8,d0
+		cmpi.w	#$2E8,d0	; wrong 16x16 tile check in rev. 0
 		else
-			cmpi.w	#$16A,d0
+			cmpi.w	#$16A,d0 ; is the 16x16 tile it's landed on lava?
 		endc
-		bcc.s	locret_E8EE
-		move.b	#0,ost_subtype(a0)
+		bcc.s	locret_E8EE	; if yes, branch
+		move.b	#0,ost_subtype(a0) ; don't wobble
 
 locret_E8EE:
 		rts	
@@ -117,7 +117,7 @@ Brick_Type04:
 		moveq	#0,d0
 		move.b	(v_oscillate+$12).w,d0
 		lsr.w	#3,d0
-		move.w	brick_origY(a0),d1
+		move.w	ost_brick_y_start(a0),d1
 		sub.w	d0,d1
-		move.w	d1,ost_y_pos(a0)	; make the block wobble
+		move.w	d1,ost_y_pos(a0) ; make the block wobble
 		rts	

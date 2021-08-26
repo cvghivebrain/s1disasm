@@ -32,7 +32,7 @@ GRing_Okay:
 		addq.b	#2,ost_routine(a0)
 		move.b	#2,ost_priority(a0)
 		move.b	#$52,ost_col_type(a0)
-		move.w	#$C40,(v_gfxbigring).w	; Signal that Art_BigRing should be loaded ($C40 is the size of Art_BigRing)
+		move.w	#$C40,(v_gfxbigring).w ; Signal that Art_BigRing should be loaded ($C40 is the size of Art_BigRing)
 
 GRing_Animate:	; Routine 2
 		move.b	(v_ani1_frame).w,ost_frame(a0)
@@ -48,14 +48,14 @@ GRing_Collect:	; Routine 4
 		move.b	#id_RingFlash,0(a1) ; load giant ring flash object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
-		move.l	a0,$3C(a1)
+		move.l	a0,ost_flash_parent(a1)
 		move.w	(v_player+ost_x_pos).w,d0
-		cmp.w	ost_x_pos(a0),d0	; has Sonic come from the left?
+		cmp.w	ost_x_pos(a0),d0 ; has Sonic come from the left?
 		bcs.s	GRing_PlaySnd	; if yes, branch
-		bset	#0,ost_render(a1)	; reverse flash	object
+		bset	#render_xflip_bit,ost_render(a1) ; reverse flash object
 
 GRing_PlaySnd:
-		sfx	sfx_GiantRing,0,0,0	; play giant ring sound
+		sfx	sfx_GiantRing,0,0,0 ; play giant ring sound
 		bra.s	GRing_Animate
 ; ===========================================================================
 

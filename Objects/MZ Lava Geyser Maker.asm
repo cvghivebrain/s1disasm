@@ -16,9 +16,9 @@ GMake_Index:	index *,,2
 		ptr GMake_Display
 		ptr GMake_Delete
 
-gmake_time:	equ $34		; time delay (2 bytes)
-gmake_timer:	equ $32		; current time remaining (2 bytes)
-ost_gmake_parent:	equ $3C		; address of parent object
+ost_gmake_wait_time:	equ $32	; current time remaining (2 bytes)
+ost_gmake_wait_total:	equ $34	; time delay (2 bytes)
+ost_gmake_parent:	equ $3C	; address of OST of parent object (4 bytes)
 ; ===========================================================================
 
 GMake_Main:	; Routine 0
@@ -28,13 +28,13 @@ GMake_Main:	; Routine 0
 		move.b	#render_rel,ost_render(a0)
 		move.b	#1,ost_priority(a0)
 		move.b	#$38,ost_actwidth(a0)
-		move.w	#120,gmake_time(a0) ; set time delay to 2 seconds
+		move.w	#120,ost_gmake_wait_total(a0) ; set time delay to 2 seconds
 
 GMake_Wait:	; Routine 2
-		subq.w	#1,gmake_timer(a0) ; decrement timer
+		subq.w	#1,ost_gmake_wait_time(a0) ; decrement timer
 		bpl.s	@cancel		; if time remains, branch
 
-		move.w	gmake_time(a0),gmake_timer(a0) ; reset timer
+		move.w	ost_gmake_wait_total(a0),ost_gmake_wait_time(a0) ; reset timer
 		move.w	(v_player+ost_y_pos).w,d0
 		move.w	ost_y_pos(a0),d1
 		cmp.w	d1,d0
@@ -56,7 +56,7 @@ GMake_MakeLava:	; Routine 6
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	ost_subtype(a0),ost_subtype(a1)
-		move.l	a0,ost_gmake_parent(a1)
+		move.l	a0,ost_geyser_parent(a1)
 
 	@fail:
 		move.b	#1,ost_anim(a0)
@@ -68,7 +68,7 @@ GMake_MakeLava:	; Routine 6
 
 	@isgeyser:
 		movea.l	ost_gmake_parent(a0),a1 ; get parent object address
-		bset	#1,ost_status(a1)
+		bset	#status_yflip_bit,ost_status(a1)
 		move.w	#-$580,ost_y_vel(a1)
 		bra.s	GMake_Display
 ; ===========================================================================
@@ -89,7 +89,7 @@ GMake_Display:	; Routine 8
 
 GMake_Delete:	; Routine $A
 		move.b	#0,ost_anim(a0)
-		move.b	#2,ost_routine(a0)
+		move.b	#id_GMake_Wait,ost_routine(a0)
 		tst.b	ost_subtype(a0)
 		beq.w	DeleteObject
 		rts	

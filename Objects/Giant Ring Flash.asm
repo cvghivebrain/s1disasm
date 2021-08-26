@@ -11,6 +11,8 @@ Flash_Index:	index *,,2
 		ptr Flash_Main
 		ptr Flash_ChkDel
 		ptr Flash_Delete
+
+ost_flash_parent:	equ $3C	; address of OST of parent object (4 bytes)
 ; ===========================================================================
 
 Flash_Main:	; Routine 0
@@ -35,11 +37,11 @@ Flash_Collect:
 		bpl.s	locret_9F76
 		move.b	#1,ost_anim_time(a0)
 		addq.b	#1,ost_frame(a0)
-		cmpi.b	#8,ost_frame(a0)	; has animation	finished?
+		cmpi.b	#8,ost_frame(a0) ; has animation finished?
 		bcc.s	Flash_End	; if yes, branch
-		cmpi.b	#3,ost_frame(a0)	; is 3rd frame displayed?
+		cmpi.b	#3,ost_frame(a0) ; is 3rd frame displayed?
 		bne.s	locret_9F76	; if not, branch
-		movea.l	$3C(a0),a1	; get parent object address
+		movea.l	ost_flash_parent(a0),a1	; get parent object address
 		move.b	#6,ost_routine(a1) ; delete parent object
 		move.b	#id_Blank,(v_player+ost_anim).w ; make Sonic invisible
 		move.b	#1,(f_bigring).w ; stop	Sonic getting bonuses
