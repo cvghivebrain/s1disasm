@@ -6,7 +6,7 @@
 		move.b	ost_routine(a0),d0
 		move.w	Elev_Index(pc,d0.w),d1
 		jsr	Elev_Index(pc,d1.w)
-		out_of_range	DeleteObject,elev_origX(a0)
+		out_of_range	DeleteObject,ost_elev_x_start(a0)
 		bra.w	DisplaySprite
 ; ===========================================================================
 Elev_Index:	index *,,2
@@ -14,10 +14,6 @@ Elev_Index:	index *,,2
 		ptr Elev_Platform
 		ptr Elev_Action
 		ptr Elev_MakeMulti
-
-elev_origX:	equ $32		; original x-axis position
-elev_origY:	equ $30		; original y-axis position
-elev_dist:	equ $3C		; distance to move (2 bytes)
 
 Elev_Var1:	dc.b $28, 0		; width, frame number
 
@@ -36,6 +32,14 @@ Elev_Var2:	dc.b $10, 1		; distance to move, action type
 		dc.b $20, 5
 		dc.b $20, 7
 		dc.b $30, 9
+
+ost_elev_y_start:	equ $30	; original y-axis position (2 bytes)
+ost_elev_x_start:	equ $32	; original x-axis position (2 bytes)
+ost_elev_moved:		equ $34	; distance moved (2 bytes)
+ost_elev_acceleration:	equ $38	; acceleration - i.e. its movement is not linear (2 bytes)
+ost_elev_dec_flag:	equ $3A	; 1 = decelerate
+ost_elev_distance:	equ $3C	; distance to move (2 bytes)
+ost_elev_dist_master:	equ $3E	; master copy of ost_elev_distance (2 bytes)
 ; ===========================================================================
 
 Elev_Main:	; Routine 0
@@ -46,8 +50,8 @@ Elev_Main:	; Routine 0
 		addq.b	#4,ost_routine(a0) ; goto Elev_MakeMulti next
 		andi.w	#$7F,d0
 		mulu.w	#6,d0
-		move.w	d0,elev_dist(a0)
-		move.w	d0,$3E(a0)
+		move.w	d0,ost_elev_distance(a0)
+		move.w	d0,ost_elev_dist_master(a0)
 		addq.l	#4,sp
 		rts	
 ; ===========================================================================
@@ -65,14 +69,14 @@ Elev_Main:	; Routine 0
 		lea	Elev_Var2(pc,d0.w),a2
 		move.b	(a2)+,d0
 		lsl.w	#2,d0
-		move.w	d0,elev_dist(a0)	; set distance to move
+		move.w	d0,ost_elev_distance(a0) ; set distance to move
 		move.b	(a2)+,ost_subtype(a0)	; set type
 		move.l	#Map_Elev,ost_mappings(a0)
 		move.w	#0+tile_pal3,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)
-		move.w	ost_x_pos(a0),elev_origX(a0)
-		move.w	ost_y_pos(a0),elev_origY(a0)
+		move.w	ost_x_pos(a0),ost_elev_x_start(a0)
+		move.w	ost_y_pos(a0),ost_elev_y_start(a0)
 
 Elev_Platform:	; Routine 2
 		moveq	#0,d1
@@ -98,33 +102,34 @@ Elev_Action:	; Routine 4
 
 Elev_Types:
 		moveq	#0,d0
-		move.b	ost_subtype(a0),d0
+		move.b	ost_subtype(a0),d0 ; subtype has changed by now, see Elev_Var2
 		andi.w	#$F,d0
 		add.w	d0,d0
 		move.w	@index(pc,d0.w),d1
 		jmp	@index(pc,d1.w)
 ; ===========================================================================
 @index:		index *
-		ptr @type00
-		ptr @type01
-		ptr @type02
-		ptr @type01
+		ptr @type00	; doesn't move
+		ptr @type01	; rises when stood on
+		ptr @type02	
+		ptr @type01	; falls when stood on
 		ptr @type04
-		ptr @type01
+		ptr @type01	; rises diagonally when stood on
 		ptr @type06
-		ptr @type01
+		ptr @type01	; falls diagonally when stood on
 		ptr @type08
-		ptr @type09
+		ptr @type09	; rises and vanishes
 ; ===========================================================================
 
 @type00:
 		rts	
 ; ===========================================================================
 
+; Moves when stood on - serves types 1, 3, 5 and 7
 @type01:
 		cmpi.b	#4,ost_routine(a0) ; check if Sonic is standing on the object
 		bne.s	@notstanding
-		addq.b	#1,ost_subtype(a0) ; if yes, add 1 to type
+		addq.b	#1,ost_subtype(a0) ; if yes, add 1 to type (goes to 2, 4, 6 or 8)
 
 	@notstanding:
 		rts	
@@ -132,52 +137,52 @@ Elev_Types:
 
 @type02:
 		bsr.w	Elev_Move
-		move.w	$34(a0),d0
+		move.w	ost_elev_moved(a0),d0
 		neg.w	d0
-		add.w	elev_origY(a0),d0
+		add.w	ost_elev_y_start(a0),d0
 		move.w	d0,ost_y_pos(a0)
 		rts	
 ; ===========================================================================
 
 @type04:
 		bsr.w	Elev_Move
-		move.w	$34(a0),d0
-		add.w	elev_origY(a0),d0
+		move.w	ost_elev_moved(a0),d0
+		add.w	ost_elev_y_start(a0),d0
 		move.w	d0,ost_y_pos(a0)
 		rts	
 ; ===========================================================================
 
 @type06:
 		bsr.w	Elev_Move
-		move.w	$34(a0),d0
+		move.w	ost_elev_moved(a0),d0
 		asr.w	#1,d0
 		neg.w	d0
-		add.w	elev_origY(a0),d0
+		add.w	ost_elev_y_start(a0),d0
 		move.w	d0,ost_y_pos(a0)
-		move.w	$34(a0),d0
-		add.w	elev_origX(a0),d0
+		move.w	ost_elev_moved(a0),d0
+		add.w	ost_elev_x_start(a0),d0
 		move.w	d0,ost_x_pos(a0)
 		rts	
 ; ===========================================================================
 
 @type08:
 		bsr.w	Elev_Move
-		move.w	$34(a0),d0
+		move.w	ost_elev_moved(a0),d0
 		asr.w	#1,d0
-		add.w	elev_origY(a0),d0
+		add.w	ost_elev_y_start(a0),d0
 		move.w	d0,ost_y_pos(a0)
-		move.w	$34(a0),d0
+		move.w	ost_elev_moved(a0),d0
 		neg.w	d0
-		add.w	elev_origX(a0),d0
+		add.w	ost_elev_x_start(a0),d0
 		move.w	d0,ost_x_pos(a0)
 		rts	
 ; ===========================================================================
 
 @type09:
 		bsr.w	Elev_Move
-		move.w	$34(a0),d0
+		move.w	ost_elev_moved(a0),d0
 		neg.w	d0
-		add.w	elev_origY(a0),d0
+		add.w	ost_elev_y_start(a0),d0
 		move.w	d0,ost_y_pos(a0)
 		tst.b	ost_subtype(a0)
 		beq.w	@typereset
@@ -185,11 +190,11 @@ Elev_Types:
 ; ===========================================================================
 
 	@typereset:
-		btst	#3,ost_status(a0)
+		btst	#status_platform_bit,ost_status(a0)
 		beq.s	@delete
-		bset	#1,ost_status(a1)
-		bclr	#3,ost_status(a1)
-		move.b	#2,ost_routine(a1)
+		bset	#status_air_bit,ost_status(a1)
+		bclr	#status_platform_bit,ost_status(a1)
+		move.b	#id_Sonic_Control,ost_routine(a1)
 
 	@delete:
 		bra.w	DeleteObject
@@ -198,8 +203,8 @@ Elev_Types:
 
 
 Elev_Move:
-		move.w	$38(a0),d0
-		tst.b	$3A(a0)
+		move.w	ost_elev_acceleration(a0),d0
+		tst.b	ost_elev_dec_flag(a0)
 		bne.s	loc_10CC8
 		cmpi.w	#$800,d0
 		bcc.s	loc_10CD0
@@ -213,16 +218,16 @@ loc_10CC8:
 		subi.w	#$10,d0
 
 loc_10CD0:
-		move.w	d0,$38(a0)
+		move.w	d0,ost_elev_acceleration(a0)
 		ext.l	d0
 		asl.l	#8,d0
-		add.l	$34(a0),d0
-		move.l	d0,$34(a0)
+		add.l	ost_elev_moved(a0),d0
+		move.l	d0,ost_elev_moved(a0)
 		swap	d0
-		move.w	elev_dist(a0),d2
+		move.w	ost_elev_distance(a0),d2
 		cmp.w	d2,d0
 		bls.s	loc_10CF0
-		move.b	#1,$3A(a0)
+		move.b	#1,ost_elev_dec_flag(a0)
 
 loc_10CF0:
 		add.w	d2,d2
@@ -237,9 +242,9 @@ locret_10CFA:
 ; ===========================================================================
 
 Elev_MakeMulti:	; Routine 6
-		subq.w	#1,elev_dist(a0)
+		subq.w	#1,ost_elev_distance(a0)
 		bne.s	@chkdel
-		move.w	$3E(a0),elev_dist(a0)
+		move.w	ost_elev_dist_master(a0),ost_elev_distance(a0)
 		bsr.w	FindFreeObj
 		bne.s	@chkdel
 		move.b	#id_Elevator,0(a1) ; duplicate the object

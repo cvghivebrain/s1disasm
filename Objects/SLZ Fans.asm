@@ -11,8 +11,8 @@ Fan_Index:	index *,,2
 		ptr Fan_Main
 		ptr Fan_Delay
 
-fan_time:	equ $30		; time between switching on/off
-fan_switch:	equ $32		; on/off switch
+ost_fan_wait_time:	equ $30	; time between switching on/off (2 bytes)
+ost_fan_flag:		equ $32	; 0 = on; 1 = off
 ; ===========================================================================
 
 Fan_Main:	; Routine 0
@@ -26,20 +26,20 @@ Fan_Main:	; Routine 0
 Fan_Delay:	; Routine 2
 		btst	#1,ost_subtype(a0) ; is object type 02/03 (always on)?
 		bne.s	@blow		; if yes, branch
-		subq.w	#1,fan_time(a0)	; subtract 1 from time delay
+		subq.w	#1,ost_fan_wait_time(a0) ; subtract 1 from time delay
 		bpl.s	@blow		; if time remains, branch
-		move.w	#120,fan_time(a0) ; set delay to 2 seconds
-		bchg	#0,fan_switch(a0) ; switch fan on/off
-		beq.s	@blow		; if fan is off, branch
-		move.w	#180,fan_time(a0) ; set delay to 3 seconds
+		move.w	#120,ost_fan_wait_time(a0) ; set delay to 2 seconds
+		bchg	#0,ost_fan_flag(a0) ; switch fan on/off
+		beq.s	@blow		; if fan is on, branch
+		move.w	#180,ost_fan_wait_time(a0) ; set delay to 3 seconds
 
 @blow:
-		tst.b	fan_switch(a0)	; is fan switched on?
+		tst.b	ost_fan_flag(a0) ; is fan switched on?
 		bne.w	@chkdel		; if not, branch
 		lea	(v_player).w,a1
 		move.w	ost_x_pos(a1),d0
 		sub.w	ost_x_pos(a0),d0
-		btst	#0,ost_status(a0)	; is fan facing right?
+		btst	#status_xflip_bit,ost_status(a0) ; is fan facing right?
 		bne.s	@chksonic	; if yes, branch
 		neg.w	d0
 
@@ -60,7 +60,7 @@ Fan_Delay:	; Routine 2
 
 	@faraway:
 		addi.w	#$60,d0
-		btst	#0,ost_status(a0)	; is fan facing right?
+		btst	#status_xflip_bit,ost_status(a0) ; is fan facing right?
 		bne.s	@right		; if yes, branch
 		neg.w	d0
 
@@ -72,7 +72,7 @@ Fan_Delay:	; Routine 2
 		neg.w	d0
 
 	@movesonic:
-		add.w	d0,ost_x_pos(a1)	; push Sonic away from the fan
+		add.w	d0,ost_x_pos(a1) ; push Sonic away from the fan
 
 @animate:
 		subq.b	#1,ost_anim_time(a0)

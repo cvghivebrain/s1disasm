@@ -14,7 +14,8 @@ LWall_Index:	index *,,2
 		ptr LWall_Move
 		ptr LWall_Delete
 
-lwall_flag:	equ $36		; flag to start wall moving
+ost_lwall_flag:		equ $36	; flag to start wall moving
+ost_lwall_parent:	equ $3C	; address of OST of parent object (4 bytes)
 ; ===========================================================================
 
 LWall_Main:	; Routine 0
@@ -29,7 +30,7 @@ LWall_Main:	; Routine 0
 		bne.s	@fail
 
 @make:
-		move.b	#id_LavaWall,0(a1)	; load object
+		move.b	#id_LavaWall,0(a1) ; load object
 		move.l	#Map_LWall,ost_mappings(a1)
 		move.w	#tile_Nem_Lava+tile_pal4,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)
@@ -39,7 +40,7 @@ LWall_Main:	; Routine 0
 		move.b	#1,ost_priority(a1)
 		move.b	#0,ost_anim(a1)
 		move.b	#$94,ost_col_type(a1)
-		move.l	a0,$3C(a1)
+		move.l	a0,ost_lwall_parent(a1)
 
 	@fail:
 		dbf	d1,@loop	; repeat sequence once
@@ -64,12 +65,12 @@ LWall_Action:	; Routine 4
 	@rangechk2:
 		cmpi.w	#$60,d0		; is Sonic within $60 pixels (y-axis)?
 		bcc.s	@movewall	; if not, branch
-		move.b	#1,lwall_flag(a0) ; set object to move
+		move.b	#1,ost_lwall_flag(a0) ; set object to move
 		bra.s	LWall_Solid
 ; ===========================================================================
 
 @movewall:
-		tst.b	lwall_flag(a0)	; is object set	to move?
+		tst.b	ost_lwall_flag(a0) ; is object set to move?
 		beq.s	LWall_Solid	; if not, branch
 		move.w	#$180,ost_x_vel(a0) ; set object speed
 		subq.b	#2,ost_routine(a0)
@@ -85,10 +86,10 @@ LWall_Solid:	; Routine 2
 		bsr.w	SolidObject
 		move.w	(sp)+,d0
 		move.b	d0,ost_routine(a0)
-		cmpi.w	#$6A0,ost_x_pos(a0)	; has object reached $6A0 on the x-axis?
+		cmpi.w	#$6A0,ost_x_pos(a0) ; has object reached $6A0 on the x-axis?
 		bne.s	@animate	; if not, branch
 		clr.w	ost_x_vel(a0)	; stop object moving
-		clr.b	lwall_flag(a0)
+		clr.b	ost_lwall_flag(a0)
 
 	@animate:
 		lea	(Ani_LWall).l,a1
@@ -99,7 +100,7 @@ LWall_Solid:	; Routine 2
 
 	@rangechk:
 		bsr.w	DisplaySprite
-		tst.b	lwall_flag(a0)	; is wall already moving?
+		tst.b	ost_lwall_flag(a0) ; is wall already moving?
 		bne.s	@moving		; if yes, branch
 		out_of_range.s	@chkgone
 
@@ -117,10 +118,10 @@ LWall_Solid:	; Routine 2
 ; ===========================================================================
 
 LWall_Move:	; Routine 6
-		movea.l	$3C(a0),a1
-		cmpi.b	#8,ost_routine(a1)
+		movea.l	ost_lwall_parent(a0),a1
+		cmpi.b	#id_LWall_Delete,ost_routine(a1)
 		beq.s	LWall_Delete
-		move.w	ost_x_pos(a1),ost_x_pos(a0)	; move rest of lava wall
+		move.w	ost_x_pos(a1),ost_x_pos(a0) ; move rest of lava wall
 		subi.w	#$80,ost_x_pos(a0)
 		bra.w	DisplaySprite
 ; ===========================================================================

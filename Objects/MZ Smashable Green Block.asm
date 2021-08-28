@@ -12,6 +12,9 @@ Smab_Index:	index *,,2
 		ptr Smab_Main
 		ptr Smab_Solid
 		ptr Smab_Points
+
+ost_smash_sonic_ani:	equ $32	; Sonic's current animation number
+ost_smash_count:	equ $34	; number of blocks hit + enemies previously hit in a single jump (2 bytes)
 ; ===========================================================================
 
 Smab_Main:	; Routine 0
@@ -25,17 +28,14 @@ Smab_Main:	; Routine 0
 
 Smab_Solid:	; Routine 2
 
-sonicAniFrame:	equ $32		; Sonic's current animation number
-@count:		equ $34		; number of blocks hit + previous stuff
-
-		move.w	(v_itembonus).w,$34(a0)
-		move.b	(v_player+ost_anim).w,sonicAniFrame(a0) ; load Sonic's animation number
+		move.w	(v_itembonus).w,ost_smash_count(a0)
+		move.b	(v_player+ost_anim).w,ost_smash_sonic_ani(a0) ; load Sonic's animation number
 		move.w	#$1B,d1
 		move.w	#$10,d2
 		move.w	#$11,d3
 		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject
-		btst	#3,ost_status(a0)	; has Sonic landed on the block?
+		btst	#status_platform_bit,ost_status(a0) ; has Sonic landed on the block?
 		bne.s	@smash		; if yes, branch
 
 	@notspinning:
@@ -43,18 +43,18 @@ sonicAniFrame:	equ $32		; Sonic's current animation number
 ; ===========================================================================
 
 @smash:
-		cmpi.b	#id_Roll,sonicAniFrame(a0) ; is Sonic rolling/jumping?
+		cmpi.b	#id_Roll,ost_smash_sonic_ani(a0) ; is Sonic rolling/jumping?
 		bne.s	@notspinning	; if not, branch
-		move.w	@count(a0),(v_itembonus).w
-		bset	#2,ost_status(a1)
+		move.w	ost_smash_count(a0),(v_itembonus).w
+		bset	#status_jump_bit,ost_status(a1)
 		move.b	#$E,ost_height(a1)
 		move.b	#7,ost_width(a1)
 		move.b	#id_Roll,ost_anim(a1) ; make Sonic roll
 		move.w	#-$300,ost_y_vel(a1) ; rebound Sonic
-		bset	#1,ost_status(a1)
-		bclr	#3,ost_status(a1)
-		move.b	#2,ost_routine(a1)
-		bclr	#3,ost_status(a0)
+		bset	#status_air_bit,ost_status(a1)
+		bclr	#status_platform_bit,ost_status(a1)
+		move.b	#id_Sonic_Control,ost_routine(a1)
+		bclr	#status_platform_bit,ost_status(a0)
 		clr.b	ost_solid(a0)
 		move.b	#1,ost_frame(a0)
 		lea	(Smab_Speeds).l,a4 ; load broken fragment speed data
@@ -93,7 +93,7 @@ Smab_Points:	; Routine 4
 		bpl.w	DeleteObject
 		rts	
 ; ===========================================================================
-Smab_Speeds:	dc.w -$200, -$200	; x-speed, y-speed
+Smab_Speeds:	dc.w -$200, -$200	; x speed, y speed
 		dc.w -$100, -$100
 		dc.w $200, -$200
 		dc.w $100, -$100

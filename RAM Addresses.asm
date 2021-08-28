@@ -237,6 +237,7 @@ f_jumponly:	equ $FFFFF7CA	; flag set to lock controls apart from jumping
 v_obj6B:		equ $FFFFF7CB	; object 6B (SBZ stomper) variable
 f_lockctrl:	equ $FFFFF7CC	; flag set to lock controls during ending sequence
 f_bigring:	equ $FFFFF7CD	; flag set when Sonic collects the giant ring
+f_obj56:	equ $FFFFF7CE	; flag set for something related to obj56 (REV01 only)
 v_itembonus:	equ $FFFFF7D0	; item bonus from broken enemies, blocks etc. (2 bytes)
 v_timebonus:	equ $FFFFF7D2	; time bonus at the end of an act (2 bytes)
 v_ringbonus:	equ $FFFFF7D4	; ring bonus at the end of an act (2 bytes)

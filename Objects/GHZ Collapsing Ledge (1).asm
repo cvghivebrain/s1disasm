@@ -29,7 +29,7 @@ Ledge_Main:	; Routine 0
 		move.b	#$64,ost_actwidth(a0)
 		move.b	ost_subtype(a0),ost_frame(a0)
 		move.b	#$38,ost_height(a0)
-		bset	#4,ost_render(a0)
+		bset	#render_useheight_bit,ost_render(a0)
 
 Ledge_Touch:	; Routine 2
 		tst.b	ost_ledge_flag(a0) ; is ledge collapsing?

@@ -6,7 +6,7 @@
 		move.b	ost_routine(a0),d0
 		move.w	Circ_Index(pc,d0.w),d1
 		jsr	Circ_Index(pc,d1.w)
-		out_of_range	DeleteObject,circ_origX(a0)
+		out_of_range	DeleteObject,ost_circ_x_start(a0)
 		bra.w	DisplaySprite
 ; ===========================================================================
 Circ_Index:	index *,,2
@@ -14,8 +14,8 @@ Circ_Index:	index *,,2
 		ptr Circ_Platform
 		ptr Circ_Action
 
-circ_origX:	equ $32		; original x-axis position
-circ_origY:	equ $30		; original y-axis position
+ost_circ_y_start:	equ $30	; original y-axis position (2 bytes)
+ost_circ_x_start:	equ $32	; original x-axis position (2 bytes)
 ; ===========================================================================
 
 Circ_Main:	; Routine 0
@@ -25,8 +25,8 @@ Circ_Main:	; Routine 0
 		move.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)
 		move.b	#$18,ost_actwidth(a0)
-		move.w	ost_x_pos(a0),circ_origX(a0)
-		move.w	ost_y_pos(a0),circ_origY(a0)
+		move.w	ost_x_pos(a0),ost_circ_x_start(a0)
+		move.w	ost_y_pos(a0),ost_circ_y_start(a0)
 
 Circ_Platform:	; Routine 2
 		moveq	#0,d1
@@ -77,9 +77,9 @@ Circ_Types:
 		exg	d1,d2
 
 	@noshift00b:
-		add.w	circ_origX(a0),d1
+		add.w	ost_circ_x_start(a0),d1
 		move.w	d1,ost_x_pos(a0)
-		add.w	circ_origY(a0),d2
+		add.w	ost_circ_y_start(a0),d2
 		move.w	d2,ost_y_pos(a0)
 		rts	
 ; ===========================================================================
@@ -104,8 +104,8 @@ Circ_Types:
 
 	@noshift04b:
 		neg.w	d1
-		add.w	circ_origX(a0),d1
+		add.w	ost_circ_x_start(a0),d1
 		move.w	d1,ost_x_pos(a0)
-		add.w	circ_origY(a0),d2
+		add.w	ost_circ_y_start(a0),d2
 		move.w	d2,ost_y_pos(a0)
 		rts	

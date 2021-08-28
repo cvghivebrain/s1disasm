@@ -13,9 +13,9 @@ Bom_Index:	index *,,2
 		ptr Bom_Display
 		ptr Bom_End
 
-bom_time:	equ $30		; time of fuse
-bom_origY:	equ $34		; original y-axis position
-bom_parent:	equ $3C		; address of parent object
+ost_bomb_fuse_time:	equ $30	; time left on fuse - also used for change direction timer (2 bytes)
+ost_bomb_y_start:	equ $34	; original y-axis position (2 bytes)
+ost_bomb_parent:	equ $3C	; address of OST of parent object (4 bytes)
 ; ===========================================================================
 
 Bom_Main:	; Routine 0
@@ -33,7 +33,7 @@ Bom_Main:	; Routine 0
 
 loc_11A3C:
 		move.b	#$9A,ost_col_type(a0)
-		bchg	#0,ost_status(a0)
+		bchg	#status_xflip_bit,ost_status(a0)
 
 Bom_Action:	; Routine 2
 		moveq	#0,d0
@@ -52,13 +52,13 @@ Bom_Action:	; Routine 2
 
 @walk:
 		bsr.w	@chksonic
-		subq.w	#1,bom_time(a0)	; subtract 1 from time delay
+		subq.w	#1,ost_bomb_fuse_time(a0) ; subtract 1 from time delay
 		bpl.s	@noflip		; if time remains, branch
 		addq.b	#2,ost_routine2(a0) ; goto @wait
-		move.w	#1535,bom_time(a0) ; set time delay to 25 seconds
+		move.w	#1535,ost_bomb_fuse_time(a0) ; set time delay to 25.5 seconds
 		move.w	#$10,ost_x_vel(a0)
 		move.b	#1,ost_anim(a0)	; use walking animation
-		bchg	#0,ost_status(a0)
+		bchg	#status_xflip_bit,ost_status(a0)
 		beq.s	@noflip
 		neg.w	ost_x_vel(a0)	; change direction
 
@@ -68,7 +68,7 @@ Bom_Action:	; Routine 2
 
 @wait:
 		bsr.w	@chksonic
-		subq.w	#1,bom_time(a0)	; subtract 1 from time delay
+		subq.w	#1,ost_bomb_fuse_time(a0) ; subtract 1 from time delay
 		bmi.s	@stopwalking	; if time expires, branch
 		bsr.w	SpeedToPos
 		rts	
@@ -76,14 +76,14 @@ Bom_Action:	; Routine 2
 
 	@stopwalking:
 		subq.b	#2,ost_routine2(a0)
-		move.w	#179,bom_time(a0) ; set time delay to 3 seconds
+		move.w	#179,ost_bomb_fuse_time(a0) ; set time delay to 3 seconds
 		clr.w	ost_x_vel(a0)	; stop walking
 		move.b	#0,ost_anim(a0)	; use waiting animation
 		rts	
 ; ===========================================================================
 
 @explode:
-		subq.w	#1,bom_time(a0)	; subtract 1 from time delay
+		subq.w	#1,ost_bomb_fuse_time(a0) ; subtract 1 from time delay
 		bpl.s	@noexplode	; if time remains, branch
 		move.b	#id_ExplosionBomb,0(a0) ; change bomb into an explosion
 		move.b	#0,ost_routine(a0)
@@ -113,7 +113,7 @@ Bom_Action:	; Routine 2
 		bne.s	@outofrange
 
 		move.b	#4,ost_routine2(a0)
-		move.w	#143,bom_time(a0) ; set fuse time
+		move.w	#143,ost_bomb_fuse_time(a0) ; set fuse time
 		clr.w	ost_x_vel(a0)
 		move.b	#2,ost_anim(a0)	; use activated animation
 		bsr.w	FindNextFreeObj
@@ -121,18 +121,18 @@ Bom_Action:	; Routine 2
 		move.b	#id_Bomb,0(a1)	; load fuse object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
-		move.w	ost_y_pos(a0),bom_origY(a1)
+		move.w	ost_y_pos(a0),ost_bomb_y_start(a1)
 		move.b	ost_status(a0),ost_status(a1)
-		move.b	#4,ost_subtype(a1)
+		move.b	#id_Bom_Display,ost_subtype(a1)
 		move.b	#3,ost_anim(a1)
 		move.w	#$10,ost_y_vel(a1)
-		btst	#1,ost_status(a0)	; is bomb upside-down?
+		btst	#status_yflip_bit,ost_status(a0) ; is bomb upside-down?
 		beq.s	@normal		; if not, branch
 		neg.w	ost_y_vel(a1)	; reverse direction for fuse
 
 	@normal:
-		move.w	#143,bom_time(a1) ; set fuse time
-		move.l	a0,bom_parent(a1)
+		move.w	#143,ost_bomb_fuse_time(a1) ; set fuse time
+		move.l	a0,ost_bomb_parent(a1)
 
 @outofrange:
 		rts	
@@ -146,16 +146,16 @@ Bom_Display:	; Routine 4
 ; ===========================================================================
 
 loc_11B70:
-		subq.w	#1,bom_time(a0)
+		subq.w	#1,ost_bomb_fuse_time(a0)
 		bmi.s	loc_11B7C
 		bsr.w	SpeedToPos
 		rts	
 ; ===========================================================================
 
 loc_11B7C:
-		clr.w	bom_time(a0)
+		clr.w	ost_bomb_fuse_time(a0)
 		clr.b	ost_routine(a0)
-		move.w	bom_origY(a0),ost_y_pos(a0)
+		move.w	ost_bomb_y_start(a0),ost_y_pos(a0)
 		moveq	#3,d1
 		movea.l	a0,a1
 		lea	(Bom_ShrSpeed).l,a2 ; load shrapnel speed data
@@ -170,17 +170,17 @@ loc_11B7C:
 		move.b	#id_Bomb,0(a1)	; load shrapnel	object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
-		move.b	#6,ost_subtype(a1)
+		move.b	#id_Bom_End,ost_subtype(a1)
 		move.b	#4,ost_anim(a1)
 		move.w	(a2)+,ost_x_vel(a1)
 		move.w	(a2)+,ost_y_vel(a1)
 		move.b	#$98,ost_col_type(a1)
-		bset	#7,ost_render(a1)
+		bset	#render_onscreen_bit,ost_render(a1)
 
 	@fail:
 		dbf	d1,@loop	; repeat 3 more	times
 
-		move.b	#6,ost_routine(a0)
+		move.b	#id_Bom_End,ost_routine(a0)
 
 Bom_End:	; Routine 6
 		bsr.w	SpeedToPos
