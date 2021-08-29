@@ -13,9 +13,10 @@ Jun_Index:	index *,,2
 		ptr Jun_Display
 		ptr Jun_Release
 
-jun_frame:	equ $34		; current frame
-jun_reverse:	equ $36		; flag set when switch is pressed
-jun_switch:	equ $38		; which switch will reverse the disc
+ost_junc_grab_frame:	equ $32	; which frame the junction grabbed Sonic on
+ost_junc_direction:	equ $34	; direction of rotation: 1 or -1 (added to the frame number)
+ost_junc_switch_flag:	equ $36	; flag set when switch is pressed
+ost_junc_switch_num:	equ $38	; which switch will reverse the disc
 ; ===========================================================================
 
 Jun_Main:	; Routine 0
@@ -25,7 +26,7 @@ Jun_Main:	; Routine 0
 		bra.s	@makeitem
 ; ===========================================================================
 
-	@repeat:
+	@loop:
 		bsr.w	FindFreeObj
 		bne.s	@fail
 		move.b	#id_Junction,0(a1)
@@ -42,13 +43,13 @@ Jun_Main:	; Routine 0
 		move.b	#$38,ost_actwidth(a1)
 
 	@fail:
-		dbf	d1,@repeat
+		dbf	d1,@loop	; repeat once
 
 		move.b	#$30,ost_actwidth(a0)
 		move.b	#4,ost_priority(a0)
 		move.w	#$3C,$30(a0)
-		move.b	#1,jun_frame(a0)
-		move.b	ost_subtype(a0),jun_switch(a0)
+		move.b	#1,ost_junc_direction(a0)
+		move.b	ost_subtype(a0),ost_junc_switch_num(a0)
 
 Jun_Action:	; Routine 2
 		bsr.w	Jun_ChkSwitch
@@ -60,30 +61,30 @@ Jun_Action:	; Routine 2
 		addq.w	#1,d3
 		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject
-		btst	#5,ost_status(a0)	; is Sonic pushing the disc?
+		btst	#status_pushing_bit,ost_status(a0) ; is Sonic pushing the disc?
 		beq.w	Jun_Display	; if not, branch
 
 		lea	(v_player).w,a1
 		moveq	#$E,d1
 		move.w	ost_x_pos(a1),d0
-		cmp.w	ost_x_pos(a0),d0	; is Sonic to the left of the disc?
+		cmp.w	ost_x_pos(a0),d0 ; is Sonic to the left of the disc?
 		bcs.s	@isleft		; if yes, branch
 		moveq	#7,d1		
 
 	@isleft:
-		cmp.b	ost_frame(a0),d1	; is the gap next to Sonic?
+		cmp.b	ost_frame(a0),d1 ; is the gap next to Sonic?
 		bne.s	Jun_Display	; if not, branch
 
-		move.b	d1,$32(a0)
+		move.b	d1,ost_junc_grab_frame(a0)
 		addq.b	#4,ost_routine(a0) ; goto Jun_Release next
 		move.b	#1,(f_lockmulti).w ; lock controls
 		move.b	#id_Roll,ost_anim(a1) ; make Sonic use "rolling" animation
 		move.w	#$800,ost_inertia(a1)
 		move.w	#0,ost_x_vel(a1)
 		move.w	#0,ost_y_vel(a1)
-		bclr	#5,ost_status(a0)
-		bclr	#5,ost_status(a1)
-		bset	#1,ost_status(a1)
+		bclr	#status_pushing_bit,ost_status(a0)
+		bclr	#status_pushing_bit,ost_status(a1)
+		bset	#status_air_bit,ost_status(a1)
 		move.w	ost_x_pos(a1),d2
 		move.w	ost_y_pos(a1),d3
 		bsr.w	Jun_ChgPos
@@ -104,7 +105,7 @@ Jun_Release:	; Routine 6
 		bne.s	@dontrelease	; if not, branch
 
 	@release:
-		cmp.b	$32(a0),d0
+		cmp.b	ost_junc_grab_frame(a0),d0
 		beq.s	@dontrelease
 		lea	(v_player).w,a1
 		move.w	#0,ost_x_vel(a1)
@@ -116,7 +117,7 @@ Jun_Release:	; Routine 6
 
 	@isdown:
 		clr.b	(f_lockmulti).w	; unlock controls
-		subq.b	#4,ost_routine(a0)
+		subq.b	#4,ost_routine(a0) ; goto Jun_Action next
 
 	@dontrelease:
 		bsr.s	Jun_ChkSwitch
@@ -129,29 +130,29 @@ Jun_Release:	; Routine 6
 Jun_ChkSwitch:
 		lea	(f_switch).w,a2
 		moveq	#0,d0
-		move.b	jun_switch(a0),d0
+		move.b	ost_junc_switch_num(a0),d0
 		btst	#0,(a2,d0.w)	; is switch pressed?
 		beq.s	@unpressed	; if not, branch
 
-		tst.b	jun_reverse(a0)	; has switch previously	been pressed?
+		tst.b	ost_junc_switch_flag(a0) ; has switch previously been pressed?
 		bne.s	@animate	; if yes, branch
-		neg.b	jun_frame(a0)
-		move.b	#1,jun_reverse(a0) ; set to "previously pressed"
+		neg.b	ost_junc_direction(a0)
+		move.b	#1,ost_junc_switch_flag(a0) ; set to "previously pressed"
 		bra.s	@animate
 ; ===========================================================================
 
 @unpressed:
-		clr.b	jun_reverse(a0)	; set to "not yet pressed"
+		clr.b	ost_junc_switch_flag(a0) ; set to "not yet pressed"
 
 @animate:
 		subq.b	#1,ost_anim_time(a0) ; decrement frame timer
 		bpl.s	@nochange	; if time remains, branch
 		move.b	#7,ost_anim_time(a0)
-		move.b	jun_frame(a0),d1
+		move.b	ost_junc_direction(a0),d1
 		move.b	ost_frame(a0),d0
 		add.b	d1,d0
 		andi.b	#$F,d0
-		move.b	d0,ost_frame(a0)	; update frame
+		move.b	d0,ost_frame(a0) ; update frame
 
 	@nochange:
 		rts	

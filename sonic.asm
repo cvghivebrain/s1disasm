@@ -15990,17 +15990,7 @@ ObjPos_LZ3:	if Revision=0
 		even
 ObjPos_SBZ3:	include	"Object Placement\SBZ3.asm"
 		even
-ObjPos_LZ1pf1:	incbin	"Object Placement\lz1pf1.bin"
-		even
-ObjPos_LZ1pf2:	incbin	"Object Placement\lz1pf2.bin"
-		even
-ObjPos_LZ2pf1:	incbin	"Object Placement\lz2pf1.bin"
-		even
-ObjPos_LZ2pf2:	incbin	"Object Placement\lz2pf2.bin"
-		even
-ObjPos_LZ3pf1:	incbin	"Object Placement\lz3pf1.bin"
-		even
-ObjPos_LZ3pf2:	incbin	"Object Placement\lz3pf2.bin"
+		include	"Object Placement\LZ Platforms.asm"
 		even
 ObjPos_MZ1:	if Revision=0
 		include	"Object Placement\MZ1.asm"

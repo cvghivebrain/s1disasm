@@ -63,22 +63,22 @@ Gar_FireBall:	; Routine 4
 		move.b	#2,ost_frame(a0)
 		addq.w	#8,ost_y_pos(a0)
 		move.w	#$200,ost_x_vel(a0)
-		btst	#0,ost_status(a0)	; is gargoyle facing left?
+		btst	#status_xflip_bit,ost_status(a0) ; is gargoyle facing left?
 		bne.s	@noflip		; if not, branch
 		neg.w	ost_x_vel(a0)
 
 	@noflip:
-		sfx	sfx_Fireball,0,0,0	; play lava ball sound
+		sfx	sfx_Fireball,0,0,0 ; play lava ball sound
 
 Gar_AniFire:	; Routine 6
 		move.b	(v_framebyte).w,d0
 		andi.b	#7,d0
 		bne.s	@nochg
-		bchg	#0,ost_frame(a0)	; change every 8 frames
+		bchg	#0,ost_frame(a0) ; change every 8 frames
 
 	@nochg:
 		bsr.w	SpeedToPos
-		btst	#0,ost_status(a0) ; is fireball moving left?
+		btst	#status_xflip_bit,ost_status(a0) ; is fireball moving left?
 		bne.s	@isright	; if not, branch
 		moveq	#-8,d3
 		bsr.w	ObjHitWallLeft
