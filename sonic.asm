@@ -12213,19 +12213,43 @@ Map_Elec:	include "Mappings\SBZ Electric Orb.asm"
 SpinConvey:	include "Objects\SBZ Conveyor Belt Platforms.asm"
 Ani_SpinConvey:	include "Animations\SBZ Conveyor Belt Platforms.asm"
 
-off_164A6:	index *
+SpinC_Data:	index *
 		ptr word_164B2
 		ptr word_164C6
 		ptr word_164DA
 		ptr word_164EE
 		ptr word_16502
 		ptr word_16516
-word_164B2:	dc.w $10, $E80,	$E14, $370, $EEF, $302,	$EEF, $340, $E14, $3AE
-word_164C6:	dc.w $10, $F80,	$F14, $2E0, $FEF, $272,	$FEF, $2B0, $F14, $31E
-word_164DA:	dc.w $10, $1080, $1014,	$270, $10EF, $202, $10EF, $240,	$1014, $2AE
-word_164EE:	dc.w $10, $F80,	$F14, $570, $FEF, $502,	$FEF, $540, $F14, $5AE
-word_16502:	dc.w $10, $1B80, $1B14,	$670, $1BEF, $602, $1BEF, $640,	$1B14, $6AE
-word_16516:	dc.w $10, $1C80, $1C14,	$5E0, $1CEF, $572, $1CEF, $5B0,	$1C14, $61E
+word_164B2:	dc.w $10, $E80
+		dc.w $E14, $370
+		dc.w $EEF, $302
+		dc.w $EEF, $340
+		dc.w $E14, $3AE
+word_164C6:	dc.w $10, $F80
+		dc.w $F14, $2E0
+		dc.w $FEF, $272
+		dc.w $FEF, $2B0
+		dc.w $F14, $31E
+word_164DA:	dc.w $10, $1080
+		dc.w $1014, $270
+		dc.w $10EF, $202
+		dc.w $10EF, $240
+		dc.w $1014, $2AE
+word_164EE:	dc.w $10, $F80
+		dc.w $F14, $570
+		dc.w $FEF, $502
+		dc.w $FEF, $540
+		dc.w $F14, $5AE
+word_16502:	dc.w $10, $1B80
+		dc.w $1B14, $670
+		dc.w $1BEF, $602
+		dc.w $1BEF, $640
+		dc.w $1B14, $6AE
+word_16516:	dc.w $10, $1C80
+		dc.w $1C14, $5E0
+		dc.w $1CEF, $572
+		dc.w $1CEF, $5B0
+		dc.w $1C14, $61E
 ; ===========================================================================
 
 Girder:		include "Objects\SBZ Girder Block.asm"
@@ -16028,17 +16052,7 @@ ObjPos_SBZ2:	include	"Object Placement\SBZ2.asm"
 		even
 ObjPos_FZ:	include	"Object Placement\FZ.asm"
 		even
-ObjPos_SBZ1pf1:	incbin	"Object Placement\sbz1pf1.bin"
-		even
-ObjPos_SBZ1pf2:	incbin	"Object Placement\sbz1pf2.bin"
-		even
-ObjPos_SBZ1pf3:	incbin	"Object Placement\sbz1pf3.bin"
-		even
-ObjPos_SBZ1pf4:	incbin	"Object Placement\sbz1pf4.bin"
-		even
-ObjPos_SBZ1pf5:	incbin	"Object Placement\sbz1pf5.bin"
-		even
-ObjPos_SBZ1pf6:	incbin	"Object Placement\sbz1pf6.bin"
+		include	"Object Placement\SBZ Platforms.asm"
 		even
 ObjPos_End:	include	"Object Placement\Ending.asm"
 		even

@@ -12,7 +12,7 @@
 		ptr @pipe8
 		ptr @pipe9
 		ptr @pipe10
-		ptr @pipe11
+		ptr @pipe11	; $A
 		ptr @valve1
 		ptr @valve2
 		ptr @valve3
@@ -23,7 +23,7 @@
 		ptr @valve8
 		ptr @valve9
 		ptr @valve10
-		ptr @valve11
+		ptr @valve11	; $15
 @pipe1:		spritemap			; broken pipe style flamethrower
 		piece	-5, $28, 2x2, $14, pal3
 		endsprite

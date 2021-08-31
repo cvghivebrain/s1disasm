@@ -19,7 +19,7 @@ loc_1629A:
 		bcc.s	SpinC_Display
 
 SpinC_Act1or2:
-		move.b	$2F(a0),d0
+		move.b	ost_spinc_subtype_copy(a0),d0
 		bpl.s	SpinC_Delete
 		andi.w	#$7F,d0
 		lea	(v_obj63).w,a2
@@ -31,6 +31,11 @@ SpinC_Delete:
 SpinC_Index:	index *,,2
 		ptr SpinC_Main
 		ptr loc_163D8
+
+ost_spinc_subtype_copy:	equ $2F	; copy of the initial subtype ($80/$81/etc.)
+
+ost_spinc_reverse:	equ $3B	; 1 = conveyors run backwards
+ost_spinc_corner_ptr:	equ $3C	; address of corner position data (4 bytes)
 ; ===========================================================================
 
 SpinC_Main:	; Routine 0
@@ -47,18 +52,18 @@ SpinC_Main:	; Routine 0
 		move.w	d0,d1
 		lsr.w	#3,d0
 		andi.w	#$1E,d0
-		lea	off_164A6(pc),a2
-		adda.w	(a2,d0.w),a2
-		move.w	(a2)+,$38(a0)
+		lea	SpinC_Data(pc),a2
+		adda.w	(a2,d0.w),a2	; get address of corner data
+		move.w	(a2)+,$39-1(a0)
 		move.w	(a2)+,$30(a0)
-		move.l	a2,$3C(a0)
+		move.l	a2,ost_spinc_corner_ptr(a0)
 		andi.w	#$F,d1
 		lsl.w	#2,d1
 		move.b	d1,$38(a0)
 		move.b	#4,$3A(a0)
 		tst.b	(f_conveyrev).w
 		beq.s	loc_16356
-		move.b	#1,$3B(a0)
+		move.b	#1,ost_spinc_reverse(a0)
 		neg.b	$3A(a0)
 		moveq	#0,d1
 		move.b	$38(a0),d1
@@ -93,7 +98,7 @@ loc_16378:
 ; ===========================================================================
 
 loc_16380:
-		move.b	d0,$2F(a0)
+		move.b	d0,ost_spinc_subtype_copy(a0)
 		andi.w	#$7F,d0
 		lea	(v_obj63).w,a2
 		bset	#0,(a2,d0.w)
@@ -146,11 +151,11 @@ loc_163D8:	; Routine 2
 ; ===========================================================================
 
 loc_16404:
-		btst	#3,ost_status(a0)
+		btst	#status_platform_bit,ost_status(a0)
 		beq.s	loc_16420
 		lea	(v_objspace).w,a1
-		bclr	#3,ost_status(a1)
-		bclr	#3,ost_status(a0)
+		bclr	#status_platform_bit,ost_status(a1)
+		bclr	#status_platform_bit,ost_status(a0)
 		clr.b	ost_solid(a0)
 
 loc_16420:
@@ -177,7 +182,7 @@ loc_16424:
 
 loc_16456:
 		move.b	d1,$38(a0)
-		movea.l	$3C(a0),a1
+		movea.l	ost_spinc_corner_ptr(a0),a1
 		move.w	(a1,d1.w),$34(a0)
 		move.w	2(a1,d1.w),$36(a0)
 		tst.w	d1

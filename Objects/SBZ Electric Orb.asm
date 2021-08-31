@@ -11,7 +11,7 @@ Elec_Index:	index *,,2
 		ptr Elec_Main
 		ptr Elec_Shock
 
-elec_freq:	equ $34		; frequency
+ost_electric_rate:	equ $34	; zap rate - applies bitmask to frame counter (2 bytes)
 ; ===========================================================================
 
 Elec_Main:	; Routine 0
@@ -24,23 +24,23 @@ Elec_Main:	; Routine 0
 		move.b	ost_subtype(a0),d0 ; read object type
 		lsl.w	#4,d0		; multiply by $10
 		subq.w	#1,d0
-		move.w	d0,elec_freq(a0)
+		move.w	d0,ost_electric_rate(a0)
 
 Elec_Shock:	; Routine 2
 		move.w	(v_framecount).w,d0
-		and.w	elec_freq(a0),d0 ; is it time to zap?
+		and.w	ost_electric_rate(a0),d0 ; is it time to zap?
 		bne.s	@animate	; if not, branch
 
 		move.b	#1,ost_anim(a0)	; run "zap" animation
 		tst.b	ost_render(a0)
 		bpl.s	@animate
-		sfx	sfx_Electric,0,0,0	; play electricity sound
+		sfx	sfx_Electric,0,0,0 ; play electricity sound
 
 	@animate:
 		lea	(Ani_Elec).l,a1
 		jsr	(AnimateSprite).l
 		move.b	#0,ost_col_type(a0)
-		cmpi.b	#4,ost_frame(a0)	; is 4th frame displayed?
+		cmpi.b	#4,ost_frame(a0) ; is 4th frame displayed?
 		bne.s	@display	; if not, branch
 		move.b	#$A4,ost_col_type(a0) ; if yes, make object hurt Sonic
 
