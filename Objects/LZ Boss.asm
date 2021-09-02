@@ -13,16 +13,23 @@ Obj77_Index:	index *,,2
 		ptr Obj77_FaceMain
 		ptr Obj77_FlameMain
 
-Obj77_ObjData:	dc.b 2,	0		; routine number, animation
-		dc.b 4,	1
-		dc.b 6,	7
+Obj77_ObjData:	dc.b id_Obj77_ShipMain,	0		; routine number, animation
+		dc.b id_Obj77_FaceMain,	1
+		dc.b id_Obj77_FlameMain, 7
+
+ost_blz_parent_x_pos:	equ $30	; parent x position (2 bytes)
+ost_blz_parent:		equ $34	; address of OST of parent object (4 bytes)
+ost_blz_parent_y_pos:	equ $38	; parent y position (2 bytes)
+ost_blz_wait_time:	equ $3C	; time to wait between each action (2 bytes)
+ost_blz_flash_num:	equ $3E	; number of times to make boss flash when hit
+ost_blz_wobble:		equ $3F	; wobble state as Eggman moves back & forth (1 byte incremented every frame & interpreted by CalcSine)
 ; ===========================================================================
 
 Obj77_Main:	; Routine 0
 		move.w	#$1E10,ost_x_pos(a0)
 		move.w	#$5C0,ost_y_pos(a0)
-		move.w	ost_x_pos(a0),$30(a0)
-		move.w	ost_y_pos(a0),$38(a0)
+		move.w	ost_x_pos(a0),ost_blz_parent_x_pos(a0)
+		move.w	ost_y_pos(a0),ost_blz_parent_y_pos(a0)
 		move.b	#$F,ost_col_type(a0)
 		move.b	#8,ost_col_property(a0) ; set number of hits to 8
 		move.b	#4,ost_priority(a0)
@@ -40,7 +47,7 @@ Obj77_Loop:
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 
 Obj77_LoadBoss:
-		bclr	#0,ost_status(a0)
+		bclr	#status_xflip_bit,ost_status(a0)
 		clr.b	ost_routine2(a1)
 		move.b	(a2)+,ost_routine(a1)
 		move.b	(a2)+,ost_anim(a1)
@@ -49,7 +56,7 @@ Obj77_LoadBoss:
 		move.w	#tile_Nem_Eggman,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)
 		move.b	#$20,ost_actwidth(a1)
-		move.l	a0,$34(a1)
+		move.l	a0,ost_blz_parent(a1)
 		dbf	d1,Obj77_Loop
 
 Obj77_ShipMain:	; Routine 2
@@ -60,10 +67,10 @@ Obj77_ShipMain:	; Routine 2
 		jsr	Obj77_ShipIndex(pc,d1.w)
 		lea	(Ani_Eggman).l,a1
 		jsr	(AnimateSprite).l
-		moveq	#3,d0
+		moveq	#status_xflip+status_yflip,d0
 		and.b	ost_status(a0),d0
-		andi.b	#$FC,ost_render(a0)
-		or.b	d0,ost_render(a0)
+		andi.b	#$FF-render_xflip-render_yflip,ost_render(a0) ; ignore x/yflip bits
+		or.b	d0,ost_render(a0) ; combine x/yflip bits from status instead
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 Obj77_ShipIndex:index *
@@ -87,19 +94,19 @@ loc_17F1E:
 
 loc_17F38:
 		bsr.w	BossMove
-		move.w	$38(a0),ost_y_pos(a0)
-		move.w	$30(a0),ost_x_pos(a0)
+		move.w	ost_blz_parent_y_pos(a0),ost_y_pos(a0)
+		move.w	ost_blz_parent_x_pos(a0),ost_x_pos(a0)
 
 loc_17F48:
-		tst.b	ost_sonic_on_obj(a0)
+		tst.b	ost_blz_wait_time+1(a0)
 		bne.s	loc_17F8E
 		tst.b	ost_status(a0)
 		bmi.s	loc_17F92
 		tst.b	ost_col_type(a0)
 		bne.s	locret_17F8C
-		tst.b	$3E(a0)
+		tst.b	ost_blz_flash_num(a0)
 		bne.s	loc_17F70
-		move.b	#$20,$3E(a0)
+		move.b	#$20,ost_blz_flash_num(a0)
 		sfx	sfx_HitBoss,0,0,0
 
 loc_17F70:
@@ -111,7 +118,7 @@ loc_17F70:
 
 loc_17F7E:
 		move.w	d0,(a1)
-		subq.b	#1,$3E(a0)
+		subq.b	#1,ost_blz_flash_num(a0)
 		bne.s	locret_17F8C
 		move.b	#$F,ost_col_type(a0)
 
@@ -126,22 +133,22 @@ loc_17F8E:
 loc_17F92:
 		moveq	#100,d0
 		bsr.w	AddPoints
-		move.b	#-1,ost_sonic_on_obj(a0)
+		move.b	#-1,ost_blz_wait_time+1(a0)
 		rts	
 ; ===========================================================================
 
 loc_17FA0:
 		moveq	#-2,d0
-		cmpi.w	#$1E48,$30(a0)
+		cmpi.w	#$1E48,ost_blz_parent_x_pos(a0)
 		bcs.s	loc_17FB6
-		move.w	#$1E48,$30(a0)
+		move.w	#$1E48,ost_blz_parent_x_pos(a0)
 		clr.w	ost_x_vel(a0)
 		addq.w	#1,d0
 
 loc_17FB6:
-		cmpi.w	#$500,$38(a0)
+		cmpi.w	#$500,ost_blz_parent_y_pos(a0)
 		bgt.s	loc_17FCA
-		move.w	#$500,$38(a0)
+		move.w	#$500,ost_blz_parent_y_pos(a0)
 		clr.w	ost_y_vel(a0)
 		addq.w	#1,d0
 
@@ -157,16 +164,16 @@ loc_17FDC:
 
 loc_17FE0:
 		moveq	#-2,d0
-		cmpi.w	#$1E70,$30(a0)
+		cmpi.w	#$1E70,ost_blz_parent_x_pos(a0)
 		bcs.s	loc_17FF6
-		move.w	#$1E70,$30(a0)
+		move.w	#$1E70,ost_blz_parent_x_pos(a0)
 		clr.w	ost_x_vel(a0)
 		addq.w	#1,d0
 
 loc_17FF6:
-		cmpi.w	#$4C0,$38(a0)
+		cmpi.w	#$4C0,ost_blz_parent_y_pos(a0)
 		bgt.s	loc_1800A
-		move.w	#$4C0,$38(a0)
+		move.w	#$4C0,ost_blz_parent_y_pos(a0)
 		clr.w	ost_y_vel(a0)
 		addq.w	#1,d0
 
@@ -174,19 +181,19 @@ loc_1800A:
 		bne.s	loc_1801A
 		move.w	#-$180,ost_y_vel(a0)
 		addq.b	#2,ost_routine2(a0)
-		clr.b	$3F(a0)
+		clr.b	ost_blz_wobble(a0)
 
 loc_1801A:
 		bra.w	loc_17F38
 ; ===========================================================================
 
 loc_1801E:
-		cmpi.w	#$100,$38(a0)
+		cmpi.w	#$100,ost_blz_parent_y_pos(a0)
 		bgt.s	loc_1804E
-		move.w	#$100,$38(a0)
+		move.w	#$100,ost_blz_parent_y_pos(a0)
 		move.w	#$140,ost_x_vel(a0)
 		move.w	#-$80,ost_y_vel(a0)
-		tst.b	ost_sonic_on_obj(a0)
+		tst.b	ost_blz_wait_time+1(a0)
 		beq.s	loc_18046
 		asl	ost_x_vel(a0)
 		asl	ost_y_vel(a0)
@@ -197,19 +204,19 @@ loc_18046:
 ; ===========================================================================
 
 loc_1804E:
-		bset	#0,ost_status(a0)
-		addq.b	#2,$3F(a0)
-		move.b	$3F(a0),d0
+		bset	#status_xflip_bit,ost_status(a0)
+		addq.b	#2,ost_blz_wobble(a0)
+		move.b	ost_blz_wobble(a0),d0
 		jsr	(CalcSine).l
 		tst.w	d1
 		bpl.s	loc_1806C
-		bclr	#0,ost_status(a0)
+		bclr	#status_xflip_bit,ost_status(a0)
 
 loc_1806C:
 		asr.w	#4,d0
 		swap	d0
 		clr.w	d0
-		add.l	$30(a0),d0
+		add.l	ost_blz_parent_x_pos(a0),d0
 		swap	d0
 		move.w	d0,ost_x_pos(a0)
 		move.w	ost_y_vel(a0),d0
@@ -229,48 +236,48 @@ loc_1806C:
 loc_180A2:
 		ext.l	d0
 		asl.l	#8,d0
-		tst.b	ost_sonic_on_obj(a0)
+		tst.b	ost_blz_wait_time+1(a0)
 		beq.s	loc_180AE
 		add.l	d0,d0
 
 loc_180AE:
-		add.l	d0,$38(a0)
-		move.w	$38(a0),ost_y_pos(a0)
+		add.l	d0,ost_blz_parent_y_pos(a0)
+		move.w	ost_blz_parent_y_pos(a0),ost_y_pos(a0)
 		bra.w	loc_17F48
 ; ===========================================================================
 
 loc_180BC:
 		moveq	#-2,d0
-		cmpi.w	#$1F4C,$30(a0)
+		cmpi.w	#$1F4C,ost_blz_parent_x_pos(a0)
 		bcs.s	loc_180D2
-		move.w	#$1F4C,$30(a0)
+		move.w	#$1F4C,ost_blz_parent_x_pos(a0)
 		clr.w	ost_x_vel(a0)
 		addq.w	#1,d0
 
 loc_180D2:
-		cmpi.w	#$C0,$38(a0)
+		cmpi.w	#$C0,ost_blz_parent_y_pos(a0)
 		bgt.s	loc_180E6
-		move.w	#$C0,$38(a0)
+		move.w	#$C0,ost_blz_parent_y_pos(a0)
 		clr.w	ost_y_vel(a0)
 		addq.w	#1,d0
 
 loc_180E6:
 		bne.s	loc_180F2
 		addq.b	#2,ost_routine2(a0)
-		bclr	#0,ost_status(a0)
+		bclr	#status_xflip_bit,ost_status(a0)
 
 loc_180F2:
 		bra.w	loc_17F38
 ; ===========================================================================
 
 loc_180F6:
-		tst.b	ost_sonic_on_obj(a0)
+		tst.b	ost_blz_wait_time+1(a0)
 		bne.s	loc_18112
 		cmpi.w	#$1EC8,ost_x_pos(a1)
 		blt.s	loc_18126
 		cmpi.w	#$F0,ost_y_pos(a1)
 		bgt.s	loc_18126
-		move.b	#$32,$3C(a0)
+		move.b	#$32,ost_blz_wait_time(a0)
 
 loc_18112:
 		music	bgm_LZ,0,0,0		; play LZ music
@@ -278,7 +285,7 @@ loc_18112:
 		else
 			clr.b	(f_lockscreen).w
 		endc
-		bset	#0,ost_status(a0)
+		bset	#status_xflip_bit,ost_status(a0)
 		addq.b	#2,ost_routine2(a0)
 
 loc_18126:
@@ -286,16 +293,16 @@ loc_18126:
 ; ===========================================================================
 
 loc_1812A:
-		tst.b	ost_sonic_on_obj(a0)
+		tst.b	ost_blz_wait_time+1(a0)
 		bne.s	loc_18136
-		subq.b	#1,$3C(a0)
+		subq.b	#1,ost_blz_wait_time(a0)
 		bne.s	loc_1814E
 
 loc_18136:
-		clr.b	$3C(a0)
+		clr.b	ost_blz_wait_time(a0)
 		move.w	#$400,ost_x_vel(a0)
 		move.w	#-$40,ost_y_vel(a0)
-		clr.b	ost_sonic_on_obj(a0)
+		clr.b	ost_blz_wait_time+1(a0)
 		addq.b	#2,ost_routine2(a0)
 
 loc_1814E:
@@ -322,14 +329,14 @@ Obj77_ShipDel:
 ; ===========================================================================
 
 Obj77_FaceMain:	; Routine 4
-		movea.l	$34(a0),a1
+		movea.l	ost_blz_parent(a0),a1
 		move.b	(a1),d0
 		cmp.b	(a0),d0
 		bne.s	Obj77_FaceDel
 		moveq	#0,d0
 		move.b	ost_routine2(a1),d0
 		moveq	#1,d1
-		tst.b	ost_sonic_on_obj(a0)
+		tst.b	ost_blz_wait_time+1(a0)
 		beq.s	loc_1818C
 		moveq	#$A,d1
 		bra.s	loc_181A0
@@ -343,7 +350,7 @@ loc_1818C:
 ; ===========================================================================
 
 loc_18196:
-		cmpi.b	#4,(v_player+ost_routine).w
+		cmpi.b	#id_Sonic_Hurt,(v_player+ost_routine).w
 		bcs.s	loc_181A0
 		moveq	#4,d1
 
@@ -365,7 +372,7 @@ Obj77_FaceDel:
 
 Obj77_FlameMain:; Routine 6
 		move.b	#7,ost_anim(a0)
-		movea.l	$34(a0),a1
+		movea.l	ost_blz_parent(a0),a1
 		move.b	(a1),d0
 		cmp.b	(a0),d0
 		bne.s	Obj77_FlameDel
@@ -391,12 +398,12 @@ Obj77_FlameDel:
 Obj77_Display:
 		lea	(Ani_Eggman).l,a1
 		jsr	(AnimateSprite).l
-		movea.l	$34(a0),a1
+		movea.l	ost_blz_parent(a0),a1
 		move.w	ost_x_pos(a1),ost_x_pos(a0)
 		move.w	ost_y_pos(a1),ost_y_pos(a0)
 		move.b	ost_status(a1),ost_status(a0)
-		moveq	#3,d0
+		moveq	#status_xflip+status_yflip,d0
 		and.b	ost_status(a0),d0
-		andi.b	#$FC,ost_render(a0)
+		andi.b	#$FF-render_xflip-render_yflip,ost_render(a0)
 		or.b	d0,ost_render(a0)
 		jmp	(DisplaySprite).l

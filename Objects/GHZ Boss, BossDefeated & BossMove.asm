@@ -69,7 +69,7 @@ BGHZ_ShipMain:	; Routine 2
 		or.b	d0,ost_render(a0) ; combine x/yflip bits from status instead
 		jmp	(DisplaySprite).l
 ; ===========================================================================
-BGHZ_ShipIndex:	index *
+BGHZ_ShipIndex:	index *,,2
 		ptr BGHZ_ShipStart
 		ptr BGHZ_MakeBall
 		ptr BGHZ_ShipMove
