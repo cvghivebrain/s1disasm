@@ -18,9 +18,9 @@ SSR_Index:	index *,,2
 		ptr SSR_Continue
 		ptr SSR_Wait
 		ptr SSR_Exit
-		ptr loc_C91A
+		ptr SSR_ContAni
 
-ssr_mainX:	equ $30		; position for card to display on
+ost_ssr_x_stop:		equ $30	; on screen x position (2 bytes)
 ; ===========================================================================
 
 SSR_ChkPLC:	; Routine 0
@@ -39,9 +39,9 @@ SSR_Main:
 
 	SSR_Loop:
 		move.b	#id_SSResult,0(a1)
-		move.w	(a2)+,ost_x_pos(a1)	; load start x-position
-		move.w	(a2)+,ssr_mainX(a1) ; load main x-position
-		move.w	(a2)+,ost_y_screen(a1) ; load y-position
+		move.w	(a2)+,ost_x_pos(a1) ; load start x position
+		move.w	(a2)+,ost_ssr_x_stop(a1) ; load main x position
+		move.w	(a2)+,ost_y_screen(a1) ; load y position
 		move.b	(a2)+,ost_routine(a1)
 		move.b	(a2)+,ost_frame(a1)
 		move.l	#Map_SSR,ost_mappings(a1)
@@ -58,21 +58,21 @@ SSR_Main:
 		bne.s	loc_C842	; if not, branch
 		moveq	#8,d0		; load "Sonic got them all" text
 		move.w	#$18,ost_x_pos(a0)
-		move.w	#$118,ssr_mainX(a0) ; change position of text
+		move.w	#$118,ost_ssr_x_stop(a0) ; change position of text
 
 loc_C842:
 		move.b	d0,ost_frame(a0)
 
 SSR_Move:	; Routine 2
 		moveq	#$10,d1		; set horizontal speed
-		move.w	ssr_mainX(a0),d0
-		cmp.w	ost_x_pos(a0),d0	; has item reached its target position?
+		move.w	ost_ssr_x_stop(a0),d0
+		cmp.w	ost_x_pos(a0),d0 ; has item reached its target position?
 		beq.s	loc_C86C	; if yes, branch
 		bge.s	SSR_ChgPos
 		neg.w	d1
 
 SSR_ChgPos:
-		add.w	d1,ost_x_pos(a0)	; change item's position
+		add.w	d1,ost_x_pos(a0) ; change item's position
 
 loc_C85A:
 		move.w	ost_x_pos(a0),d0
@@ -113,7 +113,7 @@ SSR_RingBonus:	; Routine 6
 		move.b	(v_vbla_byte).w,d0
 		andi.b	#3,d0
 		bne.s	locret_C8EA
-		sfx	sfx_Switch,1,0,0	; play "blip" sound
+		sfx	sfx_Switch,1,0,0 ; play "blip" sound
 ; ===========================================================================
 
 loc_C8C4:
@@ -136,29 +136,29 @@ SSR_Exit:	; Routine $A, $12
 
 SSR_Continue:	; Routine $E
 		move.b	#4,(v_objspace+$6C0+ost_frame).w
-		move.b	#$14,(v_objspace+$6C0+ost_routine).w
-		sfx	sfx_Continue,0,0,0	; play continues jingle
+		move.b	#id_SSR_ContAni,(v_objspace+$6C0+ost_routine).w
+		sfx	sfx_Continue,0,0,0 ; play continues jingle
 		addq.b	#2,ost_routine(a0)
 		move.w	#360,ost_anim_time(a0) ; set time delay to 6 seconds
 		bra.w	DisplaySprite
 ; ===========================================================================
 
-loc_C91A:	; Routine $14
+SSR_ContAni:	; Routine $14
 		move.b	(v_vbla_byte).w,d0
 		andi.b	#$F,d0
 		bne.s	SSR_Display2
-		bchg	#0,ost_frame(a0)
+		bchg	#0,ost_frame(a0) ; Sonic taps his foot every 16 frames
 
 SSR_Display2:
 		bra.w	DisplaySprite
 ; ===========================================================================
-SSR_Config:	dc.w $20, $120,	$C4	; start	x-pos, main x-pos, y-pos
-		dc.b 2,	0		; rountine number, frame number
+SSR_Config:	dc.w $20, $120,	$C4	; start	x pos, stop x pos, y pos
+		dc.b id_SSR_Move, 0	; routine number, frame number
 		dc.w $320, $120, $118
-		dc.b 2,	1
+		dc.b id_SSR_Move, 1
 		dc.w $360, $120, $128
-		dc.b 2,	2
+		dc.b id_SSR_Move, 2
 		dc.w $1EC, $11C, $C4
-		dc.b 2,	3
+		dc.b id_SSR_Move, 3
 		dc.w $3A0, $120, $138
-		dc.b 2,	6
+		dc.b id_SSR_Move, 6

@@ -14,6 +14,8 @@ FFloor_Index:	index *,,2
 		ptr loc_19C62
 		ptr loc_19C72
 		ptr loc_19C80
+
+ost_ffloor_children:	equ $30	; addresses of OSTs of child objects (2 bytes * 8)
 ; ===========================================================================
 
 FFloor_Main:	; Routine 0
@@ -24,9 +26,9 @@ FFloor_Main:	; Routine 0
 		move.b	#render_rel,ost_render(a0)
 		bset	#7,ost_render(a0)
 		moveq	#0,d4
-		move.w	#$2010,d5
+		move.w	#$2010,d5	; initial x position
 		moveq	#7,d6
-		lea	$30(a0),a2
+		lea	ost_ffloor_children(a0),a2
 
 FFloor_MakeBlock:
 		jsr	(FindFreeObj).l
@@ -39,9 +41,9 @@ FFloor_MakeBlock:
 		move.b	#$10,ost_actwidth(a1)
 		move.b	#$10,ost_height(a1)
 		move.b	#3,ost_priority(a1)
-		move.w	d5,ost_x_pos(a1)	; set X	position
+		move.w	d5,ost_x_pos(a1) ; set x position
 		move.w	#$5D0,ost_y_pos(a1)
-		addi.w	#$20,d5		; add $20 for next X position
+		addi.w	#$20,d5		; add $20 for next x position
 		move.b	#8,ost_routine(a1)
 		dbf	d6,FFloor_MakeBlock ; repeat sequence 7 more times
 
@@ -81,7 +83,7 @@ loc_19C36:	; Routine 4
 		move.b	ost_frame(a0),d0
 		ext.w	d0
 		add.w	d0,d0
-		move.w	$30(a0,d0.w),d0
+		move.w	ost_ffloor_children(a0,d0.w),d0
 		movea.l	d0,a1
 		move.w	#$474F,ost_subtype(a1)
 		addq.b	#1,ost_frame(a0)
@@ -93,8 +95,8 @@ FFloor_Solid2:
 ; ===========================================================================
 
 loc_19C62:	; Routine 6
-		bclr	#3,ost_status(a0)
-		bclr	#3,(v_player+ost_status).w
+		bclr	#status_platform_bit,ost_status(a0)
+		bclr	#status_platform_bit,(v_player+ost_status).w
 		bra.w	loc_1982C
 ; ===========================================================================
 
@@ -150,7 +152,7 @@ loc_19CC4:
 		dbf	d1,FFloor_LoopFrag ; repeat sequence 3 more times
 
 FFloor_BreakSnd:
-		sfx	sfx_WallSmash,0,0,0	; play smashing sound
+		sfx	sfx_WallSmash,0,0,0 ; play smashing sound
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 FFloor_FragSpeed:dc.w $80, 0

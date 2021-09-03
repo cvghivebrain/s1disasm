@@ -40,7 +40,7 @@ CSI_MakeMiniSonic:
 		move.b	(v_continues).w,d1
 		subq.b	#2,d1
 		bcc.s	CSI_MoreThan1
-		jmp	(DeleteObject).l	; cancel if you have 0-1 continues
+		jmp	(DeleteObject).l ; cancel if you have 0-1 continues
 
 	CSI_MoreThan1:
 		moveq	#1,d3
@@ -56,10 +56,10 @@ CSI_MakeMiniSonic:
 
 CSI_MiniSonicLoop:
 		move.b	#id_ContScrItem,0(a1) ; load mini-Sonic object
-		move.w	(a2)+,ost_x_pos(a1)	; use above data for x-axis position
+		move.w	(a2)+,ost_x_pos(a1) ; use above data for x-axis position
 		tst.b	d2		; do you have an even number of continues?
 		beq.s	CSI_Even	; if yes, branch
-		subi.w	#$A,ost_x_pos(a1)	; shift mini-Sonics slightly to the right
+		subi.w	#$A,ost_x_pos(a1) ; shift mini-Sonics slightly to the right
 
 	CSI_Even:
 		move.w	#$D0,ost_y_screen(a1)
@@ -77,7 +77,7 @@ CSI_MiniSonicLoop:
 CSI_ChkDel:	; Routine 6
 		tst.b	ost_subtype(a0)	; do you have 16 or more continues?
 		beq.s	CSI_Animate	; if yes, branch
-		cmpi.b	#6,(v_player+ost_routine).w ; is Sonic running?
+		cmpi.b	#id_CSon_Run,(v_player+ost_routine).w ; is Sonic running?
 		bcs.s	CSI_Animate	; if not, branch
 		move.b	(v_vbla_byte).w,d0
 		andi.b	#1,d0

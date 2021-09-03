@@ -42,7 +42,7 @@ Flash_Collect:
 		cmpi.b	#3,ost_frame(a0) ; is 3rd frame displayed?
 		bne.s	locret_9F76	; if not, branch
 		movea.l	ost_flash_parent(a0),a1	; get parent object address
-		move.b	#6,ost_routine(a1) ; delete parent object
+		move.b	#id_GRing_Delete,ost_routine(a1) ; delete parent object
 		move.b	#id_Blank,(v_player+ost_anim).w ; make Sonic invisible
 		move.b	#1,(f_bigring).w ; stop	Sonic getting bonuses
 		clr.b	(v_invinc).w	; remove invincibility

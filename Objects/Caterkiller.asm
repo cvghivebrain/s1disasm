@@ -17,9 +17,10 @@ Cat_Index:	index *,,2
 		ptr loc_16CC0
 
 ost_cat_wait_time:	equ $2A	; time to wait between actions
-ost_cat_mode:		equ $2B	; +$10 = ?; +$80 = ?
-ost_cat_parent:		equ $3C	; address of OST of parent object (4 bytes - high byte is ost_cat_segment_num)
-ost_cat_segment_num:	equ $3C	; segment number (4, 8, $A)
+ost_cat_mode:		equ $2B	; bit 4 (+$10) = segment is moving; bit 7 (+$80) = update animation
+ost_cat_floormap:	equ $2C	; height map of floor beneath caterkiller (16 bytes)
+ost_cat_parent:		equ $3C	; address of OST of parent object (4 bytes - high byte is ost_cat_segment_pos)
+ost_cat_segment_pos:	equ $3C	; segment position - starts as 0/4/8/$A, increments as it moves
 ; ===========================================================================
 
 locret_16950:
@@ -50,13 +51,13 @@ Cat_Main:	; Routine 0
 		move.b	#8,ost_actwidth(a0)
 		move.b	#$B,ost_col_type(a0)
 		move.w	ost_x_pos(a0),d2
-		moveq	#$C,d5
+		moveq	#$C,d5		; distance between segments
 		btst	#status_xflip_bit,ost_status(a0)
 		beq.s	@noflip
 		neg.w	d5
 
 	@noflip:
-		move.b	#4,d6
+		move.b	#id_Cat_BodySeg1,d6
 		moveq	#0,d3
 		moveq	#4,d4
 		movea.l	a0,a2
@@ -84,19 +85,19 @@ Cat_Loop:
 		move.b	ost_status(a0),ost_render(a1)
 		move.b	#8,ost_frame(a1)
 		move.l	a2,ost_cat_parent(a1)
-		move.b	d4,ost_cat_segment_num(a1)
+		move.b	d4,ost_cat_segment_pos(a1)
 		addq.b	#4,d4
-		movea.l	a1,a2
+		movea.l	a1,a2		; make parent object the adjacent segment instead of head
 
 	@fail:
 		dbf	d1,Cat_Loop	; repeat sequence 2 more times
 
 		move.b	#7,ost_cat_wait_time(a0)
-		clr.b	ost_cat_segment_num(a0)
+		clr.b	ost_cat_segment_pos(a0)
 
 Cat_Head:	; Routine 2
-		tst.b	ost_status(a0)
-		bmi.w	loc_16C96
+		tst.b	ost_status(a0)	; is caterkiller onscreen?
+		bmi.w	loc_16C96	; if not, branch
 		moveq	#0,d0
 		move.b	ost_routine2(a0),d0
 		move.w	Cat_Index2(pc,d0.w),d1
@@ -137,35 +138,35 @@ Cat_Delete:	; Routine $A
 		jmp	(DeleteObject).l
 ; ===========================================================================
 Cat_Index2:	index *
-		ptr @wait
-		ptr loc_16B02
+		ptr Cat_Undulate
+		ptr Cat_Floor
 ; ===========================================================================
 
-@wait:
+Cat_Undulate:
 		subq.b	#1,ost_cat_wait_time(a0)
 		bmi.s	@move
 		rts	
 ; ===========================================================================
 
-@move:
-		addq.b	#2,ost_routine2(a0)
+	@move:
+		addq.b	#2,ost_routine2(a0) ; goto Cat_Floor next
 		move.b	#$10,ost_cat_wait_time(a0)
 		move.w	#-$C0,ost_x_vel(a0)
 		move.w	#$40,ost_inertia(a0)
-		bchg	#4,ost_cat_mode(a0)
-		bne.s	loc_16AFC
+		bchg	#4,ost_cat_mode(a0) ; is segment moving?
+		bne.s	@is_moving	 ; if yes, branch
 		clr.w	ost_x_vel(a0)
 		neg.w	ost_inertia(a0)
 
-loc_16AFC:
-		bset	#7,ost_cat_mode(a0)
+	@is_moving:
+		bset	#7,ost_cat_mode(a0) ; update animation
 
-loc_16B02:
+Cat_Floor:
 		subq.b	#1,ost_cat_wait_time(a0)
 		bmi.s	@loc_16B5E
 		if Revision=0
-		move.l	ost_x_pos(a0),-(sp)
-		move.l	ost_x_pos(a0),d2
+			move.l	ost_x_pos(a0),-(sp)
+			move.l	ost_x_pos(a0),d2
 		else
 			tst.w	ost_x_vel(a0)
 			beq.s	@notmoving
@@ -183,16 +184,16 @@ loc_16B02:
 		add.l	d0,d2
 		move.l	d2,ost_x_pos(a0)
 		if Revision=0
-		jsr	(ObjFloorDist).l
-		move.l	(sp)+,d2
-		cmpi.w	#-8,d1
-		blt.s	@loc_16B70
-		cmpi.w	#$C,d1
-		bge.s	@loc_16B70
-		add.w	d1,ost_y_pos(a0)
-		swap	d2
-		cmp.w	ost_x_pos(a0),d2
-		beq.s	@notmoving
+			jsr	(ObjFloorDist).l
+			move.l	(sp)+,d2
+			cmpi.w	#-8,d1
+			blt.s	@loc_16B70
+			cmpi.w	#$C,d1
+			bge.s	@loc_16B70
+			add.w	d1,ost_y_pos(a0)
+			swap	d2
+			cmp.w	ost_x_pos(a0),d2
+			beq.s	@notmoving
 		else
 			swap	d3
 			cmp.w	ost_x_pos(a0),d3
@@ -205,10 +206,10 @@ loc_16B02:
 			add.w	d1,ost_y_pos(a0)
 		endc
 		moveq	#0,d0
-		move.b	ost_cat_segment_num(a0),d0
-		addq.b	#1,ost_cat_segment_num(a0)
-		andi.b	#$F,ost_cat_segment_num(a0)
-		move.b	d1,$2C(a0,d0.w)
+		move.b	ost_cat_segment_pos(a0),d0
+		addq.b	#1,ost_cat_segment_pos(a0)
+		andi.b	#$F,ost_cat_segment_pos(a0)
+		move.b	d1,ost_cat_floormap(a0,d0.w)
 
 	@notmoving:
 		rts	
@@ -228,31 +229,31 @@ loc_16B02:
 
 @loc_16B70:
 		if Revision=0
-		move.l	d2,ost_x_pos(a0)
-		bchg	#status_xflip_bit,ost_status(a0)
-		move.b	ost_status(a0),ost_render(a0)
-		moveq	#0,d0
-		move.b	ost_cat_segment_num(a0),d0
-		move.b	#$80,$2C(a0,d0.w)
+			move.l	d2,ost_x_pos(a0)
+			bchg	#status_xflip_bit,ost_status(a0)
+			move.b	ost_status(a0),ost_render(a0)
+			moveq	#0,d0
+			move.b	ost_cat_segment_pos(a0),d0
+			move.b	#$80,ost_cat_floormap(a0,d0.w)
 		else
 			moveq	#0,d0
-			move.b	ost_cat_segment_num(a0),d0
-			move.b	#$80,$2C(a0,d0)
+			move.b	ost_cat_segment_pos(a0),d0
+			move.b	#$80,ost_cat_floormap(a0,d0)
 			neg.w	ost_x_pos+2(a0)
 			beq.s	@loc_1730A
 			btst	#status_xflip_bit,ost_status(a0)
 			beq.s	@loc_1730A
 			subq.w	#1,ost_x_pos(a0)
-			addq.b	#1,ost_cat_segment_num(a0)
+			addq.b	#1,ost_cat_segment_pos(a0)
 			moveq	#0,d0
-			move.b	ost_cat_segment_num(a0),d0
-			clr.b	$2C(a0,d0)
+			move.b	ost_cat_segment_pos(a0),d0
+			clr.b	ost_cat_floormap(a0,d0)
 	@loc_1730A:
 			bchg	#status_xflip_bit,ost_status(a0)
 			move.b	ost_status(a0),ost_render(a0)
 		endc
-		addq.b	#1,ost_cat_segment_num(a0)
-		andi.b	#$F,ost_cat_segment_num(a0)
+		addq.b	#1,ost_cat_segment_pos(a0)
+		andi.b	#$F,ost_cat_segment_pos(a0)
 		rts	
 ; ===========================================================================
 
@@ -283,7 +284,7 @@ Cat_BodySeg1:	; Routine 4, 8
 		move.w	ost_inertia(a1),ost_inertia(a0)
 		move.w	ost_x_vel(a1),d0
 		if Revision=0
-		add.w	ost_inertia(a1),d0
+			add.w	ost_inertia(a1),d0
 		else
 			add.w	ost_inertia(a0),d0
 		endc
@@ -304,16 +305,16 @@ loc_16C0C:
 		cmp.w	ost_x_pos(a0),d3
 		beq.s	loc_16C64
 		moveq	#0,d0
-		move.b	ost_cat_segment_num(a0),d0
-		move.b	$2C(a1,d0.w),d1
+		move.b	ost_cat_segment_pos(a0),d0
+		move.b	ost_cat_floormap(a1,d0.w),d1
 		cmpi.b	#$80,d1
 		bne.s	loc_16C50
 		if Revision=0
-		swap	d3
-		move.l	d3,ost_x_pos(a0)
-		move.b	d1,$2C(a0,d0.w)
+			swap	d3
+			move.l	d3,ost_x_pos(a0)
+			move.b	d1,ost_cat_floormap(a0,d0.w)
 		else
-			move.b	d1,$2C(a0,d0)
+			move.b	d1,ost_cat_floormap(a0,d0)
 			neg.w	ost_x_pos+2(a0)
 			beq.s	locj_173E4
 			btst	#status_xflip_bit,ost_status(a0)
@@ -321,25 +322,25 @@ loc_16C0C:
 			cmpi.w	#-$C0,ost_x_vel(a0)
 			bne.s	locj_173E4
 			subq.w	#1,ost_x_pos(a0)
-			addq.b	#1,ost_cat_segment_num(a0)
+			addq.b	#1,ost_cat_segment_pos(a0)
 			moveq	#0,d0
-			move.b	ost_cat_segment_num(a0),d0
-			clr.b	$2C(a0,d0)
+			move.b	ost_cat_segment_pos(a0),d0
+			clr.b	ost_cat_floormap(a0,d0)
 	locj_173E4:
 		endc
 		bchg	#status_xflip_bit,ost_status(a0)
-		move.b	ost_status(a0),1(a0)
-		addq.b	#1,ost_cat_segment_num(a0)
-		andi.b	#$F,ost_cat_segment_num(a0)
+		move.b	ost_status(a0),ost_render(a0)
+		addq.b	#1,ost_cat_segment_pos(a0)
+		andi.b	#$F,ost_cat_segment_pos(a0)
 		bra.s	loc_16C64
 ; ===========================================================================
 
 loc_16C50:
 		ext.w	d1
 		add.w	d1,ost_y_pos(a0)
-		addq.b	#1,ost_cat_segment_num(a0)
-		andi.b	#$F,ost_cat_segment_num(a0)
-		move.b	d1,$2C(a0,d0.w)
+		addq.b	#1,ost_cat_segment_pos(a0)
+		andi.b	#$F,ost_cat_segment_pos(a0)
+		move.b	d1,ost_cat_floormap(a0,d0.w)
 
 loc_16C64:
 		cmpi.b	#$C,ost_routine(a1)

@@ -28,8 +28,8 @@ SSRC_Main:	; Routine 0
 
 	SSRC_Loop:
 		move.b	#id_SSRChaos,0(a1)
-		move.w	(a2)+,ost_x_pos(a1)	; set x-position
-		move.w	#$F0,ost_y_screen(a1) ; set y-position
+		move.w	(a2)+,ost_x_pos(a1) ; set x position
+		move.w	#$F0,ost_y_screen(a1) ; set y position
 		lea	(v_emldlist).w,a3 ; check which emeralds you have
 		move.b	(a3,d2.w),d3
 		move.b	d3,ost_frame(a1)
@@ -44,7 +44,7 @@ SSRC_Main:	; Routine 0
 
 SSRC_Flash:	; Routine 2
 		move.b	ost_frame(a0),d0
-		move.b	#6,ost_frame(a0)	; load 6th frame (blank)
+		move.b	#6,ost_frame(a0) ; load 6th frame (blank)
 		cmpi.b	#6,d0
 		bne.s	SSRC_Display
 		move.b	ost_anim(a0),ost_frame(a0) ; load visible frame

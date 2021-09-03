@@ -14,9 +14,9 @@ Lamp_Index:	index *,,2
 		ptr Lamp_Finish
 		ptr Lamp_Twirl
 
-lamp_origX:	equ $30		; original x-axis position
-lamp_origY:	equ $32		; original y-axis position
-lamp_time:	equ $36		; length of time to twirl the lamp
+ost_lamp_x_start:	equ $30	; original x-axis position (2 bytes)
+ost_lamp_y_start:	equ $32	; original y-axis position (2 bytes)
+ost_lamp_twirl_time:	equ $36	; length of time to twirl the lamp (2 bytes)
 ; ===========================================================================
 
 Lamp_Main:	; Routine 0
@@ -39,10 +39,10 @@ Lamp_Main:	; Routine 0
 		cmp.b	d2,d1		; is this a "new" lamppost?
 		bcs.s	Lamp_Blue	; if yes, branch
 
-@red:
+	@red:
 		bset	#0,2(a2,d0.w)
 		move.b	#id_Lamp_Finish,ost_routine(a0) ; goto Lamp_Finish next
-		move.b	#3,ost_frame(a0)	; use red lamppost frame
+		move.b	#3,ost_frame(a0) ; use red lamppost frame
 		rts	
 ; ===========================================================================
 
@@ -78,25 +78,25 @@ Lamp_Blue:	; Routine 2
 		cmpi.w	#$68,d0
 		bcc.s	@donothing
 
-		sfx	sfx_Lamppost,0,0,0	; play lamppost sound
+		sfx	sfx_Lamppost,0,0,0 ; play lamppost sound
 		addq.b	#2,ost_routine(a0)
 		jsr	(FindFreeObj).l
 		bne.s	@fail
-		move.b	#id_Lamppost,0(a1)	; load twirling	lamp object
+		move.b	#id_Lamppost,0(a1) ; load twirling lamp object
 		move.b	#id_Lamp_Twirl,ost_routine(a1) ; goto Lamp_Twirl next
-		move.w	ost_x_pos(a0),lamp_origX(a1)
-		move.w	ost_y_pos(a0),lamp_origY(a1)
-		subi.w	#$18,lamp_origY(a1)
+		move.w	ost_x_pos(a0),ost_lamp_x_start(a1)
+		move.w	ost_y_pos(a0),ost_lamp_y_start(a1)
+		subi.w	#$18,ost_lamp_y_start(a1)
 		move.l	#Map_Lamp,ost_mappings(a1)
 		move.w	#tile_Nem_Lamp,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)
 		move.b	#8,ost_actwidth(a1)
 		move.b	#4,ost_priority(a1)
-		move.b	#2,ost_frame(a1)	; use "ball only" frame
-		move.w	#$20,lamp_time(a1)
+		move.b	#2,ost_frame(a1) ; use "ball only" frame
+		move.w	#32,ost_lamp_twirl_time(a1)
 
 	@fail:
-		move.b	#1,ost_frame(a0)	; use "post only" frame
+		move.b	#1,ost_frame(a0) ; use "post only" frame
 		bsr.w	Lamp_StoreInfo
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
@@ -112,7 +112,7 @@ Lamp_Finish:	; Routine 4
 ; ===========================================================================
 
 Lamp_Twirl:	; Routine 6
-		subq.w	#1,lamp_time(a0) ; decrement timer
+		subq.w	#1,ost_lamp_twirl_time(a0) ; decrement timer
 		bpl.s	@continue	; if time remains, keep twirling
 		move.b	#id_Lamp_Finish,ost_routine(a0) ; goto Lamp_Finish next
 
@@ -123,11 +123,11 @@ Lamp_Twirl:	; Routine 6
 		jsr	(CalcSine).l
 		muls.w	#$C00,d1
 		swap	d1
-		add.w	lamp_origX(a0),d1
+		add.w	ost_lamp_x_start(a0),d1
 		move.w	d1,ost_x_pos(a0)
 		muls.w	#$C00,d0
 		swap	d0
-		add.w	lamp_origY(a0),d0
+		add.w	ost_lamp_y_start(a0),d0
 		move.w	d0,ost_y_pos(a0)
 		rts	
 ; ===========================================================================
@@ -138,8 +138,8 @@ Lamp_Twirl:	; Routine 6
 Lamp_StoreInfo:
 		move.b	ost_subtype(a0),(v_lastlamp).w 	; lamppost number
 		move.b	(v_lastlamp).w,($FFFFFE31).w
-		move.w	ost_x_pos(a0),($FFFFFE32).w		; x-position
-		move.w	ost_y_pos(a0),($FFFFFE34).w		; y-position
+		move.w	ost_x_pos(a0),($FFFFFE32).w	; x-position
+		move.w	ost_y_pos(a0),($FFFFFE34).w	; y-position
 		move.w	(v_rings).w,($FFFFFE36).w 	; rings
 		move.b	(v_lifecount).w,($FFFFFE54).w 	; lives
 		move.l	(v_time).w,($FFFFFE38).w 	; time
@@ -148,11 +148,11 @@ Lamp_StoreInfo:
 		move.w	(v_screenposx).w,($FFFFFE40).w 	; screen x-position
 		move.w	(v_screenposy).w,($FFFFFE42).w 	; screen y-position
 		move.w	(v_bgscreenposx).w,($FFFFFE44).w ; bg position
-		move.w	(v_bgscreenposy).w,($FFFFFE46).w 	; bg position
-		move.w	(v_bg2screenposx).w,($FFFFFE48).w 	; bg position
-		move.w	(v_bg2screenposy).w,($FFFFFE4A).w 	; bg position
-		move.w	(v_bg3screenposx).w,($FFFFFE4C).w 	; bg position
-		move.w	(v_bg3screenposy).w,($FFFFFE4E).w 	; bg position
+		move.w	(v_bgscreenposy).w,($FFFFFE46).w ; bg position
+		move.w	(v_bg2screenposx).w,($FFFFFE48).w ; bg position
+		move.w	(v_bg2screenposy).w,($FFFFFE4A).w ; bg position
+		move.w	(v_bg3screenposx).w,($FFFFFE4C).w ; bg position
+		move.w	(v_bg3screenposy).w,($FFFFFE4E).w ; bg position
 		move.w	(v_waterpos2).w,($FFFFFE50).w 	; water height
 		move.b	(v_wtr_routine).w,($FFFFFE52).w ; rountine counter for water
 		move.b	(f_wtr_state).w,($FFFFFE53).w 	; water direction

@@ -11,6 +11,11 @@
 TCha_Index:	index *,,2
 		ptr TCha_Main
 		ptr TCha_Move
+
+ost_ectry_x_start:	equ $38	; x-axis centre of emerald circle (2 bytes)
+ost_ectry_y_start:	equ $3A	; y-axis centre of emerald circle (2 bytes)
+ost_ectry_radius:	equ $3C	; radius
+ost_ectry_speed:	equ $3E	; speed at which emeralds rotate around central point (2 bytes)
 ; ===========================================================================
 
 TCha_Main:	; Routine 0
@@ -28,10 +33,10 @@ TCha_Main:	; Routine 0
 		move.b	#render_abs,ost_render(a1)
 		move.b	#1,ost_priority(a1)
 		move.w	#$104,ost_x_pos(a1)
-		move.w	#$120,$38(a1)
+		move.w	#$120,ost_ectry_x_start(a1)
 		move.w	#$EC,ost_y_screen(a1)
-		move.w	ost_y_screen(a1),$3A(a1)
-		move.b	#$1C,$3C(a1)
+		move.w	ost_y_screen(a1),ost_ectry_y_start(a1)
+		move.b	#$1C,ost_ectry_radius(a1)
 		lea	(v_emldlist).w,a3
 
 	@chkemerald:
@@ -62,7 +67,7 @@ TCha_Main:	; Routine 0
 		dbf	d1,@makeemerald	; repeat 5 times
 
 TCha_Move:	; Routine 2
-		tst.w	$3E(a0)
+		tst.w	ost_ectry_speed(a0)
 		beq.s	locret_5BBA
 		tst.b	ost_anim_time(a0)
 		beq.s	loc_5B78
@@ -70,7 +75,7 @@ TCha_Move:	; Routine 2
 		bne.s	loc_5B80
 
 loc_5B78:
-		move.w	$3E(a0),d0
+		move.w	ost_ectry_speed(a0),d0
 		add.w	d0,ost_angle(a0)
 
 loc_5B80:
@@ -80,19 +85,19 @@ loc_5B80:
 		bne.s	loc_5B96
 
 loc_5B8C:
-		clr.w	$3E(a0)
+		clr.w	ost_ectry_speed(a0)
 		move.b	ost_anim_delay(a0),ost_anim_time(a0)
 
 loc_5B96:
 		jsr	(CalcSine).l
 		moveq	#0,d4
-		move.b	$3C(a0),d4
+		move.b	ost_ectry_radius(a0),d4
 		muls.w	d4,d1
 		asr.l	#8,d1
 		muls.w	d4,d0
 		asr.l	#8,d0
-		add.w	$38(a0),d1
-		add.w	$3A(a0),d0
+		add.w	ost_ectry_x_start(a0),d1
+		add.w	ost_ectry_y_start(a0),d0
 		move.w	d1,ost_x_pos(a0)
 		move.w	d0,ost_y_screen(a0)
 

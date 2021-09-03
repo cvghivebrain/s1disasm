@@ -11,7 +11,7 @@ Bonus_Index:	index *,,2
 		ptr Bonus_Main
 		ptr Bonus_Display
 
-bonus_timelen:	equ $30		; length of time to display bonus sprites
+ost_bonus_wait_time:	equ $30	; length of time to display bonus sprites (2 bytes)
 ; ===========================================================================
 
 Bonus_Main:	; Routine 0
@@ -40,7 +40,7 @@ Bonus_Main:	; Routine 0
 		move.b	#0,ost_priority(a0)
 		move.b	#$10,ost_actwidth(a0)
 		move.b	ost_subtype(a0),ost_frame(a0)
-		move.w	#119,bonus_timelen(a0) ; set display time to 2 seconds
+		move.w	#119,ost_bonus_wait_time(a0) ; set display time to 2 seconds
 		sfx	sfx_Bonus,0,0,0	; play bonus sound
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0
@@ -63,8 +63,8 @@ Bonus_Main:	; Routine 0
 ; ===========================================================================
 
 Bonus_Display:	; Routine 2
-		subq.w	#1,bonus_timelen(a0) ; decrement display time
-		bmi.s	Bonus_Display_Delete		; if time is zero, branch
+		subq.w	#1,ost_bonus_wait_time(a0) ; decrement display time
+		bmi.s	Bonus_Display_Delete ; if time is zero, branch
 		out_of_range.s	Bonus_Display_Delete
 		jmp	(DisplaySprite).l
 

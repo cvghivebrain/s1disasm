@@ -12,8 +12,11 @@ SEgg_Index:	index *,,2
 		ptr SEgg_Eggman
 		ptr SEgg_Switch
 
-SEgg_ObjData:	dc.b id_SEgg_Eggman,	0, 3		; routine number, animation, priority
-		dc.b id_SEgg_Switch,	0, 3
+SEgg_ObjData:	dc.b id_SEgg_Eggman, 0, 3	; routine number, animation, priority
+		dc.b id_SEgg_Switch, 0, 3
+
+ost_eggman_parent:	equ $34	; address of OST of parent object (4 bytes)
+ost_eggman_wait_time:	equ $3C	; time delay between events (2 bytes)
 ; ===========================================================================
 
 SEgg_Main:	; Routine 0
@@ -22,7 +25,7 @@ SEgg_Main:	; Routine 0
 		move.w	#$5A4,ost_y_pos(a0)
 		move.b	#$F,ost_col_type(a0)
 		move.b	#$10,ost_col_property(a0)
-		bclr	#0,ost_status(a0)
+		bclr	#status_xflip_bit,ost_status(a0)
 		clr.b	ost_routine2(a0)
 		move.b	(a2)+,ost_routine(a0)
 		move.b	(a2)+,ost_anim(a0)
@@ -30,11 +33,11 @@ SEgg_Main:	; Routine 0
 		move.l	#Map_SEgg,ost_mappings(a0)
 		move.w	#tile_Nem_Sbz2Eggman,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
-		bset	#7,ost_render(a0)
+		bset	#render_onscreen_bit,ost_render(a0)
 		move.b	#$20,ost_actwidth(a0)
 		jsr	(FindNextFreeObj).l
 		bne.s	SEgg_Eggman
-		move.l	a0,$34(a1)
+		move.l	a0,ost_eggman_parent(a1)
 		move.b	#id_ScrapEggman,(a1) ; load switch object
 		move.w	#$2130,ost_x_pos(a1)
 		move.w	#$5BC,ost_y_pos(a1)
@@ -45,7 +48,7 @@ SEgg_Main:	; Routine 0
 		move.l	#Map_But,ost_mappings(a1)
 		move.w	#$4A4,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)
-		bset	#7,ost_render(a1)
+		bset	#render_onscreen_bit,ost_render(a1)
 		move.b	#$10,ost_actwidth(a1)
 		move.b	#0,ost_frame(a1)
 
@@ -62,36 +65,36 @@ SEgg_EggIndex:	index *
 		ptr SEgg_ChkSonic
 		ptr SEgg_PreLeap
 		ptr SEgg_Leap
-		ptr loc_19934
+		ptr SEgg_Move
 ; ===========================================================================
 
 SEgg_ChkSonic:
 		move.w	ost_x_pos(a0),d0
 		sub.w	(v_player+ost_x_pos).w,d0
 		cmpi.w	#128,d0		; is Sonic within 128 pixels of	Eggman?
-		bcc.s	loc_19934	; if not, branch
+		bcc.s	SEgg_Move	; if not, branch
 		addq.b	#2,ost_routine2(a0)
-		move.w	#180,$3C(a0)	; set delay to 3 seconds
+		move.w	#180,ost_eggman_wait_time(a0) ; set delay to 3 seconds
 		move.b	#1,ost_anim(a0)
 
-loc_19934:
+SEgg_Move:
 		jmp	(SpeedToPos).l
 ; ===========================================================================
 
 SEgg_PreLeap:
-		subq.w	#1,$3C(a0)	; subtract 1 from time delay
+		subq.w	#1,ost_eggman_wait_time(a0) ; subtract 1 from time delay
 		bne.s	loc_19954	; if time remains, branch
 		addq.b	#2,ost_routine2(a0)
 		move.b	#2,ost_anim(a0)
 		addq.w	#4,ost_y_pos(a0)
-		move.w	#15,$3C(a0)
+		move.w	#15,ost_eggman_wait_time(a0)
 
 loc_19954:
-		bra.s	loc_19934
+		bra.s	SEgg_Move
 ; ===========================================================================
 
 SEgg_Leap:
-		subq.w	#1,$3C(a0)
+		subq.w	#1,ost_eggman_wait_time(a0)
 		bgt.s	loc_199D0
 		bne.s	loc_1996A
 		move.w	#-$FC,ost_x_vel(a0) ; make Eggman leap
@@ -125,7 +128,7 @@ SEgg_FindBlocks:
 SEgg_FindLoop:	
 		adda.w	d1,a1		; jump to next object RAM
 		cmpi.b	#id_FalseFloor,(a1) ; is object a block? (object $83)
-		dbeq	d0,SEgg_FindLoop ; if not, repeat (max	$3E times)
+		dbeq	d0,SEgg_FindLoop ; if not, repeat (max $3E times)
 
 		bne.s	loc_199D0
 		move.w	#$474F,ost_subtype(a1) ; set block to disintegrate
@@ -133,7 +136,7 @@ SEgg_FindLoop:
 		move.b	#1,ost_anim(a0)
 
 loc_199D0:
-		bra.w	loc_19934
+		bra.w	SEgg_Move
 ; ===========================================================================
 
 SEgg_Switch:	; Routine 4
@@ -143,12 +146,12 @@ SEgg_Switch:	; Routine 4
 		jmp	SEgg_SwIndex(pc,d0.w)
 ; ===========================================================================
 SEgg_SwIndex:	index *
-		ptr loc_199E6
+		ptr SEgg_SwChk
 		ptr SEgg_SwDisplay
 ; ===========================================================================
 
-loc_199E6:
-		movea.l	$34(a0),a1
+SEgg_SwChk:
+		movea.l	ost_eggman_parent(a0),a1
 		cmpi.w	#$5357,ost_subtype(a1)
 		bne.s	SEgg_SwDisplay
 		move.b	#1,ost_frame(a0)

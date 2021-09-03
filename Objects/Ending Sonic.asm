@@ -20,14 +20,14 @@ ESon_Index:	index *,,2
 		ptr ESon_Leap
 		ptr ESon_Animate
 
-eson_time:	equ $30	; time to wait between events
+ost_esonic_wait_time:	equ $30	; time to wait between events (2 bytes)
 ; ===========================================================================
 
 ESon_Main:	; Routine 0
 		cmpi.b	#6,(v_emeralds).w ; do you have all 6 emeralds?
 		beq.s	ESon_Main2	; if yes, branch
 		addi.b	#id_ESon_Leap,ost_routine2(a0) ; else, skip emerald sequence
-		move.w	#216,eson_time(a0)
+		move.w	#216,ost_esonic_wait_time(a0)
 		rts	
 ; ===========================================================================
 
@@ -39,11 +39,11 @@ ESon_Main2:
 		clr.b	ost_status(a0)
 		move.b	#2,ost_priority(a0)
 		move.b	#0,ost_frame(a0)
-		move.w	#80,eson_time(a0) ; set duration for Sonic to pause
+		move.w	#80,ost_esonic_wait_time(a0) ; set duration for Sonic to pause
 
 ESon_MakeEmeralds:
 		; Routine 2
-		subq.w	#1,eson_time(a0) ; subtract 1 from duration
+		subq.w	#1,ost_esonic_wait_time(a0) ; subtract 1 from duration
 		bne.s	ESon_Wait
 		addq.b	#2,ost_routine2(a0)
 		move.w	#id_Confused,ost_anim(a0)
@@ -54,10 +54,10 @@ ESon_MakeEmeralds:
 ; ===========================================================================
 
 ESon_LookUp:	; Routine 6
-		cmpi.w	#$2000,((v_objspace&$FFFFFF)+$400+$3C).l
-		bne.s	locret_5480
+		cmpi.w	#$2000,((v_objspace&$FFFFFF)+$400+ost_echaos_radius).l ; has emerald circle expanded fully?
+		bne.s	locret_5480	; if not, branch
 		move.w	#1,(f_restart).w ; set level to	restart	(causes	flash)
-		move.w	#90,eson_time(a0)
+		move.w	#90,ost_esonic_wait_time(a0)
 		addq.b	#2,ost_routine2(a0)
 
 locret_5480:
@@ -66,7 +66,7 @@ locret_5480:
 
 ESon_ClrObjRam:
 		; Routine 8
-		subq.w	#1,eson_time(a0)
+		subq.w	#1,ost_esonic_wait_time(a0)
 		bne.s	ESon_Wait2
 		lea	(v_objspace+$400).w,a1
 		move.w	#$FF,d1
@@ -77,17 +77,17 @@ ESon_ClrLoop:
 		move.w	#1,(f_restart).w
 		addq.b	#2,ost_routine2(a0)
 		move.b	#id_Confused,ost_anim(a0)
-		move.w	#60,eson_time(a0)
+		move.w	#60,ost_esonic_wait_time(a0)
 
 ESon_Wait2:
 		rts	
 ; ===========================================================================
 
 ESon_MakeLogo:	; Routine $C
-		subq.w	#1,eson_time(a0)
+		subq.w	#1,ost_esonic_wait_time(a0)
 		bne.s	ESon_Wait3
 		addq.b	#2,ost_routine2(a0)
-		move.w	#180,eson_time(a0)
+		move.w	#180,ost_esonic_wait_time(a0)
 		move.b	#id_Leaping,ost_anim(a0)
 		move.b	#id_EndSTH,(v_objspace+$400).w ; load "SONIC THE HEDGEHOG" object
 
@@ -101,7 +101,7 @@ ESon_Animate:	; Rountine 4, $A, $E, $12
 ; ===========================================================================
 
 ESon_Leap:	; Routine $10
-		subq.w	#1,eson_time(a0)
+		subq.w	#1,ost_esonic_wait_time(a0)
 		bne.s	ESon_Wait4
 		addq.b	#2,ost_routine2(a0)
 		move.l	#Map_ESon,ost_mappings(a0)

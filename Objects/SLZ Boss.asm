@@ -14,17 +14,25 @@ Obj7A_Index:	index *,,2
 		ptr Obj7A_FlameMain
 		ptr Obj7A_TubeMain
 
-Obj7A_ObjData:	dc.b 2,	0, 4		; routine number, animation, priority
-		dc.b 4,	1, 4
-		dc.b 6,	7, 4
-		dc.b 8,	0, 3
+Obj7A_ObjData:	dc.b id_Obj7A_ShipMain,	0, 4		; routine number, animation, priority
+		dc.b id_Obj7A_FaceMain,	1, 4
+		dc.b id_Obj7A_FlameMain, 7, 4
+		dc.b id_Obj7A_TubeMain,	0, 3
+
+ost_bslz_seesaw:	equ $2A	; addresses of OSTs of seesaws (2 bytes * 3)
+ost_bslz_parent_x_pos:	equ $30	; parent x position (2 bytes)
+ost_bslz_parent:	equ $34	; address of OST of parent object (4 bytes)
+ost_bslz_parent_y_pos:	equ $38	; parent y position (2 bytes)
+ost_bslz_wait_time:	equ $3C	; time to wait between each action
+ost_bslz_flash_num:	equ $3E	; number of times to make boss flash when hit
+ost_bslz_wobble:	equ $3F	; wobble state as Eggman moves back & forth (1 byte incremented every frame & interpreted by CalcSine)
 ; ===========================================================================
 
 Obj7A_Main:
 		move.w	#$2188,ost_x_pos(a0)
 		move.w	#$228,ost_y_pos(a0)
-		move.w	ost_x_pos(a0),$30(a0)
-		move.w	ost_y_pos(a0),$38(a0)
+		move.w	ost_x_pos(a0),ost_bslz_parent_x_pos(a0)
+		move.w	ost_y_pos(a0),ost_bslz_parent_y_pos(a0)
 		move.b	#$F,ost_col_type(a0)
 		move.b	#8,ost_col_property(a0) ; set number of hits to 8
 		lea	Obj7A_ObjData(pc),a2
@@ -35,13 +43,13 @@ Obj7A_Main:
 
 Obj7A_Loop:
 		jsr	(FindNextFreeObj).l
-		bne.s	loc_1895C
+		bne.s	Obj7A_FindSeesaws
 		move.b	#id_BossStarLight,0(a1)
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 
 Obj7A_LoadBoss:
-		bclr	#0,ost_status(a0)
+		bclr	#status_xflip_bit,ost_status(a0)
 		clr.b	ost_routine2(a1)
 		move.b	(a2)+,ost_routine(a1)
 		move.b	(a2)+,ost_anim(a1)
@@ -50,25 +58,25 @@ Obj7A_LoadBoss:
 		move.w	#tile_Nem_Eggman,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)
 		move.b	#$20,ost_actwidth(a1)
-		move.l	a0,$34(a1)
+		move.l	a0,ost_bslz_parent(a1)
 		dbf	d1,Obj7A_Loop	; repeat sequence 3 more times
 
-loc_1895C:
+Obj7A_FindSeesaws:
 		lea	(v_objspace+$40).w,a1
-		lea	$2A(a0),a2
-		moveq	#$5E,d0
+		lea	ost_bslz_seesaw(a0),a2
+		moveq	#id_Seesaw,d0
 		moveq	#$3E,d1
 
-loc_18968:
-		cmp.b	(a1),d0
-		bne.s	loc_18974
-		tst.b	ost_subtype(a1)
-		beq.s	loc_18974
-		move.w	a1,(a2)+
+	@loop:
+		cmp.b	(a1),d0		; is object a seesaw?
+		bne.s	@notgood	; if not, branch
+		tst.b	ost_subtype(a1)	; is seesaw empty?
+		beq.s	@notgood	; if not, branch
+		move.w	a1,(a2)+	; set pointer to seesaw OST
 
-loc_18974:
-		adda.w	#$40,a1
-		dbf	d1,loc_18968
+	@notgood:
+		adda.w	#$40,a1		; next object OST slot
+		dbf	d1,@loop	; repeat for all object OSTs
 
 Obj7A_ShipMain:	; Routine 2
 		moveq	#0,d0
@@ -77,10 +85,10 @@ Obj7A_ShipMain:	; Routine 2
 		jsr	Obj7A_ShipIndex(pc,d0.w)
 		lea	(Ani_Eggman).l,a1
 		jsr	(AnimateSprite).l
-		moveq	#3,d0
+		moveq	#status_xflip+status_yflip,d0
 		and.b	ost_status(a0),d0
-		andi.b	#$FC,ost_render(a0)
-		or.b	d0,ost_render(a0)
+		andi.b	#$FF-render_xflip-render_yflip,ost_render(a0) ; ignore x/yflip bits
+		or.b	d0,ost_render(a0) ; combine x/yflip bits from status instead
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 Obj7A_ShipIndex:index *
@@ -94,26 +102,26 @@ Obj7A_ShipIndex:index *
 
 loc_189B8:
 		move.w	#-$100,ost_x_vel(a0)
-		cmpi.w	#$2120,$30(a0)
+		cmpi.w	#$2120,ost_bslz_parent_x_pos(a0)
 		bcc.s	loc_189CA
 		addq.b	#2,ost_routine2(a0)
 
 loc_189CA:
 		bsr.w	BossMove
-		move.b	$3F(a0),d0
-		addq.b	#2,$3F(a0)
+		move.b	ost_bslz_wobble(a0),d0
+		addq.b	#2,ost_bslz_wobble(a0)
 		jsr	(CalcSine).l
 		asr.w	#6,d0
-		add.w	$38(a0),d0
+		add.w	ost_bslz_parent_y_pos(a0),d0
 		move.w	d0,ost_y_pos(a0)
-		move.w	$30(a0),ost_x_pos(a0)
+		move.w	ost_bslz_parent_x_pos(a0),ost_x_pos(a0)
 		bra.s	loc_189FE
 ; ===========================================================================
 
 loc_189EE:
 		bsr.w	BossMove
-		move.w	$38(a0),ost_y_pos(a0)
-		move.w	$30(a0),ost_x_pos(a0)
+		move.w	ost_bslz_parent_y_pos(a0),ost_y_pos(a0)
+		move.w	ost_bslz_parent_x_pos(a0),ost_x_pos(a0)
 
 loc_189FE:
 		cmpi.b	#6,ost_routine2(a0)
@@ -122,10 +130,10 @@ loc_189FE:
 		bmi.s	loc_18A46
 		tst.b	ost_col_type(a0)
 		bne.s	locret_18A44
-		tst.b	$3E(a0)
+		tst.b	ost_bslz_flash_num(a0)
 		bne.s	loc_18A28
-		move.b	#$20,$3E(a0)
-		sfx	sfx_HitBoss,0,0,0	; play boss damage sound
+		move.b	#$20,ost_bslz_flash_num(a0)
+		sfx	sfx_HitBoss,0,0,0 ; play boss damage sound
 
 loc_18A28:
 		lea	(v_pal_dry+$22).w,a1
@@ -136,7 +144,7 @@ loc_18A28:
 
 loc_18A36:
 		move.w	d0,(a1)
-		subq.b	#1,$3E(a0)
+		subq.b	#1,ost_bslz_flash_num(a0)
 		bne.s	locret_18A44
 		move.b	#$F,ost_col_type(a0)
 
@@ -148,15 +156,15 @@ loc_18A46:
 		moveq	#100,d0
 		bsr.w	AddPoints
 		move.b	#6,ost_routine2(a0)
-		move.b	#$78,$3C(a0)
+		move.b	#$78,ost_bslz_wait_time(a0)
 		clr.w	ost_x_vel(a0)
 		rts	
 ; ===========================================================================
 
 loc_18A5E:
-		move.w	$30(a0),d0
+		move.w	ost_bslz_parent_x_pos(a0),d0
 		move.w	#$200,ost_x_vel(a0)
-		btst	#0,ost_status(a0)
+		btst	#status_xflip_bit,ost_status(a0)
 		bne.s	loc_18A7C
 		neg.w	ost_x_vel(a0)
 		cmpi.w	#$2008,d0
@@ -169,13 +177,13 @@ loc_18A7C:
 		blt.s	loc_18A88
 
 loc_18A82:
-		bchg	#0,ost_status(a0)
+		bchg	#status_xflip_bit,ost_status(a0)
 
 loc_18A88:
 		move.w	8(a0),d0
 		moveq	#-1,d1
 		moveq	#2,d2
-		lea	$2A(a0),a2
+		lea	ost_bslz_seesaw(a0),a2
 		moveq	#$28,d4
 		tst.w	ost_x_vel(a0)
 		bpl.s	loc_18A9E
@@ -184,9 +192,9 @@ loc_18A88:
 loc_18A9E:
 		move.w	(a2)+,d1
 		movea.l	d1,a3
-		btst	#3,ost_status(a3)
+		btst	#status_platform_bit,ost_status(a3)
 		bne.s	loc_18AB4
-		move.w	8(a3),d3
+		move.w	ost_x_pos(a3),d3
 		add.w	d4,d3
 		sub.w	d0,d3
 		beq.s	loc_18AC0
@@ -201,12 +209,12 @@ loc_18AB4:
 loc_18AC0:
 		move.b	d2,ost_subtype(a0)
 		addq.b	#2,ost_routine2(a0)
-		move.b	#$28,$3C(a0)
+		move.b	#$28,ost_bslz_wait_time(a0)
 		bra.w	loc_189CA
 ; ===========================================================================
 
 Obj7A_MakeBall:
-		cmpi.b	#$28,$3C(a0)
+		cmpi.b	#$28,ost_bslz_wait_time(a0)
 		bne.s	loc_18B36
 		moveq	#-1,d0
 		move.b	ost_subtype(a0),d0
@@ -215,14 +223,14 @@ Obj7A_MakeBall:
 		subq.w	#2,d0
 		neg.w	d0
 		add.w	d0,d0
-		lea	$2A(a0),a1
+		lea	ost_bslz_seesaw(a0),a1
 		move.w	(a1,d0.w),d0
 		movea.l	d0,a2
 		lea	(v_objspace+$40).w,a1
 		moveq	#$3E,d1
 
 loc_18AFA:
-		cmp.l	$3C(a1),d0
+		cmp.l	ost_bspike_seesaw(a1),d0
 		beq.s	loc_18B40
 		adda.w	#$40,a1
 		dbf	d1,loc_18AFA
@@ -237,10 +245,10 @@ loc_18AFA:
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		addi.w	#$20,ost_y_pos(a1)
 		move.b	ost_status(a2),ost_status(a1)
-		move.l	a2,$3C(a1)
+		move.l	a2,ost_bspike_seesaw(a1)
 
 loc_18B36:
-		subq.b	#1,$3C(a0)
+		subq.b	#1,ost_bslz_wait_time(a0)
 		beq.s	loc_18B40
 		bra.w	loc_189FE
 ; ===========================================================================
@@ -251,7 +259,7 @@ loc_18B40:
 ; ===========================================================================
 
 loc_18B48:
-		subq.b	#1,$3C(a0)
+		subq.b	#1,ost_bslz_wait_time(a0)
 		bmi.s	loc_18B52
 		bra.w	BossDefeated
 ; ===========================================================================
@@ -259,10 +267,10 @@ loc_18B48:
 loc_18B52:
 		addq.b	#2,ost_routine2(a0)
 		clr.w	ost_y_vel(a0)
-		bset	#0,ost_status(a0)
-		bclr	#7,ost_status(a0)
+		bset	#status_xflip_bit,ost_status(a0)
+		bclr	#status_onscreen_bit,ost_status(a0)
 		clr.w	ost_x_vel(a0)
-		move.b	#-$18,$3C(a0)
+		move.b	#-$18,ost_bslz_wait_time(a0)
 		tst.b	(v_bossstatus).w
 		bne.s	loc_18B7C
 		move.b	#1,(v_bossstatus).w
@@ -272,7 +280,7 @@ loc_18B7C:
 ; ===========================================================================
 
 loc_18B80:
-		addq.b	#1,$3C(a0)
+		addq.b	#1,ost_bslz_wait_time(a0)
 		beq.s	loc_18B90
 		bpl.s	loc_18B96
 		addi.w	#$18,ost_y_vel(a0)
@@ -285,10 +293,10 @@ loc_18B90:
 ; ===========================================================================
 
 loc_18B96:
-		cmpi.b	#$20,$3C(a0)
+		cmpi.b	#$20,ost_bslz_wait_time(a0)
 		bcs.s	loc_18BAE
 		beq.s	loc_18BB4
-		cmpi.b	#$2A,$3C(a0)
+		cmpi.b	#$2A,ost_bslz_wait_time(a0)
 		bcs.s	loc_18BC2
 		addq.b	#2,ost_routine2(a0)
 		bra.s	loc_18BC2
@@ -301,7 +309,7 @@ loc_18BAE:
 
 loc_18BB4:
 		clr.w	ost_y_vel(a0)
-		music	bgm_SLZ,0,0,0		; play SLZ music
+		music	bgm_SLZ,0,0,0	; play SLZ music
 
 loc_18BC2:
 		bra.w	loc_189EE
@@ -328,7 +336,7 @@ loc_18BE8:
 Obj7A_FaceMain:	; Routine 4
 		moveq	#0,d0
 		moveq	#1,d1
-		movea.l	$34(a0),a1
+		movea.l	ost_bslz_parent(a0),a1
 		move.b	ost_routine2(a1),d0
 		cmpi.b	#6,d0
 		bmi.s	loc_18C06
@@ -344,7 +352,7 @@ loc_18C06:
 ; ===========================================================================
 
 loc_18C10:
-		cmpi.b	#4,(v_player+ost_routine).w
+		cmpi.b	#id_Sonic_Hurt,(v_player+ost_routine).w
 		bcs.s	loc_18C1A
 		moveq	#4,d1
 
@@ -362,7 +370,7 @@ loc_18C32:
 
 Obj7A_FlameMain:; Routine 6
 		move.b	#8,ost_anim(a0)
-		movea.l	$34(a0),a1
+		movea.l	ost_bslz_parent(a0),a1
 		cmpi.b	#$A,ost_routine2(a1)
 		bne.s	loc_18C56
 		tst.b	ost_render(a0)
@@ -383,19 +391,19 @@ loc_18C6C:
 		jsr	(AnimateSprite).l
 
 loc_18C78:
-		movea.l	$34(a0),a1
+		movea.l	ost_bslz_parent(a0),a1
 		move.w	ost_x_pos(a1),ost_x_pos(a0)
 		move.w	ost_y_pos(a1),ost_y_pos(a0)
 		move.b	ost_status(a1),ost_status(a0)
-		moveq	#3,d0
+		moveq	#status_xflip+status_yflip,d0
 		and.b	ost_status(a0),d0
-		andi.b	#$FC,ost_render(a0)
+		andi.b	#$FF-render_xflip-render_yflip,ost_render(a0)
 		or.b	d0,ost_render(a0)
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 
 Obj7A_TubeMain:	; Routine 8
-		movea.l	$34(a0),a1
+		movea.l	ost_bslz_parent(a0),a1
 		cmpi.b	#$A,ost_routine2(a1)
 		bne.s	loc_18CB8
 		tst.b	ost_render(a0)

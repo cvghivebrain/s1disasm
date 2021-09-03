@@ -13,6 +13,12 @@ Obj86_Index:	index *,,2
 		ptr Obj86_MakeBalls
 		ptr loc_1A962
 		ptr loc_1A982
+
+ost_plasma_flag:	equ $29	; flag set when firing
+;			equ $30	; ?  (2 bytes)
+;			equ $32	; ?  (2 bytes)
+ost_plasma_parent:	equ $34	; address of OST of parent object (4 bytes)
+;			equ $38	; ?  (2 bytes)
 ; ===========================================================================
 
 Obj86_Main:	; Routine 0
@@ -25,12 +31,12 @@ Obj86_Main:	; Routine 0
 		move.b	#8,ost_width(a0)
 		move.b	#8,ost_height(a0)
 		move.b	#render_rel,ost_render(a0)
-		bset	#7,ost_render(a0)
+		bset	#render_onscreen_bit,ost_render(a0)
 		addq.b	#2,ost_routine(a0)
 
 Obj86_Generator:; Routine 2
-		movea.l	$34(a0),a1
-		cmpi.b	#6,$34(a1)
+		movea.l	ost_plasma_parent(a0),a1
+		cmpi.b	#6,ost_fz_mode(a1)
 		bne.s	loc_1A850
 		move.b	#id_ExplosionBomb,(a0)
 		move.b	#0,ost_routine(a0)
@@ -39,7 +45,7 @@ Obj86_Generator:; Routine 2
 
 loc_1A850:
 		move.b	#0,ost_anim(a0)
-		tst.b	$29(a0)
+		tst.b	ost_plasma_flag(a0)
 		beq.s	loc_1A86C
 		addq.b	#2,ost_routine(a0)
 		move.b	#1,ost_anim(a0)
@@ -66,9 +72,9 @@ loc_1A89A:
 ; ===========================================================================
 
 Obj86_MakeBalls:; Routine 4
-		tst.b	$29(a0)
+		tst.b	ost_plasma_flag(a0)
 		beq.w	loc_1A954
-		clr.b	$29(a0)
+		clr.b	ost_plasma_flag(a0)
 		add.w	$30(a0),d0
 		andi.w	#$1E,d0
 		adda.w	d0,a2
@@ -91,8 +97,8 @@ Obj86_Loop:
 		move.b	#3,ost_priority(a1)
 		move.w	#$3E,ost_subtype(a1)
 		move.b	#render_rel,ost_render(a1)
-		bset	#7,ost_render(a1)
-		move.l	a0,$34(a1)
+		bset	#render_onscreen_bit,ost_render(a1)
+		move.l	a0,ost_plasma_parent(a1)
 		jsr	(RandomNumber).l
 		move.w	$32(a0),d1
 		muls.w	#-$4F,d1
@@ -119,7 +125,7 @@ loc_1A962:	; Routine 6
 		tst.w	$38(a0)
 		bne.s	loc_1A97E
 		move.b	#2,ost_routine(a0)
-		movea.l	$34(a0),a1
+		movea.l	ost_plasma_parent(a0),a1
 		move.w	#-1,$32(a1)
 
 loc_1A97E:
@@ -160,7 +166,7 @@ loc_1A9C0:
 		bcc.s	loc_1A9E6
 		clr.w	ost_x_vel(a0)
 		add.w	d0,ost_x_pos(a0)
-		movea.l	$34(a0),a1
+		movea.l	ost_plasma_parent(a0),a1
 		subq.w	#1,$32(a1)
 
 loc_1A9E6:
@@ -191,6 +197,6 @@ loc_1AA1E:
 ; ===========================================================================
 
 loc_1AA34:
-		movea.l	$34(a0),a1
+		movea.l	ost_plasma_parent(a0),a1
 		subq.w	#1,$38(a1)
 		bra.w	Obj84_Delete

@@ -12,10 +12,10 @@ ECha_Index:	index *,,2
 		ptr ECha_Main
 		ptr ECha_Move
 
-echa_origX:	equ $38	; x-axis centre of emerald circle (2 bytes)
-echa_origY:	equ $3A	; y-axis centre of emerald circle (2 bytes)
-echa_radius:	equ $3C	; radius (2 bytes)
-echa_angle:	equ $3E	; angle for rotation (2 bytes)
+ost_echaos_x_start:	equ $38	; x-axis centre of emerald circle (2 bytes)
+ost_echaos_y_start:	equ $3A	; y-axis centre of emerald circle (2 bytes)
+ost_echaos_radius:	equ $3C	; radius (2 bytes)
+ost_echaos_angle:	equ $3E	; angle for rotation (2 bytes)
 ; ===========================================================================
 
 ECha_Main:	; Routine 0
@@ -26,8 +26,8 @@ ECha_Main:	; Routine 0
 ; ===========================================================================
 
 ECha_CreateEms:
-		move.w	(v_player+ost_x_pos).w,ost_x_pos(a0) ; match X position with Sonic
-		move.w	(v_player+ost_y_pos).w,ost_y_pos(a0) ; match Y position with Sonic
+		move.w	(v_player+ost_x_pos).w,ost_x_pos(a0) ; match x position with Sonic
+		move.w	(v_player+ost_y_pos).w,ost_y_pos(a0) ; match y position with Sonic
 		movea.l	a0,a1
 		moveq	#0,d3
 		moveq	#1,d2
@@ -40,8 +40,8 @@ ECha_CreateEms:
 		move.w	#tile_Nem_EndEm,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)
 		move.b	#1,ost_priority(a1)
-		move.w	ost_x_pos(a0),echa_origX(a1)
-		move.w	ost_y_pos(a0),echa_origY(a1)
+		move.w	ost_x_pos(a0),ost_echaos_x_start(a1)
+		move.w	ost_y_pos(a0),ost_echaos_y_start(a1)
 		move.b	d2,ost_anim(a1)
 		move.b	d2,ost_frame(a1)
 		addq.b	#1,d2
@@ -51,35 +51,35 @@ ECha_CreateEms:
 		dbf	d1,ECha_LoadLoop ; repeat 5 more times
 
 ECha_Move:	; Routine 2
-		move.w	echa_angle(a0),d0
+		move.w	ost_echaos_angle(a0),d0
 		add.w	d0,ost_angle(a0)
 		move.b	ost_angle(a0),d0
 		jsr	(CalcSine).l
 		moveq	#0,d4
-		move.b	echa_radius(a0),d4
+		move.b	ost_echaos_radius(a0),d4
 		muls.w	d4,d1
 		asr.l	#8,d1
 		muls.w	d4,d0
 		asr.l	#8,d0
-		add.w	echa_origX(a0),d1
-		add.w	echa_origY(a0),d0
+		add.w	ost_echaos_x_start(a0),d1
+		add.w	ost_echaos_y_start(a0),d0
 		move.w	d1,ost_x_pos(a0)
 		move.w	d0,ost_y_pos(a0)
 
 	ECha_Expand:
-		cmpi.w	#$2000,echa_radius(a0)
+		cmpi.w	#$2000,ost_echaos_radius(a0)
 		beq.s	ECha_Rotate
-		addi.w	#$20,echa_radius(a0) ; expand circle of emeralds
+		addi.w	#$20,ost_echaos_radius(a0) ; expand circle of emeralds
 
 	ECha_Rotate:
-		cmpi.w	#$2000,echa_angle(a0)
+		cmpi.w	#$2000,ost_echaos_angle(a0)
 		beq.s	ECha_Rise
-		addi.w	#$20,echa_angle(a0) ; move emeralds around the centre
+		addi.w	#$20,ost_echaos_angle(a0) ; move emeralds around the centre
 
 	ECha_Rise:
-		cmpi.w	#$140,echa_origY(a0)
+		cmpi.w	#$140,ost_echaos_y_start(a0)
 		beq.s	ECha_End
-		subq.w	#1,echa_origY(a0) ; make circle rise
+		subq.w	#1,ost_echaos_y_start(a0) ; make circle rise
 
 ECha_End:
 		rts	

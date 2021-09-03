@@ -27,7 +27,7 @@ CSon_Main:	; Routine 0
 		move.w	#$400,ost_y_vel(a0) ; make Sonic fall from above
 
 CSon_ChkLand:	; Routine 2
-		cmpi.w	#$1A0,ost_y_pos(a0)	; has Sonic landed yet?
+		cmpi.w	#$1A0,ost_y_pos(a0) ; has Sonic landed yet?
 		bne.s	CSon_ShowFall	; if not, branch
 
 		addq.b	#2,ost_routine(a0)

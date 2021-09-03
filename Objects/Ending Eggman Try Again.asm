@@ -14,7 +14,7 @@ EEgg_Index:	index *,,2
 		ptr EEgg_Juggle
 		ptr EEgg_Wait
 
-eegg_time:	equ $30		; time between juggle motions
+ost_eeggman_wait_time:	equ $30	; time between juggle motions (2 bytes)
 ; ===========================================================================
 
 EEgg_Main:	; Routine 0
@@ -51,17 +51,17 @@ EEgg_Juggle:	; Routine 4
 		moveq	#5,d1
 
 @emeraldloop:
-		move.b	d0,$3E(a1)
+		move.b	d0,ost_ectry_speed(a1)
 		move.w	d0,d2
 		asl.w	#3,d2
 		add.b	d2,ost_angle(a1)
 		lea	$40(a1),a1
 		dbf	d1,@emeraldloop
 		addq.b	#1,ost_frame(a0)
-		move.w	#112,eegg_time(a0)
+		move.w	#112,ost_eeggman_wait_time(a0)
 
 EEgg_Wait:	; Routine 6
-		subq.w	#1,eegg_time(a0) ; decrement timer
+		subq.w	#1,ost_eeggman_wait_time(a0) ; decrement timer
 		bpl.s	@nochg		; branch if time remains
 		bchg	#0,ost_anim(a0)
 		move.b	#id_EEgg_Animate,ost_routine(a0) ; goto EEgg_Animate next
