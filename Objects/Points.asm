@@ -2,6 +2,7 @@
 ; Object 29 - points that appear when you destroy something
 ; ---------------------------------------------------------------------------
 
+Points:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Poi_Index(pc,d0.w),d1

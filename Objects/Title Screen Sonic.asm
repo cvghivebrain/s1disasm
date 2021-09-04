@@ -2,6 +2,7 @@
 ; Object 0E - Sonic on the title screen
 ; ---------------------------------------------------------------------------
 
+TitleSonic:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	TSon_Index(pc,d0.w),d1

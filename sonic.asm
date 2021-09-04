@@ -561,7 +561,7 @@ ErrorWaitForC:
 
 ; ===========================================================================
 
-Art_Text:	incbin	"artunc\menutext.bin" ; text used in level select and debug mode
+Art_Text:	incbin	"Graphics\Level Select & Debug Text.bin" ; text used in level select and debug mode
 		even
 
 ; ===========================================================================
@@ -10067,221 +10067,55 @@ loc_8B48:
 
 ; ===========================================================================
 
-BallHog:	include "Objects\Ball Hog.asm"
-Cannonball:	include "Objects\Ball Hog Cannonball.asm"
+		include "Objects\Ball Hog.asm" ; BallHog
+		include "Objects\Ball Hog Cannonball.asm" ; Cannonball
 
-MissileDissolve:
-		include "Objects\Buzz Bomber Missile Vanishing.asm"
-; ===========================================================================
+		include "Objects\Buzz Bomber Missile Vanishing.asm" ; MissileDissolve
 
-; ---------------------------------------------------------------------------
-; Object 27 - explosion	from a destroyed enemy or monitor
-; ---------------------------------------------------------------------------
-
-ExplosionItem:
-		moveq	#0,d0
-		move.b	ost_routine(a0),d0
-		move.w	ExItem_Index(pc,d0.w),d1
-		jmp	ExItem_Index(pc,d1.w)
-; ===========================================================================
-ExItem_Index:	index *,,2
-		ptr ExItem_Animal
-		ptr ExItem_Main
-		ptr ExItem_Animate
-; ===========================================================================
-
-ExItem_Animal:	; Routine 0
-		addq.b	#2,ost_routine(a0)
-		bsr.w	FindFreeObj
-		bne.s	ExItem_Main
-		move.b	#id_Animals,0(a1) ; load animal object
-		move.w	ost_x_pos(a0),ost_x_pos(a1)
-		move.w	ost_y_pos(a0),ost_y_pos(a1)
-		move.w	ost_enemy_combo(a0),ost_enemy_combo(a1)
-
-ExItem_Main:	; Routine 2
-		addq.b	#2,ost_routine(a0)
-		move.l	#Map_ExplodeItem,ost_mappings(a0)
-		move.w	#tile_Nem_Explode,ost_tile(a0)
-		move.b	#render_rel,ost_render(a0)
-		move.b	#1,ost_priority(a0)
-		move.b	#0,ost_col_type(a0)
-		move.b	#$C,ost_actwidth(a0)
-		move.b	#7,ost_anim_time(a0) ; set frame duration to 7 frames
-		move.b	#0,ost_frame(a0)
-		sfx	sfx_BreakItem,0,0,0 ; play breaking enemy sound
-
-ExItem_Animate:	; Routine 4 (2 for ExplosionBomb)
-		subq.b	#1,ost_anim_time(a0) ; subtract 1 from frame duration
-		bpl.s	@display
-		move.b	#7,ost_anim_time(a0) ; set frame duration to 7 frames
-		addq.b	#1,ost_frame(a0) ; next frame
-		cmpi.b	#5,ost_frame(a0) ; is the final frame (05) displayed?
-		beq.w	DeleteObject	; if yes, branch
-
-	@display:
-		bra.w	DisplaySprite
-; ===========================================================================
-; ---------------------------------------------------------------------------
-; Object 3F - explosion	from a destroyed boss, bomb or cannonball
-; ---------------------------------------------------------------------------
-
-ExplosionBomb:
-		moveq	#0,d0
-		move.b	ost_routine(a0),d0
-		move.w	ExBom_Index(pc,d0.w),d1
-		jmp	ExBom_Index(pc,d1.w)
-; ===========================================================================
-ExBom_Index:	index *,,2
-		ptr ExBom_Main
-		ptr ExItem_Animate
-; ===========================================================================
-
-ExBom_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
-		move.l	#Map_ExplodeBomb,ost_mappings(a0)
-		move.w	#tile_Nem_Explode,ost_tile(a0)
-		move.b	#render_rel,ost_render(a0)
-		move.b	#1,ost_priority(a0)
-		move.b	#0,ost_col_type(a0)
-		move.b	#$C,ost_actwidth(a0)
-		move.b	#7,ost_anim_time(a0)
-		move.b	#0,ost_frame(a0)
-		sfx	sfx_Bomb,1,0,0	; play exploding bomb sound
-
+		include "Objects\Explosions.asm" ; ExplosionItem & ExplosionBomb
 Ani_Hog:	include "Animations\Ball Hog.asm"
 Map_Hog:	include "Mappings\Ball Hog.asm"
 Map_MisDissolve:include "Mappings\Buzz Bomber Missile Vanishing.asm"
 Map_ExplodeItem:include "Mappings\Explosions.asm"
 ;Map_ExplodeBomb: - see Mappings\Explosions.asm
 
-Animals:	include "Objects\Animals.asm"
-Points:		include "Objects\Points.asm"
+		include "Objects\Animals.asm" ; Animals
+		include "Objects\Points.asm" ; Points
 Map_Animal1:	include "Mappings\Animals 1.asm"
 Map_Animal2:	include "Mappings\Animals 2.asm"
 Map_Animal3:	include "Mappings\Animals 3.asm"
 Map_Points:	include "Mappings\Points.asm"
 
-Crabmeat:	include "Objects\Crabmeat.asm"
+		include "Objects\Crabmeat.asm" ; Crabmeat
 Ani_Crab:	include "Animations\Crabmeat.asm"
 Map_Crab:	include "Mappings\Crabmeat.asm"
 
-BuzzBomber:	include "Objects\Buzz Bomber.asm"
-Missile:	include "Objects\Buzz Bomber Missile.asm"
+		include "Objects\Buzz Bomber.asm" ; BuzzBomber
+		include "Objects\Buzz Bomber Missile.asm" ; Missile
 Ani_Buzz:	include "Animations\Buzz Bomber.asm"
 Ani_Missile:	include "Animations\Buzz Bomber Missile.asm"
 Map_Buzz:	include "Mappings\Buzz Bomber.asm"
 Map_Missile:	include "Mappings\Buzz Bomber Missile.asm"
 
-Rings:		include "Objects\Ring.asm"
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-CollectRing:
-		addq.w	#1,(v_rings).w	; add 1 to rings
-		ori.b	#1,(f_ringcount).w ; update the rings counter
-		move.w	#sfx_Ring,d0	; play ring sound
-		cmpi.w	#100,(v_rings).w ; do you have < 100 rings?
-		bcs.s	@playsnd	; if yes, branch
-		bset	#1,(v_lifecount).w ; update lives counter
-		beq.s	@got100
-		cmpi.w	#200,(v_rings).w ; do you have < 200 rings?
-		bcs.s	@playsnd	; if yes, branch
-		bset	#2,(v_lifecount).w ; update lives counter
-		bne.s	@playsnd
-
-	@got100:
-		addq.b	#1,(v_lives).w	; add 1 to the number of lives you have
-		addq.b	#1,(f_lifecount).w ; update the lives counter
-		move.w	#bgm_ExtraLife,d0 ; play extra life music
-
-	@playsnd:
-		jmp	(PlaySound_Special).l
-; End of function CollectRing
-
-RingLoss:	include "Objects\Ring Loss.asm"
-GiantRing:	include "Objects\Giant Ring.asm"
-RingFlash:	include "Objects\Giant Ring Flash.asm"
+		include "Objects\Rings.asm" ; Rings
+		include "Objects\_CollectRing.asm"
+		include "Objects\Ring Loss.asm" ; RingLoss
+		include "Objects\Giant Ring.asm" ; GiantRing
+		include "Objects\Giant Ring Flash.asm" ; RingFlash
 Ani_Ring:	include "Animations\Ring.asm"
 Map_Ring:	include "Mappings\Ring.asm"
 Map_GRing:	include "Mappings\Giant Ring.asm"
 Map_Flash:	include "Mappings\Giant Ring Flash.asm"
 
-Monitor:	include "Objects\Monitors.asm"
-PowerUp:	include "Objects\Monitor Contents.asm"
-; ---------------------------------------------------------------------------
-; Subroutine to	make the sides of a monitor solid
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Mon_SolidSides:
-		lea	(v_player).w,a1
-		move.w	ost_x_pos(a1),d0
-		sub.w	ost_x_pos(a0),d0
-		add.w	d1,d0
-		bmi.s	loc_A4E6
-		move.w	d1,d3
-		add.w	d3,d3
-		cmp.w	d3,d0
-		bhi.s	loc_A4E6
-		move.b	ost_height(a1),d3
-		ext.w	d3
-		add.w	d3,d2
-		move.w	ost_y_pos(a1),d3
-		sub.w	ost_y_pos(a0),d3
-		add.w	d2,d3
-		bmi.s	loc_A4E6
-		add.w	d2,d2
-		cmp.w	d2,d3
-		bcc.s	loc_A4E6
-		tst.b	(f_lockmulti).w
-		bmi.s	loc_A4E6
-		cmpi.b	#6,(v_player+ost_routine).w
-		bcc.s	loc_A4E6
-		tst.w	(v_debuguse).w
-		bne.s	loc_A4E6
-		cmp.w	d0,d1
-		bcc.s	loc_A4DC
-		add.w	d1,d1
-		sub.w	d1,d0
-
-loc_A4DC:
-		cmpi.w	#$10,d3
-		bcs.s	loc_A4EA
-
-loc_A4E2:
-		moveq	#1,d1
-		rts	
-; ===========================================================================
-
-loc_A4E6:
-		moveq	#0,d1
-		rts	
-; ===========================================================================
-
-loc_A4EA:
-		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
-		addq.w	#4,d1
-		move.w	d1,d2
-		add.w	d2,d2
-		add.w	ost_x_pos(a1),d1
-		sub.w	ost_x_pos(a0),d1
-		bmi.s	loc_A4E2
-		cmp.w	d2,d1
-		bcc.s	loc_A4E2
-		moveq	#-1,d1
-		rts	
-; End of function Obj26_SolidSides
+		include "Objects\Monitors (1).asm" ; Monitor
+		include "Objects\Monitor Contents.asm" ; PowerUp
+		include "Objects\Monitors (2).asm" ; Mon_SolidSides
 
 Ani_Monitor:	include "Animations\Monitors.asm"
 Map_Monitor:	include "Mappings\Monitors.asm"
 
-TitleSonic:	include "Objects\Title Screen Sonic.asm"
-PSBTM:		include "Objects\Title Screen Press Start & TM.asm"
+		include "Objects\Title Screen Sonic.asm" ; TitleSonic
+		include "Objects\Title Screen Press Start & TM.asm" ; PSBTM
 
 Ani_TSon:	include "Animations\Title Screen Sonic.asm"
 Ani_PSBTM:	include "Animations\Title Screen Press Start.asm"
@@ -14740,9 +14574,9 @@ Hud_ClrLivesLoop:
 		bra.s	loc_1CABC
 ; End of function Hud_Lives
 
-Art_Hud:	incbin	"artunc\HUD Numbers.bin" ; 8x16 pixel numbers on HUD
+Art_Hud:	incbin	"Graphics\HUD Numbers.bin" ; 8x16 pixel numbers on HUD
 		even
-Art_LivesNums:	incbin	"artunc\Lives Counter Numbers.bin" ; 8x8 pixel numbers on lives counter
+Art_LivesNums:	incbin	"Graphics\Lives Counter Numbers.bin" ; 8x8 pixel numbers on lives counter
 		even
 
 ; ---------------------------------------------------------------------------
@@ -15196,28 +15030,28 @@ ArtLoadCues:	include "Pattern Load Cues.asm"
 
 		align	$200,$FF
 		if Revision=0
-Nem_SegaLogo:	incbin	"artnem\Sega Logo.bin"	; large Sega logo
+Nem_SegaLogo:	incbin	"Graphics - Compressed\Sega Logo.nem" ; large Sega logo
 		even
 Eni_SegaLogo:	incbin	"tilemaps\Sega Logo.bin" ; large Sega logo (mappings)
 		even
 		else
 			dcb.b	$300,$FF
-	Nem_SegaLogo:	incbin	"artnem\Sega Logo (JP1).bin" ; large Sega logo
+	Nem_SegaLogo:	incbin	"Graphics - Compressed\Sega Logo (JP1).nem" ; large Sega logo
 			even
 	Eni_SegaLogo:	incbin	"tilemaps\Sega Logo (JP1).bin" ; large Sega logo (mappings)
 			even
 		endc
 Eni_Title:	incbin	"tilemaps\Title Screen.bin" ; title screen foreground (mappings)
 		even
-Nem_TitleFg:	incbin	"artnem\Title Screen Foreground.bin"
+Nem_TitleFg:	incbin	"Graphics - Compressed\Title Screen Foreground.nem"
 		even
-Nem_TitleSonic:	incbin	"artnem\Title Screen Sonic.bin"
+Nem_TitleSonic:	incbin	"Graphics - Compressed\Title Screen Sonic.nem"
 		even
-Nem_TitleTM:	incbin	"artnem\Title Screen TM.bin"
+Nem_TitleTM:	incbin	"Graphics - Compressed\Title Screen TM.nem"
 		even
 Eni_JapNames:	incbin	"tilemaps\Hidden Japanese Credits.bin" ; Japanese credits (mappings)
 		even
-Nem_JapNames:	incbin	"artnem\Hidden Japanese Credits.bin"
+Nem_JapNames:	incbin	"Graphics - Compressed\Hidden Japanese Credits.nem"
 		even
 
 Map_Sonic:	include "Mappings\Sonic.asm"
@@ -15226,32 +15060,30 @@ SonicDynPLC:	include "Mappings\Sonic DPLCs.asm"
 ; ---------------------------------------------------------------------------
 ; Uncompressed graphics	- Sonic
 ; ---------------------------------------------------------------------------
-Art_Sonic:	incbin	"artunc\Sonic.bin"	; Sonic
+Art_Sonic:	incbin	"Graphics\Sonic.bin" ; Sonic
 		even
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - various
 ; ---------------------------------------------------------------------------
 		if Revision=0
-Nem_Smoke:	incbin	"artnem\Unused - Smoke.bin"
-		even
-Nem_SyzSparkle:	incbin	"artnem\Unused - SYZ Sparkles.bin"
-		even
-		else
+Nem_Smoke:		incbin	"Graphics - Compressed\Unused - Smoke.nem"
+			even
+Nem_SyzSparkle:		incbin	"Graphics - Compressed\Unused - SYZ Sparkles.nem"
+			even
 		endc
-Nem_Shield:	incbin	"artnem\Shield.bin"
+Nem_Shield:	incbin	"Graphics - Compressed\Shield.nem"
 		even
-Nem_Stars:	incbin	"artnem\Invincibility Stars.bin"
+Nem_Stars:	incbin	"Graphics - Compressed\Invincibility.nem"
 		even
 		if Revision=0
-Nem_LzSonic:	incbin	"artnem\Unused - LZ Sonic.bin" ; Sonic holding his breath
-		even
-Nem_UnkFire:	incbin	"artnem\Unused - Fireball.bin" ; unused fireball
-		even
-Nem_Warp:	incbin	"artnem\Unused - SStage Flash.bin" ; entry to special stage flash
-		even
-Nem_Goggle:	incbin	"artnem\Unused - Goggles.bin" ; unused goggles
-		even
-		else
+Nem_LzSonic:		incbin	"Graphics - Compressed\Unused - LZ Sonic Holding Breath.nem" ; Sonic holding his breath
+			even
+Nem_UnkFire:		incbin	"Graphics - Compressed\Unused - Fireball.nem" ; unused fireball
+			even
+Nem_Warp:		incbin	"Graphics - Compressed\Unused - Special Stage Warp.nem" ; entry to special stage flash
+			even
+Nem_Goggle:		incbin	"Graphics - Compressed\Unused - Goggles.nem" ; unused goggles
+			even
 		endc
 
 Map_SSWalls:	include "Mappings\Special Stage Walls.asm"
@@ -15259,368 +15091,367 @@ Map_SSWalls:	include "Mappings\Special Stage Walls.asm"
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - special stage
 ; ---------------------------------------------------------------------------
-Nem_SSWalls:	incbin	"artnem\Special Walls.bin" ; special stage walls
+Nem_SSWalls:	incbin	"Graphics - Compressed\Special Stage Walls.nem" ; special stage walls
 		even
 Eni_SSBg1:	incbin	"tilemaps\SS Background 1.bin" ; special stage background (mappings)
 		even
-Nem_SSBgFish:	incbin	"artnem\Special Birds & Fish.bin" ; special stage birds and fish background
+Nem_SSBgFish:	incbin	"Graphics - Compressed\Special Stage Birds & Fish.nem" ; special stage birds and fish background
 		even
 Eni_SSBg2:	incbin	"tilemaps\SS Background 2.bin" ; special stage background (mappings)
 		even
-Nem_SSBgCloud:	incbin	"artnem\Special Clouds.bin" ; special stage clouds background
+Nem_SSBgCloud:	incbin	"Graphics - Compressed\Special Stage Clouds.nem" ; special stage clouds background
 		even
-Nem_SSGOAL:	incbin	"artnem\Special GOAL.bin" ; special stage GOAL block
+Nem_SSGOAL:	incbin	"Graphics - Compressed\Special Stage GOAL.nem" ; special stage GOAL block
 		even
-Nem_SSRBlock:	incbin	"artnem\Special R.bin"	; special stage R block
+Nem_SSRBlock:	incbin	"Graphics - Compressed\Special Stage R.nem" ; special stage R block
 		even
-Nem_SS1UpBlock:	incbin	"artnem\Special 1UP.bin" ; special stage 1UP block
+Nem_SS1UpBlock:	incbin	"Graphics - Compressed\Special Stage 1UP.nem" ; special stage 1UP block
 		even
-Nem_SSEmStars:	incbin	"artnem\Special Emerald Twinkle.bin" ; special stage stars from a collected emerald
+Nem_SSEmStars:	incbin	"Graphics - Compressed\Special Stage Emerald Twinkle.nem" ; special stage stars from a collected emerald
 		even
-Nem_SSRedWhite:	incbin	"artnem\Special Red-White.bin" ; special stage red/white block
+Nem_SSRedWhite:	incbin	"Graphics - Compressed\Special Stage Red-White.nem" ; special stage red/white block
 		even
-Nem_SSZone1:	incbin	"artnem\Special ZONE1.bin" ; special stage ZONE1 block
+Nem_SSZone1:	incbin	"Graphics - Compressed\Special Stage ZONE1.nem" ; special stage ZONE1 block
 		even
-Nem_SSZone2:	incbin	"artnem\Special ZONE2.bin" ; ZONE2 block
+Nem_SSZone2:	incbin	"Graphics - Compressed\Special Stage ZONE2.nem" ; ZONE2 block
 		even
-Nem_SSZone3:	incbin	"artnem\Special ZONE3.bin" ; ZONE3 block
+Nem_SSZone3:	incbin	"Graphics - Compressed\Special Stage ZONE3.nem" ; ZONE3 block
 		even
-Nem_SSZone4:	incbin	"artnem\Special ZONE4.bin" ; ZONE4 block
+Nem_SSZone4:	incbin	"Graphics - Compressed\Special Stage ZONE4.nem" ; ZONE4 block
 		even
-Nem_SSZone5:	incbin	"artnem\Special ZONE5.bin" ; ZONE5 block
+Nem_SSZone5:	incbin	"Graphics - Compressed\Special Stage ZONE5.nem" ; ZONE5 block
 		even
-Nem_SSZone6:	incbin	"artnem\Special ZONE6.bin" ; ZONE6 block
+Nem_SSZone6:	incbin	"Graphics - Compressed\Special Stage ZONE6.nem" ; ZONE6 block
 		even
-Nem_SSUpDown:	incbin	"artnem\Special UP-DOWN.bin" ; special stage UP/DOWN block
+Nem_SSUpDown:	incbin	"Graphics - Compressed\Special Stage UP-DOWN.nem" ; special stage UP/DOWN block
 		even
-Nem_SSEmerald:	incbin	"artnem\Special Emeralds.bin" ; special stage chaos emeralds
+Nem_SSEmerald:	incbin	"Graphics - Compressed\Special Stage Emeralds.nem" ; special stage chaos emeralds
 		even
-Nem_SSGhost:	incbin	"artnem\Special Ghost.bin" ; special stage ghost block
+Nem_SSGhost:	incbin	"Graphics - Compressed\Special Stage Ghost.nem" ; special stage ghost block
 		even
-Nem_SSWBlock:	incbin	"artnem\Special W.bin"	; special stage W block
+Nem_SSWBlock:	incbin	"Graphics - Compressed\Special Stage W.nem" ; special stage W block
 		even
-Nem_SSGlass:	incbin	"artnem\Special Glass.bin" ; special stage destroyable glass block
+Nem_SSGlass:	incbin	"Graphics - Compressed\Special Stage Glass.nem" ; special stage destroyable glass block
 		even
-Nem_ResultEm:	incbin	"artnem\Special Result Emeralds.bin" ; chaos emeralds on special stage results screen
+Nem_ResultEm:	incbin	"Graphics - Compressed\Special Stage Result Emeralds.nem" ; chaos emeralds on special stage results screen
 		even
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - GHZ stuff
 ; ---------------------------------------------------------------------------
-Nem_Stalk:	incbin	"artnem\GHZ Flower Stalk.bin"
+Nem_Stalk:	incbin	"Graphics - Compressed\GHZ Flower Stalk.nem"
 		even
-Nem_Swing:	incbin	"artnem\GHZ Swinging Platform.bin"
+Nem_Swing:	incbin	"Graphics - Compressed\GHZ Swinging Platform.nem"
 		even
-Nem_Bridge:	incbin	"artnem\GHZ Bridge.bin"
+Nem_Bridge:	incbin	"Graphics - Compressed\GHZ Bridge.nem"
 		even
-Nem_GhzUnkBlock:incbin	"artnem\Unused - GHZ Block.bin"
+Nem_GhzUnkBlock:incbin	"Graphics - Compressed\Unused - GHZ Block.nem"
 		even
-Nem_Ball:	incbin	"artnem\GHZ Giant Ball.bin"
+Nem_Ball:	incbin	"Graphics - Compressed\GHZ Giant Ball.nem"
 		even
-Nem_Spikes:	incbin	"artnem\Spikes.bin"
+Nem_Spikes:	incbin	"Graphics - Compressed\Spikes.nem"
 		even
-Nem_GhzLog:	incbin	"artnem\Unused - GHZ Log.bin"
+Nem_GhzLog:	incbin	"Graphics - Compressed\Unused - GHZ Log.nem"
 		even
-Nem_SpikePole:	incbin	"artnem\GHZ Spiked Log.bin"
+Nem_SpikePole:	incbin	"Graphics - Compressed\GHZ Spiked Helix Pole.nem"
 		even
-Nem_PplRock:	incbin	"artnem\GHZ Purple Rock.bin"
+Nem_PplRock:	incbin	"Graphics - Compressed\GHZ Purple Rock.nem"
 		even
-Nem_GhzWall1:	incbin	"artnem\GHZ Breakable Wall.bin"
+Nem_GhzWall1:	incbin	"Graphics - Compressed\GHZ Smashable Wall.nem"
 		even
-Nem_GhzWall2:	incbin	"artnem\GHZ Edge Wall.bin"
+Nem_GhzWall2:	incbin	"Graphics - Compressed\GHZ Walls.nem"
 		even
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - LZ stuff
 ; ---------------------------------------------------------------------------
-Nem_Water:	incbin	"artnem\LZ Water Surface.bin"
+Nem_Water:	incbin	"Graphics - Compressed\LZ Water Surface.nem"
 		even
-Nem_Splash:	incbin	"artnem\LZ Water & Splashes.bin"
+Nem_Splash:	incbin	"Graphics - Compressed\LZ Waterfall & Splashes.nem"
 		even
-Nem_LzSpikeBall:incbin	"artnem\LZ Spiked Ball & Chain.bin"
+Nem_LzSpikeBall:incbin	"Graphics - Compressed\LZ Spiked Ball & Chain.nem"
 		even
-Nem_FlapDoor:	incbin	"artnem\LZ Flapping Door.bin"
+Nem_FlapDoor:	incbin	"Graphics - Compressed\LZ Flapping Door.nem"
 		even
-Nem_Bubbles:	incbin	"artnem\LZ Bubbles & Countdown.bin"
+Nem_Bubbles:	incbin	"Graphics - Compressed\LZ Bubbles & Countdown.nem"
 		even
-Nem_LzBlock3:	incbin	"artnem\LZ 32x16 Block.bin"
+Nem_LzBlock3:	incbin	"Graphics - Compressed\LZ 32x16 Block.nem"
 		even
-Nem_LzDoor1:	incbin	"artnem\LZ Vertical Door.bin"
+Nem_LzDoor1:	incbin	"Graphics - Compressed\LZ Vertical Door.nem"
 		even
-Nem_Harpoon:	incbin	"artnem\LZ Harpoon.bin"
+Nem_Harpoon:	incbin	"Graphics - Compressed\LZ Harpoon.nem"
 		even
-Nem_LzPole:	incbin	"artnem\LZ Breakable Pole.bin"
+Nem_LzPole:	incbin	"Graphics - Compressed\LZ Breakable Pole.nem"
 		even
-Nem_LzDoor2:	incbin	"artnem\LZ Horizontal Door.bin"
+Nem_LzDoor2:	incbin	"Graphics - Compressed\LZ Horizontal Door.nem"
 		even
-Nem_LzWheel:	incbin	"artnem\LZ Wheel.bin"
+Nem_LzWheel:	incbin	"Graphics - Compressed\LZ Wheel.nem"
 		even
-Nem_Gargoyle:	incbin	"artnem\LZ Gargoyle & Fireball.bin"
+Nem_Gargoyle:	incbin	"Graphics - Compressed\LZ Gargoyle & Fireball.nem"
 		even
-Nem_LzBlock2:	incbin	"artnem\LZ Blocks.bin"
+Nem_LzBlock2:	incbin	"Graphics - Compressed\LZ Blocks.nem"
 		even
-Nem_LzPlatfm:	incbin	"artnem\LZ Rising Platform.bin"
+Nem_LzPlatfm:	incbin	"Graphics - Compressed\LZ Rising Platform.nem"
 		even
-Nem_Cork:	incbin	"artnem\LZ Cork.bin"
+Nem_Cork:	incbin	"Graphics - Compressed\LZ Cork.nem"
 		even
-Nem_LzBlock1:	incbin	"artnem\LZ 32x32 Block.bin"
+Nem_LzBlock1:	incbin	"Graphics - Compressed\LZ 32x32 Block.nem"
 		even
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - MZ stuff
 ; ---------------------------------------------------------------------------
-Nem_MzMetal:	incbin	"artnem\MZ Metal Blocks.bin"
+Nem_MzMetal:	incbin	"Graphics - Compressed\MZ Metal Blocks.nem"
 		even
-Nem_MzSwitch:	incbin	"artnem\MZ Switch.bin"
+Nem_MzSwitch:	incbin	"Graphics - Compressed\MZ Switch.nem"
 		even
-Nem_MzGlass:	incbin	"artnem\MZ Green Glass Block.bin"
+Nem_MzGlass:	incbin	"Graphics - Compressed\MZ Green Glass Block.nem"
 		even
-Nem_UnkGrass:	incbin	"artnem\Unused - Grass.bin"
+Nem_UnkGrass:	incbin	"Graphics - Compressed\Unused - MZ Grass.nem"
 		even
-Nem_Fireball:	incbin	"artnem\Fireballs.bin"
+Nem_Fireball:	incbin	"Graphics - Compressed\Fireballs.nem"
 		even
-Nem_Lava:	incbin	"artnem\MZ Lava.bin"
+Nem_Lava:	incbin	"Graphics - Compressed\MZ Lava.nem"
 		even
-Nem_MzBlock:	incbin	"artnem\MZ Green Pushable Block.bin"
+Nem_MzBlock:	incbin	"Graphics - Compressed\MZ Green Pushable Block.nem"
 		even
-Nem_MzUnkBlock:	incbin	"artnem\Unused - MZ Background.bin"
+Nem_MzUnkBlock:	incbin	"Graphics - Compressed\Unused - MZ Background.nem"
 		even
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - SLZ stuff
 ; ---------------------------------------------------------------------------
-Nem_Seesaw:	incbin	"artnem\SLZ Seesaw.bin"
+Nem_Seesaw:	incbin	"Graphics - Compressed\SLZ Seesaw.nem"
 		even
-Nem_SlzSpike:	incbin	"artnem\SLZ Little Spikeball.bin"
+Nem_SlzSpike:	incbin	"Graphics - Compressed\SLZ Little Spikeball.nem"
 		even
-Nem_Fan:	incbin	"artnem\SLZ Fan.bin"
+Nem_Fan:	incbin	"Graphics - Compressed\SLZ Fan.nem"
 		even
-Nem_SlzWall:	incbin	"artnem\SLZ Breakable Wall.bin"
+Nem_SlzWall:	incbin	"Graphics - Compressed\SLZ Breakable Wall.nem"
 		even
-Nem_Pylon:	incbin	"artnem\SLZ Pylon.bin"
+Nem_Pylon:	incbin	"Graphics - Compressed\SLZ Pylon.nem"
 		even
-Nem_SlzSwing:	incbin	"artnem\SLZ Swinging Platform.bin"
+Nem_SlzSwing:	incbin	"Graphics - Compressed\SLZ Swinging Platform.nem"
 		even
-Nem_SlzBlock:	incbin	"artnem\SLZ 32x32 Block.bin"
+Nem_SlzBlock:	incbin	"Graphics - Compressed\SLZ 32x32 Block.nem"
 		even
-Nem_SlzCannon:	incbin	"artnem\SLZ Cannon.bin"
+Nem_SlzCannon:	incbin	"Graphics - Compressed\SLZ Cannon.nem"
 		even
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - SYZ stuff
 ; ---------------------------------------------------------------------------
-Nem_Bumper:	incbin	"artnem\SYZ Bumper.bin"
+Nem_Bumper:	incbin	"Graphics - Compressed\SYZ Bumper.nem"
 		even
-Nem_SmallSpike:	incbin	"artnem\SYZ Small Spikeball.bin"
+Nem_SmallSpike:	incbin	"Graphics - Compressed\SYZ Small Spikeball.nem"
 		even
-Nem_LzSwitch:	incbin	"artnem\Switch.bin"
+Nem_LzSwitch:	incbin	"Graphics - Compressed\Switch.nem"
 		even
-Nem_BigSpike:	incbin	"artnem\SYZ Large Spikeball.bin"
+Nem_BigSpike:	incbin	"Graphics - Compressed\SYZ Large Spikeball.nem"
 		even
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - SBZ stuff
 ; ---------------------------------------------------------------------------
-Nem_SbzWheel1:	incbin	"artnem\SBZ Running Disc.bin"
+Nem_SbzWheel1:	incbin	"Graphics - Compressed\SBZ Running Disc.nem"
 		even
-Nem_SbzWheel2:	incbin	"artnem\SBZ Junction Wheel.bin"
+Nem_SbzWheel2:	incbin	"Graphics - Compressed\SBZ Junction Wheel.nem"
 		even
-Nem_Cutter:	incbin	"artnem\SBZ Pizza Cutter.bin"
+Nem_Cutter:	incbin	"Graphics - Compressed\SBZ Pizza Cutter.nem"
 		even
-Nem_Stomper:	incbin	"artnem\SBZ Stomper.bin"
+Nem_Stomper:	incbin	"Graphics - Compressed\SBZ Stomper.nem"
 		even
-Nem_SpinPform:	incbin	"artnem\SBZ Spinning Platform.bin"
+Nem_SpinPform:	incbin	"Graphics - Compressed\SBZ Spinning Platform.nem"
 		even
-Nem_TrapDoor:	incbin	"artnem\SBZ Trapdoor.bin"
+Nem_TrapDoor:	incbin	"Graphics - Compressed\SBZ Trapdoor.nem"
 		even
-Nem_SbzFloor:	incbin	"artnem\SBZ Collapsing Floor.bin"
+Nem_SbzFloor:	incbin	"Graphics - Compressed\SBZ Collapsing Floor.nem"
 		even
-Nem_Electric:	incbin	"artnem\SBZ Electrocuter.bin"
+Nem_Electric:	incbin	"Graphics - Compressed\SBZ Electrocuter.nem"
 		even
-Nem_SbzBlock:	incbin	"artnem\SBZ Vanishing Block.bin"
+Nem_SbzBlock:	incbin	"Graphics - Compressed\SBZ Vanishing Block.nem"
 		even
-Nem_FlamePipe:	incbin	"artnem\SBZ Flaming Pipe.bin"
+Nem_FlamePipe:	incbin	"Graphics - Compressed\SBZ Flaming Pipe.nem"
 		even
-Nem_SbzDoor1:	incbin	"artnem\SBZ Small Vertical Door.bin"
+Nem_SbzDoor1:	incbin	"Graphics - Compressed\SBZ Small Vertical Door.nem"
 		even
-Nem_SlideFloor:	incbin	"artnem\SBZ Sliding Floor Trap.bin"
+Nem_SlideFloor:	incbin	"Graphics - Compressed\SBZ Sliding Floor Trap.nem"
 		even
-Nem_SbzDoor2:	incbin	"artnem\SBZ Large Horizontal Door.bin"
+Nem_SbzDoor2:	incbin	"Graphics - Compressed\SBZ Large Horizontal Door.nem"
 		even
-Nem_Girder:	incbin	"artnem\SBZ Crushing Girder.bin"
+Nem_Girder:	incbin	"Graphics - Compressed\SBZ Crushing Girder.nem"
 		even
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - enemies
 ; ---------------------------------------------------------------------------
-Nem_BallHog:	incbin	"artnem\Enemy Ball Hog.bin"
+Nem_BallHog:	incbin	"Graphics - Compressed\Ball Hog.nem"
 		even
-Nem_Crabmeat:	incbin	"artnem\Enemy Crabmeat.bin"
+Nem_Crabmeat:	incbin	"Graphics - Compressed\Crabmeat.nem"
 		even
-Nem_Buzz:	incbin	"artnem\Enemy Buzz Bomber.bin"
+Nem_Buzz:	incbin	"Graphics - Compressed\Buzz Bomber.nem"
 		even
-Nem_UnkExplode:	incbin	"artnem\Unused - Explosion.bin"
+Nem_UnkExplode:	incbin	"Graphics - Compressed\Unused - Explosion.nem"
 		even
-Nem_Burrobot:	incbin	"artnem\Enemy Burrobot.bin"
+Nem_Burrobot:	incbin	"Graphics - Compressed\Burrobot.nem"
 		even
-Nem_Chopper:	incbin	"artnem\Enemy Chopper.bin"
+Nem_Chopper:	incbin	"Graphics - Compressed\Chopper.nem"
 		even
-Nem_Jaws:	incbin	"artnem\Enemy Jaws.bin"
+Nem_Jaws:	incbin	"Graphics - Compressed\Jaws.nem"
 		even
-Nem_Roller:	incbin	"artnem\Enemy Roller.bin"
+Nem_Roller:	incbin	"Graphics - Compressed\Roller.nem"
 		even
-Nem_Motobug:	incbin	"artnem\Enemy Motobug.bin"
+Nem_Motobug:	incbin	"Graphics - Compressed\Motobug.nem"
 		even
-Nem_Newtron:	incbin	"artnem\Enemy Newtron.bin"
+Nem_Newtron:	incbin	"Graphics - Compressed\Newtron.nem"
 		even
-Nem_Yadrin:	incbin	"artnem\Enemy Yadrin.bin"
+Nem_Yadrin:	incbin	"Graphics - Compressed\Yadrin.nem"
 		even
-Nem_Batbrain:	incbin	"artnem\Enemy Basaran.bin"
+Nem_Batbrain:	incbin	"Graphics - Compressed\Batbrain.nem"
 		even
-Nem_Splats:	incbin	"artnem\Enemy Splats.bin"
+Nem_Splats:	incbin	"Graphics - Compressed\Unused - Splats Enemy.nem"
 		even
-Nem_Bomb:	incbin	"artnem\Enemy Bomb.bin"
+Nem_Bomb:	incbin	"Graphics - Compressed\Bomb Enemy.nem"
 		even
-Nem_Orbinaut:	incbin	"artnem\Enemy Orbinaut.bin"
+Nem_Orbinaut:	incbin	"Graphics - Compressed\Orbinaut.nem"
 		even
-Nem_Cater:	incbin	"artnem\Enemy Caterkiller.bin"
+Nem_Cater:	incbin	"Graphics - Compressed\Caterkiller.nem"
 		even
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - various
 ; ---------------------------------------------------------------------------
-Nem_TitleCard:	incbin	"artnem\Title Cards.bin"
+Nem_TitleCard:	incbin	"Graphics - Compressed\Title Cards.nem"
 		even
-Nem_Hud:	incbin	"artnem\HUD.bin"	; HUD (rings, time, score)
+Nem_Hud:	incbin	"Graphics - Compressed\HUD.nem"	; HUD (rings, time, score)
 		even
-Nem_Lives:	incbin	"artnem\HUD - Life Counter Icon.bin"
+Nem_Lives:	incbin	"Graphics - Compressed\HUD - Life Counter Icon.nem"
 		even
-Nem_Ring:	incbin	"artnem\Rings.bin"
+Nem_Ring:	incbin	"Graphics - Compressed\Rings.nem"
 		even
-Nem_Monitors:	incbin	"artnem\Monitors.bin"
+Nem_Monitors:	incbin	"Graphics - Compressed\Monitors.nem"
 		even
-Nem_Explode:	incbin	"artnem\Explosion.bin"
+Nem_Explode:	incbin	"Graphics - Compressed\Explosion.nem"
 		even
-Nem_Points:	incbin	"artnem\Points.bin"	; points from destroyed enemy or object
+Nem_Points:	incbin	"Graphics - Compressed\Points.nem" ; points from destroyed enemy or object
 		even
-Nem_GameOver:	incbin	"artnem\Game Over.bin"	; game over / time over
+Nem_GameOver:	incbin	"Graphics - Compressed\Game Over.nem" ; game over / time over
 		even
-Nem_HSpring:	incbin	"artnem\Spring Horizontal.bin"
+Nem_HSpring:	incbin	"Graphics - Compressed\Spring Horizontal.nem"
 		even
-Nem_VSpring:	incbin	"artnem\Spring Vertical.bin"
+Nem_VSpring:	incbin	"Graphics - Compressed\Spring Vertical.nem"
 		even
-Nem_SignPost:	incbin	"artnem\Signpost.bin"	; end of level signpost
+Nem_SignPost:	incbin	"Graphics - Compressed\Signpost.nem" ; end of level signpost
 		even
-Nem_Lamp:	incbin	"artnem\Lamppost.bin"
+Nem_Lamp:	incbin	"Graphics - Compressed\Lamppost.nem"
 		even
-Nem_BigFlash:	incbin	"artnem\Giant Ring Flash.bin"
+Nem_BigFlash:	incbin	"Graphics - Compressed\Giant Ring Flash.nem"
 		even
-Nem_Bonus:	incbin	"artnem\Hidden Bonuses.bin" ; hidden bonuses at end of a level
+Nem_Bonus:	incbin	"Graphics - Compressed\Hidden Bonuses.nem" ; hidden bonuses at end of a level
 		even
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - continue screen
 ; ---------------------------------------------------------------------------
-Nem_ContSonic:	incbin	"artnem\Continue Screen Sonic.bin"
+Nem_ContSonic:	incbin	"Graphics - Compressed\Continue Screen Sonic.nem"
 		even
-Nem_MiniSonic:	incbin	"artnem\Continue Screen Stuff.bin"
+Nem_MiniSonic:	incbin	"Graphics - Compressed\Continue Screen Stuff.nem"
 		even
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - animals
 ; ---------------------------------------------------------------------------
-Nem_Rabbit:	incbin	"artnem\Animal Rabbit.bin"
+Nem_Rabbit:	incbin	"Graphics - Compressed\Animal Rabbit.nem"
 		even
-Nem_Chicken:	incbin	"artnem\Animal Chicken.bin"
+Nem_Chicken:	incbin	"Graphics - Compressed\Animal Chicken.nem"
 		even
-Nem_BlackBird:	incbin	"artnem\Animal Blackbird.bin"
+Nem_BlackBird:	incbin	"Graphics - Compressed\Animal Blackbird.nem"
 		even
-Nem_Seal:	incbin	"artnem\Animal Seal.bin"
+Nem_Seal:	incbin	"Graphics - Compressed\Animal Seal.nem"
 		even
-Nem_Pig:	incbin	"artnem\Animal Pig.bin"
+Nem_Pig:	incbin	"Graphics - Compressed\Animal Pig.nem"
 		even
-Nem_Flicky:	incbin	"artnem\Animal Flicky.bin"
+Nem_Flicky:	incbin	"Graphics - Compressed\Animal Flicky.nem"
 		even
-Nem_Squirrel:	incbin	"artnem\Animal Squirrel.bin"
+Nem_Squirrel:	incbin	"Graphics - Compressed\Animal Squirrel.nem"
 		even
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - primary patterns and block mappings
 ; ---------------------------------------------------------------------------
 Blk16_GHZ:	incbin	"map16\GHZ.bin"
 		even
-Nem_GHZ_1st:	incbin	"artnem\8x8 - GHZ1.bin"	; GHZ primary patterns
+Nem_GHZ_1st:	incbin	"Graphics - Compressed\8x8 - GHZ1.nem" ; GHZ primary patterns
 		even
-Nem_GHZ_2nd:	incbin	"artnem\8x8 - GHZ2.bin"	; GHZ secondary patterns
+Nem_GHZ_2nd:	incbin	"Graphics - Compressed\8x8 - GHZ2.nem" ; GHZ secondary patterns
 		even
 Blk256_GHZ:	incbin	"map256\GHZ.bin"
 		even
 Blk16_LZ:	incbin	"map16\LZ.bin"
 		even
-Nem_LZ:		incbin	"artnem\8x8 - LZ.bin"	; LZ primary patterns
+Nem_LZ:		incbin	"Graphics - Compressed\8x8 - LZ.nem" ; LZ primary patterns
 		even
 Blk256_LZ:	incbin	"map256\LZ.bin"
 		even
 Blk16_MZ:	incbin	"map16\MZ.bin"
 		even
-Nem_MZ:		incbin	"artnem\8x8 - MZ.bin"	; MZ primary patterns
+Nem_MZ:		incbin	"Graphics - Compressed\8x8 - MZ.nem" ; MZ primary patterns
 		even
 Blk256_MZ:	if Revision=0
-		incbin	"map256\MZ.bin"
+			incbin	"map256\MZ.bin"
 		else
-		incbin	"map256\MZ (JP1).bin"
+			incbin	"map256\MZ (JP1).bin"
 		endc
 		even
 Blk16_SLZ:	incbin	"map16\SLZ.bin"
 		even
-Nem_SLZ:	incbin	"artnem\8x8 - SLZ.bin"	; SLZ primary patterns
+Nem_SLZ:	incbin	"Graphics - Compressed\8x8 - SLZ.nem" ; SLZ primary patterns
 		even
 Blk256_SLZ:	incbin	"map256\SLZ.bin"
 		even
 Blk16_SYZ:	incbin	"map16\SYZ.bin"
 		even
-Nem_SYZ:	incbin	"artnem\8x8 - SYZ.bin"	; SYZ primary patterns
+Nem_SYZ:	incbin	"Graphics - Compressed\8x8 - SYZ.nem" ; SYZ primary patterns
 		even
 Blk256_SYZ:	incbin	"map256\SYZ.bin"
 		even
 Blk16_SBZ:	incbin	"map16\SBZ.bin"
 		even
-Nem_SBZ:	incbin	"artnem\8x8 - SBZ.bin"	; SBZ primary patterns
+Nem_SBZ:	incbin	"Graphics - Compressed\8x8 - SBZ.nem" ; SBZ primary patterns
 		even
 Blk256_SBZ:	if Revision=0
-		incbin	"map256\SBZ.bin"
+			incbin	"map256\SBZ.bin"
 		else
-		incbin	"map256\SBZ (JP1).bin"
+			incbin	"map256\SBZ (JP1).bin"
 		endc
 		even
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - bosses and ending sequence
 ; ---------------------------------------------------------------------------
-Nem_Eggman:	incbin	"artnem\Boss - Main.bin"
+Nem_Eggman:	incbin	"Graphics - Compressed\Boss - Main.nem"
 		even
-Nem_Weapons:	incbin	"artnem\Boss - Weapons.bin"
+Nem_Weapons:	incbin	"Graphics - Compressed\Boss - Weapons.nem"
 		even
-Nem_Prison:	incbin	"artnem\Prison Capsule.bin"
+Nem_Prison:	incbin	"Graphics - Compressed\Prison Capsule.nem"
 		even
-Nem_Sbz2Eggman:	incbin	"artnem\Boss - Eggman in SBZ2 & FZ.bin"
+Nem_Sbz2Eggman:	incbin	"Graphics - Compressed\Boss - Eggman in SBZ2 & FZ.nem"
 		even
-Nem_FzBoss:	incbin	"artnem\Boss - Final Zone.bin"
+Nem_FzBoss:	incbin	"Graphics - Compressed\Boss - Final Zone.nem"
 		even
-Nem_FzEggman:	incbin	"artnem\Boss - Eggman after FZ Fight.bin"
+Nem_FzEggman:	incbin	"Graphics - Compressed\Boss - Eggman after FZ Fight.nem"
 		even
-Nem_Exhaust:	incbin	"artnem\Boss - Exhaust Flame.bin"
+Nem_Exhaust:	incbin	"Graphics - Compressed\Boss - Exhaust Flame.nem"
 		even
-Nem_EndEm:	incbin	"artnem\Ending - Emeralds.bin"
+Nem_EndEm:	incbin	"Graphics - Compressed\Ending - Emeralds.nem"
 		even
-Nem_EndSonic:	incbin	"artnem\Ending - Sonic.bin"
+Nem_EndSonic:	incbin	"Graphics - Compressed\Ending - Sonic.nem"
 		even
-Nem_TryAgain:	incbin	"artnem\Ending - Try Again.bin"
+Nem_TryAgain:	incbin	"Graphics - Compressed\Ending - Try Again.nem"
 		even
 Nem_EndEggman:	if Revision=0
-		incbin	"artnem\Unused - Eggman Ending.bin"
-		else
+			incbin	"Graphics - Compressed\Unused - Eggman Ending.nem"
 		endc
 		even
-Kos_EndFlowers:	incbin	"artkos\Flowers at Ending.bin" ; ending sequence animated flowers
+Kos_EndFlowers:	incbin	"Graphics - Compressed\Ending Flowers.kos" ; ending sequence animated flowers
 		even
-Nem_EndFlower:	incbin	"artnem\Ending - Flowers.bin"
+Nem_EndFlower:	incbin	"Graphics - Compressed\Ending - Flowers.nem"
 		even
-Nem_CreditText:	incbin	"artnem\Ending - Credits.bin"
+Nem_CreditText:	incbin	"Graphics - Compressed\Ending - Credits.nem"
 		even
-Nem_EndStH:	incbin	"artnem\Ending - StH Logo.bin"
+Nem_EndStH:	incbin	"Graphics - Compressed\Ending - StH Logo.nem"
 		even
 
 		if Revision=0
-		dcb.b $104,$FF			; why?
+		dcb.b $104,$FF		; why?
 		else
 		dcb.b $40,$FF
 		endc
@@ -15669,19 +15500,19 @@ SS_6:		incbin	"sslayout\6.bin"
 ; ---------------------------------------------------------------------------
 ; Animated uncompressed graphics
 ; ---------------------------------------------------------------------------
-Art_GhzWater:	incbin	"artunc\GHZ Waterfall.bin"
+Art_GhzWater:	incbin	"Graphics\GHZ Waterfall.bin"
 		even
-Art_GhzFlower1:	incbin	"artunc\GHZ Flower Large.bin"
+Art_GhzFlower1:	incbin	"Graphics\GHZ Flower Large.bin"
 		even
-Art_GhzFlower2:	incbin	"artunc\GHZ Flower Small.bin"
+Art_GhzFlower2:	incbin	"Graphics\GHZ Flower Small.bin"
 		even
-Art_MzLava1:	incbin	"artunc\MZ Lava Surface.bin"
+Art_MzLava1:	incbin	"Graphics\MZ Lava Surface.bin"
 		even
-Art_MzLava2:	incbin	"artunc\MZ Lava.bin"
+Art_MzLava2:	incbin	"Graphics\MZ Lava.bin"
 		even
-Art_MzTorch:	incbin	"artunc\MZ Background Torch.bin"
+Art_MzTorch:	incbin	"Graphics\MZ Background Torch.bin"
 		even
-Art_SbzSmoke:	incbin	"artunc\SBZ Background Smoke.bin"
+Art_SbzSmoke:	incbin	"Graphics\SBZ Background Smoke.bin"
 		even
 
 ; ---------------------------------------------------------------------------
@@ -15894,7 +15725,7 @@ Level_End:	incbin	"levels\ending.bin"
 byte_6A320:	dc.b 0,	0, 0, 0
 
 
-Art_BigRing:	incbin	"artunc\Giant Ring.bin"
+Art_BigRing:	incbin	"Graphics\Giant Ring.bin"
 		even
 
 		align	$100,$FF

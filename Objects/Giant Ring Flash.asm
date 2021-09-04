@@ -2,6 +2,7 @@
 ; Object 7C - flash effect when	you collect the	giant ring
 ; ---------------------------------------------------------------------------
 
+RingFlash:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Flash_Index(pc,d0.w),d1

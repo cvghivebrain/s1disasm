@@ -2,6 +2,7 @@
 ; Object 4B - giant ring for entry to special stage
 ; ---------------------------------------------------------------------------
 
+GiantRing:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	GRing_Index(pc,d0.w),d1

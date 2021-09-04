@@ -2,6 +2,7 @@
 ; Object 1F - Crabmeat enemy (GHZ, SYZ)
 ; ---------------------------------------------------------------------------
 
+Crabmeat:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Crab_Index(pc,d0.w),d1

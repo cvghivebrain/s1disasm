@@ -6,6 +6,9 @@
 ;	d2 = height / 2 (when jumping)
 ;	d3 = height / 2 (when walking)
 ;	d4 = x-axis position
+;
+; output:
+;	d4 = collision type: 1 = side collision; -1 = top/bottom collision
 ; ---------------------------------------------------------------------------
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
@@ -41,7 +44,7 @@
 
 SolidObject71:
 		tst.b	ost_solid(a0)
-		beq.w	loc_FAD0
+		beq.w	Solid_ChkEnter2
 		move.w	d1,d2
 		add.w	d2,d2
 		lea	(v_player).w,a1
@@ -109,36 +112,37 @@ SolidObject2F:
 ; ===========================================================================
 
 Solid_ChkEnter:
-		tst.b	ost_render(a0)
-		bpl.w	Solid_Ignore
+		tst.b	ost_render(a0)	; is object onscreen?
+		bpl.w	Solid_Ignore	; if not, branch
 
-loc_FAD0:
+Solid_ChkEnter2:
 		lea	(v_player).w,a1
 		move.w	ost_x_pos(a1),d0
-		sub.w	ost_x_pos(a0),d0
-		add.w	d1,d0
-		bmi.w	Solid_Ignore	; if Sonic moves off the left, branch
+		sub.w	ost_x_pos(a0),d0 ; d0: +ve if Sonic is right; -ve if Sonic is left
+		add.w	d1,d0		; add width of object
+		bmi.w	Solid_Ignore	; branch if Sonic is outside left boundary
 		move.w	d1,d3
 		add.w	d3,d3
-		cmp.w	d3,d0		; has Sonic moved off the right?
-		bhi.w	Solid_Ignore	; if yes, branch
+		cmp.w	d3,d0
+		bhi.w	Solid_Ignore	; branch if Sonic is outside right boundary
+		
 		move.b	ost_height(a1),d3
 		ext.w	d3
-		add.w	d3,d2
+		add.w	d3,d2		; add ost_height to stated height
 		move.w	ost_y_pos(a1),d3
-		sub.w	ost_y_pos(a0),d3
+		sub.w	ost_y_pos(a0),d3 ; d3: +ve if Sonic is below; -ve if Sonic is above
 		addq.w	#4,d3
-		add.w	d2,d3
-		bmi.w	Solid_Ignore	; if Sonic moves above, branch
+		add.w	d2,d3		; add total height of object
+		bmi.w	Solid_Ignore	; branch if Sonic is outside upper boundary
 		move.w	d2,d4
 		add.w	d4,d4
-		cmp.w	d4,d3		; has Sonic moved below?
-		bcc.w	Solid_Ignore	; if yes, branch
+		cmp.w	d4,d3
+		bcc.w	Solid_Ignore	; branch if Sonic is outside lower boundary
 
 loc_FB0E:
 		tst.b	(f_lockmulti).w	; are controls locked?
 		bmi.w	Solid_Ignore	; if yes, branch
-		cmpi.b	#6,(v_player+ost_routine).w ; is Sonic dying?
+		cmpi.b	#id_Sonic_Death,(v_player+ost_routine).w ; is Sonic dying?
 		if Revision=0
 			bcc.w	Solid_Ignore ; if yes, branch
 		else
@@ -187,7 +191,7 @@ Solid_Left:
 
 Solid_Centre:
 		sub.w	d0,ost_x_pos(a1) ; correct Sonic's position
-		btst	#1,ost_status(a1) ; is Sonic in the air?
+		btst	#status_air_bit,ost_status(a1) ; is Sonic in the air?
 		bne.s	Solid_SideAir	; if yes, branch
 		bset	#status_pushing_bit,ost_status(a1) ; make Sonic push object
 		bset	#status_pushing_bit,ost_status(a0) ; make object be pushed
@@ -284,7 +288,7 @@ Solid_ResetFloor:
 		beq.s	@notonobj	; if not, branch
 
 		moveq	#0,d0
-		move.b	ost_sonic_on_obj(a1),d0	; get object being stood on
+		move.b	ost_sonic_on_obj(a1),d0	; get OST index of object being stood on
 		lsl.w	#6,d0
 		addi.l	#(v_objspace&$FFFFFF),d0
 		movea.l	d0,a2
@@ -293,7 +297,7 @@ Solid_ResetFloor:
 
 	@notonobj:
 		move.w	a0,d0
-		subi.w	#$D000,d0
+		subi.w	#v_objspace&$FFFF,d0
 		lsr.w	#6,d0
 		andi.w	#$7F,d0
 		move.b	d0,ost_sonic_on_obj(a1)	; set object being stood on

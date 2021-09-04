@@ -2,6 +2,7 @@
 ; Object 23 - missile that Buzz	Bomber throws
 ; ---------------------------------------------------------------------------
 
+Missile:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Msl_Index(pc,d0.w),d1
