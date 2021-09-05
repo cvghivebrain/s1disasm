@@ -2,6 +2,7 @@
 ; Object 09 - Sonic (special stage)
 ; ---------------------------------------------------------------------------
 
+SonicSpecial:
 		tst.w	(v_debuguse).w	; is debug mode	being used?
 		beq.s	Obj09_Normal	; if not, branch
 		bsr.w	SS_FixCamera
