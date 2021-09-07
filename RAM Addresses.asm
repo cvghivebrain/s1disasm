@@ -231,7 +231,7 @@ v_gfxbigring:	equ $FFFFF7BE	; settings for giant ring graphics loading (2 bytes)
 f_conveyrev:	equ $FFFFF7C0	; flag set to reverse conveyor belts in LZ/SBZ
 v_obj63:		equ $FFFFF7C1	; object 63 (LZ/SBZ platforms) variables (6 bytes)
 f_wtunnelmode:	equ $FFFFF7C7	; LZ water tunnel mode
-f_lockmulti:	equ $FFFFF7C8	; flag set to lock controls, lock Sonic's position & animation
+f_lockmulti:	equ $FFFFF7C8	; +1 = lock controls, lock Sonic's position & animation; +$80 = no collision with objects
 f_wtunnelallow:	equ $FFFFF7C9	; LZ water tunnels (00 = enabled; 01 = disabled)
 f_jumponly:	equ $FFFFF7CA	; flag set to lock controls apart from jumping
 v_obj6B:		equ $FFFFF7CB	; object 6B (SBZ stomper) variable

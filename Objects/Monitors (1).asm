@@ -89,7 +89,7 @@ loc_A20A:
 		tst.w	d1
 		bpl.s	loc_A220
 		sub.w	d3,ost_y_pos(a1)
-		bsr.w	loc_74AE
+		bsr.w	Plat_NoCheck
 		move.b	#2,ost_routine2(a0)
 		bra.w	Mon_Animate
 ; ===========================================================================
