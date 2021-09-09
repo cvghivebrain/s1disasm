@@ -85,7 +85,7 @@ loc_82D0:
 		bne.s	locret_8308
 		bclr	#status_platform_bit,ost_status(a1)
 		bclr	#status_pushing_bit,ost_status(a1)
-		move.b	#1,ost_anim_next(a1)
+		move.b	#1,ost_anim_restart(a1)
 
 loc_82FC:
 		move.b	#0,ost_ledge_flag(a0)

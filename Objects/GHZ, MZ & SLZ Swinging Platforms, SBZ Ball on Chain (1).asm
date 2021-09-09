@@ -3,6 +3,7 @@
 ;	    - spiked ball on a chain (SBZ)
 ; ---------------------------------------------------------------------------
 
+SwingingPlatform:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Swing_Index(pc,d0.w),d1
@@ -142,7 +143,7 @@ Swing_Action2:	; Routine 4
 		moveq	#0,d3
 		move.b	ost_height(a0),d3
 		addq.b	#1,d3
-		bsr.w	MvSonicOnPtfm
+		bsr.w	MoveWithPlatform
 		bsr.w	DisplaySprite
 		bra.w	Swing_ChkDel
 

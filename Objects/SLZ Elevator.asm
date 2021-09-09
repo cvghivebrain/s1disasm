@@ -81,7 +81,7 @@ Elev_Main:	; Routine 0
 Elev_Platform:	; Routine 2
 		moveq	#0,d1
 		move.b	ost_actwidth(a0),d1
-		jsr	(PlatformObject).l
+		jsr	(DetectPlatform).l
 		bra.w	Elev_Types
 ; ===========================================================================
 
@@ -94,7 +94,7 @@ Elev_Action:	; Routine 4
 		move.w	(sp)+,d2
 		tst.b	0(a0)
 		beq.s	@deleted
-		jmp	(MvSonicOnPtfm2).l
+		jmp	(MoveWithPlatform2).l
 
 	@deleted:
 		rts	

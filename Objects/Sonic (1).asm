@@ -68,7 +68,7 @@ loc_12C7E:
 		beq.s	loc_12CA6
 		tst.b	ost_anim(a0)
 		bne.s	loc_12CA6
-		move.b	ost_anim_next(a0),ost_anim(a0)
+		move.b	ost_anim_restart(a0),ost_anim(a0)
 
 loc_12CA6:
 		bsr.w	Sonic_Animate
@@ -491,7 +491,7 @@ loc_13086:
 		bset	#status_xflip_bit,ost_status(a0)
 		bne.s	loc_1309A
 		bclr	#status_pushing_bit,ost_status(a0)
-		move.b	#1,ost_anim_next(a0)
+		move.b	#1,ost_anim_restart(a0)
 
 loc_1309A:
 		sub.w	d5,d0
@@ -538,7 +538,7 @@ Sonic_MoveRight:
 		bclr	#status_xflip_bit,ost_status(a0)
 		beq.s	loc_13104
 		bclr	#status_pushing_bit,ost_status(a0)
-		move.b	#1,ost_anim_next(a0)
+		move.b	#1,ost_anim_restart(a0)
 
 loc_13104:
 		add.w	d5,d0
@@ -1565,9 +1565,9 @@ Sonic_Animate:
 		lea	(Ani_Sonic).l,a1
 		moveq	#0,d0
 		move.b	ost_anim(a0),d0
-		cmp.b	ost_anim_next(a0),d0 ; is animation set to restart?
+		cmp.b	ost_anim_restart(a0),d0 ; is animation set to restart?
 		beq.s	@do		; if not, branch
-		move.b	d0,ost_anim_next(a0) ; set to "no restart"
+		move.b	d0,ost_anim_restart(a0) ; set to "no restart"
 		move.b	#0,ost_anim_frame(a0) ; reset animation
 		move.b	#0,ost_anim_time(a0) ; reset frame duration
 

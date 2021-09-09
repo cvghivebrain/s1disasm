@@ -255,7 +255,7 @@ PushB_Solid:
 
 loc_C1A4:
 		move.w	d4,d2
-		bra.w	MvSonicOnPtfm
+		bra.w	MoveWithPlatform
 ; ===========================================================================
 
 loc_C1AA:

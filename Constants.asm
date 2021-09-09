@@ -128,7 +128,7 @@ ost_actwidth:		equ $19	; action width/2
 ost_frame:		equ $1A	; current frame displayed
 ost_anim_frame:		equ $1B	; current frame in animation script
 ost_anim:		equ $1C	; current animation
-ost_anim_next:		equ $1D	; next animation
+ost_anim_restart:	equ $1D	; restart animation flag / next animation number (Sonic)
 ost_anim_time:		equ $1E	; time to next frame
 ost_anim_delay:		equ $1F	; time to delay animation
 ost_col_type:		equ $20	; collision response type

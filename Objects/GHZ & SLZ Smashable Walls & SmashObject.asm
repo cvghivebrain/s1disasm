@@ -119,7 +119,7 @@ SmashObject:
 		bsr.w	SpeedToPos
 		add.w	d2,ost_y_vel(a0)
 		movea.l	(sp)+,a0
-		bsr.w	DisplaySprite1
+		bsr.w	DisplaySprite_a1
 
 	@loc_D268:
 		dbf	d1,@loop

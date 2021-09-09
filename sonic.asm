@@ -8857,7 +8857,7 @@ LevLoad_Row:
 
 Bridge:		include "Objects\GHZ Bridge (1).asm"
 
-		include "Objects\_PlatformObject.asm"
+		include "Objects\_DetectPlatform.asm"
 
 ; ---------------------------------------------------------------------------
 ; Sloped platform subroutine (GHZ collapsing ledges and	SLZ seesaws)
@@ -8915,89 +8915,14 @@ Swing_Solid:
 
 		include "Objects\GHZ Bridge (2).asm"
 
-; ---------------------------------------------------------------------------
-; Subroutine allowing Sonic to walk or jump off	a platform
-
-; input:
-;	d1 = platform width
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-ExitPlatform:
-		move.w	d1,d2
-
-ExitPlatform2:
-		add.w	d2,d2
-		lea	(v_player).w,a1
-		btst	#status_air_bit,ost_status(a1) ; is Sonic in the air?
-		bne.s	loc_75E0	; if yes, branch
-		move.w	ost_x_pos(a1),d0
-		sub.w	ost_x_pos(a0),d0
-		add.w	d1,d0
-		bmi.s	loc_75E0	; branch if Sonic leaves the platform
-		cmp.w	d2,d0
-		blo.s	locret_75F2
-
-loc_75E0:
-		bclr	#status_platform_bit,ost_status(a1)
-		move.b	#status_jump_bit,ost_routine(a0)
-		bclr	#status_platform_bit,ost_status(a0)
-
-locret_75F2:
-		rts	
-; End of function ExitPlatform
+		include "Objects\_ExitPlatform.asm"
 
 		include "Objects\GHZ Bridge (3).asm"
 Map_Bri:	include "Mappings\GHZ Bridge.asm"
 
-SwingingPlatform:
-		include "Objects\GHZ, MZ & SLZ Swinging Platforms, SBZ Ball on Chain (1).asm"
+		include "Objects\GHZ, MZ & SLZ Swinging Platforms, SBZ Ball on Chain (1).asm" ; SwingingPlatform
 		
-; ---------------------------------------------------------------------------
-; Subroutine to	change Sonic's position with a platform
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-MvSonicOnPtfm:
-		lea	(v_player).w,a1
-		move.w	ost_y_pos(a0),d0
-		sub.w	d3,d0
-		bra.s	MvSonic2
-; End of function MvSonicOnPtfm
-
-; ---------------------------------------------------------------------------
-; Subroutine to	change Sonic's position with a platform
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-MvSonicOnPtfm2:
-		lea	(v_player).w,a1
-		move.w	ost_y_pos(a0),d0
-		subi.w	#9,d0
-
-MvSonic2:
-		tst.b	(f_lockmulti).w
-		bmi.s	locret_7B62
-		cmpi.b	#6,(v_player+ost_routine).w
-		bhs.s	locret_7B62
-		tst.w	(v_debuguse).w
-		bne.s	locret_7B62
-		moveq	#0,d1
-		move.b	ost_height(a1),d1
-		sub.w	d1,d0
-		move.w	d0,ost_y_pos(a1)
-		sub.w	ost_x_pos(a0),d2
-		sub.w	d2,ost_x_pos(a1)
-
-locret_7B62:
-		rts	
-; End of function MvSonicOnPtfm2
+		include "Objects\_MoveWithPlatform.asm"
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
@@ -9049,10 +8974,10 @@ loc_7BB6:
 Map_Swing_GHZ:	include "Mappings\GHZ & MZ Swinging Platforms.asm"
 Map_Swing_SLZ:	include "Mappings\SLZ Swinging Platforms.asm"
 
-Helix:		include "Objects\GHZ Spiked Helix Pole.asm"
+		include "Objects\GHZ Spiked Helix Pole.asm" ; Helix
 Map_Hel:	include "Mappings\GHZ Spiked Helix Pole.asm"
 
-BasicPlatform:	include "Objects\Platforms.asm"		
+		include "Objects\Platforms.asm" ; BasicPlatform
 Map_Plat_Unused:
 		include "Mappings\Unused Platforms.asm"
 Map_Plat_GHZ:	include "Mappings\GHZ Platforms.asm"
@@ -9313,107 +9238,20 @@ Map_Monitor:	include "Mappings\Monitors.asm"
 Ani_TSon:	include "Animations\Title Screen Sonic.asm"
 Ani_PSBTM:	include "Animations\Title Screen Press Start.asm"
 
-; ---------------------------------------------------------------------------
-; Subroutine to	animate	a sprite using an animation script
-;
-; input: a1 = animation script
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-AnimateSprite:
-		moveq	#0,d0
-		move.b	ost_anim(a0),d0	; move animation number	to d0
-		cmp.b	ost_anim_next(a0),d0 ; is animation set to restart?
-		beq.s	Anim_Run	; if not, branch
-
-		move.b	d0,ost_anim_next(a0) ; set to "no restart"
-		move.b	#0,ost_anim_frame(a0) ; reset animation
-		move.b	#0,ost_anim_time(a0) ; reset frame duration
-
-Anim_Run:
-		subq.b	#1,ost_anim_time(a0) ; subtract 1 from frame duration
-		bpl.s	Anim_Wait	; if time remains, branch
-		add.w	d0,d0
-		adda.w	(a1,d0.w),a1	; jump to appropriate animation	script
-		move.b	(a1),ost_anim_time(a0) ; load frame duration
-		moveq	#0,d1
-		move.b	ost_anim_frame(a0),d1 ; load current frame number
-		move.b	1(a1,d1.w),d0	; read sprite number from script
-		bmi.s	Anim_End_FF	; if animation is complete, branch
-
-Anim_Next:
-		move.b	d0,d1		; copy full frame info to d1
-		andi.b	#$1F,d0		; sprite number only
-		move.b	d0,ost_frame(a0)	; load sprite number
-		move.b	ost_status(a0),d0
-		rol.b	#3,d1
-		eor.b	d0,d1
-		andi.b	#3,d1		; get x/y flip bits in d1
-		andi.b	#$FC,ost_render(a0)
-		or.b	d1,ost_render(a0)	; apply x/y flip bits
-		addq.b	#1,ost_anim_frame(a0) ; next frame number
-
-Anim_Wait:
-		rts	
-; ===========================================================================
-
-Anim_End_FF:
-		addq.b	#1,d0		; is the end flag = $FF	?
-		bne.s	Anim_End_FE	; if not, branch
-		move.b	#0,ost_anim_frame(a0) ; restart the animation
-		move.b	1(a1),d0	; read sprite number
-		bra.s	Anim_Next
-; ===========================================================================
-
-Anim_End_FE:
-		addq.b	#1,d0		; is the end flag = $FE	?
-		bne.s	Anim_End_FD	; if not, branch
-		move.b	2(a1,d1.w),d0	; read the next	byte in	the script
-		sub.b	d0,ost_anim_frame(a0) ; jump back d0 bytes in the script
-		sub.b	d0,d1
-		move.b	1(a1,d1.w),d0	; read sprite number
-		bra.s	Anim_Next
-; ===========================================================================
-
-Anim_End_FD:
-		addq.b	#1,d0		; is the end flag = $FD	?
-		bne.s	Anim_End_FC	; if not, branch
-		move.b	2(a1,d1.w),ost_anim(a0) ; read next byte, run that animation
-
-Anim_End_FC:
-		addq.b	#1,d0		; is the end flag = $FC	?
-		bne.s	Anim_End_FB	; if not, branch
-		addq.b	#2,ost_routine(a0) ; jump to next routine
-
-Anim_End_FB:
-		addq.b	#1,d0		; is the end flag = $FB	?
-		bne.s	Anim_End_FA	; if not, branch
-		move.b	#0,ost_anim_frame(a0) ; reset animation
-		clr.b	ost_routine2(a0)	; reset	2nd routine counter
-
-Anim_End_FA:
-		addq.b	#1,d0		; is the end flag = $FA	?
-		bne.s	Anim_End	; if not, branch
-		addq.b	#2,ost_routine2(a0) ; jump to next routine
-
-Anim_End:
-		rts	
-; End of function AnimateSprite
+		include "Objects\_AnimateSprite.asm"
 
 Map_PSB:	include "Mappings\Title Screen Press Start & TM.asm"
 Map_TSon:	include "Mappings\Title Screen Sonic.asm"
 
-Chopper:	include "Objects\Chopper.asm"
+		include "Objects\Chopper.asm" ; Chopper
 Ani_Chop:	include "Animations\Chopper.asm"
 Map_Chop:	include "Mappings\Chopper.asm"
 
-Jaws:		include "Objects\Jaws.asm"
+		include "Objects\Jaws.asm" ; Jaws
 Ani_Jaws:	include "Animations\Jaws.asm"
 Map_Jaws:	include "Mappings\Jaws.asm"
 
-Burrobot:	include "Objects\Burrobot.asm"
+		include "Objects\Burrobot.asm" ; Burrobot
 Ani_Burro:	include "Animations\Burrobot.asm"
 Map_Burro:	include "Mappings\Burrobot.asm"
 
@@ -9462,124 +9300,12 @@ Map_Smash:	include "Mappings\GHZ & SLZ Smashable Walls.asm"
 ExecuteObjects:	include "Includes\ExecuteObjects & Object Pointers.asm"
 
 NullObject:
-		;jmp	(DeleteObject).l	; It would be safer to have this instruction here, but instead it just falls through to ObjectFall
+		;jmp	(DeleteObject).l ; It would be safer to have this instruction here, but instead it just falls through to ObjectFall
 
+		include "Objects\_ObjectFall & SpeedToPos.asm"
 
-; ---------------------------------------------------------------------------
-; Subroutine to	make an	object fall downwards, increasingly fast
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-ObjectFall:
-		move.l	ost_x_pos(a0),d2
-		move.l	ost_y_pos(a0),d3
-		move.w	ost_x_vel(a0),d0
-		ext.l	d0
-		asl.l	#8,d0
-		add.l	d0,d2
-		move.w	ost_y_vel(a0),d0
-		addi.w	#$38,ost_y_vel(a0)	; increase vertical speed
-		ext.l	d0
-		asl.l	#8,d0
-		add.l	d0,d3
-		move.l	d2,ost_x_pos(a0)
-		move.l	d3,ost_y_pos(a0)
-		rts	
-
-; End of function ObjectFall
-; ---------------------------------------------------------------------------
-; Subroutine translating object	speed to update	object position
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-SpeedToPos:
-		move.l	ost_x_pos(a0),d2
-		move.l	ost_y_pos(a0),d3
-		move.w	ost_x_vel(a0),d0	; load horizontal speed
-		ext.l	d0
-		asl.l	#8,d0		; multiply speed by $100
-		add.l	d0,d2		; add to x-axis	position
-		move.w	ost_y_vel(a0),d0	; load vertical	speed
-		ext.l	d0
-		asl.l	#8,d0		; multiply by $100
-		add.l	d0,d3		; add to y-axis	position
-		move.l	d2,ost_x_pos(a0)	; update x-axis	position
-		move.l	d3,ost_y_pos(a0)	; update y-axis	position
-		rts	
-
-; End of function SpeedToPos
-; ---------------------------------------------------------------------------
-; Subroutine to	display	a sprite/object, when a0 is the	object RAM
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-DisplaySprite:
-		lea	(v_spritequeue).w,a1
-		move.w	ost_priority(a0),d0 ; get sprite priority
-		lsr.w	#1,d0
-		andi.w	#$380,d0
-		adda.w	d0,a1		; jump to position in queue
-		cmpi.w	#$7E,(a1)	; is this part of the queue full?
-		bcc.s	DSpr_Full	; if yes, branch
-		addq.w	#2,(a1)		; increment sprite count
-		adda.w	(a1),a1		; jump to empty position
-		move.w	a0,(a1)		; insert RAM address for object
-
-	DSpr_Full:
-		rts	
-
-; End of function DisplaySprite
-
-
-; ---------------------------------------------------------------------------
-; Subroutine to	display	a 2nd sprite/object, when a1 is	the object RAM
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-DisplaySprite1:
-		lea	(v_spritequeue).w,a2
-		move.w	ost_priority(a1),d0
-		lsr.w	#1,d0
-		andi.w	#$380,d0
-		adda.w	d0,a2
-		cmpi.w	#$7E,(a2)
-		bcc.s	DSpr1_Full
-		addq.w	#2,(a2)
-		adda.w	(a2),a2
-		move.w	a1,(a2)
-
-	DSpr1_Full:
-		rts	
-
-; End of function DisplaySprite1
-; ---------------------------------------------------------------------------
-; Subroutine to	delete an object
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-DeleteObject:
-		movea.l	a0,a1		; move object RAM address to (a1)
-
-DeleteChild:				; child objects are already in (a1)
-		moveq	#0,d1
-		moveq	#$F,d0
-
-	DelObj_Loop:
-		move.l	d1,(a1)+	; clear	the object RAM
-		dbf	d0,DelObj_Loop	; repeat for length of object RAM
-		rts	
-
-; End of function DeleteObject
+		include "Objects\_DisplaySprite.asm"
+		include "Objects\_DeleteObject & DeleteChild.asm"
 
 ; ===========================================================================
 BldSpr_ScrPos:	dc.l 0				; blank

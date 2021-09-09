@@ -81,7 +81,7 @@ VanP_Appear:	; Routine 4
 		bne.s	@loc_160D6
 		moveq	#0,d1
 		move.b	ost_actwidth(a0),d1
-		jsr	(PlatformObject).l
+		jsr	(DetectPlatform).l
 		bra.w	RememberState
 ; ===========================================================================
 
@@ -90,7 +90,7 @@ VanP_Appear:	; Routine 4
 		move.b	ost_actwidth(a0),d1
 		jsr	(ExitPlatform).l
 		move.w	ost_x_pos(a0),d2
-		jsr	(MvSonicOnPtfm2).l
+		jsr	(MoveWithPlatform2).l
 		bra.w	RememberState
 ; ===========================================================================
 

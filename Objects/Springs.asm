@@ -92,7 +92,7 @@ Spring_AniUp:	; Routine 4
 ; ===========================================================================
 
 Spring_ResetUp:	; Routine 6
-		move.b	#1,ost_anim_next(a0) ; reset animation
+		move.b	#1,ost_anim_restart(a0) ; reset animation
 		subq.b	#4,ost_routine(a0) ; goto "Spring_Up" routine
 		rts	
 ; ===========================================================================
@@ -141,7 +141,7 @@ Spring_AniLR:	; Routine $A
 ; ===========================================================================
 
 Spring_ResetLR:	; Routine $C
-		move.b	#2,ost_anim_next(a0) ; reset animation
+		move.b	#2,ost_anim_restart(a0) ; reset animation
 		subq.b	#4,ost_routine(a0) ; goto "Spring_LR" routine
 		rts	
 ; ===========================================================================
@@ -185,6 +185,6 @@ Spring_AniDwn:	; Routine $10
 
 Spring_ResetDwn:
 		; Routine $12
-		move.b	#1,ost_anim_next(a0) ; reset animation
+		move.b	#1,ost_anim_restart(a0) ; reset animation
 		subq.b	#4,ost_routine(a0) ; goto "Spring_Dwn" routine
 		rts	

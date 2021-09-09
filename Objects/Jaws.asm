@@ -2,6 +2,7 @@
 ; Object 2C - Jaws enemy (LZ)
 ; ---------------------------------------------------------------------------
 
+Jaws:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Jaws_Index(pc,d0.w),d1
@@ -40,7 +41,7 @@ Jaws_Turn:	; Routine 2
 		move.w	ost_jaws_turn_master(a0),ost_jaws_turn_time(a0) ; reset turn delay time
 		neg.w	ost_x_vel(a0)	; change speed direction
 		bchg	#status_xflip_bit,ost_status(a0) ; change Jaws facing direction
-		move.b	#1,ost_anim_next(a0) ; reset animation
+		move.b	#1,ost_anim_restart(a0) ; reset animation
 
 	@animate:
 		lea	(Ani_Jaws).l,a1

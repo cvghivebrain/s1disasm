@@ -39,7 +39,7 @@ loc_84B2:
 		move.b	(a4)+,ost_ledge_wait_time(a1)
 		cmpa.l	a0,a1
 		bhs.s	loc_84EE
-		bsr.w	DisplaySprite1
+		bsr.w	DisplaySprite_a1
 
 loc_84EE:
 		dbf	d1,loc_84AA

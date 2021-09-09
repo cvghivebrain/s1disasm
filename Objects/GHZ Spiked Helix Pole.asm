@@ -2,6 +2,7 @@
 ; Object 17 - helix of spikes on a pole	(GHZ)
 ; ---------------------------------------------------------------------------
 
+Helix:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Hel_Index(pc,d0.w),d1

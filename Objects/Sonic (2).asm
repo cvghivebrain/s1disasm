@@ -103,7 +103,7 @@ loc_146CC:
 		bne.s	loc_146C6
 		bset	#status_air_bit,ost_status(a0)
 		bclr	#status_pushing_bit,ost_status(a0)
-		move.b	#1,ost_anim_next(a0)
+		move.b	#1,ost_anim_restart(a0)
 		rts	
 ; ===========================================================================
 
@@ -248,7 +248,7 @@ loc_147FE:
 		bne.s	loc_147F8
 		bset	#status_air_bit,ost_status(a0)
 		bclr	#status_pushing_bit,ost_status(a0)
-		move.b	#1,ost_anim_next(a0)
+		move.b	#1,ost_anim_restart(a0)
 		rts	
 ; End of function Sonic_WalkVertR
 
@@ -318,7 +318,7 @@ loc_148A0:
 		bne.s	loc_1489A
 		bset	#status_air_bit,ost_status(a0)
 		bclr	#status_pushing_bit,ost_status(a0)
-		move.b	#1,ost_anim_next(a0)
+		move.b	#1,ost_anim_restart(a0)
 		rts	
 ; End of function Sonic_WalkCeiling
 
@@ -388,6 +388,6 @@ loc_14942:
 		bne.s	loc_1493C
 		bset	#status_air_bit,ost_status(a0)
 		bclr	#status_pushing_bit,ost_status(a0)
-		move.b	#1,ost_anim_next(a0)
+		move.b	#1,ost_anim_restart(a0)
 		rts	
 ; End of function Sonic_WalkVertL

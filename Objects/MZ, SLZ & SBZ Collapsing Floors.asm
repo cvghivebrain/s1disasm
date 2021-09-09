@@ -49,7 +49,7 @@ CFlo_Touch:	; Routine 2
 
 	@solid:
 		move.w	#$20,d1
-		bsr.w	PlatformObject
+		bsr.w	DetectPlatform
 		tst.b	ost_subtype(a0)
 		bpl.s	@remstate
 		btst	#status_platform_bit,ost_status(a1)
@@ -77,7 +77,7 @@ CFlo_WalkOff:	; Routine $A
 		move.w	#$20,d1
 		bsr.w	ExitPlatform
 		move.w	ost_x_pos(a0),d2
-		bsr.w	MvSonicOnPtfm2
+		bsr.w	MoveWithPlatform2
 		bra.w	RememberState
 ; End of function CFlo_WalkOff
 
@@ -102,7 +102,7 @@ loc_8402:
 		bne.s	locret_843A
 		bclr	#status_platform_bit,ost_status(a1)
 		bclr	#status_pushing_bit,ost_status(a1)
-		move.b	#1,ost_anim_next(a1)
+		move.b	#1,ost_anim_restart(a1)
 
 loc_842E:
 		move.b	#0,ost_cfloor_flag(a0)

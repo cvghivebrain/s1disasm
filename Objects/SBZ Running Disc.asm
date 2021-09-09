@@ -95,7 +95,7 @@ Disc_MoveSonic2:
 
 	@jumping:
 		bclr	#status_pushing_bit,ost_status(a1)
-		move.b	#1,ost_anim_next(a1)
+		move.b	#1,ost_anim_restart(a1)
 		move.b	#1,ost_sonic_sbz_disc(a1)
 
 	@skip_init:

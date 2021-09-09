@@ -7,7 +7,7 @@
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-PlatformObject:
+DetectPlatform:
 		lea	(v_player).w,a1
 		tst.w	ost_y_vel(a1)	; is Sonic moving up/jumping?
 		bmi.w	Plat_Exit	; if yes, branch
@@ -83,4 +83,4 @@ Plat_NoCheck:				; jump here to skip all checks
 
 Plat_Exit:
 		rts	
-; End of function PlatformObject
+; End of function DetectPlatform

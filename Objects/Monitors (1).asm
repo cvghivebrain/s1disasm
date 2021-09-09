@@ -60,7 +60,7 @@ Mon_Solid:	; Routine 2
 	@ontop:
 		move.w	#$10,d3
 		move.w	ost_x_pos(a0),d2
-		bsr.w	MvSonicOnPtfm
+		bsr.w	MoveWithPlatform
 		bra.w	Mon_Animate
 ; ===========================================================================
 
@@ -123,7 +123,7 @@ loc_A246:
 loc_A25C:
 		btst	#status_pushing_bit,ost_status(a0)
 		beq.s	Mon_Animate
-		move.w	#1,ost_anim(a1)	; clear ost_anim and set ost_anim_next to 1
+		move.w	#1,ost_anim(a1)	; clear ost_anim and set ost_anim_restart to 1
 
 loc_A26A:
 		bclr	#status_pushing_bit,ost_status(a0)

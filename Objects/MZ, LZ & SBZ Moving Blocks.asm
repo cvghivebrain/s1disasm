@@ -60,7 +60,7 @@ MBlock_Platform: ; Routine 2
 		bsr.w	MBlock_Move
 		moveq	#0,d1
 		move.b	ost_actwidth(a0),d1
-		jsr	(PlatformObject).l
+		jsr	(DetectPlatform).l
 		bra.s	MBlock_ChkDel
 ; ===========================================================================
 
@@ -71,7 +71,7 @@ MBlock_StandOn:	; Routine 4
 		move.w	ost_x_pos(a0),-(sp)
 		bsr.w	MBlock_Move
 		move.w	(sp)+,d2
-		jsr	(MvSonicOnPtfm2).l
+		jsr	(MoveWithPlatform2).l
 
 MBlock_ChkDel:
 		out_of_range	DeleteObject,ost_mblock_x_start(a0)

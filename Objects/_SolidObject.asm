@@ -37,7 +37,7 @@
 
 	@stand:
 		move.w	d4,d2
-		bsr.w	MvSonicOnPtfm
+		bsr.w	MoveWithPlatform
 		moveq	#0,d4
 		rts	
 ; ===========================================================================
@@ -66,7 +66,7 @@ SolidObject71:
 
 	@stand:
 		move.w	d4,d2
-		bsr.w	MvSonicOnPtfm
+		bsr.w	MoveWithPlatform
 		moveq	#0,d4
 		rts	
 ; ===========================================================================

@@ -31,7 +31,7 @@ Circ_Main:	; Routine 0
 Circ_Platform:	; Routine 2
 		moveq	#0,d1
 		move.b	ost_actwidth(a0),d1
-		jsr	(PlatformObject).l
+		jsr	(DetectPlatform).l
 		bra.w	Circ_Types
 ; ===========================================================================
 
@@ -42,7 +42,7 @@ Circ_Action:	; Routine 4
 		move.w	ost_x_pos(a0),-(sp)
 		bsr.w	Circ_Types
 		move.w	(sp)+,d2
-		jmp	(MvSonicOnPtfm2).l
+		jmp	(MoveWithPlatform2).l
 ; ===========================================================================
 
 Circ_Types:

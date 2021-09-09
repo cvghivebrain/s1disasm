@@ -2,6 +2,7 @@
 ; Object 18 - platforms	(GHZ, SYZ, SLZ)
 ; ---------------------------------------------------------------------------
 
+BasicPlatform:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Plat_Index(pc,d0.w),d1
@@ -65,7 +66,7 @@ Plat_Solid:	; Routine 2
 	loc_7EE0:
 		moveq	#0,d1
 		move.b	ost_actwidth(a0),d1
-		bsr.w	PlatformObject
+		bsr.w	DetectPlatform
 
 Plat_Action:	; Routine 8
 		bsr.w	Plat_Move
@@ -87,7 +88,7 @@ Plat_Action2:	; Routine 4
 		bsr.w	Plat_Move
 		bsr.w	Plat_Nudge
 		move.w	(sp)+,d2
-		bsr.w	MvSonicOnPtfm2
+		bsr.w	MoveWithPlatform2
 		bsr.w	DisplaySprite
 		bra.w	Plat_ChkDel
 
