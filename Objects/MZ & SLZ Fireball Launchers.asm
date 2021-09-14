@@ -31,7 +31,7 @@ LavaM_MakeLava:	; Routine 2
 		subq.b	#1,ost_anim_time(a0) ; subtract 1 from time delay
 		bne.s	LavaM_Wait	; if time still	remains, branch
 		move.b	ost_anim_delay(a0),ost_anim_time(a0) ; reset time delay
-		bsr.w	ChkObjectVisible
+		bsr.w	CheckOffScreen
 		bne.s	LavaM_Wait
 		bsr.w	FindFreeObj
 		bne.s	LavaM_Wait

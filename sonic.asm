@@ -2469,7 +2469,7 @@ GM_Title:
 		move.l	d0,(a1)+
 		dbf	d1,Tit_ClrPal	; fill palette with 0 (black)
 
-		moveq	#id_Pal_Sonic,d0	; load Sonic's palette
+		moveq	#id_Pal_Sonic,d0 ; load Sonic's palette
 		bsr.w	PalLoad1
 		move.b	#id_CreditsText,(v_objspace+$80).w ; load "SONIC TEAM PRESENTS" object
 		jsr	(ExecuteObjects).l
@@ -2529,7 +2529,7 @@ GM_Title:
 		locVRAM	0
 		lea	(Nem_GHZ_1st).l,a0 ; load GHZ patterns
 		bsr.w	NemDec
-		moveq	#id_Pal_Title,d0	; load title screen palette
+		moveq	#id_Pal_Title,d0 ; load title screen palette
 		bsr.w	PalLoad1
 		sfx	bgm_Title,0,1,1	; play title screen music
 		move.b	#0,(f_debugmode).w ; disable debug mode
@@ -3440,451 +3440,8 @@ loc_3BC8:
 		rts	
 ; ===========================================================================
 
-; ---------------------------------------------------------------------------
-; Subroutine to	do special water effects in Labyrinth Zone
-; ---------------------------------------------------------------------------
+		include "Includes\LZWaterFeatures.asm"
 
-LZWaterFeatures:
-		cmpi.b	#id_LZ,(v_zone).w ; check if level is LZ
-		bne.s	@notlabyrinth	; if not, branch
-		if Revision=0
-		else
-			tst.b   (f_nobgscroll).w
-			bne.s	@setheight
-		endc
-		cmpi.b	#6,(v_player+ost_routine).w ; has Sonic just died?
-		bcc.s	@setheight	; if yes, skip other effects
-
-		bsr.w	LZWindTunnels
-		bsr.w	LZWaterSlides
-		bsr.w	LZDynamicWater
-
-@setheight:
-		clr.b	(f_wtr_state).w
-		moveq	#0,d0
-		move.b	(v_oscillate+2).w,d0
-		lsr.w	#1,d0
-		add.w	(v_waterpos2).w,d0
-		move.w	d0,(v_waterpos1).w
-		move.w	(v_waterpos1).w,d0
-		sub.w	(v_screenposy).w,d0
-		bcc.s	@isbelow
-		tst.w	d0
-		bpl.s	@isbelow	; if water is below top of screen, branch
-
-		move.b	#223,(v_hbla_line).w
-		move.b	#1,(f_wtr_state).w ; screen is all underwater
-
-	@isbelow:
-		cmpi.w	#223,d0		; is water within 223 pixels of top of screen?
-		bcs.s	@isvisible	; if yes, branch
-		move.w	#223,d0
-
-	@isvisible:
-		move.b	d0,(v_hbla_line).w ; set water surface as on-screen
-
-@notlabyrinth:
-		rts	
-; ===========================================================================
-; ---------------------------------------------------------------------------
-; Initial water heights
-; ---------------------------------------------------------------------------
-WaterHeight:	dc.w $B8	; Labyrinth 1
-		dc.w $328	; Labyrinth 2
-		dc.w $900	; Labyrinth 3
-		dc.w $228	; Scrap Brain 3
-		even
-; ===========================================================================
-
-; ---------------------------------------------------------------------------
-; Labyrinth dynamic water routines
-; ---------------------------------------------------------------------------
-
-LZDynamicWater:
-		moveq	#0,d0
-		move.b	(v_act).w,d0
-		add.w	d0,d0
-		move.w	DynWater_Index(pc,d0.w),d0
-		jsr	DynWater_Index(pc,d0.w)
-		moveq	#0,d1
-		move.b	(f_water).w,d1
-		move.w	(v_waterpos3).w,d0
-		sub.w	(v_waterpos2).w,d0
-		beq.s	@exit		; if water level is correct, branch
-		bcc.s	@movewater	; if water level is too high, branch
-		neg.w	d1		; set water to move up instead
-
-	@movewater:
-		add.w	d1,(v_waterpos2).w ; move water up/down
-
-	@exit:
-		rts	
-; ===========================================================================
-DynWater_Index:	index *
-		ptr DynWater_LZ1
-		ptr DynWater_LZ2
-		ptr DynWater_LZ3
-		ptr DynWater_SBZ3
-; ===========================================================================
-
-DynWater_LZ1:
-		move.w	(v_screenposx).w,d0
-		move.b	(v_wtr_routine).w,d2
-		bne.s	@routine2
-		move.w	#$B8,d1		; water height
-		cmpi.w	#$600,d0	; has screen reached next position?
-		bcs.s	@setwater	; if not, branch
-		move.w	#$108,d1
-		cmpi.w	#$200,(v_player+ost_y_pos).w ; is Sonic above $200 y-axis?
-		bcs.s	@sonicishigh	; if yes, branch
-		cmpi.w	#$C00,d0
-		bcs.s	@setwater
-		move.w	#$318,d1
-		cmpi.w	#$1080,d0
-		bcs.s	@setwater
-		move.b	#$80,(f_switch+5).w
-		move.w	#$5C8,d1
-		cmpi.w	#$1380,d0
-		bcs.s	@setwater
-		move.w	#$3A8,d1
-		cmp.w	(v_waterpos2).w,d1 ; has water reached last height?
-		bne.s	@setwater	; if not, branch
-		move.b	#1,(v_wtr_routine).w ; use second routine next
-
-	@setwater:
-		move.w	d1,(v_waterpos3).w
-		rts	
-; ===========================================================================
-
-@sonicishigh:
-		cmpi.w	#$C80,d0
-		bcs.s	@setwater
-		move.w	#$E8,d1
-		cmpi.w	#$1500,d0
-		bcs.s	@setwater
-		move.w	#$108,d1
-		bra.s	@setwater
-; ===========================================================================
-
-@routine2:
-		subq.b	#1,d2
-		bne.s	@skip
-		cmpi.w	#$2E0,(v_player+ost_y_pos).w ; is Sonic above $2E0 y-axis?
-		bcc.s	@skip		; if not, branch
-		move.w	#$3A8,d1
-		cmpi.w	#$1300,d0
-		bcs.s	@setwater2
-		move.w	#$108,d1
-		move.b	#2,(v_wtr_routine).w
-
-	@setwater2:
-		move.w	d1,(v_waterpos3).w
-
-	@skip:
-		rts	
-; ===========================================================================
-
-DynWater_LZ2:
-		move.w	(v_screenposx).w,d0
-		move.w	#$328,d1
-		cmpi.w	#$500,d0
-		bcs.s	@setwater
-		move.w	#$3C8,d1
-		cmpi.w	#$B00,d0
-		bcs.s	@setwater
-		move.w	#$428,d1
-
-	@setwater:
-		move.w	d1,(v_waterpos3).w
-		rts	
-; ===========================================================================
-
-DynWater_LZ3:
-		move.w	(v_screenposx).w,d0
-		move.b	(v_wtr_routine).w,d2
-		bne.s	@routine2
-
-		move.w	#$900,d1
-		cmpi.w	#$600,d0	; has screen reached position?
-		bcs.s	@setwaterlz3	; if not, branch
-		cmpi.w	#$3C0,(v_player+ost_y_pos).w
-		bcs.s	@setwaterlz3
-		cmpi.w	#$600,(v_player+ost_y_pos).w ; is Sonic in a y-axis range?
-		bcc.s	@setwaterlz3	; if not, branch
-
-		move.w	#$4C8,d1	; set new water height
-		move.b	#$4B,(v_lvllayout+$106).w ; update level layout
-		move.b	#1,(v_wtr_routine).w ; use second routine next
-		sfx	sfx_Rumbling,0,1,0 ; play sound $B7 (rumbling)
-
-	@setwaterlz3:
-		move.w	d1,(v_waterpos3).w
-		move.w	d1,(v_waterpos2).w ; change water height instantly
-		rts	
-; ===========================================================================
-
-@routine2:
-		subq.b	#1,d2
-		bne.s	@routine3
-		move.w	#$4C8,d1
-		cmpi.w	#$770,d0
-		bcs.s	@setwater2
-		move.w	#$308,d1
-		cmpi.w	#$1400,d0
-		bcs.s	@setwater2
-		cmpi.w	#$508,(v_waterpos3).w
-		beq.s	@sonicislow
-		cmpi.w	#$600,(v_player+ost_y_pos).w ; is Sonic below $600 y-axis?
-		bcc.s	@sonicislow	; if yes, branch
-		cmpi.w	#$280,(v_player+ost_y_pos).w
-		bcc.s	@setwater2
-
-@sonicislow:
-		move.w	#$508,d1
-		move.w	d1,(v_waterpos2).w
-		cmpi.w	#$1770,d0
-		bcs.s	@setwater2
-		move.b	#2,(v_wtr_routine).w
-
-	@setwater2:
-		move.w	d1,(v_waterpos3).w
-		rts	
-; ===========================================================================
-
-@routine3:
-		subq.b	#1,d2
-		bne.s	@routine4
-		move.w	#$508,d1
-		cmpi.w	#$1860,d0
-		bcs.s	@setwater3
-		move.w	#$188,d1
-		cmpi.w	#$1AF0,d0
-		bcc.s	@loc_3DC6
-		cmp.w	(v_waterpos2).w,d1
-		bne.s	@setwater3
-
-	@loc_3DC6:
-		move.b	#3,(v_wtr_routine).w
-
-	@setwater3:
-		move.w	d1,(v_waterpos3).w
-		rts	
-; ===========================================================================
-
-@routine4:
-		subq.b	#1,d2
-		bne.s	@routine5
-		move.w	#$188,d1
-		cmpi.w	#$1AF0,d0
-		bcs.s	@setwater4
-		move.w	#$900,d1
-		cmpi.w	#$1BC0,d0
-		bcs.s	@setwater4
-		move.b	#4,(v_wtr_routine).w
-		move.w	#$608,(v_waterpos3).w
-		move.w	#$7C0,(v_waterpos2).w
-		move.b	#1,(f_switch+8).w
-		rts	
-; ===========================================================================
-
-@setwater4:
-		move.w	d1,(v_waterpos3).w
-		move.w	d1,(v_waterpos2).w
-		rts	
-; ===========================================================================
-
-@routine5:
-		cmpi.w	#$1E00,d0	; has screen passed final position?
-		bcs.s	@dontset	; if not, branch
-		move.w	#$128,(v_waterpos3).w
-
-	@dontset:
-		rts	
-; ===========================================================================
-
-DynWater_SBZ3:
-		move.w	#$228,d1
-		cmpi.w	#$F00,(v_screenposx).w
-		bcs.s	@setwater
-		move.w	#$4C8,d1
-
-	@setwater:
-		move.w	d1,(v_waterpos3).w
-		rts
-
-; ---------------------------------------------------------------------------
-; Labyrinth Zone "wind tunnels"	subroutine
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-LZWindTunnels:
-		tst.w	(v_debuguse).w	; is debug mode	being used?
-		bne.w	@quit	; if yes, branch
-		lea	(LZWind_Data+8).l,a2
-		moveq	#0,d0
-		move.b	(v_act).w,d0	; get act number
-		lsl.w	#3,d0		; multiply by 8
-		adda.w	d0,a2		; add to address for data
-		moveq	#0,d1
-		tst.b	(v_act).w	; is act number 1?
-		bne.s	@notact1	; if not, branch
-		moveq	#1,d1
-		subq.w	#8,a2		; use different data for act 1
-
-	@notact1:
-		lea	(v_player).w,a1
-
-@chksonic:
-		move.w	ost_x_pos(a1),d0
-		cmp.w	(a2),d0
-		bcs.w	@chknext
-		cmp.w	4(a2),d0
-		bcc.w	@chknext
-		move.w	ost_y_pos(a1),d2
-		cmp.w	2(a2),d2
-		bcs.s	@chknext
-		cmp.w	6(a2),d2
-		bcc.s	@chknext	; branch if Sonic is outside a range
-		move.b	(v_vbla_byte).w,d0
-		andi.b	#$3F,d0		; does VInt counter fall on 0, $40, $80 or $C0?
-		bne.s	@skipsound	; if not, branch
-		sfx	sfx_Waterfall,0,0,0	; play rushing water sound (only every $40 frames)
-
-	@skipsound:
-		tst.b	(f_wtunnelallow).w ; are wind tunnels disabled?
-		bne.w	@quit	; if yes, branch
-		cmpi.b	#4,ost_routine(a1) ; is Sonic hurt/dying?
-		bcc.s	@clrquit	; if yes, branch
-		move.b	#1,(f_wtunnelmode).w
-		subi.w	#$80,d0
-		cmp.w	(a2),d0
-		bcc.s	@movesonic
-		moveq	#2,d0
-		cmpi.b	#1,(v_act).w	; is act number 2?
-		bne.s	@notact2	; if not, branch
-		neg.w	d0
-
-	@notact2:
-		add.w	d0,ost_y_pos(a1)	; adjust Sonic's y-axis for curve of tunnel
-
-@movesonic:
-		addq.w	#4,ost_x_pos(a1)
-		move.w	#$400,ost_x_vel(a1) ; move Sonic horizontally
-		move.w	#0,ost_y_vel(a1)
-		move.b	#id_Float2,ost_anim(a1)	; use floating animation
-		bset	#1,ost_status(a1)
-		btst	#0,(v_jpadhold2).w ; is up pressed?
-		beq.s	@down		; if not, branch
-		subq.w	#1,ost_y_pos(a1)	; move Sonic up on pole
-
-	@down:
-		btst	#1,(v_jpadhold2).w ; is down being pressed?
-		beq.s	@end		; if not, branch
-		addq.w	#1,ost_y_pos(a1)	; move Sonic down on pole
-
-	@end:
-		rts	
-; ===========================================================================
-
-@chknext:
-		addq.w	#8,a2		; use second set of values (act 1 only)
-		dbf	d1,@chksonic	; on act 1, repeat for a second tunnel
-		tst.b	(f_wtunnelmode).w ; is Sonic still in a tunnel?
-		beq.s	@quit		; if yes, branch
-		move.b	#id_Walk,ost_anim(a1)	; use walking animation
-
-@clrquit:
-		clr.b	(f_wtunnelmode).w ; finish tunnel
-
-@quit:
-		rts	
-; End of function LZWindTunnels
-
-; ===========================================================================
-
-		;    left, top,  right, bottom boundaries
-LZWind_Data:	dc.w $A80, $300, $C10,  $380 ; act 1 values (set 1)
-		dc.w $F80, $100, $1410,	$180 ; act 1 values (set 2)
-		dc.w $460, $400, $710,  $480 ; act 2 values
-		dc.w $A20, $600, $1610, $6E0 ; act 3 values
-		dc.w $C80, $600, $13D0, $680 ; SBZ act 3 values
-		even
-
-; ---------------------------------------------------------------------------
-; Labyrinth Zone water slide subroutine
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-LZWaterSlides:
-		lea	(v_player).w,a1
-		btst	#1,ost_status(a1)	; is Sonic jumping?
-		bne.s	loc_3F6A	; if not, branch
-		move.w	ost_y_pos(a1),d0
-		lsr.w	#1,d0
-		andi.w	#$380,d0
-		move.b	ost_x_pos(a1),d1
-		andi.w	#$7F,d1
-		add.w	d1,d0
-		lea	(v_lvllayout).w,a2
-		move.b	(a2,d0.w),d0
-		lea	Slide_Chunks_End(pc),a2
-		moveq	#Slide_Chunks_End-Slide_Chunks-1,d1
-
-loc_3F62:
-		cmp.b	-(a2),d0
-		dbeq	d1,loc_3F62
-		beq.s	LZSlide_Move
-
-loc_3F6A:
-		tst.b	(f_jumponly).w
-		beq.s	locret_3F7A
-		move.w	#5,$3E(a1)
-		clr.b	(f_jumponly).w
-
-locret_3F7A:
-		rts	
-; ===========================================================================
-
-LZSlide_Move:
-		cmpi.w	#3,d1
-		bcc.s	loc_3F84
-		nop	
-
-loc_3F84:
-		bclr	#0,ost_status(a1)
-		move.b	Slide_Speeds(pc,d1.w),d0
-		move.b	d0,ost_inertia(a1)
-		bpl.s	loc_3F9A
-		bset	#0,ost_status(a1)
-
-loc_3F9A:
-		clr.b	ost_inertia+1(a1)
-		move.b	#id_WaterSlide,ost_anim(a1) ; use Sonic's "sliding" animation
-		move.b	#1,(f_jumponly).w ; lock controls (except jumping)
-		move.b	(v_vbla_byte).w,d0
-		andi.b	#$1F,d0
-		bne.s	locret_3FBE
-		sfx	sfx_Waterfall,0,0,0	; play water sound
-
-locret_3FBE:
-		rts	
-; End of function LZWaterSlides
-
-; ===========================================================================
-; byte_3FC0:
-Slide_Speeds:
-		dc.b $A, $F5, $A, $F6, $F5, $F4, $B
-		even
-
-Slide_Chunks:
-		dc.b 2, 7, 3, $4C, $4B, 8, 4
-; byte_3FCF
-Slide_Chunks_End
-		even
 ; ---------------------------------------------------------------------------
 ; Subroutine to	move Sonic in demo mode
 ; ---------------------------------------------------------------------------
@@ -4025,161 +3582,8 @@ ColPointers:	dc.l Col_GHZ
 		zonewarning ColPointers,4
 ;		dc.l Col_GHZ ; Pointer for Ending is missing by default.
 
-; ---------------------------------------------------------------------------
-; Oscillating number subroutines
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-; Initialise the values
-
-OscillateNumInit:
-		lea	(v_oscillate).w,a1
-		lea	(@baselines).l,a2
-		moveq	#$20,d1
-
-	@loop:
-		move.w	(a2)+,(a1)+	; copy baseline values to RAM
-		dbf	d1,@loop
-		rts	
-
-
-; ===========================================================================
-@baselines:	dc.w %0000000001111100	; oscillation direction bitfield
-		dc.w $80, 0
-		dc.w $80, 0
-		dc.w $80, 0
-		dc.w $80, 0
-		dc.w $80, 0
-		dc.w $80, 0
-		dc.w $80, 0
-		dc.w $80, 0
-		dc.w $80, 0
-		dc.w $50F0, $11E
-		dc.w $2080, $B4
-		dc.w $3080, $10E
-		dc.w $5080, $1C2
-		dc.w $7080, $276
-		dc.w $80, 0
-		dc.w $80, 0
-		even
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-; Oscillate values
-
-OscillateNumDo:
-		cmpi.b	#6,(v_player+ost_routine).w ; has Sonic just died?
-		bcc.s	@end		; if yes, branch
-		lea	(v_oscillate).w,a1
-		lea	(@settings).l,a2
-		move.w	(a1)+,d3	; get oscillation direction bitfield
-		moveq	#$F,d1
-
-@loop:
-		move.w	(a2)+,d2	; get frequency
-		move.w	(a2)+,d4	; get amplitude
-		btst	d1,d3		; check oscillation direction
-		bne.s	@down		; branch if 1
-
-	@up:
-		move.w	2(a1),d0	; get current rate
-		add.w	d2,d0		; add frequency
-		move.w	d0,2(a1)
-		add.w	d0,0(a1)	; add rate to value
-		cmp.b	0(a1),d4
-		bhi.s	@next
-		bset	d1,d3
-		bra.s	@next
-
-	@down:
-		move.w	2(a1),d0
-		sub.w	d2,d0
-		move.w	d0,2(a1)
-		add.w	d0,0(a1)
-		cmp.b	0(a1),d4
-		bls.s	@next
-		bclr	d1,d3
-
-	@next:
-		addq.w	#4,a1
-		dbf	d1,@loop
-		move.w	d3,(v_oscillate).w
-
-@end:
-		rts	
-; End of function OscillateNumDo
-
-; ===========================================================================
-@settings:	dc.w 2,	$10	; frequency, amplitude
-		dc.w 2,	$18
-		dc.w 2,	$20
-		dc.w 2,	$30
-		dc.w 4,	$20
-		dc.w 8,	8
-		dc.w 8,	$40
-		dc.w 4,	$40
-		dc.w 2,	$50
-		dc.w 2,	$50
-		dc.w 2,	$20
-		dc.w 3,	$30
-		dc.w 5,	$50
-		dc.w 7,	$70
-		dc.w 2,	$10
-		dc.w 2,	$10
-		even
-
-; ---------------------------------------------------------------------------
-; Subroutine to	change synchronised animation variables (rings, giant rings)
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-SynchroAnimate:
-
-; Used for GHZ spiked log
-Sync1:
-		subq.b	#1,(v_ani0_time).w ; has timer reached 0?
-		bpl.s	Sync2		; if not, branch
-		move.b	#$B,(v_ani0_time).w ; reset timer
-		subq.b	#1,(v_ani0_frame).w ; next frame
-		andi.b	#7,(v_ani0_frame).w ; max frame is 7
-
-; Used for rings and giant rings
-Sync2:
-		subq.b	#1,(v_ani1_time).w
-		bpl.s	Sync3
-		move.b	#7,(v_ani1_time).w
-		addq.b	#1,(v_ani1_frame).w
-		andi.b	#3,(v_ani1_frame).w
-
-; Used for nothing
-Sync3:
-		subq.b	#1,(v_ani2_time).w
-		bpl.s	Sync4
-		move.b	#7,(v_ani2_time).w
-		addq.b	#1,(v_ani2_frame).w
-		cmpi.b	#6,(v_ani2_frame).w
-		blo.s	Sync4
-		move.b	#0,(v_ani2_frame).w
-
-; Used for bouncing rings
-Sync4:
-		tst.b	(v_ani3_time).w
-		beq.s	SyncEnd
-		moveq	#0,d0
-		move.b	(v_ani3_time).w,d0
-		add.w	(v_ani3_buf).w,d0
-		move.w	d0,(v_ani3_buf).w
-		rol.w	#7,d0
-		andi.w	#3,d0
-		move.b	d0,(v_ani3_frame).w
-		subq.b	#1,(v_ani3_time).w
-
-SyncEnd:
-		rts	
-; End of function SynchroAnimate
+		include "Includes\OscillateNumInit & OscillateNumDo.asm"
+		include "Includes\SynchroAnimate.asm"
 
 ; ---------------------------------------------------------------------------
 ; End-of-act signpost pattern loading subroutine
@@ -8855,42 +8259,10 @@ LevLoad_Row:
 
 		include "Includes\DynamicLevelEvents.asm"
 
-Bridge:		include "Objects\GHZ Bridge (1).asm"
+		include "Objects\GHZ Bridge (1).asm" ; Bridge
 
 		include "Objects\_DetectPlatform.asm"
-
-; ---------------------------------------------------------------------------
-; Sloped platform subroutine (GHZ collapsing ledges and	SLZ seesaws)
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-SlopeObject:
-		lea	(v_player).w,a1
-		tst.w	ost_y_vel(a1)
-		bmi.w	Plat_Exit
-		move.w	ost_x_pos(a1),d0
-		sub.w	ost_x_pos(a0),d0
-		add.w	d1,d0
-		bmi.s	Plat_Exit
-		add.w	d1,d1
-		cmp.w	d1,d0
-		bhs.s	Plat_Exit
-		btst	#0,ost_render(a0)
-		beq.s	loc_754A
-		not.w	d0
-		add.w	d1,d0
-
-loc_754A:
-		lsr.w	#1,d0
-		moveq	#0,d3
-		move.b	(a2,d0.w),d3
-		move.w	ost_y_pos(a0),d0
-		sub.w	d3,d0
-		bra.w	Plat_NoXCheck_AltY
-; End of function SlopeObject
-
+		include "Objects\_SlopeObject.asm"
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
@@ -8993,8 +8365,8 @@ Obj19:
 		
 Map_GBall:	include "Mappings\GHZ Giant Ball.asm"
 
-CollapseLedge:	include "Objects\GHZ Collapsing Ledge (1).asm"
-CollapseFloor:	include "Objects\MZ, SLZ & SBZ Collapsing Floors.asm"
+		include "Objects\GHZ Collapsing Ledge (1).asm" ; CollapseLedge
+		include "Objects\MZ, SLZ & SBZ Collapsing Floors.asm" ; CollapseFloor
 		include "Objects\GHZ Collapsing Ledge (2).asm"
 
 ; ---------------------------------------------------------------------------
@@ -9005,41 +8377,7 @@ CFlo_Data1:	dc.b $1C, $18, $14, $10, $1A, $16, $12,	$E, $A,	6, $18,	$14, $10, $C
 CFlo_Data2:	dc.b $1E, $16, $E, 6, $1A, $12,	$A, 2
 CFlo_Data3:	dc.b $16, $1E, $1A, $12, 6, $E,	$A, 2
 
-; ---------------------------------------------------------------------------
-; Sloped platform subroutine (GHZ collapsing ledges and	MZ platforms)
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-SlopeObject2:
-		lea	(v_player).w,a1
-		btst	#3,ost_status(a1)
-		beq.s	locret_856E
-		move.w	ost_x_pos(a1),d0
-		sub.w	ost_x_pos(a0),d0
-		add.w	d1,d0
-		lsr.w	#1,d0
-		btst	#0,ost_render(a0)
-		beq.s	loc_854E
-		not.w	d0
-		add.w	d1,d0
-
-loc_854E:
-		moveq	#0,d1
-		move.b	(a2,d0.w),d1
-		move.w	ost_y_pos(a0),d0
-		sub.w	d1,d0
-		moveq	#0,d1
-		move.b	ost_height(a1),d1
-		sub.w	d1,d0
-		move.w	d0,ost_y_pos(a1)
-		sub.w	ost_x_pos(a0),d2
-		sub.w	d2,ost_x_pos(a1)
-
-locret_856E:
-		rts	
-; End of function SlopeObject2
+		include "Objects\_SlopeObject_NoChk.asm"
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
@@ -9052,136 +8390,17 @@ Ledge_SlopeData:
 Map_Ledge:	include "Mappings\GHZ Collapsing Ledge.asm"
 Map_CFlo:	include "Mappings\Collapsing Floors & Blocks.asm"
 
-Scenery:	include "Objects\GHZ Bridge Stump & SLZ Fireball Launcher.asm"
+		include "Objects\GHZ Bridge Stump & SLZ Fireball Launcher.asm" ; Scenery
 Map_Scen:	include "Mappings\SLZ Fireball Launcher.asm"
 
-MagicSwitch:	include "Objects\Unused Switch.asm"
+		include "Objects\Unused Switch.asm" ; MagicSwitch
 Map_Swi:	include "Mappings\Unused Switch.asm"
 
-AutoDoor:	include "Objects\SBZ Door.asm"
+		include "Objects\SBZ Door.asm" ; AutoDoor
 Ani_ADoor:	include "Animations\SBZ Door.asm"
 Map_ADoor:	include "Mappings\SBZ Door.asm"
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Obj44_SolidWall:
-		bsr.w	Obj44_SolidWall2
-		beq.s	loc_8AA8
-		bmi.w	loc_8AC4
-		tst.w	d0
-		beq.w	loc_8A92
-		bmi.s	loc_8A7C
-		tst.w	ost_x_vel(a1)
-		bmi.s	loc_8A92
-		bra.s	loc_8A82
-; ===========================================================================
-
-loc_8A7C:
-		tst.w	ost_x_vel(a1)
-		bpl.s	loc_8A92
-
-loc_8A82:
-		sub.w	d0,ost_x_pos(a1)
-		move.w	#0,ost_inertia(a1)
-		move.w	#0,ost_x_vel(a1)
-
-loc_8A92:
-		btst	#1,ost_status(a1)
-		bne.s	loc_8AB6
-		bset	#5,ost_status(a1)
-		bset	#5,ost_status(a0)
-		rts	
-; ===========================================================================
-
-loc_8AA8:
-		btst	#5,ost_status(a0)
-		beq.s	locret_8AC2
-		move.w	#id_Run,ost_anim(a1)
-
-loc_8AB6:
-		bclr	#5,ost_status(a0)
-		bclr	#5,ost_status(a1)
-
-locret_8AC2:
-		rts	
-; ===========================================================================
-
-loc_8AC4:
-		tst.w	ost_y_vel(a1)
-		bpl.s	locret_8AD8
-		tst.w	d3
-		bpl.s	locret_8AD8
-		sub.w	d3,ost_y_pos(a1)
-		move.w	#0,ost_y_vel(a1)
-
-locret_8AD8:
-		rts	
-; End of function Obj44_SolidWall
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Obj44_SolidWall2:
-		lea	(v_player).w,a1
-		move.w	ost_x_pos(a1),d0
-		sub.w	ost_x_pos(a0),d0
-		add.w	d1,d0
-		bmi.s	loc_8B48
-		move.w	d1,d3
-		add.w	d3,d3
-		cmp.w	d3,d0
-		bhi.s	loc_8B48
-		move.b	ost_height(a1),d3
-		ext.w	d3
-		add.w	d3,d2
-		move.w	ost_y_pos(a1),d3
-		sub.w	ost_y_pos(a0),d3
-		add.w	d2,d3
-		bmi.s	loc_8B48
-		move.w	d2,d4
-		add.w	d4,d4
-		cmp.w	d4,d3
-		bhs.s	loc_8B48
-		tst.b	(f_lockmulti).w
-		bmi.s	loc_8B48
-		cmpi.b	#6,(v_player+ost_routine).w
-		bhs.s	loc_8B48
-		tst.w	(v_debuguse).w
-		bne.s	loc_8B48
-		move.w	d0,d5
-		cmp.w	d0,d1
-		bhs.s	loc_8B30
-		add.w	d1,d1
-		sub.w	d1,d0
-		move.w	d0,d5
-		neg.w	d5
-
-loc_8B30:
-		move.w	d3,d1
-		cmp.w	d3,d2
-		bhs.s	loc_8B3C
-		sub.w	d4,d3
-		move.w	d3,d1
-		neg.w	d1
-
-loc_8B3C:
-		cmp.w	d1,d5
-		bhi.s	loc_8B44
-		moveq	#1,d4
-		rts	
-; ===========================================================================
-
-loc_8B44:
-		moveq	#-1,d4
-		rts	
-; ===========================================================================
-
-loc_8B48:
-		moveq	#0,d4
-		rts	
-; End of function Obj44_SolidWall2
+		include "Objects\GHZ Walls (2).asm"
 
 ; ===========================================================================
 
@@ -9307,359 +8526,9 @@ NullObject:
 		include "Objects\_DisplaySprite.asm"
 		include "Objects\_DeleteObject & DeleteChild.asm"
 
-; ===========================================================================
-BldSpr_ScrPos:	dc.l 0				; blank
-		dc.l v_screenposx&$FFFFFF	; main screen x-position
-		dc.l v_bgscreenposx&$FFFFFF	; background x-position	1
-		dc.l v_bg3screenposx&$FFFFFF	; background x-position	2
-; ---------------------------------------------------------------------------
-; Subroutine to	convert	mappings (etc) to proper Megadrive sprites
-; ---------------------------------------------------------------------------
+		include "Includes\BuildSprites.asm"
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-BuildSprites:
-		lea	(v_spritetablebuffer).w,a2 ; set address for sprite table
-		moveq	#0,d5
-		lea	(v_spritequeue).w,a4
-		moveq	#7,d7
-
-	@priorityLoop:
-		tst.w	(a4)	; are there objects left to draw?
-		beq.w	@nextPriority	; if not, branch
-		moveq	#2,d6
-
-	@objectLoop:
-		movea.w	(a4,d6.w),a0	; load object ID
-		tst.b	(a0)		; if null, branch
-		beq.w	@skipObject
-		bclr	#7,ost_render(a0)		; set as not visible
-
-		move.b	ost_render(a0),d0
-		move.b	d0,d4
-		andi.w	#$C,d0		; get drawing coordinates
-		beq.s	@screenCoords	; branch if 0 (screen coordinates)
-		movea.l	BldSpr_ScrPos(pc,d0.w),a1
-	; check object bounds
-		moveq	#0,d0
-		move.b	ost_actwidth(a0),d0
-		move.w	ost_x_pos(a0),d3
-		sub.w	(a1),d3
-		move.w	d3,d1
-		add.w	d0,d1
-		bmi.w	@skipObject	; left edge out of bounds
-		move.w	d3,d1
-		sub.w	d0,d1
-		cmpi.w	#320,d1
-		bge.s	@skipObject	; right edge out of bounds
-		addi.w	#128,d3		; VDP sprites start at 128px
-
-		btst	#4,d4		; is assume height flag on?
-		beq.s	@assumeHeight	; if yes, branch
-		moveq	#0,d0
-		move.b	ost_height(a0),d0
-		move.w	ost_y_pos(a0),d2
-		sub.w	4(a1),d2
-		move.w	d2,d1
-		add.w	d0,d1
-		bmi.s	@skipObject	; top edge out of bounds
-		move.w	d2,d1
-		sub.w	d0,d1
-		cmpi.w	#224,d1
-		bge.s	@skipObject
-		addi.w	#128,d2		; VDP sprites start at 128px
-		bra.s	@drawObject
-; ===========================================================================
-
-	@screenCoords:
-		move.w	$A(a0),d2	; special variable for screen Y
-		move.w	ost_x_pos(a0),d3
-		bra.s	@drawObject
-; ===========================================================================
-
-	@assumeHeight:
-		move.w	ost_y_pos(a0),d2
-		sub.w	ost_mappings(a1),d2
-		addi.w	#$80,d2
-		cmpi.w	#$60,d2
-		blo.s	@skipObject
-		cmpi.w	#$180,d2
-		bhs.s	@skipObject
-
-	@drawObject:
-		movea.l	ost_mappings(a0),a1
-		moveq	#0,d1
-		btst	#5,d4		; is static mappings flag on?
-		bne.s	@drawFrame	; if yes, branch
-		move.b	ost_frame(a0),d1
-		add.b	d1,d1
-		adda.w	(a1,d1.w),a1	; get mappings frame address
-		move.b	(a1)+,d1	; number of sprite pieces
-		subq.b	#1,d1
-		bmi.s	@setVisible
-
-	@drawFrame:
-		bsr.w	BuildSpr_Draw	; write data from sprite pieces to buffer
-
-	@setVisible:
-		bset	#7,ost_render(a0)		; set object as visible
-
-	@skipObject:
-		addq.w	#2,d6
-		subq.w	#2,(a4)			; number of objects left
-		bne.w	@objectLoop
-
-	@nextPriority:
-		lea	$80(a4),a4
-		dbf	d7,@priorityLoop
-		move.b	d5,(v_spritecount).w
-		cmpi.b	#$50,d5
-		beq.s	@spriteLimit
-		move.l	#0,(a2)
-		rts	
-; ===========================================================================
-
-	@spriteLimit:
-		move.b	#0,-5(a2)	; set last sprite link
-		rts	
-; End of function BuildSprites
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-BuildSpr_Draw:
-		movea.w	ost_tile(a0),a3
-		btst	#0,d4
-		bne.s	BuildSpr_FlipX
-		btst	#1,d4
-		bne.w	BuildSpr_FlipY
-; End of function BuildSpr_Draw
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-BuildSpr_Normal:
-		cmpi.b	#$50,d5		; check sprite limit
-		beq.s	@return
-		move.b	(a1)+,d0	; get y-offset
-		ext.w	d0
-		add.w	d2,d0		; add y-position
-		move.w	d0,(a2)+	; write to buffer
-		move.b	(a1)+,(a2)+	; write sprite size
-		addq.b	#1,d5		; increase sprite counter
-		move.b	d5,(a2)+	; set as sprite link
-		move.b	(a1)+,d0	; get art tile
-		lsl.w	#8,d0
-		move.b	(a1)+,d0
-		add.w	a3,d0		; add art tile offset
-		move.w	d0,(a2)+	; write to buffer
-		move.b	(a1)+,d0	; get x-offset
-		ext.w	d0
-		add.w	d3,d0		; add x-position
-		andi.w	#$1FF,d0	; keep within 512px
-		bne.s	@writeX
-		addq.w	#1,d0
-
-	@writeX:
-		move.w	d0,(a2)+	; write to buffer
-		dbf	d1,BuildSpr_Normal	; process next sprite piece
-
-	@return:
-		rts	
-; End of function BuildSpr_Normal
-
-; ===========================================================================
-
-BuildSpr_FlipX:
-		btst	#1,d4		; is object also y-flipped?
-		bne.w	BuildSpr_FlipXY	; if yes, branch
-
-	@loop:
-		cmpi.b	#$50,d5		; check sprite limit
-		beq.s	@return
-		move.b	(a1)+,d0	; y position
-		ext.w	d0
-		add.w	d2,d0
-		move.w	d0,(a2)+
-		move.b	(a1)+,d4	; size
-		move.b	d4,(a2)+	
-		addq.b	#1,d5		; link
-		move.b	d5,(a2)+
-		move.b	(a1)+,d0	; art tile
-		lsl.w	#8,d0
-		move.b	(a1)+,d0	
-		add.w	a3,d0
-		eori.w	#$800,d0	; toggle flip-x in VDP
-		move.w	d0,(a2)+	; write to buffer
-		move.b	(a1)+,d0	; get x-offset
-		ext.w	d0
-		neg.w	d0			; negate it
-		add.b	d4,d4		; calculate flipped position by size
-		andi.w	#$18,d4
-		addq.w	#8,d4
-		sub.w	d4,d0
-		add.w	d3,d0
-		andi.w	#$1FF,d0	; keep within 512px
-		bne.s	@writeX
-		addq.w	#1,d0
-
-	@writeX:
-		move.w	d0,(a2)+	; write to buffer
-		dbf	d1,@loop		; process next sprite piece
-
-	@return:
-		rts	
-; ===========================================================================
-
-BuildSpr_FlipY:
-		cmpi.b	#$50,d5		; check sprite limit
-		beq.s	@return
-		move.b	(a1)+,d0	; get y-offset
-		move.b	(a1),d4		; get size
-		ext.w	d0
-		neg.w	d0		; negate y-offset
-		lsl.b	#3,d4	; calculate flip offset
-		andi.w	#$18,d4
-		addq.w	#8,d4
-		sub.w	d4,d0
-		add.w	d2,d0	; add y-position
-		move.w	d0,(a2)+	; write to buffer
-		move.b	(a1)+,(a2)+	; size
-		addq.b	#1,d5
-		move.b	d5,(a2)+	; link
-		move.b	(a1)+,d0	; art tile
-		lsl.w	#8,d0
-		move.b	(a1)+,d0
-		add.w	a3,d0
-		eori.w	#$1000,d0	; toggle flip-y in VDP
-		move.w	d0,(a2)+
-		move.b	(a1)+,d0	; x-position
-		ext.w	d0
-		add.w	d3,d0
-		andi.w	#$1FF,d0
-		bne.s	@writeX
-		addq.w	#1,d0
-
-	@writeX:
-		move.w	d0,(a2)+	; write to buffer
-		dbf	d1,BuildSpr_FlipY	; process next sprite piece
-
-	@return:
-		rts	
-; ===========================================================================
-
-BuildSpr_FlipXY:
-		cmpi.b	#$50,d5		; check sprite limit
-		beq.s	@return
-		move.b	(a1)+,d0	; calculated flipped y
-		move.b	(a1),d4
-		ext.w	d0
-		neg.w	d0
-		lsl.b	#3,d4
-		andi.w	#$18,d4
-		addq.w	#8,d4
-		sub.w	d4,d0
-		add.w	d2,d0
-		move.w	d0,(a2)+	; write to buffer
-		move.b	(a1)+,d4	; size
-		move.b	d4,(a2)+	; link
-		addq.b	#1,d5
-		move.b	d5,(a2)+	; art tile
-		move.b	(a1)+,d0
-		lsl.w	#8,d0
-		move.b	(a1)+,d0
-		add.w	a3,d0
-		eori.w	#$1800,d0	; toggle flip-x/y in VDP
-		move.w	d0,(a2)+
-		move.b	(a1)+,d0	; calculate flipped x
-		ext.w	d0
-		neg.w	d0
-		add.b	d4,d4
-		andi.w	#$18,d4
-		addq.w	#8,d4
-		sub.w	d4,d0
-		add.w	d3,d0
-		andi.w	#$1FF,d0
-		bne.s	@writeX
-		addq.w	#1,d0
-
-	@writeX:
-		move.w	d0,(a2)+	; write to buffer
-		dbf	d1,BuildSpr_FlipXY	; process next sprite piece
-
-	@return:
-		rts	
-
-; ---------------------------------------------------------------------------
-; Subroutine to	check if an object is off screen
-
-; output:
-;	d0 = flag set if object is off screen
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-ChkObjectVisible:
-		move.w	ost_x_pos(a0),d0	; get object x-position
-		sub.w	(v_screenposx).w,d0 ; subtract screen x-position
-		bmi.s	@offscreen
-		cmpi.w	#320,d0		; is object on the screen?
-		bge.s	@offscreen	; if not, branch
-
-		move.w	ost_y_pos(a0),d1	; get object y-position
-		sub.w	(v_screenposy).w,d1 ; subtract screen y-position
-		bmi.s	@offscreen
-		cmpi.w	#224,d1		; is object on the screen?
-		bge.s	@offscreen	; if not, branch
-
-		moveq	#0,d0		; set flag to 0
-		rts	
-
-	@offscreen:
-		moveq	#1,d0		; set flag to 1
-		rts	
-; End of function ChkObjectVisible
-
-; ---------------------------------------------------------------------------
-; Subroutine to	check if an object is off screen
-; More precise than above subroutine, taking width into account
-
-; output:
-;	d0 = flag set if object is off screen
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-ChkPartiallyVisible:
-		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
-		move.w	ost_x_pos(a0),d0	; get object x-position
-		sub.w	(v_screenposx).w,d0 ; subtract screen x-position
-		add.w	d1,d0		; add object width
-		bmi.s	@offscreen2
-		add.w	d1,d1
-		sub.w	d1,d0
-		cmpi.w	#320,d0
-		bge.s	@offscreen2
-
-		move.w	ost_y_pos(a0),d1
-		sub.w	(v_screenposy).w,d1
-		bmi.s	@offscreen2
-		cmpi.w	#224,d1
-		bge.s	@offscreen2
-
-		moveq	#0,d0
-		rts	
-
-	@offscreen2:
-		moveq	#1,d0
-		rts	
-; End of function ChkPartiallyVisible
+		include "Objects\_CheckOffScreen.asm"
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	load a level's objects
@@ -9951,7 +8820,7 @@ Roller:		include "Objects\Roller.asm"
 Ani_Roll:	include "Animations\Roller.asm"
 Map_Roll:	include "Mappings\Roller.asm"
 
-EdgeWalls:	include "Objects\GHZ Walls.asm"
+		include "Objects\GHZ Walls (1).asm" ; EdgeWalls
 Map_Edge:	include "Mappings\GHZ Walls.asm"
 
 LavaMaker:	include "Objects\MZ & SLZ Fireball Launchers.asm"
@@ -9997,143 +8866,105 @@ Map_Moto:	include "Mappings\Moto Bug.asm"
 Obj4F:
 		rts	
 
-;Yadrin:
-		include "Objects\Yadrin.asm"
+		include "Objects\Yadrin.asm" ;Yadrin
 Ani_Yad:	include "Animations\Yadrin.asm"
 Map_Yad:	include "Mappings\Yadrin.asm"
 
-SolidObject:	include "Objects\_SolidObject.asm"
+		include "Objects\_SolidObject.asm"
 
-SmashBlock:	include "Objects\MZ Smashable Green Block.asm"
+		include "Objects\MZ Smashable Green Block.asm" ; SmashBlock
 Map_Smab:	include "Mappings\MZ Smashable Green Block.asm"
 
-MovingBlock:	include "Objects\MZ, LZ & SBZ Moving Blocks.asm"
+		include "Objects\MZ, LZ & SBZ Moving Blocks.asm" ; MovingBlock
 Map_MBlock:	include "Mappings\MZ & SBZ Moving Blocks.asm"
 Map_MBlockLZ:	include "Mappings\LZ Moving Block.asm"
 
-Batbrain:	include "Objects\Batbrain.asm"
+		include "Objects\Batbrain.asm" ; Batbrain
 Ani_Bas:	include "Animations\Batbrain.asm"
 Map_Bas:	include "Mappings\Batbrain.asm"
 
-FloatingBlock:	include "Objects\SYZ & SLZ Floating Blocks, LZ Doors.asm"
+		include "Objects\SYZ & SLZ Floating Blocks, LZ Doors.asm" ; FloatingBlock
 Map_FBlock:	include "Mappings\SYZ & SLZ Floating Blocks, LZ Doors.asm"
 
-SpikeBall:	include "Objects\SYZ & LZ Spike Ball Chain.asm"
+		include "Objects\SYZ & LZ Spike Ball Chain.asm" ; SpikeBall
 Map_SBall:	include "Mappings\SYZ Spike Ball Chain.asm"
 Map_SBall2:	include "Mappings\LZ Spike Ball on Chain.asm"
 
-BigSpikeBall:	include "Objects\SYZ Large Spike Balls.asm"
+		include "Objects\SYZ Large Spike Balls.asm" ; BigSpikeBall
 Map_BBall:	include "Mappings\SYZ & SBZ Large Spike Balls.asm"
 
-Elevator:	include "Objects\SLZ Elevator.asm"
+		include "Objects\SLZ Elevator.asm" ; Elevator
 Map_Elev:	include "Mappings\SLZ Elevator.asm"
 
-CirclingPlatform:
-		include "Objects\SLZ Circling Platform.asm"
+		include "Objects\SLZ Circling Platform.asm" ; CirclingPlatform
 Map_Circ:	include "Mappings\SLZ Circling Platform.asm"
 
-Staircase:	include "Objects\SLZ Stairs.asm"
+		include "Objects\SLZ Stairs.asm" ; Staircase
 Map_Stair:	include "Mappings\SLZ Stairs.asm"
 
-Pylon:		include "Objects\SLZ Pylon.asm"
+		include "Objects\SLZ Pylon.asm" ; Pylon
 Map_Pylon:	include "Mappings\SLZ Pylon.asm"
 
-WaterSurface:	include "Objects\LZ Water Surface.asm"
+		include "Objects\LZ Water Surface.asm" ; WaterSurface
 Map_Surf:	include "Mappings\LZ Water Surface.asm"
 
-Pole:		include "Objects\LZ Pole.asm"
+		include "Objects\LZ Pole.asm" ; Pole
 Map_Pole:	include "Mappings\LZ Pole.asm"
 
-FlapDoor:	include "Objects\LZ Flapping Door.asm"
+		include "Objects\LZ Flapping Door.asm" ; FlapDoor
 Ani_Flap:	include "Animations\LZ Flapping Door.asm"
 Map_Flap:	include "Mappings\LZ Flapping Door.asm"
 
-Invisibarrier:	include "Objects\Invisible Solid Blocks.asm"
+		include "Objects\Invisible Solid Blocks.asm" ; Invisibarrier
 Map_Invis:	include "Mappings\Invisible Solid Blocks.asm"
 
-Fan:		include "Objects\SLZ Fans.asm"
+		include "Objects\SLZ Fans.asm" ; Fan
 Map_Fan:	include "Mappings\SLZ Fans.asm"
 
-Seesaw:		include "Objects\SLZ Seesaw.asm"
+		include "Objects\SLZ Seesaw.asm" ; Seesaw
 Map_Seesaw:	include "Mappings\SLZ Seesaw.asm"
 Map_SSawBall:	include "Mappings\SLZ Seesaw Spike Ball.asm"
 
-Bomb:		include "Objects\Bomb Enemy.asm"
+		include "Objects\Bomb Enemy.asm" ; Bomb
 Ani_Bomb:	include "Animations\Bomb Enemy.asm"
 Map_Bomb:	include "Mappings\Bomb Enemy.asm"
 
-Orbinaut:	include "Objects\Orbinaut.asm"
+		include "Objects\Orbinaut.asm" ; Orbinaut
 Ani_Orb:	include "Animations\Orbinaut.asm"
 Map_Orb:	include "Mappings\Orbinaut.asm"
 
-Harpoon:	include "Objects\LZ Harpoon.asm"
+		include "Objects\LZ Harpoon.asm" ; Harpoon
 Ani_Harp:	include "Animations\LZ Harpoon.asm"
 Map_Harp:	include "Mappings\LZ Harpoon.asm"
 
-LabyrinthBlock:	include "Objects\LZ Blocks.asm"
+		include "Objects\LZ Blocks.asm" ; LabyrinthBlock
 Map_LBlock:	include "Mappings\LZ Blocks.asm"
 
-Gargoyle:	include "Objects\LZ Gargoyle Head.asm"
+		include "Objects\LZ Gargoyle Head.asm" ; Gargoyle
 Map_Gar:	include "Mappings\LZ Gargoyle Head.asm"
 
-LabyrinthConvey:
-		include "Objects\LZ Conveyor Belt Platforms.asm"
+		include "Objects\LZ Conveyor Belt Platforms.asm" ; LabyrinthConvey
 Map_LConv:	include "Mappings\LZ Conveyor Belt Platforms.asm"
 
-Bubble:		include "Objects\LZ Bubbles.asm"
+		include "Objects\LZ Bubbles.asm" ; Bubble
 Ani_Bub:	include "Animations\LZ Bubbles.asm"
 Map_Bub:	include "Mappings\LZ Bubbles.asm"
 
-Waterfall:	include "Objects\LZ Waterfall.asm"
+		include "Objects\LZ Waterfall.asm" ; Waterfall
 Ani_WFall:	include "Animations\LZ Waterfall.asm"
 Map_WFall:	include "Mappings\LZ Waterfall.asm"
 
-SonicPlayer:	include "Objects\Sonic (1).asm"
+		include "Objects\Sonic (1).asm" ; SonicPlayer
 
-DrownCount:	include "Objects\LZ Drowning Numbers.asm"
-
-; ---------------------------------------------------------------------------
-; Subroutine to	play music for LZ/SBZ3 after a countdown
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-ResumeMusic:
-		cmpi.w	#12,(v_air).w	; more than 12 seconds of air left?
-		bhi.s	@over12		; if yes, branch
-		move.w	#bgm_LZ,d0	; play LZ music
-		cmpi.w	#(id_LZ<<8)+3,(v_zone).w ; check if level is 0103 (SBZ3)
-		bne.s	@notsbz
-		move.w	#bgm_SBZ,d0	; play SBZ music
-
-	@notsbz:
-		if Revision=0
-		else
-			tst.b	(v_invinc).w ; is Sonic invincible?
-			beq.s	@notinvinc ; if not, branch
-			move.w	#bgm_Invincible,d0
-	@notinvinc:
-			tst.b	(f_lockscreen).w ; is Sonic at a boss?
-			beq.s	@playselected ; if not, branch
-			move.w	#bgm_Boss,d0
-	@playselected:
-		endc
-
-		jsr	(PlaySound).l
-
-	@over12:
-		move.w	#30,(v_air).w	; reset air to 30 seconds
-		clr.b	(v_objspace+$340+$32).w
-		rts	
-; End of function ResumeMusic
+		include "Objects\LZ Drowning Numbers.asm" ; DrownCount
+		include "Objects\_ResumeMusic.asm"
 
 Ani_Drown:	include "Animations\LZ Drowning Numbers.asm"
 Map_Drown:	include "Mappings\LZ Drowning Numbers.asm"
 
-ShieldItem:	include "Objects\Shield & Invincibility.asm"
-VanishSonic:	include "Objects\Unused Special Stage Warp.asm"
-Splash:		include "Objects\LZ Water Splash.asm"
+		include "Objects\Shield & Invincibility.asm" ; ShieldItem
+		include "Objects\Unused Special Stage Warp.asm" ; VanishSonic
+		include "Objects\LZ Water Splash.asm" ; Splash
 Ani_Shield:	include "Animations\Shield & Invincibility.asm"
 Map_Shield:	include "Mappings\Shield & Invincibility.asm"
 Ani_Vanish:	include "Animations\Unused Special Stage Warp.asm"
@@ -11415,50 +10246,7 @@ Obj10:
 
 		include "Includes\AnimateLevelGfx.asm"
 
-; ---------------------------------------------------------------------------
-; Object 21 - SCORE, TIME, RINGS
-; ---------------------------------------------------------------------------
-
-HUD:
-		moveq	#0,d0
-		move.b	ost_routine(a0),d0
-		move.w	HUD_Index(pc,d0.w),d1
-		jmp	HUD_Index(pc,d1.w)
-; ===========================================================================
-HUD_Index:	index *
-		ptr HUD_Main
-		ptr HUD_Flash
-; ===========================================================================
-
-HUD_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
-		move.w	#$90,ost_x_pos(a0)
-		move.w	#$108,ost_y_screen(a0)
-		move.l	#Map_HUD,ost_mappings(a0)
-		move.w	#tile_Nem_Hud,ost_tile(a0)
-		move.b	#render_abs,ost_render(a0)
-		move.b	#0,ost_priority(a0)
-
-HUD_Flash:	; Routine 2
-		tst.w	(v_rings).w	; do you have any rings?
-		beq.s	@norings	; if not, branch
-		clr.b	ost_frame(a0)	; make all counters yellow
-		jmp	(DisplaySprite).l
-; ===========================================================================
-
-@norings:
-		moveq	#0,d0
-		btst	#3,(v_framebyte).w
-		bne.s	@display
-		addq.w	#1,d0		; make ring counter flash red
-		cmpi.b	#9,(v_timemin).w ; have	9 minutes elapsed?
-		bne.s	@display	; if not, branch
-		addq.w	#2,d0		; make time counter flash red
-
-	@display:
-		move.b	d0,ost_frame(a0)
-		jmp	DisplaySprite
-		
+		include "Objects\HUD.asm" ; HUD
 Map_HUD:	include "Mappings\HUD Score, Time & Rings.asm"
 
 ; ---------------------------------------------------------------------------

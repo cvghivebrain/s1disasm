@@ -106,7 +106,7 @@ PushB_ChkDel2:
 ; ===========================================================================
 
 PushB_ChkVisible:	; Routine 4
-		bsr.w	ChkPartiallyVisible ; is block still on screen?
+		bsr.w	CheckOffScreen_Wide ; is block still on screen?
 		beq.s	@visible	; if yes, branch
 		move.b	#id_PushB_Action,ost_routine(a0)
 		clr.b	ost_pblock_lava_flag(a0)

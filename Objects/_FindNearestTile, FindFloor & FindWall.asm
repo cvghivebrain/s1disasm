@@ -45,7 +45,7 @@ FindNearestTile:
 
 @specialtile:
 		andi.w	#$7F,d1
-		btst	#render_bg_bit,ost_render(a0) ; is object "behind a loop"?
+		btst	#render_behind_bit,ost_render(a0) ; is object "behind a loop"?
 		beq.s	@treatasnormal	; if not, branch
 		addq.w	#1,d1
 		cmpi.w	#$29,d1		; is 256x256 tile number $28?

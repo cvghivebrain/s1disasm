@@ -2,6 +2,7 @@
 ; Object 5F - walking bomb enemy (SLZ, SBZ)
 ; ---------------------------------------------------------------------------
 
+Bomb:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Bom_Index(pc,d0.w),d1

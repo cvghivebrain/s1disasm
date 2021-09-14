@@ -2,6 +2,7 @@
 ; Object 44 - edge walls (GHZ)
 ; ---------------------------------------------------------------------------
 
+EdgeWalls:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Edge_Index(pc,d0.w),d1
@@ -30,7 +31,7 @@ Edge_Main:	; Routine 0
 Edge_Solid:	; Routine 2
 		move.w	#$13,d1
 		move.w	#$28,d2
-		bsr.w	Obj44_SolidWall
+		bsr.w	Edge_SolidWall
 
 Edge_Display:	; Routine 4
 		bsr.w	DisplaySprite

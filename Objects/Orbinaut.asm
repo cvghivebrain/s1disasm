@@ -2,6 +2,7 @@
 ; Object 60 - Orbinaut enemy (LZ, SLZ, SBZ)
 ; ---------------------------------------------------------------------------
 
+Orbinaut:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Orb_Index(pc,d0.w),d1

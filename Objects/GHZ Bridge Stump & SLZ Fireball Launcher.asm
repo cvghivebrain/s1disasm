@@ -2,6 +2,7 @@
 ; Object 1C - scenery (GHZ bridge stump, SLZ lava thrower)
 ; ---------------------------------------------------------------------------
 
+Scenery:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Scen_Index(pc,d0.w),d1

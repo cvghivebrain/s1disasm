@@ -2,6 +2,7 @@
 ; Object 57 - spiked balls (SYZ, LZ)
 ; ---------------------------------------------------------------------------
 
+SpikeBall:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	SBall_Index(pc,d0.w),d1

@@ -2,6 +2,7 @@
 ; Object 5A - platforms	moving in circles (SLZ)
 ; ---------------------------------------------------------------------------
 
+CirclingPlatform:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Circ_Index(pc,d0.w),d1

@@ -2,6 +2,7 @@
 ; Object 1A - GHZ collapsing ledge
 ; ---------------------------------------------------------------------------
 
+CollapseLedge:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Ledge_Index(pc,d0.w),d1
@@ -60,7 +61,7 @@ Ledge_WalkOff:	; Routine $A
 		move.w	#$30,d1
 		lea	(Ledge_SlopeData).l,a2
 		move.w	ost_x_pos(a0),d2
-		bsr.w	SlopeObject2
+		bsr.w	SlopeObject_NoChk
 		bra.w	RememberState
 ; End of function Ledge_WalkOff
 

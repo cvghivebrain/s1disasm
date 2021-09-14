@@ -3,6 +3,7 @@
 ; Sonic's mouth (LZ)
 ; ---------------------------------------------------------------------------
 
+DrownCount:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Drown_Index(pc,d0.w),d1

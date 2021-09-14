@@ -2,6 +2,7 @@
 ; Object 71 - invisible	solid barriers
 ; ---------------------------------------------------------------------------
 
+Invisibarrier:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Invis_Index(pc,d0.w),d1
@@ -29,7 +30,7 @@ Invis_Main:	; Routine 0
 		move.b	d1,ost_height(a0) ; set object height
 
 Invis_Solid:	; Routine 2
-		bsr.w	ChkObjectVisible
+		bsr.w	CheckOffScreen
 		bne.s	@chkdel
 		moveq	#0,d1
 		move.b	ost_actwidth(a0),d1

@@ -2,6 +2,7 @@
 ; Object 56 - floating blocks (SYZ/SLZ), large doors (LZ)
 ; ---------------------------------------------------------------------------
 
+FloatingBlock:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	FBlock_Index(pc,d0.w),d1

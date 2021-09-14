@@ -2,6 +2,7 @@
 ; Object 62 - gargoyle head (LZ)
 ; ---------------------------------------------------------------------------
 
+Gargoyle:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Gar_Index(pc,d0.w),d1
@@ -35,7 +36,7 @@ Gar_MakeFire:	; Routine 2
 		bne.s	@nofire		; if time remains, branch
 
 		move.b	ost_anim_delay(a0),ost_anim_time(a0) ; reset timer
-		bsr.w	ChkObjectVisible
+		bsr.w	CheckOffScreen
 		bne.s	@nofire
 		bsr.w	FindFreeObj
 		bne.s	@nofire

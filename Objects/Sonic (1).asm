@@ -2,6 +2,7 @@
 ; Object 01 - Sonic
 ; ---------------------------------------------------------------------------
 
+SonicPlayer:
 		tst.w	(v_debuguse).w	; is debug mode	being used?
 		beq.s	Sonic_Normal	; if not, branch
 		jmp	(DebugMode).l
@@ -1503,7 +1504,7 @@ Sonic_Loops:
 		beq.s	@chkifleft	; if yes, branch
 		cmp.b	(v_256loop2).w,d1
 		beq.s	@chkifinair
-		bclr	#render_bg_bit,ost_render(a0) ; return Sonic to high plane
+		bclr	#render_behind_bit,ost_render(a0) ; return Sonic to high plane
 		rts	
 ; ===========================================================================
 
@@ -1511,7 +1512,7 @@ Sonic_Loops:
 		btst	#status_air_bit,ost_status(a0) ; is Sonic in the air?
 		beq.s	@chkifleft	; if not, branch
 
-		bclr	#render_bg_bit,ost_render(a0) ; return Sonic to high plane
+		bclr	#render_behind_bit,ost_render(a0) ; return Sonic to high plane
 		rts	
 ; ===========================================================================
 
@@ -1520,7 +1521,7 @@ Sonic_Loops:
 		cmpi.b	#$2C,d2
 		bcc.s	@chkifright
 
-		bclr	#render_bg_bit,ost_render(a0) ; return Sonic to high plane
+		bclr	#render_behind_bit,ost_render(a0) ; return Sonic to high plane
 		rts	
 ; ===========================================================================
 
@@ -1528,19 +1529,19 @@ Sonic_Loops:
 		cmpi.b	#$E0,d2
 		bcs.s	@chkangle1
 
-		bset	#render_bg_bit,ost_render(a0) ; send Sonic to low plane
+		bset	#render_behind_bit,ost_render(a0) ; send Sonic to low plane
 		rts	
 ; ===========================================================================
 
 @chkangle1:
-		btst	#render_bg_bit,ost_render(a0) ; is Sonic on low plane?
+		btst	#render_behind_bit,ost_render(a0) ; is Sonic on low plane?
 		bne.s	@chkangle2	; if yes, branch
 
 		move.b	ost_angle(a0),d1
 		beq.s	@done
 		cmpi.b	#$80,d1		; is Sonic upside-down?
 		bhi.s	@done		; if yes, branch
-		bset	#render_bg_bit,ost_render(a0) ; send Sonic to low plane
+		bset	#render_behind_bit,ost_render(a0) ; send Sonic to low plane
 		rts	
 ; ===========================================================================
 
@@ -1548,7 +1549,7 @@ Sonic_Loops:
 		move.b	ost_angle(a0),d1
 		cmpi.b	#$80,d1		; is Sonic upright?
 		bls.s	@done		; if yes, branch
-		bclr	#render_bg_bit,ost_render(a0) ; send Sonic to high plane
+		bclr	#render_behind_bit,ost_render(a0) ; send Sonic to high plane
 
 @noloops:
 @done:

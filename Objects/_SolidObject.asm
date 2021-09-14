@@ -14,6 +14,7 @@
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 
+SolidObject:
 		tst.b	ost_solid(a0)	; is Sonic standing on the object?
 		beq.w	Solid_ChkEnter	; if not, branch
 		move.w	d1,d2

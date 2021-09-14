@@ -2,6 +2,7 @@
 ; Object 59 - platforms	that move when you stand on them (SLZ)
 ; ---------------------------------------------------------------------------
 
+Elevator:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Elev_Index(pc,d0.w),d1

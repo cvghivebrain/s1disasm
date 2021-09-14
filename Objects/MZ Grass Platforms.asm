@@ -69,7 +69,7 @@ LGrass_Slope:
 		addi.w	#$B,d1
 		movea.l	ost_grass_coll_ptr(a0),a2
 		move.w	ost_x_pos(a0),d2
-		bsr.w	SlopeObject2
+		bsr.w	SlopeObject_NoChk
 		bra.s	LGrass_Display
 ; ===========================================================================
 

@@ -2,6 +2,7 @@
 ; Object 5E - seesaws (SLZ)
 ; ---------------------------------------------------------------------------
 
+Seesaw:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	See_Index(pc,d0.w),d1
@@ -88,7 +89,7 @@ See_Slope2:	; Routine 4
 		jsr	(ExitPlatform).l
 		move.w	#$30,d1
 		move.w	ost_x_pos(a0),d2
-		jsr	(SlopeObject2).l
+		jsr	(SlopeObject_NoChk).l
 		rts	
 ; ===========================================================================
 

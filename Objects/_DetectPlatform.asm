@@ -2,7 +2,8 @@
 ; Platform subroutine
 ;
 ; input:
-;	d1 = width
+;	d1 = platform width
+;	d0 = y position (Plat_NoXCheck_AltY only)
 ; ---------------------------------------------------------------------------
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
