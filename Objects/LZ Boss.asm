@@ -13,9 +13,9 @@ Obj77_Index:	index *,,2
 		ptr Obj77_FaceMain
 		ptr Obj77_FlameMain
 
-Obj77_ObjData:	dc.b id_Obj77_ShipMain,	0		; routine number, animation
-		dc.b id_Obj77_FaceMain,	1
-		dc.b id_Obj77_FlameMain, 7
+Obj77_ObjData:	dc.b id_Obj77_ShipMain,	id_ani_boss_ship ; routine number, animation
+		dc.b id_Obj77_FaceMain,	id_ani_boss_face1
+		dc.b id_Obj77_FlameMain, id_ani_boss_blank
 
 ost_blz_parent_x_pos:	equ $30	; parent x position (2 bytes)
 ost_blz_parent:		equ $34	; address of OST of parent object (4 bytes)
@@ -60,7 +60,7 @@ Obj77_LoadBoss:
 		dbf	d1,Obj77_Loop
 
 Obj77_ShipMain:	; Routine 2
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		moveq	#0,d0
 		move.b	ost_routine2(a0),d0
 		move.w	Obj77_ShipIndex(pc,d0.w),d1
@@ -220,7 +220,7 @@ loc_1806C:
 		swap	d0
 		move.w	d0,ost_x_pos(a0)
 		move.w	ost_y_vel(a0),d0
-		move.w	(v_player+ost_y_pos).w,d1
+		move.w	(v_ost_player+ost_y_pos).w,d1
 		sub.w	ost_y_pos(a0),d1
 		bcs.s	loc_180A2
 		subi.w	#$48,d1
@@ -335,30 +335,30 @@ Obj77_FaceMain:	; Routine 4
 		bne.s	Obj77_FaceDel
 		moveq	#0,d0
 		move.b	ost_routine2(a1),d0
-		moveq	#1,d1
+		moveq	#id_ani_boss_face1,d1
 		tst.b	ost_blz_wait_time+1(a0)
 		beq.s	loc_1818C
-		moveq	#$A,d1
+		moveq	#id_ani_boss_defeat,d1
 		bra.s	loc_181A0
 ; ===========================================================================
 
 loc_1818C:
 		tst.b	ost_col_type(a1)
 		bne.s	loc_18196
-		moveq	#5,d1
+		moveq	#id_ani_boss_hit,d1
 		bra.s	loc_181A0
 ; ===========================================================================
 
 loc_18196:
-		cmpi.b	#id_Sonic_Hurt,(v_player+ost_routine).w
+		cmpi.b	#id_Sonic_Hurt,(v_ost_player+ost_routine).w
 		bcs.s	loc_181A0
-		moveq	#4,d1
+		moveq	#id_ani_boss_laugh,d1
 
 loc_181A0:
 		move.b	d1,ost_anim(a0)
 		cmpi.b	#$E,d0
 		bne.s	loc_181B6
-		move.b	#6,ost_anim(a0)
+		move.b	#id_ani_boss_panic,ost_anim(a0)
 		tst.b	ost_render(a0)
 		bpl.s	Obj77_FaceDel
 
@@ -371,21 +371,21 @@ Obj77_FaceDel:
 ; ===========================================================================
 
 Obj77_FlameMain:; Routine 6
-		move.b	#7,ost_anim(a0)
+		move.b	#id_ani_boss_blank,ost_anim(a0)
 		movea.l	ost_blz_parent(a0),a1
 		move.b	(a1),d0
 		cmp.b	(a0),d0
 		bne.s	Obj77_FlameDel
 		cmpi.b	#$E,ost_routine2(a1)
 		bne.s	loc_181F0
-		move.b	#$B,ost_anim(a0)
-		tst.b	1(a0)
+		move.b	#id_ani_boss_bigflame,ost_anim(a0)
+		tst.b	ost_render(a0)
 		bpl.s	Obj77_FlameDel
 		bra.s	loc_181F0
 ; ===========================================================================
 		tst.w	ost_x_vel(a1)
 		beq.s	loc_181F0
-		move.b	#8,ost_anim(a0)
+		move.b	#id_ani_boss_flame1,ost_anim(a0)
 
 loc_181F0:
 		bra.s	Obj77_Display

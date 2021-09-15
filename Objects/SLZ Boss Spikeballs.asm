@@ -170,7 +170,7 @@ locret_18EA8:
 ; ===========================================================================
 
 loc_18EAA:	; Routine 6
-		lea	(v_objspace+$40).w,a1
+		lea	(v_ost_all+$40).w,a1
 		moveq	#id_BossStarLight,d0
 		moveq	#$40,d1
 		moveq	#$3E,d2
@@ -281,7 +281,7 @@ loc_18FA2:
 		beq.s	loc_19008
 		clr.b	ost_routine2(a1)
 		move.b	#2,ost_routine(a1)
-		lea	(v_objspace).w,a2
+		lea	(v_ost_all).w,a2
 		move.w	ost_y_vel(a0),ost_y_vel(a2)
 		neg.w	ost_y_vel(a2)
 		cmpi.b	#1,ost_frame(a1)

@@ -4,9 +4,9 @@ Bri_MoveSonic:
 		move.b	ost_bridge_current_log(a0),d0 ; get current log number
 		move.b	ost_bridge_child_list(a0,d0.w),d0 ; get OST index for that log
 		lsl.w	#6,d0
-		addi.l	#v_objspace&$FFFFFF,d0 ; convert to address
+		addi.l	#v_ost_all&$FFFFFF,d0 ; convert to address
 		movea.l	d0,a2
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		move.w	ost_y_pos(a2),d0
 		subq.w	#8,d0
 		moveq	#0,d1
@@ -44,7 +44,7 @@ loc_765C:
 		moveq	#0,d0
 		move.b	(a2)+,d0
 		lsl.w	#6,d0
-		addi.l	#v_objspace&$FFFFFF,d0
+		addi.l	#v_ost_all&$FFFFFF,d0
 		movea.l	d0,a1
 		moveq	#0,d0
 		move.b	(a3)+,d0
@@ -74,7 +74,7 @@ loc_76A4:
 		moveq	#0,d0
 		move.b	(a2)+,d0
 		lsl.w	#6,d0
-		addi.l	#v_objspace&$FFFFFF,d0
+		addi.l	#v_ost_all&$FFFFFF,d0
 		movea.l	d0,a1
 		moveq	#0,d0
 		move.b	-(a3),d0
@@ -118,7 +118,7 @@ Bri_ChkDel:
 		moveq	#0,d0
 		move.b	(a2)+,d0
 		lsl.w	#6,d0
-		addi.l	#v_objspace&$FFFFFF,d0
+		addi.l	#v_ost_all&$FFFFFF,d0
 		movea.l	d0,a1
 		cmp.w	a0,d0
 		beq.s	@skipdel

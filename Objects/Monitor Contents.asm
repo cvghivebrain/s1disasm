@@ -66,7 +66,7 @@ Pow_ChkShoes:
 		bne.s	Pow_ChkShield
 
 		move.b	#1,(v_shoes).w	; speed up the BG music
-		move.w	#$4B0,(v_player+ost_sonic_shoe_time).w ; time limit for the power-up
+		move.w	#$4B0,(v_ost_player+ost_sonic_shoe_time).w ; time limit for the power-up
 		move.w	#$C00,(v_sonspeedmax).w ; change Sonic's top speed
 		move.w	#$18,(v_sonspeedacc).w	; change Sonic's acceleration
 		move.w	#$80,(v_sonspeeddec).w	; change Sonic's deceleration
@@ -78,7 +78,7 @@ Pow_ChkShield:
 		bne.s	Pow_ChkInvinc
 
 		move.b	#1,(v_shield).w	; give Sonic a shield
-		move.b	#id_ShieldItem,(v_objspace+$180).w ; load shield object ($38)
+		move.b	#id_ShieldItem,(v_ost_shield).w ; load shield object ($38)
 		music	sfx_Shield,1,0,0 ; play shield sound
 ; ===========================================================================
 
@@ -87,15 +87,15 @@ Pow_ChkInvinc:
 		bne.s	Pow_ChkRings
 
 		move.b	#1,(v_invinc).w	; make Sonic invincible
-		move.w	#$4B0,(v_player+ost_sonic_inv_time).w ; time limit for the power-up
-		move.b	#id_ShieldItem,(v_objspace+$200).w ; load stars object ($3801)
-		move.b	#1,(v_objspace+$200+ost_anim).w
-		move.b	#id_ShieldItem,(v_objspace+$240).w ; load stars object ($3802)
-		move.b	#2,(v_objspace+$240+ost_anim).w
-		move.b	#id_ShieldItem,(v_objspace+$280).w ; load stars object ($3803)
-		move.b	#3,(v_objspace+$280+ost_anim).w
-		move.b	#id_ShieldItem,(v_objspace+$2C0).w ; load stars object ($3804)
-		move.b	#4,(v_objspace+$2C0+ost_anim).w
+		move.w	#$4B0,(v_ost_player+ost_sonic_inv_time).w ; time limit for the power-up
+		move.b	#id_ShieldItem,(v_ost_stars1).w ; load stars object ($3801)
+		move.b	#1,(v_ost_stars1+ost_anim).w
+		move.b	#id_ShieldItem,(v_ost_stars2).w ; load stars object ($3802)
+		move.b	#2,(v_ost_stars2+ost_anim).w
+		move.b	#id_ShieldItem,(v_ost_stars3).w ; load stars object ($3803)
+		move.b	#3,(v_ost_stars3+ost_anim).w
+		move.b	#id_ShieldItem,(v_ost_stars4).w ; load stars object ($3804)
+		move.b	#4,(v_ost_stars4+ost_anim).w
 		tst.b	(f_lockscreen).w ; is boss mode on?
 		bne.s	Pow_NoMusic	; if yes, branch
 		if Revision=0

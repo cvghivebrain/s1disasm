@@ -37,7 +37,7 @@ Fan_Delay:	; Routine 2
 @blow:
 		tst.b	ost_fan_flag(a0) ; is fan switched on?
 		bne.w	@chkdel		; if not, branch
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		move.w	ost_x_pos(a1),d0
 		sub.w	ost_x_pos(a0),d0
 		btst	#status_xflip_bit,ost_status(a0) ; is fan facing right?

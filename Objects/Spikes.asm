@@ -86,7 +86,7 @@ Spik_Hurt:
 		bne.s	Spik_Display	; if yes, branch
 		move.l	a0,-(sp)
 		movea.l	a0,a2
-		lea	(v_player).w,a0
+		lea	(v_ost_player).w,a0
 		cmpi.b	#id_Sonic_Hurt,ost_routine(a0) ; is Sonic hurt or dead?
 		bcc.s	loc_CF20	; if yes, branch
 	if Revision<>2

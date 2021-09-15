@@ -76,7 +76,7 @@ Swing_Main:	; Routine 0
 		bne.s	@fail
 		addq.b	#1,ost_subtype(a0)
 		move.w	a1,d5
-		subi.w	#v_objspace&$FFFF,d5
+		subi.w	#v_ost_all&$FFFF,d5
 		lsr.w	#6,d5
 		andi.w	#$7F,d5
 		move.b	d5,(a2)+	; save child OST index to byte list in parent OST
@@ -101,7 +101,7 @@ Swing_Main:	; Routine 0
 
 	@fail:
 		move.w	a0,d5
-		subi.w	#v_objspace&$FFFF,d5
+		subi.w	#v_ost_all&$FFFF,d5
 		lsr.w	#6,d5
 		andi.w	#$7F,d5
 		move.b	d5,(a2)+

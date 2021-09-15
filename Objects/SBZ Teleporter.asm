@@ -40,7 +40,7 @@ Tele_Main:	; Routine 0
 		move.w	(a2)+,ost_tele_y_target(a0)
 
 Tele_Action:	; Routine 2
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		move.w	ost_x_pos(a1),d0
 		sub.w	ost_x_pos(a0),d0
 		btst	#status_xflip_bit,ost_status(a0)
@@ -82,7 +82,7 @@ Tele_Action:	; Routine 2
 ; ===========================================================================
 
 Tele_Bump:	; Routine 4
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		move.b	ost_tele_bump(a0),d0
 		addq.b	#2,ost_tele_bump(a0)
 		jsr	(CalcSine).l
@@ -102,7 +102,7 @@ locret_16796:
 
 Tele_Bend:	; Routine 6
 		addq.l	#4,sp
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		subq.b	#1,ost_tele_camera(a0)
 		bpl.s	loc_167DA
 		move.w	ost_tele_x_target(a0),ost_x_pos(a1)

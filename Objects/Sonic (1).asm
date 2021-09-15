@@ -38,7 +38,7 @@ Sonic_Main:	; Routine 0
 Sonic_Control:	; Routine 2
 		tst.w	(f_debugmode).w	; is debug cheat enabled?
 		beq.s	loc_12C58	; if not, branch
-		btst	#bitB,(v_jpadpress1).w ; is button B pressed?
+		btst	#bitB,(v_joypad_press_actual).w ; is button B pressed?
 		beq.s	loc_12C58	; if not, branch
 		move.w	#1,(v_debuguse).w ; change Sonic into a ring/item
 		clr.b	(f_lockctrl).w
@@ -48,7 +48,7 @@ Sonic_Control:	; Routine 2
 loc_12C58:
 		tst.b	(f_lockctrl).w	; are controls locked?
 		bne.s	loc_12C64	; if yes, branch
-		move.w	(v_jpadhold1).w,(v_jpadhold2).w ; enable joypad control
+		move.w	(v_joypad_hold_actual).w,(v_joypad_hold).w ; enable joypad control
 
 loc_12C64:
 		btst	#0,(f_lockmulti).w ; are controls locked?
@@ -165,7 +165,7 @@ Sonic_Display:
 
 Sonic_RecordPosition:
 		move.w	(v_trackpos).w,d0
-		lea	(v_tracksonic).w,a1
+		lea	(v_sonic_pos_tracker).w,a1
 		lea	(a1,d0.w),a1
 		move.w	ost_x_pos(a0),(a1)+
 		move.w	ost_y_pos(a0),(a1)+
@@ -194,8 +194,8 @@ Sonic_Water:
 		bset	#status_underwater_bit,ost_status(a0)
 		bne.s	@exit
 		bsr.w	ResumeMusic
-		move.b	#id_DrownCount,(v_objspace+$340).w ; load bubbles object from Sonic's mouth
-		move.b	#$81,(v_objspace+$340+ost_subtype).w
+		move.b	#id_DrownCount,(v_ost_all+$340).w ; load bubbles object from Sonic's mouth
+		move.b	#$81,(v_ost_all+$340+ost_subtype).w
 		move.w	#$300,(v_sonspeedmax).w ; change Sonic's top speed
 		move.w	#6,(v_sonspeedacc).w ; change Sonic's acceleration
 		move.w	#$40,(v_sonspeeddec).w ; change Sonic's deceleration
@@ -203,7 +203,7 @@ Sonic_Water:
 		asr	ost_y_vel(a0)
 		asr	ost_y_vel(a0)	; slow Sonic
 		beq.s	@exit		; branch if Sonic stops moving
-		move.b	#id_Splash,(v_objspace+$300).w ; load splash object
+		move.b	#id_Splash,(v_ost_all+$300).w ; load splash object
 		sfx	sfx_Splash,1,0,0  ; play splash sound
 ; ===========================================================================
 
@@ -216,7 +216,7 @@ Sonic_Water:
 		move.w	#$80,(v_sonspeeddec).w ; restore Sonic's deceleration
 		asl	ost_y_vel(a0)
 		beq.w	@exit
-		move.b	#id_Splash,(v_objspace+$300).w ; load splash object
+		move.b	#id_Splash,(v_ost_all+$300).w ; load splash object
 		cmpi.w	#-$1000,ost_y_vel(a0)
 		bgt.s	@belowmaxspeed
 		move.w	#-$1000,ost_y_vel(a0) ; set maximum speed on leaving water
@@ -297,12 +297,12 @@ Sonic_Move:
 		bne.w	Sonic_InertiaLR
 		tst.w	ost_sonic_lock_time(a0) ; are controls locked?
 		bne.w	Sonic_ResetScr	; if yes, branch
-		btst	#bitL,(v_jpadhold2).w ; is left being pressed?
+		btst	#bitL,(v_joypad_hold).w ; is left being pressed?
 		beq.s	@notleft	; if not, branch
 		bsr.w	Sonic_MoveLeft
 
 	@notleft:
-		btst	#bitR,(v_jpadhold2).w ; is right being pressed?
+		btst	#bitR,(v_joypad_hold).w ; is right being pressed?
 		beq.s	@notright	; if not, branch
 		bsr.w	Sonic_MoveRight
 
@@ -321,7 +321,7 @@ Sonic_Move:
 		moveq	#0,d0
 		move.b	ost_sonic_on_obj(a0),d0 ; get OST index of platform or object
 		lsl.w	#6,d0
-		lea	(v_objspace).w,a1
+		lea	(v_ost_all).w,a1
 		lea	(a1,d0.w),a1	; a1 = actual address of OST
 		tst.b	ost_status(a1)
 		bmi.s	Sonic_LookUp
@@ -364,7 +364,7 @@ Sonic_Balance:
 ; ===========================================================================
 
 Sonic_LookUp:
-		btst	#bitUp,(v_jpadhold2).w ; is up being pressed?
+		btst	#bitUp,(v_joypad_hold).w ; is up being pressed?
 		beq.s	Sonic_Duck	; if not, branch
 		move.b	#id_LookUp,ost_anim(a0) ; use "looking up" animation
 		cmpi.w	#$C8,(v_lookshift).w
@@ -374,7 +374,7 @@ Sonic_LookUp:
 ; ===========================================================================
 
 Sonic_Duck:
-		btst	#bitDn,(v_jpadhold2).w ; is down being pressed?
+		btst	#bitDn,(v_joypad_hold).w ; is down being pressed?
 		beq.s	Sonic_ResetScr	; if not, branch
 		move.b	#id_Duck,ost_anim(a0) ; use "ducking" animation
 		cmpi.w	#8,(v_lookshift).w
@@ -395,7 +395,7 @@ Sonic_ResetScr:
 	Sonic_ScrOk:
 
 Sonic_Inertia:
-		move.b	(v_jpadhold2).w,d0
+		move.b	(v_joypad_hold).w,d0
 		andi.b	#btnL+btnR,d0	; is left/right	pressed?
 		bne.s	Sonic_InertiaLR	; if yes, branch
 		move.w	ost_inertia(a0),d0 ; get Sonic's inertia
@@ -591,12 +591,12 @@ Sonic_RollSpeed:
 		bne.w	loc_131CC
 		tst.w	ost_sonic_lock_time(a0)
 		bne.s	@notright
-		btst	#bitL,(v_jpadhold2).w ; is left being pressed?
+		btst	#bitL,(v_joypad_hold).w ; is left being pressed?
 		beq.s	@notleft	; if not, branch
 		bsr.w	Sonic_RollLeft
 
 	@notleft:
-		btst	#bitR,(v_jpadhold2).w ; is right being pressed?
+		btst	#bitR,(v_joypad_hold).w ; is right being pressed?
 		beq.s	@notright	; if not, branch
 		bsr.w	Sonic_RollRight
 
@@ -713,7 +713,7 @@ Sonic_JumpDirection:
 		bne.s	Obj01_ResetScr2	; if yes, branch
 		
 		move.w	ost_x_vel(a0),d0
-		btst	#bitL,(v_jpadhold2).w ; is left being pressed?
+		btst	#bitL,(v_joypad_hold).w ; is left being pressed?
 		beq.s	loc_13278	; if not, branch
 		bset	#status_xflip_bit,ost_status(a0)
 		sub.w	d5,d0
@@ -724,7 +724,7 @@ Sonic_JumpDirection:
 		move.w	d1,d0
 
 	loc_13278:
-		btst	#bitR,(v_jpadhold2).w ; is right being pressed?
+		btst	#bitR,(v_joypad_hold).w ; is right being pressed?
 		beq.s	Obj01_JumpMove	; if not, branch
 		bclr	#status_xflip_bit,ost_status(a0)
 		add.w	d5,d0
@@ -831,7 +831,7 @@ Sonic_LevelBound:
 @bottom:
 		cmpi.w	#(id_SBZ<<8)+1,(v_zone).w ; is level SBZ2 ?
 		bne.w	KillSonic	; if not, kill Sonic
-		cmpi.w	#$2000,(v_player+ost_x_pos).w ; has Sonic reached $2000 on x-axis?
+		cmpi.w	#$2000,(v_ost_player+ost_x_pos).w ; has Sonic reached $2000 on x-axis?
 		bcs.w	KillSonic	; if not, kill Sonic
 		clr.b	(v_lastlamp).w	; clear	lamppost counter
 		move.w	#1,(f_restart).w ; restart the level
@@ -863,10 +863,10 @@ Sonic_Roll:
 	@ispositive:
 		cmpi.w	#$80,d0		; is Sonic moving at $80 speed or faster?
 		bcs.s	@noroll		; if not, branch
-		move.b	(v_jpadhold2).w,d0
+		move.b	(v_joypad_hold).w,d0
 		andi.b	#btnL+btnR,d0	; is left/right	being pressed?
 		bne.s	@noroll		; if yes, branch
-		btst	#bitDn,(v_jpadhold2).w ; is down being pressed?
+		btst	#bitDn,(v_joypad_hold).w ; is down being pressed?
 		bne.s	Sonic_ChkRoll	; if yes, branch
 
 	@noroll:
@@ -901,7 +901,7 @@ Sonic_ChkRoll:
 
 
 Sonic_Jump:
-		move.b	(v_jpadpress2).w,d0
+		move.b	(v_joypad_press).w,d0
 		andi.b	#btnABC,d0	; is A, B or C pressed?
 		beq.w	locret_1348E	; if not, branch
 		moveq	#0,d0
@@ -968,7 +968,7 @@ Sonic_JumpHeight:
 loc_134AE:
 		cmp.w	ost_y_vel(a0),d1
 		ble.s	locret_134C2
-		move.b	(v_jpadhold2).w,d0
+		move.b	(v_joypad_hold).w,d0
 		andi.b	#btnABC,d0	; is A, B or C pressed?
 		bne.s	locret_134C2	; if yes, branch
 		move.w	d1,ost_y_vel(a0)
@@ -1432,9 +1432,9 @@ GameOver:
 		subq.b	#1,(v_lives).w	; subtract 1 from number of lives
 		bne.s	loc_138D4
 		move.w	#0,ost_sonic_restart_time(a0)
-		move.b	#id_GameOverCard,(v_objspace+$80).w ; load GAME object
-		move.b	#id_GameOverCard,(v_objspace+$C0).w ; load OVER object
-		move.b	#1,(v_objspace+$C0+ost_frame).w ; set OVER object to correct frame
+		move.b	#id_GameOverCard,(v_ost_all+$80).w ; load GAME object
+		move.b	#id_GameOverCard,(v_ost_all+$C0).w ; load OVER object
+		move.b	#1,(v_ost_all+$C0+ost_frame).w ; set OVER object to correct frame
 		clr.b	(f_timeover).w
 
 loc_138C2:
@@ -1448,10 +1448,10 @@ loc_138D4:
 		tst.b	(f_timeover).w	; is TIME OVER tag set?
 		beq.s	locret_13900	; if not, branch
 		move.w	#0,ost_sonic_restart_time(a0)
-		move.b	#id_GameOverCard,(v_objspace+$80).w ; load TIME object
-		move.b	#id_GameOverCard,(v_objspace+$C0).w ; load OVER object
-		move.b	#2,(v_objspace+$80+ost_frame).w
-		move.b	#3,(v_objspace+$C0+ost_frame).w
+		move.b	#id_GameOverCard,(v_ost_all+$80).w ; load TIME object
+		move.b	#id_GameOverCard,(v_ost_all+$C0).w ; load OVER object
+		move.b	#2,(v_ost_all+$80+ost_frame).w
+		move.b	#3,(v_ost_all+$C0+ost_frame).w
 		bra.s	loc_138C2
 ; ===========================================================================
 
@@ -1492,7 +1492,7 @@ Sonic_Loops:
 		move.b	ost_x_pos(a0),d1
 		andi.w	#$7F,d1
 		add.w	d1,d0
-		lea	(v_lvllayout).w,a1
+		lea	(v_level_layout).w,a1
 		move.b	(a1,d0.w),d1	; d1 is	the 256x256 tile Sonic is currently on
 
 		cmp.b	(v_256roll1).w,d1 ; is Sonic on a "roll tunnel" tile?
@@ -1756,7 +1756,7 @@ Sonic_LoadGfx:
 		move.b	(a2)+,d1	; read "number of entries" value
 		subq.b	#1,d1
 		bmi.s	@nochange	; if zero, branch
-		lea	(v_sgfx_buffer).w,a3
+		lea	(v_sonic_gfx_buffer).w,a3
 		move.b	#1,(f_sonframechg).w ; set flag for Sonic graphics DMA
 
 	@readentry:

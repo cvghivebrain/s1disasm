@@ -10,21 +10,21 @@
 
 
 MoveWithPlatform:
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		move.w	ost_y_pos(a0),d0
 		sub.w	d3,d0
 		bra.s	MWP_MoveSonic
 
 
 MoveWithPlatform2:			; jump here to use standard height (9)
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		move.w	ost_y_pos(a0),d0
 		subi.w	#9,d0
 
 	MWP_MoveSonic:
 		tst.b	(f_lockmulti).w
 		bmi.s	MWP_End
-		cmpi.b	#id_Sonic_Death,(v_player+ost_routine).w ; is Sonic dying?
+		cmpi.b	#id_Sonic_Death,(v_ost_player+ost_routine).w ; is Sonic dying?
 		bhs.s	MWP_End		; if yes, branch
 		tst.w	(v_debuguse).w	; is debug mode in use?
 		bne.s	MWP_End		; if yes, branch

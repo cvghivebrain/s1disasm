@@ -47,14 +47,14 @@ ESon_MakeEmeralds:
 		bne.s	ESon_Wait
 		addq.b	#2,ost_routine2(a0)
 		move.w	#id_Confused,ost_anim(a0)
-		move.b	#id_EndChaos,(v_objspace+$400).w ; load chaos emeralds objects
+		move.b	#id_EndChaos,(v_ost_end_emeralds).w ; load chaos emeralds objects
 
 	ESon_Wait:
 		rts	
 ; ===========================================================================
 
 ESon_LookUp:	; Routine 6
-		cmpi.w	#$2000,((v_objspace&$FFFFFF)+$400+ost_echaos_radius).l ; has emerald circle expanded fully?
+		cmpi.w	#$2000,((v_ost_end_emeralds&$FFFFFF)+ost_echaos_radius).l ; has emerald circle expanded fully?
 		bne.s	locret_5480	; if not, branch
 		move.w	#1,(f_restart).w ; set level to	restart	(causes	flash)
 		move.w	#90,ost_esonic_wait_time(a0)
@@ -68,7 +68,7 @@ ESon_ClrObjRam:
 		; Routine 8
 		subq.w	#1,ost_esonic_wait_time(a0)
 		bne.s	ESon_Wait2
-		lea	(v_objspace+$400).w,a1
+		lea	(v_ost_end_emeralds).w,a1
 		move.w	#$FF,d1
 
 ESon_ClrLoop:
@@ -89,7 +89,7 @@ ESon_MakeLogo:	; Routine $C
 		addq.b	#2,ost_routine2(a0)
 		move.w	#180,ost_esonic_wait_time(a0)
 		move.b	#id_Leaping,ost_anim(a0)
-		move.b	#id_EndSTH,(v_objspace+$400).w ; load "SONIC THE HEDGEHOG" object
+		move.b	#id_EndSTH,(v_ost_end_emeralds).w ; load "SONIC THE HEDGEHOG" object
 
 ESon_Wait3:
 		rts	
@@ -111,7 +111,7 @@ ESon_Leap:	; Routine $10
 		move.b	#2,ost_priority(a0)
 		move.b	#5,ost_frame(a0)
 		move.b	#id_Leaping,ost_anim(a0) ; use "leaping" animation
-		move.b	#id_EndSTH,(v_objspace+$400).w ; load "SONIC THE HEDGEHOG" object
+		move.b	#id_EndSTH,(v_ost_end_emeralds).w ; load "SONIC THE HEDGEHOG" object
 		bra.s	ESon_Animate
 ; ===========================================================================
 

@@ -96,7 +96,7 @@ CFlo_Display:	; Routine 6
 loc_8402:
 		subq.b	#1,ost_cfloor_wait_time(a0)
 		bsr.w	CFlo_WalkOff
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		btst	#status_platform_bit,ost_status(a1)
 		beq.s	loc_842E
 		tst.b	ost_cfloor_wait_time(a0)

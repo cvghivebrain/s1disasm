@@ -67,8 +67,8 @@ Pri_BodyMain:	; Routine 2
 		tst.b	ost_routine2(a0) ; has the prison been opened?
 		beq.s	@open		; if yes, branch
 		clr.b	ost_routine2(a0)
-		bclr	#status_platform_bit,(v_player+ost_status).w
-		bset	#status_air_bit,(v_player+ost_status).w
+		bclr	#status_platform_bit,(v_ost_player+ost_status).w
+		bset	#status_air_bit,(v_ost_player+ost_status).w
 
 	@open:
 		move.b	#2,ost_frame(a0) ; use frame number 2 (destroyed prison)
@@ -93,10 +93,10 @@ Pri_Switched:	; Routine 4
 		clr.b	(f_timecount).w	; stop time counter
 		clr.b	(f_lockscreen).w ; lock screen position
 		move.b	#1,(f_lockctrl).w ; lock controls
-		move.w	#(btnR<<8),(v_jpadhold2).w ; make Sonic run to the right
+		move.w	#(btnR<<8),(v_joypad_hold).w ; make Sonic run to the right
 		clr.b	ost_routine2(a0)
-		bclr	#status_platform_bit,(v_player+ost_status).w
-		bset	#status_air_bit,(v_player+ost_status).w
+		bclr	#status_platform_bit,(v_ost_player+ost_status).w
+		bset	#status_air_bit,(v_ost_player+ost_status).w
 
 	@open2:
 		rts	
@@ -187,7 +187,7 @@ Pri_EndAct:	; Routine $E
 		moveq	#$3E,d0
 		moveq	#id_Animals,d1
 		moveq	#$40,d2
-		lea	(v_objspace+$40).w,a1 ; load object RAM
+		lea	(v_ost_all+$40).w,a1 ; load object RAM
 
 	@findanimal:
 		cmp.b	(a1),d1		; is object $28	(animal) loaded?

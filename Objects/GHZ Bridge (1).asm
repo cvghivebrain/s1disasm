@@ -54,7 +54,7 @@ Bri_Main:	; Routine 0
 		move.w	d2,ost_y_pos(a0)
 		move.w	d2,ost_bridge_y_start(a0)
 		move.w	a0,d5
-		subi.w	#v_objspace&$FFFF,d5 ; get RAM address of child OST
+		subi.w	#v_ost_all&$FFFF,d5 ; get RAM address of child OST
 		lsr.w	#6,d5		; divide by $40
 		andi.w	#$7F,d5
 		move.b	d5,(a2)+	; save child OST indices as series of bytes
@@ -62,7 +62,7 @@ Bri_Main:	; Routine 0
 
 	@notleft:
 		move.w	a1,d5
-		subi.w	#v_objspace&$FFFF,d5 ; get RAM address of child OST
+		subi.w	#v_ost_all&$FFFF,d5 ; get RAM address of child OST
 		lsr.w	#6,d5		; divide by $40
 		andi.w	#$7F,d5
 		move.b	d5,(a2)+	; save child OST indices as series of bytes
@@ -101,7 +101,7 @@ Bri_Solid:
 		move.w	d1,d2
 		addq.w	#8,d1
 		add.w	d2,d2
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		tst.w	ost_y_vel(a1)
 		bmi.w	Plat_Exit
 		move.w	ost_x_pos(a1),d0

@@ -119,12 +119,12 @@ Saw_Action:	; Routine 2
 		tst.b	ost_saw_flag(a0) ; has the saw appeared already?
 		bne.s	@here03		; if yes, branch
 
-		move.w	(v_player+ost_x_pos).w,d0
+		move.w	(v_ost_player+ost_x_pos).w,d0
 		subi.w	#$C0,d0
 		bcs.s	@nosaw03x
 		sub.w	ost_x_pos(a0),d0
 		bcs.s	@nosaw03x
-		move.w	(v_player+ost_y_pos).w,d0
+		move.w	(v_ost_player+ost_y_pos).w,d0
 		subi.w	#$80,d0
 		cmp.w	ost_y_pos(a0),d0
 		bcc.s	@nosaw03y
@@ -159,11 +159,11 @@ Saw_Action:	; Routine 2
 @type04:
 		tst.b	ost_saw_flag(a0)
 		bne.s	@here04
-		move.w	(v_player+ost_x_pos).w,d0
+		move.w	(v_ost_player+ost_x_pos).w,d0
 		addi.w	#$E0,d0
 		sub.w	ost_x_pos(a0),d0
 		bcc.s	@nosaw04x
-		move.w	(v_player+ost_y_pos).w,d0
+		move.w	(v_ost_player+ost_y_pos).w,d0
 		subi.w	#$80,d0
 		cmp.w	ost_y_pos(a0),d0
 		bcc.s	@nosaw04y

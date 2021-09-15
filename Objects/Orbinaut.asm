@@ -48,7 +48,7 @@ Orb_Main:	; Routine 0
 		bne.s	@fail
 		addq.b	#1,(a3)
 		move.w	a1,d5
-		subi.w	#v_objspace&$FFFF,d5
+		subi.w	#v_ost_all&$FFFF,d5
 		lsr.w	#6,d5
 		andi.w	#$7F,d5
 		move.b	d5,(a2)+
@@ -86,7 +86,7 @@ Orb_Main:	; Routine 0
 ; ===========================================================================
 
 Orb_ChkSonic:	; Routine 2
-		move.w	(v_player+ost_x_pos).w,d0
+		move.w	(v_ost_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0 ; is Sonic to the right of the orbinaut?
 		bcc.s	@isright	; if yes, branch
 		neg.w	d0
@@ -94,7 +94,7 @@ Orb_ChkSonic:	; Routine 2
 	@isright:
 		cmpi.w	#$A0,d0		; is Sonic within $A0 pixels of	orbinaut?
 		bcc.s	@animate	; if not, branch
-		move.w	(v_player+ost_y_pos).w,d0
+		move.w	(v_ost_player+ost_y_pos).w,d0
 		sub.w	ost_y_pos(a0),d0 ; is Sonic above the orbinaut?
 		bcc.s	@isabove	; if yes, branch
 		neg.w	d0
@@ -137,7 +137,7 @@ loc_11E40:
 		moveq	#0,d0
 		move.b	(a2)+,d0
 		lsl.w	#6,d0
-		addi.l	#v_objspace&$FFFFFF,d0
+		addi.l	#v_ost_all&$FFFFFF,d0
 		movea.l	d0,a1
 		bsr.w	DeleteChild
 		dbf	d2,loc_11E40

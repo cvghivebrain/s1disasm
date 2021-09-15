@@ -13,9 +13,9 @@ BGHZ_Index:	index *,,2
 		ptr BGHZ_FaceMain
 		ptr BGHZ_FlameMain
 
-BGHZ_ObjData:	dc.b id_BGHZ_ShipMain,	0	; routine number, animation
-		dc.b id_BGHZ_FaceMain,	1
-		dc.b id_BGHZ_FlameMain,	7
+BGHZ_ObjData:	dc.b id_BGHZ_ShipMain, id_ani_boss_ship	; routine number, animation
+		dc.b id_BGHZ_FaceMain, id_ani_boss_face1
+		dc.b id_BGHZ_FlameMain,	id_ani_boss_blank
 
 ost_bghz_parent_x_pos:	equ $30	; parent x position (2 bytes)
 ost_bghz_parent:	equ $34	; address of OST of parent object (4 bytes)
@@ -328,39 +328,39 @@ BGHZ_ShipDel:
 
 BGHZ_FaceMain:	; Routine 4
 		moveq	#0,d0
-		moveq	#1,d1
+		moveq	#id_ani_boss_face1,d1
 		movea.l	ost_bghz_parent(a0),a1
 		move.b	ost_routine2(a1),d0
 		subq.b	#4,d0
 		bne.s	loc_17A3E
 		cmpi.w	#$2A00,ost_bghz_parent_x_pos(a1)
 		bne.s	loc_17A46
-		moveq	#4,d1
+		moveq	#id_ani_boss_laugh,d1
 
 loc_17A3E:
 		subq.b	#6,d0
 		bmi.s	loc_17A46
-		moveq	#$A,d1
+		moveq	#id_ani_boss_defeat,d1
 		bra.s	loc_17A5A
 ; ===========================================================================
 
 loc_17A46:
 		tst.b	ost_col_type(a1)
 		bne.s	loc_17A50
-		moveq	#5,d1
+		moveq	#id_ani_boss_hit,d1
 		bra.s	loc_17A5A
 ; ===========================================================================
 
 loc_17A50:
-		cmpi.b	#4,(v_player+ost_routine).w
+		cmpi.b	#id_Sonic_Hurt,(v_ost_player+ost_routine).w
 		bcs.s	loc_17A5A
-		moveq	#4,d1
+		moveq	#id_ani_boss_laugh,d1
 
 loc_17A5A:
 		move.b	d1,ost_anim(a0)
 		subq.b	#2,d0
 		bne.s	BGHZ_FaceDisp
-		move.b	#6,ost_anim(a0)
+		move.b	#id_ani_boss_panic,ost_anim(a0)
 		tst.b	ost_render(a0)
 		bpl.s	BGHZ_FaceDel
 
@@ -373,11 +373,11 @@ BGHZ_FaceDel:
 ; ===========================================================================
 
 BGHZ_FlameMain:	; Routine 6
-		move.b	#7,ost_anim(a0)
+		move.b	#id_ani_boss_blank,ost_anim(a0)
 		movea.l	ost_bghz_parent(a0),a1
 		cmpi.b	#$C,ost_routine2(a1)
 		bne.s	loc_17A96
-		move.b	#$B,ost_anim(a0)
+		move.b	#id_ani_boss_bigflame,ost_anim(a0)
 		tst.b	ost_render(a0)
 		bpl.s	BGHZ_FlameDel
 		bra.s	BGHZ_FlameDisp
@@ -386,7 +386,7 @@ BGHZ_FlameMain:	; Routine 6
 loc_17A96:
 		move.w	ost_x_vel(a1),d0
 		beq.s	BGHZ_FlameDisp
-		move.b	#8,ost_anim(a0)
+		move.b	#id_ani_boss_flame1,ost_anim(a0)
 
 BGHZ_FlameDisp:
 		bra.s	BGHZ_Display

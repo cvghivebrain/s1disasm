@@ -60,7 +60,7 @@ locret_8AD8:
 
 
 Edge_SolidWall2:
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		move.w	ost_x_pos(a1),d0
 		sub.w	ost_x_pos(a0),d0
 		add.w	d1,d0
@@ -82,7 +82,7 @@ Edge_SolidWall2:
 		bhs.s	loc_8B48
 		tst.b	(f_lockmulti).w
 		bmi.s	loc_8B48
-		cmpi.b	#id_Sonic_Death,(v_player+ost_routine).w
+		cmpi.b	#id_Sonic_Death,(v_ost_player+ost_routine).w
 		bhs.s	loc_8B48
 		tst.w	(v_debuguse).w
 		bne.s	loc_8B48

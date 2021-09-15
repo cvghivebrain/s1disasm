@@ -195,7 +195,7 @@ loc_C0E6:
 
 loc_C104:
 		move.w	(sp)+,d4
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		bclr	#status_platform_bit,ost_status(a1)
 		bclr	#status_platform_bit,ost_status(a0)
 		bra.w	PushB_ChkDel
@@ -340,7 +340,7 @@ loc_C268:
 		move.w	#-$40,d1
 
 loc_C294:
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		add.w	d0,ost_x_pos(a1)
 		move.w	d1,ost_inertia(a1)
 		move.w	#0,ost_x_vel(a1)

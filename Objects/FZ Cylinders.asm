@@ -109,7 +109,7 @@ loc_1A550:
 
 loc_1A55C:
 		move.b	d0,ost_frame(a0)
-		move.w	(v_player+ost_x_pos).w,d0
+		move.w	(v_ost_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0
 		bmi.s	loc_1A578
 		subi.w	#$140,d0

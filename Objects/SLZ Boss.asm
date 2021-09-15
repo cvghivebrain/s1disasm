@@ -14,9 +14,9 @@ Obj7A_Index:	index *,,2
 		ptr Obj7A_FlameMain
 		ptr Obj7A_TubeMain
 
-Obj7A_ObjData:	dc.b id_Obj7A_ShipMain,	0, 4		; routine number, animation, priority
-		dc.b id_Obj7A_FaceMain,	1, 4
-		dc.b id_Obj7A_FlameMain, 7, 4
+Obj7A_ObjData:	dc.b id_Obj7A_ShipMain,	id_ani_boss_ship, 4		; routine number, animation, priority
+		dc.b id_Obj7A_FaceMain,	id_ani_boss_face1, 4
+		dc.b id_Obj7A_FlameMain, id_ani_boss_blank, 4
 		dc.b id_Obj7A_TubeMain,	0, 3
 
 ost_bslz_seesaw:	equ $2A	; addresses of OSTs of seesaws (2 bytes * 3)
@@ -62,7 +62,7 @@ Obj7A_LoadBoss:
 		dbf	d1,Obj7A_Loop	; repeat sequence 3 more times
 
 Obj7A_FindSeesaws:
-		lea	(v_objspace+$40).w,a1
+		lea	(v_ost_all+$40).w,a1
 		lea	ost_bslz_seesaw(a0),a2
 		moveq	#id_Seesaw,d0
 		moveq	#$3E,d1
@@ -226,7 +226,7 @@ Obj7A_MakeBall:
 		lea	ost_bslz_seesaw(a0),a1
 		move.w	(a1,d0.w),d0
 		movea.l	d0,a2
-		lea	(v_objspace+$40).w,a1
+		lea	(v_ost_all+$40).w,a1
 		moveq	#$3E,d1
 
 loc_18AFA:
@@ -335,32 +335,32 @@ loc_18BE8:
 
 Obj7A_FaceMain:	; Routine 4
 		moveq	#0,d0
-		moveq	#1,d1
+		moveq	#id_ani_boss_face1,d1
 		movea.l	ost_bslz_parent(a0),a1
 		move.b	ost_routine2(a1),d0
 		cmpi.b	#6,d0
 		bmi.s	loc_18C06
-		moveq	#$A,d1
+		moveq	#id_ani_boss_defeat,d1
 		bra.s	loc_18C1A
 ; ===========================================================================
 
 loc_18C06:
 		tst.b	ost_col_type(a1)
 		bne.s	loc_18C10
-		moveq	#5,d1
+		moveq	#id_ani_boss_hit,d1
 		bra.s	loc_18C1A
 ; ===========================================================================
 
 loc_18C10:
-		cmpi.b	#id_Sonic_Hurt,(v_player+ost_routine).w
+		cmpi.b	#id_Sonic_Hurt,(v_ost_player+ost_routine).w
 		bcs.s	loc_18C1A
-		moveq	#4,d1
+		moveq	#id_ani_boss_laugh,d1
 
 loc_18C1A:
 		move.b	d1,ost_anim(a0)
 		cmpi.b	#$A,d0
 		bne.s	loc_18C32
-		move.b	#6,ost_anim(a0)
+		move.b	#id_ani_boss_panic,ost_anim(a0)
 		tst.b	ost_render(a0)
 		bpl.w	Obj7A_Delete
 
@@ -369,13 +369,13 @@ loc_18C32:
 ; ===========================================================================
 
 Obj7A_FlameMain:; Routine 6
-		move.b	#8,ost_anim(a0)
+		move.b	#id_ani_boss_flame1,ost_anim(a0)
 		movea.l	ost_bslz_parent(a0),a1
 		cmpi.b	#$A,ost_routine2(a1)
 		bne.s	loc_18C56
 		tst.b	ost_render(a0)
 		bpl.w	Obj7A_Delete
-		move.b	#$B,ost_anim(a0)
+		move.b	#id_ani_boss_bigflame,ost_anim(a0)
 		bra.s	loc_18C6C
 ; ===========================================================================
 
@@ -384,7 +384,7 @@ loc_18C56:
 		bgt.s	loc_18C6C
 		cmpi.b	#4,ost_routine2(a1)
 		blt.s	loc_18C6C
-		move.b	#7,ost_anim(a0)
+		move.b	#id_ani_boss_blank,ost_anim(a0)
 
 loc_18C6C:
 		lea	(Ani_Eggman).l,a1
@@ -412,5 +412,5 @@ Obj7A_TubeMain:	; Routine 8
 loc_18CB8:
 		move.l	#Map_BossItems,ost_mappings(a0)
 		move.w	#tile_Nem_Weapons+tile_pal2,ost_tile(a0)
-		move.b	#3,ost_frame(a0)
+		move.b	#id_frame_boss_widepipe,ost_frame(a0)
 		bra.s	loc_18C78

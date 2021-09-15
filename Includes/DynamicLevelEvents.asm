@@ -37,7 +37,7 @@ loc_6DAC:
 		addq.w	#8,d0
 		cmp.w	(v_limitbtm2).w,d0
 		bcs.s	loc_6DC4
-		btst	#status_air_bit,(v_player+ost_status).w
+		btst	#status_air_bit,(v_ost_player+ost_status).w
 		beq.s	loc_6DC4
 		add.w	d1,d1
 		add.w	d1,d1
@@ -201,7 +201,7 @@ DLE_LZ12:
 DLE_LZ3:
 		tst.b	(f_switch+$F).w	; has switch $F	been pressed?
 		beq.s	loc_6F28	; if not, branch
-		lea	(v_lvllayout+$106).w,a1
+		lea	(v_level_layout+$106).w,a1
 		cmpi.b	#7,(a1)
 		beq.s	loc_6F28
 		move.b	#7,(a1)		; modify level layout
@@ -237,7 +237,7 @@ locret_6F64:
 DLE_SBZ3:
 		cmpi.w	#$D00,(v_screenposx).w
 		bcs.s	locret_6F8C
-		cmpi.w	#$18,(v_player+ost_y_pos).w ; has Sonic reached the top of the level?
+		cmpi.w	#$18,(v_ost_player+ost_y_pos).w ; has Sonic reached the top of the level?
 		bcc.s	locret_6F8C	; if not, branch
 		clr.b	(v_lastlamp).w
 		move.w	#1,(f_restart).w ; restart level
@@ -512,7 +512,7 @@ DLE_SYZ2:
 		cmpi.w	#$25A0,(v_screenposx).w
 		bcs.s	locret_71A2
 		move.w	#$420,(v_limitbtm1).w
-		cmpi.w	#$4D0,(v_player+ost_y_pos).w
+		cmpi.w	#$4D0,(v_ost_player+ost_y_pos).w
 		bcs.s	locret_71A2
 		move.w	#$520,(v_limitbtm1).w
 

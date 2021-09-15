@@ -50,7 +50,7 @@ GRing_Collect:	; Routine 4
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.l	a0,ost_flash_parent(a1)
-		move.w	(v_player+ost_x_pos).w,d0
+		move.w	(v_ost_player+ost_x_pos).w,d0
 		cmp.w	ost_x_pos(a0),d0 ; has Sonic come from the left?
 		bcs.s	GRing_PlaySnd	; if yes, branch
 		bset	#render_xflip_bit,ost_render(a1) ; reverse flash object

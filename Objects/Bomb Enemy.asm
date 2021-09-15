@@ -58,7 +58,7 @@ Bom_Action:	; Routine 2
 		addq.b	#2,ost_routine2(a0) ; goto @wait
 		move.w	#1535,ost_bomb_fuse_time(a0) ; set time delay to 25.5 seconds
 		move.w	#$10,ost_x_vel(a0)
-		move.b	#1,ost_anim(a0)	; use walking animation
+		move.b	#id_ani_bomb_walk,ost_anim(a0) ; use walking animation
 		bchg	#status_xflip_bit,ost_status(a0)
 		beq.s	@noflip
 		neg.w	ost_x_vel(a0)	; change direction
@@ -79,7 +79,7 @@ Bom_Action:	; Routine 2
 		subq.b	#2,ost_routine2(a0)
 		move.w	#179,ost_bomb_fuse_time(a0) ; set time delay to 3 seconds
 		clr.w	ost_x_vel(a0)	; stop walking
-		move.b	#0,ost_anim(a0)	; use waiting animation
+		move.b	#id_ani_bomb_stand,ost_anim(a0)	; use waiting animation
 		rts	
 ; ===========================================================================
 
@@ -94,7 +94,7 @@ Bom_Action:	; Routine 2
 ; ===========================================================================
 
 @chksonic:
-		move.w	(v_player+ost_x_pos).w,d0
+		move.w	(v_ost_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0
 		bcc.s	@isleft
 		neg.w	d0
@@ -102,7 +102,7 @@ Bom_Action:	; Routine 2
 	@isleft:
 		cmpi.w	#$60,d0		; is Sonic within $60 pixels?
 		bcc.s	@outofrange	; if not, branch
-		move.w	(v_player+ost_y_pos).w,d0
+		move.w	(v_ost_player+ost_y_pos).w,d0
 		sub.w	ost_y_pos(a0),d0
 		bcc.s	@isabove
 		neg.w	d0
@@ -116,7 +116,7 @@ Bom_Action:	; Routine 2
 		move.b	#4,ost_routine2(a0)
 		move.w	#143,ost_bomb_fuse_time(a0) ; set fuse time
 		clr.w	ost_x_vel(a0)
-		move.b	#2,ost_anim(a0)	; use activated animation
+		move.b	#id_ani_bomb_active,ost_anim(a0) ; use activated animation
 		bsr.w	FindNextFreeObj
 		bne.s	@outofrange
 		move.b	#id_Bomb,0(a1)	; load fuse object
@@ -125,7 +125,7 @@ Bom_Action:	; Routine 2
 		move.w	ost_y_pos(a0),ost_bomb_y_start(a1)
 		move.b	ost_status(a0),ost_status(a1)
 		move.b	#id_Bom_Display,ost_subtype(a1)
-		move.b	#3,ost_anim(a1)
+		move.b	#id_ani_bomb_fuse,ost_anim(a1)
 		move.w	#$10,ost_y_vel(a1)
 		btst	#status_yflip_bit,ost_status(a0) ; is bomb upside-down?
 		beq.s	@normal		; if not, branch
@@ -172,7 +172,7 @@ loc_11B7C:
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	#id_Bom_End,ost_subtype(a1)
-		move.b	#4,ost_anim(a1)
+		move.b	#id_ani_bomb_shrapnel,ost_anim(a1)
 		move.w	(a2)+,ost_x_vel(a1)
 		move.w	(a2)+,ost_y_vel(a1)
 		move.b	#$98,ost_col_type(a1)

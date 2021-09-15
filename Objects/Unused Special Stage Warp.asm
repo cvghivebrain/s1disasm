@@ -31,16 +31,16 @@ Van_Main:	; Routine 0
 		move.w	#120,ost_vanish_time(a0) ; set time for Sonic's disappearance to 2 seconds
 
 Van_RmvSonic:	; Routine 2
-		move.w	(v_player+ost_x_pos).w,ost_x_pos(a0)
-		move.w	(v_player+ost_y_pos).w,ost_y_pos(a0)
-		move.b	(v_player+ost_status).w,ost_status(a0)
+		move.w	(v_ost_player+ost_x_pos).w,ost_x_pos(a0)
+		move.w	(v_ost_player+ost_y_pos).w,ost_y_pos(a0)
+		move.b	(v_ost_player+ost_status).w,ost_status(a0)
 		lea	(Ani_Vanish).l,a1
 		jsr	(AnimateSprite).l
 		cmpi.b	#2,ost_frame(a0)
 		bne.s	@display
-		tst.b	(v_player).w
+		tst.b	(v_ost_player).w
 		beq.s	@display
-		move.b	#0,(v_player).w	; remove Sonic
+		move.b	#0,(v_ost_player).w	; remove Sonic
 		sfx	sfx_SSGoal,0,0,0 ; play Special Stage "GOAL" sound
 
 	@display:
@@ -50,7 +50,7 @@ Van_RmvSonic:	; Routine 2
 Van_LoadSonic:	; Routine 4
 		subq.w	#1,ost_vanish_time(a0)	; subtract 1 from time
 		bne.s	@wait		; if time remains, branch
-		move.b	#id_SonicPlayer,(v_player).w ; load Sonic object
+		move.b	#id_SonicPlayer,(v_ost_player).w ; load Sonic object
 		jmp	(DeleteObject).l
 
 	@wait:

@@ -225,7 +225,7 @@ loc_9212:
 
 loc_9224:
 		move.w	ost_x_pos(a0),d0
-		sub.w	(v_player+ost_x_pos).w,d0
+		sub.w	(v_ost_player+ost_x_pos).w,d0
 		bcs.s	loc_923C
 		subi.w	#$180,d0
 		bpl.s	loc_923C
@@ -392,7 +392,7 @@ locret_93EA:
 loc_93EC:
 		bset	#render_xflip_bit,ost_render(a0)
 		move.w	ost_x_pos(a0),d0
-		sub.w	(v_player+ost_x_pos).w,d0
+		sub.w	(v_ost_player+ost_x_pos).w,d0
 		bcc.s	locret_9402
 		bclr	#render_xflip_bit,ost_render(a0)
 
@@ -403,7 +403,7 @@ locret_9402:
 
 
 sub_9404:
-		move.w	(v_player+ost_x_pos).w,d0
+		move.w	(v_ost_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0
 		subi.w	#$B8,d0
 		rts	

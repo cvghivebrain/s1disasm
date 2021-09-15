@@ -57,7 +57,7 @@ loc_1A86C:
 		move.w	#$11,d3
 		move.w	ost_x_pos(a0),d4
 		jsr	(SolidObject).l
-		move.w	(v_player+ost_x_pos).w,d0
+		move.w	(v_ost_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0
 		bmi.s	loc_1A89A
 		subi.w	#$140,d0
@@ -178,7 +178,7 @@ loc_1A9E6:
 		move.b	#$9A,ost_col_type(a0)
 		move.w	#$B4,ost_subtype(a0)
 		moveq	#0,d0
-		move.w	(v_player+ost_x_pos).w,d0
+		move.w	(v_ost_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0
 		move.w	d0,ost_x_vel(a0)
 		move.w	#$140,ost_y_vel(a0)

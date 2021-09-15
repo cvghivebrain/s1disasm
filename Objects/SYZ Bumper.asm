@@ -25,7 +25,7 @@ Bump_Hit:	; Routine 2
 		tst.b	ost_col_property(a0) ; has Sonic touched the bumper?
 		beq.w	@display	; if not, branch
 		clr.b	ost_col_property(a0)
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		move.w	ost_x_pos(a0),d1
 		move.w	ost_y_pos(a0),d2
 		sub.w	ost_x_pos(a1),d1

@@ -2,7 +2,8 @@
 ; Constants
 ; ---------------------------------------------------------------------------
 
-Size_of_SegaPCM:		equ $6978
+Size_of_SegaPCM:	equ $6978
+sizeof_ost:		equ $40
 
 ; Sound driver constants
 TrackPlaybackControl:	equ 0		; All tracks

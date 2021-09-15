@@ -19,7 +19,7 @@ SolidObject:
 		beq.w	Solid_ChkEnter	; if not, branch
 		move.w	d1,d2
 		add.w	d2,d2
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		btst	#status_air_bit,ost_status(a1) ; is Sonic in the air?
 		bne.s	@leave		; if yes, branch
 		move.w	ost_x_pos(a1),d0
@@ -48,7 +48,7 @@ SolidObject71:
 		beq.w	Solid_ChkEnter2
 		move.w	d1,d2
 		add.w	d2,d2
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		btst	#status_air_bit,ost_status(a1)
 		bne.s	@leave
 		move.w	ost_x_pos(a1),d0
@@ -73,7 +73,7 @@ SolidObject71:
 ; ===========================================================================
 
 SolidObject2F:
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		tst.b	ost_render(a0)
 		bpl.w	Solid_Ignore
 		move.w	ost_x_pos(a1),d0
@@ -117,7 +117,7 @@ Solid_ChkEnter:
 		bpl.w	Solid_Ignore	; if not, branch
 
 Solid_ChkEnter2:
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		move.w	ost_x_pos(a1),d0
 		sub.w	ost_x_pos(a0),d0 ; d0: +ve if Sonic is right; -ve if Sonic is left
 		add.w	d1,d0		; add width of object
@@ -143,7 +143,7 @@ Solid_ChkEnter2:
 loc_FB0E:
 		tst.b	(f_lockmulti).w	; are controls locked?
 		bmi.w	Solid_Ignore	; if yes, branch
-		cmpi.b	#id_Sonic_Death,(v_player+ost_routine).w ; is Sonic dying?
+		cmpi.b	#id_Sonic_Death,(v_ost_player+ost_routine).w ; is Sonic dying?
 		if Revision=0
 			bcc.w	Solid_Ignore ; if yes, branch
 		else
@@ -291,14 +291,14 @@ Solid_ResetFloor:
 		moveq	#0,d0
 		move.b	ost_sonic_on_obj(a1),d0	; get OST index of object being stood on
 		lsl.w	#6,d0
-		addi.l	#(v_objspace&$FFFFFF),d0
+		addi.l	#(v_ost_all&$FFFFFF),d0
 		movea.l	d0,a2
 		bclr	#status_platform_bit,ost_status(a2) ; clear object's standing flags
 		clr.b	ost_solid(a2)
 
 	@notonobj:
 		move.w	a0,d0
-		subi.w	#v_objspace&$FFFF,d0
+		subi.w	#v_ost_all&$FFFF,d0
 		lsr.w	#6,d0
 		andi.w	#$7F,d0
 		move.b	d0,ost_sonic_on_obj(a1)	; set object being stood on

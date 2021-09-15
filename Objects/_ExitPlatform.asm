@@ -14,7 +14,7 @@ ExitPlatform:
 
 ExitPlatform2:				; jump here to use different value for d2 (only GHZ bridges use this)
 		add.w	d2,d2
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		btst	#status_air_bit,ost_status(a1) ; is Sonic in the air?
 		bne.s	@reset		; if yes, branch
 		move.w	ost_x_pos(a1),d0

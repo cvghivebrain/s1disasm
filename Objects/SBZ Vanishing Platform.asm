@@ -97,7 +97,7 @@ VanP_Appear:	; Routine 4
 @notsolid:
 		btst	#status_platform_bit,ost_status(a0)
 		beq.s	@display
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		bclr	#status_platform_bit,ost_status(a1)
 		bclr	#status_platform_bit,ost_status(a0)
 		move.b	#id_VanP_Vanish,ost_routine(a0)

@@ -30,6 +30,6 @@ ResumeMusic:
 
 	@over12:
 		move.w	#30,(v_air).w	; reset air to 30 seconds
-		clr.b	(v_objspace+$340+ost_drown_disp_time).w
+		clr.b	(v_ost_all+$340+ost_drown_disp_time).w
 		rts	
 ; End of function ResumeMusic

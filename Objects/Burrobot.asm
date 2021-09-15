@@ -27,7 +27,7 @@ Burro_Main:	; Routine 0
 		move.b	#5,ost_col_type(a0)
 		move.b	#$C,ost_actwidth(a0)
 		addq.b	#6,ost_routine2(a0) ; run "Burro_ChkSonic" routine
-		move.b	#2,ost_anim(a0)
+		move.b	#id_ani_burro_digging,ost_anim(a0)
 
 Burro_Action:	; Routine 2
 		moveq	#0,d0
@@ -51,7 +51,7 @@ Burro_ChangeDir:
 		addq.b	#2,ost_routine2(a0)
 		move.w	#255,ost_burro_turn_time(a0)
 		move.w	#$80,ost_x_vel(a0)
-		move.b	#1,ost_anim(a0)
+		move.b	#id_ani_burro_walk2,ost_anim(a0)
 		bchg	#status_xflip_bit,ost_status(a0) ; change direction the Burrobot is facing
 		beq.s	@nochg
 		neg.w	ost_x_vel(a0)	; change direction the Burrobot	is moving
@@ -91,14 +91,14 @@ loc_AD84:
 		subq.b	#2,ost_routine2(a0)
 		move.w	#59,ost_burro_turn_time(a0)
 		move.w	#0,ost_x_vel(a0)
-		move.b	#0,ost_anim(a0)
+		move.b	#id_ani_burro_walk1,ost_anim(a0)
 		rts	
 ; ===========================================================================
 
 loc_ADA4:
 		addq.b	#2,ost_routine2(a0)
 		move.w	#-$400,ost_y_vel(a0)
-		move.b	#2,ost_anim(a0)
+		move.b	#id_ani_burro_digging,ost_anim(a0)
 		rts	
 ; ===========================================================================
 
@@ -106,13 +106,13 @@ Burro_Jump:
 		bsr.w	SpeedToPos
 		addi.w	#$18,ost_y_vel(a0)
 		bmi.s	locret_ADF0
-		move.b	#3,ost_anim(a0)
+		move.b	#id_ani_burro_fall,ost_anim(a0)
 		jsr	(ObjFloorDist).l
 		tst.w	d1
 		bpl.s	locret_ADF0
 		add.w	d1,ost_y_pos(a0)
 		move.w	#0,ost_y_vel(a0)
-		move.b	#1,ost_anim(a0)
+		move.b	#id_ani_burro_walk2,ost_anim(a0)
 		move.w	#255,ost_burro_turn_time(a0)
 		subq.b	#2,ost_routine2(a0)
 		bsr.w	Burro_ChkSonic2
@@ -125,7 +125,7 @@ Burro_ChkSonic:
 		move.w	#$60,d2
 		bsr.w	Burro_ChkSonic2
 		bcc.s	locret_AE20
-		move.w	(v_player+ost_y_pos).w,d0
+		move.w	(v_ost_player+ost_y_pos).w,d0
 		sub.w	ost_y_pos(a0),d0
 		bcc.s	locret_AE20
 		cmpi.w	#-$80,d0
@@ -145,7 +145,7 @@ locret_AE20:
 Burro_ChkSonic2:
 		move.w	#$80,d1
 		bset	#status_xflip_bit,ost_status(a0)
-		move.w	(v_player+ost_x_pos).w,d0
+		move.w	(v_ost_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0
 		bcc.s	loc_AE40
 		neg.w	d0

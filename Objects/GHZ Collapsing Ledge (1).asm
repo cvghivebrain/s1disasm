@@ -79,7 +79,7 @@ Ledge_Display:	; Routine 6
 loc_82D0:
 		subq.b	#1,ost_ledge_wait_time(a0)
 		bsr.w	Ledge_WalkOff
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		btst	#status_platform_bit,ost_status(a1)
 		beq.s	loc_82FC
 		tst.b	ost_ledge_wait_time(a0)

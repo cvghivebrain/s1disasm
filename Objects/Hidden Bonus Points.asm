@@ -18,7 +18,7 @@ Bonus_Main:	; Routine 0
 		moveq	#$10,d2
 		move.w	d2,d3
 		add.w	d3,d3
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		move.w	ost_x_pos(a1),d0
 		sub.w	ost_x_pos(a0),d0
 		add.w	d2,d0

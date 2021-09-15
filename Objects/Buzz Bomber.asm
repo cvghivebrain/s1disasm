@@ -91,7 +91,7 @@ Buzz_Action:	; Routine 2
 		bsr.w	SpeedToPos
 		tst.b	ost_buzz_mode(a0)
 		bne.s	@keepgoing
-		move.w	(v_player+ost_x_pos).w,d0
+		move.w	(v_ost_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0
 		bpl.s	@isleft
 		neg.w	d0

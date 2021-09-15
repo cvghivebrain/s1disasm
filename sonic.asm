@@ -389,77 +389,77 @@ CheckSumError:
 ; ===========================================================================
 
 BusError:
-		move.b	#2,(v_errortype).w
+		move.b	#2,(v_error_type).w
 		bra.s	loc_43A
 
 AddressError:
-		move.b	#4,(v_errortype).w
+		move.b	#4,(v_error_type).w
 		bra.s	loc_43A
 
 IllegalInstr:
-		move.b	#6,(v_errortype).w
+		move.b	#6,(v_error_type).w
 		addq.l	#2,2(sp)
 		bra.s	loc_462
 
 ZeroDivide:
-		move.b	#8,(v_errortype).w
+		move.b	#8,(v_error_type).w
 		bra.s	loc_462
 
 ChkInstr:
-		move.b	#$A,(v_errortype).w
+		move.b	#$A,(v_error_type).w
 		bra.s	loc_462
 
 TrapvInstr:
-		move.b	#$C,(v_errortype).w
+		move.b	#$C,(v_error_type).w
 		bra.s	loc_462
 
 PrivilegeViol:
-		move.b	#$E,(v_errortype).w
+		move.b	#$E,(v_error_type).w
 		bra.s	loc_462
 
 Trace:
-		move.b	#$10,(v_errortype).w
+		move.b	#$10,(v_error_type).w
 		bra.s	loc_462
 
 Line1010Emu:
-		move.b	#$12,(v_errortype).w
+		move.b	#$12,(v_error_type).w
 		addq.l	#2,2(sp)
 		bra.s	loc_462
 
 Line1111Emu:
-		move.b	#$14,(v_errortype).w
+		move.b	#$14,(v_error_type).w
 		addq.l	#2,2(sp)
 		bra.s	loc_462
 
 ErrorExcept:
-		move.b	#0,(v_errortype).w
+		move.b	#0,(v_error_type).w
 		bra.s	loc_462
 ; ===========================================================================
 
 loc_43A:
 		disable_ints
 		addq.w	#2,sp
-		move.l	(sp)+,(v_spbuffer).w
+		move.l	(sp)+,(v_sp_buffer).w
 		addq.w	#2,sp
-		movem.l	d0-a7,(v_regbuffer).w
+		movem.l	d0-a7,(v_reg_buffer).w
 		bsr.w	ShowErrorMessage
 		move.l	2(sp),d0
 		bsr.w	ShowErrorValue
-		move.l	(v_spbuffer).w,d0
+		move.l	(v_sp_buffer).w,d0
 		bsr.w	ShowErrorValue
 		bra.s	loc_478
 ; ===========================================================================
 
 loc_462:
 		disable_ints
-		movem.l	d0-a7,(v_regbuffer).w
+		movem.l	d0-a7,(v_reg_buffer).w
 		bsr.w	ShowErrorMessage
 		move.l	2(sp),d0
 		bsr.w	ShowErrorValue
 
 loc_478:
 		bsr.w	ErrorWaitForC
-		movem.l	(v_regbuffer).w,d0-a7
+		movem.l	(v_reg_buffer).w,d0-a7
 		enable_ints
 		rte	
 
@@ -476,7 +476,7 @@ ShowErrorMessage:
 		dbf	d1,@loadgfx
 
 		moveq	#0,d0		; clear	d0
-		move.b	(v_errortype).w,d0 ; load error code
+		move.b	(v_error_type).w,d0 ; load error code
 		move.w	ErrorText(pc,d0.w),d0
 		lea	ErrorText(pc,d0.w),a0
 		locVRAM	(vram_fg+$604)
@@ -554,7 +554,7 @@ ShowErrorValue:
 
 ErrorWaitForC:
 		bsr.w	ReadJoypads
-		cmpi.b	#btnC,(v_jpadpress1).w ; is button C pressed?
+		cmpi.b	#btnC,(v_joypad_press_actual).w ; is button C pressed?
 		bne.w	ErrorWaitForC	; if not, branch
 		rts	
 ; End of function ErrorWaitForC
@@ -701,12 +701,12 @@ VBla_08:
 	@waterbelow:
 		move.w	(v_hbla_hreg).w,(a5)
 
-		dma	v_hscrolltablebuffer,$380,vram_hscroll
+		dma	v_hscroll_buffer,$380,vram_hscroll
 		dma	v_spritetablebuffer,$280,vram_sprites
 		tst.b	(f_sonframechg).w ; has Sonic's sprite changed?
 		beq.s	@nochg		; if not, branch
 
-		dma	v_sgfx_buffer,$2E0,vram_sonic ; load new Sonic gfx
+		dma	v_sonic_gfx_buffer,$2E0,vram_sonic ; load new Sonic gfx
 		move.b	#0,(f_sonframechg).w
 
 	@nochg:
@@ -749,13 +749,13 @@ VBla_0A:
 		bsr.w	ReadJoypads
 		dma	v_pal_dry,$80,cram
 		dma	v_spritetablebuffer,$280,vram_sprites
-		dma	v_hscrolltablebuffer,$380,vram_hscroll
+		dma	v_hscroll_buffer,$380,vram_hscroll
 		startZ80
 		bsr.w	PalCycle_SS
 		tst.b	(f_sonframechg).w ; has Sonic's sprite changed?
 		beq.s	@nochg		; if not, branch
 
-		dma	v_sgfx_buffer,$2E0,vram_sonic ; load new Sonic gfx
+		dma	v_sonic_gfx_buffer,$2E0,vram_sonic ; load new Sonic gfx
 		move.b	#0,(f_sonframechg).w
 
 	@nochg:
@@ -782,11 +782,11 @@ VBla_0C:
 
 	@waterbelow:
 		move.w	(v_hbla_hreg).w,(a5)
-		dma	v_hscrolltablebuffer,$380,vram_hscroll
+		dma	v_hscroll_buffer,$380,vram_hscroll
 		dma	v_spritetablebuffer,$280,vram_sprites
 		tst.b	(f_sonframechg).w
 		beq.s	@nochg
-		dma	v_sgfx_buffer,$2E0,vram_sonic
+		dma	v_sonic_gfx_buffer,$2E0,vram_sonic
 		move.b	#0,(f_sonframechg).w
 
 	@nochg:
@@ -821,11 +821,11 @@ VBla_16:
 		bsr.w	ReadJoypads
 		dma	v_pal_dry,$80,cram
 		dma	v_spritetablebuffer,$280,vram_sprites
-		dma	v_hscrolltablebuffer,$380,vram_hscroll
+		dma	v_hscroll_buffer,$380,vram_hscroll
 		startZ80
 		tst.b	(f_sonframechg).w
 		beq.s	@nochg
-		dma	v_sgfx_buffer,$2E0,vram_sonic
+		dma	v_sonic_gfx_buffer,$2E0,vram_sonic
 		move.b	#0,(f_sonframechg).w
 
 	@nochg:
@@ -853,7 +853,7 @@ sub_106E:
 
 	@waterbelow:
 		dma	v_spritetablebuffer,$280,vram_sprites
-		dma	v_hscrolltablebuffer,$380,vram_hscroll
+		dma	v_hscroll_buffer,$380,vram_hscroll
 		startZ80
 		rts	
 ; End of function sub_106E
@@ -949,7 +949,7 @@ JoypadInit:
 
 
 ReadJoypads:
-		lea	(v_jpadhold1).w,a0 ; address where joypad states are written
+		lea	(v_joypad_hold_actual).w,a0 ; address where joypad states are written
 		lea	(port_1_data).l,a1 ; first joypad port
 		bsr.s	@read		; do the first joypad
 		addq.w	#2,a1		; do the second	joypad
@@ -970,9 +970,9 @@ ReadJoypads:
 		not.b	d0		; invert bits
 		move.b	(a0),d1		; d1 = previous joypad state
 		eor.b	d0,d1
-		move.b	d0,(a0)+	; v_jpadhold1 = SACBRLDU
+		move.b	d0,(a0)+	; v_joypad_hold_actual = SACBRLDU
 		and.b	d0,d1		; d1 = new joypad inputs only
-		move.b	d1,(a0)+	; v_jpadpress1 = SACBRLDU (new only)
+		move.b	d1,(a0)+	; v_joypad_press_actual = SACBRLDU (new only)
 		rts	
 ; End of function ReadJoypads
 
@@ -991,7 +991,7 @@ VDPSetupGame:
 		dbf	d7,@setreg	; set the VDP registers
 
 		move.w	(VDPSetupArray+2).l,d0
-		move.w	d0,(v_vdp_buffer1).w
+		move.w	d0,(v_vdp_mode_buffer).w
 		move.w	#$8A00+223,(v_hbla_hreg).w	; H-INT every 224th scanline
 		moveq	#0,d0
 		move.l	#$C0000000,(vdp_control_port).l ; set VDP to CRAM write
@@ -1077,7 +1077,7 @@ ClearScreen:
 		move.l	d0,(a1)+
 		dbf	d1,@clearsprites ; clear sprite table (in RAM)
 
-		lea	(v_hscrolltablebuffer).w,a1
+		lea	(v_hscroll_buffer).w,a1
 		moveq	#0,d0
 		move.w	#($400/4),d1	; This should be ($400/4)-1, leading to a slight bug (first bit of the Sonic object's RAM is cleared)
 
@@ -1159,7 +1159,7 @@ PauseGame:
 		beq.s	Unpause		; if not, branch
 		tst.w	(f_pause).w	; is game already paused?
 		bne.s	Pause_StopGame	; if yes, branch
-		btst	#bitStart,(v_jpadpress1).w ; is Start button pressed?
+		btst	#bitStart,(v_joypad_press_actual).w ; is Start button pressed?
 		beq.s	Pause_DoNothing	; if not, branch
 
 Pause_StopGame:
@@ -1171,7 +1171,7 @@ Pause_Loop:
 		bsr.w	WaitForVBla
 		tst.b	(f_slomocheat).w ; is slow-motion cheat on?
 		beq.s	Pause_ChkStart	; if not, branch
-		btst	#bitA,(v_jpadpress1).w ; is button A pressed?
+		btst	#bitA,(v_joypad_press_actual).w ; is button A pressed?
 		beq.s	Pause_ChkBC	; if not, branch
 		move.b	#id_Title,(v_gamemode).w ; set game mode to 4 (title screen)
 		nop	
@@ -1179,13 +1179,13 @@ Pause_Loop:
 ; ===========================================================================
 
 Pause_ChkBC:
-		btst	#bitB,(v_jpadhold1).w ; is button B pressed?
+		btst	#bitB,(v_joypad_hold_actual).w ; is button B pressed?
 		bne.s	Pause_SlowMo	; if yes, branch
-		btst	#bitC,(v_jpadpress1).w ; is button C pressed?
+		btst	#bitC,(v_joypad_press_actual).w ; is button C pressed?
 		bne.s	Pause_SlowMo	; if yes, branch
 
 Pause_ChkStart:
-		btst	#bitStart,(v_jpadpress1).w ; is Start button pressed?
+		btst	#bitStart,(v_joypad_press_actual).w ; is Start button pressed?
 		beq.s	Pause_Loop	; if not, branch
 
 Pause_EndMusic:
@@ -1343,7 +1343,7 @@ RunPLC:
 		bne.s	Rplc_Exit
 		movea.l	(v_plc_buffer).w,a0
 		lea	(NemPCD_WriteRowToVDP).l,a3
-		lea	(v_ngfx_buffer).w,a1
+		lea	(v_nem_gfx_buffer).w,a1
 		move.w	(a0)+,d2
 		bpl.s	loc_160E
 		adda.w	#$A,a3
@@ -1411,7 +1411,7 @@ loc_1676:
 		move.l	($FFFFF6EC).w,d2
 		move.l	($FFFFF6F0).w,d5
 		move.l	($FFFFF6F4).w,d6
-		lea	(v_ngfx_buffer).w,a1
+		lea	(v_nem_gfx_buffer).w,a1
 
 loc_16AA:
 		movea.w	#8,a5
@@ -2362,7 +2362,7 @@ GM_Sega:
 		move.w	#$8B00,(a6)	; full-screen vertical scrolling
 		clr.b	(f_wtr_state).w
 		disable_ints
-		move.w	(v_vdp_buffer1).w,d0
+		move.w	(v_vdp_mode_buffer).w,d0
 		andi.b	#$BF,d0
 		move.w	d0,(vdp_control_port).l
 		bsr.w	ClearScreen
@@ -2391,7 +2391,7 @@ GM_Sega:
 		move.w	#0,(v_pcyc_time).w
 		move.w	#0,(v_pal_buffer+$12).w
 		move.w	#0,(v_pal_buffer+$10).w
-		move.w	(v_vdp_buffer1).w,d0
+		move.w	(v_vdp_mode_buffer).w,d0
 		ori.b	#$40,d0
 		move.w	d0,(vdp_control_port).l
 
@@ -2411,7 +2411,7 @@ Sega_WaitEnd:
 		bsr.w	WaitForVBla
 		tst.w	(v_demolength).w
 		beq.s	Sega_GotoTitle
-		andi.b	#btnStart,(v_jpadpress1).w ; is Start button pressed?
+		andi.b	#btnStart,(v_joypad_press_actual).w ; is Start button pressed?
 		beq.s	Sega_WaitEnd	; if not, branch
 
 Sega_GotoTitle:
@@ -2440,7 +2440,7 @@ GM_Title:
 		clr.b	(f_wtr_state).w
 		bsr.w	ClearScreen
 
-		lea	(v_objspace).w,a1
+		lea	(v_ost_all).w,a1
 		moveq	#0,d0
 		move.w	#$7FF,d1
 
@@ -2471,7 +2471,7 @@ GM_Title:
 
 		moveq	#id_Pal_Sonic,d0 ; load Sonic's palette
 		bsr.w	PalLoad1
-		move.b	#id_CreditsText,(v_objspace+$80).w ; load "SONIC TEAM PRESENTS" object
+		move.b	#id_CreditsText,(v_ost_credits).w ; load "SONIC TEAM PRESENTS" object
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
 		bsr.w	PaletteFadeIn
@@ -2502,12 +2502,12 @@ GM_Title:
 		move.w	#0,(v_pcyc_time).w ; disable palette cycling
 		bsr.w	LevelSizeLoad
 		bsr.w	DeformLayers
-		lea	(v_16x16).w,a1
+		lea	(v_16x16_tiles).w,a1
 		lea	(Blk16_GHZ).l,a0 ; load	GHZ 16x16 mappings
 		move.w	#0,d0
 		bsr.w	EniDec
 		lea	(Blk256_GHZ).l,a0 ; load GHZ 256x256 mappings
-		lea	(v_256x256).l,a1
+		lea	(v_256x256_tiles).l,a1
 		bsr.w	KosDec
 		bsr.w	LevelLayoutLoad
 		bsr.w	PaletteFadeOut
@@ -2516,7 +2516,7 @@ GM_Title:
 		lea	(vdp_control_port).l,a5
 		lea	(vdp_data_port).l,a6
 		lea	(v_bgscreenposx).w,a3
-		lea	(v_lvllayout+$40).w,a4
+		lea	(v_level_layout+$40).w,a4
 		move.w	#$6000,d2
 		bsr.w	DrawChunks
 		lea	($FF0000).l,a1
@@ -2534,7 +2534,7 @@ GM_Title:
 		sfx	bgm_Title,0,1,1	; play title screen music
 		move.b	#0,(f_debugmode).w ; disable debug mode
 		move.w	#$178,(v_demolength).w ; run title screen for $178 frames
-		lea	(v_objspace+$80).w,a1
+		lea	(v_ost_all+(sizeof_ost*2)).w,a1
 		moveq	#0,d0
 		move.w	#7,d1
 
@@ -2542,9 +2542,9 @@ GM_Title:
 		move.l	d0,(a1)+
 		dbf	d1,Tit_ClrObj2
 
-		move.b	#id_TitleSonic,(v_objspace+$40).w ; load big Sonic object
-		move.b	#id_PSBTM,(v_objspace+$80).w ; load "PRESS START BUTTON" object
-		;clr.b	(v_objspace+$80+ost_routine).w ; The 'Mega Games 10' version of Sonic 1 added this line, to fix the 'PRESS START BUTTON' object not appearing
+		move.b	#id_TitleSonic,(v_ost_titlesonic).w ; load big Sonic object
+		move.b	#id_PSBTM,(v_ost_psb).w ; load "PRESS START BUTTON" object
+		;clr.b	(v_ost_psb+ost_routine).w ; The 'Mega Games 10' version of Sonic 1 added this line, to fix the 'PRESS START BUTTON' object not appearing
 
 		if Revision=0
 		else
@@ -2552,11 +2552,11 @@ GM_Title:
 			bpl.s   @isjap		; if yes, branch
 		endc
 
-		move.b	#id_PSBTM,(v_objspace+$C0).w ; load "TM" object
-		move.b	#3,(v_objspace+$C0+ost_frame).w
+		move.b	#id_PSBTM,(v_ost_tm).w ; load "TM" object
+		move.b	#3,(v_ost_tm+ost_frame).w
 	@isjap:
-		move.b	#id_PSBTM,(v_objspace+$100).w ; load object which hides part of Sonic
-		move.b	#2,(v_objspace+$100+ost_frame).w
+		move.b	#id_PSBTM,(v_ost_titlemask).w ; load object which hides part of Sonic
+		move.b	#2,(v_ost_titlemask+ost_frame).w
 		jsr	(ExecuteObjects).l
 		bsr.w	DeformLayers
 		jsr	(BuildSprites).l
@@ -2564,7 +2564,7 @@ GM_Title:
 		bsr.w	NewPLC
 		move.w	#0,(v_title_dcount).w
 		move.w	#0,(v_title_ccount).w
-		move.w	(v_vdp_buffer1).w,d0
+		move.w	(v_vdp_mode_buffer).w,d0
 		ori.b	#$40,d0
 		move.w	d0,(vdp_control_port).l
 		bsr.w	PaletteFadeIn
@@ -2577,9 +2577,9 @@ Tit_MainLoop:
 		jsr	(BuildSprites).l
 		bsr.w	PCycle_Title
 		bsr.w	RunPLC
-		move.w	(v_objspace+ost_x_pos).w,d0
+		move.w	(v_ost_all+ost_x_pos).w,d0
 		addq.w	#2,d0
-		move.w	d0,(v_objspace+ost_x_pos).w ; move Sonic to the right
+		move.w	d0,(v_ost_all+ost_x_pos).w ; move Sonic to the right
 		cmpi.w	#$1C00,d0	; has Sonic object passed $1C00 on x-axis?
 		blo.s	Tit_ChkRegion	; if not, branch
 
@@ -2600,7 +2600,7 @@ Tit_ChkRegion:
 Tit_EnterCheat:
 		move.w	(v_title_dcount).w,d0
 		adda.w	d0,a0
-		move.b	(v_jpadpress1).w,d0 ; get button press
+		move.b	(v_joypad_press_actual).w,d0 ; get button press
 		andi.b	#btnDir,d0	; read only UDLR buttons
 		cmp.b	(a0),d0		; does button press match the cheat code?
 		bne.s	Tit_ResetCheat	; if not, branch
@@ -2631,7 +2631,7 @@ Tit_ResetCheat:
 		move.w	#0,(v_title_dcount).w ; reset UDLR counter
 
 Tit_CountC:
-		move.b	(v_jpadpress1).w,d0
+		move.b	(v_joypad_press_actual).w,d0
 		andi.b	#btnC,d0	; is C button pressed?
 		beq.s	loc_3230	; if not, branch
 		addq.w	#1,(v_title_ccount).w ; increment C counter
@@ -2639,18 +2639,18 @@ Tit_CountC:
 loc_3230:
 		tst.w	(v_demolength).w
 		beq.w	GotoDemo
-		andi.b	#btnStart,(v_jpadpress1).w ; check if Start is pressed
+		andi.b	#btnStart,(v_joypad_press_actual).w ; check if Start is pressed
 		beq.w	Tit_MainLoop	; if not, branch
 
 Tit_ChkLevSel:
 		tst.b	(f_levselcheat).w ; check if level select code is on
 		beq.w	PlayLevel	; if not, play level
-		btst	#bitA,(v_jpadhold1).w ; check if A is pressed
+		btst	#bitA,(v_joypad_hold_actual).w ; check if A is pressed
 		beq.w	PlayLevel	; if not, play level
 
 		moveq	#id_Pal_LevelSel,d0
 		bsr.w	PalLoad2	; load level select palette
-		lea	(v_hscrolltablebuffer).w,a1
+		lea	(v_hscroll_buffer).w,a1
 		moveq	#0,d0
 		move.w	#$DF,d1
 
@@ -2681,7 +2681,7 @@ LevelSelect:
 		bsr.w	RunPLC
 		tst.l	(v_plc_buffer).w
 		bne.s	LevelSelect
-		andi.b	#btnABC+btnStart,(v_jpadpress1).w ; is A, B, C, or Start pressed?
+		andi.b	#btnABC+btnStart,(v_joypad_press_actual).w ; is A, B, C, or Start pressed?
 		beq.s	LevelSelect	; if not, branch
 		move.w	(v_levselitem).w,d0
 		cmpi.w	#$14,d0		; have you selected item $14 (sound test)?
@@ -2840,9 +2840,9 @@ loc_33B6:
 		bsr.w	DeformLayers
 		bsr.w	PaletteCycle
 		bsr.w	RunPLC
-		move.w	(v_objspace+ost_x_pos).w,d0
+		move.w	(v_ost_all+ost_x_pos).w,d0
 		addq.w	#2,d0
-		move.w	d0,(v_objspace+ost_x_pos).w
+		move.w	d0,(v_ost_all+ost_x_pos).w
 		cmpi.w	#$1C00,d0
 		blo.s	loc_33E4
 		move.b	#id_Sega,(v_gamemode).w
@@ -2850,7 +2850,7 @@ loc_33B6:
 ; ===========================================================================
 
 loc_33E4:
-		andi.b	#btnStart,(v_jpadpress1).w ; is Start button pressed?
+		andi.b	#btnStart,(v_joypad_press_actual).w ; is Start button pressed?
 		bne.w	Tit_ChkLevSel	; if yes, branch
 		tst.w	(v_demolength).w
 		bne.w	loc_33B6
@@ -2900,7 +2900,7 @@ Demo_Levels:	incbin	"misc\Demo Level Order - Intro.bin"
 
 
 LevSelControls:
-		move.b	(v_jpadpress1).w,d1
+		move.b	(v_joypad_press_actual).w,d1
 		andi.b	#btnUp+btnDn,d1	; is up/down pressed and held?
 		bne.s	LevSel_UpDown	; if yes, branch
 		subq.w	#1,(v_levseldelay).w ; subtract 1 from time to next move
@@ -2908,7 +2908,7 @@ LevSelControls:
 
 LevSel_UpDown:
 		move.w	#$B,(v_levseldelay).w ; reset time delay
-		move.b	(v_jpadhold1).w,d1
+		move.b	(v_joypad_hold_actual).w,d1
 		andi.b	#btnUp+btnDn,d1	; is up/down pressed?
 		beq.s	LevSel_SndTest	; if not, branch
 		move.w	(v_levselitem).w,d0
@@ -2935,7 +2935,7 @@ LevSel_Refresh:
 LevSel_SndTest:
 		cmpi.w	#$14,(v_levselitem).w ; is item $14 selected?
 		bne.s	LevSel_NoMove	; if not, branch
-		move.b	(v_jpadpress1).w,d1
+		move.b	(v_joypad_press_actual).w,d1
 		andi.b	#btnR+btnL,d1	; is left/right	pressed?
 		beq.s	LevSel_NoMove	; if not, branch
 		move.w	(v_levselsound).w,d0
@@ -3117,7 +3117,7 @@ loc_37FC:
 		bsr.w	AddPLC		; load standard	patterns
 
 Level_ClrRam:
-		lea	(v_objspace).w,a1
+		lea	(v_ost_all).w,a1
 		moveq	#0,d0
 		move.w	#$7FF,d1
 
@@ -3214,7 +3214,7 @@ Level_GetBgm:
 		lea	(MusicList).l,a1 ; load	music playlist
 		move.b	(a1,d0.w),d0
 		bsr.w	PlaySound	; play music
-		move.b	#id_TitleCard,(v_objspace+$80).w ; load title card object
+		move.b	#id_TitleCard,(v_ost_titlecard1).w ; load title card object
 
 Level_TtlCardLoop:
 		move.b	#$C,(v_vbla_routine).w
@@ -3222,8 +3222,8 @@ Level_TtlCardLoop:
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
 		bsr.w	RunPLC
-		move.w	(v_objspace+$108).w,d0
-		cmp.w	(v_objspace+$130).w,d0 ; has title card sequence finished?
+		move.w	(v_ost_titlecard3+ost_x_pos).w,d0
+		cmp.w	(v_ost_titlecard3+ost_card_x_stop).w,d0 ; has title card sequence finished?
 		bne.s	Level_TtlCardLoop ; if not, branch
 		tst.l	(v_plc_buffer).w ; are there any items in the pattern load cue?
 		bne.s	Level_TtlCardLoop ; if yes, branch
@@ -3240,27 +3240,27 @@ Level_TtlCardLoop:
 		jsr	(FloorLog_Unk).l
 		bsr.w	ColIndexLoad
 		bsr.w	LZWaterFeatures
-		move.b	#id_SonicPlayer,(v_player).w ; load Sonic object
+		move.b	#id_SonicPlayer,(v_ost_player).w ; load Sonic object
 		tst.w	(f_demo).w
 		bmi.s	Level_ChkDebug
-		move.b	#id_HUD,(v_objspace+$40).w ; load HUD object
+		move.b	#id_HUD,(v_ost_hud).w ; load HUD object
 
 Level_ChkDebug:
 		tst.b	(f_debugcheat).w ; has debug cheat been entered?
 		beq.s	Level_ChkWater	; if not, branch
-		btst	#bitA,(v_jpadhold1).w ; is A button held?
+		btst	#bitA,(v_joypad_hold_actual).w ; is A button held?
 		beq.s	Level_ChkWater	; if not, branch
 		move.b	#1,(f_debugmode).w ; enable debug mode
 
 Level_ChkWater:
-		move.w	#0,(v_jpadhold2).w
-		move.w	#0,(v_jpadhold1).w
+		move.w	#0,(v_joypad_hold).w
+		move.w	#0,(v_joypad_hold_actual).w
 		cmpi.b	#id_LZ,(v_zone).w ; is level LZ?
 		bne.s	Level_LoadObj	; if not, branch
-		move.b	#id_WaterSurface,(v_objspace+$780).w ; load water surface object
-		move.w	#$60,(v_objspace+$780+ost_x_pos).w
-		move.b	#id_WaterSurface,(v_objspace+$7C0).w
-		move.w	#$120,(v_objspace+$7C0+ost_x_pos).w
+		move.b	#id_WaterSurface,(v_ost_watersurface1).w ; load water surface object
+		move.w	#$60,(v_ost_watersurface1+ost_x_pos).w
+		move.b	#id_WaterSurface,(v_ost_watersurface2).w
+		move.w	#$120,(v_ost_watersurface2+ost_x_pos).w
 
 Level_LoadObj:
 		jsr	(ObjPosLoad).l
@@ -3334,10 +3334,10 @@ Level_Delay:
 		bsr.w	PalFadeIn_Alt
 		tst.w	(f_demo).w	; is an ending sequence demo running?
 		bmi.s	Level_ClrCardArt ; if yes, branch
-		addq.b	#2,(v_objspace+$80+ost_routine).w ; make title card move
-		addq.b	#4,(v_objspace+$C0+ost_routine).w
-		addq.b	#4,(v_objspace+$100+ost_routine).w
-		addq.b	#4,(v_objspace+$140+ost_routine).w
+		addq.b	#2,(v_ost_titlecard1+ost_routine).w ; make title card move
+		addq.b	#4,(v_ost_titlecard2+ost_routine).w
+		addq.b	#4,(v_ost_titlecard3+ost_routine).w
+		addq.b	#4,(v_ost_titlecard4+ost_routine).w
 		bra.s	Level_StartGame
 ; ===========================================================================
 
@@ -3371,7 +3371,7 @@ Level_MainLoop:
 		endc
 		tst.w	(v_debuguse).w	; is debug mode being used?
 		bne.s	Level_DoScroll	; if yes, branch
-		cmpi.b	#6,(v_player+ost_routine).w ; has Sonic just died?
+		cmpi.b	#6,(v_ost_player+ost_routine).w ; has Sonic just died?
 		bhs.s	Level_SkipScroll ; if yes, branch
 
 	Level_DoScroll:
@@ -3461,7 +3461,7 @@ DemoRecorder:
 		lea	($80000).l,a1
 		move.w	(v_btnpushtime1).w,d0
 		adda.w	d0,a1
-		move.b	(v_jpadhold1).w,d0
+		move.b	(v_joypad_hold_actual).w,d0
 		cmp.b	(a1),d0
 		bne.s	@next
 		addq.b	#1,1(a1)
@@ -3478,7 +3478,7 @@ DemoRecorder:
 ; ===========================================================================
 
 MDemo_On:
-		tst.b	(v_jpadhold1).w	; is start button pressed?
+		tst.b	(v_joypad_hold_actual).w	; is start button pressed?
 		bpl.s	@dontquit	; if not, branch
 		tst.w	(f_demo).w	; is this an ending sequence demo?
 		bmi.s	@dontquit	; if yes, branch
@@ -3507,7 +3507,7 @@ MDemo_On:
 		move.w	(v_btnpushtime1).w,d0
 		adda.w	d0,a1
 		move.b	(a1),d0
-		lea	(v_jpadhold1).w,a0
+		lea	(v_joypad_hold_actual).w,a0
 		move.b	d0,d1
 		if Revision=0
 		move.b	(a0),d2
@@ -3635,7 +3635,7 @@ GM_Special:
 		move.w	#$8004,(a6)	; 8-colour mode
 		move.w	#$8A00+175,(v_hbla_hreg).w
 		move.w	#$9011,(a6)	; 128-cell hscroll size
-		move.w	(v_vdp_buffer1).w,d0
+		move.w	(v_vdp_mode_buffer).w,d0
 		andi.b	#$BF,d0
 		move.w	d0,(vdp_control_port).l
 		bsr.w	ClearScreen
@@ -3651,7 +3651,7 @@ GM_Special:
 		moveq	#id_PLC_SpecialStage,d0
 		bsr.w	QuickPLC	; load special stage patterns
 
-		lea	(v_objspace).w,a1
+		lea	(v_ost_all).w,a1
 		moveq	#0,d0
 		move.w	#$7FF,d1
 	SS_ClrObjRam:
@@ -3672,7 +3672,7 @@ GM_Special:
 		move.l	d0,(a1)+
 		dbf	d1,SS_ClrRam2	; clear	variables
 
-		lea	(v_ngfx_buffer).w,a1
+		lea	(v_nem_gfx_buffer).w,a1
 		moveq	#0,d0
 		move.w	#$7F,d1
 	SS_ClrNemRam:
@@ -3686,7 +3686,7 @@ GM_Special:
 		jsr	(SS_Load).l	; load SS layout data
 		move.l	#0,(v_screenposx).w
 		move.l	#0,(v_screenposy).w
-		move.b	#id_SonicSpecial,(v_player).w ; load special stage Sonic object
+		move.b	#id_SonicSpecial,(v_ost_player).w ; load special stage Sonic object
 		bsr.w	PalCycle_SS
 		clr.w	(v_ssangle).w	; set stage angle to "upright"
 		move.w	#$40,(v_ssrotate).w ; set stage rotation speed
@@ -3704,12 +3704,12 @@ GM_Special:
 		move.w	#1800,(v_demolength).w
 		tst.b	(f_debugcheat).w ; has debug cheat been entered?
 		beq.s	SS_NoDebug	; if not, branch
-		btst	#bitA,(v_jpadhold1).w ; is A button pressed?
+		btst	#bitA,(v_joypad_hold_actual).w ; is A button pressed?
 		beq.s	SS_NoDebug	; if not, branch
 		move.b	#1,(f_debugmode).w ; enable debug mode
 
 	SS_NoDebug:
-		move.w	(v_vdp_buffer1).w,d0
+		move.w	(v_vdp_mode_buffer).w,d0
 		ori.b	#$40,d0
 		move.w	d0,(vdp_control_port).l
 		bsr.w	PaletteWhiteIn
@@ -3723,7 +3723,7 @@ SS_MainLoop:
 		move.b	#$A,(v_vbla_routine).w
 		bsr.w	WaitForVBla
 		bsr.w	MoveSonicInDemo
-		move.w	(v_jpadhold1).w,(v_jpadhold2).w
+		move.w	(v_joypad_hold_actual).w,(v_joypad_hold).w
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
 		jsr	(SS_ShowLayout).l
@@ -3757,7 +3757,7 @@ SS_Finish:
 		move.b	#$16,(v_vbla_routine).w
 		bsr.w	WaitForVBla
 		bsr.w	MoveSonicInDemo
-		move.w	(v_jpadhold1).w,(v_jpadhold2).w
+		move.w	(v_joypad_hold_actual).w,(v_joypad_hold).w
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
 		jsr	(SS_ShowLayout).l
@@ -3795,14 +3795,14 @@ loc_47D4:
 		move.w	d0,(v_ringbonus).w ; set rings bonus
 		sfx	bgm_GotThrough,0,0,0	 ; play end-of-level music
 
-		lea	(v_objspace).w,a1
+		lea	(v_ost_all).w,a1
 		moveq	#0,d0
 		move.w	#$7FF,d1
 	SS_EndClrObjRam:
 		move.l	d0,(a1)+
 		dbf	d1,SS_EndClrObjRam ; clear object RAM
 
-		move.b	#id_SSResult,(v_objspace+$5C0).w ; load results screen object
+		move.b	#id_SSResult,(v_ost_ssresult1).w ; load results screen object
 
 SS_NormalExit:
 		bsr.w	PauseGame
@@ -4041,7 +4041,7 @@ loc_4C10:
 		neg.w	d0
 		swap	d0
 		lea	(byte_4CCC).l,a1
-		lea	(v_ngfx_buffer).w,a3
+		lea	(v_nem_gfx_buffer).w,a3
 		moveq	#9,d3
 
 loc_4C26:
@@ -4056,7 +4056,7 @@ loc_4C26:
 		ext.w	d2
 		add.w	d2,(a3)+
 		dbf	d3,loc_4C26
-		lea	(v_ngfx_buffer).w,a3
+		lea	(v_nem_gfx_buffer).w,a3
 		lea	(byte_4CB8).l,a2
 		bra.s	loc_4C7E
 ; ===========================================================================
@@ -4081,7 +4081,7 @@ loc_4C74:
 		lea	(byte_4CC4).l,a2
 
 loc_4C7E:
-		lea	(v_hscrolltablebuffer).w,a1
+		lea	(v_hscroll_buffer).w,a1
 		move.w	(v_bg3screenposx).w,d0
 		neg.w	d0
 		swap	d0
@@ -4125,7 +4125,7 @@ byte_4CCC:	dc.b 8,	2, 4, $FF, 2, 3, 8, $FF, 4, 2, 2, 3, 8,	$FD, 4,	2, 2, 3, 2, $
 GM_Continue:
 		bsr.w	PaletteFadeOut
 		disable_ints
-		move.w	(v_vdp_buffer1).w,d0
+		move.w	(v_vdp_mode_buffer).w,d0
 		andi.b	#$BF,d0
 		move.w	d0,(vdp_control_port).l
 		lea	(vdp_control_port).l,a6
@@ -4133,7 +4133,7 @@ GM_Continue:
 		move.w	#$8700,(a6)	; background colour
 		bsr.w	ClearScreen
 
-		lea	(v_objspace).w,a1
+		lea	(v_ost_all).w,a1
 		moveq	#0,d0
 		move.w	#$7FF,d1
 	Cont_ClrObjRam:
@@ -4157,16 +4157,16 @@ GM_Continue:
 		move.w	#659,(v_demolength).w ; set time delay to 11 seconds
 		clr.l	(v_screenposx).w
 		move.l	#$1000000,(v_screenposy).w
-		move.b	#id_ContSonic,(v_player).w ; load Sonic object
-		move.b	#id_ContScrItem,(v_objspace+$40).w ; load continue screen objects
-		move.b	#id_ContScrItem,(v_objspace+$80).w
-		move.b	#3,(v_objspace+$80+ost_priority).w
-		move.b	#4,(v_objspace+$80+ost_frame).w
-		move.b	#id_ContScrItem,(v_objspace+$C0).w
-		move.b	#4,(v_objspace+$C0+ost_routine).w
+		move.b	#id_ContSonic,(v_ost_player).w ; load Sonic object
+		move.b	#id_ContScrItem,(v_ost_cont_text).w ; load continue screen objects
+		move.b	#id_ContScrItem,(v_ost_cont_oval).w
+		move.b	#3,(v_ost_cont_oval+ost_priority).w
+		move.b	#4,(v_ost_cont_oval+ost_frame).w
+		move.b	#id_ContScrItem,(v_ost_cont_minisonic).w
+		move.b	#id_CSI_MakeMiniSonic,(v_ost_cont_minisonic+ost_routine).w
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
-		move.w	(v_vdp_buffer1).w,d0
+		move.w	(v_vdp_mode_buffer).w,d0
 		ori.b	#$40,d0
 		move.w	d0,(vdp_control_port).l
 		bsr.w	PaletteFadeIn
@@ -4178,7 +4178,7 @@ GM_Continue:
 Cont_MainLoop:
 		move.b	#$16,(v_vbla_routine).w
 		bsr.w	WaitForVBla
-		cmpi.b	#6,(v_player+ost_routine).w
+		cmpi.b	#6,(v_ost_player+ost_routine).w
 		bhs.s	loc_4DF2
 		disable_ints
 		move.w	(v_demolength).w,d1
@@ -4190,9 +4190,9 @@ Cont_MainLoop:
 loc_4DF2:
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
-		cmpi.w	#$180,(v_player+ost_x_pos).w ; has Sonic run off screen?
+		cmpi.w	#$180,(v_ost_player+ost_x_pos).w ; has Sonic run off screen?
 		bhs.s	Cont_GotoLevel	; if yes, branch
-		cmpi.b	#6,(v_player+ost_routine).w
+		cmpi.b	#6,(v_ost_player+ost_routine).w
 		bhs.s	Cont_MainLoop
 		tst.w	(v_demolength).w
 		bne.w	Cont_MainLoop
@@ -4227,7 +4227,7 @@ GM_Ending:
 		sfx	bgm_Stop,0,1,1 ; stop music
 		bsr.w	PaletteFadeOut
 
-		lea	(v_objspace).w,a1
+		lea	(v_ost_all).w,a1
 		moveq	#0,d0
 		move.w	#$7FF,d1
 	End_ClrObjRam:
@@ -4256,7 +4256,7 @@ GM_Ending:
 		dbf	d1,End_ClrRam3	; clear	variables
 
 		disable_ints
-		move.w	(v_vdp_buffer1).w,d0
+		move.w	(v_vdp_mode_buffer).w,d0
 		andi.b	#$BF,d0
 		move.w	d0,(vdp_control_port).l
 		bsr.w	ClearScreen
@@ -4293,17 +4293,17 @@ End_LoadData:
 		moveq	#id_Pal_Sonic,d0
 		bsr.w	PalLoad1	; load Sonic's palette
 		music	bgm_Ending,0,1,0	; play ending sequence music
-		btst	#bitA,(v_jpadhold1).w ; is button A pressed?
+		btst	#bitA,(v_joypad_hold_actual).w ; is button A pressed?
 		beq.s	End_LoadSonic	; if not, branch
 		move.b	#1,(f_debugmode).w ; enable debug mode
 
 End_LoadSonic:
-		move.b	#id_SonicPlayer,(v_player).w ; load Sonic object
-		bset	#0,(v_player+ost_status).w ; make Sonic face left
+		move.b	#id_SonicPlayer,(v_ost_player).w ; load Sonic object
+		bset	#0,(v_ost_player+ost_status).w ; make Sonic face left
 		move.b	#1,(f_lockctrl).w ; lock controls
-		move.w	#(btnL<<8),(v_jpadhold2).w ; move Sonic to the left
-		move.w	#$F800,(v_player+ost_inertia).w ; set Sonic's speed
-		move.b	#id_HUD,(v_objspace+$40).w ; load HUD object
+		move.w	#(btnL<<8),(v_joypad_hold).w ; move Sonic to the left
+		move.w	#$F800,(v_ost_player+ost_inertia).w ; set Sonic's speed
+		move.b	#id_HUD,(v_ost_hud).w ; load HUD object
 		jsr	(ObjPosLoad).l
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
@@ -4325,7 +4325,7 @@ End_LoadSonic:
 		move.w	#1800,(v_demolength).w
 		move.b	#$18,(v_vbla_routine).w
 		bsr.w	WaitForVBla
-		move.w	(v_vdp_buffer1).w,d0
+		move.w	(v_vdp_mode_buffer).w,d0
 		ori.b	#$40,d0
 		move.w	d0,(vdp_control_port).l
 		move.w	#$3F,(v_pfade_start).w
@@ -4386,11 +4386,11 @@ End_ChkEmerald:
 		tst.w	(f_restart).w
 		beq.w	End_AllEmlds
 		clr.w	(f_restart).w
-		move.w	#$2E2F,(v_lvllayout+$80).w ; modify level layout
+		move.w	#$2E2F,(v_level_layout+$80).w ; modify level layout
 		lea	(vdp_control_port).l,a5
 		lea	(vdp_data_port).l,a6
 		lea	(v_screenposx).w,a3
-		lea	(v_lvllayout).w,a4
+		lea	(v_level_layout).w,a4
 		move.w	#$4000,d2
 		bsr.w	DrawChunks
 		moveq	#id_Pal_Ending,d0
@@ -4408,30 +4408,30 @@ End_ChkEmerald:
 End_MoveSonic:
 		move.b	(v_sonicend).w,d0
 		bne.s	End_MoveSon2
-		cmpi.w	#$90,(v_player+ost_x_pos).w ; has Sonic passed $90 on x-axis?
+		cmpi.w	#$90,(v_ost_player+ost_x_pos).w ; has Sonic passed $90 on x-axis?
 		bhs.s	End_MoveSonExit	; if not, branch
 
 		addq.b	#2,(v_sonicend).w
 		move.b	#1,(f_lockctrl).w ; lock player's controls
-		move.w	#(btnR<<8),(v_jpadhold2).w ; move Sonic to the right
+		move.w	#(btnR<<8),(v_joypad_hold).w ; move Sonic to the right
 		rts	
 ; ===========================================================================
 
 End_MoveSon2:
 		subq.b	#2,d0
 		bne.s	End_MoveSon3
-		cmpi.w	#$A0,(v_player+ost_x_pos).w ; has Sonic passed $A0 on x-axis?
+		cmpi.w	#$A0,(v_ost_player+ost_x_pos).w ; has Sonic passed $A0 on x-axis?
 		blo.s	End_MoveSonExit	; if not, branch
 
 		addq.b	#2,(v_sonicend).w
 		moveq	#0,d0
 		move.b	d0,(f_lockctrl).w
-		move.w	d0,(v_jpadhold2).w ; stop Sonic moving
-		move.w	d0,(v_player+ost_inertia).w
+		move.w	d0,(v_joypad_hold).w ; stop Sonic moving
+		move.w	d0,(v_ost_player+ost_inertia).w
 		move.b	#$81,(f_lockmulti).w ; lock controls & position
-		move.b	#id_frame_Wait2,(v_player+ost_frame).w
-		move.w	#(id_Wait<<8)+id_Wait,(v_player+ost_anim).w ; use "standing" animation
-		move.b	#3,(v_player+ost_anim_time).w
+		move.b	#id_frame_Wait2,(v_ost_player+ost_frame).w
+		move.w	#(id_Wait<<8)+id_Wait,(v_ost_player+ost_anim).w ; use "standing" animation
+		move.b	#3,(v_ost_player+ost_anim_time).w
 		rts	
 ; ===========================================================================
 
@@ -4439,9 +4439,9 @@ End_MoveSon3:
 		subq.b	#2,d0
 		bne.s	End_MoveSonExit
 		addq.b	#2,(v_sonicend).w
-		move.w	#$A0,(v_player+ost_x_pos).w
-		move.b	#id_EndSonic,(v_player).w ; load Sonic ending sequence object
-		clr.w	(v_player+ost_routine).w
+		move.w	#$A0,(v_ost_player+ost_x_pos).w
+		move.b	#id_EndSonic,(v_ost_player).w ; load Sonic ending sequence object
+		clr.w	(v_ost_player+ost_routine).w
 
 End_MoveSonExit:
 		rts	
@@ -4478,7 +4478,7 @@ GM_Credits:
 		clr.b	(f_wtr_state).w
 		bsr.w	ClearScreen
 
-		lea	(v_objspace).w,a1
+		lea	(v_ost_all).w,a1
 		moveq	#0,d0
 		move.w	#$7FF,d1
 	Cred_ClrObjRam:
@@ -4498,7 +4498,7 @@ GM_Credits:
 
 		moveq	#id_Pal_Sonic,d0
 		bsr.w	PalLoad1	; load Sonic's palette
-		move.b	#id_CreditsText,(v_objspace+$80).w ; load credits object
+		move.b	#id_CreditsText,(v_ost_credits).w ; load credits object
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
 		bsr.w	EndingDemoLoad
@@ -4607,7 +4607,7 @@ TryAgainEnd:
 		clr.b	(f_wtr_state).w
 		bsr.w	ClearScreen
 
-		lea	(v_objspace).w,a1
+		lea	(v_ost_all).w,a1
 		moveq	#0,d0
 		move.w	#$7FF,d1
 	TryAg_ClrObjRam:
@@ -4627,7 +4627,7 @@ TryAgainEnd:
 		moveq	#id_Pal_Ending,d0
 		bsr.w	PalLoad1	; load ending palette
 		clr.w	(v_pal_dry_dup+$40).w
-		move.b	#id_EndEggman,(v_objspace+$80).w ; load Eggman object
+		move.b	#id_EndEggman,(v_ost_endeggman).w ; load Eggman object
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
 		move.w	#1800,(v_demolength).w ; show screen for 30 seconds
@@ -4642,7 +4642,7 @@ TryAg_MainLoop:
 		bsr.w	WaitForVBla
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
-		andi.b	#btnStart,(v_jpadpress1).w ; is Start button pressed?
+		andi.b	#btnStart,(v_joypad_press_actual).w ; is Start button pressed?
 		bne.s	TryAg_Exit	; if yes, branch
 		tst.w	(v_demolength).w ; has 30 seconds elapsed?
 		beq.s	TryAg_Exit	; if yes, branch
@@ -4783,8 +4783,8 @@ LevSz_ChkLamp:
 		beq.s	LevSz_StartLoc	; if not, branch
 
 		jsr	(Lamp_LoadInfo).l
-		move.w	(v_player+ost_x_pos).w,d1
-		move.w	(v_player+ost_y_pos).w,d0
+		move.w	(v_ost_player+ost_x_pos).w,d1
+		move.w	(v_ost_player+ost_y_pos).w,d0
 		bra.s	LevSz_SkipStartPos
 ; ===========================================================================
 
@@ -4804,10 +4804,10 @@ LevSz_StartLoc:
 LevSz_SonicPos:
 		moveq	#0,d1
 		move.w	(a1)+,d1
-		move.w	d1,(v_player+ost_x_pos).w ; set Sonic's position on x-axis
+		move.w	d1,(v_ost_player+ost_x_pos).w ; set Sonic's position on x-axis
 		moveq	#0,d0
 		move.w	(a1),d0
-		move.w	d0,(v_player+ost_y_pos).w ; set Sonic's position on y-axis
+		move.w	d0,(v_ost_player+ost_y_pos).w ; set Sonic's position on y-axis
 
 SetScreen:
 	LevSz_SkipStartPos:
@@ -5108,7 +5108,7 @@ Deform_GHZ:
 		moveq	#0,d5
 		bsr.w	ScrollBlock1
 		bsr.w	ScrollBlock4
-		lea	(v_hscrolltablebuffer).w,a1
+		lea	(v_hscroll_buffer).w,a1
 		move.w	(v_screenposy).w,d0
 		andi.w	#$7FF,d0
 		lsr.w	#5,d0
@@ -5183,7 +5183,7 @@ Deform_LZ:
 		asl.l	#7,d5
 		bsr.w	ScrollBlock1
 		move.w	(v_bgscreenposy).w,(v_bgscrposy_dup).w
-		lea	(v_hscrolltablebuffer).w,a1
+		lea	(v_hscroll_buffer).w,a1
 		move.w	#223,d1
 		move.w	(v_screenposx).w,d0
 		neg.w	d0
@@ -5229,7 +5229,7 @@ loc_6402:
 		move.w	d0,(v_bg2screenposy).w
 		bsr.w	ScrollBlock3
 		move.w	(v_bgscreenposy).w,(v_bgscrposy_dup).w
-		lea	(v_hscrolltablebuffer).w,a1
+		lea	(v_hscroll_buffer).w,a1
 		move.w	#223,d1
 		move.w	(v_screenposx).w,d0
 		neg.w	d0
@@ -5267,7 +5267,7 @@ Deform_SLZ:
 		andi.w	#$3F0,d0
 		lsr.w	#3,d0
 		lea	(a2,d0.w),a2
-		lea	(v_hscrolltablebuffer).w,a1
+		lea	(v_hscroll_buffer).w,a1
 		move.w	#$E,d1
 		move.w	(v_screenposx).w,d0
 		neg.w	d0
@@ -5372,7 +5372,7 @@ Deform_SYZ:
 		add.l	d1,d5
 		bsr.w	ScrollBlock1
 		move.w	(v_bgscreenposy).w,(v_bgscrposy_dup).w
-		lea	(v_hscrolltablebuffer).w,a1
+		lea	(v_hscroll_buffer).w,a1
 		move.w	#223,d1
 		move.w	(v_screenposx).w,d0
 		neg.w	d0
@@ -5403,7 +5403,7 @@ Deform_SBZ:
 		asl.l	#1,d5
 		bsr.w	ScrollBlock1
 		move.w	(v_bgscreenposy).w,(v_bgscrposy_dup).w
-		lea	(v_hscrolltablebuffer).w,a1
+		lea	(v_hscroll_buffer).w,a1
 		move.w	#223,d1
 		move.w	(v_screenposx).w,d0
 		neg.w	d0
@@ -5452,7 +5452,7 @@ locret_65B0:
 
 
 MoveScreenHoriz:
-		move.w	(v_player+ost_x_pos).w,d0
+		move.w	(v_ost_player+ost_x_pos).w,d0
 		sub.w	(v_screenposx).w,d0 ; Sonic's distance from left edge of screen
 		subi.w	#144,d0		; is distance less than 144px?
 		bcs.s	SH_BehindMid	; if yes, branch
@@ -5509,14 +5509,14 @@ loc_6610:
 
 ScrollVertical:
 		moveq	#0,d1
-		move.w	(v_player+ost_y_pos).w,d0
+		move.w	(v_ost_player+ost_y_pos).w,d0
 		sub.w	(v_screenposy).w,d0 ; Sonic's distance from top of screen
-		btst	#2,(v_player+ost_status).w ; is Sonic rolling?
+		btst	#2,(v_ost_player+ost_status).w ; is Sonic rolling?
 		beq.s	SV_NotRolling	; if not, branch
 		subq.w	#5,d0
 
 	SV_NotRolling:
-		btst	#1,(v_player+ost_status).w ; is Sonic jumping?
+		btst	#1,(v_ost_player+ost_status).w ; is Sonic jumping?
 		beq.s	loc_664A	; if not, branch
 
 		addi.w	#32,d0
@@ -5543,7 +5543,7 @@ loc_6656:
 loc_665C:
 		cmpi.w	#$60,(v_lookshift).w
 		bne.s	loc_6684
-		move.w	(v_player+ost_inertia).w,d1
+		move.w	(v_ost_player+ost_inertia).w,d1
 		bpl.s	loc_666C
 		neg.w	d1
 
@@ -5602,7 +5602,7 @@ loc_66CC:
 		cmpi.w	#-$100,d1
 		bgt.s	loc_66F0
 		andi.w	#$7FF,d1
-		andi.w	#$7FF,(v_player+ost_y_pos).w
+		andi.w	#$7FF,(v_ost_player+ost_y_pos).w
 		andi.w	#$7FF,(v_screenposy).w
 		andi.w	#$3FF,(v_bgscreenposy).w
 		bra.s	loc_6724
@@ -5624,7 +5624,7 @@ loc_6700:
 		blt.s	loc_6724
 		subi.w	#$800,d1
 		bcs.s	loc_6720
-		andi.w	#$7FF,(v_player+ost_y_pos).w
+		andi.w	#$7FF,(v_ost_player+ost_y_pos).w
 		subi.w	#$800,(v_screenposy).w
 		andi.w	#$3FF,(v_bgscreenposy).w
 		bra.s	loc_6724
@@ -5901,8 +5901,8 @@ LevSz_ChkLamp:
 		beq.s	LevSz_StartLoc	; if not, branch
 
 		jsr	(Lamp_LoadInfo).l
-		move.w	(v_player+ost_x_pos).w,d1
-		move.w	(v_player+ost_y_pos).w,d0
+		move.w	(v_ost_player+ost_x_pos).w,d1
+		move.w	(v_ost_player+ost_y_pos).w,d0
 		bra.s	LevSz_SkipStartPos
 ; ===========================================================================
 
@@ -5922,10 +5922,10 @@ LevSz_StartLoc:
 LevSz_SonicPos:
 		moveq	#0,d1
 		move.w	(a1)+,d1
-		move.w	d1,(v_player+ost_x_pos).w ; set Sonic's position on x-axis
+		move.w	d1,(v_ost_player+ost_x_pos).w ; set Sonic's position on x-axis
 		moveq	#0,d0
 		move.w	(a1),d0
-		move.w	d0,(v_player+ost_y_pos).w ; set Sonic's position on y-axis
+		move.w	d0,(v_ost_player+ost_y_pos).w ; set Sonic's position on y-axis
 
 SetScreen:
 	LevSz_SkipStartPos:
@@ -6194,7 +6194,7 @@ Deform_GHZ:
 		moveq	#0,d6
 		bsr.w	BGScroll_Block2
 	; calculate Y position
-		lea	(v_hscrolltablebuffer).w,a1
+		lea	(v_hscroll_buffer).w,a1
 		move.w	(v_screenposy).w,d0
 		andi.w	#$7FF,d0
 		lsr.w	#5,d0
@@ -6310,7 +6310,7 @@ Deform_LZ:
 		andi.w	#$FF,d2
 		add.w	(v_screenposy).w,d3
 		andi.w	#$FF,d3
-		lea	(v_hscrolltablebuffer).w,a1
+		lea	(v_hscroll_buffer).w,a1
 		move.w	#$DF,d1
 		move.w	(v_screenposx).w,d0
 		neg.w	d0
@@ -6544,7 +6544,7 @@ Deform_SLZ:
 ;-------------------------------------------------------------------------------
 ;-------------------------------------------------------------------------------
 Bg_Scroll_X:
-		lea	(v_hscrolltablebuffer).w,a1
+		lea	(v_hscroll_buffer).w,a1
 		move.w	#$E,d1
 		move.w	(v_screenposx).w,d0
 		neg.w	d0
@@ -6770,7 +6770,7 @@ Deform_SBZ2:;loc_68A2:
 		bsr.w	BGScroll_XY
 		move.w	(v_bgscreenposy).w,(v_bgscrposy_dup).w
 	; copy fg & bg x-position to hscroll table
-		lea	(v_hscrolltablebuffer).w,a1
+		lea	(v_hscroll_buffer).w,a1
 		move.w	#223,d1
 		move.w	(v_screenposx).w,d0
 		neg.w	d0
@@ -6818,7 +6818,7 @@ ScrollHoriz:
 
 
 MoveScreenHoriz:
-		move.w	(v_player+ost_x_pos).w,d0
+		move.w	(v_ost_player+ost_x_pos).w,d0
 		sub.w	(v_screenposx).w,d0 ; Sonic's distance from left edge of screen
 		subi.w	#144,d0		; is distance less than 144px?
 		bcs.s	SH_BehindMid	; if yes, branch
@@ -6875,14 +6875,14 @@ loc_6610:
 
 ScrollVertical:
 		moveq	#0,d1
-		move.w	(v_player+ost_y_pos).w,d0
+		move.w	(v_ost_player+ost_y_pos).w,d0
 		sub.w	(v_screenposy).w,d0 ; Sonic's distance from top of screen
-		btst	#2,(v_player+ost_status).w ; is Sonic rolling?
+		btst	#2,(v_ost_player+ost_status).w ; is Sonic rolling?
 		beq.s	SV_NotRolling	; if not, branch
 		subq.w	#5,d0
 
 	SV_NotRolling:
-		btst	#1,(v_player+ost_status).w ; is Sonic jumping?
+		btst	#1,(v_ost_player+ost_status).w ; is Sonic jumping?
 		beq.s	loc_664A	; if not, branch
 
 		addi.w	#32,d0
@@ -6909,7 +6909,7 @@ loc_6656:
 loc_665C:
 		cmpi.w	#$60,(v_lookshift).w
 		bne.s	loc_6684
-		move.w	(v_player+ost_inertia).w,d1
+		move.w	(v_ost_player+ost_inertia).w,d1
 		bpl.s	loc_666C
 		neg.w	d1
 
@@ -6968,7 +6968,7 @@ loc_66CC:
 		cmpi.w	#-$100,d1
 		bgt.s	loc_66F0
 		andi.w	#$7FF,d1
-		andi.w	#$7FF,(v_player+ost_y_pos).w
+		andi.w	#$7FF,(v_ost_player+ost_y_pos).w
 		andi.w	#$7FF,(v_screenposy).w
 		andi.w	#$3FF,(v_bgscreenposy).w
 		bra.s	loc_6724
@@ -6990,7 +6990,7 @@ loc_6700:
 		blt.s	loc_6724
 		subi.w	#$800,d1
 		bcs.s	loc_6720
-		andi.w	#$7FF,(v_player+ost_y_pos).w
+		andi.w	#$7FF,(v_ost_player+ost_y_pos).w
 		subi.w	#$800,(v_screenposy).w
 		andi.w	#$3FF,(v_bgscreenposy).w
 		bra.s	loc_6724
@@ -7202,7 +7202,7 @@ LoadTilesAsYouMove_BGOnly:
 		lea	(vdp_data_port).l,a6
 		lea	(v_bg1_scroll_flags).w,a2
 		lea	(v_bgscreenposx).w,a3
-		lea	(v_lvllayout+$40).w,a4
+		lea	(v_level_layout+$40).w,a4
 		move.w	#$6000,d2
 		bsr.w	DrawBGScrollBlock1
 		lea	(v_bg2_scroll_flags).w,a2
@@ -7223,7 +7223,7 @@ LoadTilesAsYouMove:
 		; First, update the background
 		lea	(v_bg1_scroll_flags_dup).w,a2	; Scroll block 1 scroll flags
 		lea	(v_bgscreenposx_dup).w,a3	; Scroll block 1 X coordinate
-		lea	(v_lvllayout+$40).w,a4
+		lea	(v_level_layout+$40).w,a4
 		move.w	#$6000,d2			; VRAM thing for selecting Plane B
 		bsr.w	DrawBGScrollBlock1
 		lea	(v_bg2_scroll_flags_dup).w,a2	; Scroll block 2 scroll flags
@@ -7239,7 +7239,7 @@ LoadTilesAsYouMove:
 		; Then, update the foreground
 		lea	(v_fg_scroll_flags_dup).w,a2	; Foreground scroll flags
 		lea	(v_screenposx_dup).w,a3		; Foreground X coordinate
-		lea	(v_lvllayout).w,a4
+		lea	(v_level_layout).w,a4
 		move.w	#$4000,d2			; VRAM thing for selecting Plane A
 		; The FG's update function is inlined here
 		tst.b	(a2)
@@ -7921,14 +7921,14 @@ DrawFlipXY:
 ; DrawBlocks:
 GetBlockData:
 		if Revision=0
-		lea	(v_16x16).w,a1
+		lea	(v_16x16_tiles).w,a1
 		add.w	4(a3),d4	; Add camera Y coordinate to relative coordinate
 		add.w	(a3),d5		; Add camera X coordinate to relative coordinate
 		else
 			add.w	(a3),d5
 	GetBlockData_2:
 			add.w	4(a3),d4
-			lea	(v_16x16).w,a1
+			lea	(v_16x16_tiles).w,a1
 		endc
 		; Turn Y coordinate into index into level layout
 		move.w	d4,d3
@@ -8034,11 +8034,11 @@ LoadTilesFromStart:
 		lea	(vdp_control_port).l,a5
 		lea	(vdp_data_port).l,a6
 		lea	(v_screenposx).w,a3
-		lea	(v_lvllayout).w,a4
+		lea	(v_level_layout).w,a4
 		move.w	#$4000,d2
 		bsr.s	DrawChunks
 		lea	(v_bgscreenposx).w,a3
-		lea	(v_lvllayout+$40).w,a4
+		lea	(v_level_layout+$40).w,a4
 		move.w	#$6000,d2
 		if Revision=0
 		else
@@ -8165,11 +8165,11 @@ LevelDataLoad:
 		move.l	a2,-(sp)
 		addq.l	#4,a2
 		movea.l	(a2)+,a0
-		lea	(v_16x16).w,a1	; RAM address for 16x16 mappings
+		lea	(v_16x16_tiles).w,a1	; RAM address for 16x16 mappings
 		move.w	#0,d0
 		bsr.w	EniDec
 		movea.l	(a2)+,a0
-		lea	(v_256x256).l,a1 ; RAM address for 256x256 mappings
+		lea	(v_256x256_tiles).l,a1 ; RAM address for 256x256 mappings
 		bsr.w	KosDec
 		bsr.w	LevelLayoutLoad
 		move.w	(a2)+,d0
@@ -8209,7 +8209,7 @@ LevelDataLoad:
 
 
 LevelLayoutLoad:
-		lea	(v_lvllayout).w,a3
+		lea	(v_level_layout).w,a3
 		move.w	#$1FF,d1
 		moveq	#0,d0
 
@@ -8217,10 +8217,10 @@ LevLoad_ClrRam:
 		move.l	d0,(a3)+
 		dbf	d1,LevLoad_ClrRam ; clear the RAM ($A400-A7FF)
 
-		lea	(v_lvllayout).w,a3 ; RAM address for level layout
+		lea	(v_level_layout).w,a3 ; RAM address for level layout
 		moveq	#0,d1
 		bsr.w	LevelLayoutLoad2 ; load	level layout into RAM
-		lea	(v_lvllayout+$40).w,a3 ; RAM address for background layout
+		lea	(v_level_layout+$40).w,a3 ; RAM address for background layout
 		moveq	#2,d1
 ; End of function LevelLayoutLoad
 
@@ -8268,7 +8268,7 @@ LevLoad_Row:
 
 
 Swing_Solid:
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		tst.w	ost_y_vel(a1)
 		bmi.w	Plat_Exit
 		move.w	ost_x_pos(a1),d0
@@ -8410,8 +8410,8 @@ Map_ADoor:	include "Mappings\SBZ Door.asm"
 		include "Objects\Buzz Bomber Missile Vanishing.asm" ; MissileDissolve
 
 		include "Objects\Explosions.asm" ; ExplosionItem & ExplosionBomb
-Ani_Hog:	include "Animations\Ball Hog.asm"
-Map_Hog:	include "Mappings\Ball Hog.asm"
+		include "Animations\Ball Hog.asm" ; Ani_Hog
+		include "Mappings\Ball Hog.asm" ; Map_Hog
 Map_MisDissolve:include "Mappings\Buzz Bomber Missile Vanishing.asm"
 Map_ExplodeItem:include "Mappings\Explosions.asm"
 ;Map_ExplodeBomb: - see Mappings\Explosions.asm
@@ -8471,8 +8471,8 @@ Ani_Jaws:	include "Animations\Jaws.asm"
 Map_Jaws:	include "Mappings\Jaws.asm"
 
 		include "Objects\Burrobot.asm" ; Burrobot
-Ani_Burro:	include "Animations\Burrobot.asm"
-Map_Burro:	include "Mappings\Burrobot.asm"
+		include "Animations\Burrobot.asm" ; Ani_Burro
+		include "Mappings\Burrobot.asm" ; Map_Burro
 
 LargeGrass:	include "Objects\MZ Grass Platforms.asm"
 GrassFire:	include "Objects\MZ Burning Grass.asm"
@@ -8488,8 +8488,8 @@ SideStomp:	include "Objects\MZ Unused Sideways Stomper.asm"
 Map_CStom:	include "Mappings\MZ Chain Stompers.asm"
 Map_SStom:	include "Mappings\MZ Unused Sideways Stomper.asm"
 
-Button:		include "Objects\Button.asm"
-Map_But:	include "Mappings\Button.asm"
+		include "Objects\Button.asm" ; Button
+		include "Mappings\Button.asm" ; Map_But
 
 PushBlock:	include "Objects\MZ & LZ Pushable Blocks.asm"
 Map_Push:	include "Mappings\MZ & LZ Pushable Blocks.asm"
@@ -8764,7 +8764,7 @@ locret_DA8A:
 
 
 FindFreeObj:
-		lea	(v_objspace+$800).w,a1 ; start address for object RAM
+		lea	(v_ost_level_obj).w,a1 ; start address for object RAM
 		move.w	#$5F,d0
 
 	FFree_Loop:
@@ -8880,8 +8880,8 @@ Map_MBlock:	include "Mappings\MZ & SBZ Moving Blocks.asm"
 Map_MBlockLZ:	include "Mappings\LZ Moving Block.asm"
 
 		include "Objects\Batbrain.asm" ; Batbrain
-Ani_Bas:	include "Animations\Batbrain.asm"
-Map_Bas:	include "Mappings\Batbrain.asm"
+		include "Animations\Batbrain.asm" ; Ani_Bat
+		include "Mappings\Batbrain.asm" ; Map_Bat
 
 		include "Objects\SYZ & SLZ Floating Blocks, LZ Doors.asm" ; FloatingBlock
 Map_FBlock:	include "Mappings\SYZ & SLZ Floating Blocks, LZ Doors.asm"
@@ -8926,8 +8926,8 @@ Map_Seesaw:	include "Mappings\SLZ Seesaw.asm"
 Map_SSawBall:	include "Mappings\SLZ Seesaw Spike Ball.asm"
 
 		include "Objects\Bomb Enemy.asm" ; Bomb
-Ani_Bomb:	include "Animations\Bomb Enemy.asm"
-Map_Bomb:	include "Mappings\Bomb Enemy.asm"
+		include "Animations\Bomb Enemy.asm" ; Ani_Bomb
+		include "Mappings\Bomb Enemy.asm" ; Map_Bomb
 
 		include "Objects\Orbinaut.asm" ; Orbinaut
 Ani_Orb:	include "Animations\Orbinaut.asm"
@@ -9467,9 +9467,9 @@ Map_Cred:	include "Mappings\Credits & Sonic Team Presents.asm"
 
 BossGreenHill:	include "Objects\GHZ Boss, BossDefeated & BossMove.asm"
 BossBall:	include "Objects\GHZ Boss Ball.asm"
-Ani_Eggman:	include "Animations\Bosses.asm"
-Map_Eggman:	include "Mappings\Bosses.asm"
-Map_BossItems:	include "Mappings\Boss Extras.asm"
+		include "Animations\Bosses.asm" ; Ani_Eggman
+		include "Mappings\Bosses.asm" ; Map_Eggman
+		include "Mappings\Boss Extras.asm" ; Map_BossItems
 
 BossLabyrinth:	include "Objects\LZ Boss.asm"
 BossMarble:	include "Objects\MZ Boss.asm"
@@ -10018,8 +10018,8 @@ SS_ChkEmldRepeat:
 SS_LoadData:
 		lsl.w	#2,d0
 		lea	SS_StartLoc(pc,d0.w),a1
-		move.w	(a1)+,(v_player+ost_x_pos).w
-		move.w	(a1)+,(v_player+ost_y_pos).w
+		move.w	(a1)+,(v_ost_player+ost_x_pos).w
+		move.w	(a1)+,(v_ost_player+ost_y_pos).w
 		movea.l	SS_LayoutIndex(pc,d0.w),a0
 		lea	($FF4000).l,a1
 		move.w	#0,d0
@@ -10249,57 +10249,7 @@ Obj10:
 		include "Objects\HUD.asm" ; HUD
 Map_HUD:	include "Mappings\HUD Score, Time & Rings.asm"
 
-; ---------------------------------------------------------------------------
-; Add points subroutine
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-AddPoints:
-		move.b	#1,(f_scorecount).w ; set score counter to update
-
-		if Revision=0
-		lea	(v_scorecopy).w,a2
-		lea	(v_score).w,a3
-		add.l	d0,(a3)		; add d0*10 to the score
-		move.l	#999999,d1
-		cmp.l	(a3),d1		; is score below 999999?
-		bhi.w	@belowmax	; if yes, branch
-		move.l	d1,(a3)		; reset	score to 999999
-		move.l	d1,(a2)
-
-	@belowmax:
-		move.l	(a3),d0
-		cmp.l	(a2),d0
-		blo.w	@locret_1C6B6
-		move.l	d0,(a2)
-
-		else
-
-			lea     (v_score).w,a3
-			add.l   d0,(a3)
-			move.l  #999999,d1
-			cmp.l   (a3),d1 ; is score below 999999?
-			bhi.s   @belowmax ; if yes, branch
-			move.l  d1,(a3) ; reset score to 999999
-		@belowmax:
-			move.l  (a3),d0
-			cmp.l   (v_scorelife).w,d0 ; has Sonic got 50000+ points?
-			blo.s   @noextralife ; if not, branch
-
-			addi.l  #5000,(v_scorelife).w ; increase requirement by 50000
-			tst.b   (v_megadrive).w
-			bmi.s   @noextralife ; branch if Mega Drive is Japanese
-			addq.b  #1,(v_lives).w ; give extra life
-			addq.b  #1,(f_lifecount).w
-			music	bgm_ExtraLife,1,0,0
-		endc
-
-@locret_1C6B6:
-@noextralife:
-		rts	
-; End of function AddPoints
+		include "Objects\_AddPoints.asm"
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	update the HUD
@@ -10392,7 +10342,7 @@ HUD_Update:
 
 TimeOver:
 		clr.b	(f_timecount).w
-		lea	(v_player).w,a0
+		lea	(v_ost_player).w,a0
 		movea.l	a0,a2
 		bsr.w	KillSonic
 		move.b	#1,(f_timeover).w
@@ -10509,11 +10459,11 @@ HudDb_XY:
 		locVRAM	$DC40		; set VRAM address
 		move.w	(v_screenposx).w,d1 ; load camera x-position
 		swap	d1
-		move.w	(v_player+ost_x_pos).w,d1 ; load Sonic's x-position
+		move.w	(v_ost_player+ost_x_pos).w,d1 ; load Sonic's x-position
 		bsr.s	HudDb_XY2
 		move.w	(v_screenposy).w,d1 ; load camera y-position
 		swap	d1
-		move.w	(v_player+ost_y_pos).w,d1 ; load Sonic's y-position
+		move.w	(v_ost_player+ost_y_pos).w,d1 ; load Sonic's y-position
 ; End of function HudDb_XY
 
 
@@ -10918,7 +10868,7 @@ Debug_Main:	; Routine 0
 		move.w	(v_limitbtm1).w,(v_limitbtmdb).w ; buffer level y-boundary
 		move.w	#0,(v_limittop2).w
 		move.w	#$720,(v_limitbtm1).w
-		andi.w	#$7FF,(v_player+ost_y_pos).w
+		andi.w	#$7FF,(v_ost_player+ost_y_pos).w
 		andi.w	#$7FF,(v_screenposy).w
 		andi.w	#$3FF,(v_bgscreenposy).w
 		move.b	#0,ost_frame(a0)
@@ -10972,11 +10922,11 @@ Debug_Action:	; Routine 2
 Debug_Control:
 		moveq	#0,d4
 		move.w	#1,d1
-		move.b	(v_jpadpress1).w,d4
+		move.b	(v_joypad_press_actual).w,d4
 		andi.w	#btnDir,d4	; is up/down/left/right	pressed?
 		bne.s	@dirpressed	; if yes, branch
 
-		move.b	(v_jpadhold1).w,d0
+		move.b	(v_joypad_hold_actual).w,d0
 		andi.w	#btnDir,d0	; is up/down/left/right	held?
 		bne.s	@dirheld	; if yes, branch
 
@@ -10994,7 +10944,7 @@ Debug_Control:
 		move.b	#-1,(v_debugyspeed).w
 
 @dirpressed:
-		move.b	(v_jpadhold1).w,d4
+		move.b	(v_joypad_hold_actual).w,d4
 
 loc_1D01C:
 		moveq	#0,d1
@@ -11035,9 +10985,9 @@ loc_1D066:
 		move.l	d3,ost_x_pos(a0)
 
 Debug_ChgItem:
-		btst	#bitA,(v_jpadhold1).w ; is button A pressed?
+		btst	#bitA,(v_joypad_hold_actual).w ; is button A pressed?
 		beq.s	@createitem	; if not, branch
-		btst	#bitC,(v_jpadpress1).w ; is button C pressed?
+		btst	#bitC,(v_joypad_press_actual).w ; is button C pressed?
 		beq.s	@nextitem	; if not, branch
 		subq.b	#1,(v_debugitem).w ; go back 1 item
 		bcc.s	@display
@@ -11046,7 +10996,7 @@ Debug_ChgItem:
 ; ===========================================================================
 
 @nextitem:
-		btst	#bitA,(v_jpadpress1).w ; is button A pressed?
+		btst	#bitA,(v_joypad_press_actual).w ; is button A pressed?
 		beq.s	@createitem	; if not, branch
 		addq.b	#1,(v_debugitem).w ; go forwards 1 item
 		cmp.b	(v_debugitem).w,d6
@@ -11058,7 +11008,7 @@ Debug_ChgItem:
 ; ===========================================================================
 
 @createitem:
-		btst	#bitC,(v_jpadpress1).w ; is button C pressed?
+		btst	#bitC,(v_joypad_press_actual).w ; is button C pressed?
 		beq.s	@backtonormal	; if not, branch
 		jsr	(FindFreeObj).l
 		bne.s	@backtonormal
@@ -11076,13 +11026,13 @@ Debug_ChgItem:
 ; ===========================================================================
 
 @backtonormal:
-		btst	#bitB,(v_jpadpress1).w ; is button B pressed?
+		btst	#bitB,(v_joypad_press_actual).w ; is button B pressed?
 		beq.s	@stayindebug	; if not, branch
 		moveq	#0,d0
 		move.w	d0,(v_debuguse).w ; deactivate debug mode
-		move.l	#Map_Sonic,(v_player+ost_mappings).w
-		move.w	#$780,(v_player+ost_tile).w
-		move.b	d0,(v_player+ost_anim).w
+		move.l	#Map_Sonic,(v_ost_player+ost_mappings).w
+		move.w	#$780,(v_ost_player+ost_tile).w
+		move.b	d0,(v_ost_player+ost_anim).w
 		move.w	d0,ost_x_pos+2(a0)
 		move.w	d0,ost_y_pos+2(a0)
 		move.w	(v_limittopdb).w,(v_limittop2).w ; restore level boundaries
@@ -11092,11 +11042,11 @@ Debug_ChgItem:
 
 		clr.w	(v_ssangle).w
 		move.w	#$40,(v_ssrotate).w ; set new level rotation speed
-		move.l	#Map_Sonic,(v_player+ost_mappings).w
-		move.w	#$780,(v_player+ost_tile).w
-		move.b	#id_Roll,(v_player+ost_anim).w
-		bset	#2,(v_player+ost_status).w
-		bset	#1,(v_player+ost_status).w
+		move.l	#Map_Sonic,(v_ost_player+ost_mappings).w
+		move.w	#$780,(v_ost_player+ost_tile).w
+		move.b	#id_Roll,(v_ost_player+ost_anim).w
+		bset	#2,(v_ost_player+ost_status).w
+		bset	#1,(v_ost_player+ost_status).w
 
 	@stayindebug:
 		rts	
@@ -11206,7 +11156,7 @@ dbug:		macro map,object,subtype,frame,vram
 	dbug	Map_MBlock,	id_MovingBlock,	0,	0,	$2B8
 	dbug	Map_CFlo,	id_CollapseFloor, 0,	0,	$62B8
 	dbug	Map_LTag,	id_LavaTag,	0,	0,	$8680
-	dbug	Map_Bas,	id_Batbrain,	0,	0,	$4B8
+	dbug	Map_Bat,	id_Batbrain,	0,	0,	$4B8
 	dbug	Map_Cat,	id_Caterkiller,	0,	0,	$24FF
 	dbug	Map_Lamp,	id_Lamppost,	1,	0,	$7A0
 	@MZend:

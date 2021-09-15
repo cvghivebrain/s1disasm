@@ -28,7 +28,7 @@ Cbal_Main:	; Routine 0
 		move.b	ost_subtype(a0),d0 ; move subtype to d0
 		mulu.w	#60,d0		; multiply by 60 frames	(1 second)
 		move.w	d0,ost_ball_time(a0) ; set explosion time
-		move.b	#4,ost_frame(a0)
+		move.b	#id_frame_hog_ball1,ost_frame(a0)
 
 Cbal_Bounce:	; Routine 2
 		jsr	(ObjectFall).l

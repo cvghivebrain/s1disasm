@@ -42,10 +42,10 @@ Pole_Action:	; Routine 2
 ; ===========================================================================
 
 @moveup:
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		move.w	ost_y_pos(a0),d0
 		subi.w	#$18,d0
-		btst	#bitUp,(v_jpadhold1).w ; is "up" pressed?
+		btst	#bitUp,(v_joypad_hold_actual).w ; is "up" pressed?
 		beq.s	@movedown	; if not, branch
 		subq.w	#1,ost_y_pos(a1) ; move Sonic up
 		cmp.w	ost_y_pos(a1),d0
@@ -54,7 +54,7 @@ Pole_Action:	; Routine 2
 
 @movedown:
 		addi.w	#$24,d0
-		btst	#bitDn,(v_jpadhold1).w ; is "down" pressed?
+		btst	#bitDn,(v_joypad_hold_actual).w ; is "down" pressed?
 		beq.s	@letgo		; if not, branch
 		addq.w	#1,ost_y_pos(a1) ; move Sonic down
 		cmp.w	ost_y_pos(a1),d0
@@ -62,7 +62,7 @@ Pole_Action:	; Routine 2
 		move.w	d0,ost_y_pos(a1)
 
 @letgo:
-		move.b	(v_jpadpress2).w,d0
+		move.b	(v_joypad_press).w,d0
 		andi.w	#btnABC,d0	; is A/B/C pressed?
 		beq.s	Pole_Display	; if not, branch
 
@@ -78,7 +78,7 @@ Pole_Action:	; Routine 2
 @grab:
 		tst.b	ost_col_property(a0)	; has Sonic touched the	pole?
 		beq.s	Pole_Display	; if not, branch
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		move.w	ost_x_pos(a0),d0
 		addi.w	#$14,d0
 		cmp.w	ost_x_pos(a1),d0

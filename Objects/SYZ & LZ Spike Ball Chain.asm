@@ -67,7 +67,7 @@ SBall_Main:	; Routine 0
 		bne.s	@fail
 		addq.b	#1,ost_sball_child_count(a0) ; increment child object counter
 		move.w	a1,d5		; get child object RAM address
-		subi.w	#v_objspace&$FFFF,d5 ; subtract $D000
+		subi.w	#v_ost_all&$FFFF,d5 ; subtract $D000
 		lsr.w	#6,d5		; divide by $40
 		andi.w	#$7F,d5
 		move.b	d5,(a2)+	; copy child RAM number
@@ -93,7 +93,7 @@ SBall_Main:	; Routine 0
 
 	@fail:
 		move.w	a0,d5
-		subi.w	#v_objspace&$FFFF,d5
+		subi.w	#v_ost_all&$FFFF,d5
 		lsr.w	#6,d5
 		andi.w	#$7F,d5
 		move.b	d5,(a2)+
@@ -123,7 +123,7 @@ SBall_Move:	; Routine 2
 		moveq	#0,d4
 		move.b	(a2)+,d4
 		lsl.w	#6,d4
-		addi.l	#v_objspace&$FFFFFF,d4
+		addi.l	#v_ost_all&$FFFFFF,d4
 		movea.l	d4,a1
 		moveq	#0,d4
 		move.b	ost_sball_radius(a1),d4
@@ -154,7 +154,7 @@ SBall_Move:	; Routine 2
 		moveq	#0,d0
 		move.b	(a2)+,d0
 		lsl.w	#6,d0
-		addi.l	#v_objspace&$FFFFFF,d0
+		addi.l	#v_ost_all&$FFFFFF,d0
 		movea.l	d0,a1
 		bsr.w	DeleteChild
 		dbf	d2,@deleteloop ; delete all pieces of chain

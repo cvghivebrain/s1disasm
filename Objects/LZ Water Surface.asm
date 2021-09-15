@@ -38,7 +38,7 @@ Surf_Action:	; Routine 2
 		move.w	d1,ost_y_pos(a0) ; match obj y-position to water height
 		tst.b	ost_surf_freeze(a0)
 		bne.s	@stopped
-		btst	#bitStart,(v_jpadpress1).w ; is Start button pressed?
+		btst	#bitStart,(v_joypad_press_actual).w ; is Start button pressed?
 		beq.s	@animate	; if not, branch
 		addq.b	#3,ost_frame(a0) ; use different frames
 		move.b	#1,ost_surf_freeze(a0) ; stop animation

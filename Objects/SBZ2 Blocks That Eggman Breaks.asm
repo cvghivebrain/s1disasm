@@ -96,7 +96,7 @@ FFloor_Solid2:
 
 loc_19C62:	; Routine 6
 		bclr	#status_platform_bit,ost_status(a0)
-		bclr	#status_platform_bit,(v_player+ost_status).w
+		bclr	#status_platform_bit,(v_ost_player+ost_status).w
 		bra.w	loc_1982C
 ; ===========================================================================
 

@@ -70,7 +70,7 @@ See_Slope:	; Routine 2
 		lea	(See_DataFlat).l,a2
 
 	@notflat:
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		move.w	ost_y_vel(a1),ost_seesaw_impact(a0)
 		move.w	#$30,d1
 		jsr	(SlopeObject).l
@@ -95,7 +95,7 @@ See_Slope2:	; Routine 4
 
 See_ChkSide:
 		moveq	#2,d1
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		move.w	ost_x_pos(a0),d0
 		sub.w	ost_x_pos(a1),d0 ; is Sonic on the left side of the seesaw?
 		bcc.s	@leftside	; if yes, branch
@@ -247,7 +247,7 @@ See_Spring:
 		beq.s	loc_1192C
 		clr.b	ost_routine2(a1)
 		move.b	#id_See_Slope,ost_routine(a1)
-		lea	(v_player).w,a2
+		lea	(v_ost_player).w,a2
 		move.w	ost_y_vel(a0),ost_y_vel(a2)
 		neg.w	ost_y_vel(a2)
 		bset	#status_air_bit,ost_status(a2)

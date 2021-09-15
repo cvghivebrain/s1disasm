@@ -1,14 +1,14 @@
 ; ---------------------------------------------------------------------------
 ; Animation script - Burrobot enemy
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @walk1
-		ptr @walk2
-		ptr @digging
-		ptr @fall
+Ani_Burro:	index *
+		ptr ani_burro_walk1
+		ptr ani_burro_walk2
+		ptr ani_burro_digging
+		ptr ani_burro_fall
 		
-@walk1:		dc.b 3,	0, 6, afEnd
-@walk2:		dc.b 3,	0, 1, afEnd
-@digging:	dc.b 3,	2, 3, afEnd
-@fall:		dc.b 3,	4, afEnd
-		even
+ani_burro_walk1:	dc.b 3,	id_frame_burro_walk1, id_frame_burro_walk3, afEnd
+ani_burro_walk2:	dc.b 3,	id_frame_burro_walk1, id_frame_burro_walk2, afEnd
+ani_burro_digging:	dc.b 3,	id_frame_burro_dig1, id_frame_burro_dig2, afEnd
+ani_burro_fall:		dc.b 3,	id_frame_burro_fall, afEnd
+			even

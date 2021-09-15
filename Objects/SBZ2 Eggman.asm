@@ -70,7 +70,7 @@ SEgg_EggIndex:	index *
 
 SEgg_ChkSonic:
 		move.w	ost_x_pos(a0),d0
-		sub.w	(v_player+ost_x_pos).w,d0
+		sub.w	(v_ost_player+ost_x_pos).w,d0
 		cmpi.w	#128,d0		; is Sonic within 128 pixels of	Eggman?
 		bcc.s	SEgg_Move	; if not, branch
 		addq.b	#2,ost_routine2(a0)
@@ -121,7 +121,7 @@ SEgg_FindBlocks:
 		move.w	ost_x_vel(a0),d0
 		or.w	ost_y_vel(a0),d0
 		bne.s	loc_199D0
-		lea	(v_objspace).w,a1 ; start at the first object RAM
+		lea	(v_ost_all).w,a1 ; start at the first object RAM
 		moveq	#$3E,d0
 		moveq	#$40,d1
 

@@ -14,7 +14,7 @@ BldSpr_ScrPos:	dc.l 0				; blank
 BuildSprites:
 		lea	(v_spritetablebuffer).w,a2 ; set address for sprite table - $280 bytes, copied to VRAM at VBlank
 		moveq	#0,d5
-		lea	(v_spritequeue).w,a4
+		lea	(v_sprite_queue).w,a4
 		moveq	#7,d7		; there are 8 priority levels
 
 	@priorityLoop:

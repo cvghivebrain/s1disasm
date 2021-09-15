@@ -6,7 +6,7 @@
 
 
 Mon_SolidSides:
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		move.w	ost_x_pos(a1),d0
 		sub.w	ost_x_pos(a0),d0
 		add.w	d1,d0
@@ -27,7 +27,7 @@ Mon_SolidSides:
 		bcc.s	loc_A4E6
 		tst.b	(f_lockmulti).w
 		bmi.s	loc_A4E6
-		cmpi.b	#id_Sonic_Death,(v_player+ost_routine).w
+		cmpi.b	#id_Sonic_Death,(v_ost_player+ost_routine).w
 		bcc.s	loc_A4E6
 		tst.w	(v_debuguse).w
 		bne.s	loc_A4E6

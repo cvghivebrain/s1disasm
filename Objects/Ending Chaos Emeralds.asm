@@ -19,15 +19,15 @@ ost_echaos_angle:	equ $3E	; angle for rotation (2 bytes)
 ; ===========================================================================
 
 ECha_Main:	; Routine 0
-		cmpi.b	#2,(v_player+ost_frame).w ; this isn't `id_frame_Wait1`: `v_player` is Object 88, which has its own frames
+		cmpi.b	#2,(v_ost_player+ost_frame).w ; this isn't `id_frame_Wait1`: `v_ost_player` is Object 88, which has its own frames
 		beq.s	ECha_CreateEms
 		addq.l	#4,sp
 		rts	
 ; ===========================================================================
 
 ECha_CreateEms:
-		move.w	(v_player+ost_x_pos).w,ost_x_pos(a0) ; match x position with Sonic
-		move.w	(v_player+ost_y_pos).w,ost_y_pos(a0) ; match y position with Sonic
+		move.w	(v_ost_player+ost_x_pos).w,ost_x_pos(a0) ; match x position with Sonic
+		move.w	(v_ost_player+ost_y_pos).w,ost_y_pos(a0) ; match y position with Sonic
 		movea.l	a0,a1
 		moveq	#0,d3
 		moveq	#1,d2

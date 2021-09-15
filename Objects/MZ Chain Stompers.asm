@@ -130,7 +130,7 @@ loc_B798:	; Routine 2
 		cmpi.b	#$10,ost_stomp_chain_length(a0)
 		bcc.s	CStom_Display
 		movea.l	a0,a2
-		lea	(v_player).w,a0
+		lea	(v_ost_player).w,a0
 		jsr	(KillSonic).l
 		movea.l	a2,a0
 
@@ -282,7 +282,7 @@ loc_B97C:
 ; ===========================================================================
 
 CStom_Type03:
-		move.w	(v_player+ost_x_pos).w,d0
+		move.w	(v_ost_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0
 		bcc.s	loc_B98C
 		neg.w	d0

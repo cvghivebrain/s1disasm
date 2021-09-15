@@ -1,8 +1,30 @@
 ; ---------------------------------------------------------------------------
 ; Animation script - Ball Hog enemy (SBZ)
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @hog
+Ani_Hog:	index *
+		ptr ani_hog_0
 		
-@hog:		dc.b 9,	0, 0, 2, 2, 3, 2, 0, 0,	2, 2, 3, 2, 0, 0, 2, 2, 3, 2, 0, 0, 1, afEnd
+ani_hog_0:	dc.b 9
+		dc.b id_frame_hog_standing
+		dc.b id_frame_hog_standing
+		dc.b id_frame_hog_squat
+		dc.b id_frame_hog_squat
+		dc.b id_frame_hog_leap
+		dc.b id_frame_hog_squat
+		dc.b id_frame_hog_standing
+		dc.b id_frame_hog_standing
+		dc.b id_frame_hog_squat
+		dc.b id_frame_hog_squat
+		dc.b id_frame_hog_leap
+		dc.b id_frame_hog_squat
+		dc.b id_frame_hog_standing
+		dc.b id_frame_hog_standing
+		dc.b id_frame_hog_squat
+		dc.b id_frame_hog_squat
+		dc.b id_frame_hog_leap
+		dc.b id_frame_hog_squat
+		dc.b id_frame_hog_standing
+		dc.b id_frame_hog_standing
+		dc.b id_frame_hog_open
+		dc.b afEnd
 		even

@@ -39,9 +39,9 @@ Shi_Shield:	; Routine 2
 		bne.s	@remove		; if yes, branch
 		tst.b	(v_shield).w	; does Sonic have shield?
 		beq.s	@delete		; if not, branch
-		move.w	(v_player+ost_x_pos).w,ost_x_pos(a0)
-		move.w	(v_player+ost_y_pos).w,ost_y_pos(a0)
-		move.b	(v_player+ost_status).w,ost_status(a0)
+		move.w	(v_ost_player+ost_x_pos).w,ost_x_pos(a0)
+		move.w	(v_ost_player+ost_y_pos).w,ost_y_pos(a0)
+		move.b	(v_ost_player+ost_status).w,ost_status(a0)
 		lea	(Ani_Shield).l,a1
 		jsr	(AnimateSprite).l
 		jmp	(DisplaySprite).l
@@ -90,11 +90,11 @@ Shi_Stars:	; Routine 4
 		move.b	d1,ost_invincibility_last_pos(a0)
 
 	@b:
-		lea	(v_tracksonic).w,a1
+		lea	(v_sonic_pos_tracker).w,a1
 		lea	(a1,d0.w),a1
 		move.w	(a1)+,ost_x_pos(a0)
 		move.w	(a1)+,ost_y_pos(a0)
-		move.b	(v_player+ost_status).w,ost_status(a0)
+		move.b	(v_ost_player+ost_status).w,ost_status(a0)
 		lea	(Ani_Shield).l,a1
 		jsr	(AnimateSprite).l
 		jmp	(DisplaySprite).l

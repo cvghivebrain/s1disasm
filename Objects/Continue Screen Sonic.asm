@@ -44,7 +44,7 @@ CSon_ShowFall:
 ; ===========================================================================
 
 CSon_Animate:	; Routine 4
-		tst.b	(v_jpadpress1).w ; is Start button pressed?
+		tst.b	(v_joypad_press_actual).w ; is Start button pressed?
 		bmi.s	CSon_GetUp	; if yes, branch
 		lea	(AniScript_CSon).l,a1
 		jmp	(AnimateSprite).l

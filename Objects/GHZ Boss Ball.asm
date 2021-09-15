@@ -48,7 +48,7 @@ GBall_MakeLinks:
 
 loc_17B60:
 		move.w	a1,d5
-		subi.w	#v_objspace&$FFFF,d5
+		subi.w	#v_ost_all&$FFFF,d5
 		lsr.w	#6,d5
 		andi.w	#$7F,d5
 		move.b	d5,(a2)+
@@ -82,7 +82,7 @@ loc_17BC6:
 		moveq	#0,d4
 		move.b	(a2)+,d4
 		lsl.w	#6,d4
-		addi.l	#v_objspace&$FFFFFF,d4
+		addi.l	#v_ost_all&$FFFFFF,d4
 		movea.l	d4,a1
 		move.b	(a3)+,d0
 		cmp.b	ost_ball_base_dist(a1),d0

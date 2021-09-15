@@ -39,7 +39,7 @@ Hog_Main:	; Routine 0
 Hog_Action:	; Routine 2
 		lea	(Ani_Hog).l,a1
 		bsr.w	AnimateSprite
-		cmpi.b	#1,ost_frame(a0) ; is final frame (01) displayed?
+		cmpi.b	#id_frame_hog_open,ost_frame(a0) ; is final frame (01) displayed?
 		bne.s	@setlaunchflag	; if not, branch
 		tst.b	ost_hog_flag(a0) ; is it set to launch cannonball?
 		beq.s	@makeball	; if yes, branch

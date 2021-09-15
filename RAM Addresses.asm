@@ -2,23 +2,65 @@
 ; RAM Addresses - Variables (v) and Flags (f)
 ; ---------------------------------------------------------------------------
 
-v_regbuffer:	equ $FFFFFC00	; stores registers d0-a7 during an error event ($40 bytes)
-v_spbuffer:	equ $FFFFFC40	; stores most recent sp address (4 bytes)
-v_errortype:	equ $FFFFFC44	; error type
+; ====================
+; Error trap variables
+; ====================
+v_reg_buffer:		equ $FFFFFC00 ; stores registers d0-a7 during an error event ($40 bytes) - v_objstate uses same space
+v_sp_buffer:		equ $FFFFFC40 ; stores most recent sp address (4 bytes) - v_objstate uses same space
+v_error_type:		equ $FFFFFC44 ; error type - v_objstate uses same space
 
-v_256x256:	equ   $FF0000	; 256x256 tile mappings ($A400 bytes)
-v_lvllayout:	equ $FFFFA400	; level and background layouts ($400 bytes)
-v_bgscroll_buffer:	equ	$FFFFA800	; background scroll buffer ($200 bytes)
-v_ngfx_buffer:	equ $FFFFAA00	; Nemesis graphics decompression buffer ($200 bytes)
-v_spritequeue:	equ $FFFFAC00	; sprite display queue, in order of priority ($400 bytes)
-v_16x16:		equ $FFFFB000	; 16x16 tile mappings
-
-v_sgfx_buffer:	equ $FFFFC800	; buffered Sonic graphics ($17 cells) ($2E0 bytes)
-v_tracksonic:	equ $FFFFCB00	; position tracking data for Sonic ($100 bytes)
-v_hscrolltablebuffer:	equ $FFFFCC00 ; scrolling table data (actually $380 bytes, but $400 is reserved for it)
-v_objspace:	equ $FFFFD000	; object variable space ($40 bytes per object) ($2000 bytes)
-v_player:	equ v_objspace	; object variable space for Sonic ($40 bytes)
-v_lvlobjspace:	equ $FFFFD800	; level object variable space ($1800 bytes)
+; ====================
+; Major data blocks
+; ====================
+v_256x256_tiles:	equ   $FF0000 ; 256x256 tile mappings ($A400 bytes)
+v_level_layout:		equ $FFFFA400 ; level and background layouts ($400 bytes)
+v_bgscroll_buffer:	equ $FFFFA800 ; background scroll buffer ($200 bytes)
+v_nem_gfx_buffer:	equ $FFFFAA00 ; Nemesis graphics decompression buffer ($200 bytes)
+v_sprite_queue:		equ $FFFFAC00 ; sprite display queue, in order of priority ($400 bytes)
+v_16x16_tiles:		equ $FFFFB000 ; 16x16 tile mappings
+v_sonic_gfx_buffer:	equ $FFFFC800 ; buffered Sonic graphics ($17 cells) ($2E0 bytes)
+v_sonic_pos_tracker:	equ $FFFFCB00 ; earlier position tracking list for Sonic, used by invinciblity stars ($100 bytes)
+v_hscroll_buffer:	equ $FFFFCC00 ; scrolling table data (actually $380 bytes, but $400 is reserved for it)
+v_ost_all:		equ $FFFFD000 ; object variable space ($40 bytes per object) ($2000 bytes)
+	v_ost_player:		equ v_ost_all ; object variable space for Sonic ($40 bytes)
+	v_ost_titlesonic:	equ v_ost_all+(sizeof_ost*1) ; title screen Sonic
+	v_ost_psb:		equ v_ost_all+(sizeof_ost*2) ; title screen "Press Start Button"
+	v_ost_tm:		equ v_ost_all+(sizeof_ost*3) ; title screen "TM"
+	v_ost_titlemask:	equ v_ost_all+(sizeof_ost*4) ; title screen sprite mask
+	v_ost_credits:		equ v_ost_all+(sizeof_ost*2) ; "Sonic Team Presents" and credits text
+	v_ost_endeggman:	equ v_ost_all+(sizeof_ost*2) ; ending/"Try Again" Eggman
+	v_ost_tryagain:		equ v_ost_all+(sizeof_ost*3) ; "Try Again" text
+	v_ost_tryag_emeralds:	equ v_ost_all+(sizeof_ost*$20) ; "Try Again" chaos emeralds
+	v_ost_cont_text:	equ v_ost_all+(sizeof_ost*1) ; continue screen text
+	v_ost_cont_oval:	equ v_ost_all+(sizeof_ost*2) ; continue screen oval
+	v_ost_cont_minisonic:	equ v_ost_all+(sizeof_ost*3) ; continue screen mini Sonics
+	v_ost_hud:		equ v_ost_all+(sizeof_ost*1) ; HUD
+	v_ost_titlecard1:	equ v_ost_all+(sizeof_ost*2) ; title card - zone name
+	v_ost_titlecard2:	equ v_ost_all+(sizeof_ost*3) ; title card - "zone"
+	v_ost_titlecard3:	equ v_ost_all+(sizeof_ost*4) ; title card - "act" 1/2/3
+	v_ost_titlecard4:	equ v_ost_all+(sizeof_ost*5) ; title card - oval
+	v_ost_shield:		equ v_ost_all+(sizeof_ost*6) ; shield
+	v_ost_stars1:		equ v_ost_all+(sizeof_ost*8) ; invincibility stars
+	v_ost_stars2:		equ v_ost_all+(sizeof_ost*9) ; invincibility stars
+	v_ost_stars3:		equ v_ost_all+(sizeof_ost*$A) ; invincibility stars
+	v_ost_stars4:		equ v_ost_all+(sizeof_ost*$B) ; invincibility stars
+	v_ost_end_emeralds:	equ v_ost_all+(sizeof_ost*$10) ; ending chaos emeralds
+	v_ost_gotthrough1:	equ v_ost_all+(sizeof_ost*$17) ; got through act - "Sonic has"
+	v_ost_gotthrough2:	equ v_ost_all+(sizeof_ost*$18) ; got through act - "passed"
+	v_ost_gotthrough3:	equ v_ost_all+(sizeof_ost*$19) ; got through act - "act" 1/2/3
+	v_ost_gotthrough4:	equ v_ost_all+(sizeof_ost*$1A) ; got through act - score
+	v_ost_gotthrough5:	equ v_ost_all+(sizeof_ost*$1B) ; got through act - time bonus
+	v_ost_gotthrough6:	equ v_ost_all+(sizeof_ost*$1C) ; got through act - ring bonus
+	v_ost_gotthrough7:	equ v_ost_all+(sizeof_ost*$1D) ; got through act - oval
+	v_ost_watersurface1:	equ v_ost_all+(sizeof_ost*$1E) ; LZ water surface
+	v_ost_watersurface2:	equ v_ost_all+(sizeof_ost*$1F) ; LZ water surface
+	v_ost_ssresult1:	equ v_ost_all+(sizeof_ost*$17) ; special stage results screen
+	v_ost_ssresult2:	equ v_ost_all+(sizeof_ost*$18) ; special stage results screen
+	v_ost_ssresult3:	equ v_ost_all+(sizeof_ost*$19) ; special stage results screen
+	v_ost_ssresult4:	equ v_ost_all+(sizeof_ost*$1A) ; special stage results screen
+	v_ost_ssresult5:	equ v_ost_all+(sizeof_ost*$1B) ; special stage results screen
+	v_ost_ssres_emeralds:	equ v_ost_all+(sizeof_ost*$20) ; special stage results screen chaos emeralds
+	v_ost_level_obj:	equ v_ost_all+(sizeof_ost*$20) ; level object variable space ($1800 bytes)
 
 v_snddriver_ram:	equ $FFFFF000 ; start of RAM for the sound driver data ($5C0 bytes)
 
@@ -102,13 +144,15 @@ v_1up_ram_copy:		equ v_spcsfx_track_ram_end
 ; From here on, no longer relative to sound driver RAM
 ; =================================================================================
 
-v_gamemode:	equ $FFFFF600	; game mode (00=Sega; 04=Title; 08=Demo; 0C=Level; 10=SS; 14=Cont; 18=End; 1C=Credit; +8C=PreLevel)
-v_jpadhold2:	equ $FFFFF602	; joypad input - held, duplicate
-v_jpadpress2:	equ $FFFFF603	; joypad input - pressed, duplicate
-v_jpadhold1:	equ $FFFFF604	; joypad input - held
-v_jpadpress1:	equ $FFFFF605	; joypad input - pressed
+v_gamemode:		equ $FFFFF600 ; game mode (00=Sega; 04=Title; 08=Demo; 0C=Level; 10=SS; 14=Cont; 18=End; 1C=Credit; +8C=PreLevel)
+v_joypad_hold:		equ $FFFFF602 ; joypad input - held, can be overridden by demos
+v_joypad_press:		equ $FFFFF603 ; joypad input - pressed, can be overridden by demos
+v_joypad_hold_actual:	equ $FFFFF604 ; joypad input - held, actual
+v_joypad_press_actual:	equ $FFFFF605 ; joypad input - pressed, actual
+v_joypad2_hold_actual:	equ $FFFFF606 ; joypad 2 input - held, actual - unused
+v_joypad2_press_actual:	equ $FFFFF607 ; joypad 2 input - pressed, actual - unused
 
-v_vdp_buffer1:	equ $FFFFF60C	; VDP instruction buffer (2 bytes)
+v_vdp_mode_buffer:	equ $FFFFF60C ; VDP register 81 buffer - contains $8134 which is sent to vdp_control_port (2 bytes)
 
 v_demolength:	equ $FFFFF614	; the length of a demo in frames (2 bytes)
 v_scrposy_dup:	equ $FFFFF616	; screen position y (duplicate) (2 bytes)

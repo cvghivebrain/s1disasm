@@ -1,16 +1,16 @@
 ; ---------------------------------------------------------------------------
 ; Animation script - Bomb enemy
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @stand
-		ptr @walk
-		ptr @activated
-		ptr @fuse
-		ptr @shrapnel
+Ani_Bomb:	index *
+		ptr ani_bomb_stand
+		ptr ani_bomb_walk
+		ptr ani_bomb_active
+		ptr ani_bomb_fuse
+		ptr ani_bomb_shrapnel
 		
-@stand:		dc.b $13, 1, 0,	afEnd
-@walk:		dc.b $13, 5, 4,	3, 2, afEnd
-@activated:	dc.b $13, 7, 6,	afEnd
-@fuse:		dc.b 3,	8, 9, afEnd
-@shrapnel:	dc.b 3,	$A, $B,	afEnd
+ani_bomb_stand:		dc.b $13, id_frame_bomb_stand2, id_frame_bomb_stand1,	afEnd
+ani_bomb_walk:		dc.b $13, id_frame_bomb_walk4, id_frame_bomb_walk3, id_frame_bomb_walk2, id_frame_bomb_walk1, afEnd
+ani_bomb_active:	dc.b $13, id_frame_bomb_activate2, id_frame_bomb_activate1, afEnd
+ani_bomb_fuse:		dc.b 3,	id_frame_bomb_fuse1, id_frame_bomb_fuse2, afEnd
+ani_bomb_shrapnel:	dc.b 3,	id_frame_bomb_shrapnel1, id_frame_bomb_shrapnel2, afEnd
 		even

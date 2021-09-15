@@ -62,7 +62,7 @@ WFall_OnWater:	; Routine 6
 
 WFall_Priority:	; Routine 8
 		bclr	#tile_hi_bit,ost_tile(a0)
-		cmpi.b	#7,(v_lvllayout+$106).w
+		cmpi.b	#7,(v_level_layout+$106).w
 		bne.s	@animate
 		bset	#tile_hi_bit,ost_tile(a0) ; high priority sprite if level layout is as stated above
 

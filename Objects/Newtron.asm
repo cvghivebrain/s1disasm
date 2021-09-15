@@ -44,7 +44,7 @@ Newt_Action:	; Routine 2
 
 @chkdistance:
 		bset	#status_xflip_bit,ost_status(a0)
-		move.w	(v_player+ost_x_pos).w,d0
+		move.w	(v_ost_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0
 		bcc.s	@sonicisright
 		neg.w	d0
@@ -71,7 +71,7 @@ Newt_Action:	; Routine 2
 		cmpi.b	#4,ost_frame(a0) ; has "appearing" animation finished?
 		bcc.s	@fall		; is yes, branch
 		bset	#status_xflip_bit,ost_status(a0)
-		move.w	(v_player+ost_x_pos).w,d0
+		move.w	(v_ost_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0
 		bcc.s	@sonicisright2
 		bclr	#status_xflip_bit,ost_status(a0)

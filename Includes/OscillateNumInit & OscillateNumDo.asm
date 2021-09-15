@@ -42,7 +42,7 @@ OscillateNumInit:
 ; Oscillate values
 
 OscillateNumDo:
-		cmpi.b	#id_Sonic_Death,(v_player+ost_routine).w ; has Sonic just died?
+		cmpi.b	#id_Sonic_Death,(v_ost_player+ost_routine).w ; has Sonic just died?
 		bcc.s	@end		; if yes, branch
 		lea	(v_oscillate).w,a1
 		lea	(@settings).l,a2

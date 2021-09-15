@@ -22,7 +22,7 @@ ReactToItem:
 	@notducking:
 		move.w	#$10,d4
 		add.w	d5,d5
-		lea	(v_objspace+$800).w,a1 ; first OST address for interactable objects
+		lea	(v_ost_all+$800).w,a1 ; first OST address for interactable objects
 		move.w	#$5F,d6
 
 @loop:

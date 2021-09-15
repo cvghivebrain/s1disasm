@@ -82,7 +82,7 @@ loc_C610:
 ; ===========================================================================
 
 loc_C61A:
-		cmpi.b	#id_Got_Move2,(v_objspace+$700+ost_routine).w
+		cmpi.b	#id_Got_Move2,(v_ost_gotthrough6+ost_routine).w
 		beq.s	loc_C610
 		cmpi.b	#4,ost_frame(a0)
 		bne.s	loc_C5FE

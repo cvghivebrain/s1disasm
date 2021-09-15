@@ -5,10 +5,10 @@
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 
-		lea	(v_objspace).w,a0 ; set address for object RAM
+		lea	(v_ost_all).w,a0 ; set address for object RAM
 		moveq	#$7F,d7
 		moveq	#0,d0
-		cmpi.b	#6,(v_player+ost_routine).w
+		cmpi.b	#6,(v_ost_player+ost_routine).w
 		bhs.s	loc_D362
 
 loc_D348:

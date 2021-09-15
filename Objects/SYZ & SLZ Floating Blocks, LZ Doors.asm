@@ -229,7 +229,7 @@ FBlock_Action:	; Routine 2
 		cmpi.b	#3,ost_fblock_switch_num(a0)
 		bne.s	@aaa
 		clr.b	(f_wtunnelallow).w
-		move.w	(v_player+ost_x_pos).w,d0
+		move.w	(v_ost_player+ost_x_pos).w,d0
 		cmp.w	ost_x_pos(a0),d0
 		bcc.s	@aaa
 		move.b	#1,(f_wtunnelallow).w

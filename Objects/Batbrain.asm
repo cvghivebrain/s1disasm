@@ -5,19 +5,19 @@
 Batbrain:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
-		move.w	Bas_Index(pc,d0.w),d1
-		jmp	Bas_Index(pc,d1.w)
+		move.w	Bat_Index(pc,d0.w),d1
+		jmp	Bat_Index(pc,d1.w)
 ; ===========================================================================
-Bas_Index:	index *,,2
-		ptr Bas_Main
-		ptr Bas_Action
+Bat_Index:	index *,,2
+		ptr Bat_Main
+		ptr Bat_Action
 
 ost_bat_sonic_y_pos:	equ $36	; Sonic's y position (2 bytes)
 ; ===========================================================================
 
-Bas_Main:	; Routine 0
+Bat_Main:	; Routine 0
 		addq.b	#2,ost_routine(a0)
-		move.l	#Map_Bas,ost_mappings(a0)
+		move.l	#Map_Bat,ost_mappings(a0)
 		move.w	#tile_Nem_Batbrain+tile_hi,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#$C,ost_height(a0)
@@ -25,12 +25,12 @@ Bas_Main:	; Routine 0
 		move.b	#$B,ost_col_type(a0)
 		move.b	#$10,ost_actwidth(a0)
 
-Bas_Action:	; Routine 2
+Bat_Action:	; Routine 2
 		moveq	#0,d0
 		move.b	ost_routine2(a0),d0
 		move.w	@index(pc,d0.w),d1
 		jsr	@index(pc,d1.w)
-		lea	(Ani_Bas).l,a1
+		lea	(Ani_Bat).l,a1
 		bsr.w	AnimateSprite
 		bra.w	RememberState
 ; ===========================================================================
@@ -45,7 +45,7 @@ Bas_Action:	; Routine 2
 		move.w	#$80,d2
 		bsr.w	@chkdistance	; is Sonic < $80 pixels from basaran?
 		bcc.s	@nodrop		; if not, branch
-		move.w	(v_player+ost_y_pos).w,d0
+		move.w	(v_ost_player+ost_y_pos).w,d0
 		move.w	d0,ost_bat_sonic_y_pos(a0)
 		sub.w	ost_y_pos(a0),d0
 		bcs.s	@nodrop
@@ -58,7 +58,7 @@ Bas_Action:	; Routine 2
 		add.b	d7,d0
 		andi.b	#7,d0
 		bne.s	@nodrop
-		move.b	#1,ost_anim(a0)
+		move.b	#id_ani_bat_drop,ost_anim(a0)
 		addq.b	#2,ost_routine2(a0)
 
 	@nodrop:
@@ -77,7 +77,7 @@ Bas_Action:	; Routine 2
 		bcc.s	@dropmore	; if not, branch
 		move.w	d1,ost_x_vel(a0) ; make basaran fly horizontally
 		move.w	#0,ost_y_vel(a0) ; stop basaran falling
-		move.b	#2,ost_anim(a0)
+		move.b	#id_ani_bat_fly,ost_anim(a0)
 		addq.b	#2,ost_routine2(a0)
 
 	@dropmore:
@@ -97,7 +97,7 @@ Bas_Action:	; Routine 2
 
 	@nosound:
 		bsr.w	SpeedToPos
-		move.w	(v_player+ost_x_pos).w,d0
+		move.w	(v_ost_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0
 		bcc.s	@isright	; if Sonic is right of basaran, branch
 		neg.w	d0
@@ -144,7 +144,7 @@ Bas_Action:	; Routine 2
 @chkdistance:
 		move.w	#$100,d1
 		bset	#status_xflip_bit,ost_status(a0)
-		move.w	(v_player+ost_x_pos).w,d0
+		move.w	(v_ost_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0
 		bcc.s	@right		; if Sonic is right of basaran, branch
 		neg.w	d0

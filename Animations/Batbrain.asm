@@ -1,14 +1,14 @@
 ; ---------------------------------------------------------------------------
 ; Animation script - Basaran enemy
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @still
-		ptr @fall
-		ptr @fly
+Ani_Bat:	index *
+		ptr ani_bat_hang
+		ptr ani_bat_drop
+		ptr ani_bat_fly
 		
-@still:		dc.b $F, 0, afEnd
+ani_bat_hang:	dc.b $F, id_frame_bat_hanging, afEnd
 		even
-@fall:		dc.b $F, 1, afEnd
+ani_bat_drop:	dc.b $F, id_frame_bat_fly1, afEnd
 		even
-@fly:		dc.b 3,	1, 2, 3, 2, afEnd
+ani_bat_fly:	dc.b 3,	id_frame_bat_fly1, id_frame_bat_fly2, id_frame_bat_fly3, id_frame_bat_fly2, afEnd
 		even

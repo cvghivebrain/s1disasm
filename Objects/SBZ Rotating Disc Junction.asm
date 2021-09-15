@@ -64,7 +64,7 @@ Jun_Action:	; Routine 2
 		btst	#status_pushing_bit,ost_status(a0) ; is Sonic pushing the disc?
 		beq.w	Jun_Display	; if not, branch
 
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		moveq	#$E,d1
 		move.w	ost_x_pos(a1),d0
 		cmp.w	ost_x_pos(a0),d0 ; is Sonic to the left of the disc?
@@ -107,7 +107,7 @@ Jun_Release:	; Routine 6
 	@release:
 		cmp.b	ost_junc_grab_frame(a0),d0
 		beq.s	@dontrelease
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		move.w	#0,ost_x_vel(a1)
 		move.w	#$800,ost_y_vel(a1)
 		cmpi.b	#4,d0
@@ -163,7 +163,7 @@ Jun_ChkSwitch:
 
 
 Jun_ChgPos:
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		moveq	#0,d0
 		move.b	ost_frame(a0),d0
 		add.w	d0,d0

@@ -14,9 +14,9 @@ Obj75_Index:	index *,,2
 		ptr Obj75_FlameMain
 		ptr Obj75_SpikeMain
 
-Obj75_ObjData:	dc.b id_Obj75_ShipMain,	0, 5		; routine number, animation, priority
-		dc.b id_Obj75_FaceMain,	1, 5
-		dc.b id_Obj75_FlameMain, 7, 5
+Obj75_ObjData:	dc.b id_Obj75_ShipMain,	id_ani_boss_ship, 5		; routine number, animation, priority
+		dc.b id_Obj75_FaceMain,	id_ani_boss_face1, 5
+		dc.b id_Obj75_FlameMain, id_ani_boss_blank, 5
 		dc.b id_Obj75_SpikeMain, 0, 5
 
 ost_bsyz_mode:		equ $29	; $FF = lifting block
@@ -176,7 +176,7 @@ loc_192AE:
 		bgt.s	loc_192E8
 		tst.b	ost_bsyz_wait_time+1(a0)
 		bne.s	loc_192E8
-		move.w	(v_player+ost_x_pos).w,d1
+		move.w	(v_ost_player+ost_x_pos).w,d1
 		subi.w	#$2C00,d1
 		asr.w	#5,d1
 		cmp.b	ost_bsyz_block_num(a0),d1
@@ -353,7 +353,7 @@ loc_19446:
 
 Obj75_FindBlocks:
 		clr.w	ost_bsyz_block(a0)
-		lea	(v_objspace+$40).w,a1
+		lea	(v_ost_all+$40).w,a1
 		moveq	#$3E,d0
 		moveq	#id_BossBlock,d1
 		move.b	ost_bsyz_block_num(a0),d2
@@ -457,7 +457,7 @@ Obj75_ShipDelete:
 ; ===========================================================================
 
 Obj75_FaceMain:	; Routine 4
-		moveq	#1,d1
+		moveq	#id_ani_boss_face1,d1
 		movea.l	ost_bsyz_parent(a0),a1
 		moveq	#0,d0
 		move.b	ost_routine2(a1),d0
@@ -483,12 +483,12 @@ off_19546:	index *
 ; ===========================================================================
 
 loc_19552:
-		moveq	#$A,d1
+		moveq	#id_ani_boss_defeat,d1
 		rts	
 ; ===========================================================================
 
 loc_19556:
-		moveq	#6,d1
+		moveq	#id_ani_boss_panic,d1
 		rts	
 ; ===========================================================================
 
@@ -510,31 +510,31 @@ loc_19570:
 ; ===========================================================================
 
 loc_19572:
-		moveq	#6,d1
+		moveq	#id_ani_boss_panic,d1
 
 loc_19574:
 		tst.b	ost_col_type(a1)
 		bne.s	loc_1957E
-		moveq	#5,d1
+		moveq	#id_ani_boss_hit,d1
 		rts	
 ; ===========================================================================
 
 loc_1957E:
-		cmpi.b	#id_Sonic_Hurt,(v_player+ost_routine).w
+		cmpi.b	#id_Sonic_Hurt,(v_ost_player+ost_routine).w
 		bcs.s	locret_19588
-		moveq	#4,d1
+		moveq	#id_ani_boss_laugh,d1
 
 locret_19588:
 		rts	
 ; ===========================================================================
 
 Obj75_FlameMain:; Routine 6
-		move.b	#7,ost_anim(a0)
+		move.b	#id_ani_boss_blank,ost_anim(a0)
 		movea.l	ost_bsyz_parent(a0),a1
 		cmpi.b	#$A,ost_routine2(a1)
 		bne.s	loc_195AA
-		move.b	#$B,ost_anim(a0)
-		tst.b	1(a0)
+		move.b	#id_ani_boss_bigflame,ost_anim(a0)
+		tst.b	ost_render(a0)
 		bpl.s	Obj75_FlameDelete
 		bra.s	loc_195B6
 ; ===========================================================================
@@ -542,7 +542,7 @@ Obj75_FlameMain:; Routine 6
 loc_195AA:
 		tst.w	ost_x_vel(a1)
 		beq.s	loc_195B6
-		move.b	#8,ost_anim(a0)
+		move.b	#id_ani_boss_flame1,ost_anim(a0)
 
 loc_195B6:
 		bra.s	loc_195BE
@@ -571,7 +571,7 @@ loc_195DA:
 Obj75_SpikeMain:; Routine 8
 		move.l	#Map_BossItems,ost_mappings(a0)
 		move.w	#tile_Nem_Weapons+tile_pal2,ost_tile(a0)
-		move.b	#5,ost_frame(a0)
+		move.b	#id_frame_boss_spike,ost_frame(a0)
 		movea.l	ost_bsyz_parent(a0),a1
 		cmpi.b	#$A,ost_routine2(a1)
 		bne.s	loc_1961C

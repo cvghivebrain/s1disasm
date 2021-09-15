@@ -153,7 +153,7 @@ loc_163D8:	; Routine 2
 loc_16404:
 		btst	#status_platform_bit,ost_status(a0)
 		beq.s	loc_16420
-		lea	(v_objspace).w,a1
+		lea	(v_ost_all).w,a1
 		bclr	#status_platform_bit,ost_status(a1)
 		bclr	#status_platform_bit,ost_status(a0)
 		clr.b	ost_solid(a0)

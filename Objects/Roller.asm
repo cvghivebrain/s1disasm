@@ -71,7 +71,7 @@ Roll_Index2:	index *
 ; ===========================================================================
 
 Roll_RollChk:
-		move.w	(v_player+ost_x_pos).w,d0
+		move.w	(v_ost_player+ost_x_pos).w,d0
 		subi.w	#$100,d0
 		bcs.s	loc_E0D2
 		sub.w	ost_x_pos(a0),d0 ; check distance between Roller and Sonic
@@ -146,7 +146,7 @@ locret_E150:
 Roll_Stop:
 		tst.b	ost_roller_mode(a0)
 		bmi.s	locret_E188
-		move.w	(v_player+ost_x_pos).w,d0
+		move.w	(v_ost_player+ost_x_pos).w,d0
 		subi.w	#$30,d0
 		sub.w	ost_x_pos(a0),d0
 		bcc.s	locret_E188

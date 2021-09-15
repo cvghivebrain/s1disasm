@@ -172,7 +172,7 @@ loc_19F10:
 		tst.w	$32(a0)
 		bmi.w	loc_19FA6
 		bclr	#status_xflip_bit,ost_status(a0)
-		move.w	(v_player+ost_x_pos).w,d0
+		move.w	(v_ost_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0
 		bcs.s	loc_19F2E
 		bset	#status_xflip_bit,ost_status(a0)
@@ -194,7 +194,7 @@ loc_19F48:
 
 loc_19F50:
 		addq.w	#7,(v_random).w
-		cmpi.b	#id_Roll,(v_player+ost_anim).w
+		cmpi.b	#id_Roll,(v_ost_player+ost_anim).w
 		bne.s	loc_19F48
 		move.w	#$300,d0
 		btst	#status_xflip_bit,ost_status(a0)
@@ -202,7 +202,7 @@ loc_19F50:
 		neg.w	d0
 
 loc_19F6A:
-		move.w	d0,(v_player+ost_x_vel).w
+		move.w	d0,(v_ost_player+ost_x_vel).w
 		tst.b	ost_fz_flash_num(a0)
 		bne.s	loc_19F88
 		subq.b	#1,ost_col_property(a0)
@@ -318,7 +318,7 @@ loc_1A074:
 loc_1A09A:
 		move.w	#$400,ost_x_vel(a0)
 		move.w	ost_x_pos(a0),d0
-		sub.w	(v_player+ost_x_pos).w,d0
+		sub.w	(v_ost_player+ost_x_pos).w,d0
 		bpl.s	loc_1A0B4
 		move.w	#$500,ost_x_vel(a0)
 		bra.w	loc_1A0F2
@@ -442,19 +442,19 @@ loc_1A210:
 		move.b	#$F,ost_col_type(a0)
 
 loc_1A216:
-		cmpi.w	#$2790,(v_player+ost_x_pos).w
+		cmpi.w	#$2790,(v_ost_player+ost_x_pos).w
 		blt.s	loc_1A23A
 		move.b	#1,(f_lockctrl).w
-		move.w	#0,(v_jpadhold2).w
-		clr.w	(v_player+ost_inertia).w
+		move.w	#0,(v_joypad_hold).w
+		clr.w	(v_ost_player+ost_inertia).w
 		tst.w	ost_y_vel(a0)
 		bpl.s	loc_1A248
-		move.w	#$100,(v_jpadhold2).w
+		move.w	#$100,(v_joypad_hold).w
 
 loc_1A23A:
-		cmpi.w	#$27E0,(v_player+ost_x_pos).w
+		cmpi.w	#$27E0,(v_ost_player+ost_x_pos).w
 		blt.s	loc_1A248
-		move.w	#$27E0,(v_player+ost_x_pos).w
+		move.w	#$27E0,(v_ost_player+ost_x_pos).w
 
 loc_1A248:
 		cmpi.w	#$2900,ost_x_pos(a0)
@@ -568,7 +568,7 @@ loc_1A38A:
 
 loc_1A38E:	; Routine $A
 		move.b	#$B,ost_frame(a0)
-		move.w	(v_player+ost_x_pos).w,d0
+		move.w	(v_ost_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0
 		bcs.s	loc_1A3A6
 		tst.b	ost_render(a0)

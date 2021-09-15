@@ -43,7 +43,7 @@ Flap_OpenClose:	; Routine 2
 		clr.b	(f_wtunnelallow).w ; enable wind tunnel
 		tst.b	ost_frame(a0)	; is the door open?
 		bne.s	@display	; if yes, branch
-		move.w	(v_player+ost_x_pos).w,d0
+		move.w	(v_ost_player+ost_x_pos).w,d0
 		cmp.w	ost_x_pos(a0),d0 ; has Sonic passed through the door?
 		bcc.s	@display	; if yes, branch
 		move.b	#1,(f_wtunnelallow).w ; disable wind tunnel

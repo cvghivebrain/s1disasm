@@ -86,7 +86,7 @@ Bub_ChkWater:	; Routine 4
 
 		bsr.w	ResumeMusic	; cancel countdown music
 		sfx	sfx_Bubble,0,0,0 ; play collecting bubble sound
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		clr.w	ost_x_vel(a1)
 		clr.w	ost_y_vel(a1)
 		clr.w	ost_inertia(a1)	; stop Sonic
@@ -230,7 +230,7 @@ Bub_BblTypes:	dc.b 0,	1, 0, 0, 0, 0, 1, 0, 0,	0, 0, 1, 0, 1, 0, 0, 1,	0
 Bub_ChkSonic:
 		tst.b	(f_lockmulti).w
 		bmi.s	@loc_12998
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		move.w	ost_x_pos(a1),d0
 		move.w	ost_x_pos(a0),d1
 		subi.w	#$10,d1

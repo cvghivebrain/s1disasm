@@ -67,12 +67,12 @@ Lamp_Blue:	; Routine 2
 ; ===========================================================================
 
 @chkhit:
-		move.w	(v_player+ost_x_pos).w,d0
+		move.w	(v_ost_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0
 		addq.w	#8,d0
 		cmpi.w	#$10,d0
 		bcc.w	@donothing
-		move.w	(v_player+ost_y_pos).w,d0
+		move.w	(v_ost_player+ost_y_pos).w,d0
 		sub.w	ost_y_pos(a0),d0
 		addi.w	#$40,d0
 		cmpi.w	#$68,d0
@@ -167,8 +167,8 @@ Lamp_StoreInfo:
 
 Lamp_LoadInfo:
 		move.b	($FFFFFE31).w,(v_lastlamp).w
-		move.w	($FFFFFE32).w,(v_player+ost_x_pos).w
-		move.w	($FFFFFE34).w,(v_player+ost_y_pos).w
+		move.w	($FFFFFE32).w,(v_ost_player+ost_x_pos).w
+		move.w	($FFFFFE34).w,(v_ost_player+ost_y_pos).w
 		move.w	($FFFFFE36).w,(v_rings).w
 		move.b	($FFFFFE54).w,(v_lifecount).w
 		clr.w	(v_rings).w

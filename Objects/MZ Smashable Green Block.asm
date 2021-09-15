@@ -30,7 +30,7 @@ Smab_Main:	; Routine 0
 Smab_Solid:	; Routine 2
 
 		move.w	(v_itembonus).w,ost_smash_count(a0)
-		move.b	(v_player+ost_anim).w,ost_smash_sonic_ani(a0) ; load Sonic's animation number
+		move.b	(v_ost_player+ost_anim).w,ost_smash_sonic_ani(a0) ; load Sonic's animation number
 		move.w	#$1B,d1
 		move.w	#$10,d2
 		move.w	#$11,d3

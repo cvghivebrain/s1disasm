@@ -9,7 +9,7 @@
 
 
 DisplaySprite:
-		lea	(v_spritequeue).w,a1
+		lea	(v_sprite_queue).w,a1
 		move.w	ost_priority(a0),d0 ; get sprite priority
 		lsr.w	#1,d0		; d0 = priority * $80
 		andi.w	#$380,d0
@@ -37,7 +37,7 @@ DisplaySprite:
 
 
 DisplaySprite_a1:
-		lea	(v_spritequeue).w,a2
+		lea	(v_sprite_queue).w,a2
 		move.w	ost_priority(a1),d0
 		lsr.w	#1,d0
 		andi.w	#$380,d0

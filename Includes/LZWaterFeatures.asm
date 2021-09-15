@@ -10,7 +10,7 @@ LZWaterFeatures:
 			tst.b   (f_nobgscroll).w
 			bne.s	@setheight
 		endc
-		cmpi.b	#id_Sonic_Death,(v_player+ost_routine).w ; has Sonic just died?
+		cmpi.b	#id_Sonic_Death,(v_ost_player+ost_routine).w ; has Sonic just died?
 		bcc.s	@setheight	; if yes, skip other effects
 
 		bsr.w	LZWindTunnels
@@ -93,7 +93,7 @@ DynWater_LZ1:
 		cmpi.w	#$600,d0	; has screen reached next position?
 		bcs.s	@setwater	; if not, branch
 		move.w	#$108,d1
-		cmpi.w	#$200,(v_player+ost_y_pos).w ; is Sonic above $200 y-axis?
+		cmpi.w	#$200,(v_ost_player+ost_y_pos).w ; is Sonic above $200 y-axis?
 		bcs.s	@sonicishigh	; if yes, branch
 		cmpi.w	#$C00,d0
 		bcs.s	@setwater
@@ -127,7 +127,7 @@ DynWater_LZ1:
 @routine2:
 		subq.b	#1,d2
 		bne.s	@skip
-		cmpi.w	#$2E0,(v_player+ost_y_pos).w ; is Sonic above $2E0 y-axis?
+		cmpi.w	#$2E0,(v_ost_player+ost_y_pos).w ; is Sonic above $2E0 y-axis?
 		bcc.s	@skip		; if not, branch
 		move.w	#$3A8,d1
 		cmpi.w	#$1300,d0
@@ -165,13 +165,13 @@ DynWater_LZ3:
 		move.w	#$900,d1
 		cmpi.w	#$600,d0	; has screen reached position?
 		bcs.s	@setwaterlz3	; if not, branch
-		cmpi.w	#$3C0,(v_player+ost_y_pos).w
+		cmpi.w	#$3C0,(v_ost_player+ost_y_pos).w
 		bcs.s	@setwaterlz3
-		cmpi.w	#$600,(v_player+ost_y_pos).w ; is Sonic in a y-axis range?
+		cmpi.w	#$600,(v_ost_player+ost_y_pos).w ; is Sonic in a y-axis range?
 		bcc.s	@setwaterlz3	; if not, branch
 
 		move.w	#$4C8,d1	; set new water height
-		move.b	#$4B,(v_lvllayout+$106).w ; update level layout
+		move.b	#$4B,(v_level_layout+$106).w ; update level layout
 		move.b	#1,(v_wtr_routine).w ; use second routine next
 		sfx	sfx_Rumbling,0,1,0 ; play sound $B7 (rumbling)
 
@@ -192,9 +192,9 @@ DynWater_LZ3:
 		bcs.s	@setwater2
 		cmpi.w	#$508,(v_waterpos3).w
 		beq.s	@sonicislow
-		cmpi.w	#$600,(v_player+ost_y_pos).w ; is Sonic below $600 y-axis?
+		cmpi.w	#$600,(v_ost_player+ost_y_pos).w ; is Sonic below $600 y-axis?
 		bcc.s	@sonicislow	; if yes, branch
-		cmpi.w	#$280,(v_player+ost_y_pos).w
+		cmpi.w	#$280,(v_ost_player+ost_y_pos).w
 		bcc.s	@setwater2
 
 @sonicislow:
@@ -292,7 +292,7 @@ LZWindTunnels:
 		subq.w	#8,a2		; use different data for act 1
 
 	@notact1:
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 
 @chksonic:
 		move.w	ost_x_pos(a1),d0
@@ -333,12 +333,12 @@ LZWindTunnels:
 		move.w	#0,ost_y_vel(a1)
 		move.b	#id_Float2,ost_anim(a1)	; use floating animation
 		bset	#status_air_bit,ost_status(a1)
-		btst	#bitUp,(v_jpadhold2).w ; is up pressed?
+		btst	#bitUp,(v_joypad_hold).w ; is up pressed?
 		beq.s	@down		; if not, branch
 		subq.w	#1,ost_y_pos(a1) ; move Sonic up on pole
 
 	@down:
-		btst	#bitDn,(v_jpadhold2).w ; is down being pressed?
+		btst	#bitDn,(v_joypad_hold).w ; is down being pressed?
 		beq.s	@end		; if not, branch
 		addq.w	#1,ost_y_pos(a1) ; move Sonic down on pole
 
@@ -378,7 +378,7 @@ LZWind_Data:	dc.w $A80, $300, $C10,  $380 ; act 1 values (set 1)
 
 
 LZWaterSlides:
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		btst	#status_air_bit,ost_status(a1) ; is Sonic in air?
 		bne.s	loc_3F6A	; if not, branch
 		move.w	ost_y_pos(a1),d0
@@ -387,7 +387,7 @@ LZWaterSlides:
 		move.b	ost_x_pos(a1),d1
 		andi.w	#$7F,d1
 		add.w	d1,d0
-		lea	(v_lvllayout).w,a2
+		lea	(v_level_layout).w,a2
 		move.b	(a2,d0.w),d0
 		lea	Slide_Chunks_End(pc),a2
 		moveq	#Slide_Chunks_End-Slide_Chunks-1,d1

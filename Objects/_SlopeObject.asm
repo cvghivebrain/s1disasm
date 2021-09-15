@@ -10,7 +10,7 @@
 
 
 SlopeObject:
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		tst.w	ost_y_vel(a1)	; is Sonic moving up/jumping?
 		bmi.w	Plat_Exit	; if yes, branch
 

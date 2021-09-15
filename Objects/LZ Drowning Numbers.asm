@@ -182,9 +182,9 @@ Drown_WobbleData:
 Drown_Countdown:; Routine $A
 		tst.w	ost_drown_restart_time(a0)
 		bne.w	@loc_13F86
-		cmpi.b	#id_Sonic_Death,(v_player+ost_routine).w ; is Sonic dead?
+		cmpi.b	#id_Sonic_Death,(v_ost_player+ost_routine).w ; is Sonic dead?
 		bcc.w	@nocountdown	; if yes, branch
-		btst	#status_underwater_bit,(v_player+ost_status).w ; is Sonic underwater?
+		btst	#status_underwater_bit,(v_ost_player+ost_status).w ; is Sonic underwater?
 		beq.w	@nocountdown	; if not, branch
 
 		subq.w	#1,ost_drown_num_time(a0) ; decrement timer
@@ -230,7 +230,7 @@ Drown_Countdown:; Routine $A
 		move.w	#1,ost_drown_extra_flag(a0)
 		move.w	#$78,ost_drown_restart_time(a0)
 		move.l	a0,-(sp)
-		lea	(v_player).w,a0
+		lea	(v_ost_player).w,a0
 		bsr.w	Sonic_ResetOnFloor
 		move.b	#id_Drown,ost_anim(a0) ; use Sonic's drowning animation
 		bset	#status_air_bit,ost_status(a0)
@@ -246,13 +246,13 @@ Drown_Countdown:; Routine $A
 @loc_13F86:
 		subq.w	#1,ost_drown_restart_time(a0)
 		bne.s	@loc_13F94
-		move.b	#id_Sonic_Death,(v_player+ost_routine).w
+		move.b	#id_Sonic_Death,(v_ost_player+ost_routine).w
 		rts	
 ; ===========================================================================
 
 	@loc_13F94:
 		move.l	a0,-(sp)
-		lea	(v_player).w,a0
+		lea	(v_ost_player).w,a0
 		jsr	(SpeedToPos).l
 		addi.w	#$10,ost_y_vel(a0)
 		movea.l	(sp)+,a0
@@ -276,22 +276,22 @@ Drown_Countdown:; Routine $A
 		jsr	(FindFreeObj).l
 		bne.w	@nocountdown
 		move.b	#id_DrownCount,0(a1) ; load object
-		move.w	(v_player+ost_x_pos).w,ost_x_pos(a1) ; match X position to Sonic
+		move.w	(v_ost_player+ost_x_pos).w,ost_x_pos(a1) ; match X position to Sonic
 		moveq	#6,d0
-		btst	#status_xflip_bit,(v_player+ost_status).w
+		btst	#status_xflip_bit,(v_ost_player+ost_status).w
 		beq.s	@noflip
 		neg.w	d0
 		move.b	#$40,ost_angle(a1)
 
 	@noflip:
 		add.w	d0,ost_x_pos(a1)
-		move.w	(v_player+ost_y_pos).w,ost_y_pos(a1)
+		move.w	(v_ost_player+ost_y_pos).w,ost_y_pos(a1)
 		move.b	#6,ost_subtype(a1) ; object is small bubble
 		tst.w	ost_drown_restart_time(a0)
 		beq.w	@loc_1403E
 		andi.w	#7,$3A(a0)
 		addi.w	#0,$3A(a0)
-		move.w	(v_player+ost_y_pos).w,d0
+		move.w	(v_ost_player+ost_y_pos).w,d0
 		subi.w	#$C,d0
 		move.w	d0,ost_y_pos(a1)
 		jsr	(RandomNumber).l

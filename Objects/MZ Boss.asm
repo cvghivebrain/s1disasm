@@ -14,9 +14,9 @@ Obj73_Index:	index *,,2
 		ptr Obj73_FlameMain
 		ptr Obj73_TubeMain
 
-Obj73_ObjData:	dc.b id_Obj73_ShipMain,	0, 4		; routine number, animation, priority
-		dc.b id_Obj73_FaceMain,	1, 4
-		dc.b id_Obj73_FlameMain, 7, 4
+Obj73_ObjData:	dc.b id_Obj73_ShipMain,	id_ani_boss_ship, 4		; routine number, animation, priority
+		dc.b id_Obj73_FaceMain,	id_ani_boss_face1, 4
+		dc.b id_Obj73_FlameMain, id_ani_boss_blank, 4
 		dc.b id_Obj73_TubeMain,	0, 3
 
 ost_bmz_parent_x_pos:	equ $30	; parent x position (2 bytes)
@@ -343,7 +343,7 @@ Obj73_ShipDel:
 
 Obj73_FaceMain:	; Routine 4
 		moveq	#0,d0
-		moveq	#1,d1
+		moveq	#id_ani_boss_face1,d1
 		movea.l	ost_bmz_parent(a0),a1
 		move.b	ost_routine2(a1),d0
 		subq.w	#2,d0
@@ -352,34 +352,34 @@ Obj73_FaceMain:	; Routine 4
 		beq.s	loc_185DA
 		tst.w	ost_y_vel(a1)
 		bne.s	loc_185DA
-		moveq	#4,d1
+		moveq	#id_ani_boss_laugh,d1
 		bra.s	loc_185EE
 ; ===========================================================================
 
 loc_185D2:
 		subq.b	#2,d0
 		bmi.s	loc_185DA
-		moveq	#$A,d1
+		moveq	#id_ani_boss_defeat,d1
 		bra.s	loc_185EE
 ; ===========================================================================
 
 loc_185DA:
 		tst.b	ost_col_type(a1)
 		bne.s	loc_185E4
-		moveq	#5,d1
+		moveq	#id_ani_boss_hit,d1
 		bra.s	loc_185EE
 ; ===========================================================================
 
 loc_185E4:
-		cmpi.b	#id_Sonic_Hurt,(v_player+ost_routine).w
+		cmpi.b	#id_Sonic_Hurt,(v_ost_player+ost_routine).w
 		bcs.s	loc_185EE
-		moveq	#4,d1
+		moveq	#id_ani_boss_laugh,d1
 
 loc_185EE:
 		move.b	d1,ost_anim(a0)
 		subq.b	#4,d0
 		bne.s	loc_18602
-		move.b	#6,ost_anim(a0)
+		move.b	#id_ani_boss_panic,ost_anim(a0)
 		tst.b	ost_render(a0)
 		bpl.s	Obj73_FaceDel
 
@@ -392,11 +392,11 @@ Obj73_FaceDel:
 ; ===========================================================================
 
 Obj73_FlameMain:; Routine 6
-		move.b	#7,ost_anim(a0)
+		move.b	#id_ani_boss_blank,ost_anim(a0)
 		movea.l	ost_bmz_parent(a0),a1
 		cmpi.b	#8,ost_routine2(a1)
 		blt.s	loc_1862A
-		move.b	#$B,ost_anim(a0)
+		move.b	#id_ani_boss_bigflame,ost_anim(a0)
 		tst.b	ost_render(a0)
 		bpl.s	Obj73_FlameDel
 		bra.s	loc_18636
@@ -441,7 +441,7 @@ Obj73_TubeMain:	; Routine 8
 loc_18688:
 		move.l	#Map_BossItems,ost_mappings(a0)
 		move.w	#tile_Nem_Weapons+tile_pal2,ost_tile(a0)
-		move.b	#4,ost_frame(a0)
+		move.b	#id_frame_boss_pipe,ost_frame(a0)
 		bra.s	loc_1864A
 ; ===========================================================================
 

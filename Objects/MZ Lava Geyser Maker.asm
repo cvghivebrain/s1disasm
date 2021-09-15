@@ -35,7 +35,7 @@ GMake_Wait:	; Routine 2
 		bpl.s	@cancel		; if time remains, branch
 
 		move.w	ost_gmake_wait_total(a0),ost_gmake_wait_time(a0) ; reset timer
-		move.w	(v_player+ost_y_pos).w,d0
+		move.w	(v_ost_player+ost_y_pos).w,d0
 		move.w	ost_y_pos(a0),d1
 		cmp.w	d1,d0
 		bcc.s	@cancel

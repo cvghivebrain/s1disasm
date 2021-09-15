@@ -47,7 +47,7 @@ Hel_Build:
 		bne.s	Hel_Action
 		addq.b	#1,ost_subtype(a0)
 		move.w	a1,d5
-		subi.w	#v_objspace&$FFFF,d5
+		subi.w	#v_ost_all&$FFFF,d5
 		lsr.w	#6,d5
 		andi.w	#$7F,d5
 		move.b	d5,(a2)+	; copy child OST index to byte list in parent OST
@@ -115,7 +115,7 @@ Hel_DelAll:
 		moveq	#0,d0
 		move.b	(a2)+,d0
 		lsl.w	#6,d0
-		addi.l	#v_objspace&$FFFFFF,d0
+		addi.l	#v_ost_all&$FFFFFF,d0
 		movea.l	d0,a1		; get child address
 		bsr.w	DeleteChild	; delete object
 		dbf	d2,Hel_DelLoop ; repeat d2 times (helix length)

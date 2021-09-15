@@ -12,7 +12,7 @@
 
 
 SlopeObject_NoChk:
-		lea	(v_player).w,a1
+		lea	(v_ost_player).w,a1
 		btst	#status_platform_bit,ost_status(a1) ; is Sonic on a platform?
 		beq.s	@noplatform	; if not, branch
 		move.w	ost_x_pos(a1),d0

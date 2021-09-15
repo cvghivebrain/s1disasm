@@ -2,6 +2,7 @@
 ; Object 32 - buttons (MZ, SYZ, LZ, SBZ)
 ; ---------------------------------------------------------------------------
 
+Button:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	But_Index(pc,d0.w),d1
@@ -96,7 +97,7 @@ But_MZBlock:
 		subq.w	#8,d3
 		move.w	#$20,d4
 		move.w	#$10,d5
-		lea	(v_lvlobjspace).w,a1 ; begin checking object RAM
+		lea	(v_ost_level_obj).w,a1 ; begin checking object RAM
 		move.w	#$5F,d6
 
 But_MZLoop:

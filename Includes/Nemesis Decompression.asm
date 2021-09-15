@@ -26,7 +26,7 @@ NemDecToRAM:
 		lea	(NemPCD_WriteRowToRAM).l,a3 ; advance to the next location after each write
 
 NemDecMain:
-		lea	(v_ngfx_buffer).w,a1
+		lea	(v_nem_gfx_buffer).w,a1
 		move.w	(a0)+,d2	; get number of patterns
 		lsl.w	#1,d2
 		bcc.s	loc_146A	; branch if the sign bit isn't set
