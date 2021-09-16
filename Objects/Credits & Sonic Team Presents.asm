@@ -2,6 +2,7 @@
 ; Object 8A - "SONIC TEAM PRESENTS" and	credits
 ; ---------------------------------------------------------------------------
 
+CreditsText:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Cred_Index(pc,d0.w),d1
@@ -27,7 +28,7 @@ Cred_Main:	; Routine 0
 		bne.s	Cred_Display	; if not, branch
 
 		move.w	#$A6,ost_tile(a0)
-		move.b	#$A,ost_frame(a0) ; display "SONIC TEAM PRESENTS"
+		move.b	#id_frame_cred_sonicteam,ost_frame(a0) ; display "SONIC TEAM PRESENTS"
 		tst.b	(f_creditscheat).w ; is hidden credits cheat on?
 		beq.s	Cred_Display	; if not, branch
 		cmpi.b	#btnABC+btnDn,(v_joypad_hold_actual).w ; is A+B+C+Down being pressed? ($72)

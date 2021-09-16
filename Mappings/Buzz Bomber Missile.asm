@@ -1,25 +1,29 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - missile that Buzz Bomber throws
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @Flare1
-		ptr @Flare2
-		ptr @Ball1
-		ptr @Ball2
+Map_Missile:	index *
+		ptr frame_buzz_flare1
+		ptr frame_buzz_flare2
+		ptr frame_buzz_ball1
+		ptr frame_buzz_ball2
 		
-@Flare1:	spritemap		; buzz bomber firing flare
+frame_buzz_flare1:
+		spritemap		; buzz bomber firing flare
 		piece	-8, -8, 2x2, $24
 		endsprite
 		
-@Flare2:	spritemap
+frame_buzz_flare2:
+		spritemap
 		piece	-8, -8, 2x2, $28
 		endsprite
 		
-@Ball1:		spritemap		; missile itself
+frame_buzz_ball1:
+		spritemap		; missile itself
 		piece	-8, -8, 2x2, $2C
 		endsprite
 		
-@Ball2:		spritemap
+frame_buzz_ball2:
+		spritemap
 		piece	-8, -8, 2x2, $33
 		endsprite
 		even

@@ -1,29 +1,29 @@
 ; ---------------------------------------------------------------------------
 ; Animation script - Crabmeat enemy
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @stand
-		ptr @standslope
-		ptr @standsloperev
-		ptr @walk
-		ptr @walkslope
-		ptr @walksloperev
-		ptr @firing
-		ptr @ball
+Ani_Crab:	index *
+		ptr ani_crab_stand
+		ptr ani_crab_standslope
+		ptr ani_crab_standsloperev
+		ptr ani_crab_walk
+		ptr ani_crab_walkslope
+		ptr ani_crab_walksloperev
+		ptr ani_crab_firing
+		ptr ani_crab_ball
 		
-@stand:		dc.b $F, 0, afEnd
-		even
-@standslope:	dc.b $F, 2, afEnd
-		even
-@standsloperev:	dc.b $F, 2+afxflip, afEnd
-		even
-@walk:		dc.b $F, 1, 1+afxflip, 0, afEnd
-		even
-@walkslope:	dc.b $F, 1+afxflip, 3, 2, afEnd
-		even
-@walksloperev:	dc.b $F, 1, 3+afxflip, 2+afxflip, afEnd
-		even
-@firing:	dc.b $F, 4, afEnd
-		even
-@ball:		dc.b 1,	5, 6, afEnd
-		even
+ani_crab_stand:		dc.b $F, id_frame_crab_stand, afEnd
+			even
+ani_crab_standslope:	dc.b $F, id_frame_crab_slope1, afEnd
+			even
+ani_crab_standsloperev:	dc.b $F, id_frame_crab_slope1+afxflip, afEnd
+			even
+ani_crab_walk:		dc.b $F, id_frame_crab_walk, id_frame_crab_walk+afxflip, id_frame_crab_stand, afEnd
+			even
+ani_crab_walkslope:	dc.b $F, id_frame_crab_walk+afxflip, id_frame_crab_slope2, id_frame_crab_slope1, afEnd
+			even
+ani_crab_walksloperev:	dc.b $F, id_frame_crab_walk, id_frame_crab_slope2+afxflip, id_frame_crab_slope1+afxflip, afEnd
+			even
+ani_crab_firing:	dc.b $F, id_frame_crab_firing, afEnd
+			even
+ani_crab_ball:		dc.b 1,	id_frame_crab_ball1, id_frame_crab_ball2, afEnd
+			even

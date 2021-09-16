@@ -2,6 +2,7 @@
 ; Object 87 - Sonic on ending sequence
 ; ---------------------------------------------------------------------------
 
+EndSonic:
 		moveq	#0,d0
 		move.b	ost_routine2(a0),d0
 		move.w	ESon_Index(pc,d0.w),d1
@@ -38,7 +39,7 @@ ESon_Main2:
 		move.b	#render_rel,ost_render(a0)
 		clr.b	ost_status(a0)
 		move.b	#2,ost_priority(a0)
-		move.b	#0,ost_frame(a0)
+		move.b	#id_frame_esonic_hold1,ost_frame(a0)
 		move.w	#80,ost_esonic_wait_time(a0) ; set duration for Sonic to pause
 
 ESon_MakeEmeralds:
@@ -46,7 +47,7 @@ ESon_MakeEmeralds:
 		subq.w	#1,ost_esonic_wait_time(a0) ; subtract 1 from duration
 		bne.s	ESon_Wait
 		addq.b	#2,ost_routine2(a0)
-		move.w	#id_Confused,ost_anim(a0)
+		move.w	#id_ani_esonic_confused,ost_anim(a0)
 		move.b	#id_EndChaos,(v_ost_end_emeralds).w ; load chaos emeralds objects
 
 	ESon_Wait:
@@ -76,7 +77,7 @@ ESon_ClrLoop:
 		dbf	d1,ESon_ClrLoop ; clear the object RAM
 		move.w	#1,(f_restart).w
 		addq.b	#2,ost_routine2(a0)
-		move.b	#id_Confused,ost_anim(a0)
+		move.b	#id_ani_esonic_confused,ost_anim(a0)
 		move.w	#60,ost_esonic_wait_time(a0)
 
 ESon_Wait2:
@@ -88,7 +89,7 @@ ESon_MakeLogo:	; Routine $C
 		bne.s	ESon_Wait3
 		addq.b	#2,ost_routine2(a0)
 		move.w	#180,ost_esonic_wait_time(a0)
-		move.b	#id_Leaping,ost_anim(a0)
+		move.b	#id_ani_esonic_leap,ost_anim(a0)
 		move.b	#id_EndSTH,(v_ost_end_emeralds).w ; load "SONIC THE HEDGEHOG" object
 
 ESon_Wait3:
@@ -96,7 +97,7 @@ ESon_Wait3:
 ; ===========================================================================
 
 ESon_Animate:	; Rountine 4, $A, $E, $12
-		lea	(AniScript_ESon).l,a1
+		lea	(Ani_ESon).l,a1
 		jmp	(AnimateSprite).l
 ; ===========================================================================
 
@@ -109,8 +110,8 @@ ESon_Leap:	; Routine $10
 		move.b	#render_rel,ost_render(a0)
 		clr.b	ost_status(a0)
 		move.b	#2,ost_priority(a0)
-		move.b	#5,ost_frame(a0)
-		move.b	#id_Leaping,ost_anim(a0) ; use "leaping" animation
+		move.b	#id_frame_esonic_leap1,ost_frame(a0)
+		move.b	#id_ani_esonic_leap,ost_anim(a0) ; use "leaping" animation
 		move.b	#id_EndSTH,(v_ost_end_emeralds).w ; load "SONIC THE HEDGEHOG" object
 		bra.s	ESon_Animate
 ; ===========================================================================

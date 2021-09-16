@@ -1,49 +1,56 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Sonic on the ending	sequence
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @Hold1
-		ptr @Hold2
-		ptr @Up
-		ptr @Conf1
-		ptr @Conf2
-		ptr @Leap1
-		ptr @Leap2
-		ptr @Leap3
+Map_ESon:	index *
+		ptr frame_esonic_hold1
+		ptr frame_esonic_hold2
+		ptr frame_esonic_up
+		ptr frame_esonic_confused1
+		ptr frame_esonic_confused2
+		ptr frame_esonic_leap1
+		ptr frame_esonic_leap2
+		ptr frame_esonic_leap3
 		
-@Hold1:		spritemap			; holding emeralds
+frame_esonic_hold1:
+		spritemap			; holding emeralds
 		piece	-8, -$14, 3x4, 0
 		piece	-$10, $C, 4x1, $C
 		endsprite
 		
-@Hold2:		spritemap 			; holding emeralds (glowing)
+frame_esonic_hold2:
+		spritemap 			; holding emeralds (glowing)
 		piece	-$10, -4, 4x2, $10
 		piece	-8, -$14, 3x4, 0
 		piece	-$10, $C, 4x1, $C
 		endsprite
 		
-@Up:		spritemap 			; looking up
+frame_esonic_up:
+		spritemap 			; looking up
 		piece	-8, -$14, 3x2, $18
 		piece	-$10, -4, 4x3, $1E
 		endsprite
 		
-@Conf1:		spritemap 			; confused
+frame_esonic_confused1:
+		spritemap 			; confused
 		piece	-8, -$14, 3x2, $2A
 		piece	-$10, -4, 4x3, $30
 		endsprite
 		
-@Conf2:		spritemap 			; confused #2
+frame_esonic_confused2:
+		spritemap 			; confused #2
 		piece	-$10, -$14, 3x2, $2A, xflip
 		piece	-$10, -4, 4x3, $30, xflip
 		endsprite
 		
-@Leap1:		spritemap 			; leaping
+frame_esonic_leap1:
+		spritemap 			; leaping
 		piece	-$10, -$14, 2x3, $3C
 		piece	0, -$14, 2x3, $3C, xflip
 		piece	-$10, 4, 4x2, $42
 		endsprite
 		
-@Leap2:		spritemap			; leaping #2
+frame_esonic_leap2:
+		spritemap			; leaping #2
 		piece	-8, -$4E, 4x1, $4A
 		piece	-$10, -$46, 4x4, $4E
 		piece	$10, -$46, 2x2, $5E
@@ -53,7 +60,8 @@
 		piece	-8, -$16, 2x2, $6C
 		endsprite
 		
-@Leap3:		spritemap 			; leaping #3
+frame_esonic_leap3:
+		spritemap 			; leaping #3
 		piece	-8, -$80, 4x4, $70
 		piece	-$20, -$70, 3x4, $80
 		piece	$18, -$70, 3x4, $8C

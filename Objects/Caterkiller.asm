@@ -2,6 +2,7 @@
 ; Object 78 - Caterkiller enemy	(MZ, SBZ)
 ; ---------------------------------------------------------------------------
 
+Caterkiller:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Cat_Index(pc,d0.w),d1
@@ -83,7 +84,7 @@ Cat_Loop:
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	ost_status(a0),ost_status(a1)
 		move.b	ost_status(a0),ost_render(a1)
-		move.b	#8,ost_frame(a1)
+		move.b	#id_frame_cat_body1,ost_frame(a1)
 		move.l	a2,ost_cat_parent(a1)
 		move.b	d4,ost_cat_segment_pos(a1)
 		addq.b	#4,d4
@@ -219,7 +220,7 @@ Cat_Floor:
 		subq.b	#2,ost_routine2(a0)
 		move.b	#7,ost_cat_wait_time(a0)
 		if Revision=0
-		move.w	#0,ost_x_vel(a0)
+			move.w	#0,ost_x_vel(a0)
 		else
 			clr.w	ost_x_vel(a0)
 			clr.w	ost_inertia(a0)

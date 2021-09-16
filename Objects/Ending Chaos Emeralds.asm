@@ -2,6 +2,7 @@
 ; Object 88 - chaos emeralds on	the ending sequence
 ; ---------------------------------------------------------------------------
 
+EndChaos:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	ECha_Index(pc,d0.w),d1
@@ -30,7 +31,7 @@ ECha_CreateEms:
 		move.w	(v_ost_player+ost_y_pos).w,ost_y_pos(a0) ; match y position with Sonic
 		movea.l	a0,a1
 		moveq	#0,d3
-		moveq	#1,d2
+		moveq	#id_frame_echaos_blue,d2
 		moveq	#5,d1
 
 	ECha_LoadLoop:

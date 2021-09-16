@@ -1,10 +1,10 @@
 ; ---------------------------------------------------------------------------
 ; Animation script - missile that Buzz Bomber throws
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @flare
-		ptr @missile
+Ani_Missile:	index *
+		ptr ani_buzz_flare
+		ptr ani_buzz_missile
 		
-@flare:		dc.b 7,	0, 1, afRoutine
-@missile:	dc.b 1,	2, 3, afEnd
-		even
+ani_buzz_flare:		dc.b 7,	id_frame_buzz_flare1, id_frame_buzz_flare2, afRoutine
+ani_buzz_missile:	dc.b 1,	id_frame_buzz_ball1, id_frame_buzz_ball2, afEnd
+			even

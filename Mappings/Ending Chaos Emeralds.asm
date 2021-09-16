@@ -1,40 +1,47 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - chaos emeralds on the ending sequence
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @Emerald1
-		ptr @Emerald2
-		ptr @Emerald3
-		ptr @Emerald4
-		ptr @Emerald5
-		ptr @Emerald6
-		ptr @Emerald7
+Map_ECha:	index *
+		ptr frame_echaos_flash
+		ptr frame_echaos_blue
+		ptr frame_echaos_yellow
+		ptr frame_echaos_pink
+		ptr frame_echaos_green
+		ptr frame_echaos_red
+		ptr frame_echaos_grey
 		
-@Emerald1:	spritemap
+frame_echaos_flash:			; unused
+		spritemap
 		piece	-8, -8, 2x2, 0
 		endsprite
 		
-@Emerald2:	spritemap
+frame_echaos_blue:
+		spritemap
 		piece	-8, -8, 2x2, 4
 		endsprite
 		
-@Emerald3:	spritemap
+frame_echaos_yellow:
+		spritemap
 		piece	-8, -8, 2x2, $10, pal3
 		endsprite
 		
-@Emerald4:	spritemap
+frame_echaos_pink:
+		spritemap
 		piece	-8, -8, 2x2, $18, pal2
 		endsprite
 		
-@Emerald5:	spritemap
+frame_echaos_green:
+		spritemap
 		piece	-8, -8, 2x2, $14, pal3
 		endsprite
 		
-@Emerald6:	spritemap
+frame_echaos_red:
+		spritemap
 		piece	-8, -8, 2x2, 8
 		endsprite
 		
-@Emerald7:	spritemap
+frame_echaos_grey:
+		spritemap
 		piece	-8, -8, 2x2, $C
 		endsprite
 		even

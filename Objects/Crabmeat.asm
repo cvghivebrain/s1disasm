@@ -68,7 +68,7 @@ Crab_Action:	; Routine 2
 		move.w	#127,ost_crab_wait_time(a0) ; set time delay to approx 2 seconds
 		move.w	#$80,ost_x_vel(a0) ; move Crabmeat to the right
 		bsr.w	Crab_SetAni
-		addq.b	#3,d0
+		addq.b	#3,d0		; use walking animation
 		move.b	d0,ost_anim(a0)
 		bchg	#status_xflip_bit,ost_status(a0)
 		bne.s	@noflip
@@ -81,7 +81,7 @@ Crab_Action:	; Routine 2
 
 @fire:
 		move.w	#59,ost_crab_wait_time(a0)
-		move.b	#6,ost_anim(a0)	; use firing animation
+		move.b	#id_ani_crab_firing,ost_anim(a0) ; use firing animation
 		bsr.w	FindFreeObj
 		bne.s	@failleft
 		move.b	#id_Crabmeat,0(a1) ; load left fireball
@@ -151,15 +151,15 @@ loc_966E:
 
 
 Crab_SetAni:
-		moveq	#0,d0
+		moveq	#id_ani_crab_stand,d0
 		move.b	ost_angle(a0),d3
 		bmi.s	loc_96A4
 		cmpi.b	#6,d3
 		bcs.s	locret_96A2
-		moveq	#1,d0
+		moveq	#id_ani_crab_standslope,d0
 		btst	#status_xflip_bit,ost_status(a0)
 		bne.s	locret_96A2
-		moveq	#2,d0
+		moveq	#id_ani_crab_standsloperev,d0
 
 locret_96A2:
 		rts	
@@ -168,10 +168,10 @@ locret_96A2:
 loc_96A4:
 		cmpi.b	#-6,d3
 		bhi.s	locret_96B6
-		moveq	#2,d0
+		moveq	#id_ani_crab_standsloperev,d0
 		btst	#status_xflip_bit,ost_status(a0)
 		bne.s	locret_96B6
-		moveq	#1,d0
+		moveq	#id_ani_crab_standslope,d0
 
 locret_96B6:
 		rts	
@@ -196,7 +196,7 @@ Crab_BallMain:	; Routine 6
 		move.b	#$87,ost_col_type(a0)
 		move.b	#8,ost_actwidth(a0)
 		move.w	#-$400,ost_y_vel(a0)
-		move.b	#7,ost_anim(a0)
+		move.b	#id_ani_crab_ball,ost_anim(a0)
 
 Crab_BallMove:	; Routine 8
 		lea	(Ani_Crab).l,a1

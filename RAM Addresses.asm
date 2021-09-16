@@ -23,17 +23,22 @@ v_sonic_pos_tracker:	equ $FFFFCB00 ; earlier position tracking list for Sonic, u
 v_hscroll_buffer:	equ $FFFFCC00 ; scrolling table data (actually $380 bytes, but $400 is reserved for it)
 v_ost_all:		equ $FFFFD000 ; object variable space ($40 bytes per object) ($2000 bytes)
 	v_ost_player:		equ v_ost_all ; object variable space for Sonic ($40 bytes)
+	; Title screen and intro
 	v_ost_titlesonic:	equ v_ost_all+(sizeof_ost*1) ; title screen Sonic
 	v_ost_psb:		equ v_ost_all+(sizeof_ost*2) ; title screen "Press Start Button"
 	v_ost_tm:		equ v_ost_all+(sizeof_ost*3) ; title screen "TM"
 	v_ost_titlemask:	equ v_ost_all+(sizeof_ost*4) ; title screen sprite mask
+	; Intro/credits
 	v_ost_credits:		equ v_ost_all+(sizeof_ost*2) ; "Sonic Team Presents" and credits text
+	; Try again
 	v_ost_endeggman:	equ v_ost_all+(sizeof_ost*2) ; ending/"Try Again" Eggman
 	v_ost_tryagain:		equ v_ost_all+(sizeof_ost*3) ; "Try Again" text
 	v_ost_tryag_emeralds:	equ v_ost_all+(sizeof_ost*$20) ; "Try Again" chaos emeralds
+	; Continue
 	v_ost_cont_text:	equ v_ost_all+(sizeof_ost*1) ; continue screen text
 	v_ost_cont_oval:	equ v_ost_all+(sizeof_ost*2) ; continue screen oval
 	v_ost_cont_minisonic:	equ v_ost_all+(sizeof_ost*3) ; continue screen mini Sonics
+	; Level - no interaction with Sonic
 	v_ost_hud:		equ v_ost_all+(sizeof_ost*1) ; HUD
 	v_ost_titlecard1:	equ v_ost_all+(sizeof_ost*2) ; title card - zone name
 	v_ost_titlecard2:	equ v_ost_all+(sizeof_ost*3) ; title card - "zone"
@@ -54,12 +59,14 @@ v_ost_all:		equ $FFFFD000 ; object variable space ($40 bytes per object) ($2000 
 	v_ost_gotthrough7:	equ v_ost_all+(sizeof_ost*$1D) ; got through act - oval
 	v_ost_watersurface1:	equ v_ost_all+(sizeof_ost*$1E) ; LZ water surface
 	v_ost_watersurface2:	equ v_ost_all+(sizeof_ost*$1F) ; LZ water surface
+	; Special stage results
 	v_ost_ssresult1:	equ v_ost_all+(sizeof_ost*$17) ; special stage results screen
 	v_ost_ssresult2:	equ v_ost_all+(sizeof_ost*$18) ; special stage results screen
 	v_ost_ssresult3:	equ v_ost_all+(sizeof_ost*$19) ; special stage results screen
 	v_ost_ssresult4:	equ v_ost_all+(sizeof_ost*$1A) ; special stage results screen
 	v_ost_ssresult5:	equ v_ost_all+(sizeof_ost*$1B) ; special stage results screen
 	v_ost_ssres_emeralds:	equ v_ost_all+(sizeof_ost*$20) ; special stage results screen chaos emeralds
+	; Level - can interact with Sonic
 	v_ost_level_obj:	equ v_ost_all+(sizeof_ost*$20) ; level object variable space ($1800 bytes)
 
 v_snddriver_ram:	equ $FFFFF000 ; start of RAM for the sound driver data ($5C0 bytes)

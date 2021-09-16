@@ -2,6 +2,7 @@
 ; Object 8B - Eggman on "TRY AGAIN" and "END"	screens
 ; ---------------------------------------------------------------------------
 
+EndEggman:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	EEgg_Index(pc,d0.w),d1
@@ -25,14 +26,14 @@ EEgg_Main:	; Routine 0
 		move.w	#tile_Nem_TryAgain,ost_tile(a0)
 		move.b	#render_abs,ost_render(a0)
 		move.b	#2,ost_priority(a0)
-		move.b	#2,ost_anim(a0)	; use "END" animation
+		move.b	#id_ani_eegg_end,ost_anim(a0) ; use "END" animation
 		cmpi.b	#6,(v_emeralds).w ; do you have all 6 emeralds?
 		beq.s	EEgg_Animate	; if yes, branch
 
 		move.b	#id_CreditsText,(v_ost_tryagain).w ; load credits object
-		move.w	#9,(v_creditsnum).w ; use "TRY AGAIN" text
+		move.w	#id_frame_cred_tryagain,(v_creditsnum).w ; use "TRY AGAIN" text
 		move.b	#id_TryChaos,(v_ost_tryag_emeralds).w ; load emeralds object on "TRY AGAIN" screen
-		move.b	#0,ost_anim(a0)	; use "TRY AGAIN" animation
+		move.b	#id_ani_eegg_juggle1,ost_anim(a0) ; use "TRY AGAIN" animation
 
 EEgg_Animate:	; Routine 2
 		lea	(Ani_EEgg).l,a1

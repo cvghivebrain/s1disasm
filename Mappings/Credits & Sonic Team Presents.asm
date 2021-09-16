@@ -1,20 +1,21 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - "SONIC TEAM	PRESENTS" and credits
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @staff
-		ptr @gameplan
-		ptr @program
-		ptr @character
-		ptr @design
-		ptr @soundproduce
-		ptr @soundprogram
-		ptr @thanks
-		ptr @presentedby
-		ptr @tryagain
-		ptr @sonicteam
+Map_Cred:	index *
+		ptr frame_cred_staff
+		ptr frame_cred_gameplan
+		ptr frame_cred_program
+		ptr frame_cred_character
+		ptr frame_cred_design
+		ptr frame_cred_soundproduce
+		ptr frame_cred_soundprogram
+		ptr frame_cred_thanks
+		ptr frame_cred_presentedby
+		ptr frame_cred_tryagain
+		ptr frame_cred_sonicteam
 		
-@staff:		spritemap			; SONIC TEAM STAFF
+frame_cred_staff:
+		spritemap			; SONIC TEAM STAFF
 		piece	-$78, -8, 2x2, $2E
 		piece	-$68, -8, 2x2, $26
 		piece	-$58, -8, 2x2, $1A
@@ -31,7 +32,8 @@
 		piece	$68, -8, 2x2, $5C
 		endsprite
 		
-@gameplan:	spritemap			; GAME PLAN CAROL YAS
+frame_cred_gameplan:
+		spritemap			; GAME PLAN CAROL YAS
 		piece	-$80, -$28, 2x2, 0
 		piece	-$70, -$28, 2x2, 4
 		piece	-$60, -$28, 3x2, 8
@@ -50,7 +52,8 @@
 		piece	$44, 8, 2x2, $2E
 		endsprite
 		
-@program:	spritemap			; PROGRAM YU 2
+frame_cred_program:
+		spritemap			; PROGRAM YU 2
 		piece	-$80, -$28, 2x2, $12
 		piece	-$70, -$28, 2x2, $22
 		piece	-$60, -$28, 2x2, $26
@@ -63,7 +66,8 @@
 		piece	8, 8, 2x2, $36
 		endsprite
 		
-@character:	spritemap			; CHARACTER DESIGN BIGISLAND
+frame_cred_character:
+		spritemap			; CHARACTER DESIGN BIGISLAND
 		piece	-$78, -$28, 2x2, $1E
 		piece	-$68, -$28, 2x2, $3A
 		piece	-$58, -$28, 2x2, 4
@@ -90,7 +94,8 @@
 		piece	$30, 8, 2x2, $42
 		endsprite
 		
-@design:	spritemap			; DESIGN JINYA	PHENIX RIE
+frame_cred_design:
+		spritemap			; DESIGN JINYA	PHENIX RIE
 		piece	-$60, -$30, 2x2, $42
 		piece	-$50, -$30, 2x2, $E
 		piece	-$40, -$30, 2x2, $2E
@@ -113,7 +118,8 @@
 		piece	$48, $20, 2x2, $E
 		endsprite
 		
-@soundproduce:	spritemap			; SOUND PRODUCE MASATO	NAKAMURA
+frame_cred_soundproduce:
+		spritemap			; SOUND PRODUCE MASATO	NAKAMURA
 		piece	-$68, -$28, 2x2, $2E
 		piece	-$58, -$28, 2x2, $26
 		piece	-$48, -$28, 2x2, $32
@@ -142,7 +148,8 @@
 		piece	$6C, 8, 2x2, 4
 		endsprite
 		
-@soundprogram:	spritemap			; SOUND PROGRAM JIMITA	MACKY
+frame_cred_soundprogram:
+		spritemap			; SOUND PROGRAM JIMITA	MACKY
 		piece	-$68, -$30, 2x2, $2E
 		piece	-$58, -$30, 2x2, $26
 		piece	-$48, -$30, 2x2, $32
@@ -168,7 +175,8 @@
 		piece	$14, $20, 2x2, $2A
 		endsprite
 		
-@thanks:	spritemap			; SPECIAL THANKS FUJIO	MINEGISHI PAPA
+frame_cred_thanks:
+		spritemap			; SPECIAL THANKS FUJIO	MINEGISHI PAPA
 		piece	-$80, -$28, 2x2, $2E
 		piece	-$70, -$28, 2x2, $12
 		piece	-$60, -$28, 2x2, $E
@@ -202,7 +210,8 @@
 		piece	$28, $20, 2x2, 4
 		endsprite
 		
-@presentedby:	spritemap			; PRESENTED BY SEGA
+frame_cred_presentedby:
+		spritemap			; PRESENTED BY SEGA
 		piece	-$80, -8, 2x2, $12
 		piece	-$70, -8, 2x2, $22
 		piece	-$60, -8, 2x2, $E
@@ -220,7 +229,8 @@
 		piece	$70, -8, 2x2, 4
 		endsprite
 		
-@tryagain:	spritemap			; TRY AGAIN
+frame_cred_tryagain:
+		spritemap			; TRY AGAIN
 		piece	-$40, $30, 2x2, $3E
 		piece	-$30, $30, 2x2, $22
 		piece	-$20, $30, 2x2, $2A
@@ -231,7 +241,8 @@
 		piece	$30, $30, 2x2, $1A
 		endsprite
 		
-@sonicteam:	spritemap			; SONIC TEAM PRESENTS
+frame_cred_sonicteam:
+		spritemap			; SONIC TEAM PRESENTS
 		piece	-$4C, -$18, 2x2, $2E
 		piece	-$3C, -$18, 2x2, $26
 		piece	-$2C, -$18, 2x2, $1A

@@ -4212,11 +4212,10 @@ Cont_GotoLevel:
 		rts	
 ; ===========================================================================
 
-ContScrItem:	include "Objects\Continue Screen Items.asm"
-ContSonic:	include "Objects\Continue Screen Sonic.asm"
-
-AniScript_CSon:	include "Animations\Continue Screen Sonic.asm"
-Map_ContScr:	include "Mappings\Continue Screen.asm"
+		include "Objects\Continue Screen Items.asm" ; ContScrItem
+		include "Objects\Continue Screen Sonic.asm" ; ContSonic
+		include "Animations\Continue Screen Sonic.asm" ; Ani_CSon
+		include "Mappings\Continue Screen.asm" ; Map_ContScr
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
@@ -4448,16 +4447,15 @@ End_MoveSonExit:
 ; End of function End_MoveSonic
 
 ; ===========================================================================
+		include "Objects\Ending Sonic.asm" ; EndSonic
+		include "Animations\Ending Sonic.asm" ; Ani_ESon
 
-EndSonic:	include "Objects\Ending Sonic.asm"
-AniScript_ESon:	include "Animations\Ending Sonic.asm"
-
-EndChaos:	include "Objects\Ending Chaos Emeralds.asm"
-EndSTH:		include "Objects\Ending StH Text.asm"
+		include "Objects\Ending Chaos Emeralds.asm" ; EndChaos
+		include "Objects\Ending StH Text.asm" ; EndSTH
 		
-Map_ESon:	include "Mappings\Ending Sonic.asm"
-Map_ECha:	include "Mappings\Ending Chaos Emeralds.asm"
-Map_ESth:	include "Mappings\Ending StH Text.asm"
+		include "Mappings\Ending Sonic.asm" ; Map_ESon
+		include "Mappings\Ending Chaos Emeralds.asm" ; Map_ECha
+		include "Mappings\Ending StH Text.asm" ; Map_ESth
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
@@ -4655,12 +4653,12 @@ TryAg_Exit:
 
 ; ===========================================================================
 
-EndEggman:	include "Objects\Ending Eggman Try Again.asm"
-Ani_EEgg:	include "Animations\Ending Eggman Try Again.asm"
+		include "Objects\Ending Eggman Try Again.asm" ; EndEggman
+		include "Animations\Ending Eggman Try Again.asm" ; Ani_EEgg
 
 TryChaos:	include "Objects\Ending Chaos Emeralds Try Again.asm"
 
-Map_EEgg:	include "Mappings\Ending Eggman Try Again.asm"
+		include "Mappings\Ending Eggman Try Again.asm" ; Map_EEgg
 
 ; ---------------------------------------------------------------------------
 ; Ending sequence demos
@@ -8388,7 +8386,7 @@ Ledge_SlopeData:
 		even
 
 Map_Ledge:	include "Mappings\GHZ Collapsing Ledge.asm"
-Map_CFlo:	include "Mappings\Collapsing Floors & Blocks.asm"
+		include "Mappings\MZ, SLZ & SBZ Collapsing Floors.asm" ; Map_CFlo
 
 		include "Objects\GHZ Bridge Stump & SLZ Fireball Launcher.asm" ; Scenery
 Map_Scen:	include "Mappings\SLZ Fireball Launcher.asm"
@@ -8402,8 +8400,6 @@ Map_ADoor:	include "Mappings\SBZ Door.asm"
 
 		include "Objects\GHZ Walls (2).asm"
 
-; ===========================================================================
-
 		include "Objects\Ball Hog.asm" ; BallHog
 		include "Objects\Ball Hog Cannonball.asm" ; Cannonball
 
@@ -8412,9 +8408,8 @@ Map_ADoor:	include "Mappings\SBZ Door.asm"
 		include "Objects\Explosions.asm" ; ExplosionItem & ExplosionBomb
 		include "Animations\Ball Hog.asm" ; Ani_Hog
 		include "Mappings\Ball Hog.asm" ; Map_Hog
-Map_MisDissolve:include "Mappings\Buzz Bomber Missile Vanishing.asm"
-Map_ExplodeItem:include "Mappings\Explosions.asm"
-;Map_ExplodeBomb: - see Mappings\Explosions.asm
+		include "Mappings\Buzz Bomber Missile Vanishing.asm" ; Map_MisDissolve
+		include "Mappings\Explosions.asm" ; Map_ExplodeItem & Map_ExplodeBomb
 
 		include "Objects\Animals.asm" ; Animals
 		include "Objects\Points.asm" ; Points
@@ -8424,15 +8419,15 @@ Map_Animal3:	include "Mappings\Animals 3.asm"
 Map_Points:	include "Mappings\Points.asm"
 
 		include "Objects\Crabmeat.asm" ; Crabmeat
-Ani_Crab:	include "Animations\Crabmeat.asm"
-Map_Crab:	include "Mappings\Crabmeat.asm"
+		include "Animations\Crabmeat.asm" ; Ani_Crab
+		include "Mappings\Crabmeat.asm" ; Map_Crab
 
 		include "Objects\Buzz Bomber.asm" ; BuzzBomber
 		include "Objects\Buzz Bomber Missile.asm" ; Missile
-Ani_Buzz:	include "Animations\Buzz Bomber.asm"
-Ani_Missile:	include "Animations\Buzz Bomber Missile.asm"
-Map_Buzz:	include "Mappings\Buzz Bomber.asm"
-Map_Missile:	include "Mappings\Buzz Bomber Missile.asm"
+		include "Animations\Buzz Bomber.asm" ; Ani_Buzz
+		include "Animations\Buzz Bomber Missile.asm" ; Ani_Missile
+		include "Mappings\Buzz Bomber.asm" ; Map_Buzz
+		include "Mappings\Buzz Bomber Missile.asm" ; Map_Missile
 
 		include "Objects\Rings.asm" ; Rings
 		include "Objects\_CollectRing.asm"
@@ -8463,8 +8458,8 @@ Map_PSB:	include "Mappings\Title Screen Press Start & TM.asm"
 Map_TSon:	include "Mappings\Title Screen Sonic.asm"
 
 		include "Objects\Chopper.asm" ; Chopper
-Ani_Chop:	include "Animations\Chopper.asm"
-Map_Chop:	include "Mappings\Chopper.asm"
+		include "Animations\Chopper.asm" ; Ani_Chop
+		include "Mappings\Chopper.asm" ; Map_Chop
 
 		include "Objects\Jaws.asm" ; Jaws
 Ani_Jaws:	include "Animations\Jaws.asm"
@@ -9452,9 +9447,9 @@ Map_Gird:	include "Mappings\SBZ Girder Block.asm"
 
 Teleport:	include "Objects\SBZ Teleporter.asm"
 
-Caterkiller:	include "Objects\Caterkiller.asm"
-Ani_Cat:	include "Animations\Caterkiller.asm"
-Map_Cat:	include "Mappings\Caterkiller.asm"
+		include "Objects\Caterkiller.asm" ; Caterkiller
+		include "Animations\Caterkiller.asm" ; Ani_Cat
+		include "Mappings\Caterkiller.asm" ; Map_Cat
 
 Lamppost:	include "Objects\Lamppost.asm"		
 Map_Lamp:	include "Mappings\Lamppost.asm"
@@ -9462,8 +9457,8 @@ Map_Lamp:	include "Mappings\Lamppost.asm"
 HiddenBonus:	include "Objects\Hidden Bonus Points.asm"
 Map_Bonus:	include "Mappings\Hidden Bonus Points.asm"
 
-CreditsText:	include "Objects\Credits & Sonic Team Presents.asm"
-Map_Cred:	include "Mappings\Credits & Sonic Team Presents.asm"
+		include "Objects\Credits & Sonic Team Presents.asm" ; CreditsText
+		include "Mappings\Credits & Sonic Team Presents.asm" ; Map_Cred
 
 BossGreenHill:	include "Objects\GHZ Boss, BossDefeated & BossMove.asm"
 BossBall:	include "Objects\GHZ Boss Ball.asm"

@@ -1,12 +1,12 @@
 ; ---------------------------------------------------------------------------
 ; Animation script - Buzz Bomber enemy
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @fly1
-		ptr @fly2
-		ptr @fires
+Ani_Buzz:	index *
+		ptr ani_buzz_fly1
+		ptr ani_buzz_fly2
+		ptr ani_buzz_fire
 		
-@fly1:		dc.b 1,	0, 1, afEnd
-@fly2:		dc.b 1,	2, 3, afEnd
-@fires:		dc.b 1,	4, 5, afEnd
+ani_buzz_fly1:	dc.b 1,	id_frame_buzz_fly1, id_frame_buzz_fly2, afEnd
+ani_buzz_fly2:	dc.b 1,	id_frame_buzz_fly3, id_frame_buzz_fly4, afEnd
+ani_buzz_fire:	dc.b 1,	id_frame_buzz_fire1, id_frame_buzz_fire2, afEnd
 		even

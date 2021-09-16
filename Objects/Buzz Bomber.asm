@@ -48,8 +48,8 @@ Buzz_Action:	; Routine 2
 		addq.b	#2,ost_routine2(a0)
 		move.w	#127,ost_buzz_wait_time(a0) ; set time delay to just over 2 seconds
 		move.w	#$400,ost_x_vel(a0) ; move Buzz Bomber to the right
-		move.b	#1,ost_anim(a0)	; use "flying" animation
-		btst	#0,ost_status(a0) ; is Buzz Bomber facing left?
+		move.b	#id_ani_buzz_fly2,ost_anim(a0) ; use "flying" animation
+		btst	#status_xflip_bit,ost_status(a0) ; is Buzz Bomber facing left?
 		bne.s	@noflip		; if not, branch
 		neg.w	ost_x_vel(a0)	; move Buzz Bomber to the left
 
@@ -79,7 +79,7 @@ Buzz_Action:	; Routine 2
 		move.l	a0,ost_missile_parent(a1)
 		move.b	#1,ost_buzz_mode(a0) ; set to "already fired" to prevent refiring
 		move.w	#59,ost_buzz_wait_time(a0)
-		move.b	#2,ost_anim(a0)	; use "firing" animation
+		move.b	#id_ani_buzz_fire,ost_anim(a0) ; use "firing" animation
 
 	@fail:
 		rts	
@@ -114,7 +114,7 @@ Buzz_Action:	; Routine 2
 	@stop:
 		subq.b	#2,ost_routine2(a0)
 		move.w	#0,ost_x_vel(a0) ; stop Buzz Bomber moving
-		move.b	#0,ost_anim(a0)	; use "hovering" animation
+		move.b	#id_ani_buzz_fly1,ost_anim(a0) ; use "hovering" animation
 
 @keepgoing:
 		rts	

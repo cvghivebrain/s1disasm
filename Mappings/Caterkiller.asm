@@ -1,125 +1,149 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Caterkiller	enemy (MZ, SBZ)
 ; ---------------------------------------------------------------------------
-		index *
-		ptr byte_16D9E
-		ptr byte_16DA4
-		ptr byte_16DAA
-		ptr byte_16DB0
-		ptr byte_16DB6
-		ptr byte_16DBC
-		ptr byte_16DC2
-		ptr byte_16DC8
-		ptr byte_16DCE
-		ptr byte_16DD4
-		ptr byte_16DDA
-		ptr byte_16DE0
-		ptr byte_16DE6
-		ptr byte_16DEC
-		ptr byte_16DF2
-		ptr byte_16DF8
-		ptr byte_16DFE
-		ptr byte_16E04
-		ptr byte_16E0A
-		ptr byte_16E10
-		ptr byte_16E16
-		ptr byte_16E1C
-		ptr byte_16E22
-		ptr byte_16E28
+Map_Cat:	index *
+		ptr frame_cat_head1	; 0
+		ptr frame_cat_head2
+		ptr frame_cat_head3
+		ptr frame_cat_head4
+		ptr frame_cat_head5
+		ptr frame_cat_head6
+		ptr frame_cat_head7
+		ptr frame_cat_head8
+		ptr frame_cat_body1	; 8
+		ptr frame_cat_body2
+		ptr frame_cat_body3
+		ptr frame_cat_body4
+		ptr frame_cat_body5
+		ptr frame_cat_body6
+		ptr frame_cat_body7
+		ptr frame_cat_body8
+		ptr frame_cat_mouth1	; $10
+		ptr frame_cat_mouth2
+		ptr frame_cat_mouth3
+		ptr frame_cat_mouth4
+		ptr frame_cat_mouth5
+		ptr frame_cat_mouth6
+		ptr frame_cat_mouth7
+		ptr frame_cat_mouth8
 		
-byte_16D9E:	spritemap
+frame_cat_head1:			; caterkiller head, mouth closed
+		spritemap
 		piece	-8, -$E, 2x3, 0
 		endsprite
 		
-byte_16DA4:	spritemap
+frame_cat_head2:
+		spritemap
 		piece	-8, -$F, 2x3, 0
 		endsprite
 		
-byte_16DAA:	spritemap
+frame_cat_head3:
+		spritemap
 		piece	-8, -$10, 2x3, 0
 		endsprite
 		
-byte_16DB0:	spritemap
+frame_cat_head4:
+		spritemap
 		piece	-8, -$11, 2x3, 0
 		endsprite
 
-byte_16DB6:	spritemap
+frame_cat_head5:
+		spritemap
 		piece	-8, -$12, 2x3, 0
 		endsprite
 		
-byte_16DBC:	spritemap
+frame_cat_head6:
+		spritemap
 		piece	-8, -$13, 2x3, 0
 		endsprite
 		
-byte_16DC2:	spritemap
+frame_cat_head7:
+		spritemap
 		piece	-8, -$14, 2x3, 0
 		endsprite
 		
-byte_16DC8:	spritemap
+frame_cat_head8:
+		spritemap
 		piece	-8, -$15, 2x3, 0
 		endsprite
 		
-byte_16DCE:	spritemap
+frame_cat_body1:			; caterkiller body
+		spritemap
 		piece	-8, -8, 2x2, $C
 		endsprite
 		
-byte_16DD4:	spritemap
+frame_cat_body2:
+		spritemap
 		piece	-8, -9, 2x2, $C
 		endsprite
 		
-byte_16DDA:	spritemap
+frame_cat_body3:
+		spritemap
 		piece	-8, -$A, 2x2, $C
 		endsprite
 		
-byte_16DE0:	spritemap
+frame_cat_body4:
+		spritemap
 		piece	-8, -$B, 2x2, $C
 		endsprite
 		
-byte_16DE6:	spritemap
+frame_cat_body5:
+		spritemap
 		piece	-8, -$C, 2x2, $C
 		endsprite
 		
-byte_16DEC:	spritemap
+frame_cat_body6:
+		spritemap
 		piece	-8, -$D, 2x2, $C
 		endsprite
 		
-byte_16DF2:	spritemap
+frame_cat_body7:
+		spritemap
 		piece	-8, -$E, 2x2, $C
 		endsprite
 		
-byte_16DF8:	spritemap
+frame_cat_body8:
+		spritemap
 		piece	-8, -$F, 2x2, $C
 		endsprite
 		
-byte_16DFE:	spritemap
+frame_cat_mouth1:			; caterkiller head, mouth open
+		spritemap
 		piece	-8, -$E, 2x3, 6
 		endsprite
 		
-byte_16E04:	spritemap
+frame_cat_mouth2:
+		spritemap
 		piece	-8, -$F, 2x3, 6
 		endsprite
 		
-byte_16E0A:	spritemap
+frame_cat_mouth3:
+		spritemap
 		piece	-8, -$10, 2x3, 6
 		endsprite
 		
-byte_16E10:	spritemap
+frame_cat_mouth4:
+		spritemap
 		piece	-8, -$11, 2x3, 6
 		endsprite
 		
-byte_16E16:	spritemap
+frame_cat_mouth5:
+		spritemap
 		piece	-8, -$12, 2x3, 6
 		endsprite
 		
-byte_16E1C:	spritemap
+frame_cat_mouth6:
+		spritemap
 		piece	-8, -$13, 2x3, 6
 		endsprite
 		
-byte_16E22:	spritemap
+frame_cat_mouth7:
+		spritemap
 		piece	-8, -$14, 2x3, 6
 		endsprite
 		
-byte_16E28:	spritemap
+frame_cat_mouth8:
+		spritemap
 		piece	-8, -$15, 2x3, 6
 		endsprite
 		even

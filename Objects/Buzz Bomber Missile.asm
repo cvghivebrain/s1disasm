@@ -20,7 +20,7 @@ ost_missile_parent:	equ $3C	; address of OST of parent object (4 bytes)
 ; ===========================================================================
 
 Msl_Main:	; Routine 0
-		subq.w	#1,$32(a0)
+		subq.w	#1,ost_missile_wait_time(a0)
 		bpl.s	Msl_ChkCancel
 		addq.b	#2,ost_routine(a0)
 		move.l	#Map_Missile,ost_mappings(a0)
@@ -34,7 +34,7 @@ Msl_Main:	; Routine 0
 
 		move.b	#id_Msl_FromNewt,ost_routine(a0) ; run "Msl_FromNewt" routine
 		move.b	#$87,ost_col_type(a0)
-		move.b	#1,ost_anim(a0)
+		move.b	#id_ani_buzz_missile,ost_anim(a0)
 		bra.s	Msl_Animate2
 ; ===========================================================================
 
@@ -64,7 +64,7 @@ Msl_FromBuzz:	; Routine 4
 		btst	#status_onscreen_bit,ost_status(a0)
 		bne.s	@explode
 		move.b	#$87,ost_col_type(a0)
-		move.b	#1,ost_anim(a0)
+		move.b	#id_ani_buzz_missile,ost_anim(a0)
 		bsr.w	SpeedToPos
 		lea	(Ani_Missile).l,a1
 		bsr.w	AnimateSprite

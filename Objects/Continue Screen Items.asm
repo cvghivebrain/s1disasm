@@ -2,6 +2,7 @@
 ; Object 80 - Continue screen elements
 ; ---------------------------------------------------------------------------
 
+ContScrItem:
 		moveq	#0,d0
 		move.b	$24(a0),d0
 		move.w	CSI_Index(pc,d0.w),d1
@@ -63,7 +64,7 @@ CSI_MiniSonicLoop:
 
 	CSI_Even:
 		move.w	#$D0,ost_y_screen(a1)
-		move.b	#6,ost_frame(a1)
+		move.b	#id_frame_cont_mini1_6,ost_frame(a1)
 		move.b	#id_CSI_ChkDel,ost_routine(a1)
 		move.l	#Map_ContScr,ost_mappings(a1)
 		move.w	#$551+tile_hi,ost_tile(a1)

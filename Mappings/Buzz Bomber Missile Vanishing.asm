@@ -1,6 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - buzz bomber missile vanishing
 ; ---------------------------------------------------------------------------
+Map_MisDissolve:
 		index *
 		ptr byte_8EAE
 		ptr byte_8EB4
