@@ -7,13 +7,13 @@
 
 ; ===========================================================================
 
-	include "Mega Drive.asm"
-	include "Macros - More CPUs.asm"
-	include "Macros - 68k Extended.asm"
-	include "Constants.asm"
-	include "RAM Addresses.asm"
-	include "Macros - General.asm"
-	include "Macros - Sonic.asm"
+		include "Mega Drive.asm"
+		include "Macros - More CPUs.asm"
+		include "Macros - 68k Extended.asm"
+		include "Constants.asm"
+		include "RAM Addresses.asm"
+		include "Macros - General.asm"
+		include "Macros - Sonic.asm"
 
 		cpu	68000
 
@@ -8288,7 +8288,7 @@ Swing_Solid:
 		include "Objects\_ExitPlatform.asm"
 
 		include "Objects\GHZ Bridge (3).asm"
-Map_Bri:	include "Mappings\GHZ Bridge.asm"
+		include "Mappings\GHZ Bridge.asm" ; Map_Bri
 
 		include "Objects\GHZ, MZ & SLZ Swinging Platforms, SBZ Ball on Chain (1).asm" ; SwingingPlatform
 		
@@ -8316,9 +8316,9 @@ loc_7B78:
 Obj48_Move:
 		tst.b	ost_sonic_on_obj(a0)
 		bne.s	loc_7B9C
-		move.w	$3E(a0),d0
+		move.w	ost_ball_angle(a0),d0
 		addq.w	#8,d0
-		move.w	d0,$3E(a0)
+		move.w	d0,ost_ball_angle(a0)
 		add.w	d0,ost_angle(a0)
 		cmpi.w	#$200,d0
 		bne.s	loc_7BB6
@@ -8327,9 +8327,9 @@ Obj48_Move:
 ; ===========================================================================
 
 loc_7B9C:
-		move.w	$3E(a0),d0
+		move.w	ost_ball_angle(a0),d0
 		subq.w	#8,d0
-		move.w	d0,$3E(a0)
+		move.w	d0,ost_ball_angle(a0)
 		add.w	d0,ost_angle(a0)
 		cmpi.w	#-$200,d0
 		bne.s	loc_7BB6
@@ -8341,7 +8341,7 @@ loc_7BB6:
 
 		include "Objects\GHZ, MZ & SLZ Swinging Platforms, SBZ Ball on Chain (2).asm"
 		
-Map_Swing_GHZ:	include "Mappings\GHZ & MZ Swinging Platforms.asm"
+		include "Mappings\GHZ & MZ Swinging Platforms.asm" ; Map_Swing_GHZ
 Map_Swing_SLZ:	include "Mappings\SLZ Swinging Platforms.asm"
 
 		include "Objects\GHZ Spiked Helix Pole.asm" ; Helix
@@ -8361,7 +8361,7 @@ Map_Plat_SLZ:	include "Mappings\SLZ Platforms.asm"
 Obj19:
 		rts	
 		
-Map_GBall:	include "Mappings\GHZ Giant Ball.asm"
+		include "Mappings\GHZ Giant Ball.asm" ; Map_GBall
 
 		include "Objects\GHZ Collapsing Ledge (1).asm" ; CollapseLedge
 		include "Objects\MZ, SLZ & SBZ Collapsing Floors.asm" ; CollapseFloor
@@ -8385,7 +8385,7 @@ Ledge_SlopeData:
 		incbin	"misc\GHZ Collapsing Ledge Heightmap.bin"
 		even
 
-Map_Ledge:	include "Mappings\GHZ Collapsing Ledge.asm"
+		include "Mappings\GHZ Collapsing Ledge.asm" ; Map_Ledge
 		include "Mappings\MZ, SLZ & SBZ Collapsing Floors.asm" ; Map_CFlo
 
 		include "Objects\GHZ Bridge Stump & SLZ Fireball Launcher.asm" ; Scenery
@@ -8473,7 +8473,7 @@ LargeGrass:	include "Objects\MZ Grass Platforms.asm"
 GrassFire:	include "Objects\MZ Burning Grass.asm"
 Ani_GFire:	include "Animations\MZ Burning Grass.asm"
 Map_LGrass:	include "Mappings\MZ Grass Platforms.asm"
-Map_Fire:	include "Mappings\Fireballs.asm"
+		include "Mappings\Fireballs.asm" ; Map_Fire
 
 GlassBlock:	include "Objects\MZ Green Glass Blocks.asm"
 Map_Glass:	include "Mappings\MZ Green Glass Blocks.asm"
@@ -8490,13 +8490,13 @@ PushBlock:	include "Objects\MZ & LZ Pushable Blocks.asm"
 Map_Push:	include "Mappings\MZ & LZ Pushable Blocks.asm"
 
 TitleCard:	include "Objects\Title Cards.asm"
-GameOverCard:	include "Objects\Game Over & Time Over.asm"
+		include "Objects\Game Over & Time Over.asm" ; GameOverCard
 GotThroughCard:	include "Objects\Sonic Got Through Title Card.asm"
 
 SSResult:	include "Objects\Special Stage Results.asm"
 SSRChaos:	include "Objects\Special Stage Results Chaos Emeralds.asm"
 Map_Card:	include "Mappings\Title Cards.asm"
-Map_Over:	include "Mappings\Game Over & Time Over.asm"
+		include "Mappings\Game Over & Time Over.asm" ; Map_Over
 Map_Got:	include "Mappings\Title Cards Sonic Has Passed.asm"
 Map_SSR:	include "Mappings\Special Stage Results.asm"
 Map_SSRC:	include "Mappings\Special Stage Results Chaos Emeralds.asm"
@@ -8508,8 +8508,8 @@ PurpleRock:	include "Objects\GHZ Purple Rock.asm"
 WaterSound:	include "Objects\GHZ Waterfall Sound.asm"
 Map_PRock:	include "Mappings\GHZ Purple Rock.asm"
 
-SmashWall:	include "Objects\GHZ & SLZ Smashable Walls & SmashObject.asm"
-Map_Smash:	include "Mappings\GHZ & SLZ Smashable Walls.asm"
+		include "Objects\GHZ & SLZ Smashable Walls & SmashObject.asm" ; SmashWall
+		include "Mappings\GHZ & SLZ Smashable Walls.asm" ; Map_Smash
 
 ExecuteObjects:	include "Includes\ExecuteObjects & Object Pointers.asm"
 
@@ -8819,8 +8819,8 @@ Map_Roll:	include "Mappings\Roller.asm"
 Map_Edge:	include "Mappings\GHZ Walls.asm"
 
 LavaMaker:	include "Objects\MZ & SLZ Fireball Launchers.asm"
-LavaBall:	include "Objects\Fireballs.asm"
-Ani_Fire:	include "Animations\Fireballs.asm"
+		include "Objects\Fireballs.asm" ; LavaBall
+		include "Animations\Fireballs.asm" ; Ani_Fire
 
 Flamethrower:	include "Objects\SBZ Flamethrower.asm"
 Ani_Flame:	include "Animations\SBZ Flamethrower.asm"
@@ -9461,7 +9461,7 @@ Map_Bonus:	include "Mappings\Hidden Bonus Points.asm"
 		include "Mappings\Credits & Sonic Team Presents.asm" ; Map_Cred
 
 BossGreenHill:	include "Objects\GHZ Boss, BossDefeated & BossMove.asm"
-BossBall:	include "Objects\GHZ Boss Ball.asm"
+		include "Objects\GHZ Boss Ball.asm" ; BossBall
 		include "Animations\Bosses.asm" ; Ani_Eggman
 		include "Mappings\Bosses.asm" ; Map_Eggman
 		include "Mappings\Boss Extras.asm" ; Map_BossItems
@@ -9485,21 +9485,19 @@ Map_SEgg:	include "Mappings\SBZ2 Eggman.asm"
 FalseFloor:	include "Objects\SBZ2 Blocks That Eggman Breaks.asm"
 Map_FFloor:	include "Mappings\SBZ2 Blocks That Eggman Breaks.asm"
 
-;BossFinal:
-		include "Objects\FZ Boss.asm"
-Ani_FZEgg:	include "Animations\FZ Eggman.asm"
-Map_FZDamaged:	include "Mappings\FZ Eggman in Damaged Ship.asm"
-Map_FZLegs:	include "Mappings\FZ Eggman Ship Legs.asm"
+		include "Objects\FZ Boss.asm" ; BossFinal
+		include "Animations\FZ Eggman.asm" ; Ani_FZEgg
+		include "Mappings\FZ Eggman in Damaged Ship.asm" ; Map_FZDamaged
+		include "Mappings\FZ Eggman Ship Legs.asm" ; Map_FZLegs
 
-;EggmanCylinder:
-		include "Objects\FZ Cylinders.asm"
-Map_EggCyl:	include "Mappings\FZ Cylinders.asm"
+		include "Objects\FZ Cylinders.asm" ; EggmanCylinder
+		include "Mappings\FZ Cylinders.asm" ; Map_EggCyl
 
-BossPlasma:	include "Objects\FZ Plasma Balls.asm"
-Ani_PLaunch:	include "Animations\FZ Plasma Launcher.asm"
-Map_PLaunch:	include "Mappings\FZ Plasma Launcher.asm"
-Ani_Plasma:	include "Animations\FZ Plasma Balls.asm"
-Map_Plasma:	include "Mappings\FZ Plasma Balls.asm"
+		include "Objects\FZ Plasma Balls.asm" ; BossPlasma
+		include "Animations\FZ Plasma Launcher.asm" ; Ani_PLaunch
+		include "Mappings\FZ Plasma Launcher.asm" ; Map_PLaunch
+		include "Animations\FZ Plasma Balls.asm" ; Ani_Plasma
+		include "Mappings\FZ Plasma Balls.asm" ; Map_Plasma
 
 Prison:		include "Objects\Prison Capsule.asm"
 Ani_Pri:	include "Animations\Prison Capsule.asm"

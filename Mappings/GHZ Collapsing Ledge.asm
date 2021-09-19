@@ -1,13 +1,14 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - GHZ	collapsing ledge
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @left
-		ptr @right
-		ptr @leftsmash
-		ptr @rightsmash
+Map_Ledge:	index *
+		ptr frame_ledge_left
+		ptr frame_ledge_right
+		ptr frame_ledge_leftsmash
+		ptr frame_ledge_rightsmash
 		
-@left:		spritemap		; ledge facing left
+frame_ledge_left:
+		spritemap		; ledge facing left
 		piece	$10, -$38, 4x3, $57
 		piece	-$10, -$30, 4x2, $63
 		piece	$10, -$20, 4x2, $6B
@@ -26,7 +27,8 @@
 		piece	0, $10, 2x2, $B7
 		endsprite
 		
-@right:		spritemap		; ledge facing right
+frame_ledge_right:
+		spritemap		; ledge facing right
 		piece	$10, -$38, 4x3, $57
 		piece	-$10, -$30, 4x2, $63
 		piece	$10, -$20, 4x2, $6B
@@ -45,7 +47,8 @@
 		piece	0, $10, 2x2, $B7
 		endsprite
 		
-@leftsmash:	spritemap		; ledge facing left in pieces
+frame_ledge_leftsmash:
+		spritemap		; ledge facing left in pieces
 		piece	$20, -$38, 2x3, $5D
 		piece	$10, -$38, 2x3, $57
 		piece	0, -$30, 2x2, $67
@@ -73,7 +76,8 @@
 		piece	0, $10, 2x2, $B7
 		endsprite
 		
-@rightsmash:	spritemap		; ledge facing right in pieces
+frame_ledge_rightsmash:
+		spritemap		; ledge facing right in pieces
 		piece	$20, -$38, 2x3, $5D
 		piece	$10, -$38, 2x3, $57
 		piece	0, -$30, 2x2, $67

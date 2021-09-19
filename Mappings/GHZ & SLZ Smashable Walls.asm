@@ -1,12 +1,13 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - smashable walls (GHZ, SLZ)
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @left
-		ptr @middle
-		ptr @right
+Map_Smash:	index *
+		ptr frame_smash_left
+		ptr frame_smash_middle
+		ptr frame_smash_right
 		
-@left:		spritemap
+frame_smash_left:
+		spritemap
 		piece	-$10, -$20, 2x2, 0
 		piece	-$10, -$10, 2x2, 0
 		piece	-$10, 0, 2x2, 0
@@ -17,7 +18,8 @@
 		piece	0, $10, 2x2, 4
 		endsprite
 		
-@middle:	spritemap
+frame_smash_middle:
+		spritemap
 		piece	-$10, -$20, 2x2, 4
 		piece	-$10, -$10, 2x2, 4
 		piece	-$10, 0, 2x2, 4
@@ -28,7 +30,8 @@
 		piece	0, $10, 2x2, 4
 		endsprite
 		
-@right:		spritemap
+frame_smash_right:
+		spritemap
 		piece	-$10, -$20, 2x2, 4
 		piece	-$10, -$10, 2x2, 4
 		piece	-$10, 0, 2x2, 4

@@ -189,15 +189,15 @@
 		objpos $18B0,$00D0,id_Rings,$12,rem
 		objpos $18D8,$03B0,id_Orbinaut,$02,rem
 		objpos $1900,$05E0,id_SwingingPlatform,$07
-		objpos $1910,$03C0,id_SmashWall,$01,rem
+		objpos $1910,$03C0,id_SmashWall,id_frame_smash_middle,rem
 		objpos $1910,$0451,id_Monitor,$05,rem
-		objpos $1930,$03C0,id_SmashWall,$01,rem
+		objpos $1930,$03C0,id_SmashWall,id_frame_smash_middle,rem
 		objpos $1930,$0451,id_Monitor,$06,rem
-		objpos $1950,$03C0,id_SmashWall,$01,rem
+		objpos $1950,$03C0,id_SmashWall,id_frame_smash_middle,rem
 		objpos $1950,$0451,id_Monitor,$06,rem
 		objpos $1958,$01E8,id_Elevator,$03
 		objpos $1960,$0370,id_LavaMaker,$36
-		objpos $1970,$03C0,id_SmashWall,$01,rem
+		objpos $1970,$03C0,id_SmashWall,id_frame_smash_middle,rem
 		objpos $1970,$0451,id_Monitor,$06,rem
 		objpos $1978,$0370,id_Scenery,$00,xflip
 		objpos $19F0,$0210,id_Bomb,$00,yflip,rem

@@ -1432,9 +1432,9 @@ GameOver:
 		subq.b	#1,(v_lives).w	; subtract 1 from number of lives
 		bne.s	loc_138D4
 		move.w	#0,ost_sonic_restart_time(a0)
-		move.b	#id_GameOverCard,(v_ost_all+$80).w ; load GAME object
-		move.b	#id_GameOverCard,(v_ost_all+$C0).w ; load OVER object
-		move.b	#1,(v_ost_all+$C0+ost_frame).w ; set OVER object to correct frame
+		move.b	#id_GameOverCard,(v_ost_gameover1).w ; load GAME object
+		move.b	#id_GameOverCard,(v_ost_gameover2).w ; load OVER object
+		move.b	#id_frame_gameover_over,(v_ost_gameover2+ost_frame).w ; set OVER object to correct frame
 		clr.b	(f_timeover).w
 
 loc_138C2:
@@ -1448,10 +1448,10 @@ loc_138D4:
 		tst.b	(f_timeover).w	; is TIME OVER tag set?
 		beq.s	locret_13900	; if not, branch
 		move.w	#0,ost_sonic_restart_time(a0)
-		move.b	#id_GameOverCard,(v_ost_all+$80).w ; load TIME object
-		move.b	#id_GameOverCard,(v_ost_all+$C0).w ; load OVER object
-		move.b	#2,(v_ost_all+$80+ost_frame).w
-		move.b	#3,(v_ost_all+$C0+ost_frame).w
+		move.b	#id_GameOverCard,(v_ost_gameover1).w ; load TIME object
+		move.b	#id_GameOverCard,(v_ost_gameover2).w ; load OVER object
+		move.b	#id_frame_gameover_time,(v_ost_gameover1+ost_frame).w
+		move.b	#id_frame_gameover_over2,(v_ost_gameover2+ost_frame).w
 		bra.s	loc_138C2
 ; ===========================================================================
 

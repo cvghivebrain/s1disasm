@@ -51,7 +51,7 @@
 		objpos $0DDA,$0277,id_Rings,$10,rem
 		objpos $0E2C,$0278,id_Springs,$02
 		objpos $0EB1,$0211,id_Rings,$10,rem
-		objpos $0ED0,$0240,id_CollapseLedge,$00,rem
+		objpos $0ED0,$0240,id_CollapseLedge,id_frame_ledge_left,rem
 		objpos $0ED2,$020A,id_Rings,$10,rem
 		objpos $0EF5,$0203,id_Rings,$10,rem
 		objpos $0F1A,$0205,id_Rings,$10,rem
@@ -67,8 +67,8 @@
 		objpos $0FA0,$0201,id_PurpleRock,$00
 		objpos $0FAC,$03B7,id_Spikes,$00
 		objpos $0FD8,$0272,id_PurpleRock,$00
-		objpos $1030,$02B0,id_CollapseLedge,$01,xflip,rem
-		objpos $10A0,$02B0,id_CollapseLedge,$00,rem
+		objpos $1030,$02B0,id_CollapseLedge,id_frame_ledge_right,xflip,rem
+		objpos $10A0,$02B0,id_CollapseLedge,id_frame_ledge_left,rem
 		objpos $1100,$01D0,id_BuzzBomber,$00,rem
 		objpos $1158,$032C,id_Rings,$12,rem
 		objpos $1170,$0377,id_Spikes,$00

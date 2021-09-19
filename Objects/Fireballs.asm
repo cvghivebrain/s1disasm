@@ -2,6 +2,7 @@
 ; Object 14 - lava balls (MZ, SLZ)
 ; ---------------------------------------------------------------------------
 
+LavaBall:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	LBall_Index(pc,d0.w),d1
@@ -48,12 +49,12 @@ LBall_Main:	; Routine 0
 		bcs.s	@sound		; if yes, branch
 
 		move.b	#$10,ost_actwidth(a0)
-		move.b	#2,ost_anim(a0)	; use horizontal animation
+		move.b	#id_ani_fire_horizontal,ost_anim(a0) ; use horizontal animation
 		move.w	ost_y_vel(a0),ost_x_vel(a0) ; set horizontal speed
 		move.w	#0,ost_y_vel(a0) ; delete vertical speed
 
 	@sound:
-		sfx	sfx_Fireball,0,0,0	; play lava ball sound
+		sfx	sfx_Fireball,0,0,0 ; play lava ball sound
 
 LBall_Action:	; Routine 2
 		moveq	#0,d0
@@ -106,7 +107,7 @@ LBall_Type04:
 		tst.w	d1
 		bpl.s	locret_E452
 		move.b	#8,ost_subtype(a0)
-		move.b	#1,ost_anim(a0)
+		move.b	#id_ani_fire_vertcollide,ost_anim(a0)
 		move.w	#0,ost_y_vel(a0) ; stop the object when it touches the ceiling
 
 locret_E452:
@@ -120,7 +121,7 @@ LBall_Type05:
 		tst.w	d1
 		bpl.s	locret_E474
 		move.b	#8,ost_subtype(a0)
-		move.b	#1,ost_anim(a0)
+		move.b	#id_ani_fire_vertcollide,ost_anim(a0)
 		move.w	#0,ost_y_vel(a0) ; stop the object when it touches the floor
 
 locret_E474:
@@ -135,7 +136,7 @@ LBall_Type06:
 		tst.w	d1
 		bpl.s	locret_E498
 		move.b	#8,ost_subtype(a0)
-		move.b	#3,ost_anim(a0)
+		move.b	#id_ani_fire_horicollide,ost_anim(a0)
 		move.w	#0,ost_x_vel(a0) ; stop object when it touches a wall
 
 locret_E498:
@@ -149,7 +150,7 @@ LBall_Type07:
 		tst.w	d1
 		bpl.s	locret_E4BC
 		move.b	#8,ost_subtype(a0)
-		move.b	#3,ost_anim(a0)
+		move.b	#id_ani_fire_horicollide,ost_anim(a0)
 		move.w	#0,ost_x_vel(a0) ; stop object when it touches a wall
 
 locret_E4BC:

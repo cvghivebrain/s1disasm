@@ -44,6 +44,8 @@ v_ost_all:		equ $FFFFD000 ; object variable space ($40 bytes per object) ($2000 
 	v_ost_titlecard2:	equ v_ost_all+(sizeof_ost*3) ; title card - "zone"
 	v_ost_titlecard3:	equ v_ost_all+(sizeof_ost*4) ; title card - "act" 1/2/3
 	v_ost_titlecard4:	equ v_ost_all+(sizeof_ost*5) ; title card - oval
+	v_ost_gameover1:	equ v_ost_all+(sizeof_ost*2) ; game over card - "game"/"time"
+	v_ost_gameover2:	equ v_ost_all+(sizeof_ost*3) ; game over card - "over"
 	v_ost_shield:		equ v_ost_all+(sizeof_ost*6) ; shield
 	v_ost_stars1:		equ v_ost_all+(sizeof_ost*8) ; invincibility stars
 	v_ost_stars2:		equ v_ost_all+(sizeof_ost*9) ; invincibility stars

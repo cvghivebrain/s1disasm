@@ -1,14 +1,14 @@
 ; ---------------------------------------------------------------------------
 ; Animation script - energy ball launcher (FZ)
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @red
-		ptr @redsparking
-		ptr @whitesparking
+Ani_PLaunch:	index *
+		ptr ani_plaunch_red
+		ptr ani_plaunch_redsparking
+		ptr ani_plaunch_whitesparking
 		
-@red:		dc.b $7E, 0, afEnd
-		even
-@redsparking:	dc.b 1,	0, 2, 0, 3, afEnd
-		even
-@whitesparking:	dc.b 1,	1, 2, 1, 3, afEnd
-		even
+ani_plaunch_red:		dc.b $7E, id_frame_plaunch_red, afEnd
+				even
+ani_plaunch_redsparking:	dc.b 1,	id_frame_plaunch_red, id_frame_plaunch_sparking1, id_frame_plaunch_red, id_frame_plaunch_sparking2, afEnd
+				even
+ani_plaunch_whitesparking:	dc.b 1,	id_frame_plaunch_white, id_frame_plaunch_sparking1, id_frame_plaunch_white, id_frame_plaunch_sparking2, afEnd
+				even

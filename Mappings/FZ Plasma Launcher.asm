@@ -1,25 +1,29 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - energy ball	launcher (FZ)
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @red
-		ptr @white
-		ptr @sparking1
-		ptr @sparking2
+Map_PLaunch:	index *
+		ptr frame_plaunch_red
+		ptr frame_plaunch_white
+		ptr frame_plaunch_sparking1
+		ptr frame_plaunch_sparking2
 		
-@red:		spritemap
+frame_plaunch_red:
+		spritemap
 		piece	-8, -8, 2x2, $6E
 		endsprite
 		
-@white:		spritemap
+frame_plaunch_white:
+		spritemap
 		piece	-8, -8, 2x2, $76
 		endsprite
 		
-@sparking1:	spritemap
+frame_plaunch_sparking1:
+		spritemap
 		piece	-8, -8, 2x2, $72
 		endsprite
 		
-@sparking2:	spritemap
+frame_plaunch_sparking2:
+		spritemap
 		piece	-8, -8, 2x2, $72, yflip
 		endsprite
 		even

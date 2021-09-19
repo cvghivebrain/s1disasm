@@ -2,6 +2,7 @@
 ; Object 86 - energy balls (FZ)
 ; ---------------------------------------------------------------------------
 
+BossPlasma:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Obj86_Index(pc,d0.w),d0
@@ -26,7 +27,7 @@ Obj86_Main:	; Routine 0
 		move.w	#$53C,ost_y_pos(a0)
 		move.w	#tile_Nem_FzBoss,ost_tile(a0)
 		move.l	#Map_PLaunch,ost_mappings(a0)
-		move.b	#0,ost_anim(a0)
+		move.b	#id_ani_plaunch_red,ost_anim(a0)
 		move.b	#3,ost_priority(a0)
 		move.b	#8,ost_width(a0)
 		move.b	#8,ost_height(a0)
@@ -44,11 +45,11 @@ Obj86_Generator:; Routine 2
 ; ===========================================================================
 
 loc_1A850:
-		move.b	#0,ost_anim(a0)
+		move.b	#id_ani_plaunch_red,ost_anim(a0)
 		tst.b	ost_plasma_flag(a0)
 		beq.s	loc_1A86C
 		addq.b	#2,ost_routine(a0)
-		move.b	#1,ost_anim(a0)
+		move.b	#id_ani_plaunch_redsparking,ost_anim(a0)
 		move.b	#$3E,ost_subtype(a0)
 
 loc_1A86C:
@@ -121,7 +122,7 @@ loc_1A95E:
 ; ===========================================================================
 
 loc_1A962:	; Routine 6
-		move.b	#2,ost_anim(a0)
+		move.b	#id_ani_plaunch_whitesparking,ost_anim(a0)
 		tst.w	$38(a0)
 		bne.s	loc_1A97E
 		move.b	#2,ost_routine(a0)
@@ -170,11 +171,11 @@ loc_1A9C0:
 		subq.w	#1,$32(a1)
 
 loc_1A9E6:
-		move.b	#0,ost_anim(a0)
+		move.b	#id_ani_plasma_full,ost_anim(a0)
 		subq.w	#1,ost_subtype(a0)
 		bne.s	locret_1AA1C
 		addq.b	#2,ost_routine2(a0)
-		move.b	#1,ost_anim(a0)
+		move.b	#id_ani_plasma_short,ost_anim(a0)
 		move.b	#$9A,ost_col_type(a0)
 		move.w	#$B4,ost_subtype(a0)
 		moveq	#0,d0

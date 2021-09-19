@@ -5,14 +5,14 @@
 		objpos $0128,$03B8,id_Springs,$02
 		objpos $0190,$03E0,id_Spikes,$40
 		objpos $01C0,$03C8,id_BasicPlatform,$05
-		objpos $01E0,$0340,id_CollapseLedge,$00,rem
+		objpos $01E0,$0340,id_CollapseLedge,id_frame_ledge_left,rem
 		objpos $0208,$03E0,id_Spikes,$40
 		objpos $0250,$0307,id_MotoBug,$00,rem
 		objpos $0260,$0298,id_BuzzBomber,$00,rem
 		objpos $0278,$030C,id_Springs,$02
 		objpos $02D8,$0218,id_BuzzBomber,$00,rem
-		objpos $02E0,$0240,id_CollapseLedge,$00,rem
-		objpos $0320,$02D0,id_CollapseLedge,$00,rem
+		objpos $02E0,$0240,id_CollapseLedge,id_frame_ledge_left,rem
+		objpos $0320,$02D0,id_CollapseLedge,id_frame_ledge_left,rem
 		objpos $0350,$0208,id_Monitor,$04,rem
 		objpos $0350,$0372,id_Rings,$10,rem
 		objpos $0374,$036A,id_Rings,$10,rem
@@ -32,7 +32,7 @@
 		objpos $0590,$0230,id_BuzzBomber,$00,rem
 		objpos $05A2,$039C,id_Rings,$10,rem
 		objpos $05C4,$03AC,id_Rings,$10,rem
-		objpos $05D0,$0240,id_CollapseLedge,$00,rem
+		objpos $05D0,$0240,id_CollapseLedge,id_frame_ledge_left,rem
 		objpos $05E8,$03B6,id_Rings,$10,rem
 		objpos $0648,$0294,id_Rings,$10,rem
 		objpos $0650,$0207,id_MotoBug,$00,rem
@@ -42,7 +42,7 @@
 		objpos $06B8,$0274,id_Rings,$10,rem
 		objpos $06E8,$0272,id_Rings,$10,rem
 		objpos $0716,$0274,id_Rings,$10,rem
-		objpos $0730,$02B0,id_CollapseLedge,$01,xflip,rem
+		objpos $0730,$02B0,id_CollapseLedge,id_frame_ledge_right,xflip,rem
 		objpos $0745,$027E,id_Rings,$10,rem
 		objpos $0750,$01F0,id_BuzzBomber,$00,rem
 		objpos $0780,$0258,id_BasicPlatform,$02
@@ -53,13 +53,13 @@
 		objpos $0848,$0310,id_EdgeWalls,$01
 		objpos $0848,$0350,id_EdgeWalls,$01
 		objpos $0848,$0360,id_EdgeWalls,$01
-		objpos $0850,$03A0,id_SmashWall,$00,rem
-		objpos $0870,$03A0,id_SmashWall,$01,rem
-		objpos $0890,$03A0,id_SmashWall,$01,rem
-		objpos $08B0,$03A0,id_SmashWall,$01,rem
+		objpos $0850,$03A0,id_SmashWall,id_frame_smash_left,rem
+		objpos $0870,$03A0,id_SmashWall,id_frame_smash_middle,rem
+		objpos $0890,$03A0,id_SmashWall,id_frame_smash_middle,rem
+		objpos $08B0,$03A0,id_SmashWall,id_frame_smash_middle,rem
 		objpos $08D0,$0198,id_BuzzBomber,$00,rem
-		objpos $08D0,$03A0,id_SmashWall,$01,rem
-		objpos $08F0,$03A0,id_SmashWall,$02,rem
+		objpos $08D0,$03A0,id_SmashWall,id_frame_smash_middle,rem
+		objpos $08F0,$03A0,id_SmashWall,id_frame_smash_right,rem
 		objpos $08F0,$0278,id_Scenery,$03,xflip
 		objpos $0920,$01C0,id_BuzzBomber,$00,rem
 		objpos $0920,$0250,id_Rings,$15,rem
@@ -129,7 +129,7 @@
 		objpos $1080,$04D0,id_BuzzBomber,$00,rem
 		objpos $1084,$02F0,id_Monitor,$02,rem
 		objpos $1098,$0320,id_Rings,$10,rem
-		objpos $10A0,$0570,id_CollapseLedge,$00,rem
+		objpos $10A0,$0570,id_CollapseLedge,id_frame_ledge_left,rem
 		objpos $10AF,$032F,id_Rings,$10,rem
 		objpos $10B0,$0210,id_BasicPlatform,$03
 		objpos $10C0,$0345,id_Rings,$10,rem
@@ -139,7 +139,7 @@
 		objpos $1140,$022C,id_BasicPlatform,$03
 		objpos $1150,$04D0,id_BuzzBomber,$00,rem
 		objpos $1190,$0507,id_PurpleRock,$00
-		objpos $11D0,$0240,id_CollapseLedge,$00,rem
+		objpos $11D0,$0240,id_CollapseLedge,id_frame_ledge_left,rem
 		objpos $11F0,$04F0,id_Spikes,$10
 		objpos $1208,$04F0,id_EdgeWalls,$00
 		objpos $1225,$0205,id_MotoBug,$00,xflip,rem
@@ -156,7 +156,7 @@
 		objpos $12E0,$0272,id_MotoBug,$00,xflip,rem
 		objpos $12E0,$04B1,id_Spikes,$00
 		objpos $1308,$04B0,id_EdgeWalls,$00
-		objpos $1330,$02B0,id_CollapseLedge,$01,xflip,rem
+		objpos $1330,$02B0,id_CollapseLedge,id_frame_ledge_right,xflip,rem
 		objpos $1378,$0478,id_Spikes,$00
 		objpos $1404,$036F,id_Springs,$10,xflip
 		objpos $1408,$0470,id_EdgeWalls,$00
@@ -230,19 +230,19 @@
 		objpos $1BD6,$021F,id_Monitor,$06,rem
 		objpos $1C30,$0278,id_Springs,$02
 		objpos $1CB0,$033E,id_Springs,$02
-		objpos $1CD0,$0240,id_CollapseLedge,$00,rem
+		objpos $1CD0,$0240,id_CollapseLedge,id_frame_ledge_left,rem
 		objpos $1D10,$0330,id_BasicPlatform,$02
 		objpos $1D45,$0207,id_Monitor,$06,rem
 		objpos $1D48,$02D0,id_EdgeWalls,$00
 		objpos $1D48,$0310,id_EdgeWalls,$01
 		objpos $1D48,$0350,id_EdgeWalls,$01
-		objpos $1D50,$03A0,id_SmashWall,$00,rem
-		objpos $1D70,$03A0,id_SmashWall,$01,rem
-		objpos $1D90,$03A0,id_SmashWall,$01,rem
-		objpos $1DB0,$03A0,id_SmashWall,$01,rem
-		objpos $1DD0,$03A0,id_SmashWall,$01,rem
-		objpos $1DF0,$03A0,id_SmashWall,$02,rem
-		objpos $1E20,$02B0,id_CollapseLedge,$01,xflip,rem
+		objpos $1D50,$03A0,id_SmashWall,id_frame_smash_left,rem
+		objpos $1D70,$03A0,id_SmashWall,id_frame_smash_middle,rem
+		objpos $1D90,$03A0,id_SmashWall,id_frame_smash_middle,rem
+		objpos $1DB0,$03A0,id_SmashWall,id_frame_smash_middle,rem
+		objpos $1DD0,$03A0,id_SmashWall,id_frame_smash_middle,rem
+		objpos $1DF0,$03A0,id_SmashWall,id_frame_smash_right,rem
+		objpos $1E20,$02B0,id_CollapseLedge,id_frame_ledge_right,xflip,rem
 		objpos $1E20,$03B8,id_Rings,$10,rem
 		objpos $1E48,$03B9,id_Rings,$10,rem
 		objpos $1E70,$03AA,id_Rings,$10,rem
@@ -255,12 +255,12 @@
 		objpos $1F11,$0375,id_Rings,$10,rem
 		objpos $1FF8,$03E0,id_EdgeWalls,$02
 		objpos $2000,$02A0,id_BuzzBomber,$00,rem
-		objpos $2030,$03B0,id_CollapseLedge,$01,xflip,rem
+		objpos $2030,$03B0,id_CollapseLedge,id_frame_ledge_right,xflip,rem
 		objpos $2050,$03D0,id_Spikes,$40
 		objpos $2070,$0308,id_SwingingPlatform,$07
 		objpos $20B0,$02F0,id_BuzzBomber,$00,rem
 		objpos $20E0,$03D0,id_Spikes,$40
-		objpos $2120,$03D0,id_CollapseLedge,$00,rem
+		objpos $2120,$03D0,id_CollapseLedge,id_frame_ledge_left,rem
 		objpos $2134,$03D0,id_Spikes,$20
 		objpos $2224,$0250,id_Rings,$44,rem
 		objpos $2224,$0314,id_Springs,$02

@@ -15,8 +15,8 @@ BossFinal:
 Obj85_Index:	index *,,2
 		ptr Obj85_Main
 		ptr Obj85_Eggman
-		ptr loc_1A38E
-		ptr loc_1A346
+		ptr Obj85_Panel
+		ptr Obj85_Legs
 		ptr loc_1A2C6
 		ptr loc_1A3AC
 		ptr loc_1A264
@@ -469,7 +469,7 @@ loc_1A260:
 		bra.w	loc_1A15C
 ; ===========================================================================
 
-loc_1A264:	; Routine 4
+loc_1A264:	; Routine $C
 		movea.l	ost_fz_parent(a0),a1
 		move.b	(a1),d0
 		cmp.b	(a0),d0
@@ -504,7 +504,7 @@ loc_1A2A6:
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 
-loc_1A2C6:	; Routine 6
+loc_1A2C6:	; Routine 8
 		movea.l	ost_fz_parent(a0),a1
 		move.b	(a1),d0
 		cmp.b	(a0),d0
@@ -516,10 +516,10 @@ loc_1A2C6:	; Routine 6
 ; ===========================================================================
 
 loc_1A2E4:
-		move.b	#1,ost_anim(a0)
+		move.b	#id_ani_boss_face1,ost_anim(a0)
 		tst.b	ost_col_property(a1)
 		ble.s	loc_1A312
-		move.b	#6,ost_anim(a0)
+		move.b	#id_ani_boss_panic,ost_anim(a0)
 		move.l	#Map_Eggman,ost_mappings(a0)
 		move.w	#tile_Nem_Eggman,ost_tile(a0)
 		lea	Ani_Eggman(pc),a1
@@ -528,11 +528,11 @@ loc_1A2E4:
 ; ===========================================================================
 
 loc_1A312:
-		tst.b	1(a0)
+		tst.b	ost_render(a0)
 		bpl.w	Obj85_Delete
 		bsr.w	BossDefeated
 		move.b	#2,ost_priority(a0)
-		move.b	#0,ost_anim(a0)
+		move.b	#id_ani_fzeggman_0,ost_anim(a0)
 		move.l	#Map_FZDamaged,ost_mappings(a0)
 		move.w	#tile_Nem_FzEggman,ost_tile(a0)
 		lea	Ani_FZEgg(pc),a1
@@ -540,7 +540,7 @@ loc_1A312:
 		bra.w	loc_1A296
 ; ===========================================================================
 
-loc_1A346:	; Routine 8
+Obj85_Legs:	; Routine 6
 		bset	#status_xflip_bit,ost_status(a0)
 		movea.l	ost_fz_parent(a0),a1
 		cmpi.l	#Map_Eggman,ost_mappings(a1)
@@ -559,15 +559,15 @@ loc_1A376:
 		subq.b	#1,ost_anim_time(a0)
 		bgt.s	loc_1A38A
 		addq.b	#1,ost_frame(a0)
-		cmpi.b	#2,ost_frame(a0)
+		cmpi.b	#id_frame_fzlegs_retracted,ost_frame(a0)
 		bgt.w	Obj85_Delete
 
 loc_1A38A:
 		bra.w	loc_1A296
 ; ===========================================================================
 
-loc_1A38E:	; Routine $A
-		move.b	#$B,ost_frame(a0)
+Obj85_Panel:	; Routine 4
+		move.b	#id_frame_cylinder_controlpanel,ost_frame(a0)
 		move.w	(v_ost_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0
 		bcs.s	loc_1A3A6
@@ -578,7 +578,7 @@ loc_1A3A6:
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 
-loc_1A3AC:	; Routine $C
+loc_1A3AC:	; Routine $A
 		move.b	#0,ost_frame(a0)
 		bset	#status_xflip_bit,ost_status(a0)
 		movea.l	ost_fz_parent(a0),a1

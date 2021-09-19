@@ -114,6 +114,8 @@ ost_tile:		equ 2	; palette line & VRAM setting (2 bytes)
 	tile_hi:	equ $8000
 	tile_xflip_bit:	equ 3
 	tile_yflip_bit:	equ 4
+	tile_pal12_bit:	equ 5
+	tile_pal34_bit:	equ 6
 	tile_hi_bit:	equ 7
 ost_mappings:		equ 4	; mappings address (4 bytes)
 ost_x_pos:		equ 8	; x-axis position (2 bytes)

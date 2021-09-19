@@ -45,5 +45,5 @@ Scen_Values:	dc.l Map_Scen		; mappings address
 		dc.b 0,	8, 2, 0
 		dc.l Map_Bri
 		dc.w tile_Nem_Bridge+tile_pal3
-		dc.b 1,	$10, 1,	0
+		dc.b id_frame_bridge_stump, $10, 1, 0
 		even

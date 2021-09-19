@@ -14,19 +14,19 @@
 		objpos $01C0,$01C0,id_Chopper,$00,rem
 		objpos $020E,$010A,id_Scenery,$03
 		objpos $0248,$0190,id_Spikes,$20
-		objpos $0250,$02A0,id_SmashWall,$00,rem
+		objpos $0250,$02A0,id_SmashWall,id_frame_smash_left,rem
 		objpos $025C,$018E,id_Spikes,$20
 		objpos $0270,$0189,id_Spikes,$20
-		objpos $0270,$02A0,id_SmashWall,$01,rem
+		objpos $0270,$02A0,id_SmashWall,id_frame_smash_middle,rem
 		objpos $0284,$0182,id_Spikes,$20
-		objpos $0290,$02A0,id_SmashWall,$01,rem
+		objpos $0290,$02A0,id_SmashWall,id_frame_smash_middle,rem
 		objpos $0298,$017E,id_Spikes,$20
-		objpos $02B0,$02A0,id_SmashWall,$01,rem
-		objpos $02D0,$02A0,id_SmashWall,$01,rem
+		objpos $02B0,$02A0,id_SmashWall,id_frame_smash_middle,rem
+		objpos $02D0,$02A0,id_SmashWall,id_frame_smash_middle,rem
 		objpos $02F0,$0058,id_Rings,$44,rem
 		objpos $02F0,$0158,id_Springs,$02
 		objpos $02F0,$0170,id_PurpleRock,$00
-		objpos $02F0,$02A0,id_SmashWall,$02,rem
+		objpos $02F0,$02A0,id_SmashWall,id_frame_smash_right,rem
 		objpos $0338,$02B5,id_Monitor,$03,rem
 		objpos $03F8,$02F0,id_EdgeWalls,$02
 		objpos $0430,$0258,id_BuzzBomber,$00,rem
@@ -189,7 +189,7 @@
 		objpos $1790,$0370,id_BuzzBomber,$00,rem
 		objpos $17A0,$0200,id_Crabmeat,$00,rem
 		objpos $17D0,$01FE,id_PurpleRock,$00
-		objpos $17E0,$03F0,id_CollapseLedge,$00,rem
+		objpos $17E0,$03F0,id_CollapseLedge,id_frame_ledge_left,rem
 		objpos $1808,$03F0,id_EdgeWalls,$10
 		objpos $1810,$0370,id_Newtron,$00,rem
 		objpos $1820,$03B0,id_Spikes,$00
@@ -219,9 +219,9 @@
 		objpos $1A08,$04B0,id_EdgeWalls,$00
 		objpos $1A08,$04F0,id_EdgeWalls,$01
 		objpos $1A1D,$02B6,id_Rings,$10,rem
-		objpos $1A30,$02F0,id_CollapseLedge,$01,xflip,rem
+		objpos $1A30,$02F0,id_CollapseLedge,id_frame_ledge_right,xflip,rem
 		objpos $1A80,$0477,id_PurpleRock,$00
-		objpos $1AA0,$02F0,id_CollapseLedge,$00,rem
+		objpos $1AA0,$02F0,id_CollapseLedge,id_frame_ledge_left,rem
 		objpos $1AF0,$0410,id_BuzzBomber,$00,rem
 		objpos $1AF8,$04B0,id_EdgeWalls,$02
 		objpos $1B50,$0440,id_BuzzBomber,$00,rem
@@ -230,7 +230,7 @@
 		objpos $1BDC,$0372,id_Spikes,$30
 		objpos $1C08,$0200,id_EdgeWalls,$01
 		objpos $1C90,$03F0,id_BuzzBomber,$00,rem
-		objpos $1CA0,$0470,id_CollapseLedge,$00,rem
+		objpos $1CA0,$0470,id_CollapseLedge,id_frame_ledge_left,rem
 		objpos $1CE0,$03E0,id_BuzzBomber,$00,rem
 		objpos $1D38,$0428,id_Springs,$10,xflip
 		objpos $1DA0,$0407,id_Monitor,$06,rem

@@ -4,11 +4,11 @@
 		objpos $0000,$0000,id_Pylon,$00
 		objpos $00A8,$02B0,id_Rings,$12,rem
 		objpos $01A8,$02B0,id_Rings,$12,rem
-		objpos $0210,$02C0,id_SmashWall,$01,rem
-		objpos $0230,$02C0,id_SmashWall,$01,rem
-		objpos $0250,$02C0,id_SmashWall,$01,rem
+		objpos $0210,$02C0,id_SmashWall,id_frame_smash_middle,rem
+		objpos $0230,$02C0,id_SmashWall,id_frame_smash_middle,rem
+		objpos $0250,$02C0,id_SmashWall,id_frame_smash_middle,rem
 		objpos $0270,$0270,id_Bomb,$00,rem
-		objpos $0270,$02C0,id_SmashWall,$01,rem
+		objpos $0270,$02C0,id_SmashWall,id_frame_smash_middle,rem
 		objpos $0290,$03F1,id_Monitor,$06,rem
 		objpos $0290,$03F8,id_Springs,$00
 		objpos $02B0,$03F1,id_Monitor,$06,rem

@@ -84,17 +84,17 @@ Swing_Main:	; Routine 0
 		move.b	d4,0(a1)	; load swinging	object
 		move.l	ost_mappings(a0),ost_mappings(a1)
 		move.w	ost_tile(a0),ost_tile(a1)
-		bclr	#6,ost_tile(a1)
+		bclr	#tile_pal34_bit,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)
 		move.b	#4,ost_priority(a1)
 		move.b	#8,ost_actwidth(a1)
-		move.b	#1,ost_frame(a1)
+		move.b	#id_frame_swing_chain,ost_frame(a1)
 		move.b	d3,ost_swing_radius(a1) ; radius is smaller for chainlinks closer to top
 		subi.b	#$10,d3
 		bcc.s	@notanchor
-		move.b	#2,ost_frame(a1)
+		move.b	#id_frame_swing_anchor,ost_frame(a1)
 		move.b	#3,ost_priority(a1)
-		bset	#6,ost_tile(a1)
+		bset	#tile_pal34_bit,ost_tile(a1)
 
 	@notanchor:
 		dbf	d1,@makechain ; repeat d1 times (chain length)
@@ -106,13 +106,13 @@ Swing_Main:	; Routine 0
 		andi.w	#$7F,d5
 		move.b	d5,(a2)+
 		move.w	#$4080,ost_angle(a0)
-		move.w	#-$200,$3E(a0)
+		move.w	#-$200,ost_ball_angle(a0)
 		move.w	(sp)+,d1
 		btst	#4,d1		; is object type $1X ?
 		beq.s	@not1X		; if not, branch
 		move.l	#Map_GBall,ost_mappings(a0) ; use GHZ ball mappings
 		move.w	#tile_Nem_Ball+tile_pal3,ost_tile(a0)
-		move.b	#1,ost_frame(a0)
+		move.b	#id_frame_ball_check1,ost_frame(a0)
 		move.b	#2,ost_priority(a0)
 		move.b	#$81,ost_col_type(a0) ; make object hurt when touched
 

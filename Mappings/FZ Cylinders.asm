@@ -1,21 +1,22 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - cylinders Eggman hides in (FZ)
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @flat
-		ptr @extending1
-		ptr @extending2
-		ptr @extending3
-		ptr @extending4
-		ptr @extendedfully
-		ptr @extendedfully
-		ptr @extendedfully
-		ptr @extendedfully
-		ptr @extendedfully
-		ptr @extendedfully
-		ptr @controlpanel
+Map_EggCyl:	index *
+		ptr frame_cylinder_flat
+		ptr frame_cylinder_extending1
+		ptr frame_cylinder_extending2
+		ptr frame_cylinder_extending3
+		ptr frame_cylinder_extending4
+		ptr frame_cylinder_extendedfully
+		ptr frame_cylinder_extendedfully
+		ptr frame_cylinder_extendedfully
+		ptr frame_cylinder_extendedfully
+		ptr frame_cylinder_extendedfully
+		ptr frame_cylinder_extendedfully
+		ptr frame_cylinder_controlpanel
 		
-@flat:		spritemap
+frame_cylinder_flat:
+		spritemap
 		piece	-$20, -$60, 4x2, 0, pal3
 		piece	0, -$60, 4x2, 0, xflip, pal3
 		piece	-$20, -$50, 4x1, 8, pal2
@@ -24,7 +25,8 @@
 		piece	0, -$48, 4x4, $10, xflip, pal3
 		endsprite
 		
-@extending1:	spritemap
+frame_cylinder_extending1:
+		spritemap
 		piece	-$20, -$60, 4x2, 0, pal3
 		piece	0, -$60, 4x2, 0, xflip, pal3
 		piece	-$20, -$50, 4x1, 8, pal2
@@ -35,7 +37,8 @@
 		piece	0, -$28, 4x4, $20, xflip, pal3
 		endsprite
 		
-@extending2:	spritemap
+frame_cylinder_extending2:
+		spritemap
 		piece	-$20, -$60, 4x2, 0, pal3
 		piece	0, -$60, 4x2, 0, xflip, pal3
 		piece	-$20, -$50, 4x1, 8, pal2
@@ -48,7 +51,8 @@
 		piece	0, -8, 4x4, $30, xflip, pal3
 		endsprite
 		
-@extending3:	spritemap
+frame_cylinder_extending3:
+		spritemap
 		piece	-$20, -$60, 4x2, 0, pal3
 		piece	0, -$60, 4x2, 0, xflip, pal3
 		piece	-$20, -$50, 4x1, 8, pal2
@@ -63,7 +67,8 @@
 		piece	0, $18, 4x4, $40, xflip, pal3
 		endsprite
 		
-@extending4:	spritemap
+frame_cylinder_extending4:
+		spritemap
 		piece	-$20, -$60, 4x2, 0, pal3
 		piece	0, -$60, 4x2, 0, xflip, pal3
 		piece	-$20, -$50, 4x1, 8, pal2
@@ -79,7 +84,8 @@
 		piece	-$10, $38, 4x4, $50, pal3
 		endsprite
 		
-@extendedfully:	spritemap
+frame_cylinder_extendedfully:
+		spritemap
 		piece	-$20, -$60, 4x2, 0, pal3
 		piece	0, -$60, 4x2, 0, xflip, pal3
 		piece	-$20, -$50, 4x1, 8, pal2
@@ -96,7 +102,8 @@
 		piece	-$10, $58, 4x4, $50, pal3
 		endsprite
 		
-@controlpanel:	spritemap
+frame_cylinder_controlpanel:
+		spritemap
 		piece	-$10, -8, 2x1, $68
 		piece	-$10, 0, 4x1, $6A
 		endsprite

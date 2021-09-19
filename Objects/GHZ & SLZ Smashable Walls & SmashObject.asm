@@ -2,6 +2,7 @@
 ; Object 3C - smashable	wall (GHZ, SLZ)
 ; ---------------------------------------------------------------------------
 
+SmashWall:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Smash_Index(pc,d0.w),d1

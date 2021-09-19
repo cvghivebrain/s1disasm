@@ -1,12 +1,18 @@
 ; ---------------------------------------------------------------------------
 ; Animation script - energy balls (FZ)
 ; ---------------------------------------------------------------------------
-		dc.w @full-Ani_Plasma
-		dc.w @short-Ani_Plasma
+Ani_Plasma:	index *
+		ptr ani_plasma_full
+		ptr ani_plasma_short
 		
-@full:		dc.b 1,	0, $A, 8, $A, 1, $A, 9,	$A, 6, $A, 7, $A, 0, $A
-		dc.b 8,	$A, 1, $A, 9, $A, 6, $A, 7, $A,	2, $A, 3, $A, 4
-		dc.b $A, 5, afEnd
-		even
-@short:		dc.b 0,	6, 5, 1, 5, 7, 5, 1, 5,	afEnd
-		even
+ani_plasma_full:	dc.b 1,	id_frame_plasma_fuzzy1, id_frame_plasma_blank, id_frame_plasma_fuzzy5, id_frame_plasma_blank
+			dc.b id_frame_plasma_fuzzy2, id_frame_plasma_blank, id_frame_plasma_fuzzy6, id_frame_plasma_blank
+			dc.b id_frame_plasma_fuzzy3, id_frame_plasma_blank, id_frame_plasma_fuzzy4, id_frame_plasma_blank
+			dc.b id_frame_plasma_fuzzy1, id_frame_plasma_blank, id_frame_plasma_fuzzy5, id_frame_plasma_blank
+			dc.b id_frame_plasma_fuzzy2, id_frame_plasma_blank, id_frame_plasma_fuzzy6, id_frame_plasma_blank
+			dc.b id_frame_plasma_fuzzy3, id_frame_plasma_blank, id_frame_plasma_fuzzy4, id_frame_plasma_blank
+			dc.b id_frame_plasma_white1, id_frame_plasma_blank, id_frame_plasma_white2, id_frame_plasma_blank
+			dc.b id_frame_plasma_white3, id_frame_plasma_blank, id_frame_plasma_white4, afEnd
+			even
+ani_plasma_short:	dc.b 0,	id_frame_plasma_fuzzy3, id_frame_plasma_white4, id_frame_plasma_fuzzy2, id_frame_plasma_white4, id_frame_plasma_fuzzy4, id_frame_plasma_white4, id_frame_plasma_fuzzy2, id_frame_plasma_white4,	afEnd
+			even

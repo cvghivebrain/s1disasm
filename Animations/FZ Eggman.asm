@@ -1,8 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Animation script - Eggman (FZ)
 ; ---------------------------------------------------------------------------
-		index *
-		ptr byte_1A3D6
+Ani_FZEgg:	index *
+		ptr ani_fzeggman_0
 		
-byte_1A3D6:	dc.b 3,	0, 1, afEnd
+ani_fzeggman_0:	dc.b 3,	id_frame_fzeggman_damage1, id_frame_fzeggman_damage2, afEnd
 		even
