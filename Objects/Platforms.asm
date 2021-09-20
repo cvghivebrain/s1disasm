@@ -52,7 +52,7 @@ Plat_Main:	; Routine 0
 		move.b	ost_subtype(a0),d0
 		cmpi.b	#$A,d0		; is object type $A (large platform)?
 		bne.s	@setframe	; if not, branch
-		addq.b	#1,d1		; use frame #1
+		addq.b	#id_frame_plat_large,d1 ; use frame #1
 		move.b	#$20,ost_actwidth(a0) ; set width
 
 	@setframe:

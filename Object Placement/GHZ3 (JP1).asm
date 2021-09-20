@@ -49,10 +49,10 @@
 		objpos $07C0,$0358,id_Springs,$02
 		objpos $0820,$0340,id_Newtron,$01,rem
 		objpos $0828,$0201,id_Rings,$15,rem
-		objpos $0848,$02D0,id_EdgeWalls,$00
-		objpos $0848,$0310,id_EdgeWalls,$01
-		objpos $0848,$0350,id_EdgeWalls,$01
-		objpos $0848,$0360,id_EdgeWalls,$01
+		objpos $0848,$02D0,id_EdgeWalls,id_frame_edge_shadow
+		objpos $0848,$0310,id_EdgeWalls,id_frame_edge_light
+		objpos $0848,$0350,id_EdgeWalls,id_frame_edge_light
+		objpos $0848,$0360,id_EdgeWalls,id_frame_edge_light
 		objpos $0850,$03A0,id_SmashWall,id_frame_smash_left,rem
 		objpos $0870,$03A0,id_SmashWall,id_frame_smash_middle,rem
 		objpos $0890,$03A0,id_SmashWall,id_frame_smash_middle,rem
@@ -65,8 +65,8 @@
 		objpos $0920,$0250,id_Rings,$15,rem
 		objpos $0968,$0288,id_Bridge,$0C
 		objpos $09D0,$0278,id_Scenery,$03
-		objpos $0A08,$02C0,id_EdgeWalls,$01
-		objpos $0A08,$02F0,id_EdgeWalls,$01
+		objpos $0A08,$02C0,id_EdgeWalls,id_frame_edge_light
+		objpos $0A08,$02F0,id_EdgeWalls,id_frame_edge_light
 		objpos $0B00,$026B,id_Lamppost,$01,rem
 		objpos $0B24,$0220,id_Monitor,$03,rem
 		objpos $0B38,$0272,id_Rings,$10,rem
@@ -96,22 +96,22 @@
 		objpos $0DD0,$0531,id_PurpleRock,$00
 		objpos $0DE8,$0274,id_Rings,$10,rem
 		objpos $0DF0,$0178,id_Springs,$02
-		objpos $0E08,$00F0,id_EdgeWalls,$00
-		objpos $0E08,$0130,id_EdgeWalls,$01
-		objpos $0E08,$0170,id_EdgeWalls,$01
-		objpos $0E08,$01B0,id_EdgeWalls,$01
-		objpos $0E08,$01F0,id_EdgeWalls,$01
-		objpos $0E08,$0230,id_EdgeWalls,$01
+		objpos $0E08,$00F0,id_EdgeWalls,id_frame_edge_shadow
+		objpos $0E08,$0130,id_EdgeWalls,id_frame_edge_light
+		objpos $0E08,$0170,id_EdgeWalls,id_frame_edge_light
+		objpos $0E08,$01B0,id_EdgeWalls,id_frame_edge_light
+		objpos $0E08,$01F0,id_EdgeWalls,id_frame_edge_light
+		objpos $0E08,$0230,id_EdgeWalls,id_frame_edge_light
 		objpos $0E20,$0520,id_Crabmeat,$00,rem
 		objpos $0E84,$0040,id_Monitor,$06,rem
 		objpos $0EA0,$04C0,id_Newtron,$00,rem
 		objpos $0EB0,$00AC,id_Lamppost,$02,rem
 		objpos $0EE0,$04E0,id_Newtron,$00,rem
-		objpos $0EF8,$00F0,id_EdgeWalls,$02
-		objpos $0EF8,$0120,id_EdgeWalls,$02
-		objpos $0EF8,$0160,id_EdgeWalls,$02
-		objpos $0EF8,$01A0,id_EdgeWalls,$02
-		objpos $0EF8,$01E0,id_EdgeWalls,$02
+		objpos $0EF8,$00F0,id_EdgeWalls,id_frame_edge_dark
+		objpos $0EF8,$0120,id_EdgeWalls,id_frame_edge_dark
+		objpos $0EF8,$0160,id_EdgeWalls,id_frame_edge_dark
+		objpos $0EF8,$01A0,id_EdgeWalls,id_frame_edge_dark
+		objpos $0EF8,$01E0,id_EdgeWalls,id_frame_edge_dark
 		objpos $0F48,$0490,id_Rings,$42,rem
 		objpos $0F48,$0505,id_PurpleRock,$00
 		objpos $0F60,$04B0,id_Newtron,$00,rem
@@ -141,7 +141,7 @@
 		objpos $1190,$0507,id_PurpleRock,$00
 		objpos $11D0,$0240,id_CollapseLedge,id_frame_ledge_left,rem
 		objpos $11F0,$04F0,id_Spikes,$10
-		objpos $1208,$04F0,id_EdgeWalls,$00
+		objpos $1208,$04F0,id_EdgeWalls,id_frame_edge_shadow
 		objpos $1225,$0205,id_MotoBug,$00,xflip,rem
 		objpos $1240,$0480,id_Newtron,$00,rem
 		objpos $1250,$0372,id_Rings,$10,rem
@@ -155,11 +155,11 @@
 		objpos $12D8,$033E,id_Rings,$10,rem
 		objpos $12E0,$0272,id_MotoBug,$00,xflip,rem
 		objpos $12E0,$04B1,id_Spikes,$00
-		objpos $1308,$04B0,id_EdgeWalls,$00
+		objpos $1308,$04B0,id_EdgeWalls,id_frame_edge_shadow
 		objpos $1330,$02B0,id_CollapseLedge,id_frame_ledge_right,xflip,rem
 		objpos $1378,$0478,id_Spikes,$00
 		objpos $1404,$036E,id_Springs,$10,xflip
-		objpos $1408,$0470,id_EdgeWalls,$00
+		objpos $1408,$0470,id_EdgeWalls,id_frame_edge_shadow
 		objpos $1420,$036F,id_PurpleRock,$00
 		objpos $1428,$0420,id_Crabmeat,$00,rem
 		objpos $1470,$040D,id_Springs,$02
@@ -171,14 +171,14 @@
 		objpos $14D8,$0403,id_Spikes,$20
 		objpos $14E8,$0420,id_BuzzBomber,$00,rem
 		objpos $14F0,$0401,id_Spikes,$20
-		objpos $14F8,$02F0,id_EdgeWalls,$02
-		objpos $14F8,$0330,id_EdgeWalls,$12
-		objpos $14F8,$0360,id_EdgeWalls,$12
-		objpos $14F8,$03B0,id_EdgeWalls,$12
-		objpos $14F8,$03F0,id_EdgeWalls,$12
-		objpos $14F8,$0440,id_EdgeWalls,$02
-		objpos $14F8,$0480,id_EdgeWalls,$02
-		objpos $14F8,$04B0,id_EdgeWalls,$02
+		objpos $14F8,$02F0,id_EdgeWalls,id_frame_edge_dark
+		objpos $14F8,$0330,id_EdgeWalls,id_frame_edge_dark+$10
+		objpos $14F8,$0360,id_EdgeWalls,id_frame_edge_dark+$10
+		objpos $14F8,$03B0,id_EdgeWalls,id_frame_edge_dark+$10
+		objpos $14F8,$03F0,id_EdgeWalls,id_frame_edge_dark+$10
+		objpos $14F8,$0440,id_EdgeWalls,id_frame_edge_dark
+		objpos $14F8,$0480,id_EdgeWalls,id_frame_edge_dark
+		objpos $14F8,$04B0,id_EdgeWalls,id_frame_edge_dark
 		objpos $1500,$0248,id_BuzzBomber,$00,rem
 		objpos $1588,$0388,id_WaterSound,$00
 		objpos $1588,$0388,id_Helix,$10
@@ -192,11 +192,11 @@
 		objpos $1698,$04B0,id_Monitor,$06,rem
 		objpos $16C0,$04B0,id_Monitor,$06,rem
 		objpos $16E8,$04B0,id_Monitor,$02,rem
-		objpos $1708,$03B0,id_EdgeWalls,$10
-		objpos $1708,$03F0,id_EdgeWalls,$11
-		objpos $1708,$0430,id_EdgeWalls,$11
-		objpos $1708,$0460,id_EdgeWalls,$11
-		objpos $1708,$04B0,id_EdgeWalls,$00
+		objpos $1708,$03B0,id_EdgeWalls,id_frame_edge_shadow+$10
+		objpos $1708,$03F0,id_EdgeWalls,id_frame_edge_light+$10
+		objpos $1708,$0430,id_EdgeWalls,id_frame_edge_light+$10
+		objpos $1708,$0460,id_EdgeWalls,id_frame_edge_light+$10
+		objpos $1708,$04B0,id_EdgeWalls,id_frame_edge_shadow
 		objpos $1720,$02C8,id_BasicPlatform,$03
 		objpos $1730,$0479,id_Springs,$02
 		objpos $175C,$037F,id_Rings,$10,rem
@@ -208,8 +208,8 @@
 		objpos $17C0,$03A9,id_Rings,$10,rem
 		objpos $17D8,$0470,id_Spikes,$30
 		objpos $17E6,$03B3,id_Rings,$10,rem
-		objpos $17F8,$04B0,id_EdgeWalls,$02
-		objpos $17F8,$04F0,id_EdgeWalls,$02
+		objpos $17F8,$04B0,id_EdgeWalls,id_frame_edge_dark
+		objpos $17F8,$04F0,id_EdgeWalls,id_frame_edge_dark
 		objpos $1870,$0360,id_Newtron,$00,rem
 		objpos $1878,$0205,id_Monitor,$05,rem
 		objpos $18C0,$0390,id_Newtron,$00,rem
@@ -233,9 +233,9 @@
 		objpos $1CD0,$0240,id_CollapseLedge,id_frame_ledge_left,rem
 		objpos $1D10,$0330,id_BasicPlatform,$02
 		objpos $1D45,$0207,id_Monitor,$06,rem
-		objpos $1D48,$02D0,id_EdgeWalls,$00
-		objpos $1D48,$0310,id_EdgeWalls,$01
-		objpos $1D48,$0350,id_EdgeWalls,$01
+		objpos $1D48,$02D0,id_EdgeWalls,id_frame_edge_shadow
+		objpos $1D48,$0310,id_EdgeWalls,id_frame_edge_light
+		objpos $1D48,$0350,id_EdgeWalls,id_frame_edge_light
 		objpos $1D50,$03A0,id_SmashWall,id_frame_smash_left,rem
 		objpos $1D70,$03A0,id_SmashWall,id_frame_smash_middle,rem
 		objpos $1D90,$03A0,id_SmashWall,id_frame_smash_middle,rem
@@ -253,7 +253,7 @@
 		objpos $1EE0,$02C0,id_BasicPlatform,$06
 		objpos $1EE6,$0378,id_Rings,$10,rem
 		objpos $1F11,$0375,id_Rings,$10,rem
-		objpos $1FF8,$03E0,id_EdgeWalls,$02
+		objpos $1FF8,$03E0,id_EdgeWalls,id_frame_edge_dark
 		objpos $2000,$02A0,id_BuzzBomber,$00,rem
 		objpos $2030,$03B0,id_CollapseLedge,id_frame_ledge_right,xflip,rem
 		objpos $2050,$03D0,id_Spikes,$40
@@ -280,7 +280,7 @@
 		objpos $25A8,$03C8,id_Bridge,$0C
 		objpos $25DC,$03F0,id_Spikes,$20
 		objpos $25F4,$03F0,id_Spikes,$20
-		objpos $2608,$03F0,id_EdgeWalls,$00
+		objpos $2608,$03F0,id_EdgeWalls,id_frame_edge_shadow
 		objpos $2610,$03B9,id_Scenery,$03
 		objpos $26A8,$03AC,id_Lamppost,$04,rem
 		

@@ -1,24 +1,28 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - hidden points at the end of	a level
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @blank
-		ptr @10000
-		ptr @1000
-		ptr @100
+Map_Bonus:	index *
+		ptr frame_bonus_blank
+		ptr frame_bonus_10000
+		ptr frame_bonus_1000
+		ptr frame_bonus_100
 		
-@blank:		spritemap
+frame_bonus_blank:
+		spritemap
 		endsprite
 		
-@10000:		spritemap
+frame_bonus_10000:
+		spritemap
 		piece	-$10, -$C, 4x3, 0
 		endsprite
 		
-@1000:		spritemap
+frame_bonus_1000:
+		spritemap
 		piece	-$10, -$C, 4x3, $C
 		endsprite
 		
-@100:		spritemap
+frame_bonus_100:
+		spritemap
 		piece	-$10, -$C, 4x3, $18
 		endsprite
 		even

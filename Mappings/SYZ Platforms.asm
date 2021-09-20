@@ -1,10 +1,10 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - SYZ	platforms
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @platform
+Map_Plat_SYZ:	index *
+		ptr frame_plat_syz
 		
-@platform:	spritemap
+frame_plat_syz:	spritemap
 		piece	-$20, -$A, 3x4, $49
 		piece	-8, -$A, 2x4, $51
 		piece	8, -$A, 3x4, $55

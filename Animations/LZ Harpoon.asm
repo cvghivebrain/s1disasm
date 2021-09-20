@@ -1,14 +1,14 @@
 ; ---------------------------------------------------------------------------
 ; Animation script - harpoon (LZ)
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @h_extending
-		ptr @h_retracting
-		ptr @v_extending
-		ptr @v_retracting
+Ani_Harp:	index *
+		ptr ani_harp_h_extending
+		ptr ani_harp_h_retracting
+		ptr ani_harp_v_extending
+		ptr ani_harp_v_retracting
 		
-@h_extending:	dc.b 3,	1, 2, afRoutine
-@h_retracting:	dc.b 3,	1, 0, afRoutine
-@v_extending:	dc.b 3,	4, 5, afRoutine
-@v_retracting:	dc.b 3,	4, 3, afRoutine
-		even
+ani_harp_h_extending:	dc.b 3,	id_frame_harp_h_middle, id_frame_harp_h_extended, afRoutine
+ani_harp_h_retracting:	dc.b 3,	id_frame_harp_h_middle, id_frame_harp_h_retracted, afRoutine
+ani_harp_v_extending:	dc.b 3,	id_frame_harp_v_middle, id_frame_harp_v_extended, afRoutine
+ani_harp_v_retracting:	dc.b 3,	id_frame_harp_v_middle, id_frame_harp_v_retracted, afRoutine
+			even

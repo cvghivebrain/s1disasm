@@ -37,7 +37,7 @@ Pole_Action:	; Routine 2
 		beq.s	@moveup
 		subq.w	#1,ost_pole_time(a0) ; decrement time until break
 		bne.s	@moveup
-		move.b	#1,ost_frame(a0) ; break the pole
+		move.b	#id_frame_pole_broken,ost_frame(a0) ; break the pole
 		bra.s	@release
 ; ===========================================================================
 

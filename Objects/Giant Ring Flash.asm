@@ -23,7 +23,7 @@ Flash_Main:	; Routine 0
 		ori.b	#render_rel,ost_render(a0)
 		move.b	#0,ost_priority(a0)
 		move.b	#$20,ost_actwidth(a0)
-		move.b	#$FF,ost_frame(a0)
+		move.b	#-1,ost_frame(a0)
 
 Flash_ChkDel:	; Routine 2
 		bsr.s	Flash_Collect
@@ -38,9 +38,9 @@ Flash_Collect:
 		bpl.s	locret_9F76
 		move.b	#1,ost_anim_time(a0)
 		addq.b	#1,ost_frame(a0)
-		cmpi.b	#8,ost_frame(a0) ; has animation finished?
+		cmpi.b	#id_frame_flash_final+1,ost_frame(a0) ; has animation finished?
 		bcc.s	Flash_End	; if yes, branch
-		cmpi.b	#3,ost_frame(a0) ; is 3rd frame displayed?
+		cmpi.b	#id_frame_flash_full,ost_frame(a0) ; is 3rd frame displayed?
 		bne.s	locret_9F76	; if not, branch
 		movea.l	ost_flash_parent(a0),a1	; get parent object address
 		move.b	#id_GRing_Delete,ost_routine(a1) ; delete parent object

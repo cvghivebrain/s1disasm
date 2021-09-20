@@ -1,10 +1,10 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - SLZ	platforms
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @platform
+Map_Plat_SLZ:	index *
+		ptr frame_plat_slz
 		
-@platform:	spritemap
+frame_plat_slz:	spritemap
 		piece	-$20, -8, 4x4, $21
 		piece	0, -8, 4x4, $21
 		endsprite

@@ -32,13 +32,13 @@
 		objpos $0660,$0458,id_Rings,$13,rem
 		objpos $0660,$04A0,id_Rings,$13,rem
 		objpos $06C0,$0570,id_FloatingBlock,$F0,rem
-		objpos $06F0,$03E0,id_LabyrinthBlock,$30
+		objpos $06F0,$03E0,id_LabyrinthBlock,type_lblock_solid
 		objpos $06F8,$01F8,id_Waterfall,$04
 		objpos $0708,$06F8,id_Waterfall,$04,xflip
 		objpos $0710,$04F8,id_Jaws,$0C,xflip,rem
 		objpos $0740,$03E0,id_FloatingBlock,$FA,xflip,rem
 		objpos $0770,$0378,id_Button,$0A
-		objpos $0770,$0390,id_LabyrinthBlock,$30
+		objpos $0770,$0390,id_LabyrinthBlock,type_lblock_solid
 		objpos $07C0,$0480,id_SpikeBall,$C4
 		objpos $07D0,$05F8,id_Bubble,$81
 		objpos $07F0,$04F8,id_Button,$00
@@ -48,16 +48,16 @@
 		objpos $0810,$0391,id_Monitor,$06,rem
 		objpos $0820,$0678,id_Jaws,$0C,xflip,rem
 		objpos $0820,$06E0,id_Jaws,$0C,xflip,rem
-		objpos $0830,$05F8,id_Harpoon,$02,rem
-		objpos $0850,$0610,id_LabyrinthBlock,$30
-		objpos $0870,$05F8,id_Harpoon,$02,rem
+		objpos $0830,$05F8,id_Harpoon,type_harp_v,rem
+		objpos $0850,$0610,id_LabyrinthBlock,type_lblock_solid
+		objpos $0870,$05F8,id_Harpoon,type_harp_v,rem
 		objpos $0870,$06F8,id_Bubble,$81
-		objpos $0890,$0610,id_LabyrinthBlock,$01
-		objpos $08B0,$05F8,id_Harpoon,$02,rem
-		objpos $08D0,$0610,id_LabyrinthBlock,$30
+		objpos $0890,$0610,id_LabyrinthBlock,type_lblock_sink
+		objpos $08B0,$05F8,id_Harpoon,type_harp_v,rem
+		objpos $08D0,$0610,id_LabyrinthBlock,type_lblock_solid
 		objpos $08D0,$06F8,id_Bubble,$81
 		objpos $08E0,$03F4,id_Spikes,$01
-		objpos $08F0,$05F8,id_Harpoon,$02,rem
+		objpos $08F0,$05F8,id_Harpoon,type_harp_v,rem
 		objpos $08F0,$06A0,id_Jaws,$0C,rem
 		objpos $0910,$02F0,id_Spikes,$00
 		objpos $0920,$05F8,id_Bubble,$80
@@ -76,7 +76,7 @@
 		objpos $0A50,$0510,id_Burrobot,$00,rem
 		objpos $0AA0,$0300,id_SpikeBall,$65
 		objpos $0AA0,$04F8,id_Bubble,$81
-		objpos $0AA8,$0450,id_Harpoon,$00,rem
+		objpos $0AA8,$0450,id_Harpoon,type_harp_h,rem
 		objpos $0B08,$0660,id_FlapDoor,$02
 		objpos $0B20,$02D0,id_Spikes,$30
 		objpos $0B50,$03B1,id_Monitor,$02,rem
@@ -131,12 +131,12 @@
 		objpos $1250,$0668,id_Spikes,$10
 		objpos $125C,$02B3,id_LabyrinthConvey,$7F
 		objpos $125D,$0214,id_LabyrinthConvey,$7F
-		objpos $1270,$0670,id_LabyrinthBlock,$30
+		objpos $1270,$0670,id_LabyrinthBlock,type_lblock_solid
 		objpos $1290,$04AC,id_Lamppost,$01,rem
 		objpos $12CC,$06D0,id_Spikes,$40
 		objpos $12F0,$01B8,id_Button,$0E
-		objpos $12F0,$01D0,id_LabyrinthBlock,$30
-		objpos $12F0,$01F0,id_LabyrinthBlock,$30
+		objpos $12F0,$01D0,id_LabyrinthBlock,type_lblock_solid
+		objpos $12F0,$01F0,id_LabyrinthBlock,type_lblock_solid
 		objpos $1300,$0280,id_LabyrinthConvey,$85
 		objpos $1320,$02F0,id_Spikes,$30
 		objpos $1330,$0580,id_Jaws,$0C,xflip,rem
@@ -183,7 +183,7 @@
 		objpos $1640,$0790,id_Spikes,$30,yflip
 		objpos $1660,$04F8,id_Springs,$00
 		objpos $1680,$0638,id_Button,$07
-		objpos $1680,$0650,id_LabyrinthBlock,$30
+		objpos $1680,$0650,id_LabyrinthBlock,type_lblock_solid
 		objpos $16A0,$04F8,id_Bubble,$80
 		objpos $16A0,$07F8,id_Bubble,$80
 		objpos $16C0,$0770,id_Spikes,$30,yflip
@@ -202,26 +202,26 @@
 		objpos $1810,$0670,id_Burrobot,$00,xflip,rem
 		objpos $1830,$0690,id_Burrobot,$00,xflip,rem
 		objpos $1850,$04EC,id_Lamppost,$02,rem
-		objpos $1850,$0630,id_LabyrinthBlock,$30
-		objpos $1880,$05D0,id_LabyrinthBlock,$30
+		objpos $1850,$0630,id_LabyrinthBlock,type_lblock_solid
+		objpos $1880,$05D0,id_LabyrinthBlock,type_lblock_solid
 		objpos $1890,$0598,id_Button,$09
-		objpos $1890,$05B0,id_LabyrinthBlock,$30
-		objpos $1890,$05F0,id_LabyrinthBlock,$30
+		objpos $1890,$05B0,id_LabyrinthBlock,type_lblock_solid
+		objpos $1890,$05F0,id_LabyrinthBlock,type_lblock_solid
 		objpos $18A0,$06F8,id_Bubble,$80
 		objpos $18C0,$0510,id_FloatingBlock,$F9,xflip,rem
-		objpos $18C0,$0530,id_LabyrinthBlock,$30
+		objpos $18C0,$0530,id_LabyrinthBlock,type_lblock_solid
 		objpos $18D0,$06E8,id_Orbinaut,$00,rem
-		objpos $18E0,$0530,id_LabyrinthBlock,$30
+		objpos $18E0,$0530,id_LabyrinthBlock,type_lblock_solid
 		objpos $18E0,$0690,id_Spikes,$30,yflip
 		objpos $18F0,$0410,id_Spikes,$40,yflip
 		objpos $1910,$03F0,id_Invisibarrier,$31
-		objpos $1910,$04F0,id_LabyrinthBlock,$27
+		objpos $1910,$04F0,id_LabyrinthBlock,type_lblock_cork
 		objpos $1970,$0340,id_Invisibarrier,$31
-		objpos $1970,$04F0,id_LabyrinthBlock,$27
+		objpos $1970,$04F0,id_LabyrinthBlock,type_lblock_cork
 		objpos $1990,$0510,id_Burrobot,$00,rem
 		objpos $19A0,$0350,id_Spikes,$30,yflip
 		objpos $19F0,$0370,id_Invisibarrier,$11
-		objpos $19F0,$04F0,id_LabyrinthBlock,$27
+		objpos $19F0,$04F0,id_LabyrinthBlock,type_lblock_cork
 		objpos $1A40,$0210,id_Burrobot,$00,rem
 		objpos $1AD0,$0250,id_Burrobot,$00,rem
 		objpos $1B20,$0210,id_Burrobot,$00,rem
@@ -232,19 +232,19 @@
 		
 		objpos $1E10,$0530,id_Gargoyle,$03,xflip,rem
 		objpos $1E30,$01D0,id_Gargoyle,$03,xflip,rem
-		objpos $1E30,$02D0,id_LabyrinthBlock,$30
+		objpos $1E30,$02D0,id_LabyrinthBlock,type_lblock_solid
 		objpos $1E30,$04E0,id_Gargoyle,$03,xflip,rem
-		objpos $1E48,$0180,id_Harpoon,$00,rem
-		objpos $1E48,$0380,id_Harpoon,$00,rem
-		objpos $1E48,$0480,id_Harpoon,$00,rem
+		objpos $1E48,$0180,id_Harpoon,type_harp_h,rem
+		objpos $1E48,$0380,id_Harpoon,type_harp_h,rem
+		objpos $1E48,$0480,id_Harpoon,type_harp_h,rem
 		objpos $1E50,$02D0,id_Gargoyle,$03,xflip,rem
-		objpos $1E58,$0130,id_Harpoon,$00,xflip,rem
-		objpos $1E58,$0330,id_Harpoon,$00,xflip,rem
-		objpos $1E58,$0430,id_Harpoon,$00,xflip,rem
-		objpos $1E98,$02B0,id_Harpoon,$00,rem
+		objpos $1E58,$0130,id_Harpoon,type_harp_h,xflip,rem
+		objpos $1E58,$0330,id_Harpoon,type_harp_h,xflip,rem
+		objpos $1E58,$0430,id_Harpoon,type_harp_h,xflip,rem
+		objpos $1E98,$02B0,id_Harpoon,type_harp_h,rem
 		objpos $1EB0,$0250,id_Gargoyle,$03,rem
-		objpos $1ED8,$0180,id_Harpoon,$00,xflip,rem
-		objpos $1ED8,$0380,id_Harpoon,$00,xflip,rem
+		objpos $1ED8,$0180,id_Harpoon,type_harp_h,xflip,rem
+		objpos $1ED8,$0380,id_Harpoon,type_harp_h,xflip,rem
 		objpos $20D0,$00BB,id_Prison,$01
 		objpos $20D0,$00E0,id_Prison,$00
 		endobj

@@ -1,13 +1,14 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - SCORE, TIME, RINGS
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @allyellow
-		ptr @ringred
-		ptr @timered
-		ptr @allred
+Map_HUD:	index *
+		ptr frame_hud_allyellow
+		ptr frame_hud_ringred
+		ptr frame_hud_timered
+		ptr frame_hud_allred
 		
-@allyellow:	spritemap
+frame_hud_allyellow:
+		spritemap
 		piece	0, -$80, 4x2, 0, hi
 		piece	$20, -$80, 4x2, $18, hi
 		piece	$40, -$80, 4x2, $20, hi
@@ -21,7 +22,8 @@
 		endsprite
 		dc.b 0
 		
-@ringred:	spritemap
+frame_hud_ringred:
+		spritemap
 		piece	0, -$80, 4x2, 0, hi
 		piece	$20, -$80, 4x2, $18, hi
 		piece	$40, -$80, 4x2, $20, hi
@@ -35,7 +37,8 @@
 		endsprite
 		dc.b 0
 		
-@timered:	spritemap
+frame_hud_timered:
+		spritemap
 		piece	0, -$80, 4x2, 0, hi
 		piece	$20, -$80, 4x2, $18, hi
 		piece	$40, -$80, 4x2, $20, hi
@@ -49,7 +52,8 @@
 		endsprite
 		dc.b 0
 		
-@allred:	spritemap
+frame_hud_allred:
+		spritemap
 		piece	0, -$80, 4x2, 0, hi
 		piece	$20, -$80, 4x2, $18, hi
 		piece	$40, -$80, 4x2, $20, hi

@@ -1,10 +1,11 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - drowning countdown numbers (LZ)
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @num
+Map_Drown:	index *
+		ptr frame_drown_num
 		
-@num:		spritemap
+frame_drown_num:
+		spritemap
 		piece	-$E, -$18, 4x3, 0
 		endsprite
 		even

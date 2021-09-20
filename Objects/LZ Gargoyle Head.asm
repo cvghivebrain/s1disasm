@@ -61,7 +61,7 @@ Gar_FireBall:	; Routine 4
 		move.b	#4,ost_priority(a0)
 		move.b	#$98,ost_col_type(a0)
 		move.b	#8,ost_actwidth(a0)
-		move.b	#2,ost_frame(a0)
+		move.b	#id_frame_gargoyle_fireball1,ost_frame(a0)
 		addq.w	#8,ost_y_pos(a0)
 		move.w	#$200,ost_x_vel(a0)
 		btst	#status_xflip_bit,ost_status(a0) ; is gargoyle facing left?

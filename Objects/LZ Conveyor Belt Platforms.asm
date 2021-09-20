@@ -57,7 +57,7 @@ LCon_Main:	; Routine 0
 ; ===========================================================================
 
 loc_123E2:
-		move.b	#4,ost_frame(a0) ; use plaform sprite
+		move.b	#id_frame_lcon_platform,ost_frame(a0) ; use plaform sprite
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0 ; get subtype (not the same as initial subtype)
 		move.w	d0,d1

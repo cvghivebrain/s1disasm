@@ -1,10 +1,10 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - purple rock	(GHZ)
 ; ---------------------------------------------------------------------------
-		index *
-		ptr byte_D110
+Map_PRock:	index *
+		ptr frame_rock_0
 		
-byte_D110:	spritemap
+frame_rock_0:	spritemap
 		piece	-$18, -$10, 3x4, 0
 		piece	0, -$10, 3x4, $C
 		endsprite

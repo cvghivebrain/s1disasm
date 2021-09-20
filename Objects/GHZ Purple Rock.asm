@@ -2,6 +2,7 @@
 ; Object 3B - purple rock (GHZ)
 ; ---------------------------------------------------------------------------
 
+PurpleRock:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Rock_Index(pc,d0.w),d1

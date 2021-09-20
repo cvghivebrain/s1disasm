@@ -1,8 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Animation script - water splash (LZ)
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @splash
+Ani_Splash:	index *
+		ptr ani_splash_0
 		
-@splash:	dc.b 4,	0, 1, 2, afRoutine
+ani_splash_0:	dc.b 4,	id_frame_splash_0, id_frame_splash_1, id_frame_splash_2, afRoutine
 		even

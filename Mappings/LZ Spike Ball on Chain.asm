@@ -1,20 +1,23 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - spiked ball	on a chain (LZ)
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @chain
-		ptr @spikeball
-		ptr @base
+Map_SBall2:	index *
+		ptr frame_sball_chain
+		ptr frame_sball_spikeball
+		ptr frame_sball_base
 		
-@chain:		spritemap			; chain link
+frame_sball_chain:
+		spritemap			; chain link
 		piece	-8, -8, 2x2, 0
 		endsprite
 		
-@spikeball:	spritemap			; spikeball
+frame_sball_spikeball:
+		spritemap			; spikeball
 		piece	-$10, -$10, 4x4, 4
 		endsprite
 		
-@base:		spritemap			; wall attachment
+frame_sball_base:
+		spritemap			; wall attachment
 		piece	-8, -8, 2x2, $14
 		endsprite
 		even

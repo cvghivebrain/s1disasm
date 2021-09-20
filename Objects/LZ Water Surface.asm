@@ -40,7 +40,7 @@ Surf_Action:	; Routine 2
 		bne.s	@stopped
 		btst	#bitStart,(v_joypad_press_actual).w ; is Start button pressed?
 		beq.s	@animate	; if not, branch
-		addq.b	#3,ost_frame(a0) ; use different frames
+		addq.b	#id_frame_surf_paused1,ost_frame(a0) ; use different frames
 		move.b	#1,ost_surf_freeze(a0) ; stop animation
 		bra.s	@display
 ; ===========================================================================
@@ -49,14 +49,14 @@ Surf_Action:	; Routine 2
 		tst.w	(f_pause).w	; is the game paused?
 		bne.s	@display	; if yes, branch
 		move.b	#0,ost_surf_freeze(a0) ; resume animation
-		subq.b	#3,ost_frame(a0) ; use normal frames
+		subq.b	#id_frame_surf_paused1,ost_frame(a0) ; use normal frames
 
 @animate:
 		subq.b	#1,ost_anim_time(a0)
 		bpl.s	@display
 		move.b	#7,ost_anim_time(a0)
 		addq.b	#1,ost_frame(a0)
-		cmpi.b	#3,ost_frame(a0)
+		cmpi.b	#id_frame_surf_normal3+1,ost_frame(a0)
 		bcs.s	@display
 		move.b	#0,ost_frame(a0)
 

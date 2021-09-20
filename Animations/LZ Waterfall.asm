@@ -1,8 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Animation script - waterfall (LZ)
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @splash
+Ani_WFall:	index *
+		ptr ani_wfall_splash
 		
-@splash:	dc.b 5,	9, $A, $B, afEnd
-		even
+ani_wfall_splash:	dc.b 5,	id_frame_wfall_splash1, id_frame_wfall_splash2, id_frame_wfall_splash3, afEnd
+			even

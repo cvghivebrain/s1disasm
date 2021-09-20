@@ -64,7 +64,7 @@ Drown_ChkWater:	; Routine 4
 
 		move.b	#id_Drown_Display,ost_routine(a0) ; goto Drown_Display next
 		addq.b	#7,ost_anim(a0)
-		cmpi.b	#$D,ost_anim(a0)
+		cmpi.b	#id_ani_drown_blank,ost_anim(a0)
 		beq.s	Drown_Display
 		bra.s	Drown_Display
 ; ===========================================================================
@@ -130,7 +130,7 @@ Drown_ShowNumber:
 		beq.s	@nonumber
 		subq.w	#1,ost_drown_num_time(a0) ; decrement timer
 		bne.s	@nonumber	; if time remains, branch
-		cmpi.b	#7,ost_anim(a0)
+		cmpi.b	#id_ani_drown_zeroflash,ost_anim(a0)
 		bcc.s	@nonumber
 
 		move.w	#15,ost_drown_num_time(a0)

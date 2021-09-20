@@ -2,6 +2,7 @@
 ; Object 7D - hidden points at the end of a level
 ; ---------------------------------------------------------------------------
 
+HiddenBonus:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Bonus_Index(pc,d0.w),d1

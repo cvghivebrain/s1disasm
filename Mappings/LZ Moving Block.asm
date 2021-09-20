@@ -1,10 +1,11 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - moving block (LZ)
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @0
+Map_MBlockLZ:	index *
+		ptr frame_mblocklz_0
 		
-@0:		spritemap
+frame_mblocklz_0:
+		spritemap
 		piece	-$10, -8, 4x2, 0
 		endsprite
 		even

@@ -1,13 +1,14 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - giant ring
 ; ---------------------------------------------------------------------------
-		index *
-		ptr byte_9FDA
-		ptr byte_A00D
-		ptr byte_A036
-		ptr byte_A04B
+Map_GRing:	index *
+		ptr frame_bigring_front
+		ptr frame_bigring_45_1
+		ptr frame_bigring_side
+		ptr frame_bigring_45_2
 		
-byte_9FDA:	spritemap		; ring front
+frame_bigring_front:
+		spritemap		; ring front
 		piece	-$18, -$20, 3x1, 0
 		piece	0, -$20, 3x1, 3
 		piece	-$20, -$18, 4x1, 6
@@ -20,7 +21,8 @@ byte_9FDA:	spritemap		; ring front
 		piece	0, $18, 3x1, $29
 		endsprite
 		
-byte_A00D:	spritemap		; ring angle
+frame_bigring_45_1:
+		spritemap		; ring angle
 		piece	-$10, -$20, 4x1, $2C
 		piece	-$18, -$18, 3x1, $30
 		piece	0, -$18, 3x2, $33
@@ -31,14 +33,16 @@ byte_A00D:	spritemap		; ring angle
 		piece	-$10, $18, 4x1, $4E
 		endsprite
 		
-byte_A036:	spritemap		; ring perpendicular
+frame_bigring_side:
+		spritemap		; ring perpendicular
 		piece	-$C, -$20, 2x4, $52
 		piece	4, -$20, 1x4, $52, xflip
 		piece	-$C, 0, 2x4, $5A
 		piece	4, 0, 1x4, $5A, xflip
 		endsprite
 		
-byte_A04B:	spritemap		; ring angle
+frame_bigring_45_2:
+		spritemap		; ring angle
 		piece	-$10, -$20, 4x1, $2C, xflip
 		piece	0, -$18, 3x1, $30, xflip
 		piece	-$18, -$18, 3x2, $33, xflip

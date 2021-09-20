@@ -1,16 +1,19 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - unused
 ; ---------------------------------------------------------------------------
+Map_Plat_Unused:
 		index *
-		ptr @small
-		ptr @large
+		ptr frame_plat_unused_small
+		ptr frame_plat_unused_large
 		
-@small:		spritemap
+frame_plat_unused_small:
+		spritemap
 		piece	-$18, -$C, 3x4, $3C
 		piece	0, -$C, 3x4, $48
 		endsprite
 		
-@large:		spritemap
+frame_plat_unused_large:
+		spritemap
 		piece	-$20, -$C, 4x4, $CA
 		piece	-$20, 4, 4x4, $DA
 		piece	-$20, $24, 4x4, $DA

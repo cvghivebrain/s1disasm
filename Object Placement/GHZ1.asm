@@ -33,10 +33,10 @@
 		objpos $0B10,$0308,id_Scenery,$03
 		objpos $0B94,$02D0,id_Rings,$11,rem
 		objpos $0BA0,$02FE,id_PurpleRock,$00
-		objpos $0C08,$02F8,id_EdgeWalls,$00
+		objpos $0C08,$02F8,id_EdgeWalls,id_frame_edge_shadow
 		objpos $0C50,$034C,id_MotoBug,$00,rem
-		objpos $0D08,$03B0,id_EdgeWalls,$00
-		objpos $0D08,$03E0,id_EdgeWalls,$01
+		objpos $0D08,$03B0,id_EdgeWalls,id_frame_edge_shadow
+		objpos $0D08,$03E0,id_EdgeWalls,id_frame_edge_light
 		objpos $0D28,$0373,id_Spikes,$00
 		objpos $0D40,$0268,id_BuzzBomber,$00,rem
 		objpos $0D50,$02B6,id_Rings,$10,rem
@@ -116,8 +116,8 @@
 		objpos $1784,$0189,id_Rings,$10,rem
 		objpos $17A6,$0179,id_Rings,$10,rem
 		objpos $17E0,$0174,id_Rings,$10,rem
-		objpos $1808,$01C0,id_EdgeWalls,$01
-		objpos $1808,$01F0,id_EdgeWalls,$01
+		objpos $1808,$01C0,id_EdgeWalls,id_frame_edge_light
+		objpos $1808,$01F0,id_EdgeWalls,id_frame_edge_light
 		objpos $180C,$0174,id_Rings,$10,rem
 		objpos $1820,$0074,id_Rings,$16,rem
 		objpos $183C,$0176,id_Rings,$10,rem
@@ -138,10 +138,10 @@
 		objpos $198C,$017B,id_Rings,$10,rem
 		objpos $19BC,$0176,id_Rings,$10,rem
 		objpos $19EC,$0174,id_Rings,$10,rem
-		objpos $1AF8,$00C0,id_EdgeWalls,$02
-		objpos $1AF8,$00E0,id_EdgeWalls,$02
-		objpos $1AF8,$02B0,id_EdgeWalls,$02
-		objpos $1AF8,$02F0,id_EdgeWalls,$02
+		objpos $1AF8,$00C0,id_EdgeWalls,id_frame_edge_dark
+		objpos $1AF8,$00E0,id_EdgeWalls,id_frame_edge_dark
+		objpos $1AF8,$02B0,id_EdgeWalls,id_frame_edge_dark
+		objpos $1AF8,$02F0,id_EdgeWalls,id_frame_edge_dark
 		objpos $1B60,$0088,id_BasicPlatform,$03
 		objpos $1B70,$0288,id_BasicPlatform,$03
 		objpos $1BA0,$00C8,id_BasicPlatform,$03
@@ -160,13 +160,13 @@
 		objpos $1D88,$0228,id_Rings,$13,rem
 		objpos $1DA0,$0320,id_BuzzBomber,$00,rem
 		objpos $1DE0,$0204,id_BasicPlatform,$01
-		objpos $1DF8,$04B0,id_EdgeWalls,$02
+		objpos $1DF8,$04B0,id_EdgeWalls,id_frame_edge_dark
 		objpos $1E00,$0268,id_Rings,$10,rem
-		objpos $1E08,$0370,id_EdgeWalls,$00
+		objpos $1E08,$0370,id_EdgeWalls,id_frame_edge_shadow
 		objpos $1E18,$0368,id_Newtron,$01,xflip,rem
 		objpos $1E20,$04B4,id_Spikes,$00
 		objpos $1E40,$0450,id_Newtron,$01,xflip,rem
-		objpos $1E48,$0340,id_EdgeWalls,$00
+		objpos $1E48,$0340,id_EdgeWalls,id_frame_edge_shadow
 		objpos $1E60,$0330,id_Newtron,$01,xflip,rem
 		objpos $1E60,$0430,id_Newtron,$01,xflip,rem
 		objpos $1EA0,$02A0,id_BuzzBomber,$00,rem

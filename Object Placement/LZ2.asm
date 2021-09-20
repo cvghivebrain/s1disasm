@@ -24,7 +24,7 @@
 		objpos $02D0,$0110,id_Burrobot,$00,rem
 		objpos $02F0,$04C0,id_SpikeBall,$C4
 		objpos $0340,$0390,id_Spikes,$30,yflip
-		objpos $0340,$0408,id_LabyrinthBlock,$13
+		objpos $0340,$0408,id_LabyrinthBlock,type_lblock_rise
 		objpos $0358,$0110,id_Waterfall,$07
 		objpos $0358,$0120,id_Waterfall,$09
 		objpos $0368,$0130,id_Waterfall,$08,xflip
@@ -71,11 +71,11 @@
 		objpos $07E0,$04D0,id_Spikes,$30,yflip
 		objpos $07F0,$0458,id_Jaws,$06,xflip,rem
 		objpos $0808,$01F0,id_Rings,$12,rem
-		objpos $0810,$0610,id_LabyrinthBlock,$01
+		objpos $0810,$0610,id_LabyrinthBlock,type_lblock_sink
 		objpos $0820,$0678,id_Bubble,$80
 		objpos $0828,$0350,id_Rings,$12,rem
 		objpos $0830,$04F8,id_Bubble,$80
-		objpos $0830,$0610,id_LabyrinthBlock,$01
+		objpos $0830,$0610,id_LabyrinthBlock,type_lblock_sink
 		objpos $0840,$0390,id_Spikes,$30,yflip
 		objpos $0860,$05E4,id_Orbinaut,$00,xflip,rem
 		objpos $08A0,$0270,id_Spikes,$30,yflip
@@ -83,7 +83,7 @@
 		objpos $08D6,$0550,id_Spikes,$30,yflip
 		objpos $08F0,$020C,id_Gargoyle,$02,rem
 		objpos $08F0,$0391,id_Monitor,$06,rem
-		objpos $0910,$06C8,id_Harpoon,$02,yflip,rem
+		objpos $0910,$06C8,id_Harpoon,type_harp_v,yflip,rem
 		objpos $0930,$0670,id_Jaws,$09,xflip,rem
 		objpos $0940,$06F8,id_Bubble,$80
 		objpos $0948,$01A0,id_FloatingBlock,$E2,rem
@@ -93,18 +93,18 @@
 		objpos $09C0,$06A4,id_Jaws,$09,rem
 		objpos $09E0,$01EC,id_Lamppost,$01,rem
 		objpos $09E0,$05B0,id_Spikes,$30,yflip
-		objpos $09F0,$06C8,id_Harpoon,$02,yflip,rem
+		objpos $09F0,$06C8,id_Harpoon,type_harp_v,yflip,rem
 		objpos $0A10,$03F8,id_Rings,$42,rem
 		objpos $0A10,$0438,id_Bubble,$81
 		objpos $0A20,$0510,id_Spikes,$30,yflip
 		objpos $0A20,$05F8,id_Bubble,$81
 		objpos $0A40,$0498,id_Rings,$41,rem
-		objpos $0A58,$0210,id_Harpoon,$00,xflip,rem
-		objpos $0A68,$0250,id_Harpoon,$00,xflip,rem
-		objpos $0A68,$0448,id_Harpoon,$00,xflip,rem
+		objpos $0A58,$0210,id_Harpoon,type_harp_h,xflip,rem
+		objpos $0A68,$0250,id_Harpoon,type_harp_h,xflip,rem
+		objpos $0A68,$0448,id_Harpoon,type_harp_h,xflip,rem
 		objpos $0A90,$02F8,id_Button,$00
 		objpos $0A90,$04F8,id_Button,$01
-		objpos $0A98,$04B0,id_Harpoon,$00,xflip,rem
+		objpos $0A98,$04B0,id_Harpoon,type_harp_h,xflip,rem
 		objpos $0AC0,$06F8,id_Bubble,$80
 		objpos $0AE0,$06E4,id_Orbinaut,$00,rem
 		objpos $0AF0,$01F1,id_Monitor,$05,rem

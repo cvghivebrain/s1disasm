@@ -40,7 +40,7 @@ Bub_Main:	; Routine 0
 		andi.w	#$7F,d0		; read only last 7 bits	(deduct	$80)
 		move.b	d0,ost_bubble_wait_time(a0)
 		move.b	d0,ost_bubble_wait_master(a0) ; set bubble frequency
-		move.b	#6,ost_anim(a0)
+		move.b	#id_ani_bubble_bubmaker,ost_anim(a0)
 		bra.w	Bub_BblMaker
 ; ===========================================================================
 
@@ -54,7 +54,7 @@ Bub_Main:	; Routine 0
 Bub_Animate:	; Routine 2
 		lea	(Ani_Bub).l,a1
 		jsr	(AnimateSprite).l
-		cmpi.b	#6,ost_frame(a0) ; is bubble full-size?
+		cmpi.b	#id_frame_bubble_full,ost_frame(a0) ; is bubble full-size?
 		bne.s	Bub_ChkWater	; if not, branch
 
 		move.b	#1,ost_bubble_inhalable(a0) ; set "inhalable" flag

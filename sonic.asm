@@ -8345,14 +8345,13 @@ loc_7BB6:
 Map_Swing_SLZ:	include "Mappings\SLZ Swinging Platforms.asm"
 
 		include "Objects\GHZ Spiked Helix Pole.asm" ; Helix
-Map_Hel:	include "Mappings\GHZ Spiked Helix Pole.asm"
+		include "Mappings\GHZ Spiked Helix Pole.asm" ; Map_Hel
 
 		include "Objects\Platforms.asm" ; BasicPlatform
-Map_Plat_Unused:
-		include "Mappings\Unused Platforms.asm"
-Map_Plat_GHZ:	include "Mappings\GHZ Platforms.asm"
-Map_Plat_SYZ:	include "Mappings\SYZ Platforms.asm"
-Map_Plat_SLZ:	include "Mappings\SLZ Platforms.asm"
+		include "Mappings\Unused Platforms.asm" ; Map_Plat_Unused
+		include "Mappings\GHZ Platforms.asm" ; Map_Plat_GHZ
+		include "Mappings\SYZ Platforms.asm" ; Map_Plat_SYZ
+		include "Mappings\SLZ Platforms.asm" ; Map_Plat_SLZ
 
 ; ---------------------------------------------------------------------------
 ; Object 19 - blank
@@ -8436,8 +8435,8 @@ Map_Points:	include "Mappings\Points.asm"
 		include "Objects\Giant Ring Flash.asm" ; RingFlash
 Ani_Ring:	include "Animations\Ring.asm"
 Map_Ring:	include "Mappings\Ring.asm"
-Map_GRing:	include "Mappings\Giant Ring.asm"
-Map_Flash:	include "Mappings\Giant Ring Flash.asm"
+		include "Mappings\Giant Ring.asm" ; Map_GRing
+		include "Mappings\Giant Ring Flash.asm" ; Map_Flash
 
 		include "Objects\Monitors (1).asm" ; Monitor
 		include "Objects\Monitor Contents.asm" ; PowerUp
@@ -8462,8 +8461,8 @@ Map_TSon:	include "Mappings\Title Screen Sonic.asm"
 		include "Mappings\Chopper.asm" ; Map_Chop
 
 		include "Objects\Jaws.asm" ; Jaws
-Ani_Jaws:	include "Animations\Jaws.asm"
-Map_Jaws:	include "Mappings\Jaws.asm"
+		include "Animations\Jaws.asm" ; Ani_Jaws
+		include "Mappings\Jaws.asm" ; Map_Jaws
 
 		include "Objects\Burrobot.asm" ; Burrobot
 		include "Animations\Burrobot.asm" ; Ani_Burro
@@ -8504,9 +8503,9 @@ Map_SSRC:	include "Mappings\Special Stage Results Chaos Emeralds.asm"
 Spikes:		include "Objects\Spikes.asm"
 Map_Spike:	include "Mappings\Spikes.asm"
 
-PurpleRock:	include "Objects\GHZ Purple Rock.asm"
+		include "Objects\GHZ Purple Rock.asm" ; PurpleRock
 WaterSound:	include "Objects\GHZ Waterfall Sound.asm"
-Map_PRock:	include "Mappings\GHZ Purple Rock.asm"
+		include "Mappings\GHZ Purple Rock.asm" ; Map_PRock
 
 		include "Objects\GHZ & SLZ Smashable Walls & SmashObject.asm" ; SmashWall
 		include "Mappings\GHZ & SLZ Smashable Walls.asm" ; Map_Smash
@@ -8816,7 +8815,7 @@ Ani_Roll:	include "Animations\Roller.asm"
 Map_Roll:	include "Mappings\Roller.asm"
 
 		include "Objects\GHZ Walls (1).asm" ; EdgeWalls
-Map_Edge:	include "Mappings\GHZ Walls.asm"
+		include "Mappings\GHZ Walls.asm" ; Map_Edge
 
 LavaMaker:	include "Objects\MZ & SLZ Fireball Launchers.asm"
 		include "Objects\Fireballs.asm" ; LavaBall
@@ -8872,7 +8871,7 @@ Map_Smab:	include "Mappings\MZ Smashable Green Block.asm"
 
 		include "Objects\MZ, LZ & SBZ Moving Blocks.asm" ; MovingBlock
 Map_MBlock:	include "Mappings\MZ & SBZ Moving Blocks.asm"
-Map_MBlockLZ:	include "Mappings\LZ Moving Block.asm"
+		include "Mappings\LZ Moving Block.asm" ; Map_MBlockLZ
 
 		include "Objects\Batbrain.asm" ; Batbrain
 		include "Animations\Batbrain.asm" ; Ani_Bat
@@ -8883,7 +8882,7 @@ Map_FBlock:	include "Mappings\SYZ & SLZ Floating Blocks, LZ Doors.asm"
 
 		include "Objects\SYZ & LZ Spike Ball Chain.asm" ; SpikeBall
 Map_SBall:	include "Mappings\SYZ Spike Ball Chain.asm"
-Map_SBall2:	include "Mappings\LZ Spike Ball on Chain.asm"
+		include "Mappings\LZ Spike Ball on Chain.asm" ; Map_SBall2
 
 		include "Objects\SYZ Large Spike Balls.asm" ; BigSpikeBall
 Map_BBall:	include "Mappings\SYZ & SBZ Large Spike Balls.asm"
@@ -8901,17 +8900,17 @@ Map_Stair:	include "Mappings\SLZ Stairs.asm"
 Map_Pylon:	include "Mappings\SLZ Pylon.asm"
 
 		include "Objects\LZ Water Surface.asm" ; WaterSurface
-Map_Surf:	include "Mappings\LZ Water Surface.asm"
+		include "Mappings\LZ Water Surface.asm" ; Map_Surf
 
 		include "Objects\LZ Pole.asm" ; Pole
-Map_Pole:	include "Mappings\LZ Pole.asm"
+		include "Mappings\LZ Pole.asm" ; Map_Pole
 
 		include "Objects\LZ Flapping Door.asm" ; FlapDoor
-Ani_Flap:	include "Animations\LZ Flapping Door.asm"
-Map_Flap:	include "Mappings\LZ Flapping Door.asm"
+		include "Animations\LZ Flapping Door.asm" ; Ani_Flap
+		include "Mappings\LZ Flapping Door.asm" ; Map_Flap
 
 		include "Objects\Invisible Solid Blocks.asm" ; Invisibarrier
-Map_Invis:	include "Mappings\Invisible Solid Blocks.asm"
+		include "Mappings\Invisible Solid Blocks.asm" ; Map_Invis
 
 		include "Objects\SLZ Fans.asm" ; Fan
 Map_Fan:	include "Mappings\SLZ Fans.asm"
@@ -8929,33 +8928,33 @@ Ani_Orb:	include "Animations\Orbinaut.asm"
 Map_Orb:	include "Mappings\Orbinaut.asm"
 
 		include "Objects\LZ Harpoon.asm" ; Harpoon
-Ani_Harp:	include "Animations\LZ Harpoon.asm"
-Map_Harp:	include "Mappings\LZ Harpoon.asm"
+		include "Animations\LZ Harpoon.asm" ; Ani_Harp
+		include "Mappings\LZ Harpoon.asm" ; Map_Harp
 
 		include "Objects\LZ Blocks.asm" ; LabyrinthBlock
-Map_LBlock:	include "Mappings\LZ Blocks.asm"
+		include "Mappings\LZ Blocks.asm" ; Map_LBlock
 
 		include "Objects\LZ Gargoyle Head.asm" ; Gargoyle
-Map_Gar:	include "Mappings\LZ Gargoyle Head.asm"
+		include "Mappings\LZ Gargoyle Head.asm" ; Map_Gar
 
 		include "Objects\LZ Conveyor Belt Platforms.asm" ; LabyrinthConvey
-Map_LConv:	include "Mappings\LZ Conveyor Belt Platforms.asm"
+		include "Mappings\LZ Conveyor Belt Platforms.asm" ; Map_LConv
 
 		include "Objects\LZ Bubbles.asm" ; Bubble
-Ani_Bub:	include "Animations\LZ Bubbles.asm"
-Map_Bub:	include "Mappings\LZ Bubbles.asm"
+		include "Animations\LZ Bubbles.asm" ; Ani_Bub
+		include "Mappings\LZ Bubbles.asm" ; Map_Bub
 
 		include "Objects\LZ Waterfall.asm" ; Waterfall
-Ani_WFall:	include "Animations\LZ Waterfall.asm"
-Map_WFall:	include "Mappings\LZ Waterfall.asm"
+		include "Animations\LZ Waterfall.asm" ; Ani_WFall
+		include "Mappings\LZ Waterfall.asm" ; Map_WFall
 
 		include "Objects\Sonic (1).asm" ; SonicPlayer
 
 		include "Objects\LZ Drowning Numbers.asm" ; DrownCount
 		include "Objects\_ResumeMusic.asm"
 
-Ani_Drown:	include "Animations\LZ Drowning Numbers.asm"
-Map_Drown:	include "Mappings\LZ Drowning Numbers.asm"
+		include "Animations\LZ Drowning Numbers.asm" ; Ani_Drown
+		include "Mappings\LZ Drowning Numbers.asm" ; Map_Drown
 
 		include "Objects\Shield & Invincibility.asm" ; ShieldItem
 		include "Objects\Unused Special Stage Warp.asm" ; VanishSonic
@@ -8964,8 +8963,8 @@ Ani_Shield:	include "Animations\Shield & Invincibility.asm"
 Map_Shield:	include "Mappings\Shield & Invincibility.asm"
 Ani_Vanish:	include "Animations\Unused Special Stage Warp.asm"
 Map_Vanish:	include "Mappings\Unused Special Stage Warp.asm"
-Ani_Splash:	include "Animations\LZ Water Splash.asm"
-Map_Splash:	include "Mappings\LZ Water Splash.asm"
+		include "Animations\LZ Water Splash.asm" ; Ani_Splash
+		include "Mappings\LZ Water Splash.asm" ; Map_Splash
 
 		include "Objects\Sonic (2).asm"
 		include "Objects\_FindNearestTile, FindFloor & FindWall.asm"
@@ -9451,11 +9450,11 @@ Teleport:	include "Objects\SBZ Teleporter.asm"
 		include "Animations\Caterkiller.asm" ; Ani_Cat
 		include "Mappings\Caterkiller.asm" ; Map_Cat
 
-Lamppost:	include "Objects\Lamppost.asm"		
-Map_Lamp:	include "Mappings\Lamppost.asm"
+		include "Objects\Lamppost.asm" ; Lamppost
+		include "Mappings\Lamppost.asm" ; Map_Lamp
 
-HiddenBonus:	include "Objects\Hidden Bonus Points.asm"
-Map_Bonus:	include "Mappings\Hidden Bonus Points.asm"
+		include "Objects\Hidden Bonus Points.asm" ; HiddenBonus
+		include "Mappings\Hidden Bonus Points.asm" ; Map_Bonus
 
 		include "Objects\Credits & Sonic Team Presents.asm" ; CreditsText
 		include "Mappings\Credits & Sonic Team Presents.asm" ; Map_Cred
@@ -10240,7 +10239,7 @@ Obj10:
 		include "Includes\AnimateLevelGfx.asm"
 
 		include "Objects\HUD.asm" ; HUD
-Map_HUD:	include "Mappings\HUD Score, Time & Rings.asm"
+		include "Mappings\HUD Score, Time & Rings.asm" ; Map_HUD
 
 		include "Objects\_AddPoints.asm"
 
@@ -12080,6 +12079,7 @@ ObjPosSBZPlatform_Index:
 		ptr ObjPos_SBZ1pf2
 		endobj
 		
+		include "Object Subtypes.asm"
 ObjPos_GHZ1:	include	"Object Placement\GHZ1.asm"
 		even
 ObjPos_GHZ2:	include	"Object Placement\GHZ2.asm"

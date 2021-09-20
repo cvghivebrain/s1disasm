@@ -86,7 +86,7 @@ SBall_Main:	; Routine 0
 
 		tst.b	d3
 		bne.s	@notlzagain
-		move.b	#2,ost_frame(a1) ; use different frame for LZ chain
+		move.b	#id_frame_sball_base,ost_frame(a1) ; use different frame for LZ chain
 
 	@notlzagain:
 		dbf	d1,@makechain ; repeat for length of chain
@@ -101,7 +101,7 @@ SBall_Main:	; Routine 0
 		bne.s	SBall_Move
 
 		move.b	#$8B,ost_col_type(a0) ; if yes, make last spikeball larger
-		move.b	#1,ost_frame(a0) ; use different frame
+		move.b	#id_frame_sball_spikeball,ost_frame(a0) ; use different frame
 
 SBall_Move:	; Routine 2
 		bsr.w	@movesub

@@ -2,6 +2,7 @@
 ; Object 79 - lamppost
 ; ---------------------------------------------------------------------------
 
+Lamppost:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Lamp_Index(pc,d0.w),d1
@@ -42,7 +43,7 @@ Lamp_Main:	; Routine 0
 	@red:
 		bset	#0,2(a2,d0.w)
 		move.b	#id_Lamp_Finish,ost_routine(a0) ; goto Lamp_Finish next
-		move.b	#3,ost_frame(a0) ; use red lamppost frame
+		move.b	#id_frame_lamp_red,ost_frame(a0) ; use red lamppost frame
 		rts	
 ; ===========================================================================
 
@@ -62,7 +63,7 @@ Lamp_Blue:	; Routine 2
 		move.b	ost_respawn(a0),d0
 		bset	#0,2(a2,d0.w)
 		move.b	#id_Lamp_Finish,ost_routine(a0)
-		move.b	#3,ost_frame(a0)
+		move.b	#id_frame_lamp_red,ost_frame(a0)
 		bra.w	@donothing
 ; ===========================================================================
 
@@ -92,11 +93,11 @@ Lamp_Blue:	; Routine 2
 		move.b	#render_rel,ost_render(a1)
 		move.b	#8,ost_actwidth(a1)
 		move.b	#4,ost_priority(a1)
-		move.b	#2,ost_frame(a1) ; use "ball only" frame
+		move.b	#id_frame_lamp_redballonly,ost_frame(a1) ; use "ball only" frame
 		move.w	#32,ost_lamp_twirl_time(a1)
 
 	@fail:
-		move.b	#1,ost_frame(a0) ; use "post only" frame
+		move.b	#id_frame_lamp_poleonly,ost_frame(a0) ; use "post only" frame
 		bsr.w	Lamp_StoreInfo
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
