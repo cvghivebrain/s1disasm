@@ -1,8 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Animation script - ring
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @ring
+Ani_Ring:	index *
+		ptr ani_ring_sparkle
 		
-@ring:		dc.b 5,	4, 5, 6, 7, afRoutine
-		even
+ani_ring_sparkle:	dc.b 5,	id_frame_ring_sparkle1, id_frame_ring_sparkle2, id_frame_ring_sparkle3, id_frame_ring_sparkle4, afRoutine
+			even

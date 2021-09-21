@@ -2,6 +2,7 @@
 ; Object 43 - Roller enemy (SYZ)
 ; ---------------------------------------------------------------------------
 
+Roller:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Roll_Index(pc,d0.w),d1
@@ -77,7 +78,7 @@ Roll_RollChk:
 		sub.w	ost_x_pos(a0),d0 ; check distance between Roller and Sonic
 		bcs.s	loc_E0D2
 		addq.b	#4,ost_routine2(a0)
-		move.b	#2,ost_anim(a0)
+		move.b	#id_ani_roll_roll,ost_anim(a0)
 		move.w	#$700,ost_x_vel(a0) ; move Roller horizontally
 		move.b	#$8E,ost_col_type(a0) ; make Roller invincible
 
@@ -87,11 +88,11 @@ loc_E0D2:
 ; ===========================================================================
 
 Roll_RollNoChk:
-		cmpi.b	#2,ost_anim(a0)
+		cmpi.b	#id_ani_roll_roll,ost_anim(a0)
 		beq.s	loc_E0F8
 		subq.w	#1,ost_roller_open_time(a0)
 		bpl.s	locret_E0F6
-		move.b	#1,ost_anim(a0)
+		move.b	#id_ani_roll_fold,ost_anim(a0)
 		move.w	#$700,ost_x_vel(a0)
 		move.b	#$8E,ost_col_type(a0)
 
@@ -150,7 +151,7 @@ Roll_Stop:
 		subi.w	#$30,d0
 		sub.w	ost_x_pos(a0),d0
 		bcc.s	locret_E188
-		move.b	#0,ost_anim(a0)
+		move.b	#id_ani_roll_unfold,ost_anim(a0)
 		move.b	#$E,ost_col_type(a0)
 		clr.w	ost_x_vel(a0)
 		move.w	#120,ost_roller_open_time(a0) ; set waiting time to 2 seconds

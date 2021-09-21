@@ -2,6 +2,7 @@
 ; Object 42 - Newtron enemy (GHZ)
 ; ---------------------------------------------------------------------------
 
+Newtron:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Newt_Index(pc,d0.w),d1
@@ -54,13 +55,13 @@ Newt_Action:	; Routine 2
 		cmpi.w	#$80,d0		; is Sonic within $80 pixels of	the newtron?
 		bcc.s	@outofrange	; if not, branch
 		addq.b	#2,ost_routine2(a0) ; goto @type00 next
-		move.b	#1,ost_anim(a0)
+		move.b	#id_ani_newt_drop,ost_anim(a0)
 		tst.b	ost_subtype(a0)	; check	object type
 		beq.s	@istype00	; if type is 00, branch
 
 		move.w	#tile_Nem_Newtron+tile_pal2,ost_tile(a0)
 		move.b	#8,ost_routine2(a0) ; goto @type01 next
-		move.b	#4,ost_anim(a0)	; use different	animation
+		move.b	#id_ani_newt_firing,ost_anim(a0) ; use different animation
 
 	@outofrange:
 	@istype00:
@@ -68,7 +69,7 @@ Newt_Action:	; Routine 2
 ; ===========================================================================
 
 @type00:
-		cmpi.b	#4,ost_frame(a0) ; has "appearing" animation finished?
+		cmpi.b	#id_frame_newt_drop2,ost_frame(a0) ; has "appearing" animation finished?
 		bcc.s	@fall		; is yes, branch
 		bset	#status_xflip_bit,ost_status(a0)
 		move.w	(v_ost_player+ost_x_pos).w,d0
@@ -81,7 +82,7 @@ Newt_Action:	; Routine 2
 ; ===========================================================================
 
 	@fall:
-		cmpi.b	#1,ost_frame(a0)
+		cmpi.b	#id_frame_newt_norm,ost_frame(a0)
 		bne.s	@loc_DE42
 		move.b	#$C,ost_col_type(a0)
 
@@ -94,7 +95,7 @@ Newt_Action:	; Routine 2
 		add.w	d1,ost_y_pos(a0)
 		move.w	#0,ost_y_vel(a0) ; stop newtron falling
 		addq.b	#2,ost_routine2(a0)
-		move.b	#2,ost_anim(a0)
+		move.b	#id_ani_newt_fly1,ost_anim(a0)
 		btst	#5,ost_tile(a0)
 		beq.s	@pppppppp
 		addq.b	#1,ost_anim(a0)
@@ -132,12 +133,12 @@ Newt_Action:	; Routine 2
 ; ===========================================================================
 
 @type01:
-		cmpi.b	#1,ost_frame(a0)
+		cmpi.b	#id_frame_newt_norm,ost_frame(a0)
 		bne.s	@firemissile
 		move.b	#$C,ost_col_type(a0)
 
 	@firemissile:
-		cmpi.b	#2,ost_frame(a0)
+		cmpi.b	#id_frame_newt_firing,ost_frame(a0)
 		bne.s	@fail
 		tst.b	ost_newtron_fire_flag(a0)
 		bne.s	@fail

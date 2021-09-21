@@ -2,6 +2,7 @@
 ; Object 4E - advancing	wall of	lava (MZ)
 ; ---------------------------------------------------------------------------
 
+LavaWall:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	LWall_Index(pc,d0.w),d1
@@ -38,7 +39,7 @@ LWall_Main:	; Routine 0
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	#1,ost_priority(a1)
-		move.b	#0,ost_anim(a1)
+		move.b	#id_ani_lavawall_0,ost_anim(a1)
 		move.b	#$94,ost_col_type(a1)
 		move.l	a0,ost_lwall_parent(a1)
 
@@ -46,7 +47,7 @@ LWall_Main:	; Routine 0
 		dbf	d1,@loop	; repeat sequence once
 
 		addq.b	#6,ost_routine(a1)
-		move.b	#4,ost_frame(a1)
+		move.b	#id_frame_lavawall_4,ost_frame(a1)
 
 LWall_Action:	; Routine 4
 		move.w	(v_ost_player+ost_x_pos).w,d0

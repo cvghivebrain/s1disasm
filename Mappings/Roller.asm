@@ -1,32 +1,37 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Roller enemy (SYZ)
 ; ---------------------------------------------------------------------------
-		index *
-		ptr M_Roll_Stand
-		ptr M_Roll_Fold
-		ptr M_Roll_Roll1
-		ptr M_Roll_Roll2
-		ptr M_Roll_Roll3
+Map_Roll:	index *
+		ptr frame_roll_stand
+		ptr frame_roll_fold
+		ptr frame_roll_roll1
+		ptr frame_roll_roll2
+		ptr frame_roll_roll3
 		
-M_Roll_Stand:	spritemap			; standing
+frame_roll_stand:
+		spritemap			; standing
 		piece	-$10, -$22, 4x3, 0
 		piece	-$10, -$A, 4x3, $C
 		endsprite
 		
-M_Roll_Fold:	spritemap			; folding
+frame_roll_fold:
+		spritemap			; folding
 		piece	-$10, -$1A, 4x3, 0
 		piece	-$10, -2, 4x2, $18
 		endsprite
 		
-M_Roll_Roll1:	spritemap			; rolling
+frame_roll_roll1:
+		spritemap			; rolling
 		piece	-$10, -$10, 4x4, $20
 		endsprite
 		
-M_Roll_Roll2:	spritemap			; rolling
+frame_roll_roll2:
+		spritemap			; rolling
 		piece	-$10, -$10, 4x4, $30
 		endsprite
 		
-M_Roll_Roll3:	spritemap			; rolling
+frame_roll_roll3:
+		spritemap			; rolling
 		piece	-$10, -$10, 4x4, $40
 		endsprite
 		even

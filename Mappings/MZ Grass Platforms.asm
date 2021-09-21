@@ -1,12 +1,13 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - large moving grass-covered platforms (MZ)
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @wide
-		ptr @sloped
-		ptr @narrow
+Map_LGrass:	index *
+		ptr frame_grass_wide
+		ptr frame_grass_sloped
+		ptr frame_grass_narrow
 		
-@wide:		spritemap		; wide platform
+frame_grass_wide:
+		spritemap		; wide platform
 		piece	-$40, -$28, 2x3, $57
 		piece	-$40, -$10, 2x2, $53
 		piece	-$40, 0, 4x4, 1
@@ -22,7 +23,8 @@
 		piece	$30, -$10, 2x2, $53
 		endsprite
 		
-@sloped:	spritemap		; sloped platform (catches fire)
+frame_grass_sloped:
+		spritemap		; sloped platform (catches fire)
 		piece	-$40, -$30, 4x4, $27
 		piece	-$40, -$10, 4x2, $37
 		piece	-$40, 0, 4x4, 1
@@ -35,7 +37,8 @@
 		piece	$20, -$20, 4x2, $4F
 		endsprite
 		
-@narrow:	spritemap		; narrow platform
+frame_grass_narrow:
+		spritemap		; narrow platform
 		piece	-$20, -$30, 4x4, $11
 		piece	-$20, -$10, 4x4, 1
 		piece	-$20, $10, 4x4, 1

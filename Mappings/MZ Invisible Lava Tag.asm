@@ -1,9 +1,10 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - invisible lava tag (MZ)
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @0
+Map_LTag:	index *
+		ptr frame_lavatag_0
 		
-@0:		spritemap		; no sprite, because the tag is invisible!
+frame_lavatag_0:
+		spritemap		; no sprite, because the tag is invisible!
 		endsprite
 		even

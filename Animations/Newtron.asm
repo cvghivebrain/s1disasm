@@ -1,17 +1,17 @@
 ; ---------------------------------------------------------------------------
 ; Animation script - Newtron enemy
 ; ---------------------------------------------------------------------------
-		index *
-		ptr A_Newt_Blank
-		ptr A_Newt_Drop
-		ptr A_Newt_Fly1
-		ptr A_Newt_Fly2
-		ptr A_Newt_Fires
+Ani_Newt:	index *
+		ptr ani_newt_blank
+		ptr ani_newt_drop
+		ptr ani_newt_fly1
+		ptr ani_newt_fly2
+		ptr ani_newt_firing
 		
-A_Newt_Blank:	dc.b $F, $A, afEnd
-		even
-A_Newt_Drop:	dc.b $13, 0, 1,	3, 4, 5, afBack, 1
-A_Newt_Fly1:	dc.b 2,	6, 7, afEnd
-A_Newt_Fly2:	dc.b 2,	8, 9, afEnd
-A_Newt_Fires:	dc.b $13, 0, 1,	1, 2, 1, 1, 0, afRoutine
-		even
+ani_newt_blank:		dc.b $F, id_frame_newt_blank, afEnd
+			even
+ani_newt_drop:		dc.b $13, id_frame_newt_trans, id_frame_newt_norm, id_frame_newt_drop1, id_frame_newt_drop2, id_frame_newt_drop3, afBack, 1
+ani_newt_fly1:		dc.b 2,	id_frame_newt_fly1a, id_frame_newt_fly1b, afEnd
+ani_newt_fly2:		dc.b 2,	id_frame_newt_fly2a, id_frame_newt_fly2b, afEnd
+ani_newt_firing:	dc.b $13, id_frame_newt_trans, id_frame_newt_norm, id_frame_newt_norm, id_frame_newt_firing, id_frame_newt_norm, id_frame_newt_norm, id_frame_newt_trans, afRoutine
+			even

@@ -2,6 +2,7 @@
 ; Object 2F - large grass-covered platforms (MZ)
 ; ---------------------------------------------------------------------------
 
+LargeGrass:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	LGrass_Index(pc,d0.w),d1
@@ -13,11 +14,11 @@ LGrass_Index:	index *,,2
 
 LGrass_Data:	index *
 		ptr LGrass_Data1	 	; collision angle data
-		dc.b 0,	$40			; frame	number,	platform width
+		dc.b id_frame_grass_wide, $40	; frame number,	platform width
 		ptr LGrass_Data3
-		dc.b 1,	$40
+		dc.b id_frame_grass_sloped, $40
 		ptr LGrass_Data2
-		dc.b 2,	$20
+		dc.b id_frame_grass_narrow, $20
 
 ost_grass_x_start:	equ $2A	; original x position (2 bytes)
 ost_grass_y_start:	equ $2C	; original y position (2 bytes)
@@ -78,7 +79,7 @@ LGrass_Solid:
 		move.b	ost_actwidth(a0),d1
 		addi.w	#$B,d1
 		move.w	#$20,d2
-		cmpi.b	#2,ost_frame(a0)
+		cmpi.b	#id_frame_grass_narrow,ost_frame(a0)
 		bne.s	loc_AF8E
 		move.w	#$30,d2
 

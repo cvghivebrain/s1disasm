@@ -1,30 +1,33 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Moto Bug enemy (GHZ)
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @moto1
-		ptr @moto2
-		ptr @moto3
-		ptr @smoke1
-		ptr @smoke2
-		ptr @smoke3
-		ptr @blank
+Map_Moto:	index *
+		ptr frame_moto_0
+		ptr frame_moto_1
+		ptr frame_moto_2
+		ptr frame_moto_smoke1
+		ptr frame_moto_smoke2
+		ptr frame_moto_smoke3
+		ptr frame_moto_blank
 		
-@moto1:		spritemap
+frame_moto_0:
+		spritemap
 		piece	-$14, -$10, 4x2, 0
 		piece	-$14, 0, 4x1, 8
 		piece	$C, -8, 1x2, $C
 		piece	-$C, 8, 3x1, $E
 		endsprite
 		
-@moto2:		spritemap
+frame_moto_1:
+		spritemap
 		piece	-$14, -$F, 4x2, 0
 		piece	-$14, 1, 4x1, 8
 		piece	$C, -7, 1x2, $C
 		piece	-$C, 9, 3x1, $11
 		endsprite
 		
-@moto3:		spritemap
+frame_moto_2:
+		spritemap
 		piece	-$14, -$10, 4x2, 0
 		piece	-$14, 0, 4x1, $14
 		piece	$C, -8, 1x2, $C
@@ -32,18 +35,22 @@
 		piece	-4, 8, 2x1, $12
 		endsprite
 		
-@smoke1:	spritemap
+frame_moto_smoke1:
+		spritemap
 		piece	$10, -6, 1x1, $1A
 		endsprite
 		
-@smoke2:	spritemap
+frame_moto_smoke2:
+		spritemap
 		piece	$10, -6, 1x1, $1B
 		endsprite
 		
-@smoke3:	spritemap
+frame_moto_smoke3:
+		spritemap
 		piece	$10, -6, 1x1, $1C
 		endsprite
 		
-@blank:		spritemap
+frame_moto_blank:
+		spritemap
 		endsprite
 		even

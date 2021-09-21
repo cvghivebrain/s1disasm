@@ -1,75 +1,87 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - monitors
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @static0
-		ptr @static1
-		ptr @static2
-		ptr @eggman
-		ptr @sonic
-		ptr @shoes
-		ptr @shield
-		ptr @invincible
-		ptr @rings
-		ptr @s
-		ptr @goggles
-		ptr @broken
+Map_Monitor:	index *
+		ptr frame_monitor_static0
+		ptr frame_monitor_static1
+		ptr frame_monitor_static2
+		ptr frame_monitor_eggman
+		ptr frame_monitor_sonic
+		ptr frame_monitor_shoes
+		ptr frame_monitor_shield
+		ptr frame_monitor_invincible
+		ptr frame_monitor_rings
+		ptr frame_monitor_s
+		ptr frame_monitor_goggles
+		ptr frame_monitor_broken
 		
-@static0:	spritemap			; static monitor
+frame_monitor_static0:
+		spritemap			; static monitor
 		piece	-$10, -$11, 4x4, 0
 		endsprite
 		
-@static1:	spritemap			; static monitor
+frame_monitor_static1:
+		spritemap			; static monitor
 		piece	-8, -$B, 2x2, $10
 		piece	-$10, -$11, 4x4, 0
 		endsprite
 		
-@static2:	spritemap			; static monitor
+frame_monitor_static2:
+		spritemap			; static monitor
 		piece	-8, -$B, 2x2, $14
 		piece	-$10, -$11, 4x4, 0
 		endsprite
 		
-@eggman:	spritemap			; Eggman monitor
+frame_monitor_eggman:
+		spritemap			; Eggman monitor
 		piece	-8, -$B, 2x2, $18
 		piece	-$10, -$11, 4x4, 0
 		endsprite
 		
-@sonic:		spritemap			; Sonic	monitor
+frame_monitor_sonic:
+		spritemap			; Sonic	monitor
 		piece	-8, -$B, 2x2, $1C
 		piece	-$10, -$11, 4x4, 0
 		endsprite
 		
-@shoes:		spritemap			; speed	shoes monitor
+frame_monitor_shoes:
+		spritemap			; speed	shoes monitor
 		piece	-8, -$B, 2x2, $24
 		piece	-$10, -$11, 4x4, 0
 		endsprite
 		
-@shield:	spritemap			; shield monitor
+frame_monitor_shield:
+		spritemap			; shield monitor
 		piece	-8, -$B, 2x2, $28
 		piece	-$10, -$11, 4x4, 0
 		endsprite
 		
-@invincible:	spritemap			; invincibility	monitor
+frame_monitor_invincible:
+		spritemap			; invincibility	monitor
 		piece	-8, -$B, 2x2, $2C
 		piece	-$10, -$11, 4x4, 0
 		endsprite
 		
-@rings:		spritemap			; 10 rings monitor
+frame_monitor_rings:
+		spritemap			; 10 rings monitor
 		piece	-8, -$B, 2x2, $30
 		piece	-$10, -$11, 4x4, 0
 		endsprite
 		
-@s:		spritemap			; 'S' monitor
+frame_monitor_s:
+		spritemap			; 'S' monitor
 		piece	-8, -$B, 2x2, $34
 		piece	-$10, -$11, 4x4, 0
 		endsprite
 		
-@goggles:	spritemap			; goggles monitor
+frame_monitor_goggles:
+		spritemap			; goggles monitor
 		piece	-8, -$B, 2x2, $20
 		piece	-$10, -$11, 4x4, 0
 		endsprite
 		
-@broken:	spritemap			; broken monitor
+frame_monitor_broken:
+		spritemap			; broken monitor
 		piece	-$10, -1, 4x2, $38
 		endsprite
 		even

@@ -1,8 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Animation script - advancing wall of lava (MZ)
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @wall
+Ani_LWall:	index *
+		ptr ani_lavawall_0
 		
-@wall:		dc.b 9,	0, 1, 2, 3, afEnd
-		even
+ani_lavawall_0:		dc.b 9,	id_frame_lavawall_0, id_frame_lavawall_1, id_frame_lavawall_2, id_frame_lavawall_3, afEnd
+			even

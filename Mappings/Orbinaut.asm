@@ -1,25 +1,29 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Orbinaut enemy (LZ,	SLZ, SBZ)
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @normal
-		ptr @medium
-		ptr @angry
-		ptr @spikeball
+Map_Orb:	index *
+		ptr frame_orb_normal
+		ptr frame_orb_medium
+		ptr frame_orb_angry
+		ptr frame_orb_spikeball
 		
-@normal:	spritemap
+frame_orb_normal:
+		spritemap
 		piece	-$C, -$C, 3x3, 0
 		endsprite
 		
-@medium:	spritemap
+frame_orb_medium:
+		spritemap
 		piece	-$C, -$C, 3x3, 9, pal2
 		endsprite
 		
-@angry:		spritemap
+frame_orb_angry:
+		spritemap
 		piece	-$C, -$C, 3x3, $12
 		endsprite
 		
-@spikeball:	spritemap
+frame_orb_spikeball:
+		spritemap
 		piece	-8, -8, 2x2, $1B
 		endsprite
 		even

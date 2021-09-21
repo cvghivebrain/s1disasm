@@ -2,6 +2,7 @@
 ; Object 4C - lava geyser / lavafall producer (MZ)
 ; ---------------------------------------------------------------------------
 
+GeyserMaker:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	GMake_Index(pc,d0.w),d1
@@ -59,10 +60,10 @@ GMake_MakeLava:	; Routine 6
 		move.l	a0,ost_geyser_parent(a1)
 
 	@fail:
-		move.b	#1,ost_anim(a0)
+		move.b	#id_ani_geyser_bubble2,ost_anim(a0)
 		tst.b	ost_subtype(a0)	; is object type 0 (geyser) ?
 		beq.s	@isgeyser	; if yes, branch
-		move.b	#4,ost_anim(a0)
+		move.b	#id_ani_geyser_blank,ost_anim(a0)
 		bra.s	GMake_Display
 ; ===========================================================================
 
@@ -88,7 +89,7 @@ GMake_Display:	; Routine 8
 ; ===========================================================================
 
 GMake_Delete:	; Routine $A
-		move.b	#0,ost_anim(a0)
+		move.b	#id_ani_geyser_bubble1,ost_anim(a0)
 		move.b	#id_GMake_Wait,ost_routine(a0)
 		tst.b	ost_subtype(a0)
 		beq.w	DeleteObject

@@ -32,7 +32,7 @@ Mon_Main:	; Routine 0
 		btst	#0,2(a2,d0.w)	; has monitor been broken?
 		beq.s	@notbroken	; if not, branch
 		move.b	#id_Mon_Display,ost_routine(a0) ; run "Mon_Display" routine
-		move.b	#$B,ost_frame(a0)	; use broken monitor frame
+		move.b	#id_frame_monitor_broken,ost_frame(a0) ; use broken monitor frame
 		rts	
 ; ===========================================================================
 
@@ -162,5 +162,5 @@ Mon_Explode:
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
 		bset	#0,2(a2,d0.w)
-		move.b	#9,ost_anim(a0)	; set monitor type to broken
+		move.b	#id_ani_monitor_breaking,ost_anim(a0) ; set monitor type to broken
 		bra.w	DisplaySprite

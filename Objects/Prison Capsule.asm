@@ -2,6 +2,7 @@
 ; Object 3E - prison capsule
 ; ---------------------------------------------------------------------------
 
+Prison:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Pri_Index(pc,d0.w),d1
@@ -22,10 +23,10 @@ Pri_Index:	index *,,2
 		ptr Pri_Animals
 		ptr Pri_EndAct
 
-Pri_Var:	dc.b id_Pri_BodyMain, $20, 4, 0	; routine, width, priority, frame
-		dc.b id_Pri_Switched, $C, 5, 1
-		dc.b id_Pri_Explosion, $10, 4, 3
-		dc.b id_Pri_Explosion+2, $10, 3, 5
+Pri_Var:	dc.b id_Pri_BodyMain, $20, 4, id_frame_prison_capsule	; routine, width, priority, frame
+		dc.b id_Pri_Switched, $C, 5, id_frame_prison_switch1
+		dc.b id_Pri_Explosion, $10, 4, id_frame_prison_switch2
+		dc.b id_Pri_Explosion+2, $10, 3, id_frame_prison_unused_panel
 
 ost_prison_y_start:	equ $30	; original y position (2 bytes)
 ; ===========================================================================
@@ -71,7 +72,7 @@ Pri_BodyMain:	; Routine 2
 		bset	#status_air_bit,(v_ost_player+ost_status).w
 
 	@open:
-		move.b	#2,ost_frame(a0) ; use frame number 2 (destroyed prison)
+		move.b	#id_frame_prison_broken,ost_frame(a0) ; use frame number 2 (destroyed prison)
 		rts	
 ; ===========================================================================
 
@@ -130,7 +131,7 @@ Pri_Explosion:	; Routine 6, 8, $A
 @makeanimal:
 		move.b	#2,(v_bossstatus).w
 		move.b	#id_Pri_Animals,ost_routine(a0) ; replace explosions with animals
-		move.b	#6,ost_frame(a0)
+		move.b	#id_frame_prison_blank,ost_frame(a0)
 		move.w	#150,ost_anim_time(a0)
 		addi.w	#$20,ost_y_pos(a0)
 		moveq	#7,d6

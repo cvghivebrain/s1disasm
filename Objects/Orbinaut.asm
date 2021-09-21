@@ -59,7 +59,7 @@ Orb_Main:	; Routine 0
 		ori.b	#render_rel,ost_render(a1)
 		move.b	#4,ost_priority(a1)
 		move.b	#8,ost_actwidth(a1)
-		move.b	#3,ost_frame(a1)
+		move.b	#id_frame_orb_spikeball,ost_frame(a1)
 		move.b	#$98,ost_col_type(a1)
 		move.b	d2,ost_angle(a1)
 		addi.b	#$40,d2
@@ -104,7 +104,7 @@ Orb_ChkSonic:	; Routine 2
 		bcc.s	@animate	; if not, branch
 		tst.w	(v_debuguse).w	; is debug mode	on?
 		bne.s	@animate	; if yes, branch
-		move.b	#1,ost_anim(a0)	; use "angry" animation
+		move.b	#id_ani_orb_angry,ost_anim(a0) ; use "angry" animation
 
 @animate:
 		lea	(Ani_Orb).l,a1
@@ -150,7 +150,7 @@ Orb_MoveOrb:	; Routine 6
 		movea.l	ost_orb_parent(a0),a1
 		cmpi.b	#id_Orbinaut,0(a1) ; does parent object still exist?
 		bne.w	DeleteObject	; if not, delete
-		cmpi.b	#2,ost_frame(a1) ; is orbinaut angry?
+		cmpi.b	#id_frame_orb_angry,ost_frame(a1) ; is orbinaut angry?
 		bne.s	@circle		; if not, branch
 		cmpi.b	#$40,ost_angle(a0) ; is spikeorb directly under the orbinaut?
 		bne.s	@circle		; if not, branch

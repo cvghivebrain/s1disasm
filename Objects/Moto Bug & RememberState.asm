@@ -2,6 +2,7 @@
 ; Object 40 - Moto Bug enemy (GHZ)
 ; ---------------------------------------------------------------------------
 
+MotoBug:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Moto_Index(pc,d0.w),d1
@@ -35,7 +36,7 @@ Moto_Main:	; Routine 0
 		add.w	d1,ost_y_pos(a0) ; match object's position with the floor
 		move.w	#0,ost_y_vel(a0)
 		addq.b	#2,ost_routine(a0) ; goto Moto_Action next
-		bchg	#0,ost_status(a0)
+		bchg	#status_xflip_bit,ost_status(a0)
 
 	@notonfloor:
 		rts	
@@ -83,7 +84,7 @@ Moto_ActIndex:	index *
 		bpl.s	@wait		; if time remains, branch
 		addq.b	#2,ost_routine2(a0)
 		move.w	#-$100,ost_x_vel(a0) ; move object to the left
-		move.b	#1,ost_anim(a0)
+		move.b	#id_ani_moto_walk,ost_anim(a0)
 		bchg	#status_xflip_bit,ost_status(a0)
 		bne.s	@wait
 		neg.w	ost_x_vel(a0)	; change direction
@@ -109,7 +110,7 @@ Moto_ActIndex:	index *
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	ost_status(a0),ost_status(a1)
-		move.b	#2,ost_anim(a1)
+		move.b	#id_ani_moto_smoke,ost_anim(a1)
 
 	@nosmoke:
 		rts	
@@ -118,7 +119,7 @@ Moto_ActIndex:	index *
 		subq.b	#2,ost_routine2(a0)
 		move.w	#59,ost_moto_wait_time(a0) ; set pause time to 1 second
 		move.w	#0,ost_x_vel(a0) ; stop the object moving
-		move.b	#0,ost_anim(a0)
+		move.b	#id_ani_moto_stand,ost_anim(a0)
 		rts	
 ; ===========================================================================
 

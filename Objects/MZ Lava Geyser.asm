@@ -2,6 +2,7 @@
 ; Object 4D - lava geyser / lavafall (MZ)
 ; ---------------------------------------------------------------------------
 
+LavaGeyser:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Geyser_Index(pc,d0.w),d1
@@ -52,10 +53,10 @@ Geyser_Main:	; Routine 0
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	ost_subtype(a0),ost_subtype(a1)
 		move.b	#1,ost_priority(a1)
-		move.b	#5,ost_anim(a1)
+		move.b	#id_ani_geyser_bubble4,ost_anim(a1)
 		tst.b	ost_subtype(a0)
 		beq.s	@fail
-		move.b	#2,ost_anim(a1)
+		move.b	#id_ani_geyser_end,ost_anim(a1)
 
 	@fail:
 		dbf	d1,@loop
@@ -112,7 +113,7 @@ Geyser_Type00:
 		bcc.s	locret_EFDA
 		addq.b	#4,ost_routine(a0)
 		movea.l	ost_geyser_parent(a0),a1
-		move.b	#3,ost_anim(a1)
+		move.b	#id_ani_geyser_bubble3,ost_anim(a1)
 
 locret_EFDA:
 		rts	
@@ -125,7 +126,7 @@ Geyser_Type01:
 		bcc.s	locret_EFFA
 		addq.b	#4,ost_routine(a0)
 		movea.l	ost_geyser_parent(a0),a1
-		move.b	#1,ost_anim(a1)
+		move.b	#id_ani_geyser_bubble2,ost_anim(a1)
 
 locret_EFFA:
 		rts	

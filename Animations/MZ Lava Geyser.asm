@@ -1,19 +1,19 @@
 ; ---------------------------------------------------------------------------
 ; Animation script - geyser of lava (MZ)
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @bubble1
-		ptr @bubble2
-		ptr @end
-		ptr @bubble3
-		ptr @blank
-		ptr @bubble4
+Ani_Geyser:	index *
+		ptr ani_geyser_bubble1
+		ptr ani_geyser_bubble2
+		ptr ani_geyser_end
+		ptr ani_geyser_bubble3
+		ptr ani_geyser_blank
+		ptr ani_geyser_bubble4
 		
-@bubble1:	dc.b 2,	0, 1, 0, 1, 4, 5, 4, 5,	afRoutine
-@bubble2:	dc.b 2,	2, 3, afEnd
-@end:		dc.b 2,	6, 7, afEnd
-@bubble3:	dc.b 2,	2, 3, 0, 1, 0, 1, afRoutine
-@blank:		dc.b $F, $13, afEnd
-		even
-@bubble4:	dc.b 2,	$11, $12, afEnd
-		even
+ani_geyser_bubble1:	dc.b 2,	id_frame_geyser_bubble1, id_frame_geyser_bubble2, id_frame_geyser_bubble1, id_frame_geyser_bubble2, id_frame_geyser_bubble5, id_frame_geyser_bubble6, id_frame_geyser_bubble5, id_frame_geyser_bubble6,	afRoutine
+ani_geyser_bubble2:	dc.b 2,	id_frame_geyser_bubble3, id_frame_geyser_bubble4, afEnd
+ani_geyser_end:		dc.b 2,	id_frame_geyser_end1, id_frame_geyser_end2, afEnd
+ani_geyser_bubble3:	dc.b 2,	id_frame_geyser_bubble3, id_frame_geyser_bubble4, id_frame_geyser_bubble1, id_frame_geyser_bubble2, id_frame_geyser_bubble1, id_frame_geyser_bubble2, afRoutine
+ani_geyser_blank:	dc.b $F, id_frame_geyser_blank, afEnd
+			even
+ani_geyser_bubble4:	dc.b 2,	id_frame_geyser_bubble7, id_frame_geyser_bubble8, afEnd
+			even

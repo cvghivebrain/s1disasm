@@ -13,11 +13,11 @@ MBlock_Index:	index *,,2
 		ptr MBlock_Platform
 		ptr MBlock_StandOn
 
-MBlock_Var:	dc.b $10, 0		; object width,	frame number
-		dc.b $20, 1
-		dc.b $20, 2
-		dc.b $40, 3
-		dc.b $30, 4
+MBlock_Var:	dc.b $10, id_frame_mblock_mz1		; object width,	frame number
+		dc.b $20, id_frame_mblock_mz2
+		dc.b $20, id_frame_mblock_sbz
+		dc.b $40, id_frame_mblock_sbzwide
+		dc.b $30, id_frame_mblock_mz3
 
 ost_mblock_x_start:	equ $30	; original x position (2 bytes)
 ost_mblock_y_start:	equ $32	; original y position (2 bytes)

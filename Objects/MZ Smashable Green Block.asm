@@ -57,7 +57,7 @@ Smab_Solid:	; Routine 2
 		move.b	#id_Sonic_Control,ost_routine(a1)
 		bclr	#status_platform_bit,ost_status(a0)
 		clr.b	ost_solid(a0)
-		move.b	#1,ost_frame(a0)
+		move.b	#id_frame_smash_four,ost_frame(a0)
 		lea	(Smab_Speeds).l,a4 ; load broken fragment speed data
 		moveq	#3,d1		; set number of	fragments to 4
 		move.w	#$38,d2

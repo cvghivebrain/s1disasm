@@ -1,9 +1,9 @@
 ; ---------------------------------------------------------------------------
 ; Animation script - prison capsule
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @switchflash
-		ptr @switchflash
+Ani_Pri:	index *
+		ptr ani_prison_switchflash
+		ptr ani_prison_switchflash
 		
-@switchflash:	dc.b 2,	1, 3, afEnd
-		even
+ani_prison_switchflash:	dc.b 2,	id_frame_prison_switch1, id_frame_prison_switch2, afEnd
+			even

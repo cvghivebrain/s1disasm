@@ -2,6 +2,7 @@
 ; Object 33 - pushable blocks (MZ, LZ)
 ; ---------------------------------------------------------------------------
 
+PushBlock:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	PushB_Index(pc,d0.w),d1
@@ -12,8 +13,8 @@ PushB_Index:	index *,,2
 		ptr PushB_Action
 		ptr PushB_ChkVisible
 
-PushB_Var:	dc.b $10, 0	; object width,	frame number
-		dc.b $40, 1
+PushB_Var:	dc.b $10, id_frame_pblock_single	; object width,	frame number
+		dc.b $40, id_frame_pblock_four
 
 ost_pblock_lava_speed:	equ $30	; x axis speed when block is on lava (2 bytes)
 ost_pblock_lava_flag:	equ $32	; 1 = block is on lava

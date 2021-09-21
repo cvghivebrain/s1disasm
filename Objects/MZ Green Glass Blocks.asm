@@ -2,6 +2,7 @@
 ; Object 30 - large green glass blocks (MZ)
 ; ---------------------------------------------------------------------------
 
+GlassBlock:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Glass_Index(pc,d0.w),d1
@@ -20,10 +21,10 @@ Glass_Index:	index *,,2
 		ptr Glass_Block34
 		ptr Glass_Reflect34
 
-Glass_Vars1:	dc.b id_Glass_Block012,	0, 0	; routine num, y-axis dist from	origin,	frame num
-		dc.b id_Glass_Reflect012, 0, 1
-Glass_Vars2:	dc.b id_Glass_Block34, 0, 2
-		dc.b id_Glass_Reflect34, 0, 1
+Glass_Vars1:	dc.b id_Glass_Block012,	0, id_frame_glass_tall	; routine num, y-axis dist from	origin,	frame num
+		dc.b id_Glass_Reflect012, 0, id_frame_glass_shine
+Glass_Vars2:	dc.b id_Glass_Block34, 0, id_frame_glass_short
+		dc.b id_Glass_Reflect34, 0, id_frame_glass_shine
 
 ost_glass_y_start:	equ $30	; original y position (2 bytes)
 ost_glass_y_dist:	equ $32	; distance block moves when switch is pressed (2 bytes)

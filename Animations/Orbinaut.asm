@@ -1,11 +1,11 @@
 ; ---------------------------------------------------------------------------
 ; Animation script - Orbinaut enemy
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @normal
-		ptr @angers
+Ani_Orb:	index *
+		ptr ani_orb_normal
+		ptr ani_orb_angry
 		
-@normal:	dc.b $F, 0, afEnd
+ani_orb_normal:	dc.b $F, id_frame_orb_normal, afEnd
 		even
-@angers:	dc.b $F, 1, 2, afBack, 1
+ani_orb_angry:	dc.b $F, id_frame_orb_medium, id_frame_orb_angry, afBack, 1
 		even

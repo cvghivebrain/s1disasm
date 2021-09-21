@@ -2,6 +2,7 @@
 ; Object 45 - spiked metal block from beta version (MZ)
 ; ---------------------------------------------------------------------------
 
+SideStomp:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	SStom_Index(pc,d0.w),d1
@@ -15,10 +16,10 @@ SStom_Index:	index *,,2
 		ptr SStom_Pole
 
 		;	routine			x pos	frame
-SStom_Var:	dc.b	id_SStom_Solid,  	4,	0	; main block
-		dc.b	id_SStom_Spikes,	-$1C,	1	; spikes
-		dc.b	id_SStom_Pole,		$34,	3	; pole
-		dc.b	id_SStom_Display,	$28,	2	; wall bracket
+SStom_Var:	dc.b	id_SStom_Solid,  	4,	id_frame_mash_block	; main block
+		dc.b	id_SStom_Spikes,	-$1C,	id_frame_mash_spikes	; spikes
+		dc.b	id_SStom_Pole,		$34,	id_frame_mash_pole1	; pole
+		dc.b	id_SStom_Display,	$28,	id_frame_mash_wallbracket ; wall bracket
 
 ;word_B9BE:	; Note that this indicates three subtypes
 SStom_Len:	dc.w $3800	; short

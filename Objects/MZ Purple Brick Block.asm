@@ -2,6 +2,7 @@
 ; Object 46 - solid blocks and blocks that fall	from the ceiling (MZ)
 ; ---------------------------------------------------------------------------
 
+MarbleBrick:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Brick_Index(pc,d0.w),d1

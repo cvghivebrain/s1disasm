@@ -8415,7 +8415,7 @@ Map_ADoor:	include "Mappings\SBZ Door.asm"
 Map_Animal1:	include "Mappings\Animals 1.asm"
 Map_Animal2:	include "Mappings\Animals 2.asm"
 Map_Animal3:	include "Mappings\Animals 3.asm"
-Map_Points:	include "Mappings\Points.asm"
+		include "Mappings\Points.asm" ; Map_Points
 
 		include "Objects\Crabmeat.asm" ; Crabmeat
 		include "Animations\Crabmeat.asm" ; Ani_Crab
@@ -8433,8 +8433,8 @@ Map_Points:	include "Mappings\Points.asm"
 		include "Objects\Ring Loss.asm" ; RingLoss
 		include "Objects\Giant Ring.asm" ; GiantRing
 		include "Objects\Giant Ring Flash.asm" ; RingFlash
-Ani_Ring:	include "Animations\Ring.asm"
-Map_Ring:	include "Mappings\Ring.asm"
+		include "Animations\Ring.asm" ; Ani_Ring
+		include "Mappings\Ring.asm" ; Map_Ring
 		include "Mappings\Giant Ring.asm" ; Map_GRing
 		include "Mappings\Giant Ring Flash.asm" ; Map_Flash
 
@@ -8442,8 +8442,8 @@ Map_Ring:	include "Mappings\Ring.asm"
 		include "Objects\Monitor Contents.asm" ; PowerUp
 		include "Objects\Monitors (2).asm" ; Mon_SolidSides
 
-Ani_Monitor:	include "Animations\Monitors.asm"
-Map_Monitor:	include "Mappings\Monitors.asm"
+		include "Animations\Monitors.asm" ; Ani_Monitor
+		include "Mappings\Monitors.asm" ; Map_Monitor
 
 		include "Objects\Title Screen Sonic.asm" ; TitleSonic
 		include "Objects\Title Screen Press Start & TM.asm" ; PSBTM
@@ -8468,25 +8468,25 @@ Map_TSon:	include "Mappings\Title Screen Sonic.asm"
 		include "Animations\Burrobot.asm" ; Ani_Burro
 		include "Mappings\Burrobot.asm" ; Map_Burro
 
-LargeGrass:	include "Objects\MZ Grass Platforms.asm"
+		include "Objects\MZ Grass Platforms.asm" ; LargeGrass
 GrassFire:	include "Objects\MZ Burning Grass.asm"
 Ani_GFire:	include "Animations\MZ Burning Grass.asm"
-Map_LGrass:	include "Mappings\MZ Grass Platforms.asm"
+		include "Mappings\MZ Grass Platforms.asm" ; Map_LGrass
 		include "Mappings\Fireballs.asm" ; Map_Fire
 
-GlassBlock:	include "Objects\MZ Green Glass Blocks.asm"
-Map_Glass:	include "Mappings\MZ Green Glass Blocks.asm"
+		include "Objects\MZ Green Glass Blocks.asm" ; GlassBlock
+		include "Mappings\MZ Green Glass Blocks.asm" ; Map_Glass
 
-ChainStomp:	include "Objects\MZ Chain Stompers.asm"
-SideStomp:	include "Objects\MZ Unused Sideways Stomper.asm"
-Map_CStom:	include "Mappings\MZ Chain Stompers.asm"
-Map_SStom:	include "Mappings\MZ Unused Sideways Stomper.asm"
+		include "Objects\MZ Chain Stompers.asm" ; ChainStomp
+		include "Objects\MZ Unused Sideways Stomper.asm" ; SideStomp
+		include "Mappings\MZ Chain Stompers.asm" ; Map_CStom
+		include "Mappings\MZ Unused Sideways Stomper.asm" ; Map_SStom
 
 		include "Objects\Button.asm" ; Button
 		include "Mappings\Button.asm" ; Map_But
 
-PushBlock:	include "Objects\MZ & LZ Pushable Blocks.asm"
-Map_Push:	include "Mappings\MZ & LZ Pushable Blocks.asm"
+		include "Objects\MZ & LZ Pushable Blocks.asm" ; PushBlock
+		include "Mappings\MZ & LZ Pushable Blocks.asm" ; Map_Push
 
 TitleCard:	include "Objects\Title Cards.asm"
 		include "Objects\Game Over & Time Over.asm" ; GameOverCard
@@ -8806,13 +8806,13 @@ Springs:	include "Objects\Springs.asm"
 Ani_Spring:	include "Animations\Springs.asm"
 Map_Spring:	include "Mappings\Springs.asm"
 
-Newtron:	include "Objects\Newtron.asm"
-Ani_Newt:	include "Animations\Newtron.asm"
-Map_Newt:	include "Mappings\Newtron.asm"
+		include "Objects\Newtron.asm" ; Newtron
+		include "Animations\Newtron.asm" ; Ani_Newt
+		include "Mappings\Newtron.asm" ; Map_Newt
 
-Roller:		include "Objects\Roller.asm"
-Ani_Roll:	include "Animations\Roller.asm"
-Map_Roll:	include "Mappings\Roller.asm"
+			include "Objects\Roller.asm" ; Roller
+		include "Animations\Roller.asm" ; Ani_Roll
+		include "Mappings\Roller.asm" ; Map_Roll
 
 		include "Objects\GHZ Walls (1).asm" ; EdgeWalls
 		include "Mappings\GHZ Walls.asm" ; Map_Edge
@@ -8825,8 +8825,8 @@ Flamethrower:	include "Objects\SBZ Flamethrower.asm"
 Ani_Flame:	include "Animations\SBZ Flamethrower.asm"
 Map_Flame:	include "Mappings\SBZ Flamethrower.asm"
 
-MarbleBrick:	include "Objects\MZ Purple Brick Block.asm"
-Map_Brick:	include "Mappings\MZ Purple Brick Block.asm"
+		include "Objects\MZ Purple Brick Block.asm" ; MarbleBrick
+		include "Mappings\MZ Purple Brick Block.asm" ; Map_Brick
 
 SpinningLight:	include "Objects\SYZ Lamp.asm"
 Map_Light:	include "Mappings\SYZ Lamp.asm"
@@ -8839,19 +8839,19 @@ Signpost:	include "Objects\Signpost & GotThroughAct.asm"
 Ani_Sign:	include "Animations\Signpost.asm"
 Map_Sign:	include "Mappings\Signpost.asm"
 
-GeyserMaker:	include "Objects\MZ Lava Geyser Maker.asm"
-LavaGeyser:	include "Objects\MZ Lava Geyser.asm"
-LavaWall:	include "Objects\MZ Lava Wall.asm"
-LavaTag:	include "Objects\MZ Invisible Lava Tag.asm"
-Map_LTag:	include "Mappings\MZ Invisible Lava Tag.asm"
-Ani_Geyser:	include "Animations\MZ Lava Geyser.asm"
-Ani_LWall:	include "Animations\MZ Lava Wall.asm"
-Map_Geyser:	include "Mappings\MZ Lava Geyser.asm"
-Map_LWall:	include "Mappings\MZ Lava Wall.asm"
+		include "Objects\MZ Lava Geyser Maker.asm" ; GeyserMaker
+		include "Objects\MZ Lava Geyser.asm" ; LavaGeyser
+		include "Objects\MZ Lava Wall.asm" ; LavaWall
+		include "Objects\MZ Invisible Lava Tag.asm" ; LavaTag
+		include "Mappings\MZ Invisible Lava Tag.asm" ; Map_LTag
+		include "Animations\MZ Lava Geyser.asm" ; Ani_Geyser
+		include "Animations\MZ Lava Wall.asm" ; Ani_LWall
+		include "Mappings\MZ Lava Geyser.asm" ; Map_Geyser
+		include "Mappings\MZ Lava Wall.asm" ; Map_LWall
 
-MotoBug:	include "Objects\Moto Bug & RememberState.asm"
-Ani_Moto:	include "Animations\Moto Bug.asm"
-Map_Moto:	include "Mappings\Moto Bug.asm"
+		include "Objects\Moto Bug & RememberState.asm" ; MotoBug
+		include "Animations\Moto Bug.asm" ; Ani_Moto
+		include "Mappings\Moto Bug.asm" ; Map_Moto
 
 ; ---------------------------------------------------------------------------
 ; Object 4F - blank
@@ -8867,10 +8867,10 @@ Map_Yad:	include "Mappings\Yadrin.asm"
 		include "Objects\_SolidObject.asm"
 
 		include "Objects\MZ Smashable Green Block.asm" ; SmashBlock
-Map_Smab:	include "Mappings\MZ Smashable Green Block.asm"
+		include "Mappings\MZ Smashable Green Block.asm" ; Map_Smab
 
 		include "Objects\MZ, LZ & SBZ Moving Blocks.asm" ; MovingBlock
-Map_MBlock:	include "Mappings\MZ & SBZ Moving Blocks.asm"
+		include "Mappings\MZ & SBZ Moving Blocks.asm" ; Map_MBlock
 		include "Mappings\LZ Moving Block.asm" ; Map_MBlockLZ
 
 		include "Objects\Batbrain.asm" ; Batbrain
@@ -8924,8 +8924,8 @@ Map_SSawBall:	include "Mappings\SLZ Seesaw Spike Ball.asm"
 		include "Mappings\Bomb Enemy.asm" ; Map_Bomb
 
 		include "Objects\Orbinaut.asm" ; Orbinaut
-Ani_Orb:	include "Animations\Orbinaut.asm"
-Map_Orb:	include "Mappings\Orbinaut.asm"
+		include "Animations\Orbinaut.asm" ; Ani_Orb
+		include "Mappings\Orbinaut.asm" ; Map_Orb
 
 		include "Objects\LZ Harpoon.asm" ; Harpoon
 		include "Animations\LZ Harpoon.asm" ; Ani_Harp
@@ -9498,9 +9498,9 @@ Map_FFloor:	include "Mappings\SBZ2 Blocks That Eggman Breaks.asm"
 		include "Animations\FZ Plasma Balls.asm" ; Ani_Plasma
 		include "Mappings\FZ Plasma Balls.asm" ; Map_Plasma
 
-Prison:		include "Objects\Prison Capsule.asm"
-Ani_Pri:	include "Animations\Prison Capsule.asm"
-Map_Pri:	include "Mappings\Prison Capsule.asm"
+		include "Objects\Prison Capsule.asm" ; Prison
+		include "Animations\Prison Capsule.asm" ; Ani_Pri
+		include "Mappings\Prison Capsule.asm" ; Map_Pri
 
 		include "Objects\_ReactToItem, HurtSonic & KillSonic.asm"
 

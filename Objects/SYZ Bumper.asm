@@ -60,7 +60,7 @@ Bump_Hit:	; Routine 2
 		move.b	#id_Points,0(a1) ; load points object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
-		move.b	#4,ost_frame(a1)
+		move.b	#id_frame_points_10,ost_frame(a1)
 
 	@display:
 		lea	(Ani_Bump).l,a1

@@ -46,7 +46,7 @@ Pow_Checks:
 
 Pow_ChkEggman:
 		move.b	ost_anim(a0),d0
-		cmpi.b	#1,d0		; does monitor contain Eggman?
+		cmpi.b	#id_ani_monitor_eggman,d0 ; does monitor contain Eggman?
 		bne.s	Pow_ChkSonic
 		rts			; Eggman monitor does nothing
 ; ===========================================================================
