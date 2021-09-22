@@ -1,15 +1,15 @@
 ; ---------------------------------------------------------------------------
 ; Animation script - signpost
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @eggman
-		ptr @spin1
-		ptr @spin2
-		ptr @sonic
+Ani_Sign:	index *
+		ptr ani_sign_eggman
+		ptr ani_sign_spin1
+		ptr ani_sign_spin2
+		ptr ani_sign_sonic
 		
-@eggman:	dc.b $F, 0, afEnd
-		even
-@spin1:		dc.b 1,	0, 1, 2, 3, afEnd
-@spin2:		dc.b 1,	4, 1, 2, 3, afEnd
-@sonic:		dc.b $F, 4, afEnd
-		even
+ani_sign_eggman:	dc.b $F, id_frame_sign_eggman, afEnd
+			even
+ani_sign_spin1:		dc.b 1,	id_frame_sign_eggman, id_frame_sign_spin1, id_frame_sign_spin2, id_frame_sign_spin3, afEnd
+ani_sign_spin2:		dc.b 1,	id_frame_sign_sonic, id_frame_sign_spin1, id_frame_sign_spin2, id_frame_sign_spin3, afEnd
+ani_sign_sonic:		dc.b $F, id_frame_sign_sonic, afEnd
+			even

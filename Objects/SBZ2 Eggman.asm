@@ -2,6 +2,7 @@
 ; Object 82 - Eggman (SBZ2)
 ; ---------------------------------------------------------------------------
 
+ScrapEggman:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	SEgg_Index(pc,d0.w),d1
@@ -12,7 +13,7 @@ SEgg_Index:	index *,,2
 		ptr SEgg_Eggman
 		ptr SEgg_Switch
 
-SEgg_ObjData:	dc.b id_SEgg_Eggman, 0, 3	; routine number, animation, priority
+SEgg_ObjData:	dc.b id_SEgg_Eggman, id_ani_eggman_stand, 3	; routine number, animation, priority
 		dc.b id_SEgg_Switch, 0, 3
 
 ost_eggman_parent:	equ $34	; address of OST of parent object (4 bytes)
@@ -50,7 +51,7 @@ SEgg_Main:	; Routine 0
 		move.b	#render_rel,ost_render(a1)
 		bset	#render_onscreen_bit,ost_render(a1)
 		move.b	#$10,ost_actwidth(a1)
-		move.b	#0,ost_frame(a1)
+		move.b	#id_frame_button_up,ost_frame(a1)
 
 SEgg_Eggman:	; Routine 2
 		moveq	#0,d0
@@ -75,7 +76,7 @@ SEgg_ChkSonic:
 		bcc.s	SEgg_Move	; if not, branch
 		addq.b	#2,ost_routine2(a0)
 		move.w	#180,ost_eggman_wait_time(a0) ; set delay to 3 seconds
-		move.b	#1,ost_anim(a0)
+		move.b	#id_ani_eggman_laugh,ost_anim(a0)
 
 SEgg_Move:
 		jmp	(SpeedToPos).l
@@ -85,7 +86,7 @@ SEgg_PreLeap:
 		subq.w	#1,ost_eggman_wait_time(a0) ; subtract 1 from time delay
 		bne.s	loc_19954	; if time remains, branch
 		addq.b	#2,ost_routine2(a0)
-		move.b	#2,ost_anim(a0)
+		move.b	#id_ani_eggman_jump1,ost_anim(a0)
 		addq.w	#4,ost_y_pos(a0)
 		move.w	#15,ost_eggman_wait_time(a0)
 
@@ -133,7 +134,7 @@ SEgg_FindLoop:
 		bne.s	loc_199D0
 		move.w	#$474F,ost_subtype(a1) ; set block to disintegrate
 		addq.b	#2,ost_routine2(a0)
-		move.b	#1,ost_anim(a0)
+		move.b	#id_ani_eggman_laugh,ost_anim(a0)
 
 loc_199D0:
 		bra.w	SEgg_Move
@@ -154,7 +155,7 @@ SEgg_SwChk:
 		movea.l	ost_eggman_parent(a0),a1
 		cmpi.w	#$5357,ost_subtype(a1)
 		bne.s	SEgg_SwDisplay
-		move.b	#1,ost_frame(a0)
+		move.b	#id_frame_button_down,ost_frame(a0)
 		addq.b	#2,ost_routine2(a0)
 
 SEgg_SwDisplay:

@@ -2,6 +2,7 @@
 ; Object 69 - spinning platforms and trapdoors (SBZ)
 ; ---------------------------------------------------------------------------
 
+SpinPlatform:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Spin_Index(pc,d0.w),d1
@@ -36,7 +37,7 @@ Spin_Main:	; Routine 0
 		move.l	#Map_Spin,ost_mappings(a0)
 		move.w	#tile_Nem_SpinPform,ost_tile(a0)
 		move.b	#$10,ost_actwidth(a0)
-		move.b	#2,ost_anim(a0)
+		move.b	#id_ani_spin_1,ost_anim(a0)
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0 ; get object type
 		move.w	d0,d1

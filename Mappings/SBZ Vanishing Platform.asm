@@ -1,24 +1,28 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - vanishing platforms	(SBZ)
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @whole
-		ptr @half
-		ptr @quarter
-		ptr @gone
+Map_VanP:	index *
+		ptr frame_vanish_whole
+		ptr frame_vanish_half
+		ptr frame_vanish_quarter
+		ptr frame_vanish_gone
 		
-@whole:		spritemap
+frame_vanish_whole:
+		spritemap
 		piece	-$10, -8, 4x4, 0
 		endsprite
 		
-@half:		spritemap
+frame_vanish_half:
+		spritemap
 		piece	-8, -8, 2x4, $10
 		endsprite
 		
-@quarter:	spritemap
+frame_vanish_quarter:
+		spritemap
 		piece	-4, -8, 1x4, $18
 		endsprite
 		
-@gone:		spritemap
+frame_vanish_gone:
+		spritemap
 		endsprite
 		even

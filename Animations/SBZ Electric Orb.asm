@@ -1,11 +1,11 @@
 ; ---------------------------------------------------------------------------
 ; Animation script - electrocution orbs (SBZ)
 ; ---------------------------------------------------------------------------
-		index *
-		ptr byte_161CC
-		ptr byte_161D0
+Ani_Elec:	index *
+		ptr ani_electro_normal
+		ptr ani_electro_zap
 		
-byte_161CC:	dc.b 7,	0, afEnd
-		even
-byte_161D0:	dc.b 0,	1, 1, 1, 2, 3, 3, 4, 4,	4, 5, 5, 5, 0, afChange, 0
-		even
+ani_electro_normal:	dc.b 7,	id_frame_electro_normal, afEnd
+			even
+ani_electro_zap:	dc.b 0,	id_frame_electro_zap1, id_frame_electro_zap1, id_frame_electro_zap1, id_frame_electro_zap2, id_frame_electro_zap3, id_frame_electro_zap3, id_frame_electro_zap4, id_frame_electro_zap4,	id_frame_electro_zap4, id_frame_electro_zap5, id_frame_electro_zap5, id_frame_electro_zap5, id_frame_electro_normal, afChange, id_ani_electro_normal
+			even

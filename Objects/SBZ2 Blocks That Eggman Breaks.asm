@@ -2,6 +2,7 @@
 ; Object 83 - blocks that disintegrate when Eggman presses a switch (SBZ2)
 ; ---------------------------------------------------------------------------
 
+FalseFloor:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	FFloor_Index(pc,d0.w),d1
@@ -24,7 +25,7 @@ FFloor_Main:	; Routine 0
 		move.b	#$80,ost_actwidth(a0)
 		move.b	#$10,ost_height(a0)
 		move.b	#render_rel,ost_render(a0)
-		bset	#7,ost_render(a0)
+		bset	#render_onscreen_bit,ost_render(a0)
 		moveq	#0,d4
 		move.w	#$2010,d5	; initial x position
 		moveq	#7,d6

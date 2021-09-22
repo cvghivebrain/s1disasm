@@ -2,6 +2,7 @@
 ; Object 70 - large girder block (SBZ)
 ; ---------------------------------------------------------------------------
 
+Girder:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Gird_Index(pc,d0.w),d1

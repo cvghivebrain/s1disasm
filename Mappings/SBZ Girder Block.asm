@@ -1,10 +1,10 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - large girder block (SBZ)
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @girder
+Map_Gird:	index *
+		ptr frame_girder_0
 		
-@girder:	spritemap
+frame_girder_0:	spritemap
 		piece	-$60, -$18, 4x3, 0
 		piece	-$60, 0, 4x3, 0, yflip
 		piece	-$40, -$18, 4x3, 6

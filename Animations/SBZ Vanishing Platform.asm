@@ -1,11 +1,11 @@
 ; ---------------------------------------------------------------------------
 ; Animation script - vanishing platforms (SBZ)
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @vanish
-		ptr @appear
+Ani_Van:	index *
+		ptr ani_vanish_vanish
+		ptr ani_vanish_appear
 		
-@vanish:	dc.b 7,	0, 1, 2, 3, afBack, 1
-		even
-@appear:	dc.b 7,	3, 2, 1, 0, afBack, 1
-		even
+ani_vanish_vanish:	dc.b 7,	id_frame_vanish_whole, id_frame_vanish_half, id_frame_vanish_quarter, id_frame_vanish_gone, afBack, 1
+			even
+ani_vanish_appear:	dc.b 7,	id_frame_vanish_gone, id_frame_vanish_quarter, id_frame_vanish_half, id_frame_vanish_whole, afBack, 1
+			even

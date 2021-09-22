@@ -2,6 +2,7 @@
 ; Object 0D - signpost at the end of a level
 ; ---------------------------------------------------------------------------
 
+Signpost:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Sign_Index(pc,d0.w),d1
@@ -48,11 +49,11 @@ Sign_Touch:	; Routine 2
 ; ===========================================================================
 
 Sign_Spin:	; Routine 4
-		subq.w	#1,ost_sign_spin_time(a0)	; subtract 1 from spin time
+		subq.w	#1,ost_sign_spin_time(a0) ; subtract 1 from spin time
 		bpl.s	@chksparkle	; if time remains, branch
 		move.w	#60,ost_sign_spin_time(a0) ; set spin cycle time to 1 second
 		addq.b	#1,ost_anim(a0)	; next spin cycle
-		cmpi.b	#3,ost_anim(a0)	; have 3 spin cycles completed?
+		cmpi.b	#id_ani_sign_sonic,ost_anim(a0) ; have 3 spin cycles completed?
 		bne.s	@chksparkle	; if not, branch
 		addq.b	#2,ost_routine(a0)
 
@@ -125,7 +126,7 @@ Sign_SonicRun:	; Routine 6
 
 
 GotThroughAct:
-		tst.b	(v_ost_all+$5C0).w
+		tst.b	(v_ost_gotthrough1).w
 		bne.s	locret_ECEE
 		move.w	(v_limitright2).w,(v_limitleft2).w
 		clr.b	(v_invinc).w	; disable invincibility

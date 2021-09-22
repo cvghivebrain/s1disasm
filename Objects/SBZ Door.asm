@@ -45,7 +45,7 @@ loc_899A:
 		beq.s	ADoor_Animate
 
 ADoor_Open:
-		move.b	#1,ost_anim(a0)	; use "opening"	animation
+		move.b	#id_ani_autodoor_open,ost_anim(a0) ; use "opening" animation
 
 ADoor_Animate:
 		lea	(Ani_ADoor).l,a1

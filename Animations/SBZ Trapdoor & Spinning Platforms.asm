@@ -1,14 +1,14 @@
 ; ---------------------------------------------------------------------------
 ; Animation script - trapdoor (SBZ)
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @trapopen
-		ptr @trapclose
-		ptr @spin1
-		ptr @spin2
+Ani_Spin:	index *
+		ptr ani_spin_trapopen
+		ptr ani_spin_trapclose
+		ptr ani_spin_1
+		ptr ani_spin_2
 		
-@trapopen:	dc.b 3,	0, 1, 2, afBack, 1
-@trapclose:	dc.b 3,	2, 1, 0, afBack, 1
-@spin1:		dc.b 1,	0, 1, 2, 3, 4, 3+afyflip, 2+afyflip, 1+afyflip, 0+afyflip, 1+afxflip+afyflip, 2+afxflip+afyflip, 3+afxflip+afyflip, 4+afxflip+afyflip, 3+afxflip, 2+afxflip, 1+afxflip, 0, afBack, 1
-@spin2:		dc.b 1,	0, 1, 2, 3, 4, 3+afyflip, 2+afyflip, 1+afyflip, 0+afyflip, 1+afxflip+afyflip, 2+afxflip+afyflip, 3+afxflip+afyflip, 4+afxflip+afyflip, 3+afxflip, 2+afxflip, 1+afxflip, 0, afBack, 1
-		even
+ani_spin_trapopen:	dc.b 3,	id_frame_trap_closed, id_frame_trap_half, id_frame_trap_open, afBack, 1
+ani_spin_trapclose:	dc.b 3,	id_frame_trap_open, id_frame_trap_half, id_frame_trap_closed, afBack, 1
+ani_spin_1:		dc.b 1,	id_frame_spin_flat, id_frame_spin_1, id_frame_spin_2, id_frame_spin_3, id_frame_spin_4, id_frame_spin_3+afyflip, id_frame_spin_2+afyflip, id_frame_spin_1+afyflip, id_frame_spin_flat+afyflip, id_frame_spin_1+afxflip+afyflip, id_frame_spin_2+afxflip+afyflip, id_frame_spin_3+afxflip+afyflip, id_frame_spin_4+afxflip+afyflip, id_frame_spin_3+afxflip, id_frame_spin_2+afxflip, id_frame_spin_1+afxflip, id_frame_spin_flat, afBack, 1
+ani_spin_2:		dc.b 1,	id_frame_spin_flat, id_frame_spin_1, id_frame_spin_2, id_frame_spin_3, id_frame_spin_4, id_frame_spin_3+afyflip, id_frame_spin_2+afyflip, id_frame_spin_1+afyflip, id_frame_spin_flat+afyflip, id_frame_spin_1+afxflip+afyflip, id_frame_spin_2+afxflip+afyflip, id_frame_spin_3+afxflip+afyflip, id_frame_spin_4+afxflip+afyflip, id_frame_spin_3+afxflip, id_frame_spin_2+afxflip, id_frame_spin_1+afxflip, id_frame_spin_flat, afBack, 1
+			even

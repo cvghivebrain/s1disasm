@@ -1,21 +1,23 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - stomper and	sliding doors (SBZ)
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @door
-		ptr @stomper
-		ptr @stomper
-		ptr @stomper
-		ptr @bigdoor
+Map_Stomp:	index *
+		ptr frame_stomp_door
+		ptr frame_stomp_stomper
+		ptr frame_stomp_stomper
+		ptr frame_stomp_stomper
+		ptr frame_stomp_bigdoor
 		
-@door:		spritemap			; horizontal sliding door
+frame_stomp_door:
+		spritemap			; horizontal sliding door
 		piece	-$40, -$C, 4x3, $1AF, pal2
 		piece	-$20, -$C, 4x3, $1B2, pal2
 		piece	0, -$C, 4x3, $1B2, pal2
 		piece	$20, -$C, 4x3, $1AF, pal2, xflip
 		endsprite
 		
-@stomper:	spritemap			; stomper block with yellow/black stripes
+frame_stomp_stomper:
+		spritemap			; stomper block with yellow/black stripes
 		piece	-$1C, -$20, 4x1, $C
 		piece	4, -$20, 3x1, $10
 		piece	-$1C, -$18, 4x3, $13, pal2
@@ -26,7 +28,8 @@
 		piece	4, $18, 3x1, $10
 		endsprite
 		
-@bigdoor:	spritemap			; huge diagonal sliding door from SBZ3
+frame_stomp_bigdoor:
+		spritemap			; huge diagonal sliding door from SBZ3
 		piece	-$80, -$40, 4x4, 0
 		piece	-$60, -$40, 4x4, $10
 		piece	-$40, -$40, 4x4, $20

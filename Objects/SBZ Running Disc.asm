@@ -2,6 +2,7 @@
 ; Object 67 - disc that	you run	around (SBZ)
 ; ---------------------------------------------------------------------------
 
+RunningDisc:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Disc_Index(pc,d0.w),d1

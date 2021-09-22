@@ -2,6 +2,7 @@
 ; Object 6A - ground saws and pizza cutters (SBZ)
 ; ---------------------------------------------------------------------------
 
+Saws:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Saw_Index(pc,d0.w),d1
@@ -134,7 +135,7 @@ Saw_Action:	; Routine 2
 		move.b	#1,ost_saw_flag(a0)
 		move.w	#$600,ost_x_vel(a0) ; move object to the right
 		move.b	#$A2,ost_col_type(a0)
-		move.b	#2,ost_frame(a0)
+		move.b	#id_frame_saw_groundsaw1,ost_frame(a0)
 		sfx	sfx_Saw,0,0,0	; play saw sound
 
 	@nosaw03x:
@@ -173,7 +174,7 @@ Saw_Action:	; Routine 2
 		move.b	#1,ost_saw_flag(a0)
 		move.w	#-$600,ost_x_vel(a0) ; move object to the left
 		move.b	#$A2,ost_col_type(a0)
-		move.b	#2,ost_frame(a0)
+		move.b	#id_frame_saw_groundsaw1,ost_frame(a0)
 		sfx	sfx_Saw,0,0,0	; play saw sound
 
 	@nosaw04x:

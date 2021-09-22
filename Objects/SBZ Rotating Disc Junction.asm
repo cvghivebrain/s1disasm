@@ -2,6 +2,7 @@
 ; Object 66 - rotating disc junction that grabs Sonic (SBZ)
 ; ---------------------------------------------------------------------------
 
+Junction:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Jun_Index(pc,d0.w),d1
@@ -34,7 +35,7 @@ Jun_Main:	; Routine 0
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	#3,ost_priority(a1)
-		move.b	#$10,ost_frame(a1) ; use large circular sprite
+		move.b	#id_frame_junc_circle,ost_frame(a1) ; use large circular sprite
 
 @makeitem:
 		move.l	#Map_Jun,ost_mappings(a1)
@@ -65,11 +66,11 @@ Jun_Action:	; Routine 2
 		beq.w	Jun_Display	; if not, branch
 
 		lea	(v_ost_player).w,a1
-		moveq	#$E,d1
+		moveq	#id_frame_junc_nw,d1
 		move.w	ost_x_pos(a1),d0
 		cmp.w	ost_x_pos(a0),d0 ; is Sonic to the left of the disc?
 		bcs.s	@isleft		; if yes, branch
-		moveq	#7,d1		
+		moveq	#id_frame_junc_ese,d1		
 
 	@isleft:
 		cmp.b	ost_frame(a0),d1 ; is the gap next to Sonic?
@@ -99,9 +100,9 @@ Jun_Display:	; Routine 4
 
 Jun_Release:	; Routine 6
 		move.b	ost_frame(a0),d0
-		cmpi.b	#4,d0		; is gap pointing down?
+		cmpi.b	#id_frame_junc_s,d0 ; is gap pointing down?
 		beq.s	@release	; if yes, branch
-		cmpi.b	#7,d0		; is gap pointing right?
+		cmpi.b	#id_frame_junc_ese,d0 ; is gap pointing right?
 		bne.s	@dontrelease	; if not, branch
 
 	@release:

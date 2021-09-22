@@ -2,6 +2,7 @@
 ; Object 6D - flame thrower (SBZ)
 ; ---------------------------------------------------------------------------
 
+Flamethrower:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Flame_Index(pc,d0.w),d1
@@ -23,7 +24,7 @@ Flame_Main:	; Routine 0
 		move.w	#tile_Nem_FlamePipe+tile_hi,ost_tile(a0)
 		ori.b	#render_rel,ost_render(a0)
 		move.b	#1,ost_priority(a0)
-		move.w	ost_y_pos(a0),$30(a0) ; store ost_y_pos (gets overwritten later though)
+		move.w	ost_y_pos(a0),ost_flame_time(a0) ; store ost_y_pos (gets overwritten later though)
 		move.b	#$C,ost_actwidth(a0)
 		move.b	ost_subtype(a0),d0
 		andi.w	#$F0,d0		; read 1st digit of object type
@@ -37,7 +38,7 @@ Flame_Main:	; Routine 0
 		move.b	#$A,ost_flame_last_frame(a0)
 		btst	#status_yflip_bit,ost_status(a0)
 		beq.s	Flame_Action
-		move.b	#2,ost_anim(a0)
+		move.b	#id_ani_flame_valve_on,ost_anim(a0)
 		move.b	#$15,ost_flame_last_frame(a0)
 
 Flame_Action:	; Routine 2

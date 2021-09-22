@@ -2,6 +2,7 @@
 ; Object 6E - electrocution orbs (SBZ)
 ; ---------------------------------------------------------------------------
 
+Electro:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Elec_Index(pc,d0.w),d1
@@ -31,7 +32,7 @@ Elec_Shock:	; Routine 2
 		and.w	ost_electric_rate(a0),d0 ; is it time to zap?
 		bne.s	@animate	; if not, branch
 
-		move.b	#1,ost_anim(a0)	; run "zap" animation
+		move.b	#id_ani_electro_zap,ost_anim(a0) ; run "zap" animation
 		tst.b	ost_render(a0)
 		bpl.s	@animate
 		sfx	sfx_Electric,0,0,0 ; play electricity sound
@@ -40,7 +41,7 @@ Elec_Shock:	; Routine 2
 		lea	(Ani_Elec).l,a1
 		jsr	(AnimateSprite).l
 		move.b	#0,ost_col_type(a0)
-		cmpi.b	#4,ost_frame(a0) ; is 4th frame displayed?
+		cmpi.b	#id_frame_electro_zap4,ost_frame(a0) ; is 4th frame displayed?
 		bne.s	@display	; if not, branch
 		move.b	#$A4,ost_col_type(a0) ; if yes, make object hurt Sonic
 

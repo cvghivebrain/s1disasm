@@ -8394,8 +8394,8 @@ Map_Scen:	include "Mappings\SLZ Fireball Launcher.asm"
 Map_Swi:	include "Mappings\Unused Switch.asm"
 
 		include "Objects\SBZ Door.asm" ; AutoDoor
-Ani_ADoor:	include "Animations\SBZ Door.asm"
-Map_ADoor:	include "Mappings\SBZ Door.asm"
+		include "Animations\SBZ Door.asm" ; Ani_ADoor
+		include "Mappings\SBZ Door.asm" ; Map_ADoor
 
 		include "Objects\GHZ Walls (2).asm"
 
@@ -8821,9 +8821,9 @@ LavaMaker:	include "Objects\MZ & SLZ Fireball Launchers.asm"
 		include "Objects\Fireballs.asm" ; LavaBall
 		include "Animations\Fireballs.asm" ; Ani_Fire
 
-Flamethrower:	include "Objects\SBZ Flamethrower.asm"
-Ani_Flame:	include "Animations\SBZ Flamethrower.asm"
-Map_Flame:	include "Mappings\SBZ Flamethrower.asm"
+		include "Objects\SBZ Flamethrower.asm" ; Flamethrower
+		include "Animations\SBZ Flamethrower.asm" ; Ani_Flame
+		include "Mappings\SBZ Flamethrower.asm" ; Map_Flame
 
 		include "Objects\MZ Purple Brick Block.asm" ; MarbleBrick
 		include "Mappings\MZ Purple Brick Block.asm" ; Map_Brick
@@ -8835,9 +8835,9 @@ Bumper:		include "Objects\SYZ Bumper.asm"
 Ani_Bump:	include "Animations\SYZ Bumper.asm"
 Map_Bump:	include "Mappings\SYZ Bumper.asm"
 
-Signpost:	include "Objects\Signpost & GotThroughAct.asm"
-Ani_Sign:	include "Animations\Signpost.asm"
-Map_Sign:	include "Mappings\Signpost.asm"
+		include "Objects\Signpost & GotThroughAct.asm" ; Signpost & GotThroughAct
+		include "Animations\Signpost.asm" ; Ani_Sign
+		include "Mappings\Signpost.asm" ; Map_Sign
 
 		include "Objects\MZ Lava Geyser Maker.asm" ; GeyserMaker
 		include "Objects\MZ Lava Geyser.asm" ; LavaGeyser
@@ -8959,8 +8959,8 @@ Map_SSawBall:	include "Mappings\SLZ Seesaw Spike Ball.asm"
 		include "Objects\Shield & Invincibility.asm" ; ShieldItem
 		include "Objects\Unused Special Stage Warp.asm" ; VanishSonic
 		include "Objects\LZ Water Splash.asm" ; Splash
-Ani_Shield:	include "Animations\Shield & Invincibility.asm"
-Map_Shield:	include "Mappings\Shield & Invincibility.asm"
+		include "Animations\Shield & Invincibility.asm" ; Ani_Shield
+		include "Mappings\Shield & Invincibility.asm" ; Map_Shield
 Ani_Vanish:	include "Animations\Unused Special Stage Warp.asm"
 Map_Vanish:	include "Mappings\Unused Special Stage Warp.asm"
 		include "Animations\LZ Water Splash.asm" ; Ani_Splash
@@ -9373,31 +9373,31 @@ locret_15098:
 
 ; ===========================================================================
 
-Junction:	include "Objects\SBZ Rotating Disc Junction.asm"
-Map_Jun:	include "Mappings\SBZ Rotating Disc Junction.asm"
+		include "Objects\SBZ Rotating Disc Junction.asm" ; Junction
+		include "Mappings\SBZ Rotating Disc Junction.asm" ; Map_Jun
 
-RunningDisc:	include "Objects\SBZ Running Disc.asm"
-Map_Disc:	include "Mappings\SBZ Running Disc.asm"
+		include "Objects\SBZ Running Disc.asm" ; RunningDisc
+		include "Mappings\SBZ Running Disc.asm" ; Map_Disc
 
 Conveyor:	include "Objects\SBZ Conveyor Belt.asm"
-SpinPlatform:	include "Objects\SBZ Trapdoor & Spinning Platforms.asm"
-Ani_Spin:	include "Animations\SBZ Trapdoor & Spinning Platforms.asm"
-Map_Trap:	include "Mappings\SBZ Trapdoor.asm"
-Map_Spin:	include "Mappings\SBZ Spinning Platforms.asm"
+		include "Objects\SBZ Trapdoor & Spinning Platforms.asm" ; SpinPlatform
+		include "Animations\SBZ Trapdoor & Spinning Platforms.asm" ; Ani_Spin
+		include "Mappings\SBZ Trapdoor.asm" ; Map_Trap
+		include "Mappings\SBZ Spinning Platforms.asm" ; Map_Spin
 
-Saws:		include "Objects\SBZ Saws.asm"
-Map_Saw:	include "Mappings\SBZ Saws.asm"
+		include "Objects\SBZ Saws.asm" ; Saws
+		include "Mappings\SBZ Saws.asm" ; Map_Saw
 
-ScrapStomp:	include "Objects\SBZ Stomper & Sliding Doors.asm"
-Map_Stomp:	include "Mappings\SBZ Stomper & Sliding Doors.asm"
+		include "Objects\SBZ Stomper & Sliding Doors.asm" ; ScrapStomp
+		include "Mappings\SBZ Stomper & Sliding Doors.asm" ; Map_Stomp
 
-VanishPlatform:	include "Objects\SBZ Vanishing Platform.asm"
-Ani_Van:	include "Animations\SBZ Vanishing Platform.asm"
-Map_VanP:	include "Mappings\SBZ Vanishing Platform.asm"
+		include "Objects\SBZ Vanishing Platform.asm" ; VanishPlatform
+		include "Animations\SBZ Vanishing Platform.asm" ; Ani_Van
+		include "Mappings\SBZ Vanishing Platform.asm" ; Map_VanP
 
-Electro:	include "Objects\SBZ Electric Orb.asm"
-Ani_Elec:	include "Animations\SBZ Electric Orb.asm"
-Map_Elec:	include "Mappings\SBZ Electric Orb.asm"
+		include "Objects\SBZ Electric Orb.asm" ; Electro
+		include "Animations\SBZ Electric Orb.asm" ; Ani_Elec
+		include "Mappings\SBZ Electric Orb.asm" ; Map_Elec
 
 SpinConvey:	include "Objects\SBZ Conveyor Belt Platforms.asm"
 Ani_SpinConvey:	include "Animations\SBZ Conveyor Belt Platforms.asm"
@@ -9441,8 +9441,8 @@ word_16516:	dc.w $10, $1C80
 		dc.w $1C14, $61E
 ; ===========================================================================
 
-Girder:		include "Objects\SBZ Girder Block.asm"
-Map_Gird:	include "Mappings\SBZ Girder Block.asm"
+		include "Objects\SBZ Girder Block.asm" ; Girder
+		include "Mappings\SBZ Girder Block.asm" ; Map_Gird
 
 Teleport:	include "Objects\SBZ Teleporter.asm"
 
@@ -9478,11 +9478,11 @@ Map_BossBlock:	include "Mappings\SYZ Blocks at Boss.asm"
 loc_1982C:
 		jmp	(DeleteObject).l
 
-ScrapEggman:	include "Objects\SBZ2 Eggman.asm"
-Ani_SEgg:	include "Animations\SBZ2 Eggman.asm"
-Map_SEgg:	include "Mappings\SBZ2 Eggman.asm"
-FalseFloor:	include "Objects\SBZ2 Blocks That Eggman Breaks.asm"
-Map_FFloor:	include "Mappings\SBZ2 Blocks That Eggman Breaks.asm"
+		include "Objects\SBZ2 Eggman.asm" ; ScrapEggman
+		include "Animations\SBZ2 Eggman.asm" ; Ani_SEgg
+		include "Mappings\SBZ2 Eggman.asm" ; Map_SEgg
+		include "Objects\SBZ2 Blocks That Eggman Breaks.asm" ; FalseFloor
+		include "Mappings\SBZ2 Blocks That Eggman Breaks.asm" ; Map_FFloor
 
 		include "Objects\FZ Boss.asm" ; BossFinal
 		include "Animations\FZ Eggman.asm" ; Ani_FZEgg

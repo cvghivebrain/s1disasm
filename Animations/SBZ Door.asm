@@ -1,10 +1,10 @@
 ; ---------------------------------------------------------------------------
 ; Animation script - doors (SBZ)
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @close
-		ptr @open
+Ani_ADoor:	index *
+		ptr ani_autodoor_close
+		ptr ani_autodoor_open
 		
-@close:		dc.b 0,	8, 7, 6, 5, 4, 3, 2, 1,	0, afBack, 1
-@open:		dc.b 0,	0, 1, 2, 3, 4, 5, 6, 7,	8, afBack, 1
-		even
+ani_autodoor_close:	dc.b 0,	id_frame_autodoor_open, id_frame_autodoor_07, id_frame_autodoor_06, id_frame_autodoor_05, id_frame_autodoor_04, id_frame_autodoor_03, id_frame_autodoor_02, id_frame_autodoor_01, id_frame_autodoor_closed, afBack, 1
+ani_autodoor_open:	dc.b 0,	id_frame_autodoor_closed, id_frame_autodoor_01, id_frame_autodoor_02, id_frame_autodoor_03, id_frame_autodoor_04, id_frame_autodoor_05, id_frame_autodoor_06, id_frame_autodoor_07, id_frame_autodoor_open, afBack, 1
+			even
