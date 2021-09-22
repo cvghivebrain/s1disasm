@@ -1,85 +1,101 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - walls of the special stage
 ; ---------------------------------------------------------------------------
-		index *
-		ptr byte_2C584
-		ptr byte_2C58A
-		ptr byte_2C590
-		ptr byte_2C596
-		ptr byte_2C59C
-		ptr byte_2C5A2
-		ptr byte_2C5A8
-		ptr byte_2C5AE
-		ptr byte_2C5B4
-		ptr byte_2C5BA
-		ptr byte_2C5C0
-		ptr byte_2C5C6
-		ptr byte_2C5CC
-		ptr byte_2C5D2
-		ptr byte_2C5D8
-		ptr byte_2C5DE
+Map_SSWalls:	index *
+		ptr frame_ss_wall_0
+		ptr frame_ss_wall_1
+		ptr frame_ss_wall_2
+		ptr frame_ss_wall_3
+		ptr frame_ss_wall_4
+		ptr frame_ss_wall_5
+		ptr frame_ss_wall_6
+		ptr frame_ss_wall_7
+		ptr frame_ss_wall_8
+		ptr frame_ss_wall_9
+		ptr frame_ss_wall_a
+		ptr frame_ss_wall_b
+		ptr frame_ss_wall_c
+		ptr frame_ss_wall_d
+		ptr frame_ss_wall_e
+		ptr frame_ss_wall_f
 		
-byte_2C584:	spritemap
+frame_ss_wall_0:
+		spritemap
 		piece	-$C, -$C, 3x3, 0
 		endsprite
 		
-byte_2C58A:	spritemap
+frame_ss_wall_1:
+		spritemap
 		piece	-$10, -$10, 4x4, 9
 		endsprite
 		
-byte_2C590:	spritemap
+frame_ss_wall_2:
+		spritemap
 		piece	-$10, -$10, 4x4, $19
 		endsprite
 		
-byte_2C596:	spritemap
+frame_ss_wall_3:
+		spritemap
 		piece	-$10, -$10, 4x4, $29
 		endsprite
 		
-byte_2C59C:	spritemap
+frame_ss_wall_4:
+		spritemap
 		piece	-$10, -$10, 4x4, $39
 		endsprite
 		
-byte_2C5A2:	spritemap
+frame_ss_wall_5:
+		spritemap
 		piece	-$10, -$10, 4x4, $49
 		endsprite
 		
-byte_2C5A8:	spritemap
+frame_ss_wall_6:
+		spritemap
 		piece	-$10, -$10, 4x4, $59
 		endsprite
 		
-byte_2C5AE:	spritemap
+frame_ss_wall_7:
+		spritemap
 		piece	-$10, -$10, 4x4, $69
 		endsprite
 		
-byte_2C5B4:	spritemap
+frame_ss_wall_8:
+		spritemap
 		piece	-$10, -$10, 4x4, $79
 		endsprite
 		
-byte_2C5BA:	spritemap
+frame_ss_wall_9:
+		spritemap
 		piece	-$10, -$10, 4x4, $89
 		endsprite
 		
-byte_2C5C0:	spritemap
+frame_ss_wall_a:
+		spritemap
 		piece	-$10, -$10, 4x4, $99
 		endsprite
 		
-byte_2C5C6:	spritemap
+frame_ss_wall_b:
+		spritemap
 		piece	-$10, -$10, 4x4, $A9
 		endsprite
 		
-byte_2C5CC:	spritemap
+frame_ss_wall_c:
+		spritemap
 		piece	-$10, -$10, 4x4, $B9
 		endsprite
 		
-byte_2C5D2:	spritemap
+frame_ss_wall_d:
+		spritemap
 		piece	-$10, -$10, 4x4, $C9
 		endsprite
 		
-byte_2C5D8:	spritemap
+frame_ss_wall_e:
+		spritemap
 		piece	-$10, -$10, 4x4, $D9
 		endsprite
 		
-byte_2C5DE:	spritemap
+frame_ss_wall_f:
+		spritemap
 		piece	-$10, -$10, 4x4, $E9
 		endsprite
 		even

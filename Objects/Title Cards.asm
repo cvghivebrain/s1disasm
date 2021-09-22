@@ -2,6 +2,7 @@
 ; Object 34 - zone title cards
 ; ---------------------------------------------------------------------------
 
+TitleCard:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Card_Index(pc,d0.w),d1
@@ -137,13 +138,13 @@ Card_Delete:
 ; ===========================================================================
 Card_ItemData:	; y position, routine number, frame number
 		dc.w $D0
-		dc.b id_Card_ChkPos, 0	; zone name (frame number changes)
+		dc.b id_Card_ChkPos, id_frame_card_ghz	; zone name (frame number changes)
 		dc.w $E4
-		dc.b id_Card_ChkPos, 6	; "ZONE"
+		dc.b id_Card_ChkPos, id_frame_card_zone	; "ZONE"
 		dc.w $EA
-		dc.b id_Card_ChkPos, 7	; act number (frame number changes)
+		dc.b id_Card_ChkPos, id_frame_card_act1	; act number (frame number changes)
 		dc.w $E0
-		dc.b id_Card_ChkPos, $A	; oval
+		dc.b id_Card_ChkPos, id_frame_card_oval	; oval
 ; ---------------------------------------------------------------------------
 ; Title	card configuration data
 ; Format:

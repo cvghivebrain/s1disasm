@@ -1,15 +1,17 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - special stage "DOWN" block
 ; ---------------------------------------------------------------------------
-		index *
-		ptr byte_1B954
-		ptr byte_1B95A
+Map_SS_Down:	index *
+		ptr frame_ss_down_0
+		ptr frame_ss_down_1
 		
-byte_1B954:	spritemap
+frame_ss_down_0:
+		spritemap
 		piece	-$C, -$C, 3x3, 9
 		endsprite
 		
-byte_1B95A:	spritemap
+frame_ss_down_1:
+		spritemap
 		piece	-$C, -$C, 3x3, $12
 		endsprite
 		even

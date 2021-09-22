@@ -2,6 +2,7 @@
 ; Object 36 - spikes
 ; ---------------------------------------------------------------------------
 
+Spikes:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Spik_Index(pc,d0.w),d1
@@ -11,12 +12,12 @@ Spik_Index:	index *,,2
 		ptr Spik_Main
 		ptr Spik_Solid
 
-Spik_Var:	dc.b 0,	$14		; frame	number,	object width
-		dc.b 1,	$10
-		dc.b 2,	4
-		dc.b 3,	$1C
-		dc.b 4,	$40
-		dc.b 5,	$10
+Spik_Var:	dc.b id_frame_spike_3up, $14	; frame	number,	object width
+		dc.b id_frame_spike_3left, $10
+		dc.b id_frame_spike_1up, 4
+		dc.b id_frame_spike_3upwide, $1C
+		dc.b id_frame_spike_6upwide, $40
+		dc.b id_frame_spike_1left, $10
 
 ost_spike_x_start:	equ $30	; original X position (2 bytes)
 ost_spike_y_start:	equ $32	; original Y position (2 bytes)
@@ -45,9 +46,9 @@ Spik_Main:	; Routine 0
 Spik_Solid:	; Routine 2
 		bsr.w	Spik_Type0x	; make the object move
 		move.w	#4,d2
-		cmpi.b	#5,ost_frame(a0) ; is object type $5x ?
+		cmpi.b	#id_frame_spike_1left,ost_frame(a0) ; is object type $5x ?
 		beq.s	Spik_SideWays	; if yes, branch
-		cmpi.b	#1,ost_frame(a0) ; is object type $1x ?
+		cmpi.b	#id_frame_spike_3left,ost_frame(a0) ; is object type $1x ?
 		bne.s	Spik_Upright	; if not, branch
 		move.w	#$14,d2
 
@@ -89,18 +90,18 @@ Spik_Hurt:
 		lea	(v_ost_player).w,a0
 		cmpi.b	#id_Sonic_Hurt,ost_routine(a0) ; is Sonic hurt or dead?
 		bcc.s	loc_CF20	; if yes, branch
-	if Revision<>2
-		move.l	ost_y_pos(a0),d3
-		move.w	ost_y_vel(a0),d0
-		ext.l	d0
-		asl.l	#8,d0
-	else
-		; This fixes the infamous "spike bug"
-		tst.w	ost_sonic_flash_rate(a0) ; Is Sonic flashing after being hurt?
-		bne.s	loc_CF20	; If so, skip getting hurt
-		jmp	(loc_E0).l	; This is a copy of the above code that was pushed aside for this
-loc_D5A2:
-	endc
+		if Revision<>2
+			move.l	ost_y_pos(a0),d3
+			move.w	ost_y_vel(a0),d0
+			ext.l	d0
+			asl.l	#8,d0
+		else
+			; This fixes the infamous "spike bug"
+			tst.w	ost_sonic_flash_rate(a0) ; Is Sonic flashing after being hurt?
+			bne.s	loc_CF20	; If so, skip getting hurt
+			jmp	(loc_E0).l	; This is a copy of the above code that was pushed aside for this
+	loc_D5A2:
+		endc
 		sub.l	d0,d3
 		move.l	d3,ost_y_pos(a0)
 		jsr	(HurtSonic).l

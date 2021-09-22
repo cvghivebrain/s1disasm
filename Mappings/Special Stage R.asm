@@ -1,19 +1,19 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - special stage "R" block
 ; ---------------------------------------------------------------------------
-		index *
-		ptr byte_1B912
-		ptr byte_1B918
-		ptr byte_1B91E
+Map_SS_R:	index *
+		ptr frame_ss_r_0
+		ptr frame_ss_r_1
+		ptr frame_ss_r_2
 		
-byte_1B912:	spritemap
+frame_ss_r_0:	spritemap
 		piece	-$C, -$C, 3x3, 0
 		endsprite
 		
-byte_1B918:	spritemap
+frame_ss_r_1:	spritemap
 		piece	-$C, -$C, 3x3, 9
 		endsprite
 		
-byte_1B91E:	spritemap
+frame_ss_r_2:	spritemap
 		endsprite
 		even

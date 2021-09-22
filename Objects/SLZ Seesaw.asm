@@ -138,7 +138,7 @@ See_Spikeball:	; Routine 6
 		move.w	ost_x_pos(a0),ost_seesaw_x_start(a0)
 		addi.w	#$28,ost_x_pos(a0)
 		move.w	ost_y_pos(a0),ost_seesaw_y_start(a0)
-		move.b	#1,ost_frame(a0)
+		move.b	#id_frame_seesaw_silver,ost_frame(a0)
 		btst	#status_xflip_bit,ost_status(a0) ; is seesaw flipped?
 		beq.s	See_MoveSpike	; if not, branch
 		subi.w	#$50,ost_x_pos(a0) ; move spikeball to the other side

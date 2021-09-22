@@ -8342,7 +8342,7 @@ loc_7BB6:
 		include "Objects\GHZ, MZ & SLZ Swinging Platforms, SBZ Ball on Chain (2).asm"
 		
 		include "Mappings\GHZ & MZ Swinging Platforms.asm" ; Map_Swing_GHZ
-Map_Swing_SLZ:	include "Mappings\SLZ Swinging Platforms.asm"
+		include "Mappings\SLZ Swinging Platforms.asm" ; Map_Swing_SLZ
 
 		include "Objects\GHZ Spiked Helix Pole.asm" ; Helix
 		include "Mappings\GHZ Spiked Helix Pole.asm" ; Map_Hel
@@ -8388,7 +8388,7 @@ Ledge_SlopeData:
 		include "Mappings\MZ, SLZ & SBZ Collapsing Floors.asm" ; Map_CFlo
 
 		include "Objects\GHZ Bridge Stump & SLZ Fireball Launcher.asm" ; Scenery
-Map_Scen:	include "Mappings\SLZ Fireball Launcher.asm"
+		include "Mappings\SLZ Fireball Launcher.asm" ; Map_Scen
 
 		include "Objects\Unused Switch.asm" ; MagicSwitch
 Map_Swi:	include "Mappings\Unused Switch.asm"
@@ -8488,20 +8488,20 @@ Ani_GFire:	include "Animations\MZ Burning Grass.asm"
 		include "Objects\MZ & LZ Pushable Blocks.asm" ; PushBlock
 		include "Mappings\MZ & LZ Pushable Blocks.asm" ; Map_Push
 
-TitleCard:	include "Objects\Title Cards.asm"
+		include "Objects\Title Cards.asm" ; TitleCard
 		include "Objects\Game Over & Time Over.asm" ; GameOverCard
-GotThroughCard:	include "Objects\Sonic Got Through Title Card.asm"
+		include "Objects\Sonic Got Through Title Card.asm" ; GotThroughCard
 
-SSResult:	include "Objects\Special Stage Results.asm"
-SSRChaos:	include "Objects\Special Stage Results Chaos Emeralds.asm"
-Map_Card:	include "Mappings\Title Cards.asm"
+		include "Objects\Special Stage Results.asm" ; SSResult
+		include "Objects\Special Stage Results Chaos Emeralds.asm" ; SSRChaos
+		include "Mappings\Title Cards.asm" ; Map_Card
 		include "Mappings\Game Over & Time Over.asm" ; Map_Over
-Map_Got:	include "Mappings\Title Cards Sonic Has Passed.asm"
-Map_SSR:	include "Mappings\Special Stage Results.asm"
-Map_SSRC:	include "Mappings\Special Stage Results Chaos Emeralds.asm"
+		include "Mappings\Title Cards Sonic Has Passed.asm" ; Map_Got
+		include "Mappings\Special Stage Results.asm" ; Map_SSR
+		include "Mappings\Special Stage Results Chaos Emeralds.asm" ; Map_SSRC
 
-Spikes:		include "Objects\Spikes.asm"
-Map_Spike:	include "Mappings\Spikes.asm"
+		include "Objects\Spikes.asm" ; Spikes
+		include "Mappings\Spikes.asm" ; Map_Spike
 
 		include "Objects\GHZ Purple Rock.asm" ; PurpleRock
 WaterSound:	include "Objects\GHZ Waterfall Sound.asm"
@@ -8802,9 +8802,9 @@ FindNextFreeObj:
 
 ; End of function FindNextFreeObj
 
-Springs:	include "Objects\Springs.asm"
-Ani_Spring:	include "Animations\Springs.asm"
-Map_Spring:	include "Mappings\Springs.asm"
+		include "Objects\Springs.asm" ; Springs
+		include "Animations\Springs.asm" ; Ani_Spring
+		include "Mappings\Springs.asm" ; Map_Spring
 
 		include "Objects\Newtron.asm" ; Newtron
 		include "Animations\Newtron.asm" ; Ani_Newt
@@ -8888,16 +8888,16 @@ Map_SBall:	include "Mappings\SYZ Spike Ball Chain.asm"
 Map_BBall:	include "Mappings\SYZ & SBZ Large Spike Balls.asm"
 
 		include "Objects\SLZ Elevator.asm" ; Elevator
-Map_Elev:	include "Mappings\SLZ Elevator.asm"
+		include "Mappings\SLZ Elevator.asm" ; Map_Elev
 
 		include "Objects\SLZ Circling Platform.asm" ; CirclingPlatform
-Map_Circ:	include "Mappings\SLZ Circling Platform.asm"
+		include "Mappings\SLZ Circling Platform.asm" ; Map_Circ
 
 		include "Objects\SLZ Stairs.asm" ; Staircase
-Map_Stair:	include "Mappings\SLZ Stairs.asm"
+		include "Mappings\SLZ Stairs.asm" ; Map_Stair
 
 		include "Objects\SLZ Pylon.asm" ; Pylon
-Map_Pylon:	include "Mappings\SLZ Pylon.asm"
+		include "Mappings\SLZ Pylon.asm" ; Map_Pylon
 
 		include "Objects\LZ Water Surface.asm" ; WaterSurface
 		include "Mappings\LZ Water Surface.asm" ; Map_Surf
@@ -8913,11 +8913,11 @@ Map_Pylon:	include "Mappings\SLZ Pylon.asm"
 		include "Mappings\Invisible Solid Blocks.asm" ; Map_Invis
 
 		include "Objects\SLZ Fans.asm" ; Fan
-Map_Fan:	include "Mappings\SLZ Fans.asm"
+		include "Mappings\SLZ Fans.asm" ; Map_Fan
 
 		include "Objects\SLZ Seesaw.asm" ; Seesaw
-Map_Seesaw:	include "Mappings\SLZ Seesaw.asm"
-Map_SSawBall:	include "Mappings\SLZ Seesaw Spike Ball.asm"
+		include "Mappings\SLZ Seesaw.asm" ; Map_Seesaw
+		include "Mappings\SLZ Seesaw Spike Ball.asm" ; Map_SSawBall
 
 		include "Objects\Bomb Enemy.asm" ; Bomb
 		include "Animations\Bomb Enemy.asm" ; Ani_Bomb
@@ -9469,8 +9469,8 @@ BossLabyrinth:	include "Objects\LZ Boss.asm"
 BossMarble:	include "Objects\MZ Boss.asm"
 BossFire:	include "Objects\MZ Boss Fire.asm"
 BossStarLight:	include "Objects\SLZ Boss.asm"
-BossSpikeball:	include "Objects\SLZ Boss Spikeballs.asm"
-Map_BSBall:	include "Mappings\SLZ Boss Spikeballs.asm"
+		include "Objects\SLZ Boss Spikeballs.asm" ; BossSpikeball
+		include "Mappings\SLZ Boss Spikeballs.asm" ; Map_BSBall
 BossSpringYard:	include "Objects\SYZ Boss.asm"
 BossBlock:	include "Objects\SYZ Blocks at Boss.asm"
 Map_BossBlock:	include "Mappings\SYZ Blocks at Boss.asm"
@@ -10222,11 +10222,11 @@ SS_MapIndex:
 	dc.l Map_SS_Glass
 	dc.w $45F0
 
-Map_SS_R:	include "Mappings\Special Stage R.asm"
-Map_SS_Glass:	include "Mappings\Special Stage Breakable & Red-White Blocks.asm"
-Map_SS_Up:	include "Mappings\Special Stage Up.asm"
-Map_SS_Down:	include "Mappings\Special Stage Down.asm"
-Map_SS_Chaos:	include "Mappings\Special Stage Chaos Emeralds.asm"
+		include "Mappings\Special Stage R.asm" ; Map_SS_R
+		include "Mappings\Special Stage Breakable & Red-White Blocks.asm" ; Map_SS_Glass
+		include "Mappings\Special Stage Up.asm" ; Map_SS_Up
+		include "Mappings\Special Stage Down.asm" ; Map_SS_Down
+		include "Mappings\Special Stage Chaos Emeralds.asm" ; Map_SS_Chaos1, Map_SS_Chaos2 & Map_SS_Chaos3
 
 		include "Objects\Special Stage Sonic.asm" ; SonicSpecial
 ; ---------------------------------------------------------------------------
@@ -11314,8 +11314,8 @@ Eni_JapNames:	incbin	"tilemaps\Hidden Japanese Credits.bin" ; Japanese credits (
 Nem_JapNames:	incbin	"Graphics - Compressed\Hidden Japanese Credits.nem"
 		even
 
-Map_Sonic:	include "Mappings\Sonic.asm"
-SonicDynPLC:	include "Mappings\Sonic DPLCs.asm"
+		include "Mappings\Sonic.asm" ; Map_Sonic
+		include "Mappings\Sonic DPLCs.asm" ; SonicDynPLC
 
 ; ---------------------------------------------------------------------------
 ; Uncompressed graphics	- Sonic
@@ -11346,7 +11346,7 @@ Nem_Goggle:		incbin	"Graphics - Compressed\Unused - Goggles.nem" ; unused goggle
 			even
 		endc
 
-Map_SSWalls:	include "Mappings\Special Stage Walls.asm"
+		include "Mappings\Special Stage Walls.asm" ; Map_SSWalls
 
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - special stage

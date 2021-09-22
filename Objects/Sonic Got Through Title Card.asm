@@ -1,7 +1,8 @@
 ; ---------------------------------------------------------------------------
-; Object 3A - "SONIC GOT THROUGH" title	card
+; Object 3A - "SONIC HAS PASSED" title card
 ; ---------------------------------------------------------------------------
 
+GotThroughCard:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Got_Index(pc,d0.w),d1
@@ -247,23 +248,23 @@ loc_C766:	; Routine $10
 ; ===========================================================================
 		;    x start,	x stop,	y,	routine, frame
 
-Got_Config:	dc.w 4,		$124,	$BC			; "SONIC HAS"
-		dc.b 				2,	0
+Got_Config:	dc.w 4,		$124,	$BC				; "SONIC HAS"
+		dc.b 				2,	id_frame_got_sonichas
 
-		dc.w -$120,	$120,	$D0			; "PASSED"
-		dc.b 				2,	1
+		dc.w -$120,	$120,	$D0				; "PASSED"
+		dc.b 				2,	id_frame_got_passed
 
-		dc.w $40C,	$14C,	$D6			; "ACT" 1/2/3
-		dc.b 				2,	6
+		dc.w $40C,	$14C,	$D6				; "ACT" 1/2/3
+		dc.b 				2,	id_frame_card_act1_6
 
-		dc.w $520,	$120,	$EC			; score
-		dc.b 				2,	2
+		dc.w $520,	$120,	$EC				; score
+		dc.b 				2,	id_frame_got_score
 
-		dc.w $540,	$120,	$FC			; time bonus
-		dc.b 				2,	3
+		dc.w $540,	$120,	$FC				; time bonus
+		dc.b 				2,	id_frame_got_timebonus
 
-		dc.w $560,	$120,	$10C			; ring bonus
-		dc.b 				2,	4
+		dc.w $560,	$120,	$10C				; ring bonus
+		dc.b 				2,	id_frame_got_ringbonus
 
-		dc.w $20C,	$14C,	$CC			; oval
-		dc.b 				2,	5
+		dc.w $20C,	$14C,	$CC				; oval
+		dc.b 				2,	id_frame_card_oval_5

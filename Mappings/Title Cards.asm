@@ -1,21 +1,22 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - zone title cards
 ; ---------------------------------------------------------------------------
-		index *
-		ptr M_Card_GHZ
-		ptr M_Card_LZ
-		ptr M_Card_MZ
-		ptr M_Card_SLZ
-		ptr M_Card_SYZ
-		ptr M_Card_SBZ
-		ptr M_Card_Zone
-		ptr M_Card_Act1
-		ptr M_Card_Act2
-		ptr M_Card_Act3
-		ptr M_Card_Oval
-		ptr M_Card_FZ
+Map_Card:	index *
+		ptr frame_card_ghz
+		ptr frame_card_lz
+		ptr frame_card_mz
+		ptr frame_card_slz
+		ptr frame_card_syz
+		ptr frame_card_sbz
+		ptr frame_card_zone
+		ptr frame_card_act1
+		ptr frame_card_act2
+		ptr frame_card_act3
+		ptr frame_card_oval
+		ptr frame_card_fz
 		
-M_Card_GHZ:	spritemap 			; GREEN HILL
+frame_card_ghz:
+		spritemap 			; GREEN HILL
 		piece -$4C, -8, 2x2, $18
 		piece -$3C, -8, 2x2, $3A
 		piece -$2C, -8, 2x2, $10
@@ -28,7 +29,8 @@ M_Card_GHZ:	spritemap 			; GREEN HILL
 		endsprite
 		even
 		
-M_Card_LZ:	spritemap			; LABYRINTH
+frame_card_lz:
+		spritemap			; LABYRINTH
 		piece -$44, -8, 2x2, $26
 		piece -$34, -8, 2x2, 0
 		piece -$24, -8, 2x2, 4
@@ -41,7 +43,8 @@ M_Card_LZ:	spritemap			; LABYRINTH
 		endsprite
 		even
 		
-M_Card_MZ:	spritemap			; MARBLE
+frame_card_mz:
+		spritemap			; MARBLE
 		piece -$31, -8, 2x2, $2A
 		piece -$20, -8, 2x2, 0
 		piece -$10, -8, 2x2, $3A
@@ -51,7 +54,8 @@ M_Card_MZ:	spritemap			; MARBLE
 		endsprite
 		even
 		
-M_Card_SLZ:	spritemap			; STAR LIGHT
+frame_card_slz:
+		spritemap			; STAR LIGHT
 		piece -$4C, -8, 2x2, $3E
 		piece -$3C, -8, 2x2, $42
 		piece -$2C, -8, 2x2, 0
@@ -64,7 +68,8 @@ M_Card_SLZ:	spritemap			; STAR LIGHT
 		endsprite
 		even
 		
-M_Card_SYZ:	spritemap			; SPRING YARD
+frame_card_syz:
+		spritemap			; SPRING YARD
 		piece -$54, -8, 2x2, $3E
 		piece -$44, -8, 2x2, $36
 		piece -$34, -8, 2x2, $3A
@@ -78,7 +83,8 @@ M_Card_SYZ:	spritemap			; SPRING YARD
 		endsprite
 		even
 		
-M_Card_SBZ:	spritemap			; SCRAP BRAIN
+frame_card_sbz:
+		spritemap			; SCRAP BRAIN
 		piece -$54, -8, 2x2, $3E
 		piece -$44, -8, 2x2, 8
 		piece -$34, -8, 2x2, $3A
@@ -92,7 +98,8 @@ M_Card_SBZ:	spritemap			; SCRAP BRAIN
 		endsprite
 		even
 		
-M_Card_Zone:	spritemap			; ZONE
+frame_card_zone:
+		spritemap			; ZONE
 		piece -$20, -8, 2x2, $4E
 		piece -$10, -8, 2x2, $32
 		piece 0, -8, 2x2, $2E
@@ -100,22 +107,26 @@ M_Card_Zone:	spritemap			; ZONE
 		endsprite
 		even
 		
-M_Card_Act1:	spritemap			; ACT 1
+frame_card_act1:
+		spritemap			; ACT 1
 		piece -$14, 4, 4x1, $53
 		piece $C, -$C, 1x3, $57
 		endsprite
 		
-M_Card_Act2:	spritemap			; ACT 2
+frame_card_act2:
+		spritemap			; ACT 2
 		piece -$14, 4, 4x1, $53
 		piece 8, -$C, 2x3, $5A
 		endsprite
 		
-M_Card_Act3:	spritemap			; ACT 3
+frame_card_act3:
+		spritemap			; ACT 3
 		piece -$14, 4, 4x1, $53
 		piece 8, -$C, 2x3, $60
 		endsprite
 		
-M_Card_Oval:	spritemap			; Oval
+frame_card_oval:
+		spritemap			; Oval
 		piece -$C, -$1C, 4x1, $70
 		piece $14, -$1C, 1x3, $74
 		piece -$14, -$14, 2x1, $77
@@ -132,7 +143,8 @@ M_Card_Oval:	spritemap			; Oval
 		endsprite
 		even
 		
-M_Card_FZ:	spritemap			; FINAL
+frame_card_fz:
+		spritemap			; FINAL
 		piece -$24, -8, 2x2, $14
 		piece -$14, -8, 1x2, $20
 		piece -$C, -8, 2x2, $2E

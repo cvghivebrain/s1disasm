@@ -1,10 +1,10 @@
 ; ---------------------------------------------------------------------------
 ; Animation script - springs
 ; ---------------------------------------------------------------------------
-		index *
-		ptr byte_DD02
-		ptr byte_DD0E
+Ani_Spring:	index *
+		ptr ani_spring_up
+		ptr ani_spring_left
 		
-byte_DD02:	dc.b 0,	1, 0, 0, 2, 2, 2, 2, 2,	2, 0, afRoutine
-byte_DD0E:	dc.b 0,	4, 3, 3, 5, 5, 5, 5, 5,	5, 3, afRoutine
-		even
+ani_spring_up:		dc.b 0,	id_frame_spring_upflat, id_frame_spring_up, id_frame_spring_up, id_frame_spring_upext, id_frame_spring_upext, id_frame_spring_upext, id_frame_spring_upext, id_frame_spring_upext, id_frame_spring_upext, id_frame_spring_up, afRoutine
+ani_spring_left:	dc.b 0,	id_frame_spring_leftflat, id_frame_spring_left, id_frame_spring_left, id_frame_spring_leftext, id_frame_spring_leftext, id_frame_spring_leftext, id_frame_spring_leftext, id_frame_spring_leftext, id_frame_spring_leftext, id_frame_spring_left, afRoutine
+			even

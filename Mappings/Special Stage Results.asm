@@ -1,18 +1,19 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - special stage results screen
 ; ---------------------------------------------------------------------------
-		index *
-		ptr M_SSR_Chaos
-		ptr M_SSR_Score
+Map_SSR:	index *
+		ptr frame_ssr_chaos
+		ptr frame_ssr_score
 		ptr byte_CD0D
-		ptr M_Card_Oval
+		ptr frame_card_oval
 		ptr byte_CD31
 		ptr byte_CD46
 		ptr byte_CD5B
-		ptr byte_CD6B
-		ptr byte_CDA8
+		ptr frame_ssr_specialstage
+		ptr frame_ssr_gotthemall
 		
-M_SSR_Chaos:	spritemap			; "CHAOS EMERALDS"
+frame_ssr_chaos:
+		spritemap			; "CHAOS EMERALDS"
 		piece -$70, -8, 2x2, 8
 		piece -$60, -8, 2x2, $1C
 		piece -$50, -8, 2x2, 0
@@ -28,7 +29,8 @@ M_SSR_Chaos:	spritemap			; "CHAOS EMERALDS"
 		piece $60, -8, 2x2, $3E
 		endsprite
 		
-M_SSR_Score:	spritemap			; "SCORE"
+frame_ssr_score:
+		spritemap			; "SCORE"
 		piece -$50, -8, 4x2, $14A
 		piece -$30, -8, 1x2, $162
 		piece $18, -8, 3x2, $164
@@ -67,7 +69,8 @@ byte_CD5B:	spritemap
 		piece -$10, -8, 1x2, $FFE1
 		endsprite
 		
-byte_CD6B:	spritemap			; "SPECIAL STAGE"
+frame_ssr_specialstage:
+		spritemap			; "SPECIAL STAGE"
 		piece -$64, -8, 2x2, $3E
 		piece -$54, -8, 2x2, $36
 		piece -$44, -8, 2x2, $10
@@ -82,7 +85,8 @@ byte_CD6B:	spritemap			; "SPECIAL STAGE"
 		piece $54, -8, 2x2, $10
 		endsprite
 		
-byte_CDA8:	spritemap			; "SONIC GOT THEM ALL"
+frame_ssr_gotthemall:
+		spritemap			; "SONIC GOT THEM ALL"
 		piece -$78, -8, 2x2, $3E
 		piece -$68, -8, 2x2, $32
 		piece -$58, -8, 2x2, $2E

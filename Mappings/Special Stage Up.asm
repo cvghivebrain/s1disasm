@@ -1,15 +1,15 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - special stage "UP" block
 ; ---------------------------------------------------------------------------
-		index *
-		ptr byte_1B944
-		ptr byte_1B94A
+Map_SS_Up:	index *
+		ptr frame_ss_up_0
+		ptr frame_ss_up_1
 		
-byte_1B944:	spritemap
+frame_ss_up_0:	spritemap
 		piece	-$C, -$C, 3x3, 0
 		endsprite
 		
-byte_1B94A:	spritemap
+frame_ss_up_1:	spritemap
 		piece	-$C, -$C, 3x3, $12
 		endsprite
 		even

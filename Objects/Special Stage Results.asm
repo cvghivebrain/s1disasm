@@ -2,6 +2,7 @@
 ; Object 7E - special stage results screen
 ; ---------------------------------------------------------------------------
 
+SSResult:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	SSR_Index(pc,d0.w),d1
@@ -153,12 +154,12 @@ SSR_Display2:
 		bra.w	DisplaySprite
 ; ===========================================================================
 SSR_Config:	dc.w $20, $120,	$C4	; start	x pos, stop x pos, y pos
-		dc.b id_SSR_Move, 0	; routine number, frame number
+		dc.b id_SSR_Move, id_frame_ssr_chaos	; routine number, frame number
 		dc.w $320, $120, $118
-		dc.b id_SSR_Move, 1
+		dc.b id_SSR_Move, id_frame_ssr_score
 		dc.w $360, $120, $128
 		dc.b id_SSR_Move, 2
 		dc.w $1EC, $11C, $C4
-		dc.b id_SSR_Move, 3
+		dc.b id_SSR_Move, id_frame_card_oval_3
 		dc.w $3A0, $120, $138
 		dc.b id_SSR_Move, 6

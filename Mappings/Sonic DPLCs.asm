@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
-; Uncompressed graphics	loading	array for Sonic
+; Dynamic Pattern Load Cues for Sonic
 ; ---------------------------------------------------------------------------
-		mirror_index *,,,SonPLC,\sonic_frames
+SonicDynPLC:		mirror_index *,,,SonPLC,\sonic_frames
 		
 SonPLC_frame_Blank:	dc.b 0
 SonPLC_frame_Stand:	dc.b 4,	$20, 0,	$70, 3,	$20, $B, $20, $E

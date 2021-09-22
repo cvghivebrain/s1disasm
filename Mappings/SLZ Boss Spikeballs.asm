@@ -1,13 +1,16 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - exploding spikeys that the SLZ boss	drops
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @fireball1
-		ptr @fireball2
-@fireball1:	spritemap
+Map_BSBall:	index *
+		ptr frame_bsball_fireball1
+		ptr frame_bsball_fireball2
+
+frame_bsball_fireball1:
+		spritemap
 		piece	-4, -4, 1x1, $27
 		endsprite
-@fireball2:	spritemap
+frame_bsball_fireball2:
+		spritemap
 		piece	-4, -4, 1x1, $28
 		endsprite
 		even

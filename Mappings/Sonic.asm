@@ -1,4 +1,7 @@
-		index *,,
+; ---------------------------------------------------------------------------
+; Sprite mappings - Sonic
+; ---------------------------------------------------------------------------
+Map_Sonic:	index *,,
 		ptr frame_Blank,sonic_frames
 		ptr frame_Stand,sonic_frames
 		ptr frame_Wait1,sonic_frames

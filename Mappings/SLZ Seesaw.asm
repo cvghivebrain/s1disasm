@@ -1,13 +1,14 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - seesaws (SLZ)
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @sloping
-		ptr @flat
-		ptr @sloping
-		ptr @flat
+Map_Seesaw:	index *
+		ptr frame_seesaw_sloping
+		ptr frame_seesaw_flat
+		ptr frame_seesaw_sloping
+		ptr frame_seesaw_flat
 		
-@sloping:	spritemap
+frame_seesaw_sloping:
+		spritemap
 		piece	-$2D, -$2C, 2x3, 0
 		piece	-$1D, -$24, 2x3, 6
 		piece	-$D, -$1C, 2x1, $C
@@ -17,7 +18,8 @@
 		piece	$23, -4, 2x2, $19
 		endsprite
 		
-@flat:		spritemap
+frame_seesaw_flat:
+		spritemap
 		piece	-$30, -$1A, 3x3, $1D
 		piece	-$18, -$1A, 3x3, $23
 		piece	0, -$1A, 3x3, $23, xflip

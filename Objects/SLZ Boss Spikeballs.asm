@@ -2,6 +2,7 @@
 ; Object 7B - exploding	spikeys	that Eggman drops (SLZ)
 ; ---------------------------------------------------------------------------
 
+BossSpikeball:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Obj7B_Index(pc,d0.w),d0
@@ -34,7 +35,7 @@ ost_bspike_seesaw:	equ $3C	; address of OST of seesaw (4 bytes)
 Obj7B_Main:	; Routine 0
 		move.l	#Map_SSawBall,ost_mappings(a0)
 		move.w	#tile_Nem_SlzSpike_Boss,ost_tile(a0)
-		move.b	#1,ost_frame(a0)
+		move.b	#id_frame_seesaw_silver,ost_frame(a0)
 		ori.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)
 		move.b	#$8B,ost_col_type(a0)
@@ -116,7 +117,7 @@ loc_18E00:
 		neg.w	ost_x_vel(a0)
 
 loc_18E16:
-		move.b	#1,ost_frame(a0)
+		move.b	#id_frame_seesaw_silver,ost_frame(a0)
 		move.w	#$20,ost_subtype(a0)
 		addq.b	#2,ost_routine(a0)
 		bra.w	loc_18EAA
@@ -363,6 +364,6 @@ Obj7B_MoveFrag:	; Routine $A
 		and.w	(v_vbla_word).w,d0
 		lsr.w	#2,d0
 		move.b	d0,ost_frame(a0)
-		tst.b	1(a0)
+		tst.b	ost_render(a0)
 		bpl.w	Obj7A_Delete
 		rts	

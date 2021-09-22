@@ -2,6 +2,7 @@
 ; Object 41 - springs
 ; ---------------------------------------------------------------------------
 
+Springs:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Spring_Index(pc,d0.w),d1
@@ -40,8 +41,8 @@ Spring_Main:	; Routine 0
 		beq.s	Spring_NotLR	; if not, branch
 
 		move.b	#id_Spring_LR,ost_routine(a0) ; use "Spring_LR" routine
-		move.b	#1,ost_anim(a0)
-		move.b	#3,ost_frame(a0)
+		move.b	#id_ani_spring_left,ost_anim(a0)
+		move.b	#id_frame_spring_left,ost_frame(a0)
 		move.w	#tile_Nem_VSpring,ost_tile(a0)
 		move.b	#8,ost_actwidth(a0)
 
@@ -55,7 +56,7 @@ Spring_Main:	; Routine 0
 	Spring_NotDwn:
 		btst	#1,d0		; is spring subtype $x2?
 		beq.s	loc_DB72	; if not, branch
-		bset	#5,ost_tile(a0)	; use 2nd palette (yellow spring)
+		bset	#tile_pal12_bit,ost_tile(a0) ; use 2nd palette (yellow spring)
 
 loc_DB72:
 		andi.w	#$F,d0

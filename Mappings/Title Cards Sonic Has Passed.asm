@@ -1,18 +1,19 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - "SONIC HAS PASSED" title card
 ; ---------------------------------------------------------------------------
-		index *
-		ptr M_Got_SonicHas
-		ptr M_Got_Passed
-		ptr M_Got_Score
-		ptr M_Got_TBonus
-		ptr M_Got_RBonus
-		ptr M_Card_Oval
-		ptr M_Card_Act1
-		ptr M_Card_Act2
-		ptr M_Card_Act3
+Map_Got:	index *
+		ptr frame_got_sonichas
+		ptr frame_got_passed
+		ptr frame_got_score
+		ptr frame_got_timebonus
+		ptr frame_got_ringbonus
+		ptr frame_card_oval
+		ptr frame_card_act1
+		ptr frame_card_act2
+		ptr frame_card_act3
 		
-M_Got_SonicHas:	spritemap			; SONIC HAS
+frame_got_sonichas:
+		spritemap			; SONIC HAS
 		piece -$48, -8, 2x2, $3E
 		piece -$38, -8, 2x2, $32
 		piece -$28, -8, 2x2, $2E
@@ -23,7 +24,8 @@ M_Got_SonicHas:	spritemap			; SONIC HAS
 		piece $30, -8, 2x2, $3E
 		endsprite
 		
-M_Got_Passed:	spritemap			; PASSED
+frame_got_passed:
+		spritemap			; PASSED
 		piece -$30, -8, 2x2, $36
 		piece -$20, -8, 2x2, 0
 		piece -$10, -8, 2x2, $3E
@@ -32,7 +34,8 @@ M_Got_Passed:	spritemap			; PASSED
 		piece $20, -8, 2x2, $C
 		endsprite
 		
-M_Got_Score:	spritemap			; SCORE
+frame_got_score:
+		spritemap			; SCORE
 		piece -$50, -8, 4x2, $14A
 		piece -$30, -8, 1x2, $162
 		piece $18, -8, 3x2, $164
@@ -41,7 +44,8 @@ M_Got_Score:	spritemap			; SCORE
 		piece -$33, -1, 2x1, $6E, xflip, yflip
 		endsprite
 		
-M_Got_TBonus:	spritemap			; TIME BONUS
+frame_got_timebonus:
+		spritemap			; TIME BONUS
 		piece -$50, -8, 4x2, $15A
 		piece -$27, -8, 4x2, $66
 		piece -7, -8, 1x2, $14A
@@ -51,7 +55,8 @@ M_Got_TBonus:	spritemap			; TIME BONUS
 		piece $48, -8, 1x2, $170
 		endsprite
 		
-M_Got_RBonus:	spritemap			; RING BONUS
+frame_got_ringbonus:
+		spritemap			; RING BONUS
 		piece -$50, -8, 4x2, $152
 		piece -$27, -8, 4x2, $66
 		piece -7, -8, 1x2, $14A

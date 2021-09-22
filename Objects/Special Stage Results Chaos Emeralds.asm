@@ -2,6 +2,7 @@
 ; Object 7F - chaos emeralds from the special stage results screen
 ; ---------------------------------------------------------------------------
 
+SSRChaos:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	SSRC_Index(pc,d0.w),d1
@@ -44,7 +45,7 @@ SSRC_Main:	; Routine 0
 
 SSRC_Flash:	; Routine 2
 		move.b	ost_frame(a0),d0
-		move.b	#6,ost_frame(a0) ; load 6th frame (blank)
+		move.b	#id_frame_ssrc_blank,ost_frame(a0) ; load 6th frame (blank)
 		cmpi.b	#6,d0
 		bne.s	SSRC_Display
 		move.b	ost_anim(a0),ost_frame(a0) ; load visible frame
