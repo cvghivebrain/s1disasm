@@ -1,17 +1,17 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Sonic on the title screen
 ; ---------------------------------------------------------------------------
-		index *
-		ptr byte_A898
-		ptr byte_A8CB
-		ptr byte_A917
-		ptr byte_A96D
-		ptr byte_A9AF
-		ptr byte_A9E7
-		ptr byte_AA47
-		ptr byte_AAB1
+Map_TSon:	index *
+		ptr frame_tson_0
+		ptr frame_tson_1
+		ptr frame_tson_2
+		ptr frame_tson_3
+		ptr frame_tson_4
+		ptr frame_tson_5
+		ptr frame_tson_wag1
+		ptr frame_tson_wag2
 		
-byte_A898:	spritemap
+frame_tson_0:	spritemap
 		piece	8, 8, 3x1, 0
 		piece	8, $10, 4x4, 3
 		piece	$28, $10, 4x4, $13
@@ -24,7 +24,7 @@ byte_A898:	spritemap
 		piece	$28, $58, 1x1, $4E
 		endsprite
 		
-byte_A8CB:	spritemap
+frame_tson_1:	spritemap
 		piece	$20, $48, 4x3, $1BD
 		piece	$38, $38, 2x2, $1C9
 		piece	$30, $40, 1x1, $1CD
@@ -42,7 +42,7 @@ byte_A8CB:	spritemap
 		piece	$30, $58, 2x1, $A1
 		endsprite
 		
-byte_A917:	spritemap
+frame_tson_2:	spritemap
 		piece	$28, $38, 4x3, $1BD
 		piece	$40, $28, 2x2, $1C9
 		piece	$38, $30, 1x1, $1CD
@@ -62,7 +62,7 @@ byte_A917:	spritemap
 		piece	$30, $58, 2x1, $A1
 		endsprite
 		
-byte_A96D:	spritemap
+frame_tson_3:	spritemap
 		piece	8, $10, 4x4, $A3
 		piece	$28, 8, 3x1, $B3
 		piece	$28, $10, 4x4, $B6
@@ -78,7 +78,7 @@ byte_A96D:	spritemap
 		piece	$28, $58, 1x1, $F5
 		endsprite
 		
-byte_A9AF:	spritemap
+frame_tson_4:	spritemap
 		piece	$10, 8, 4x4, $F6
 		piece	$30, 8, 3x4, $106
 		piece	$48, $10, 2x3, $112
@@ -92,7 +92,7 @@ byte_A9AF:	spritemap
 		piece	$18, $58, 3x1, $147
 		endsprite
 		
-byte_A9E7:	spritemap
+frame_tson_5:	spritemap
 		piece	$38, $28, 4x3, $1E4
 		piece	$48, $18, 2x2, $1F0
 		piece	$38, $40, 3x1, $1F4
@@ -114,7 +114,8 @@ byte_A9E7:	spritemap
 		piece	$28, $58, 3x1, $1A6
 		endsprite
 		
-byte_AA47:	spritemap
+frame_tson_wag1:
+		spritemap
 		piece	$38, $28, 4x3, $1E4
 		piece	$48, $18, 2x2, $1F0
 		piece	$38, $40, 3x1, $1F4
@@ -138,7 +139,8 @@ byte_AA47:	spritemap
 		piece	$28, $58, 3x1, $1A6
 		endsprite
 		
-byte_AAB1:	spritemap
+frame_tson_wag2:
+		spritemap
 		piece	$38, $18, 2x1, $1F9
 		piece	$38, $20, 1x1, $1FB
 		piece	$30, $28, 3x1, $1FC

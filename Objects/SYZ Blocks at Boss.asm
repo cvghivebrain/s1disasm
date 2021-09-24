@@ -2,6 +2,7 @@
 ; Object 76 - blocks that Eggman picks up (SYZ)
 ; ---------------------------------------------------------------------------
 
+BossBlock:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Obj76_Index(pc,d0.w),d1

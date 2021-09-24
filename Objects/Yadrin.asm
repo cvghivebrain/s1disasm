@@ -89,7 +89,7 @@ Yad_Move:
 		bpl.s	locret_F8E2	; if time remains, branch
 		addq.b	#2,ost_routine2(a0)
 		move.w	#-$100,ost_x_vel(a0) ; move object
-		move.b	#1,ost_anim(a0)
+		move.b	#id_ani_yadrin_walk,ost_anim(a0)
 		bchg	#status_xflip_bit,ost_status(a0)
 		bne.s	locret_F8E2
 		neg.w	ost_x_vel(a0)	; change direction
@@ -115,5 +115,5 @@ Yad_Pause:
 		subq.b	#2,ost_routine2(a0)
 		move.w	#59,ost_yadrin_wait_time(a0) ; set pause time to 1 second
 		move.w	#0,ost_x_vel(a0)
-		move.b	#0,ost_anim(a0)
+		move.b	#id_ani_yadrin_stand,ost_anim(a0)
 		rts	

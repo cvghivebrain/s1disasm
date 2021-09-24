@@ -36,11 +36,11 @@ Van_RmvSonic:	; Routine 2
 		move.b	(v_ost_player+ost_status).w,ost_status(a0)
 		lea	(Ani_Vanish).l,a1
 		jsr	(AnimateSprite).l
-		cmpi.b	#2,ost_frame(a0)
+		cmpi.b	#id_frame_vanish_flash3,ost_frame(a0)
 		bne.s	@display
 		tst.b	(v_ost_player).w
 		beq.s	@display
-		move.b	#0,(v_ost_player).w	; remove Sonic
+		move.b	#0,(v_ost_player).w ; remove Sonic
 		sfx	sfx_SSGoal,0,0,0 ; play Special Stage "GOAL" sound
 
 	@display:

@@ -1,29 +1,32 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - special stage entry	from beta
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @flash1
-		ptr @flash2
-		ptr @flash3
-		ptr @sparkle1
-		ptr @sparkle2
-		ptr @sparkle3
-		ptr @sparkle4
-		ptr @blank
+Map_Vanish:	index *
+		ptr frame_vanish_flash1
+		ptr frame_vanish_flash2
+		ptr frame_vanish_flash3
+		ptr frame_vanish_sparkle1
+		ptr frame_vanish_sparkle2
+		ptr frame_vanish_sparkle3
+		ptr frame_vanish_sparkle4
+		ptr frame_vanish_blank
 		
-@flash1:	spritemap
+frame_vanish_flash1:
+		spritemap
 		piece	8, -8, 1x1, 0
 		piece	0, 0, 2x1, 1
 		piece	8, 8, 1x1, 0, yflip
 		endsprite
 		
-@flash2:	spritemap
+frame_vanish_flash2:
+		spritemap
 		piece	-$10, -$10, 4x2, 3
 		piece	-$10, 0, 4x1, $B
 		piece	-$10, 8, 4x2, 3, yflip
 		endsprite
 		
-@flash3:	spritemap
+frame_vanish_flash3:
+		spritemap
 		piece	-$C, -$1C, 4x3, $F
 		piece	-$14, -$14, 1x3, $1B
 		piece	-$C, -4, 4x1, $1E
@@ -31,7 +34,8 @@
 		piece	-$14, 4, 1x2, $1B, yflip
 		endsprite
 		
-@sparkle1:	spritemap
+frame_vanish_sparkle1:
+		spritemap
 		piece	-8, -$10, 3x1, $22
 		piece	-$10, -8, 4x3, $25
 		piece	-$10, $10, 3x1, $31
@@ -43,7 +47,8 @@
 		piece	$30, -8, 1x1, $25
 		endsprite
 		
-@sparkle2:	spritemap
+frame_vanish_sparkle2:
+		spritemap
 		piece	-$10, 0, 1x1, $25, xflip, yflip
 		piece	-8, -8, 2x1, $38
 		piece	8, -$10, 1x1, $26
@@ -64,7 +69,8 @@
 		piece	$40, -8, 1x1, $25, yflip
 		endsprite
 		
-@sparkle3:	spritemap
+frame_vanish_sparkle3:
+		spritemap
 		piece	0, -8, 1x1, $25, xflip
 		piece	$10, -$10, 1x1, $38
 		piece	0, $10, 1x1, $25, xflip
@@ -84,7 +90,8 @@
 		piece	$50, 0, 1x1, $25, yflip
 		endsprite
 		
-@sparkle4:	spritemap
+frame_vanish_sparkle4:
+		spritemap
 		piece	$30, -4, 1x1, $26, xflip
 		piece	$28, 4, 1x1, $25, xflip
 		piece	$38, 4, 1x1, $27, yflip
@@ -93,7 +100,7 @@
 		piece	$48, -4, 1x1, $26, yflip
 		piece	$48, $C, 1x1, $27, xflip
 		piece	$50, 4, 1x1, $26, xflip, yflip
-@blank:		EQU	*+1
+frame_vanish_blank: equ	*+1
 		piece	$58, 4, 1x1, $27, xflip
 		endsprite
 		even

@@ -91,7 +91,7 @@ FBlock_Main:	; Routine 0
 		andi.b	#$F,d0		; read low nybble
 		move.b	d0,ost_fblock_switch_num(a0) ; save to variable
 		move.b	#5,ost_subtype(a0) ; force subtype to 5 (moves up when switch is pressed)
-		cmpi.b	#7,ost_frame(a0) ; is object a large horizontal LZ door?
+		cmpi.b	#id_frame_fblock_lzhoriz,ost_frame(a0) ; is object a large horizontal LZ door?
 		bne.s	@chkstate	; if not, branch
 		move.b	#$C,ost_subtype(a0) ; force subtype to $C (moves left when switch is pressed)
 		move.w	#$80,ost_fblock_height(a0)

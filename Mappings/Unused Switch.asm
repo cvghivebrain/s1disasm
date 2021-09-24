@@ -1,10 +1,10 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Unused switch thingy
 ; ---------------------------------------------------------------------------
-		index *
-		ptr byte_891E
+Map_Switch:	index *
+		ptr frame_switch_0
 		
-byte_891E:	spritemap
+frame_switch_0:	spritemap
 		piece	-$10, -$18, 2x4, $54
 		piece	-$10, 8, 2x2, $5C
 		piece	0, -$18, 2x4, $54

@@ -1,8 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Animation script - Sonic on the title screen
 ; ---------------------------------------------------------------------------
-		index *
-		ptr byte_A706
+Ani_TSon:	index *
+		ptr ani_tson_0
 		
-byte_A706:	dc.b 7,	0, 1, 2, 3, 4, 5, 6, 7,	afBack, 2
+ani_tson_0:	dc.b 7,	id_frame_tson_0, id_frame_tson_1, id_frame_tson_2, id_frame_tson_3, id_frame_tson_4, id_frame_tson_5, id_frame_tson_wag1, id_frame_tson_wag2, afBack, 2
 		even

@@ -20,6 +20,7 @@ ost_ball_parent:	equ $34	; address of OST of parent object (4 bytes)
 ost_ball_base_y_pos:	equ $38	; y position of base (2 bytes)
 ost_ball_base_x_pos:	equ $3A	; x position of base (2 bytes)
 ost_ball_base_dist:	equ $3C	; distance of ball/link from base
+ost_ball_direction:	equ $3D	; swing direction - 0 = left; 1 = right
 ost_ball_angle:		equ $3E ; swing angle (2 bytes)
 ; ===========================================================================
 
@@ -115,7 +116,7 @@ GBall_Display:
 
 GBall_Display2:	; Routine 4
 		bsr.w	sub_17C2A
-		jsr	(Obj48_Move).l
+		jsr	(GBall_Move).l
 		jmp	(DisplaySprite).l
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||

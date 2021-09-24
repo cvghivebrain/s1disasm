@@ -1,11 +1,11 @@
 ; ---------------------------------------------------------------------------
 ; Animation script - Yadrin enemy
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @stand
-		ptr @walk
+Ani_Yad:	index *
+		ptr ani_yadrin_stand
+		ptr ani_yadrin_walk
 
-@stand:		dc.b 7,	0, afEnd
-		even
-@walk:		dc.b 7,	0, 3, 1, 4, 0, 3, 2, 5,	afEnd
-		even
+ani_yadrin_stand:	dc.b 7,	id_frame_yadrin_walk0, afEnd
+			even
+ani_yadrin_walk:	dc.b 7,	id_frame_yadrin_walk0, id_frame_yadrin_walk3, id_frame_yadrin_walk1, id_frame_yadrin_walk4, id_frame_yadrin_walk0, id_frame_yadrin_walk3, id_frame_yadrin_walk2, id_frame_yadrin_walk5, afEnd
+			even

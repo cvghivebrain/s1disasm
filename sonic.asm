@@ -89,37 +89,37 @@ Vectors:	dc.l v_systemstack&$FFFFFF	; Initial stack pointer value
 		dc.l ErrorTrap			; Unused (reserved)
 		dc.l ErrorTrap			; Unused (reserved)
 		dc.l ErrorTrap			; Unused (reserved)
-	if Revision<>2
-		dc.l ErrorTrap			; Unused (reserved)
-		dc.l ErrorTrap			; Unused (reserved)
-		dc.l ErrorTrap			; Unused (reserved)
-		dc.l ErrorTrap			; Unused (reserved)
-		dc.l ErrorTrap			; Unused (reserved)
-		dc.l ErrorTrap			; Unused (reserved)
-		dc.l ErrorTrap			; Unused (reserved)
-		dc.l ErrorTrap			; Unused (reserved)
-	else
-loc_E0:
-		; Relocated code from Spik_Hurt. REVXB was a nasty hex-edit.
-		move.l	ost_y_pos(a0),d3
-		move.w	ost_y_vel(a0),d0
-		ext.l	d0
-		asl.l	#8,d0
-		jmp	(loc_D5A2).l
+		if Revision<>2
+			dc.l ErrorTrap			; Unused (reserved)
+			dc.l ErrorTrap			; Unused (reserved)
+			dc.l ErrorTrap			; Unused (reserved)
+			dc.l ErrorTrap			; Unused (reserved)
+			dc.l ErrorTrap			; Unused (reserved)
+			dc.l ErrorTrap			; Unused (reserved)
+			dc.l ErrorTrap			; Unused (reserved)
+			dc.l ErrorTrap			; Unused (reserved)
+		else
+	loc_E0:
+			; Relocated code from Spik_Hurt. REVXB was a nasty hex-edit.
+			move.l	ost_y_pos(a0),d3
+			move.w	ost_y_vel(a0),d0
+			ext.l	d0
+			asl.l	#8,d0
+			jmp	(loc_D5A2).l
 
-		dc.w ErrorTrap
-		dc.l ErrorTrap
-		dc.l ErrorTrap
-		dc.l ErrorTrap
-	endif
+			dc.w ErrorTrap
+			dc.l ErrorTrap
+			dc.l ErrorTrap
+			dc.l ErrorTrap
+		endc
 Console:	dc.b "SEGA MEGA DRIVE " ; Hardware system ID (Console name)
 Date:		dc.b "(C)SEGA 1991.APR" ; Copyright holder and release date (generally year)
 Title_Local:	dc.b "SONIC THE               HEDGEHOG                " ; Domestic name
 Title_Int:	dc.b "SONIC THE               HEDGEHOG                " ; International name
 Serial:		if Revision=0
-		dc.b "GM 00001009-00"   ; Serial/version number (Rev 0)
+			dc.b "GM 00001009-00"   ; Serial/version number (Rev 0)
 		else
-		dc.b "GM 00004049-01" ; Serial/version number (Rev non-0)
+			dc.b "GM 00004049-01" ; Serial/version number (Rev non-0)
 		endc
 Checksum: 	dc.w $0
 		dc.b "J               " ; I/O support
@@ -128,9 +128,9 @@ RomEndLoc:	dc.l EndOfRom-1		; End address of ROM
 RamStartLoc:	dc.l $FF0000		; Start address of RAM
 RamEndLoc:	dc.l $FFFFFF		; End address of RAM
 SRAMSupport:	if EnableSRAM=1
-		dc.b $52, $41, $A0+(BackupSRAM<<6)+(AddressSRAM<<3), $20
+			dc.b $52, $41, $A0+(BackupSRAM<<6)+(AddressSRAM<<3), $20
 		else
-		dc.l $20202020
+			dc.l $20202020
 		endc
 		dc.l $20202020		; SRAM start ($200001)
 		dc.l $20202020		; SRAM end ($20xxxx)
@@ -8309,35 +8309,7 @@ loc_7B78:
 		bra.s	Swing_Move2
 ; End of function Swing_Move
 
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Obj48_Move:
-		tst.b	ost_sonic_on_obj(a0)
-		bne.s	loc_7B9C
-		move.w	ost_ball_angle(a0),d0
-		addq.w	#8,d0
-		move.w	d0,ost_ball_angle(a0)
-		add.w	d0,ost_angle(a0)
-		cmpi.w	#$200,d0
-		bne.s	loc_7BB6
-		move.b	#1,ost_sonic_on_obj(a0)
-		bra.s	loc_7BB6
-; ===========================================================================
-
-loc_7B9C:
-		move.w	ost_ball_angle(a0),d0
-		subq.w	#8,d0
-		move.w	d0,ost_ball_angle(a0)
-		add.w	d0,ost_angle(a0)
-		cmpi.w	#-$200,d0
-		bne.s	loc_7BB6
-		move.b	#0,ost_sonic_on_obj(a0)
-
-loc_7BB6:
-		move.b	ost_angle(a0),d0
-; End of function Obj48_Move
+		include "Objects\GHZ Boss Ball (2).asm"
 
 		include "Objects\GHZ, MZ & SLZ Swinging Platforms, SBZ Ball on Chain (2).asm"
 		
@@ -8391,7 +8363,7 @@ Ledge_SlopeData:
 		include "Mappings\SLZ Fireball Launcher.asm" ; Map_Scen
 
 		include "Objects\Unused Switch.asm" ; MagicSwitch
-Map_Swi:	include "Mappings\Unused Switch.asm"
+		include "Mappings\Unused Switch.asm" ; Map_Switch
 
 		include "Objects\SBZ Door.asm" ; AutoDoor
 		include "Animations\SBZ Door.asm" ; Ani_ADoor
@@ -8448,13 +8420,13 @@ Map_Animal3:	include "Mappings\Animals 3.asm"
 		include "Objects\Title Screen Sonic.asm" ; TitleSonic
 		include "Objects\Title Screen Press Start & TM.asm" ; PSBTM
 
-Ani_TSon:	include "Animations\Title Screen Sonic.asm"
-Ani_PSBTM:	include "Animations\Title Screen Press Start.asm"
+		include "Animations\Title Screen Sonic.asm" ; Ani_TSon
+		include "Animations\Title Screen Press Start.asm" ; Ani_PSB
 
 		include "Objects\_AnimateSprite.asm"
 
-Map_PSB:	include "Mappings\Title Screen Press Start & TM.asm"
-Map_TSon:	include "Mappings\Title Screen Sonic.asm"
+		include "Mappings\Title Screen Press Start & TM.asm" ; Map_PSB
+		include "Mappings\Title Screen Sonic.asm" ; Map_TSon
 
 		include "Objects\Chopper.asm" ; Chopper
 		include "Animations\Chopper.asm" ; Ani_Chop
@@ -8747,60 +8719,7 @@ loc_DA80:
 locret_DA8A:
 		rts	
 
-; ---------------------------------------------------------------------------
-; Subroutine to find a free object space
-
-; output:
-;	a1 = free position in object RAM
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-FindFreeObj:
-		lea	(v_ost_level_obj).w,a1 ; start address for object RAM
-		move.w	#$5F,d0
-
-	FFree_Loop:
-		tst.b	(a1)		; is object RAM	slot empty?
-		beq.s	FFree_Found	; if yes, branch
-		lea	$40(a1),a1	; goto next object RAM slot
-		dbf	d0,FFree_Loop	; repeat $5F times
-
-	FFree_Found:
-		rts	
-
-; End of function FindFreeObj
-
-
-; ---------------------------------------------------------------------------
-; Subroutine to find a free object space AFTER the current one
-
-; output:
-;	a1 = free position in object RAM
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-FindNextFreeObj:
-		movea.l	a0,a1
-		move.w	#$F000,d0
-		sub.w	a0,d0
-		lsr.w	#6,d0
-		subq.w	#1,d0
-		bcs.s	NFree_Found
-
-	NFree_Loop:
-		tst.b	(a1)
-		beq.s	NFree_Found
-		lea	$40(a1),a1
-		dbf	d0,NFree_Loop
-
-	NFree_Found:
-		rts	
-
-; End of function FindNextFreeObj
+		include "Objects\_FindFreeObj & FindNextFreeObj.asm"
 
 		include "Objects\Springs.asm" ; Springs
 		include "Animations\Springs.asm" ; Ani_Spring
@@ -8810,7 +8729,7 @@ FindNextFreeObj:
 		include "Animations\Newtron.asm" ; Ani_Newt
 		include "Mappings\Newtron.asm" ; Map_Newt
 
-			include "Objects\Roller.asm" ; Roller
+		include "Objects\Roller.asm" ; Roller
 		include "Animations\Roller.asm" ; Ani_Roll
 		include "Mappings\Roller.asm" ; Map_Roll
 
@@ -8828,12 +8747,12 @@ LavaMaker:	include "Objects\MZ & SLZ Fireball Launchers.asm"
 		include "Objects\MZ Purple Brick Block.asm" ; MarbleBrick
 		include "Mappings\MZ Purple Brick Block.asm" ; Map_Brick
 
-SpinningLight:	include "Objects\SYZ Lamp.asm"
-Map_Light:	include "Mappings\SYZ Lamp.asm"
+		include "Objects\SYZ Lamp.asm" ; SpinningLight
+		include "Mappings\SYZ Lamp.asm" ; Map_Light
 
-Bumper:		include "Objects\SYZ Bumper.asm"
-Ani_Bump:	include "Animations\SYZ Bumper.asm"
-Map_Bump:	include "Mappings\SYZ Bumper.asm"
+		include "Objects\SYZ Bumper.asm" ; Bumper
+		include "Animations\SYZ Bumper.asm" ; Ani_Bump
+		include "Mappings\SYZ Bumper.asm" ; Map_Bump
 
 		include "Objects\Signpost & GotThroughAct.asm" ; Signpost & GotThroughAct
 		include "Animations\Signpost.asm" ; Ani_Sign
@@ -8861,8 +8780,8 @@ Obj4F:
 		rts	
 
 		include "Objects\Yadrin.asm" ;Yadrin
-Ani_Yad:	include "Animations\Yadrin.asm"
-Map_Yad:	include "Mappings\Yadrin.asm"
+		include "Animations\Yadrin.asm" ; Ani_Yad
+		include "Mappings\Yadrin.asm" ; Map_Yad
 
 		include "Objects\_SolidObject.asm"
 
@@ -8878,14 +8797,14 @@ Map_Yad:	include "Mappings\Yadrin.asm"
 		include "Mappings\Batbrain.asm" ; Map_Bat
 
 		include "Objects\SYZ & SLZ Floating Blocks, LZ Doors.asm" ; FloatingBlock
-Map_FBlock:	include "Mappings\SYZ & SLZ Floating Blocks, LZ Doors.asm"
+		include "Mappings\SYZ & SLZ Floating Blocks, LZ Doors.asm" ; Map_FBlock
 
 		include "Objects\SYZ & LZ Spike Ball Chain.asm" ; SpikeBall
-Map_SBall:	include "Mappings\SYZ Spike Ball Chain.asm"
+		include "Mappings\SYZ Spike Ball Chain.asm" ; Map_SBall
 		include "Mappings\LZ Spike Ball on Chain.asm" ; Map_SBall2
 
 		include "Objects\SYZ Large Spike Balls.asm" ; BigSpikeBall
-Map_BBall:	include "Mappings\SYZ & SBZ Large Spike Balls.asm"
+		include "Mappings\SYZ & SBZ Large Spike Balls.asm" ; Map_BBall
 
 		include "Objects\SLZ Elevator.asm" ; Elevator
 		include "Mappings\SLZ Elevator.asm" ; Map_Elev
@@ -8961,8 +8880,8 @@ Map_BBall:	include "Mappings\SYZ & SBZ Large Spike Balls.asm"
 		include "Objects\LZ Water Splash.asm" ; Splash
 		include "Animations\Shield & Invincibility.asm" ; Ani_Shield
 		include "Mappings\Shield & Invincibility.asm" ; Map_Shield
-Ani_Vanish:	include "Animations\Unused Special Stage Warp.asm"
-Map_Vanish:	include "Mappings\Unused Special Stage Warp.asm"
+		include "Animations\Unused Special Stage Warp.asm" ; Ani_Vanish
+		include "Mappings\Unused Special Stage Warp.asm" ; Map_Vanish
 		include "Animations\LZ Water Splash.asm" ; Ani_Splash
 		include "Mappings\LZ Water Splash.asm" ; Map_Splash
 
@@ -9460,7 +9379,7 @@ Teleport:	include "Objects\SBZ Teleporter.asm"
 		include "Mappings\Credits & Sonic Team Presents.asm" ; Map_Cred
 
 BossGreenHill:	include "Objects\GHZ Boss, BossDefeated & BossMove.asm"
-		include "Objects\GHZ Boss Ball.asm" ; BossBall
+		include "Objects\GHZ Boss Ball (1).asm" ; BossBall
 		include "Animations\Bosses.asm" ; Ani_Eggman
 		include "Mappings\Bosses.asm" ; Map_Eggman
 		include "Mappings\Boss Extras.asm" ; Map_BossItems
@@ -9472,8 +9391,8 @@ BossStarLight:	include "Objects\SLZ Boss.asm"
 		include "Objects\SLZ Boss Spikeballs.asm" ; BossSpikeball
 		include "Mappings\SLZ Boss Spikeballs.asm" ; Map_BSBall
 BossSpringYard:	include "Objects\SYZ Boss.asm"
-BossBlock:	include "Objects\SYZ Blocks at Boss.asm"
-Map_BossBlock:	include "Mappings\SYZ Blocks at Boss.asm"
+		include "Objects\SYZ Blocks at Boss.asm" ; BossBlock
+		include "Mappings\SYZ Blocks at Boss.asm" ; Map_BossBlock
 
 loc_1982C:
 		jmp	(DeleteObject).l

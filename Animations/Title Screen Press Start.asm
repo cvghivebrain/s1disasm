@@ -1,8 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Animation script - "PRESS START BUTTON" on the title screen
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @flash
+Ani_PSB:	index *
+		ptr ani_psb_flash
 		
-@flash:		dc.b $1F, 0, 1,	afEnd
+ani_psb_flash:	dc.b $1F, id_frame_psb_blank, id_frame_psb_psb, afEnd
 		even

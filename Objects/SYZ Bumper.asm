@@ -2,6 +2,7 @@
 ; Object 47 - pinball bumper (SYZ)
 ; ---------------------------------------------------------------------------
 
+Bumper:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Bump_Index(pc,d0.w),d1
@@ -42,7 +43,7 @@ Bump_Hit:	; Routine 2
 		bclr	#status_rolljump_bit,ost_status(a1)
 		bclr	#status_pushing_bit,ost_status(a1)
 		clr.b	ost_sonic_jump(a1)
-		move.b	#1,ost_anim(a0)	; use "hit" animation
+		move.b	#id_ani_bump_bumped,ost_anim(a0) ; use "hit" animation
 		sfx	sfx_Bumper,0,0,0 ; play bumper sound
 		lea	(v_objstate).w,a2
 		moveq	#0,d0

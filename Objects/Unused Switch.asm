@@ -19,7 +19,7 @@ ost_switch_y_start:	equ $30	; original y-axis position (2 bytes)
 
 Swi_Main:	; Routine 0
 		addq.b	#2,ost_routine(a0)
-		move.l	#Map_Swi,ost_mappings(a0)
+		move.l	#Map_Switch,ost_mappings(a0)
 		move.w	#0+tile_pal3,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.w	ost_y_pos(a0),ost_switch_y_start(a0) ; save position on y-axis

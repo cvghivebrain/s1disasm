@@ -70,6 +70,7 @@ v_ost_all:		equ $FFFFD000 ; object variable space ($40 bytes per object) ($2000 
 	v_ost_ssres_emeralds:	equ v_ost_all+(sizeof_ost*$20) ; special stage results screen chaos emeralds
 	; Level - can interact with Sonic
 	v_ost_level_obj:	equ v_ost_all+(sizeof_ost*$20) ; level object variable space ($1800 bytes)
+v_ost_end:		equ $FFFFF000
 
 v_snddriver_ram:	equ $FFFFF000 ; start of RAM for the sound driver data ($5C0 bytes)
 

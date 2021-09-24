@@ -1,10 +1,11 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - chain of spiked balls (SYZ)
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @0
+Map_SBall:	index *
+		ptr frame_sball_syz
 		
-@0:		spritemap
+frame_sball_syz:
+		spritemap
 		piece	-8, -8, 2x2, 0
 		endsprite
 		even

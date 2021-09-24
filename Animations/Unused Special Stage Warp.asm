@@ -1,8 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Animation script - special stage entry effect from beta
 ; ---------------------------------------------------------------------------
-		index *
-		ptr @vanish
+Ani_Vanish:	index *
+		ptr ani_vanish_0
 		
-@vanish:	dc.b 5,	0, 1, 0, 1, 0, 7, 1, 7,	2, 7, 3, 7, 4, 7, 5, 7, 6, 7, afRoutine
+ani_vanish_0:	dc.b 5,	id_frame_vanish_flash1, id_frame_vanish_flash2, id_frame_vanish_flash1, id_frame_vanish_flash2, id_frame_vanish_flash1, id_frame_vanish_blank, id_frame_vanish_flash2, id_frame_vanish_blank, id_frame_vanish_flash3, id_frame_vanish_blank, id_frame_vanish_sparkle1, id_frame_vanish_blank, id_frame_vanish_sparkle2, id_frame_vanish_blank, id_frame_vanish_sparkle3, id_frame_vanish_blank, id_frame_vanish_sparkle4, id_frame_vanish_blank, afRoutine
 		even
