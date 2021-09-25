@@ -128,7 +128,7 @@ ost_y_vel:		equ $12	; y-axis velocity (2 bytes)
 ost_inertia:		equ $14	; potential speed (2 bytes)
 ost_height:		equ $16	; height/2
 ost_width:		equ $17	; width/2
-ost_priority:		equ $18	; sprite stack priority - 0 is front, 7 is lowest
+ost_priority:		equ $18	; sprite stack priority - 0 is highest, 7 is lowest
 ost_actwidth:		equ $19	; action width/2
 ost_frame:		equ $1A	; current frame displayed
 ost_anim_frame:		equ $1B	; current frame in animation script
@@ -147,6 +147,7 @@ ost_status:		equ $22	; orientation or mode
 	status_rolljump:	equ $10	; Sonic is jumping after rolling (Sonic only)
 	status_pushing:		equ $20	; Sonic is pushing this (objects) / Sonic is pushing an object (Sonic)
 	status_underwater:	equ $40	; Sonic is underwater (Sonic only)
+	status_onscreen:	equ $80	; object is on-screen
 	status_xflip_bit:	equ 0
 	status_yflip_bit:	equ 1
 	status_air_bit:		equ 1

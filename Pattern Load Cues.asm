@@ -369,7 +369,7 @@ PLC_Ending:	dc.w ((PLC_Endingend-PLC_Ending-2)/6)-1
 		plcm	Nem_EndEm, $78A0	; emeralds
 		plcm	Nem_EndSonic, $7C20	; Sonic
 		if Revision=0
-		plcm	Nem_EndEggman, $A480	; Eggman's death ((unused)
+		plcm	Nem_EndEggman, $A480	; Eggman's death (unused)
 		else
 		endc
 		plcm	Nem_Rabbit, $AA60	; rabbit
