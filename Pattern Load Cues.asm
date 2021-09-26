@@ -41,12 +41,18 @@ PLC_Animals:
 
 plcm:	macro gfx,vram,suffix
 	dc.l gfx
-	dc.w vram
-	if narg=3
-	tile_\gfx\_\suffix: equ vram/$20
+	if strlen("\vram")>0
+	plcm_vram: = \vram
+	else
+	plcm_vram: = last_vram
+	endc
+	last_vram: = plcm_vram+sizeof_\gfx
+	dc.w plcm_vram
+	if strlen("\suffix")>0
+	tile_\gfx\_\suffix: equ plcm_vram/$20
 	else
 		if ~def(tile_\gfx)
-		tile_\gfx: equ vram/$20
+		tile_\gfx: equ plcm_vram/$20
 		endc
 	endc
 	endm
@@ -57,6 +63,7 @@ vram_orbinaut:	equ $8520
 vram_buzz:	equ $8880
 vram_yadrin:	equ $8F60
 vram_cater:	equ $9FE0
+vram_button:	equ $A1E0
 vram_spikes:	equ $A360
 vram_hspring:	equ $A460
 vram_vspring:	equ $A660
@@ -79,7 +86,7 @@ PLC_Main:	dc.w ((PLC_Mainend-PLC_Main-2)/6)-1
 PLC_Main2:	dc.w ((PLC_Main2end-PLC_Main2-2)/6)-1
 		plcm	Nem_Monitors, $D000	; monitors
 		plcm	Nem_Shield, $A820	; shield
-		plcm	Nem_Stars, $AB80	; invincibility	stars
+		plcm	Nem_Stars	 	; invincibility	stars ($AB80)
 	PLC_Main2end:
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - explosion
@@ -101,20 +108,20 @@ PLC_GHZ:	dc.w ((PLC_GHZ2-PLC_GHZ-2)/6)-1
 		plcm	Nem_GHZ_2nd, $39A0	; GHZ secondary	patterns
 		plcm	Nem_Stalk, $6B00	; flower stalk
 		plcm	Nem_PplRock, $7A00	; purple rock
-		plcm	Nem_Crabmeat, vram_crabmeat	; crabmeat enemy
-		plcm	Nem_Buzz, vram_buzz	; buzz bomber enemy
-		plcm	Nem_Chopper, $8F60	; chopper enemy
-		plcm	Nem_Newtron, $9360	; newtron enemy
-		plcm	Nem_Motobug, $9E00	; motobug enemy
+		plcm	Nem_Crabmeat, vram_crabmeat ; crabmeat enemy ($8000)
+		plcm	Nem_Buzz, vram_buzz	; buzz bomber enemy ($8880)
+		plcm	Nem_Chopper		; chopper enemy ($8F60)
+		plcm	Nem_Newtron		; newtron enemy ($9360)
+		plcm	Nem_Motobug		; motobug enemy ($9E00)
 		plcm	Nem_Spikes, vram_spikes	; spikes
-		plcm	Nem_HSpring, vram_hspring	; horizontal spring
-		plcm	Nem_VSpring, vram_vspring	; vertical spring
+		plcm	Nem_HSpring, vram_hspring ; horizontal spring
+		plcm	Nem_VSpring, vram_vspring ; vertical spring
 
 PLC_GHZ2:	dc.w ((PLC_GHZ2end-PLC_GHZ2-2)/6)-1
 		plcm	Nem_Swing, $7000	; swinging platform
-		plcm	Nem_Bridge, $71C0	; bridge
-		plcm	Nem_SpikePole, $7300	; spiked pole
-		plcm	Nem_Ball, $7540		; giant	ball
+		plcm	Nem_Bridge		; bridge ($71C0)
+		plcm	Nem_SpikePole		; spiked pole ($7300)
+		plcm	Nem_Ball		; giant	ball ($7540)
 		plcm	Nem_GhzWall1, $A1E0	; breakable wall
 		plcm	Nem_GhzWall2, $6980	; normal wall
 	PLC_GHZ2end:
@@ -124,34 +131,33 @@ PLC_GHZ2:	dc.w ((PLC_GHZ2end-PLC_GHZ2-2)/6)-1
 PLC_LZ:		dc.w ((PLC_LZ2-PLC_LZ-2)/6)-1
 		plcm	Nem_LZ,0		; LZ main patterns
 		plcm	Nem_LzBlock1, $3C00	; block
-		plcm	Nem_LzBlock2, $3E00	; blocks
+		plcm	Nem_LzBlock2		; blocks ($3E00)
 		plcm	Nem_Splash, $4B20	; waterfalls and splash
 		plcm	Nem_Water, $6000	; water	surface
-		plcm	Nem_LzSpikeBall, $6200	; spiked ball
-		plcm	Nem_FlapDoor, $6500	; flapping door
-		plcm	Nem_Bubbles, $6900	; bubbles and numbers
-		plcm	Nem_LzBlock3, $7780	; block
-		plcm	Nem_LzDoor1, $7880	; vertical door
-		plcm	Nem_Harpoon, $7980	; harpoon
+		plcm	Nem_LzSpikeBall		; spiked ball ($6200)
+		plcm	Nem_FlapDoor		; flapping door ($6500)
+		plcm	Nem_Bubbles		; bubbles and numbers ($6900)
+		plcm	Nem_LzBlock3		; block ($7780)
+		plcm	Nem_LzDoor1		; vertical door ($7880)
+		plcm	Nem_Harpoon		; harpoon ($7980)
 		plcm	Nem_Burrobot, $94C0	; burrobot enemy
 
 PLC_LZ2:	dc.w ((PLC_LZ2end-PLC_LZ2-2)/6)-1
 		plcm	Nem_LzPole, $7BC0	; pole that breaks
-		plcm	Nem_LzDoor2, $7CC0	; large	horizontal door
-		plcm	Nem_LzWheel, $7EC0	; wheel
+		plcm	Nem_LzDoor2		; large	horizontal door ($7CC0)
+		plcm	Nem_LzWheel		; wheel ($7EC0)
 		plcm	Nem_Gargoyle, $5D20	; gargoyle head
 		if Revision=0
 		plcm	Nem_LzSonic, $8800	; Sonic	holding	his breath
-		else
 		endc
 		plcm	Nem_LzPlatfm, $89E0	; rising platform
-		plcm	Nem_Orbinaut, $8CE0,LZ	; orbinaut enemy
-		plcm	Nem_Jaws, $90C0		; jaws enemy
-		plcm	Nem_LzSwitch, $A1E0	; switch
+		plcm	Nem_Orbinaut,,LZ	; orbinaut enemy ($8CE0)
+		plcm	Nem_Jaws		; jaws enemy ($90C0)
+		plcm	Nem_LzSwitch, vram_button ; switch ($A1E0)
 		plcm	Nem_Cork, $A000		; cork block
 		plcm	Nem_Spikes, vram_spikes	; spikes
-		plcm	Nem_HSpring, vram_hspring	; horizontal spring
-		plcm	Nem_VSpring, vram_vspring	; vertical spring
+		plcm	Nem_HSpring, vram_hspring ; horizontal spring
+		plcm	Nem_VSpring, vram_vspring ; vertical spring
 	PLC_LZ2end:
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - Marble
@@ -159,14 +165,14 @@ PLC_LZ2:	dc.w ((PLC_LZ2end-PLC_LZ2-2)/6)-1
 PLC_MZ:		dc.w ((PLC_MZ2-PLC_MZ-2)/6)-1
 		plcm	Nem_MZ,0		; MZ main patterns
 		plcm	Nem_MzMetal, $6000	; metal	blocks
-		plcm	Nem_Fireball, $68A0	; fireballs
+		plcm	Nem_Fireball		; fireballs ($68A0)
 		plcm	Nem_Swing, $7000	; swinging platform
-		plcm	Nem_MzGlass, $71C0	; green	glassy block
-		plcm	Nem_Lava, $7500		; lava
-		plcm	Nem_Buzz, vram_buzz	; buzz bomber enemy
-		plcm	Nem_Yadrin, vram_yadrin	; yadrin enemy
-		plcm	Nem_Batbrain, $9700	; basaran enemy
-		plcm	Nem_Cater, vram_cater	; caterkiller enemy
+		plcm	Nem_MzGlass		; green	glassy block ($71C0)
+		plcm	Nem_Lava		; lava ($7500)
+		plcm	Nem_Buzz, vram_buzz	; buzz bomber enemy ($8880)
+		plcm	Nem_Yadrin, vram_yadrin	; yadrin enemy ($8F60)
+		plcm	Nem_Batbrain		; basaran enemy ($9700)
+		plcm	Nem_Cater, vram_cater	; caterkiller enemy ($9FE0)
 
 PLC_MZ2:	dc.w ((PLC_MZ2end-PLC_MZ2-2)/6)-1
 		plcm	Nem_MzSwitch, $A260	; switch
@@ -180,20 +186,20 @@ PLC_MZ2:	dc.w ((PLC_MZ2end-PLC_MZ2-2)/6)-1
 ; ---------------------------------------------------------------------------
 PLC_SLZ:	dc.w ((PLC_SLZ2-PLC_SLZ-2)/6)-1
 		plcm	Nem_SLZ,0		; SLZ main patterns
-		plcm	Nem_Bomb, vram_bomb		; bomb enemy
-		plcm	Nem_Orbinaut, vram_orbinaut	; orbinaut enemy
+		plcm	Nem_Bomb, vram_bomb	; bomb enemy ($8000)
+		plcm	Nem_Orbinaut, vram_orbinaut ; orbinaut enemy ($8520)
 		plcm	Nem_Fireball, $9000,SLZ	; fireballs
 		plcm	Nem_SlzBlock, $9C00	; block
 		plcm	Nem_SlzWall, $A260	; breakable wall
 		plcm	Nem_Spikes, vram_spikes	; spikes
-		plcm	Nem_HSpring, vram_hspring	; horizontal spring
-		plcm	Nem_VSpring, vram_vspring	; vertical spring
+		plcm	Nem_HSpring, vram_hspring ; horizontal spring
+		plcm	Nem_VSpring, vram_vspring ; vertical spring
 
 PLC_SLZ2:	dc.w ((PLC_SLZ2end-PLC_SLZ2-2)/6)-1
 		plcm	Nem_Seesaw, $6E80	; seesaw
-		plcm	Nem_Fan, $7400		; fan
-		plcm	Nem_Pylon, $7980	; foreground pylon
-		plcm	Nem_SlzSwing, $7B80	; swinging platform
+		plcm	Nem_Fan			; fan ($7400)
+		plcm	Nem_Pylon		; foreground pylon ($7980)
+		plcm	Nem_SlzSwing		; swinging platform ($7B80)
 		plcm	Nem_SlzCannon, $9B00	; fireball launcher
 		plcm	Nem_SlzSpike, $9E00	; spikeball
 	PLC_SLZ2end:
@@ -202,20 +208,20 @@ PLC_SLZ2:	dc.w ((PLC_SLZ2end-PLC_SLZ2-2)/6)-1
 ; ---------------------------------------------------------------------------
 PLC_SYZ:	dc.w ((PLC_SYZ2-PLC_SYZ-2)/6)-1
 		plcm	Nem_SYZ,0		; SYZ main patterns
-		plcm	Nem_Crabmeat, vram_crabmeat	; crabmeat enemy
-		plcm	Nem_Buzz, vram_buzz	; buzz bomber enemy
-		plcm	Nem_Yadrin, vram_yadrin	; yadrin enemy
-		plcm	Nem_Roller, $9700	; roller enemy
+		plcm	Nem_Crabmeat, vram_crabmeat ; crabmeat enemy ($8000)
+		plcm	Nem_Buzz, vram_buzz	; buzz bomber enemy ($8880)
+		plcm	Nem_Yadrin, vram_yadrin	; yadrin enemy ($8F60)
+		plcm	Nem_Roller		; roller enemy ($9700)
 
 PLC_SYZ2:	dc.w ((PLC_SYZ2end-PLC_SYZ2-2)/6)-1
 		plcm	Nem_Bumper, $7000	; bumper
-		plcm	Nem_BigSpike, $72C0	; large	spikeball
-		plcm	Nem_SmallSpike, $7740	; small	spikeball
-		plcm	Nem_Cater, vram_cater	; caterkiller enemy
-		plcm	Nem_LzSwitch, $A1E0	; switch
+		plcm	Nem_BigSpike		; large	spikeball ($72C0)
+		plcm	Nem_SmallSpike		; small	spikeball ($7740)
+		plcm	Nem_Cater, vram_cater	; caterkiller enemy ($9FE0)
+		plcm	Nem_LzSwitch, vram_button ; switch ($A1E0)
 		plcm	Nem_Spikes, vram_spikes	; spikes
-		plcm	Nem_HSpring, vram_hspring	; horizontal spring
-		plcm	Nem_VSpring, vram_vspring	; vertical spring
+		plcm	Nem_HSpring, vram_hspring ; horizontal spring
+		plcm	Nem_VSpring, vram_vspring ; vertical spring
 	PLC_SYZ2end:
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - Scrap Brain
@@ -223,31 +229,31 @@ PLC_SYZ2:	dc.w ((PLC_SYZ2end-PLC_SYZ2-2)/6)-1
 PLC_SBZ:	dc.w ((PLC_SBZ2-PLC_SBZ-2)/6)-1
 		plcm	Nem_SBZ,0		; SBZ main patterns
 		plcm	Nem_Stomper, $5800	; moving platform and stomper
-		plcm	Nem_SbzDoor1, $5D00	; door
-		plcm	Nem_Girder, $5E00	; girder
-		plcm	Nem_BallHog, $6040	; ball hog enemy
+		plcm	Nem_SbzDoor1		; door ($5D00)
+		plcm	Nem_Girder		; girder ($5E00)
+		plcm	Nem_BallHog		; ball hog enemy ($6040)
 		plcm	Nem_SbzWheel1, $6880	; spot on large	wheel
-		plcm	Nem_SbzWheel2, $6900	; wheel	that grabs Sonic
-		plcm	Nem_BigSpike, $7220,SBZ	; large	spikeball
-		plcm	Nem_Cutter, $76A0	; pizza	cutter
-		plcm	Nem_FlamePipe, $7B20	; flaming pipe
-		plcm	Nem_SbzFloor, $7EA0	; collapsing floor
+		plcm	Nem_SbzWheel2		; wheel	that grabs Sonic ($6900)
+		plcm	Nem_BigSpike,,SBZ	; large	spikeball ($7220)
+		plcm	Nem_Cutter		; pizza	cutter ($76A0)
+		plcm	Nem_FlamePipe		; flaming pipe ($7B20)
+		plcm	Nem_SbzFloor		; collapsing floor ($7EA0)
 		plcm	Nem_SbzBlock, $9860	; vanishing block
 
 PLC_SBZ2:	dc.w ((PLC_SBZ2end-PLC_SBZ2-2)/6)-1
 		plcm	Nem_Cater, $5600, SBZ	; caterkiller enemy
-		plcm	Nem_Bomb, vram_bomb		; bomb enemy
-		plcm	Nem_Orbinaut, vram_orbinaut	; orbinaut enemy
+		plcm	Nem_Bomb, vram_bomb	; bomb enemy ($8000)
+		plcm	Nem_Orbinaut, vram_orbinaut ; orbinaut enemy ($8520)
 		plcm	Nem_SlideFloor, $8C00	; floor	that slides away
-		plcm	Nem_SbzDoor2, $8DE0	; horizontal door
-		plcm	Nem_Electric, $8FC0	; electric orb
-		plcm	Nem_TrapDoor, $9240	; trapdoor
+		plcm	Nem_SbzDoor2		; horizontal door ($8DE0)
+		plcm	Nem_Electric		; electric orb ($8FC0)
+		plcm	Nem_TrapDoor		; trapdoor ($9240)
 		plcm	Nem_SbzFloor, $7F20	; collapsing floor
 		plcm	Nem_SpinPform, $9BE0	; small	spinning platform
-		plcm	Nem_LzSwitch, $A1E0	; switch
+		plcm	Nem_LzSwitch, vram_button ; switch ($A1E0)
 		plcm	Nem_Spikes, vram_spikes	; spikes
-		plcm	Nem_HSpring, vram_hspring	; horizontal spring
-		plcm	Nem_VSpring, vram_vspring	; vertical spring
+		plcm	Nem_HSpring, vram_hspring ; horizontal spring
+		plcm	Nem_VSpring, vram_vspring ; vertical spring
 	PLC_SBZ2end:
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - title card
@@ -260,10 +266,10 @@ PLC_TitleCard:	dc.w ((PLC_TitleCardend-PLC_TitleCard-2)/6)-1
 ; ---------------------------------------------------------------------------
 PLC_Boss:	dc.w ((PLC_Bossend-PLC_Boss-2)/6)-1
 		plcm	Nem_Eggman, $8000	; Eggman main patterns
-		plcm	Nem_Weapons, $8D80	; Eggman's weapons
+		plcm	Nem_Weapons		; Eggman's weapons ($8D80)
 		plcm	Nem_Prison, $93A0	; prison capsule
-		plcm	Nem_Bomb, $A300,Boss		; bomb enemy (partially overwritten - shrapnel remains)
-		plcm	Nem_SlzSpike, $A300,Boss	; spikeball (SLZ boss)
+		plcm	Nem_Bomb, $A300, Boss	; bomb enemy (partially overwritten - shrapnel remains)
+		plcm	Nem_SlzSpike, $A300, Boss ; spikeball (SLZ boss)
 		plcm	Nem_Exhaust, $A540	; exhaust flame
 	PLC_Bossend:
 ; ---------------------------------------------------------------------------
@@ -281,7 +287,6 @@ PLC_Warp:
 		if Revision=0
 		dc.w ((PLC_Warpend-PLC_Warp-2)/6)-1
 		plcm	Nem_Warp, $A820
-		else
 		endc
 	PLC_Warpend:
 ; ---------------------------------------------------------------------------
@@ -289,11 +294,11 @@ PLC_Warp:
 ; ---------------------------------------------------------------------------
 PLC_SpecialStage:	dc.w ((PLC_SpeStageend-PLC_SpecialStage-2)/6)-1
 		plcm	Nem_SSBgCloud, 0	; bubble and cloud background
-		plcm	Nem_SSBgFish, $A20	; bird and fish	background
-		plcm	Nem_SSWalls, $2840	; walls
-		plcm	Nem_Bumper, $4760	; bumper
-		plcm	Nem_SSGOAL, $4A20	; GOAL block
-		plcm	Nem_SSUpDown, $4C60	; UP and DOWN blocks
+		plcm	Nem_SSBgFish		; bird and fish	background ($A20)
+		plcm	Nem_SSWalls		; walls ($2840)
+		plcm	Nem_Bumper		; bumper ($4760)
+		plcm	Nem_SSGOAL		; GOAL block ($4A20)
+		plcm	Nem_SSUpDown		; UP and DOWN blocks ($4C60)
 		plcm	Nem_SSRBlock, $5E00	; R block
 		plcm	Nem_SS1UpBlock, $6E00	; 1UP block
 		plcm	Nem_SSEmStars, $7E00	; emerald collection stars
@@ -303,12 +308,12 @@ PLC_SpecialStage:	dc.w ((PLC_SpeStageend-PLC_SpecialStage-2)/6)-1
 		plcm	Nem_SSGlass, $BE00	; glass	block
 		plcm	Nem_SSEmerald, $EE00	; emeralds
 		plcm	Nem_SSZone1, $F2E0	; ZONE 1 block
-		plcm	Nem_SSZone2, $F400	; ZONE 2 block
-		plcm	Nem_SSZone3, $F520	; ZONE 3 block
+		plcm	Nem_SSZone2		; ZONE 2 block ($F400)
+		plcm	Nem_SSZone3		; ZONE 3 block ($F520)
 	PLC_SpeStageend:
 		plcm	Nem_SSZone4, $F2E0	; ZONE 4 block
-		plcm	Nem_SSZone5, $F400	; ZONE 5 block
-		plcm	Nem_SSZone6, $F520	; ZONE 6 block
+		plcm	Nem_SSZone5		; ZONE 5 block ($F400)
+		plcm	Nem_SSZone6		; ZONE 6 block ($F520)
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - GHZ animals
 ; ---------------------------------------------------------------------------
@@ -356,7 +361,7 @@ PLC_SBZAnimals:	dc.w ((PLC_SBZAnimalsend-PLC_SBZAnimals-2)/6)-1
 ; ---------------------------------------------------------------------------
 PLC_SSResult:dc.w ((PLC_SpeStResultend-PLC_SSResult-2)/6)-1
 		plcm	Nem_ResultEm, $A820	; emeralds
-		plcm	Nem_MiniSonic, $AA20	; mini Sonic
+		plcm	Nem_MiniSonic		; mini Sonic ($AA20)
 	PLC_SpeStResultend:
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - ending sequence
@@ -366,27 +371,26 @@ PLC_Ending:	dc.w ((PLC_Endingend-PLC_Ending-2)/6)-1
 		plcm	Nem_GHZ_2nd, $39A0	; GHZ secondary	patterns
 		plcm	Nem_Stalk, $6B00	; flower stalk
 		plcm	Nem_EndFlower, $7400	; flowers
-		plcm	Nem_EndEm, $78A0	; emeralds
-		plcm	Nem_EndSonic, $7C20	; Sonic
+		plcm	Nem_EndEm		; emeralds ($78A0)
+		plcm	Nem_EndSonic		; Sonic ($7C20)
 		if Revision=0
 		plcm	Nem_EndEggman, $A480	; Eggman's death (unused)
-		else
 		endc
 		plcm	Nem_Rabbit, $AA60	; rabbit
-		plcm	Nem_Chicken, $ACA0	; chicken
-		plcm	Nem_BlackBird, $AE60	; blackbird
-		plcm	Nem_Seal, $B0A0		; seal
-		plcm	Nem_Pig, $B260		; pig
-		plcm	Nem_Flicky, $B4A0	; flicky
-		plcm	Nem_Squirrel, $B660	; squirrel
-		plcm	Nem_EndStH, $B8A0	; "SONIC THE HEDGEHOG"
+		plcm	Nem_Chicken		; chicken ($ACA0)
+		plcm	Nem_BlackBird		; blackbird ($AE60)
+		plcm	Nem_Seal		; seal ($B0A0)
+		plcm	Nem_Pig			; pig ($B260)
+		plcm	Nem_Flicky		; flicky ($B4A0)
+		plcm	Nem_Squirrel		; squirrel ($B660)
+		plcm	Nem_EndStH		; "SONIC THE HEDGEHOG" ($B8A0)
 	PLC_Endingend:
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - "TRY AGAIN" and "END" screens
 ; ---------------------------------------------------------------------------
 PLC_TryAgain:	dc.w ((PLC_TryAgainend-PLC_TryAgain-2)/6)-1
-		plcm	Nem_EndEm, $78A0,TryAgain	; emeralds
-		plcm	Nem_TryAgain, $7C20	; Eggman
+		plcm	Nem_EndEm, $78A0, TryAgain ; emeralds
+		plcm	Nem_TryAgain		; Eggman ($7C20)
 		plcm	Nem_CreditText, $B400	; credits alphabet
 	PLC_TryAgainend:
 ; ---------------------------------------------------------------------------
@@ -395,7 +399,7 @@ PLC_TryAgain:	dc.w ((PLC_TryAgainend-PLC_TryAgain-2)/6)-1
 PLC_EggmanSBZ2:	dc.w ((PLC_EggmanSBZ2end-PLC_EggmanSBZ2-2)/6)-1
 		plcm	Nem_SbzBlock, $A300	; block
 		plcm	Nem_Sbz2Eggman, $8000	; Eggman
-		plcm	Nem_LzSwitch, $9400	; switch
+		plcm	Nem_LzSwitch, $9400, SBZ2 ; switch
 	PLC_EggmanSBZ2end:
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - final boss
@@ -404,7 +408,7 @@ PLC_FZBoss:	dc.w ((PLC_FZBossend-PLC_FZBoss-2)/6)-1
 		plcm	Nem_FzEggman, $7400	; Eggman after boss
 		plcm	Nem_FzBoss, $6000	; FZ boss
 		plcm	Nem_Eggman, $8000	; Eggman main patterns
-		plcm	Nem_Sbz2Eggman, $8E00,FZ	; Eggman without ship
+		plcm	Nem_Sbz2Eggman, $8E00, FZ ; Eggman without ship
 		plcm	Nem_Exhaust, $A540	; exhaust flame
 	PLC_FZBossend:
 		even

@@ -205,10 +205,15 @@ endobj:		macros
 ; ---------------------------------------------------------------------------
 
 nemesis:	macro
-	nemfile:	equs \2
-	\1:	incbin	"\nemfolder\\nemfile\.nem"
+		file_\1: equs \2
+		file_nem: equs \2
+		sizeof_\1: equ filesize("\nemfolderdec\\file_nem\.bin")
+		endm
+
+nemfile:	macro
+		file_nem: equs file_\1
+	\1:	incbin	"\nemfolder\\file_nem\.nem"
 		even
-		sizeof_\1: = filesize("\nemfolderdec\\nemfile\.bin")
 		endm
 
 nemfolder:	equs "Graphics - Compressed\"

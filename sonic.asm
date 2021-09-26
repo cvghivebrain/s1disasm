@@ -9310,28 +9310,29 @@ lhead:	macro plc1,lvlgfx,plc2,sixteen,twofivesix,music,pal
 
 ;	* music and level gfx are actually set elsewhere, so these values are useless
 
+		include "Nemesis File List.asm"
 ArtLoadCues:	include "Pattern Load Cues.asm"
 
 
 		align	$200,$FF
 		if Revision=0
-		nemesis	Nem_SegaLogo,"Sega Logo"; large Sega logo
+		nemfile	Nem_SegaLogo
 Eni_SegaLogo:	incbin	"tilemaps\Sega Logo.bin" ; large Sega logo (mappings)
 		even
 		else
 			dcb.b	$300,$FF
-			nemesis	Nem_SegaLogo,"Sega Logo (JP1)"; large Sega logo
+			nemfile	Nem_SegaLogo
 	Eni_SegaLogo:	incbin	"tilemaps\Sega Logo (JP1).bin" ; large Sega logo (mappings)
 			even
 		endc
 Eni_Title:	incbin	"tilemaps\Title Screen.bin" ; title screen foreground (mappings)
 		even
-		nemesis	Nem_TitleFg,"Title Screen Foreground"
-		nemesis	Nem_TitleSonic,"Title Screen Sonic"
-		nemesis	Nem_TitleTM,"Title Screen TM"
+		nemfile	Nem_TitleFg
+		nemfile	Nem_TitleSonic
+		nemfile	Nem_TitleTM
 Eni_JapNames:	incbin	"tilemaps\Hidden Japanese Credits.bin" ; Japanese credits (mappings)
 		even
-		nemesis	Nem_JapNames,"Hidden Japanese Credits"
+		nemfile	Nem_JapNames
 
 		include "Mappings\Sonic.asm" ; Map_Sonic
 		include "Mappings\Sonic DPLCs.asm" ; SonicDynPLC
@@ -9345,16 +9346,16 @@ Art_Sonic:	incbin	"Graphics\Sonic.bin" ; Sonic
 ; Compressed graphics - various
 ; ---------------------------------------------------------------------------
 		if Revision=0
-		nemesis Nem_Smoke,"Unused - Smoke"
-		nemesis Nem_SyzSparkle,"Unused - SYZ Sparkles"
+		nemfile	Nem_Smoke
+		nemfile	Nem_SyzSparkle
 		endc
-		nemesis Nem_Shield,"Shield"
-		nemesis Nem_Stars,"Invincibility"
+		nemfile	Nem_Shield
+		nemfile	Nem_Stars
 		if Revision=0
-		nemesis Nem_LzSonic,"Unused - LZ Sonic Holding Breath" ; Sonic holding his breath
-		nemesis Nem_UnkFire,"Unused - Fireball" ; unused fireball
-		nemesis Nem_Warp,"Unused - Special Stage Warp" ; entry to special stage flash
-		nemesis Nem_Goggle,"Unused - Goggles" ; unused goggles
+		nemfile	Nem_LzSonic
+		nemfile	Nem_UnkFire
+		nemfile	Nem_Warp
+		nemfile	Nem_Goggle
 		endc
 
 		include "Mappings\Special Stage Walls.asm" ; Map_SSWalls
@@ -9362,177 +9363,177 @@ Art_Sonic:	incbin	"Graphics\Sonic.bin" ; Sonic
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - special stage
 ; ---------------------------------------------------------------------------
-		nemesis Nem_SSWalls,"Special Stage Walls" ; special stage walls
+		nemfile	Nem_SSWalls
 Eni_SSBg1:	incbin	"tilemaps\SS Background 1.bin" ; special stage background (mappings)
 		even
-		nemesis Nem_SSBgFish,"Special Stage Birds & Fish" ; special stage birds and fish background
+		nemfile	Nem_SSBgFish
 Eni_SSBg2:	incbin	"tilemaps\SS Background 2.bin" ; special stage background (mappings)
 		even
-		nemesis Nem_SSBgCloud,"Special Stage Clouds" ; special stage clouds background
-		nemesis Nem_SSGOAL,"Special Stage GOAL" ; special stage GOAL block
-		nemesis Nem_SSRBlock,"Special Stage R" ; special stage R block
-		nemesis Nem_SS1UpBlock,"Special Stage 1UP" ; special stage 1UP block
-		nemesis Nem_SSEmStars,"Special Stage Emerald Twinkle" ; special stage stars from a collected emerald
-		nemesis Nem_SSRedWhite,"Special Stage Red-White" ; special stage red/white block
-		nemesis Nem_SSZone1,"Special Stage ZONE1" ; special stage ZONE1 block
-		nemesis Nem_SSZone2,"Special Stage ZONE2" ; ZONE2 block
-		nemesis Nem_SSZone3,"Special Stage ZONE3" ; ZONE3 block
-		nemesis Nem_SSZone4,"Special Stage ZONE4" ; ZONE4 block
-		nemesis Nem_SSZone5,"Special Stage ZONE5" ; ZONE5 block
-		nemesis Nem_SSZone6,"Special Stage ZONE6" ; ZONE6 block
-		nemesis Nem_SSUpDown,"Special Stage UP-DOWN" ; special stage UP/DOWN block
-		nemesis Nem_SSEmerald,"Special Stage Emeralds" ; special stage chaos emeralds
-		nemesis Nem_SSGhost,"Special Stage Ghost" ; special stage ghost block
-		nemesis Nem_SSWBlock,"Special Stage W" ; special stage W block
-		nemesis Nem_SSGlass,"Special Stage Glass" ; special stage destroyable glass block
-		nemesis Nem_ResultEm,"Special Stage Result Emeralds" ; chaos emeralds on special stage results screen
+		nemfile	Nem_SSBgCloud
+		nemfile	Nem_SSGOAL
+		nemfile	Nem_SSRBlock
+		nemfile	Nem_SS1UpBlock
+		nemfile	Nem_SSEmStars
+		nemfile	Nem_SSRedWhite
+		nemfile	Nem_SSZone1
+		nemfile	Nem_SSZone2
+		nemfile	Nem_SSZone3
+		nemfile	Nem_SSZone4
+		nemfile	Nem_SSZone5
+		nemfile	Nem_SSZone6
+		nemfile	Nem_SSUpDown
+		nemfile	Nem_SSEmerald
+		nemfile	Nem_SSGhost
+		nemfile	Nem_SSWBlock
+		nemfile	Nem_SSGlass
+		nemfile	Nem_ResultEm
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - GHZ stuff
 ; ---------------------------------------------------------------------------
-		nemesis Nem_Stalk,"GHZ Flower Stalk"
-		nemesis Nem_Swing,"GHZ Swinging Platform"
-		nemesis Nem_Bridge,"GHZ Bridge"
-		nemesis Nem_GhzUnkBlock,"Unused - GHZ Block"
-		nemesis Nem_Ball,"GHZ Giant Ball"
-		nemesis Nem_Spikes,"Spikes"
-		nemesis Nem_GhzLog,"Unused - GHZ Log"
-		nemesis Nem_SpikePole,"GHZ Spiked Helix Pole"
-		nemesis Nem_PplRock,"GHZ Purple Rock"
-		nemesis Nem_GhzWall1,"GHZ Smashable Wall"
-		nemesis Nem_GhzWall2,"GHZ Walls"
+		nemfile	Nem_Stalk
+		nemfile	Nem_Swing
+		nemfile	Nem_Bridge
+		nemfile	Nem_GhzUnkBlock
+		nemfile	Nem_Ball
+		nemfile	Nem_Spikes
+		nemfile	Nem_GhzLog
+		nemfile	Nem_SpikePole
+		nemfile	Nem_PplRock
+		nemfile	Nem_GhzWall1
+		nemfile	Nem_GhzWall2
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - LZ stuff
 ; ---------------------------------------------------------------------------
-		nemesis Nem_Water,"LZ Water Surface"
-		nemesis Nem_Splash,"LZ Waterfall & Splashes"
-		nemesis Nem_LzSpikeBall,"LZ Spiked Ball & Chain"
-		nemesis Nem_FlapDoor,"LZ Flapping Door"
-		nemesis Nem_Bubbles,"LZ Bubbles & Countdown"
-		nemesis Nem_LzBlock3,"LZ 32x16 Block"
-		nemesis Nem_LzDoor1,"LZ Vertical Door"
-		nemesis Nem_Harpoon,"LZ Harpoon"
-		nemesis Nem_LzPole,"LZ Breakable Pole"
-		nemesis Nem_LzDoor2,"LZ Horizontal Door"
-		nemesis Nem_LzWheel,"LZ Wheel"
-		nemesis Nem_Gargoyle,"LZ Gargoyle & Fireball"
-		nemesis Nem_LzBlock2,"LZ Blocks"
-		nemesis Nem_LzPlatfm,"LZ Rising Platform"
-		nemesis Nem_Cork,"LZ Cork"
-		nemesis Nem_LzBlock1,"LZ 32x32 Block"
+		nemfile	Nem_Water
+		nemfile	Nem_Splash
+		nemfile	Nem_LzSpikeBall
+		nemfile	Nem_FlapDoor
+		nemfile	Nem_Bubbles
+		nemfile	Nem_LzBlock3
+		nemfile	Nem_LzDoor1
+		nemfile	Nem_Harpoon
+		nemfile	Nem_LzPole
+		nemfile	Nem_LzDoor2
+		nemfile	Nem_LzWheel
+		nemfile	Nem_Gargoyle
+		nemfile	Nem_LzBlock2
+		nemfile	Nem_LzPlatfm
+		nemfile	Nem_Cork
+		nemfile	Nem_LzBlock1
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - MZ stuff
 ; ---------------------------------------------------------------------------
-		nemesis Nem_MzMetal,"MZ Metal Blocks"
-		nemesis Nem_MzSwitch,"MZ Switch"
-		nemesis Nem_MzGlass,"MZ Green Glass Block"
-		nemesis Nem_UnkGrass,"Unused - MZ Grass"
-		nemesis Nem_Fireball,"Fireballs"
-		nemesis Nem_Lava,"MZ Lava"
-		nemesis Nem_MzBlock,"MZ Green Pushable Block"
-		nemesis Nem_MzUnkBlock,"Unused - MZ Background"
+		nemfile	Nem_MzMetal
+		nemfile	Nem_MzSwitch
+		nemfile	Nem_MzGlass
+		nemfile	Nem_UnkGrass
+		nemfile	Nem_Fireball
+		nemfile	Nem_Lava
+		nemfile	Nem_MzBlock
+		nemfile	Nem_MzUnkBlock
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - SLZ stuff
 ; ---------------------------------------------------------------------------
-		nemesis Nem_Seesaw,"SLZ Seesaw"
-		nemesis Nem_SlzSpike,"SLZ Little Spikeball"
-		nemesis Nem_Fan,"SLZ Fan"
-		nemesis Nem_SlzWall,"SLZ Breakable Wall"
-		nemesis Nem_Pylon,"SLZ Pylon"
-		nemesis Nem_SlzSwing,"SLZ Swinging Platform"
-		nemesis Nem_SlzBlock,"SLZ 32x32 Block"
-		nemesis Nem_SlzCannon,"SLZ Cannon"
+		nemfile	Nem_Seesaw
+		nemfile	Nem_SlzSpike
+		nemfile	Nem_Fan
+		nemfile	Nem_SlzWall
+		nemfile	Nem_Pylon
+		nemfile	Nem_SlzSwing
+		nemfile	Nem_SlzBlock
+		nemfile	Nem_SlzCannon
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - SYZ stuff
 ; ---------------------------------------------------------------------------
-		nemesis Nem_Bumper,"SYZ Bumper"
-		nemesis Nem_SmallSpike,"SYZ Small Spikeball"
-		nemesis Nem_LzSwitch,"Switch"
-		nemesis Nem_BigSpike,"SYZ Large Spikeball"
+		nemfile	Nem_Bumper
+		nemfile	Nem_SmallSpike
+		nemfile	Nem_LzSwitch
+		nemfile	Nem_BigSpike
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - SBZ stuff
 ; ---------------------------------------------------------------------------
-		nemesis Nem_SbzWheel1,"SBZ Running Disc"
-		nemesis Nem_SbzWheel2,"SBZ Junction Wheel"
-		nemesis Nem_Cutter,"SBZ Pizza Cutter"
-		nemesis Nem_Stomper,"SBZ Stomper"
-		nemesis Nem_SpinPform,"SBZ Spinning Platform"
-		nemesis Nem_TrapDoor,"SBZ Trapdoor"
-		nemesis Nem_SbzFloor,"SBZ Collapsing Floor"
-		nemesis Nem_Electric,"SBZ Electrocuter"
-		nemesis Nem_SbzBlock,"SBZ Vanishing Block"
-		nemesis Nem_FlamePipe,"SBZ Flaming Pipe"
-		nemesis Nem_SbzDoor1,"SBZ Small Vertical Door"
-		nemesis Nem_SlideFloor,"SBZ Sliding Floor Trap"
-		nemesis Nem_SbzDoor2,"SBZ Large Horizontal Door"
-		nemesis Nem_Girder,"SBZ Crushing Girder"
+		nemfile	Nem_SbzWheel1
+		nemfile	Nem_SbzWheel2
+		nemfile	Nem_Cutter
+		nemfile	Nem_Stomper
+		nemfile	Nem_SpinPform
+		nemfile	Nem_TrapDoor
+		nemfile	Nem_SbzFloor
+		nemfile	Nem_Electric
+		nemfile	Nem_SbzBlock
+		nemfile	Nem_FlamePipe
+		nemfile	Nem_SbzDoor1
+		nemfile	Nem_SlideFloor
+		nemfile	Nem_SbzDoor2
+		nemfile	Nem_Girder
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - enemies
 ; ---------------------------------------------------------------------------
-		nemesis Nem_BallHog,"Ball Hog"
-		nemesis Nem_Crabmeat,"Crabmeat"
-		nemesis Nem_Buzz,"Buzz Bomber"
-		nemesis Nem_UnkExplode,"Unused - Explosion"
-		nemesis Nem_Burrobot,"Burrobot"
-		nemesis Nem_Chopper,"Chopper"
-		nemesis Nem_Jaws,"Jaws"
-		nemesis Nem_Roller,"Roller"
-		nemesis Nem_Motobug,"Motobug"
-		nemesis Nem_Newtron,"Newtron"
-		nemesis Nem_Yadrin,"Yadrin"
-		nemesis Nem_Batbrain,"Batbrain"
-		nemesis Nem_Splats,"Unused - Splats Enemy"
-		nemesis Nem_Bomb,"Bomb Enemy"
-		nemesis Nem_Orbinaut,"Orbinaut"
-		nemesis Nem_Cater,"Caterkiller"
+		nemfile	Nem_BallHog
+		nemfile	Nem_Crabmeat
+		nemfile	Nem_Buzz
+		nemfile	Nem_UnkExplode
+		nemfile	Nem_Burrobot
+		nemfile	Nem_Chopper
+		nemfile	Nem_Jaws
+		nemfile	Nem_Roller
+		nemfile	Nem_Motobug
+		nemfile	Nem_Newtron
+		nemfile	Nem_Yadrin
+		nemfile	Nem_Batbrain
+		nemfile	Nem_Splats
+		nemfile	Nem_Bomb
+		nemfile	Nem_Orbinaut
+		nemfile	Nem_Cater
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - various
 ; ---------------------------------------------------------------------------
-		nemesis Nem_TitleCard,"Title Cards"
-		nemesis Nem_Hud,"HUD"	; HUD (rings, time, score)
-		nemesis Nem_Lives,"HUD - Life Counter Icon"
-		nemesis Nem_Ring,"Rings"
-		nemesis Nem_Monitors,"Monitors"
-		nemesis Nem_Explode,"Explosion"
-		nemesis Nem_Points,"Points" ; points from destroyed enemy or object
-		nemesis Nem_GameOver,"Game Over" ; game over / time over
-		nemesis Nem_HSpring,"Spring Horizontal"
-		nemesis Nem_VSpring,"Spring Vertical"
-		nemesis Nem_SignPost,"Signpost" ; end of level signpost
-		nemesis Nem_Lamp,"Lamppost"
-		nemesis Nem_BigFlash,"Giant Ring Flash"
-		nemesis Nem_Bonus,"Hidden Bonuses" ; hidden bonuses at end of a level
+		nemfile	Nem_TitleCard
+		nemfile	Nem_Hud,"HUD"	; HUD (rings, time
+		nemfile	Nem_Lives
+		nemfile	Nem_Ring
+		nemfile	Nem_Monitors
+		nemfile	Nem_Explode
+		nemfile	Nem_Points
+		nemfile	Nem_GameOver
+		nemfile	Nem_HSpring
+		nemfile	Nem_VSpring
+		nemfile	Nem_SignPost
+		nemfile	Nem_Lamp
+		nemfile	Nem_BigFlash
+		nemfile	Nem_Bonus
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - continue screen
 ; ---------------------------------------------------------------------------
-		nemesis Nem_ContSonic,"Continue Screen Sonic"
-		nemesis Nem_MiniSonic,"Continue Screen Stuff"
+		nemfile	Nem_ContSonic
+		nemfile	Nem_MiniSonic
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - animals
 ; ---------------------------------------------------------------------------
-		nemesis Nem_Rabbit,"Animal Rabbit"
-		nemesis Nem_Chicken,"Animal Chicken"
-		nemesis Nem_BlackBird,"Animal Blackbird"
-		nemesis Nem_Seal,"Animal Seal"
-		nemesis Nem_Pig,"Animal Pig"
-		nemesis Nem_Flicky,"Animal Flicky"
-		nemesis Nem_Squirrel,"Animal Squirrel"
+		nemfile	Nem_Rabbit
+		nemfile	Nem_Chicken
+		nemfile	Nem_BlackBird
+		nemfile	Nem_Seal
+		nemfile	Nem_Pig
+		nemfile	Nem_Flicky
+		nemfile	Nem_Squirrel
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - primary patterns and block mappings
 ; ---------------------------------------------------------------------------
 Blk16_GHZ:	incbin	"map16\GHZ.bin"
 		even
-		nemesis Nem_GHZ_1st,"8x8 - GHZ1" ; GHZ primary patterns
-		nemesis Nem_GHZ_2nd,"8x8 - GHZ2" ; GHZ secondary patterns
+		nemfile	Nem_GHZ_1st
+		nemfile	Nem_GHZ_2nd
 Blk256_GHZ:	incbin	"map256\GHZ.bin"
 		even
 Blk16_LZ:	incbin	"map16\LZ.bin"
 		even
-		nemesis Nem_LZ,"8x8 - LZ" ; LZ primary patterns
+		nemfile	Nem_LZ
 Blk256_LZ:	incbin	"map256\LZ.bin"
 		even
 Blk16_MZ:	incbin	"map16\MZ.bin"
 		even
-		nemesis Nem_MZ,"8x8 - MZ" ; MZ primary patterns
+		nemfile	Nem_MZ
 Blk256_MZ:	if Revision=0
 			incbin	"map256\MZ.bin"
 		else
@@ -9541,17 +9542,17 @@ Blk256_MZ:	if Revision=0
 		even
 Blk16_SLZ:	incbin	"map16\SLZ.bin"
 		even
-		nemesis Nem_SLZ,"8x8 - SLZ" ; SLZ primary patterns
+		nemfile	Nem_SLZ
 Blk256_SLZ:	incbin	"map256\SLZ.bin"
 		even
 Blk16_SYZ:	incbin	"map16\SYZ.bin"
 		even
-		nemesis Nem_SYZ,"8x8 - SYZ" ; SYZ primary patterns
+		nemfile	Nem_SYZ
 Blk256_SYZ:	incbin	"map256\SYZ.bin"
 		even
 Blk16_SBZ:	incbin	"map16\SBZ.bin"
 		even
-		nemesis Nem_SBZ,"8x8 - SBZ" ; SBZ primary patterns
+		nemfile	Nem_SBZ
 Blk256_SBZ:	if Revision=0
 			incbin	"map256\SBZ.bin"
 		else
@@ -9561,24 +9562,24 @@ Blk256_SBZ:	if Revision=0
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - bosses and ending sequence
 ; ---------------------------------------------------------------------------
-		nemesis Nem_Eggman,"Boss - Main"
-		nemesis Nem_Weapons,"Boss - Weapons"
-		nemesis Nem_Prison,"Prison Capsule"
-		nemesis Nem_Sbz2Eggman,"Boss - Eggman in SBZ2 & FZ"
-		nemesis Nem_FzBoss,"Boss - Final Zone"
-		nemesis Nem_FzEggman,"Boss - Eggman after FZ Fight"
-		nemesis Nem_Exhaust,"Boss - Exhaust Flame"
-		nemesis Nem_EndEm,"Ending - Emeralds"
-		nemesis Nem_EndSonic,"Ending - Sonic"
-		nemesis Nem_TryAgain,"Ending - Try Again"
+		nemfile	Nem_Eggman
+		nemfile	Nem_Weapons
+		nemfile	Nem_Prison
+		nemfile	Nem_Sbz2Eggman
+		nemfile	Nem_FzBoss
+		nemfile	Nem_FzEggman
+		nemfile	Nem_Exhaust
+		nemfile	Nem_EndEm
+		nemfile	Nem_EndSonic
+		nemfile	Nem_TryAgain
 		if Revision=0
-			nemesis	Nem_EndEggman,"Unused - Eggman Ending"
+			nemfile	Nem_EndEggman
 		endc
 Kos_EndFlowers:	incbin	"Graphics - Compressed\Ending Flowers.kos" ; ending sequence animated flowers
 		even
-		nemesis Nem_EndFlower,"Ending - Flowers"
-		nemesis Nem_CreditText,"Ending - Credits"
-		nemesis Nem_EndStH,"Ending - StH Logo"
+		nemfile	Nem_EndFlower
+		nemfile	Nem_CreditText
+		nemfile	Nem_EndStH
 
 		if Revision=0
 		dcb.b $104,$FF		; why?

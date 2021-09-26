@@ -461,7 +461,7 @@ loc_1A248:
 		bcs.s	loc_1A260
 		tst.b	ost_render(a0)
 		bmi.s	loc_1A260
-		move.b	#$18,(v_gamemode).w
+		move.b	#id_Ending,(v_gamemode).w
 		bra.w	Obj85_Delete
 ; ===========================================================================
 
