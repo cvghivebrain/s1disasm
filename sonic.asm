@@ -5060,7 +5060,7 @@ DeformLayers:
 		clr.w	(v_bg1_scroll_flags).w
 		clr.w	(v_bg2_scroll_flags).w
 		clr.w	(v_bg3_scroll_flags).w
-		bsr.w	ScrollHoriz
+		bsr.w	ScrollHorizontal
 		bsr.w	ScrollVertical
 		bsr.w	DynamicLevelEvents
 		move.w	(v_screenposx).w,(v_scrposx_dup).w
@@ -5422,7 +5422,7 @@ loc_6576:
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 
-ScrollHoriz:
+ScrollHorizontal:
 		move.w	(v_screenposx).w,d4 ; save old screen position
 		bsr.s	MoveScreenHoriz
 		move.w	(v_screenposx).w,d0
@@ -5443,7 +5443,7 @@ ScrollHoriz:
 
 locret_65B0:
 		rts	
-; End of function ScrollHoriz
+; End of function ScrollHorizontal
 
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
@@ -6125,905 +6125,13 @@ BgScroll_End:
 		clr.l	(a2)+
 		clr.l	(a2)+
 		rts
-; ---------------------------------------------------------------------------
-; Background layer deformation subroutines
-; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-DeformLayers:
-		tst.b	(f_nobgscroll).w
-		beq.s	@bgscroll
-		rts	
-; ===========================================================================
-
-	@bgscroll:
-		clr.w	(v_fg_scroll_flags).w
-		clr.w	(v_bg1_scroll_flags).w
-		clr.w	(v_bg2_scroll_flags).w
-		clr.w	(v_bg3_scroll_flags).w
-		bsr.w	ScrollHoriz
-		bsr.w	ScrollVertical
-		bsr.w	DynamicLevelEvents
-		move.w	(v_screenposy).w,(v_scrposy_dup).w
-		move.w	(v_bgscreenposy).w,(v_bgscrposy_dup).w
-		moveq	#0,d0
-		move.b	(v_zone).w,d0
-		add.w	d0,d0
-		move.w	Deform_Index(pc,d0.w),d0
-		jmp	Deform_Index(pc,d0.w)
-; End of function DeformLayers
-
-; ===========================================================================
-; ---------------------------------------------------------------------------
-; Offset index for background layer deformation	code
-; ---------------------------------------------------------------------------
-Deform_Index:	index *
-		ptr Deform_GHZ
-		ptr Deform_LZ
-		ptr Deform_MZ
-		ptr Deform_SLZ
-		ptr Deform_SYZ
-		ptr Deform_SBZ
-		zonewarning Deform_Index,2
-		ptr Deform_GHZ
-; ---------------------------------------------------------------------------
-; Green	Hill Zone background layer deformation code
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Deform_GHZ:
-	; block 3 - distant mountains
-		move.w	(v_scrshiftx).w,d4
-		ext.l	d4
-		asl.l	#5,d4
-		move.l	d4,d1
-		asl.l	#1,d4
-		add.l	d1,d4
-		moveq	#0,d6
-		bsr.w	BGScroll_Block3
-	; block 2 - hills & waterfalls
-		move.w	(v_scrshiftx).w,d4
-		ext.l	d4
-		asl.l	#7,d4
-		moveq	#0,d6
-		bsr.w	BGScroll_Block2
-	; calculate Y position
-		lea	(v_hscroll_buffer).w,a1
-		move.w	(v_screenposy).w,d0
-		andi.w	#$7FF,d0
-		lsr.w	#5,d0
-		neg.w	d0
-		addi.w	#$20,d0
-		bpl.s	@limitY
-		moveq	#0,d0
-	@limitY:
-		move.w	d0,d4
-		move.w	d0,(v_bgscrposy_dup).w
-		move.w	(v_screenposx).w,d0
-		cmpi.b	#id_Title,(v_gamemode).w
-		bne.s	@notTitle
-		moveq	#0,d0	; reset foreground position in title screen
-	@notTitle:
-		neg.w	d0
-		swap	d0
-	; auto-scroll clouds
-		lea	(v_bgscroll_buffer).w,a2
-		addi.l	#$10000,(a2)+
-		addi.l	#$C000,(a2)+
-		addi.l	#$8000,(a2)+
-	; calculate background scroll	
-		move.w	(v_bgscroll_buffer).w,d0
-		add.w	(v_bg3screenposx).w,d0
-		neg.w	d0
-		move.w	#$1F,d1
-		sub.w	d4,d1
-		bcs.s	@gotoCloud2
-	@cloudLoop1:		; upper cloud (32px)
-		move.l	d0,(a1)+
-		dbf	d1,@cloudLoop1
-
-	@gotoCloud2:
-		move.w	(v_bgscroll_buffer+4).w,d0
-		add.w	(v_bg3screenposx).w,d0
-		neg.w	d0
-		move.w	#$F,d1
-	@cloudLoop2:		; middle cloud (16px)
-		move.l	d0,(a1)+
-		dbf	d1,@cloudLoop2
-
-		move.w	(v_bgscroll_buffer+8).w,d0
-		add.w	(v_bg3screenposx).w,d0
-		neg.w	d0
-		move.w	#$F,d1
-	@cloudLoop3:		; lower cloud (16px)
-		move.l	d0,(a1)+
-		dbf	d1,@cloudLoop3
-
-		move.w	#$2F,d1
-		move.w	(v_bg3screenposx).w,d0
-		neg.w	d0
-	@mountainLoop:		; distant mountains (48px)
-		move.l	d0,(a1)+
-		dbf	d1,@mountainLoop
-
-		move.w	#$27,d1
-		move.w	(v_bg2screenposx).w,d0
-		neg.w	d0
-	@hillLoop:			; hills & waterfalls (40px)
-		move.l	d0,(a1)+
-		dbf	d1,@hillLoop
-
-		move.w	(v_bg2screenposx).w,d0
-		move.w	(v_screenposx).w,d2
-		sub.w	d0,d2
-		ext.l	d2
-		asl.l	#8,d2
-		divs.w	#$68,d2
-		ext.l	d2
-		asl.l	#8,d2
-		moveq	#0,d3
-		move.w	d0,d3
-		move.w	#$47,d1
-		add.w	d4,d1
-	@waterLoop:			; water deformation
-		move.w	d3,d0
-		neg.w	d0
-		move.l	d0,(a1)+
-		swap	d3
-		add.l	d2,d3
-		swap	d3
-		dbf	d1,@waterLoop
-		rts
-; End of function Deform_GHZ
-
-; ---------------------------------------------------------------------------
-; Labyrinth Zone background layer deformation code
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Deform_LZ:
-	; plain background scroll
-		move.w	(v_scrshiftx).w,d4
-		ext.l	d4
-		asl.l	#7,d4
-		move.w	(v_scrshifty).w,d5
-		ext.l	d5
-		asl.l	#7,d5
-		bsr.w	BGScroll_XY
-
-		move.w	(v_bgscreenposy).w,(v_bgscrposy_dup).w
-		lea	(Lz_Scroll_Data).l,a3
-		lea	(Drown_WobbleData).l,a2
-		move.b	(v_lz_deform).w,d2
-		move.b	d2,d3
-		addi.w	#$80,(v_lz_deform).w
-
-		add.w	(v_bgscreenposy).w,d2
-		andi.w	#$FF,d2
-		add.w	(v_screenposy).w,d3
-		andi.w	#$FF,d3
-		lea	(v_hscroll_buffer).w,a1
-		move.w	#$DF,d1
-		move.w	(v_screenposx).w,d0
-		neg.w	d0
-		move.w	d0,d6
-		swap	d0
-		move.w	(v_bgscreenposx).w,d0
-		neg.w	d0
-		move.w	(v_waterpos1).w,d4
-		move.w	(v_screenposy).w,d5
-	; write normal scroll before meeting water position
-	@normalLoop:		
-		cmp.w	d4,d5	; is current y >= water y?
-		bge.s	@underwaterLoop	; if yes, branch
-		move.l	d0,(a1)+
-		addq.w	#1,d5
-		addq.b	#1,d2
-		addq.b	#1,d3
-		dbf	d1,@normalLoop
-		rts
-	; apply water deformation when underwater
-	@underwaterLoop:
-		move.b	(a3,d3),d4
-		ext.w	d4
-		add.w	d6,d4
-		move.w	d4,(a1)+
-		move.b	(a2,d2),d4
-		ext.w	d4
-		add.w	d0,d4
-		move.w	d4,(a1)+
-		addq.b	#1,d2
-		addq.b	#1,d3
-		dbf	d1,@underwaterLoop
-		rts
-
-Lz_Scroll_Data:
-		dc.b $01,$01,$02,$02,$03,$03,$03,$03,$02,$02,$01,$01,$00,$00,$00,$00
-		dc.b $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-		dc.b $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-		dc.b $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-		dc.b $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-		dc.b $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-		dc.b $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-		dc.b $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-		dc.b $FF,$FF,$FE,$FE,$FD,$FD,$FD,$FD,$FE,$FE,$FF,$FF,$00,$00,$00,$00
-		dc.b $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-		dc.b $01,$01,$02,$02,$03,$03,$03,$03,$02,$02,$01,$01,$00,$00,$00,$00
-		dc.b $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-		dc.b $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-		dc.b $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-		dc.b $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-		dc.b $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-; End of function Deform_LZ
-
-; ---------------------------------------------------------------------------
-; Marble Zone background layer deformation code
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Deform_MZ:
-	; block 1 - dungeon interior
-		move.w	(v_scrshiftx).w,d4
-		ext.l	d4
-		asl.l	#6,d4
-		move.l	d4,d1
-		asl.l	#1,d4
-		add.l	d1,d4
-		moveq	#2,d6
-		bsr.w	BGScroll_Block1
-	; block 3 - mountains
-		move.w	(v_scrshiftx).w,d4
-		ext.l	d4
-		asl.l	#6,d4
-		moveq	#6,d6
-		bsr.w	BGScroll_Block3
-	; block 2 - bushes & antique buildings
-		move.w	(v_scrshiftx).w,d4
-		ext.l	d4
-		asl.l	#7,d4
-		moveq	#4,d6
-		bsr.w	BGScroll_Block2
-	; calculate y-position of background
-		move.w	#$200,d0	; start with 512px, ignoring 2 chunks
-		move.w	(v_screenposy).w,d1
-		subi.w	#$1C8,d1	; 0% scrolling when y <= 56px 
-		bcs.s	@noYscroll
-		move.w	d1,d2
-		add.w	d1,d1
-		add.w	d2,d1
-		asr.w	#2,d1
-		add.w	d1,d0
-	@noYscroll:
-		move.w	d0,(v_bg2screenposy).w
-		move.w	d0,(v_bg3screenposy).w
-		bsr.w	BGScroll_YAbsolute
-		move.w	(v_bgscreenposy).w,(v_bgscrposy_dup).w
-	; do something with redraw flags
-		move.b	(v_bg1_scroll_flags).w,d0
-		or.b	(v_bg2_scroll_flags).w,d0
-		or.b	d0,(v_bg3_scroll_flags).w
-		clr.b	(v_bg1_scroll_flags).w
-		clr.b	(v_bg2_scroll_flags).w
-	; calculate background scroll buffer
-		lea	(v_bgscroll_buffer).w,a1
-		move.w	(v_screenposx).w,d2
-		neg.w	d2
-		move.w	d2,d0
-		asr.w	#2,d0
-		sub.w	d2,d0
-		ext.l	d0
-		asl.l	#3,d0
-		divs.w	#5,d0
-		ext.l	d0
-		asl.l	#4,d0
-		asl.l	#8,d0
-		moveq	#0,d3
-		move.w	d2,d3
-		asr.w	#1,d3
-		move.w	#4,d1
-	@cloudLoop:		
-		move.w	d3,(a1)+
-		swap	d3
-		add.l	d0,d3
-		swap	d3
-		dbf	d1,@cloudLoop
-
-		move.w	(v_bg3screenposx).w,d0
-		neg.w	d0
-		move.w	#1,d1
-	@mountainLoop:		
-		move.w	d0,(a1)+
-		dbf	d1,@mountainLoop
-
-		move.w	(v_bg2screenposx).w,d0
-		neg.w	d0
-		move.w	#8,d1
-	@bushLoop:		
-		move.w	d0,(a1)+
-		dbf	d1,@bushLoop
-
-		move.w	(v_bgscreenposx).w,d0
-		neg.w	d0
-		move.w	#$F,d1
-	@interiorLoop:		
-		move.w	d0,(a1)+
-		dbf	d1,@interiorLoop
-
-		lea	(v_bgscroll_buffer).w,a2
-		move.w	(v_bgscreenposy).w,d0
-		subi.w	#$200,d0	; subtract 512px (unused 2 chunks)
-		move.w	d0,d2
-		cmpi.w	#$100,d0
-		bcs.s	@limitY
-		move.w	#$100,d0
-	@limitY:
-		andi.w	#$1F0,d0
-		lsr.w	#3,d0
-		lea	(a2,d0),a2
-		bra.w	Bg_Scroll_X
-; End of function Deform_MZ
-
-; ---------------------------------------------------------------------------
-; Star Light Zone background layer deformation code
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Deform_SLZ:
-	; vertical scrolling
-		move.w	(v_scrshifty).w,d5
-		ext.l	d5
-		asl.l	#7,d5
-		bsr.w	Bg_Scroll_Y
-		move.w	(v_bgscreenposy).w,(v_bgscrposy_dup).w
-	; calculate background scroll buffer
-		lea	(v_bgscroll_buffer).w,a1
-		move.w	(v_screenposx).w,d2
-		neg.w	d2
-		move.w	d2,d0
-		asr.w	#3,d0
-		sub.w	d2,d0
-		ext.l	d0
-		asl.l	#4,d0
-		divs.w	#$1C,d0
-		ext.l	d0
-		asl.l	#4,d0
-		asl.l	#8,d0
-		moveq	#0,d3
-		move.w	d2,d3
-		move.w	#$1B,d1
-	@starLoop:		
-		move.w	d3,(a1)+
-		swap	d3
-		add.l	d0,d3
-		swap	d3
-		dbf	d1,@starLoop
-
-		move.w	d2,d0
-		asr.w	#3,d0
-		move.w	d0,d1
-		asr.w	#1,d1
-		add.w	d1,d0
-		move.w	#4,d1
-	@buildingLoop1:		; distant black buildings
-		move.w	d0,(a1)+
-		dbf	d1,@buildingLoop1
-
-		move.w	d2,d0
-		asr.w	#2,d0
-		move.w	#4,d1
-	@buildingLoop2:		; closer buildings
-		move.w	d0,(a1)+
-		dbf	d1,@buildingLoop2
-
-		move.w	d2,d0
-		asr.w	#1,d0
-		move.w	#$1D,d1
-	@bottomLoop:		; bottom part of background
-		move.w	d0,(a1)+
-		dbf	d1,@bottomLoop
-
-		lea	(v_bgscroll_buffer).w,a2
-		move.w	(v_bgscreenposy).w,d0
-		move.w	d0,d2
-		subi.w	#$C0,d0
-		andi.w	#$3F0,d0
-		lsr.w	#3,d0
-		lea	(a2,d0),a2
-;-------------------------------------------------------------------------------
-;-------------------------------------------------------------------------------
-Bg_Scroll_X:
-		lea	(v_hscroll_buffer).w,a1
-		move.w	#$E,d1
-		move.w	(v_screenposx).w,d0
-		neg.w	d0
-		swap	d0
-		andi.w	#$F,d2
-		add.w	d2,d2
-		move.w	(a2)+,d0
-		jmp	@pixelJump(pc,d2.w)		; skip pixels for first row
-	@blockLoop:
-		move.w	(a2)+,d0
-	@pixelJump:		
-		move.l	d0,(a1)+
-		move.l	d0,(a1)+
-		move.l	d0,(a1)+
-		move.l	d0,(a1)+
-		move.l	d0,(a1)+
-		move.l	d0,(a1)+
-		move.l	d0,(a1)+
-		move.l	d0,(a1)+
-		move.l	d0,(a1)+
-		move.l	d0,(a1)+
-		move.l	d0,(a1)+
-		move.l	d0,(a1)+
-		move.l	d0,(a1)+
-		move.l	d0,(a1)+
-		move.l	d0,(a1)+
-		move.l	d0,(a1)+
-		dbf	d1,@blockLoop
-		rts
-
-; ---------------------------------------------------------------------------
-; Spring Yard Zone background layer deformation	code
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Deform_SYZ:
-	; vertical scrolling
-		move.w	(v_scrshifty).w,d5
-		ext.l	d5
-		asl.l	#4,d5
-		move.l	d5,d1
-		asl.l	#1,d5
-		add.l	d1,d5
-		bsr.w	Bg_Scroll_Y
-		move.w	(v_bgscreenposy).w,(v_bgscrposy_dup).w
-	; calculate background scroll buffer
-		lea	(v_bgscroll_buffer).w,a1
-		move.w	(v_screenposx).w,d2
-		neg.w	d2
-		move.w	d2,d0
-		asr.w	#3,d0
-		sub.w	d2,d0
-		ext.l	d0
-		asl.l	#3,d0
-		divs.w	#8,d0
-		ext.l	d0
-		asl.l	#4,d0
-		asl.l	#8,d0
-		moveq	#0,d3
-		move.w	d2,d3
-		asr.w	#1,d3
-		move.w	#7,d1
-	@cloudLoop:		
-		move.w	d3,(a1)+
-		swap	d3
-		add.l	d0,d3
-		swap	d3
-		dbf	d1,@cloudLoop
-
-		move.w	d2,d0
-		asr.w	#3,d0
-		move.w	#4,d1
-	@mountainLoop:		
-		move.w	d0,(a1)+
-		dbf	d1,@mountainLoop
-
-		move.w	d2,d0
-		asr.w	#2,d0
-		move.w	#5,d1
-	@buildingLoop:		
-		move.w	d0,(a1)+
-		dbf	d1,@buildingLoop
-
-		move.w	d2,d0
-		move.w	d2,d1
-		asr.w	#1,d1
-		sub.w	d1,d0
-		ext.l	d0
-		asl.l	#4,d0
-		divs.w	#$E,d0
-		ext.l	d0
-		asl.l	#4,d0
-		asl.l	#8,d0
-		moveq	#0,d3
-		move.w	d2,d3
-		asr.w	#1,d3
-		move.w	#$D,d1
-	@bushLoop:		
-		move.w	d3,(a1)+
-		swap	d3
-		add.l	d0,d3
-		swap	d3
-		dbf	d1,@bushLoop
-
-		lea	(v_bgscroll_buffer).w,a2
-		move.w	(v_bgscreenposy).w,d0
-		move.w	d0,d2
-		andi.w	#$1F0,d0
-		lsr.w	#3,d0
-		lea	(a2,d0),a2
-		bra.w	Bg_Scroll_X
-; End of function Deform_SYZ
-
-; ---------------------------------------------------------------------------
-; Scrap	Brain Zone background layer deformation	code
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Deform_SBZ:
-		tst.b	(v_act).w
-		bne.w	Deform_SBZ2
-	; block 1 - lower black buildings
-		move.w	(v_scrshiftx).w,d4
-		ext.l	d4
-		asl.l	#7,d4
-		moveq	#2,d6
-		bsr.w	BGScroll_Block1
-	; block 3 - distant brown buildings
-		move.w	(v_scrshiftx).w,d4
-		ext.l	d4
-		asl.l	#6,d4
-		moveq	#6,d6
-		bsr.w	BGScroll_Block3
-	; block 2 - upper black buildings
-		move.w	(v_scrshiftx).w,d4
-		ext.l	d4
-		asl.l	#5,d4
-		move.l	d4,d1
-		asl.l	#1,d4
-		add.l	d1,d4
-		moveq	#4,d6
-		bsr.w	BGScroll_Block2
-	; vertical scrolling
-		moveq	#0,d4
-		move.w	(v_scrshifty).w,d5
-		ext.l	d5
-		asl.l	#5,d5
-		bsr.w	BGScroll_YRelative
-
-		move.w	(v_bgscreenposy).w,d0
-		move.w	d0,(v_bg2screenposy).w
-		move.w	d0,(v_bg3screenposy).w
-		move.w	d0,(v_bgscrposy_dup).w
-		move.b	(v_bg1_scroll_flags).w,d0
-		or.b	(v_bg3_scroll_flags).w,d0
-		or.b	d0,(v_bg2_scroll_flags).w
-		clr.b	(v_bg1_scroll_flags).w
-		clr.b	(v_bg3_scroll_flags).w
-	; calculate background scroll buffer
-		lea	(v_bgscroll_buffer).w,a1
-		move.w	(v_screenposx).w,d2
-		neg.w	d2
-		asr.w	#2,d2
-		move.w	d2,d0
-		asr.w	#1,d0
-		sub.w	d2,d0
-		ext.l	d0
-		asl.l	#3,d0
-		divs.w	#4,d0
-		ext.l	d0
-		asl.l	#4,d0
-		asl.l	#8,d0
-		moveq	#0,d3
-		move.w	d2,d3
-		move.w	#3,d1
-	@cloudLoop:		
-		move.w	d3,(a1)+
-		swap	d3
-		add.l	d0,d3
-		swap	d3
-		dbf	d1,@cloudLoop
-
-		move.w	(v_bg3screenposx).w,d0
-		neg.w	d0
-		move.w	#9,d1
-	@buildingLoop1:		; distant brown buildings
-		move.w	d0,(a1)+
-		dbf	d1,@buildingLoop1
-
-		move.w	(v_bg2screenposx).w,d0
-		neg.w	d0
-		move.w	#6,d1
-	@buildingLoop2:		; upper black buildings
-		move.w	d0,(a1)+
-		dbf	d1,@buildingLoop2
-
-		move.w	(v_bgscreenposx).w,d0
-		neg.w	d0
-		move.w	#$A,d1
-	@buildingLoop3:		; lower black buildings
-		move.w	d0,(a1)+
-		dbf	d1,@buildingLoop3
-		lea	(v_bgscroll_buffer).w,a2
-		move.w	(v_bgscreenposy).w,d0
-		move.w	d0,d2
-		andi.w	#$1F0,d0
-		lsr.w	#3,d0
-		lea	(a2,d0),a2
-		bra.w	Bg_Scroll_X
-;-------------------------------------------------------------------------------
-Deform_SBZ2:;loc_68A2:
-	; plain background deformation
-		move.w	(v_scrshiftx).w,d4
-		ext.l	d4		
-		asl.l	#6,d4
-		move.w	(v_scrshifty).w,d5
-		ext.l	d5
-		asl.l	#5,d5
-		bsr.w	BGScroll_XY
-		move.w	(v_bgscreenposy).w,(v_bgscrposy_dup).w
-	; copy fg & bg x-position to hscroll table
-		lea	(v_hscroll_buffer).w,a1
-		move.w	#223,d1
-		move.w	(v_screenposx).w,d0
-		neg.w	d0
-		swap	d0
-		move.w	(v_bgscreenposx).w,d0
-		neg.w	d0
-	@loop:		
-		move.l	d0,(a1)+
-		dbf	d1,@loop
-		rts
-; End of function Deform_SBZ
-
-; ---------------------------------------------------------------------------
-; Subroutine to	scroll the level horizontally as Sonic moves
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-ScrollHoriz:
-		move.w	(v_screenposx).w,d4 ; save old screen position
-		bsr.s	MoveScreenHoriz
-		move.w	(v_screenposx).w,d0
-		andi.w	#$10,d0
-		move.b	(v_fg_xblock).w,d1
-		eor.b	d1,d0
-		bne.s	@return
-		eori.b	#$10,(v_fg_xblock).w
-		move.w	(v_screenposx).w,d0
-		sub.w	d4,d0		; compare new with old screen position
-		bpl.s	@scrollRight
-
-		bset	#2,(v_fg_scroll_flags).w ; screen moves backward
-		rts	
-
-	@scrollRight:
-		bset	#3,(v_fg_scroll_flags).w ; screen moves forward
-
-	@return:
-		rts	
-; End of function ScrollHoriz
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-MoveScreenHoriz:
-		move.w	(v_ost_player+ost_x_pos).w,d0
-		sub.w	(v_screenposx).w,d0 ; Sonic's distance from left edge of screen
-		subi.w	#144,d0		; is distance less than 144px?
-		bcs.s	SH_BehindMid	; if yes, branch
-		subi.w	#16,d0		; is distance more than 160px?
-		bcc.s	SH_AheadOfMid	; if yes, branch
-		clr.w	(v_scrshiftx).w
-		rts	
-; ===========================================================================
-
-SH_AheadOfMid:
-		cmpi.w	#16,d0		; is Sonic within 16px of middle area?
-		bcs.s	SH_Ahead16	; if yes, branch
-		move.w	#16,d0		; set to 16 if greater
-
-	SH_Ahead16:
-		add.w	(v_screenposx).w,d0
-		cmp.w	(v_limitright2).w,d0
-		blt.s	SH_SetScreen
-		move.w	(v_limitright2).w,d0
-
-SH_SetScreen:
-		move.w	d0,d1
-		sub.w	(v_screenposx).w,d1
-		asl.w	#8,d1
-		move.w	d0,(v_screenposx).w ; set new screen position
-		move.w	d1,(v_scrshiftx).w ; set distance for screen movement
-		rts	
-; ===========================================================================
-
-SH_BehindMid:
-		add.w	(v_screenposx).w,d0
-		cmp.w	(v_limitleft2).w,d0
-		bgt.s	SH_SetScreen
-		move.w	(v_limitleft2).w,d0
-		bra.s	SH_SetScreen
-; End of function MoveScreenHoriz
-
-; ===========================================================================
-		tst.w	d0
-		bpl.s	loc_6610
-		move.w	#-2,d0
-		bra.s	SH_BehindMid
-
-loc_6610:
-		move.w	#2,d0
-		bra.s	SH_AheadOfMid
-
-; ---------------------------------------------------------------------------
-; Subroutine to	scroll the level vertically as Sonic moves
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-ScrollVertical:
-		moveq	#0,d1
-		move.w	(v_ost_player+ost_y_pos).w,d0
-		sub.w	(v_screenposy).w,d0 ; Sonic's distance from top of screen
-		btst	#2,(v_ost_player+ost_status).w ; is Sonic rolling?
-		beq.s	SV_NotRolling	; if not, branch
-		subq.w	#5,d0
-
-	SV_NotRolling:
-		btst	#1,(v_ost_player+ost_status).w ; is Sonic jumping?
-		beq.s	loc_664A	; if not, branch
-
-		addi.w	#32,d0
-		sub.w	(v_lookshift).w,d0
-		bcs.s	loc_6696
-		subi.w	#64,d0
-		bcc.s	loc_6696
-		tst.b	(f_bgscrollvert).w
-		bne.s	loc_66A8
-		bra.s	loc_6656
-; ===========================================================================
-
-loc_664A:
-		sub.w	(v_lookshift).w,d0
-		bne.s	loc_665C
-		tst.b	(f_bgscrollvert).w
-		bne.s	loc_66A8
-
-loc_6656:
-		clr.w	(v_scrshifty).w
-		rts	
-; ===========================================================================
-
-loc_665C:
-		cmpi.w	#$60,(v_lookshift).w
-		bne.s	loc_6684
-		move.w	(v_ost_player+ost_inertia).w,d1
-		bpl.s	loc_666C
-		neg.w	d1
-
-loc_666C:
-		cmpi.w	#$800,d1
-		bcc.s	loc_6696
-		move.w	#$600,d1
-		cmpi.w	#6,d0
-		bgt.s	loc_66F6
-		cmpi.w	#-6,d0
-		blt.s	loc_66C0
-		bra.s	loc_66AE
-; ===========================================================================
-
-loc_6684:
-		move.w	#$200,d1
-		cmpi.w	#2,d0
-		bgt.s	loc_66F6
-		cmpi.w	#-2,d0
-		blt.s	loc_66C0
-		bra.s	loc_66AE
-; ===========================================================================
-
-loc_6696:
-		move.w	#$1000,d1
-		cmpi.w	#$10,d0
-		bgt.s	loc_66F6
-		cmpi.w	#-$10,d0
-		blt.s	loc_66C0
-		bra.s	loc_66AE
-; ===========================================================================
-
-loc_66A8:
-		moveq	#0,d0
-		move.b	d0,(f_bgscrollvert).w
-
-loc_66AE:
-		moveq	#0,d1
-		move.w	d0,d1
-		add.w	(v_screenposy).w,d1
-		tst.w	d0
-		bpl.w	loc_6700
-		bra.w	loc_66CC
-; ===========================================================================
-
-loc_66C0:
-		neg.w	d1
-		ext.l	d1
-		asl.l	#8,d1
-		add.l	(v_screenposy).w,d1
-		swap	d1
-
-loc_66CC:
-		cmp.w	(v_limittop2).w,d1
-		bgt.s	loc_6724
-		cmpi.w	#-$100,d1
-		bgt.s	loc_66F0
-		andi.w	#$7FF,d1
-		andi.w	#$7FF,(v_ost_player+ost_y_pos).w
-		andi.w	#$7FF,(v_screenposy).w
-		andi.w	#$3FF,(v_bgscreenposy).w
-		bra.s	loc_6724
-; ===========================================================================
-
-loc_66F0:
-		move.w	(v_limittop2).w,d1
-		bra.s	loc_6724
-; ===========================================================================
-
-loc_66F6:
-		ext.l	d1
-		asl.l	#8,d1
-		add.l	(v_screenposy).w,d1
-		swap	d1
-
-loc_6700:
-		cmp.w	(v_limitbtm2).w,d1
-		blt.s	loc_6724
-		subi.w	#$800,d1
-		bcs.s	loc_6720
-		andi.w	#$7FF,(v_ost_player+ost_y_pos).w
-		subi.w	#$800,(v_screenposy).w
-		andi.w	#$3FF,(v_bgscreenposy).w
-		bra.s	loc_6724
-; ===========================================================================
-
-loc_6720:
-		move.w	(v_limitbtm2).w,d1
-
-loc_6724:
-		move.w	(v_screenposy).w,d4
-		swap	d1
-		move.l	d1,d3
-		sub.l	(v_screenposy).w,d3
-		ror.l	#8,d3
-		move.w	d3,(v_scrshifty).w
-		move.l	d1,(v_screenposy).w
-		move.w	(v_screenposy).w,d0
-		andi.w	#$10,d0
-		move.b	(v_fg_yblock).w,d1
-		eor.b	d1,d0
-		bne.s	@return
-		eori.b	#$10,(v_fg_yblock).w
-		move.w	(v_screenposy).w,d0
-		sub.w	d4,d0
-		bpl.s	@scrollBottom
-		bset	#0,(v_fg_scroll_flags).w
-		rts	
-; ===========================================================================
-
-	@scrollBottom:
-		bset	#1,(v_fg_scroll_flags).w
-
-	@return:
-		rts	
-; End of function ScrollVertical
+		if revision=0
+		include	"Includes\DeformLayers.asm"
+		else
+		include	"Includes\DeformLayers (JP1).asm"
+		endc
+		include	"Includes\ScrollHorizontal & ScrollVertical.asm"
 
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
@@ -10207,29 +9315,23 @@ ArtLoadCues:	include "Pattern Load Cues.asm"
 
 		align	$200,$FF
 		if Revision=0
-Nem_SegaLogo:	incbin	"Graphics - Compressed\Sega Logo.nem" ; large Sega logo
-		even
+		nemesis	Nem_SegaLogo,"Sega Logo"; large Sega logo
 Eni_SegaLogo:	incbin	"tilemaps\Sega Logo.bin" ; large Sega logo (mappings)
 		even
 		else
 			dcb.b	$300,$FF
-	Nem_SegaLogo:	incbin	"Graphics - Compressed\Sega Logo (JP1).nem" ; large Sega logo
-			even
+			nemesis	Nem_SegaLogo,"Sega Logo (JP1)"; large Sega logo
 	Eni_SegaLogo:	incbin	"tilemaps\Sega Logo (JP1).bin" ; large Sega logo (mappings)
 			even
 		endc
 Eni_Title:	incbin	"tilemaps\Title Screen.bin" ; title screen foreground (mappings)
 		even
-Nem_TitleFg:	incbin	"Graphics - Compressed\Title Screen Foreground.nem"
-		even
-Nem_TitleSonic:	incbin	"Graphics - Compressed\Title Screen Sonic.nem"
-		even
-Nem_TitleTM:	incbin	"Graphics - Compressed\Title Screen TM.nem"
-		even
+		nemesis	Nem_TitleFg,"Title Screen Foreground"
+		nemesis	Nem_TitleSonic,"Title Screen Sonic"
+		nemesis	Nem_TitleTM,"Title Screen TM"
 Eni_JapNames:	incbin	"tilemaps\Hidden Japanese Credits.bin" ; Japanese credits (mappings)
 		even
-Nem_JapNames:	incbin	"Graphics - Compressed\Hidden Japanese Credits.nem"
-		even
+		nemesis	Nem_JapNames,"Hidden Japanese Credits"
 
 		include "Mappings\Sonic.asm" ; Map_Sonic
 		include "Mappings\Sonic DPLCs.asm" ; SonicDynPLC
@@ -10243,24 +9345,16 @@ Art_Sonic:	incbin	"Graphics\Sonic.bin" ; Sonic
 ; Compressed graphics - various
 ; ---------------------------------------------------------------------------
 		if Revision=0
-Nem_Smoke:		incbin	"Graphics - Compressed\Unused - Smoke.nem"
-			even
-Nem_SyzSparkle:		incbin	"Graphics - Compressed\Unused - SYZ Sparkles.nem"
-			even
+		nemesis Nem_Smoke,"Unused - Smoke"
+		nemesis Nem_SyzSparkle,"Unused - SYZ Sparkles"
 		endc
-Nem_Shield:	incbin	"Graphics - Compressed\Shield.nem"
-		even
-Nem_Stars:	incbin	"Graphics - Compressed\Invincibility.nem"
-		even
+		nemesis Nem_Shield,"Shield"
+		nemesis Nem_Stars,"Invincibility"
 		if Revision=0
-Nem_LzSonic:		incbin	"Graphics - Compressed\Unused - LZ Sonic Holding Breath.nem" ; Sonic holding his breath
-			even
-Nem_UnkFire:		incbin	"Graphics - Compressed\Unused - Fireball.nem" ; unused fireball
-			even
-Nem_Warp:		incbin	"Graphics - Compressed\Unused - Special Stage Warp.nem" ; entry to special stage flash
-			even
-Nem_Goggle:		incbin	"Graphics - Compressed\Unused - Goggles.nem" ; unused goggles
-			even
+		nemesis Nem_LzSonic,"Unused - LZ Sonic Holding Breath" ; Sonic holding his breath
+		nemesis Nem_UnkFire,"Unused - Fireball" ; unused fireball
+		nemesis Nem_Warp,"Unused - Special Stage Warp" ; entry to special stage flash
+		nemesis Nem_Goggle,"Unused - Goggles" ; unused goggles
 		endc
 
 		include "Mappings\Special Stage Walls.asm" ; Map_SSWalls
@@ -10268,301 +9362,177 @@ Nem_Goggle:		incbin	"Graphics - Compressed\Unused - Goggles.nem" ; unused goggle
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - special stage
 ; ---------------------------------------------------------------------------
-Nem_SSWalls:	incbin	"Graphics - Compressed\Special Stage Walls.nem" ; special stage walls
-		even
+		nemesis Nem_SSWalls,"Special Stage Walls" ; special stage walls
 Eni_SSBg1:	incbin	"tilemaps\SS Background 1.bin" ; special stage background (mappings)
 		even
-Nem_SSBgFish:	incbin	"Graphics - Compressed\Special Stage Birds & Fish.nem" ; special stage birds and fish background
-		even
+		nemesis Nem_SSBgFish,"Special Stage Birds & Fish" ; special stage birds and fish background
 Eni_SSBg2:	incbin	"tilemaps\SS Background 2.bin" ; special stage background (mappings)
 		even
-Nem_SSBgCloud:	incbin	"Graphics - Compressed\Special Stage Clouds.nem" ; special stage clouds background
-		even
-Nem_SSGOAL:	incbin	"Graphics - Compressed\Special Stage GOAL.nem" ; special stage GOAL block
-		even
-Nem_SSRBlock:	incbin	"Graphics - Compressed\Special Stage R.nem" ; special stage R block
-		even
-Nem_SS1UpBlock:	incbin	"Graphics - Compressed\Special Stage 1UP.nem" ; special stage 1UP block
-		even
-Nem_SSEmStars:	incbin	"Graphics - Compressed\Special Stage Emerald Twinkle.nem" ; special stage stars from a collected emerald
-		even
-Nem_SSRedWhite:	incbin	"Graphics - Compressed\Special Stage Red-White.nem" ; special stage red/white block
-		even
-Nem_SSZone1:	incbin	"Graphics - Compressed\Special Stage ZONE1.nem" ; special stage ZONE1 block
-		even
-Nem_SSZone2:	incbin	"Graphics - Compressed\Special Stage ZONE2.nem" ; ZONE2 block
-		even
-Nem_SSZone3:	incbin	"Graphics - Compressed\Special Stage ZONE3.nem" ; ZONE3 block
-		even
-Nem_SSZone4:	incbin	"Graphics - Compressed\Special Stage ZONE4.nem" ; ZONE4 block
-		even
-Nem_SSZone5:	incbin	"Graphics - Compressed\Special Stage ZONE5.nem" ; ZONE5 block
-		even
-Nem_SSZone6:	incbin	"Graphics - Compressed\Special Stage ZONE6.nem" ; ZONE6 block
-		even
-Nem_SSUpDown:	incbin	"Graphics - Compressed\Special Stage UP-DOWN.nem" ; special stage UP/DOWN block
-		even
-Nem_SSEmerald:	incbin	"Graphics - Compressed\Special Stage Emeralds.nem" ; special stage chaos emeralds
-		even
-Nem_SSGhost:	incbin	"Graphics - Compressed\Special Stage Ghost.nem" ; special stage ghost block
-		even
-Nem_SSWBlock:	incbin	"Graphics - Compressed\Special Stage W.nem" ; special stage W block
-		even
-Nem_SSGlass:	incbin	"Graphics - Compressed\Special Stage Glass.nem" ; special stage destroyable glass block
-		even
-Nem_ResultEm:	incbin	"Graphics - Compressed\Special Stage Result Emeralds.nem" ; chaos emeralds on special stage results screen
-		even
+		nemesis Nem_SSBgCloud,"Special Stage Clouds" ; special stage clouds background
+		nemesis Nem_SSGOAL,"Special Stage GOAL" ; special stage GOAL block
+		nemesis Nem_SSRBlock,"Special Stage R" ; special stage R block
+		nemesis Nem_SS1UpBlock,"Special Stage 1UP" ; special stage 1UP block
+		nemesis Nem_SSEmStars,"Special Stage Emerald Twinkle" ; special stage stars from a collected emerald
+		nemesis Nem_SSRedWhite,"Special Stage Red-White" ; special stage red/white block
+		nemesis Nem_SSZone1,"Special Stage ZONE1" ; special stage ZONE1 block
+		nemesis Nem_SSZone2,"Special Stage ZONE2" ; ZONE2 block
+		nemesis Nem_SSZone3,"Special Stage ZONE3" ; ZONE3 block
+		nemesis Nem_SSZone4,"Special Stage ZONE4" ; ZONE4 block
+		nemesis Nem_SSZone5,"Special Stage ZONE5" ; ZONE5 block
+		nemesis Nem_SSZone6,"Special Stage ZONE6" ; ZONE6 block
+		nemesis Nem_SSUpDown,"Special Stage UP-DOWN" ; special stage UP/DOWN block
+		nemesis Nem_SSEmerald,"Special Stage Emeralds" ; special stage chaos emeralds
+		nemesis Nem_SSGhost,"Special Stage Ghost" ; special stage ghost block
+		nemesis Nem_SSWBlock,"Special Stage W" ; special stage W block
+		nemesis Nem_SSGlass,"Special Stage Glass" ; special stage destroyable glass block
+		nemesis Nem_ResultEm,"Special Stage Result Emeralds" ; chaos emeralds on special stage results screen
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - GHZ stuff
 ; ---------------------------------------------------------------------------
-Nem_Stalk:	incbin	"Graphics - Compressed\GHZ Flower Stalk.nem"
-		even
-Nem_Swing:	incbin	"Graphics - Compressed\GHZ Swinging Platform.nem"
-		even
-Nem_Bridge:	incbin	"Graphics - Compressed\GHZ Bridge.nem"
-		even
-Nem_GhzUnkBlock:incbin	"Graphics - Compressed\Unused - GHZ Block.nem"
-		even
-Nem_Ball:	incbin	"Graphics - Compressed\GHZ Giant Ball.nem"
-		even
-Nem_Spikes:	incbin	"Graphics - Compressed\Spikes.nem"
-		even
-Nem_GhzLog:	incbin	"Graphics - Compressed\Unused - GHZ Log.nem"
-		even
-Nem_SpikePole:	incbin	"Graphics - Compressed\GHZ Spiked Helix Pole.nem"
-		even
-Nem_PplRock:	incbin	"Graphics - Compressed\GHZ Purple Rock.nem"
-		even
-Nem_GhzWall1:	incbin	"Graphics - Compressed\GHZ Smashable Wall.nem"
-		even
-Nem_GhzWall2:	incbin	"Graphics - Compressed\GHZ Walls.nem"
-		even
+		nemesis Nem_Stalk,"GHZ Flower Stalk"
+		nemesis Nem_Swing,"GHZ Swinging Platform"
+		nemesis Nem_Bridge,"GHZ Bridge"
+		nemesis Nem_GhzUnkBlock,"Unused - GHZ Block"
+		nemesis Nem_Ball,"GHZ Giant Ball"
+		nemesis Nem_Spikes,"Spikes"
+		nemesis Nem_GhzLog,"Unused - GHZ Log"
+		nemesis Nem_SpikePole,"GHZ Spiked Helix Pole"
+		nemesis Nem_PplRock,"GHZ Purple Rock"
+		nemesis Nem_GhzWall1,"GHZ Smashable Wall"
+		nemesis Nem_GhzWall2,"GHZ Walls"
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - LZ stuff
 ; ---------------------------------------------------------------------------
-Nem_Water:	incbin	"Graphics - Compressed\LZ Water Surface.nem"
-		even
-Nem_Splash:	incbin	"Graphics - Compressed\LZ Waterfall & Splashes.nem"
-		even
-Nem_LzSpikeBall:incbin	"Graphics - Compressed\LZ Spiked Ball & Chain.nem"
-		even
-Nem_FlapDoor:	incbin	"Graphics - Compressed\LZ Flapping Door.nem"
-		even
-Nem_Bubbles:	incbin	"Graphics - Compressed\LZ Bubbles & Countdown.nem"
-		even
-Nem_LzBlock3:	incbin	"Graphics - Compressed\LZ 32x16 Block.nem"
-		even
-Nem_LzDoor1:	incbin	"Graphics - Compressed\LZ Vertical Door.nem"
-		even
-Nem_Harpoon:	incbin	"Graphics - Compressed\LZ Harpoon.nem"
-		even
-Nem_LzPole:	incbin	"Graphics - Compressed\LZ Breakable Pole.nem"
-		even
-Nem_LzDoor2:	incbin	"Graphics - Compressed\LZ Horizontal Door.nem"
-		even
-Nem_LzWheel:	incbin	"Graphics - Compressed\LZ Wheel.nem"
-		even
-Nem_Gargoyle:	incbin	"Graphics - Compressed\LZ Gargoyle & Fireball.nem"
-		even
-Nem_LzBlock2:	incbin	"Graphics - Compressed\LZ Blocks.nem"
-		even
-Nem_LzPlatfm:	incbin	"Graphics - Compressed\LZ Rising Platform.nem"
-		even
-Nem_Cork:	incbin	"Graphics - Compressed\LZ Cork.nem"
-		even
-Nem_LzBlock1:	incbin	"Graphics - Compressed\LZ 32x32 Block.nem"
-		even
+		nemesis Nem_Water,"LZ Water Surface"
+		nemesis Nem_Splash,"LZ Waterfall & Splashes"
+		nemesis Nem_LzSpikeBall,"LZ Spiked Ball & Chain"
+		nemesis Nem_FlapDoor,"LZ Flapping Door"
+		nemesis Nem_Bubbles,"LZ Bubbles & Countdown"
+		nemesis Nem_LzBlock3,"LZ 32x16 Block"
+		nemesis Nem_LzDoor1,"LZ Vertical Door"
+		nemesis Nem_Harpoon,"LZ Harpoon"
+		nemesis Nem_LzPole,"LZ Breakable Pole"
+		nemesis Nem_LzDoor2,"LZ Horizontal Door"
+		nemesis Nem_LzWheel,"LZ Wheel"
+		nemesis Nem_Gargoyle,"LZ Gargoyle & Fireball"
+		nemesis Nem_LzBlock2,"LZ Blocks"
+		nemesis Nem_LzPlatfm,"LZ Rising Platform"
+		nemesis Nem_Cork,"LZ Cork"
+		nemesis Nem_LzBlock1,"LZ 32x32 Block"
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - MZ stuff
 ; ---------------------------------------------------------------------------
-Nem_MzMetal:	incbin	"Graphics - Compressed\MZ Metal Blocks.nem"
-		even
-Nem_MzSwitch:	incbin	"Graphics - Compressed\MZ Switch.nem"
-		even
-Nem_MzGlass:	incbin	"Graphics - Compressed\MZ Green Glass Block.nem"
-		even
-Nem_UnkGrass:	incbin	"Graphics - Compressed\Unused - MZ Grass.nem"
-		even
-Nem_Fireball:	incbin	"Graphics - Compressed\Fireballs.nem"
-		even
-Nem_Lava:	incbin	"Graphics - Compressed\MZ Lava.nem"
-		even
-Nem_MzBlock:	incbin	"Graphics - Compressed\MZ Green Pushable Block.nem"
-		even
-Nem_MzUnkBlock:	incbin	"Graphics - Compressed\Unused - MZ Background.nem"
-		even
+		nemesis Nem_MzMetal,"MZ Metal Blocks"
+		nemesis Nem_MzSwitch,"MZ Switch"
+		nemesis Nem_MzGlass,"MZ Green Glass Block"
+		nemesis Nem_UnkGrass,"Unused - MZ Grass"
+		nemesis Nem_Fireball,"Fireballs"
+		nemesis Nem_Lava,"MZ Lava"
+		nemesis Nem_MzBlock,"MZ Green Pushable Block"
+		nemesis Nem_MzUnkBlock,"Unused - MZ Background"
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - SLZ stuff
 ; ---------------------------------------------------------------------------
-Nem_Seesaw:	incbin	"Graphics - Compressed\SLZ Seesaw.nem"
-		even
-Nem_SlzSpike:	incbin	"Graphics - Compressed\SLZ Little Spikeball.nem"
-		even
-Nem_Fan:	incbin	"Graphics - Compressed\SLZ Fan.nem"
-		even
-Nem_SlzWall:	incbin	"Graphics - Compressed\SLZ Breakable Wall.nem"
-		even
-Nem_Pylon:	incbin	"Graphics - Compressed\SLZ Pylon.nem"
-		even
-Nem_SlzSwing:	incbin	"Graphics - Compressed\SLZ Swinging Platform.nem"
-		even
-Nem_SlzBlock:	incbin	"Graphics - Compressed\SLZ 32x32 Block.nem"
-		even
-Nem_SlzCannon:	incbin	"Graphics - Compressed\SLZ Cannon.nem"
-		even
+		nemesis Nem_Seesaw,"SLZ Seesaw"
+		nemesis Nem_SlzSpike,"SLZ Little Spikeball"
+		nemesis Nem_Fan,"SLZ Fan"
+		nemesis Nem_SlzWall,"SLZ Breakable Wall"
+		nemesis Nem_Pylon,"SLZ Pylon"
+		nemesis Nem_SlzSwing,"SLZ Swinging Platform"
+		nemesis Nem_SlzBlock,"SLZ 32x32 Block"
+		nemesis Nem_SlzCannon,"SLZ Cannon"
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - SYZ stuff
 ; ---------------------------------------------------------------------------
-Nem_Bumper:	incbin	"Graphics - Compressed\SYZ Bumper.nem"
-		even
-Nem_SmallSpike:	incbin	"Graphics - Compressed\SYZ Small Spikeball.nem"
-		even
-Nem_LzSwitch:	incbin	"Graphics - Compressed\Switch.nem"
-		even
-Nem_BigSpike:	incbin	"Graphics - Compressed\SYZ Large Spikeball.nem"
-		even
+		nemesis Nem_Bumper,"SYZ Bumper"
+		nemesis Nem_SmallSpike,"SYZ Small Spikeball"
+		nemesis Nem_LzSwitch,"Switch"
+		nemesis Nem_BigSpike,"SYZ Large Spikeball"
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - SBZ stuff
 ; ---------------------------------------------------------------------------
-Nem_SbzWheel1:	incbin	"Graphics - Compressed\SBZ Running Disc.nem"
-		even
-Nem_SbzWheel2:	incbin	"Graphics - Compressed\SBZ Junction Wheel.nem"
-		even
-Nem_Cutter:	incbin	"Graphics - Compressed\SBZ Pizza Cutter.nem"
-		even
-Nem_Stomper:	incbin	"Graphics - Compressed\SBZ Stomper.nem"
-		even
-Nem_SpinPform:	incbin	"Graphics - Compressed\SBZ Spinning Platform.nem"
-		even
-Nem_TrapDoor:	incbin	"Graphics - Compressed\SBZ Trapdoor.nem"
-		even
-Nem_SbzFloor:	incbin	"Graphics - Compressed\SBZ Collapsing Floor.nem"
-		even
-Nem_Electric:	incbin	"Graphics - Compressed\SBZ Electrocuter.nem"
-		even
-Nem_SbzBlock:	incbin	"Graphics - Compressed\SBZ Vanishing Block.nem"
-		even
-Nem_FlamePipe:	incbin	"Graphics - Compressed\SBZ Flaming Pipe.nem"
-		even
-Nem_SbzDoor1:	incbin	"Graphics - Compressed\SBZ Small Vertical Door.nem"
-		even
-Nem_SlideFloor:	incbin	"Graphics - Compressed\SBZ Sliding Floor Trap.nem"
-		even
-Nem_SbzDoor2:	incbin	"Graphics - Compressed\SBZ Large Horizontal Door.nem"
-		even
-Nem_Girder:	incbin	"Graphics - Compressed\SBZ Crushing Girder.nem"
-		even
+		nemesis Nem_SbzWheel1,"SBZ Running Disc"
+		nemesis Nem_SbzWheel2,"SBZ Junction Wheel"
+		nemesis Nem_Cutter,"SBZ Pizza Cutter"
+		nemesis Nem_Stomper,"SBZ Stomper"
+		nemesis Nem_SpinPform,"SBZ Spinning Platform"
+		nemesis Nem_TrapDoor,"SBZ Trapdoor"
+		nemesis Nem_SbzFloor,"SBZ Collapsing Floor"
+		nemesis Nem_Electric,"SBZ Electrocuter"
+		nemesis Nem_SbzBlock,"SBZ Vanishing Block"
+		nemesis Nem_FlamePipe,"SBZ Flaming Pipe"
+		nemesis Nem_SbzDoor1,"SBZ Small Vertical Door"
+		nemesis Nem_SlideFloor,"SBZ Sliding Floor Trap"
+		nemesis Nem_SbzDoor2,"SBZ Large Horizontal Door"
+		nemesis Nem_Girder,"SBZ Crushing Girder"
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - enemies
 ; ---------------------------------------------------------------------------
-Nem_BallHog:	incbin	"Graphics - Compressed\Ball Hog.nem"
-		even
-Nem_Crabmeat:	incbin	"Graphics - Compressed\Crabmeat.nem"
-		even
-Nem_Buzz:	incbin	"Graphics - Compressed\Buzz Bomber.nem"
-		even
-Nem_UnkExplode:	incbin	"Graphics - Compressed\Unused - Explosion.nem"
-		even
-Nem_Burrobot:	incbin	"Graphics - Compressed\Burrobot.nem"
-		even
-Nem_Chopper:	incbin	"Graphics - Compressed\Chopper.nem"
-		even
-Nem_Jaws:	incbin	"Graphics - Compressed\Jaws.nem"
-		even
-Nem_Roller:	incbin	"Graphics - Compressed\Roller.nem"
-		even
-Nem_Motobug:	incbin	"Graphics - Compressed\Motobug.nem"
-		even
-Nem_Newtron:	incbin	"Graphics - Compressed\Newtron.nem"
-		even
-Nem_Yadrin:	incbin	"Graphics - Compressed\Yadrin.nem"
-		even
-Nem_Batbrain:	incbin	"Graphics - Compressed\Batbrain.nem"
-		even
-Nem_Splats:	incbin	"Graphics - Compressed\Unused - Splats Enemy.nem"
-		even
-Nem_Bomb:	incbin	"Graphics - Compressed\Bomb Enemy.nem"
-		even
-Nem_Orbinaut:	incbin	"Graphics - Compressed\Orbinaut.nem"
-		even
-Nem_Cater:	incbin	"Graphics - Compressed\Caterkiller.nem"
-		even
+		nemesis Nem_BallHog,"Ball Hog"
+		nemesis Nem_Crabmeat,"Crabmeat"
+		nemesis Nem_Buzz,"Buzz Bomber"
+		nemesis Nem_UnkExplode,"Unused - Explosion"
+		nemesis Nem_Burrobot,"Burrobot"
+		nemesis Nem_Chopper,"Chopper"
+		nemesis Nem_Jaws,"Jaws"
+		nemesis Nem_Roller,"Roller"
+		nemesis Nem_Motobug,"Motobug"
+		nemesis Nem_Newtron,"Newtron"
+		nemesis Nem_Yadrin,"Yadrin"
+		nemesis Nem_Batbrain,"Batbrain"
+		nemesis Nem_Splats,"Unused - Splats Enemy"
+		nemesis Nem_Bomb,"Bomb Enemy"
+		nemesis Nem_Orbinaut,"Orbinaut"
+		nemesis Nem_Cater,"Caterkiller"
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - various
 ; ---------------------------------------------------------------------------
-Nem_TitleCard:	incbin	"Graphics - Compressed\Title Cards.nem"
-		even
-Nem_Hud:	incbin	"Graphics - Compressed\HUD.nem"	; HUD (rings, time, score)
-		even
-Nem_Lives:	incbin	"Graphics - Compressed\HUD - Life Counter Icon.nem"
-		even
-Nem_Ring:	incbin	"Graphics - Compressed\Rings.nem"
-		even
-Nem_Monitors:	incbin	"Graphics - Compressed\Monitors.nem"
-		even
-Nem_Explode:	incbin	"Graphics - Compressed\Explosion.nem"
-		even
-Nem_Points:	incbin	"Graphics - Compressed\Points.nem" ; points from destroyed enemy or object
-		even
-Nem_GameOver:	incbin	"Graphics - Compressed\Game Over.nem" ; game over / time over
-		even
-Nem_HSpring:	incbin	"Graphics - Compressed\Spring Horizontal.nem"
-		even
-Nem_VSpring:	incbin	"Graphics - Compressed\Spring Vertical.nem"
-		even
-Nem_SignPost:	incbin	"Graphics - Compressed\Signpost.nem" ; end of level signpost
-		even
-Nem_Lamp:	incbin	"Graphics - Compressed\Lamppost.nem"
-		even
-Nem_BigFlash:	incbin	"Graphics - Compressed\Giant Ring Flash.nem"
-		even
-Nem_Bonus:	incbin	"Graphics - Compressed\Hidden Bonuses.nem" ; hidden bonuses at end of a level
-		even
+		nemesis Nem_TitleCard,"Title Cards"
+		nemesis Nem_Hud,"HUD"	; HUD (rings, time, score)
+		nemesis Nem_Lives,"HUD - Life Counter Icon"
+		nemesis Nem_Ring,"Rings"
+		nemesis Nem_Monitors,"Monitors"
+		nemesis Nem_Explode,"Explosion"
+		nemesis Nem_Points,"Points" ; points from destroyed enemy or object
+		nemesis Nem_GameOver,"Game Over" ; game over / time over
+		nemesis Nem_HSpring,"Spring Horizontal"
+		nemesis Nem_VSpring,"Spring Vertical"
+		nemesis Nem_SignPost,"Signpost" ; end of level signpost
+		nemesis Nem_Lamp,"Lamppost"
+		nemesis Nem_BigFlash,"Giant Ring Flash"
+		nemesis Nem_Bonus,"Hidden Bonuses" ; hidden bonuses at end of a level
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - continue screen
 ; ---------------------------------------------------------------------------
-Nem_ContSonic:	incbin	"Graphics - Compressed\Continue Screen Sonic.nem"
-		even
-Nem_MiniSonic:	incbin	"Graphics - Compressed\Continue Screen Stuff.nem"
-		even
+		nemesis Nem_ContSonic,"Continue Screen Sonic"
+		nemesis Nem_MiniSonic,"Continue Screen Stuff"
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - animals
 ; ---------------------------------------------------------------------------
-Nem_Rabbit:	incbin	"Graphics - Compressed\Animal Rabbit.nem"
-		even
-Nem_Chicken:	incbin	"Graphics - Compressed\Animal Chicken.nem"
-		even
-Nem_BlackBird:	incbin	"Graphics - Compressed\Animal Blackbird.nem"
-		even
-Nem_Seal:	incbin	"Graphics - Compressed\Animal Seal.nem"
-		even
-Nem_Pig:	incbin	"Graphics - Compressed\Animal Pig.nem"
-		even
-Nem_Flicky:	incbin	"Graphics - Compressed\Animal Flicky.nem"
-		even
-Nem_Squirrel:	incbin	"Graphics - Compressed\Animal Squirrel.nem"
-		even
+		nemesis Nem_Rabbit,"Animal Rabbit"
+		nemesis Nem_Chicken,"Animal Chicken"
+		nemesis Nem_BlackBird,"Animal Blackbird"
+		nemesis Nem_Seal,"Animal Seal"
+		nemesis Nem_Pig,"Animal Pig"
+		nemesis Nem_Flicky,"Animal Flicky"
+		nemesis Nem_Squirrel,"Animal Squirrel"
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - primary patterns and block mappings
 ; ---------------------------------------------------------------------------
 Blk16_GHZ:	incbin	"map16\GHZ.bin"
 		even
-Nem_GHZ_1st:	incbin	"Graphics - Compressed\8x8 - GHZ1.nem" ; GHZ primary patterns
-		even
-Nem_GHZ_2nd:	incbin	"Graphics - Compressed\8x8 - GHZ2.nem" ; GHZ secondary patterns
-		even
+		nemesis Nem_GHZ_1st,"8x8 - GHZ1" ; GHZ primary patterns
+		nemesis Nem_GHZ_2nd,"8x8 - GHZ2" ; GHZ secondary patterns
 Blk256_GHZ:	incbin	"map256\GHZ.bin"
 		even
 Blk16_LZ:	incbin	"map16\LZ.bin"
 		even
-Nem_LZ:		incbin	"Graphics - Compressed\8x8 - LZ.nem" ; LZ primary patterns
-		even
+		nemesis Nem_LZ,"8x8 - LZ" ; LZ primary patterns
 Blk256_LZ:	incbin	"map256\LZ.bin"
 		even
 Blk16_MZ:	incbin	"map16\MZ.bin"
 		even
-Nem_MZ:		incbin	"Graphics - Compressed\8x8 - MZ.nem" ; MZ primary patterns
-		even
+		nemesis Nem_MZ,"8x8 - MZ" ; MZ primary patterns
 Blk256_MZ:	if Revision=0
 			incbin	"map256\MZ.bin"
 		else
@@ -10571,20 +9541,17 @@ Blk256_MZ:	if Revision=0
 		even
 Blk16_SLZ:	incbin	"map16\SLZ.bin"
 		even
-Nem_SLZ:	incbin	"Graphics - Compressed\8x8 - SLZ.nem" ; SLZ primary patterns
-		even
+		nemesis Nem_SLZ,"8x8 - SLZ" ; SLZ primary patterns
 Blk256_SLZ:	incbin	"map256\SLZ.bin"
 		even
 Blk16_SYZ:	incbin	"map16\SYZ.bin"
 		even
-Nem_SYZ:	incbin	"Graphics - Compressed\8x8 - SYZ.nem" ; SYZ primary patterns
-		even
+		nemesis Nem_SYZ,"8x8 - SYZ" ; SYZ primary patterns
 Blk256_SYZ:	incbin	"map256\SYZ.bin"
 		even
 Blk16_SBZ:	incbin	"map16\SBZ.bin"
 		even
-Nem_SBZ:	incbin	"Graphics - Compressed\8x8 - SBZ.nem" ; SBZ primary patterns
-		even
+		nemesis Nem_SBZ,"8x8 - SBZ" ; SBZ primary patterns
 Blk256_SBZ:	if Revision=0
 			incbin	"map256\SBZ.bin"
 		else
@@ -10594,38 +9561,24 @@ Blk256_SBZ:	if Revision=0
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - bosses and ending sequence
 ; ---------------------------------------------------------------------------
-Nem_Eggman:	incbin	"Graphics - Compressed\Boss - Main.nem"
-		even
-Nem_Weapons:	incbin	"Graphics - Compressed\Boss - Weapons.nem"
-		even
-Nem_Prison:	incbin	"Graphics - Compressed\Prison Capsule.nem"
-		even
-Nem_Sbz2Eggman:	incbin	"Graphics - Compressed\Boss - Eggman in SBZ2 & FZ.nem"
-		even
-Nem_FzBoss:	incbin	"Graphics - Compressed\Boss - Final Zone.nem"
-		even
-Nem_FzEggman:	incbin	"Graphics - Compressed\Boss - Eggman after FZ Fight.nem"
-		even
-Nem_Exhaust:	incbin	"Graphics - Compressed\Boss - Exhaust Flame.nem"
-		even
-Nem_EndEm:	incbin	"Graphics - Compressed\Ending - Emeralds.nem"
-		even
-Nem_EndSonic:	incbin	"Graphics - Compressed\Ending - Sonic.nem"
-		even
-Nem_TryAgain:	incbin	"Graphics - Compressed\Ending - Try Again.nem"
-		even
-Nem_EndEggman:	if Revision=0
-			incbin	"Graphics - Compressed\Unused - Eggman Ending.nem"
+		nemesis Nem_Eggman,"Boss - Main"
+		nemesis Nem_Weapons,"Boss - Weapons"
+		nemesis Nem_Prison,"Prison Capsule"
+		nemesis Nem_Sbz2Eggman,"Boss - Eggman in SBZ2 & FZ"
+		nemesis Nem_FzBoss,"Boss - Final Zone"
+		nemesis Nem_FzEggman,"Boss - Eggman after FZ Fight"
+		nemesis Nem_Exhaust,"Boss - Exhaust Flame"
+		nemesis Nem_EndEm,"Ending - Emeralds"
+		nemesis Nem_EndSonic,"Ending - Sonic"
+		nemesis Nem_TryAgain,"Ending - Try Again"
+		if Revision=0
+			nemesis	Nem_EndEggman,"Unused - Eggman Ending"
 		endc
-		even
 Kos_EndFlowers:	incbin	"Graphics - Compressed\Ending Flowers.kos" ; ending sequence animated flowers
 		even
-Nem_EndFlower:	incbin	"Graphics - Compressed\Ending - Flowers.nem"
-		even
-Nem_CreditText:	incbin	"Graphics - Compressed\Ending - Credits.nem"
-		even
-Nem_EndStH:	incbin	"Graphics - Compressed\Ending - StH Logo.nem"
-		even
+		nemesis Nem_EndFlower,"Ending - Flowers"
+		nemesis Nem_CreditText,"Ending - Credits"
+		nemesis Nem_EndStH,"Ending - StH Logo"
 
 		if Revision=0
 		dcb.b $104,$FF		; why?

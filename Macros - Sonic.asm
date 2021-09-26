@@ -171,7 +171,11 @@ piece:		macro
 objpos:		macro
 		dc.w \1		; xpos
 		obj_ypos: = \2
-		obj_id: = \3
+		if strcmp("\3","0")
+		obj_id\@: = 0
+		else
+		obj_id\@: = id_\3
+		endc
 		obj_sub: = \4
 		obj_xflip: = 0
 		obj_yflip: = 0
@@ -189,8 +193,23 @@ objpos:		macro
 		endr
 		
 		dc.w obj_ypos+obj_xflip+obj_yflip
-		dc.b obj_id+obj_rem, obj_sub
+		dc.b obj_id\@+obj_rem, obj_sub
 		endm
 
 endobj:		macros
 		objpos $ffff,0,0,0
+
+; ---------------------------------------------------------------------------
+; Nemesis compressed graphics
+; input: label, file name without extension or folder
+; ---------------------------------------------------------------------------
+
+nemesis:	macro
+	nemfile:	equs \2
+	\1:	incbin	"\nemfolder\\nemfile\.nem"
+		even
+		sizeof_\1: = filesize("\nemfolderdec\\nemfile\.bin")
+		endm
+
+nemfolder:	equs "Graphics - Compressed\"
+nemfolderdec:	equs "Graphics - Compressed\Decompressed\"

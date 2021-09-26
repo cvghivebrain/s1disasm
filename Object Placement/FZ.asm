@@ -1,6 +1,6 @@
 ; ---------------------------------------------------------------------------
 ; Final Zone object placement
 ; ---------------------------------------------------------------------------
-		objpos $24d0,$510,id_Invisibarrier,$31
-		objpos $2550,$510,id_Invisibarrier,$31
+		objpos $24d0,$510,Invisibarrier,$31
+		objpos $2550,$510,Invisibarrier,$31
 		endobj
