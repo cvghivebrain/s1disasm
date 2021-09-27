@@ -267,7 +267,7 @@ locret_11938:
 ; ===========================================================================
 See_Speeds:	dc.w -8, -$1C, -$2F, -$1C, -8
 
-See_DataSlope:	incbin	"misc\slzssaw1.bin"
+See_DataSlope:	incbin	"Misc Data\slzssaw1.bin"
 		even
-See_DataFlat:	incbin	"misc\slzssaw2.bin"
+See_DataFlat:	incbin	"Misc Data\slzssaw2.bin"
 		even

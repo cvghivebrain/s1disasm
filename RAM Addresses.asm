@@ -154,7 +154,7 @@ v_1up_ram_copy:		equ v_spcsfx_track_ram_end
 ; From here on, no longer relative to sound driver RAM
 ; =================================================================================
 
-v_gamemode:		equ $FFFFF600 ; game mode (00=Sega; 04=Title; 08=Demo; 0C=Level; 10=SS; 14=Cont; 18=End; 1C=Credit; +8C=PreLevel)
+v_gamemode:		equ $FFFFF600 ; game mode (00=Sega; 04=Title; 08=Demo; 0C=Level; 10=SS; 14=Cont; 18=End; 1C=Credit; 8C=PreLevel)
 v_joypad_hold:		equ $FFFFF602 ; joypad input - held, can be overridden by demos
 v_joypad_press:		equ $FFFFF603 ; joypad input - pressed, can be overridden by demos
 v_joypad_hold_actual:	equ $FFFFF604 ; joypad input - held, actual
@@ -164,16 +164,16 @@ v_joypad2_press_actual:	equ $FFFFF607 ; joypad 2 input - pressed, actual - unuse
 
 v_vdp_mode_buffer:	equ $FFFFF60C ; VDP register 81 buffer - contains $8134 which is sent to vdp_control_port (2 bytes)
 
-v_demolength:	equ $FFFFF614	; the length of a demo in frames (2 bytes)
-v_scrposy_dup:	equ $FFFFF616	; screen position y (duplicate) (2 bytes)
-v_bgscrposy_dup:	equ $FFFFF618	; background screen position y (duplicate) (2 bytes)
-v_scrposx_dup:	equ $FFFFF61A	; screen position x (duplicate) (2 bytes)
-v_bgscreenposx_dup_unused:	equ $FFFFF61C	; background screen position x (duplicate) (2 bytes)
+v_countdown:		equ $FFFFF614 ; decrements every time VBlank runs, used as a general purpose timer (2 bytes)
+v_fg_y_pos_vsram:	equ $FFFFF616 ; foreground y position, sent to VSRAM during VBlank (2 bytes)
+v_bg_y_pos_vsram:	equ $FFFFF618 ; background y position, sent to VSRAM during VBlank (2 bytes)
+v_fg_x_pos_hscroll:	equ $FFFFF61A ; foreground x position - unused (2 bytes)
+v_bg_x_pos_hscroll:	equ $FFFFF61C ; background x position - unused (2 bytes)
 v_bg3screenposy_dup_unused:	equ $FFFFF61E	; (2 bytes)
 v_bg3screenposx_dup_unused:	equ $FFFFF620	; (2 bytes)
 
-v_hbla_hreg:	equ $FFFFF624	; VDP H.interrupt register buffer (8Axx) (2 bytes)
-v_hbla_line:	equ $FFFFF625	; screen line where water starts and palette is changed by HBlank
+v_vdp_hint_counter:	equ $FFFFF624 ; VDP register 8A buffer - horizontal interrupt counter (8Axx) (2 bytes)
+	v_vdp_hint_line:	equ $FFFFF625 ; screen line where water starts and palette is changed by HBlank
 v_pfade_start:	equ $FFFFF626	; palette fading - start position in bytes
 v_pfade_size:	equ $FFFFF627	; palette fading - number of colours
 v_vbla_routine:	equ $FFFFF62A	; VBlank - routine counter

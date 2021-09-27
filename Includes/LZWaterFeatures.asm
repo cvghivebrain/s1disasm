@@ -30,7 +30,7 @@ LZWaterFeatures:
 		tst.w	d0
 		bpl.s	@isbelow	; if water is below top of screen, branch
 
-		move.b	#223,(v_hbla_line).w
+		move.b	#223,(v_vdp_hint_line).w
 		move.b	#1,(f_wtr_state).w ; screen is all underwater
 
 	@isbelow:
@@ -39,7 +39,7 @@ LZWaterFeatures:
 		move.w	#223,d0
 
 	@isvisible:
-		move.b	d0,(v_hbla_line).w ; set water surface as on-screen
+		move.b	d0,(v_vdp_hint_line).w ; set water surface as on-screen
 
 @notlabyrinth:
 		rts	

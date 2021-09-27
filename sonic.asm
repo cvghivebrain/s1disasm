@@ -575,7 +575,7 @@ VBlank:
 		beq.s	VBla_00
 		move.w	(vdp_control_port).l,d0
 		move.l	#$40000010,(vdp_control_port).l
-		move.l	(v_scrposy_dup).w,(vdp_data_port).l ; send screen y-axis pos. to VSRAM
+		move.l	(v_fg_y_pos_vsram).w,(vdp_data_port).l ; send screen y-axis pos. to VSRAM
 		btst	#6,(v_megadrive).w ; is Megadrive PAL?
 		beq.s	@notPAL		; if not, branch
 
@@ -647,37 +647,37 @@ VBla_00:
 		dma	v_pal_water,$80,cram
 
 	@waterbelow:
-		move.w	(v_hbla_hreg).w,(a5)
+		move.w	(v_vdp_hint_counter).w,(a5)
 		startZ80
 		bra.w	VBla_Music
 ; ===========================================================================
 
 VBla_02:
-		bsr.w	sub_106E
+		bsr.w	ReadPad_WaterPal_Sprites_HScroll
 
 VBla_14:
-		tst.w	(v_demolength).w
+		tst.w	(v_countdown).w
 		beq.w	@end
-		subq.w	#1,(v_demolength).w
+		subq.w	#1,(v_countdown).w
 
 	@end:
 		rts	
 ; ===========================================================================
 
 VBla_04:
-		bsr.w	sub_106E
+		bsr.w	ReadPad_WaterPal_Sprites_HScroll
 		bsr.w	LoadTilesAsYouMove_BGOnly
 		bsr.w	sub_1642
-		tst.w	(v_demolength).w
+		tst.w	(v_countdown).w
 		beq.w	@end
-		subq.w	#1,(v_demolength).w
+		subq.w	#1,(v_countdown).w
 
 	@end:
 		rts	
 ; ===========================================================================
 
 VBla_06:
-		bsr.w	sub_106E
+		bsr.w	ReadPad_WaterPal_Sprites_HScroll
 		rts	
 ; ===========================================================================
 
@@ -699,7 +699,7 @@ VBla_08:
 		dma	v_pal_water,$80,cram
 
 	@waterbelow:
-		move.w	(v_hbla_hreg).w,(a5)
+		move.w	(v_vdp_hint_counter).w,(a5)
 
 		dma	v_hscroll_buffer,$380,vram_hscroll
 		dma	v_spritetablebuffer,$280,vram_sprites
@@ -715,7 +715,7 @@ VBla_08:
 		movem.l	d0-d7,(v_screenposx_dup).w
 		movem.l	(v_fg_scroll_flags).w,d0-d1
 		movem.l	d0-d1,(v_fg_scroll_flags_dup).w
-		cmpi.b	#96,(v_hbla_line).w
+		cmpi.b	#96,(v_vdp_hint_line).w
 		bhs.s	Demo_Time
 		move.b	#1,($FFFFF64F).w
 		addq.l	#4,sp
@@ -733,9 +733,9 @@ Demo_Time:
 		jsr	(AnimateLevelGfx).l
 		jsr	(HUD_Update).l
 		bsr.w	ProcessDPLC2
-		tst.w	(v_demolength).w ; is there time left on the demo?
+		tst.w	(v_countdown).w ; is there time left on the demo?
 		beq.w	@end		; if not, branch
-		subq.w	#1,(v_demolength).w ; subtract 1 from time left
+		subq.w	#1,(v_countdown).w ; subtract 1 from time left
 
 	@end:
 		rts	
@@ -759,9 +759,9 @@ VBla_0A:
 		move.b	#0,(f_sonframechg).w
 
 	@nochg:
-		tst.w	(v_demolength).w	; is there time left on the demo?
+		tst.w	(v_countdown).w ; is there time left on the demo?
 		beq.w	@end	; if not, return
-		subq.w	#1,(v_demolength).w	; subtract 1 from time left in demo
+		subq.w	#1,(v_countdown).w ; subtract 1 from time left in demo
 
 	@end:
 		rts	
@@ -781,7 +781,7 @@ VBla_0C:
 		dma	v_pal_water,$80,cram
 
 	@waterbelow:
-		move.w	(v_hbla_hreg).w,(a5)
+		move.w	(v_vdp_hint_counter).w,(a5)
 		dma	v_hscroll_buffer,$380,vram_hscroll
 		dma	v_spritetablebuffer,$280,vram_sprites
 		tst.b	(f_sonframechg).w
@@ -803,15 +803,15 @@ VBla_0C:
 ; ===========================================================================
 
 VBla_0E:
-		bsr.w	sub_106E
+		bsr.w	ReadPad_WaterPal_Sprites_HScroll
 		addq.b	#1,($FFFFF628).w
 		move.b	#$E,(v_vbla_routine).w
 		rts	
 ; ===========================================================================
 
 VBla_12:
-		bsr.w	sub_106E
-		move.w	(v_hbla_hreg).w,(a5)
+		bsr.w	ReadPad_WaterPal_Sprites_HScroll
+		move.w	(v_vdp_hint_counter).w,(a5)
 		bra.w	sub_1642
 ; ===========================================================================
 
@@ -829,9 +829,9 @@ VBla_16:
 		move.b	#0,(f_sonframechg).w
 
 	@nochg:
-		tst.w	(v_demolength).w
+		tst.w	(v_countdown).w
 		beq.w	@end
-		subq.w	#1,(v_demolength).w
+		subq.w	#1,(v_countdown).w
 
 	@end:
 		rts	
@@ -839,7 +839,7 @@ VBla_16:
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 
-sub_106E:
+ReadPad_WaterPal_Sprites_HScroll:
 		stopZ80
 		waitZ80
 		bsr.w	ReadJoypads
@@ -856,7 +856,7 @@ sub_106E:
 		dma	v_hscroll_buffer,$380,vram_hscroll
 		startZ80
 		rts	
-; End of function sub_106E
+; End of function ReadPad_WaterPal_Sprites_HScroll
 
 ; ---------------------------------------------------------------------------
 ; Horizontal interrupt
@@ -992,7 +992,7 @@ VDPSetupGame:
 
 		move.w	(VDPSetupArray+2).l,d0
 		move.w	d0,(v_vdp_mode_buffer).w
-		move.w	#$8A00+223,(v_hbla_hreg).w	; H-INT every 224th scanline
+		move.w	#$8A00+223,(v_vdp_hint_counter).w	; H-INT every 224th scanline
 		moveq	#0,d0
 		move.l	#$C0000000,(vdp_control_port).l ; set VDP to CRAM write
 		move.w	#$3F,d7
@@ -1001,8 +1001,8 @@ VDPSetupGame:
 		move.w	d0,(a1)
 		dbf	d7,@clrCRAM	; clear	the CRAM
 
-		clr.l	(v_scrposy_dup).w
-		clr.l	(v_scrposx_dup).w
+		clr.l	(v_fg_y_pos_vsram).w
+		clr.l	(v_fg_x_pos_hscroll).w
 		move.l	d1,-(sp)
 		dma_fill	0,$FFFF,0
 
@@ -1062,11 +1062,11 @@ ClearScreen:
 
 		move.w	#$8F02,(a5)
 		if Revision=0
-		move.l	#0,(v_scrposy_dup).w
-		move.l	#0,(v_scrposx_dup).w
+		move.l	#0,(v_fg_y_pos_vsram).w
+		move.l	#0,(v_fg_x_pos_hscroll).w
 		else
-		clr.l	(v_scrposy_dup).w
-		clr.l	(v_scrposx_dup).w
+		clr.l	(v_fg_y_pos_vsram).w
+		clr.l	(v_fg_x_pos_hscroll).w
 		endc
 
 		lea	(v_spritetablebuffer).w,a1
@@ -1168,7 +1168,7 @@ Pause_StopGame:
 
 Pause_Loop:
 		move.b	#$10,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		bsr.w	WaitForVBlank
 		tst.b	(f_slomocheat).w ; is slow-motion cheat on?
 		beq.s	Pause_ChkStart	; if not, branch
 		btst	#bitA,(v_joypad_press_actual).w ; is button A pressed?
@@ -1557,7 +1557,7 @@ PalFadeIn_Alt:				; start position and size are already set
 
 	@mainloop:
 		move.b	#$12,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		bsr.w	WaitForVBlank
 		bsr.s	FadeIn_FromBlack
 		bsr.w	RunPLC
 		dbf	d4,@mainloop
@@ -1652,7 +1652,7 @@ PaletteFadeOut:
 
 	@mainloop:
 		move.b	#$12,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		bsr.w	WaitForVBlank
 		bsr.s	FadeOut_ToBlack
 		bsr.w	RunPLC
 		dbf	d4,@mainloop
@@ -1746,7 +1746,7 @@ PaletteWhiteIn:
 
 	@mainloop:
 		move.b	#$12,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		bsr.w	WaitForVBlank
 		bsr.s	WhiteIn_FromWhite
 		bsr.w	RunPLC
 		dbf	d4,@mainloop
@@ -1840,7 +1840,7 @@ PaletteWhiteOut:
 
 	@mainloop:
 		move.b	#$12,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		bsr.w	WaitForVBlank
 		bsr.s	WhiteOut_ToWhite
 		bsr.w	RunPLC
 		dbf	d4,@mainloop
@@ -2165,186 +2165,9 @@ Pal_SSResult:	incbin	"Palettes\Special Stage Results.bin"
 Pal_Continue:	incbin	"Palettes\Special Stage Continue Bonus.bin"
 Pal_Ending:	incbin	"Palettes\Ending.bin"
 
-; ---------------------------------------------------------------------------
-; Subroutine to	wait for VBlank routines to complete
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-WaitForVBla:
-		enable_ints
-
-	@wait:
-		tst.b	(v_vbla_routine).w ; has VBlank routine finished?
-		bne.s	@wait		; if not, branch
-		rts	
-; End of function WaitForVBla
-
-; ---------------------------------------------------------------------------
-; Subroutine to	generate a pseudo-random number	in d0
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-RandomNumber:
-		move.l	(v_random).w,d1
-		bne.s	@scramble	; if d1 is not 0, branch
-		move.l	#$2A6D365A,d1	; if d1 is 0, use seed number
-
-	@scramble:
-		move.l	d1,d0
-		asl.l	#2,d1
-		add.l	d0,d1
-		asl.l	#3,d1
-		add.l	d0,d1
-		move.w	d1,d0
-		swap	d1
-		add.w	d1,d0
-		move.w	d0,d1
-		swap	d1
-		move.l	d1,(v_random).w
-		rts	
-
-; ---------------------------------------------------------------------------
-; Subroutine calculate a sine
-
-; input:
-;	d0 = angle
-
-; output:
-;	d0 = sine
-;	d1 = cosine
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-CalcSine:
-		andi.w	#$FF,d0
-		add.w	d0,d0
-		addi.w	#$80,d0
-		move.w	Sine_Data(pc,d0.w),d1
-		subi.w	#$80,d0
-		move.w	Sine_Data(pc,d0.w),d0
-		rts	
-; End of function CalcSine
-
-; ===========================================================================
-
-Sine_Data:	incbin	"misc\sinewave.bin"	; values for a 360? sine wave
-
-; ===========================================================================
-
-; The following code is unused garbage.
-
-		if Revision=0
-		movem.l	d1-d2,-(sp)
-		move.w	d0,d1
-		swap	d1
-		moveq	#0,d0
-		move.w	d0,d1
-		moveq	#7,d2
-
-	loc_2C80:
-		rol.l	#2,d1
-		add.w	d0,d0
-		addq.w	#1,d0
-		sub.w	d0,d1
-		bcc.s	loc_2C9A
-		add.w	d0,d1
-		subq.w	#1,d0
-		dbf	d2,loc_2C80
-		lsr.w	#1,d0
-		movem.l	(sp)+,d1-d2
-		rts	
-; ===========================================================================
-
-	loc_2C9A:
-		addq.w	#1,d0
-		dbf	d2,loc_2C80
-		lsr.w	#1,d0
-		movem.l	(sp)+,d1-d2
-		rts	
-		else
-		endc
-; ---------------------------------------------------------------------------
-; Subroutine calculate an angle
-
-; input:
-;	d1 = x-axis distance
-;	d2 = y-axis distance
-
-; output:
-;	d0 = angle
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-CalcAngle:
-		movem.l	d3-d4,-(sp)
-		moveq	#0,d3
-		moveq	#0,d4
-		move.w	d1,d3
-		move.w	d2,d4
-		or.w	d3,d4
-		beq.s	loc_2D04
-		move.w	d2,d4
-		tst.w	d3
-		bpl.w	loc_2CC2
-		neg.w	d3
-
-loc_2CC2:
-		tst.w	d4
-		bpl.w	loc_2CCA
-		neg.w	d4
-
-loc_2CCA:
-		cmp.w	d3,d4
-		bcc.w	loc_2CDC
-		lsl.l	#8,d4
-		divu.w	d3,d4
-		moveq	#0,d0
-		move.b	Angle_Data(pc,d4.w),d0
-		bra.s	loc_2CE6
-; ===========================================================================
-
-loc_2CDC:
-		lsl.l	#8,d3
-		divu.w	d4,d3
-		moveq	#$40,d0
-		sub.b	Angle_Data(pc,d3.w),d0
-
-loc_2CE6:
-		tst.w	d1
-		bpl.w	loc_2CF2
-		neg.w	d0
-		addi.w	#$80,d0
-
-loc_2CF2:
-		tst.w	d2
-		bpl.w	loc_2CFE
-		neg.w	d0
-		addi.w	#$100,d0
-
-loc_2CFE:
-		movem.l	(sp)+,d3-d4
-		rts	
-; ===========================================================================
-
-loc_2D04:
-		move.w	#$40,d0
-		movem.l	(sp)+,d3-d4
-		rts	
-; End of function CalcAngle
-
-; ===========================================================================
-
-Angle_Data:	incbin	"misc\angles.bin"
-
-; ===========================================================================
+		include "Includes\WaitForVBlank.asm"
+		include "Objects\_RandomNumber.asm"
+		include "Objects\_CalcSine & CalcAngle.asm"
 
 ; ---------------------------------------------------------------------------
 ; Sega screen
@@ -2397,19 +2220,19 @@ GM_Sega:
 
 Sega_WaitPal:
 		move.b	#2,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		bsr.w	WaitForVBlank
 		bsr.w	PalCycle_Sega
 		bne.s	Sega_WaitPal
 
 		sfx	sfx_Sega,0,1,1	; play "SEGA" sound
 		move.b	#$14,(v_vbla_routine).w
-		bsr.w	WaitForVBla
-		move.w	#$1E,(v_demolength).w
+		bsr.w	WaitForVBlank
+		move.w	#$1E,(v_countdown).w
 
 Sega_WaitEnd:
 		move.b	#2,(v_vbla_routine).w
-		bsr.w	WaitForVBla
-		tst.w	(v_demolength).w
+		bsr.w	WaitForVBlank
+		tst.w	(v_countdown).w
 		beq.s	Sega_GotoTitle
 		andi.b	#btnStart,(v_joypad_press_actual).w ; is Start button pressed?
 		beq.s	Sega_WaitEnd	; if not, branch
@@ -2533,7 +2356,7 @@ GM_Title:
 		bsr.w	PalLoad1
 		sfx	bgm_Title,0,1,1	; play title screen music
 		move.b	#0,(f_debugmode).w ; disable debug mode
-		move.w	#$178,(v_demolength).w ; run title screen for $178 frames
+		move.w	#$178,(v_countdown).w ; run title screen for $178 frames
 		lea	(v_ost_all+(sizeof_ost*2)).w,a1
 		moveq	#0,d0
 		move.w	#7,d1
@@ -2571,7 +2394,7 @@ GM_Title:
 
 Tit_MainLoop:
 		move.b	#4,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		bsr.w	WaitForVBlank
 		jsr	(ExecuteObjects).l
 		bsr.w	DeformLayers
 		jsr	(BuildSprites).l
@@ -2637,7 +2460,7 @@ Tit_CountC:
 		addq.w	#1,(v_title_ccount).w ; increment C counter
 
 loc_3230:
-		tst.w	(v_demolength).w
+		tst.w	(v_countdown).w
 		beq.w	GotoDemo
 		andi.b	#btnStart,(v_joypad_press_actual).w ; check if Start is pressed
 		beq.w	Tit_MainLoop	; if not, branch
@@ -2658,7 +2481,7 @@ Tit_ChkLevSel:
 		move.l	d0,(a1)+
 		dbf	d1,Tit_ClrScroll1 ; clear scroll data (in RAM)
 
-		move.l	d0,(v_scrposy_dup).w
+		move.l	d0,(v_fg_y_pos_vsram).w
 		disable_ints
 		lea	(vdp_data_port).l,a6
 		locVRAM	$E000
@@ -2676,7 +2499,7 @@ Tit_ChkLevSel:
 
 LevelSelect:
 		move.b	#4,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		bsr.w	WaitForVBlank
 		bsr.w	LevSelControls
 		bsr.w	RunPLC
 		tst.l	(v_plc_buffer).w
@@ -2832,11 +2655,11 @@ LevSelCode_US:	dc.b btnUp,btnDn,btnL,btnR,0,$FF
 ; ---------------------------------------------------------------------------
 
 GotoDemo:
-		move.w	#$1E,(v_demolength).w
+		move.w	#$1E,(v_countdown).w
 
 loc_33B6:
 		move.b	#4,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		bsr.w	WaitForVBlank
 		bsr.w	DeformLayers
 		bsr.w	PaletteCycle
 		bsr.w	RunPLC
@@ -2852,7 +2675,7 @@ loc_33B6:
 loc_33E4:
 		andi.b	#btnStart,(v_joypad_press_actual).w ; is Start button pressed?
 		bne.w	Tit_ChkLevSel	; if yes, branch
-		tst.w	(v_demolength).w
+		tst.w	(v_countdown).w
 		bne.w	loc_33B6
 		sfx	bgm_Fade,0,1,1 ; fade out music
 		move.w	(v_demonum).w,d0 ; load	demo number
@@ -2889,7 +2712,7 @@ Demo_Level:
 ; ---------------------------------------------------------------------------
 ; Levels used in demos
 ; ---------------------------------------------------------------------------
-Demo_Levels:	incbin	"misc\Demo Level Order - Intro.bin"
+Demo_Levels:	incbin	"Misc Data\Demo Level Order - Intro.bin"
 		even
 
 ; ---------------------------------------------------------------------------
@@ -3062,9 +2885,9 @@ LevSel_ChgLine:
 ; Level	select menu text
 ; ---------------------------------------------------------------------------
 LevelMenuText:	if Revision=0
-		incbin	"misc\Level Select Text.bin"
+		incbin	"Misc Data\Level Select Text.bin"
 		else
-		incbin	"misc\Level Select Text (JP1).bin"
+		incbin	"Misc Data\Level Select Text (JP1).bin"
 		endc
 		even
 ; ---------------------------------------------------------------------------
@@ -3159,8 +2982,8 @@ Level_ClrRam:
 		move.w	#$9001,(a6)		; 64-cell hscroll size
 		move.w	#$8004,(a6)		; 8-colour mode
 		move.w	#$8720,(a6)		; set background colour (line 3; colour 0)
-		move.w	#$8A00+223,(v_hbla_hreg).w ; set palette change position (for water)
-		move.w	(v_hbla_hreg).w,(a6)
+		move.w	#$8A00+223,(v_vdp_hint_counter).w ; set palette change position (for water)
+		move.w	(v_vdp_hint_counter).w,(a6)
 		cmpi.b	#id_LZ,(v_zone).w ; is level LZ?
 		bne.s	Level_LoadPal	; if not, branch
 
@@ -3218,7 +3041,7 @@ Level_GetBgm:
 
 Level_TtlCardLoop:
 		move.b	#$C,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		bsr.w	WaitForVBlank
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
 		bsr.w	RunPLC
@@ -3303,13 +3126,13 @@ Level_LoadObj:
 Level_Demo:
 		move.b	1(a1),(v_btnpushtime2).w ; load key press duration
 		subq.b	#1,(v_btnpushtime2).w ; subtract 1 from duration
-		move.w	#1800,(v_demolength).w
+		move.w	#1800,(v_countdown).w
 		tst.w	(f_demo).w
 		bpl.s	Level_ChkWaterPal
-		move.w	#540,(v_demolength).w
+		move.w	#540,(v_countdown).w
 		cmpi.w	#4,(v_creditsnum).w
 		bne.s	Level_ChkWaterPal
-		move.w	#510,(v_demolength).w
+		move.w	#510,(v_countdown).w
 
 Level_ChkWaterPal:
 		cmpi.b	#id_LZ,(v_zone).w ; is level LZ/SBZ3?
@@ -3327,7 +3150,7 @@ Level_Delay:
 
 	Level_DelayLoop:
 		move.b	#8,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		bsr.w	WaitForVBlank
 		dbf	d1,Level_DelayLoop
 
 		move.w	#$202F,(v_pfade_start).w ; fade in 2nd, 3rd & 4th palette lines
@@ -3359,7 +3182,7 @@ Level_StartGame:
 Level_MainLoop:
 		bsr.w	PauseGame
 		move.b	#8,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		bsr.w	WaitForVBlank
 		addq.w	#1,(v_framecount).w ; add 1 to level timer
 		bsr.w	MoveSonicInDemo
 		bsr.w	LZWaterFeatures
@@ -3401,7 +3224,7 @@ Level_MainLoop:
 Level_ChkDemo:
 		tst.w	(f_restart).w	; is level set to restart?
 		bne.s	Level_EndDemo	; if yes, branch
-		tst.w	(v_demolength).w ; is there time left on the demo?
+		tst.w	(v_countdown).w ; is there time left on the demo?
 		beq.s	Level_EndDemo	; if not, branch
 		cmpi.b	#id_Demo,(v_gamemode).w
 		beq.w	Level_MainLoop	; if mode is 8 (demo), branch
@@ -3418,13 +3241,13 @@ Level_EndDemo:
 		move.b	#id_Credits,(v_gamemode).w ; go to credits
 
 Level_FadeDemo:
-		move.w	#$3C,(v_demolength).w
+		move.w	#$3C,(v_countdown).w
 		move.w	#$3F,(v_pfade_start).w
 		clr.w	(v_palchgspeed).w
 
 	Level_FDLoop:
 		move.b	#8,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		bsr.w	WaitForVBlank
 		bsr.w	MoveSonicInDemo
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
@@ -3435,7 +3258,7 @@ Level_FadeDemo:
 		bsr.w	FadeOut_ToBlack
 
 loc_3BC8:
-		tst.w	(v_demolength).w
+		tst.w	(v_countdown).w
 		bne.s	Level_FDLoop
 		rts	
 ; ===========================================================================
@@ -3633,7 +3456,7 @@ GM_Special:
 		lea	(vdp_control_port).l,a6
 		move.w	#$8B03,(a6)	; line scroll mode
 		move.w	#$8004,(a6)	; 8-colour mode
-		move.w	#$8A00+175,(v_hbla_hreg).w
+		move.w	#$8A00+175,(v_vdp_hint_counter).w
 		move.w	#$9011,(a6)	; 128-cell hscroll size
 		move.w	(v_vdp_mode_buffer).w,d0
 		andi.b	#$BF,d0
@@ -3701,7 +3524,7 @@ GM_Special:
 		clr.w	(v_rings).w
 		clr.b	(v_lifecount).w
 		move.w	#0,(v_debuguse).w
-		move.w	#1800,(v_demolength).w
+		move.w	#1800,(v_countdown).w
 		tst.b	(f_debugcheat).w ; has debug cheat been entered?
 		beq.s	SS_NoDebug	; if not, branch
 		btst	#bitA,(v_joypad_hold_actual).w ; is A button pressed?
@@ -3721,7 +3544,7 @@ GM_Special:
 SS_MainLoop:
 		bsr.w	PauseGame
 		move.b	#$A,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		bsr.w	WaitForVBlank
 		bsr.w	MoveSonicInDemo
 		move.w	(v_joypad_hold_actual).w,(v_joypad_hold).w
 		jsr	(ExecuteObjects).l
@@ -3730,7 +3553,7 @@ SS_MainLoop:
 		bsr.w	SS_BGAnimate
 		tst.w	(f_demo).w	; is demo mode on?
 		beq.s	SS_ChkEnd	; if not, branch
-		tst.w	(v_demolength).w ; is there time left on the demo?
+		tst.w	(v_countdown).w ; is there time left on the demo?
 		beq.w	SS_ToSegaScreen	; if not, branch
 
 	SS_ChkEnd:
@@ -3749,13 +3572,13 @@ SS_MainLoop:
 		clr.w	(v_zone).w	; set to GHZ1
 
 SS_Finish:
-		move.w	#60,(v_demolength).w ; set delay time to 1 second
+		move.w	#60,(v_countdown).w ; set delay time to 1 second
 		move.w	#$3F,(v_pfade_start).w
 		clr.w	(v_palchgspeed).w
 
 	SS_FinLoop:
 		move.b	#$16,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		bsr.w	WaitForVBlank
 		bsr.w	MoveSonicInDemo
 		move.w	(v_joypad_hold_actual).w,(v_joypad_hold).w
 		jsr	(ExecuteObjects).l
@@ -3768,7 +3591,7 @@ SS_Finish:
 		bsr.w	WhiteOut_ToWhite
 
 loc_47D4:
-		tst.w	(v_demolength).w
+		tst.w	(v_countdown).w
 		bne.s	SS_FinLoop
 
 		disable_ints
@@ -3807,7 +3630,7 @@ loc_47D4:
 SS_NormalExit:
 		bsr.w	PauseGame
 		move.b	#$C,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		bsr.w	WaitForVBlank
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
 		bsr.w	RunPLC
@@ -3938,12 +3761,12 @@ loc_4992:
 		move.w	#-$7E00,d0
 		move.b	(a1)+,d0
 		move.w	d0,(a6)
-		move.b	(a1),(v_scrposy_dup).w
+		move.b	(a1),(v_fg_y_pos_vsram).w
 		move.w	#-$7C00,d0
 		move.b	(a0)+,d0
 		move.w	d0,(a6)
 		move.l	#$40000010,(vdp_control_port).l
-		move.l	(v_scrposy_dup).w,(vdp_data_port).l
+		move.l	(v_fg_y_pos_vsram).w,(vdp_data_port).l
 		moveq	#0,d0
 		move.b	(a0)+,d0
 		bmi.s	loc_49E8
@@ -4024,7 +3847,7 @@ SS_BGAnimate:
 		move.w	($FFFFF7A0).w,d0
 		bne.s	loc_4BF6
 		move.w	#0,(v_bgscreenposy).w
-		move.w	(v_bgscreenposy).w,(v_bgscrposy_dup).w
+		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w
 
 loc_4BF6:
 		cmpi.w	#8,d0
@@ -4033,7 +3856,7 @@ loc_4BF6:
 		bne.s	loc_4C10
 		addq.w	#1,(v_bg3screenposx).w
 		addq.w	#1,(v_bgscreenposy).w
-		move.w	(v_bgscreenposy).w,(v_bgscrposy_dup).w
+		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w
 
 loc_4C10:
 		moveq	#0,d0
@@ -4154,7 +3977,7 @@ GM_Continue:
 		moveq	#id_Pal_Continue,d0
 		bsr.w	PalLoad1	; load continue	screen palette
 		music	bgm_Continue,0,1,1	; play continue	music
-		move.w	#659,(v_demolength).w ; set time delay to 11 seconds
+		move.w	#659,(v_countdown).w ; set time delay to 11 seconds
 		clr.l	(v_screenposx).w
 		move.l	#$1000000,(v_screenposy).w
 		move.b	#id_ContSonic,(v_ost_player).w ; load Sonic object
@@ -4177,11 +4000,11 @@ GM_Continue:
 
 Cont_MainLoop:
 		move.b	#$16,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		bsr.w	WaitForVBlank
 		cmpi.b	#6,(v_ost_player+ost_routine).w
 		bhs.s	loc_4DF2
 		disable_ints
-		move.w	(v_demolength).w,d1
+		move.w	(v_countdown).w,d1
 		divu.w	#$3C,d1
 		andi.l	#$F,d1
 		jsr	(ContScrCounter).l
@@ -4194,7 +4017,7 @@ loc_4DF2:
 		bhs.s	Cont_GotoLevel	; if yes, branch
 		cmpi.b	#6,(v_ost_player+ost_routine).w
 		bhs.s	Cont_MainLoop
-		tst.w	(v_demolength).w
+		tst.w	(v_countdown).w
 		bne.w	Cont_MainLoop
 		move.b	#id_Sega,(v_gamemode).w ; go to Sega screen
 		rts	
@@ -4267,8 +4090,8 @@ GM_Ending:
 		move.w	#$9001,(a6)		; 64-cell hscroll size
 		move.w	#$8004,(a6)		; 8-colour mode
 		move.w	#$8720,(a6)		; set background colour (line 3; colour 0)
-		move.w	#$8A00+223,(v_hbla_hreg).w ; set palette change position (for water)
-		move.w	(v_hbla_hreg).w,(a6)
+		move.w	#$8A00+223,(v_vdp_hint_counter).w ; set palette change position (for water)
+		move.w	(v_vdp_hint_counter).w,(a6)
 		move.w	#30,(v_air).w
 		move.w	#id_EndZ<<8,(v_zone).w ; set level number to 0600 (extra flowers)
 		cmpi.b	#6,(v_emeralds).w ; do you have all 6 emeralds?
@@ -4321,9 +4144,9 @@ End_LoadSonic:
 		move.b	#1,(f_scorecount).w
 		move.b	#1,(f_ringcount).w
 		move.b	#0,(f_timecount).w
-		move.w	#1800,(v_demolength).w
+		move.w	#1800,(v_countdown).w
 		move.b	#$18,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		bsr.w	WaitForVBlank
 		move.w	(v_vdp_mode_buffer).w,d0
 		ori.b	#$40,d0
 		move.w	d0,(vdp_control_port).l
@@ -4337,7 +4160,7 @@ End_LoadSonic:
 End_MainLoop:
 		bsr.w	PauseGame
 		move.b	#$18,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		bsr.w	WaitForVBlank
 		addq.w	#1,(v_framecount).w
 		bsr.w	End_MoveSonic
 		jsr	(ExecuteObjects).l
@@ -4367,7 +4190,7 @@ End_ChkEmerald:
 	End_AllEmlds:
 		bsr.w	PauseGame
 		move.b	#$18,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		bsr.w	WaitForVBlank
 		addq.w	#1,(v_framecount).w
 		bsr.w	End_MoveSonic
 		jsr	(ExecuteObjects).l
@@ -4513,14 +4336,14 @@ GM_Credits:
 	Cred_SkipObjGfx:
 		moveq	#id_PLC_Main2,d0
 		bsr.w	AddPLC		; load standard	level graphics
-		move.w	#120,(v_demolength).w ; display a credit for 2 seconds
+		move.w	#120,(v_countdown).w ; display a credit for 2 seconds
 		bsr.w	PaletteFadeIn
 
 Cred_WaitLoop:
 		move.b	#4,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		bsr.w	WaitForVBlank
 		bsr.w	RunPLC
-		tst.w	(v_demolength).w ; have 2 seconds elapsed?
+		tst.w	(v_countdown).w ; have 2 seconds elapsed?
 		bne.s	Cred_WaitLoop	; if not, branch
 		tst.l	(v_plc_buffer).w ; have level gfx finished decompressing?
 		bne.s	Cred_WaitLoop	; if not, branch
@@ -4570,7 +4393,7 @@ EndDemo_Exit:
 ; ---------------------------------------------------------------------------
 ; Levels used in the end sequence demos
 ; ---------------------------------------------------------------------------
-EndDemo_Levels:	incbin	"misc\Demo Level Order - Ending.bin"
+EndDemo_Levels:	incbin	"Misc Data\Demo Level Order - Ending.bin"
 
 ; ---------------------------------------------------------------------------
 ; Lamppost variables in the end sequence demo (Star Light Zone)
@@ -4628,7 +4451,7 @@ TryAgainEnd:
 		move.b	#id_EndEggman,(v_ost_endeggman).w ; load Eggman object
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
-		move.w	#1800,(v_demolength).w ; show screen for 30 seconds
+		move.w	#1800,(v_countdown).w ; show screen for 30 seconds
 		bsr.w	PaletteFadeIn
 
 ; ---------------------------------------------------------------------------
@@ -4637,12 +4460,12 @@ TryAgainEnd:
 TryAg_MainLoop:
 		bsr.w	PauseGame
 		move.b	#4,(v_vbla_routine).w
-		bsr.w	WaitForVBla
+		bsr.w	WaitForVBlank
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
 		andi.b	#btnStart,(v_joypad_press_actual).w ; is Start button pressed?
 		bne.s	TryAg_Exit	; if yes, branch
-		tst.w	(v_demolength).w ; has 30 seconds elapsed?
+		tst.w	(v_countdown).w ; has 30 seconds elapsed?
 		beq.s	TryAg_Exit	; if yes, branch
 		cmpi.b	#id_Credits,(v_gamemode).w
 		beq.s	TryAg_MainLoop
@@ -5063,10 +4886,10 @@ DeformLayers:
 		bsr.w	ScrollHorizontal
 		bsr.w	ScrollVertical
 		bsr.w	DynamicLevelEvents
-		move.w	(v_screenposx).w,(v_scrposx_dup).w
-		move.w	(v_screenposy).w,(v_scrposy_dup).w
+		move.w	(v_screenposx).w,(v_fg_x_pos_hscroll).w
+		move.w	(v_screenposy).w,(v_fg_y_pos_vsram).w
 		move.w	(v_bgscreenposx).w,(v_bgscreenposx_dup_unused).w
-		move.w	(v_bgscreenposy).w,(v_bgscrposy_dup).w
+		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w
 		move.w	(v_bg3screenposx).w,(v_bg3screenposx_dup_unused).w
 		move.w	(v_bg3screenposy).w,(v_bg3screenposy_dup_unused).w
 		moveq	#0,d0
@@ -5115,7 +4938,7 @@ Deform_GHZ:
 		move.w	d0,(v_bg2screenposy).w
 		move.w	d0,d4
 		bsr.w	ScrollBlock3
-		move.w	(v_bgscreenposy).w,(v_bgscrposy_dup).w
+		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w
 		move.w	#$6F,d1
 		sub.w	d4,d1
 		move.w	(v_screenposx).w,d0
@@ -5180,7 +5003,7 @@ Deform_LZ:
 		ext.l	d5
 		asl.l	#7,d5
 		bsr.w	ScrollBlock1
-		move.w	(v_bgscreenposy).w,(v_bgscrposy_dup).w
+		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w
 		lea	(v_hscroll_buffer).w,a1
 		move.w	#223,d1
 		move.w	(v_screenposx).w,d0
@@ -5226,7 +5049,7 @@ Deform_MZ:
 loc_6402:
 		move.w	d0,(v_bg2screenposy).w
 		bsr.w	ScrollBlock3
-		move.w	(v_bgscreenposy).w,(v_bgscrposy_dup).w
+		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w
 		lea	(v_hscroll_buffer).w,a1
 		move.w	#223,d1
 		move.w	(v_screenposx).w,d0
@@ -5256,7 +5079,7 @@ Deform_SLZ:
 		ext.l	d5
 		asl.l	#7,d5
 		bsr.w	ScrollBlock2
-		move.w	(v_bgscreenposy).w,(v_bgscrposy_dup).w
+		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w
 		bsr.w	Deform_SLZ_2
 		lea	(v_bgscroll_buffer).w,a2
 		move.w	(v_bgscreenposy).w,d0
@@ -5369,7 +5192,7 @@ Deform_SYZ:
 		asl.l	#1,d5
 		add.l	d1,d5
 		bsr.w	ScrollBlock1
-		move.w	(v_bgscreenposy).w,(v_bgscrposy_dup).w
+		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w
 		lea	(v_hscroll_buffer).w,a1
 		move.w	#223,d1
 		move.w	(v_screenposx).w,d0
@@ -5400,7 +5223,7 @@ Deform_SBZ:
 		asl.l	#4,d5
 		asl.l	#1,d5
 		bsr.w	ScrollBlock1
-		move.w	(v_bgscreenposy).w,(v_bgscrposy_dup).w
+		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w
 		lea	(v_hscroll_buffer).w,a1
 		move.w	#223,d1
 		move.w	(v_screenposx).w,d0
@@ -7461,7 +7284,7 @@ CFlo_Data3:	dc.b $16, $1E, $1A, $12, 6, $E,	$A, 2
 ; Collision data for GHZ collapsing ledge
 ; ---------------------------------------------------------------------------
 Ledge_SlopeData:
-		incbin	"misc\GHZ Collapsing Ledge Heightmap.bin"
+		incbin	"Misc Data\GHZ Collapsing Ledge Heightmap.bin"
 		even
 
 		include "Mappings\GHZ Collapsing Ledge.asm" ; Map_Ledge
