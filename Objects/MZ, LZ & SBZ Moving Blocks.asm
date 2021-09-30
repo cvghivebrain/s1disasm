@@ -164,7 +164,7 @@ MBlock_05_End:
 MBlock_Type06:
 		bsr.w	SpeedToPos
 		addi.w	#$18,ost_y_vel(a0) ; make the platform fall
-		bsr.w	ObjFloorDist
+		bsr.w	FindFloorObj
 		tst.w	d1		; has platform hit the floor?
 		bpl.w	locret_FFA0	; if not, branch
 		add.w	d1,ost_y_pos(a0)

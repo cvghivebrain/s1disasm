@@ -30,7 +30,7 @@ Moto_Main:	; Routine 0
 		move.b	#8,ost_width(a0)
 		move.b	#$C,ost_col_type(a0)
 		bsr.w	ObjectFall
-		jsr	(ObjFloorDist).l
+		jsr	(FindFloorObj).l
 		tst.w	d1
 		bpl.s	@notonfloor
 		add.w	d1,ost_y_pos(a0) ; match object's position with the floor
@@ -95,7 +95,7 @@ Moto_ActIndex:	index *
 
 @findfloor:
 		bsr.w	SpeedToPos
-		jsr	(ObjFloorDist).l
+		jsr	(FindFloorObj).l
 		cmpi.w	#-8,d1
 		blt.s	@pause
 		cmpi.w	#$C,d1

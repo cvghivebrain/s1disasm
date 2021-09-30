@@ -155,45 +155,53 @@ v_1up_ram_copy:		equ v_spcsfx_track_ram_end
 ; =================================================================================
 
 v_gamemode:		equ $FFFFF600 ; game mode (00=Sega; 04=Title; 08=Demo; 0C=Level; 10=SS; 14=Cont; 18=End; 1C=Credit; 8C=PreLevel)
+	; $F601 unused
 v_joypad_hold:		equ $FFFFF602 ; joypad input - held, can be overridden by demos
 v_joypad_press:		equ $FFFFF603 ; joypad input - pressed, can be overridden by demos
 v_joypad_hold_actual:	equ $FFFFF604 ; joypad input - held, actual
 v_joypad_press_actual:	equ $FFFFF605 ; joypad input - pressed, actual
 v_joypad2_hold_actual:	equ $FFFFF606 ; joypad 2 input - held, actual - unused
 v_joypad2_press_actual:	equ $FFFFF607 ; joypad 2 input - pressed, actual - unused
-
-v_vdp_mode_buffer:	equ $FFFFF60C ; VDP register 81 buffer - contains $8134 which is sent to vdp_control_port (2 bytes)
-
+	; $F608-$F60B unused
+v_vdp_mode_buffer:	equ $FFFFF60C ; VDP register $81 buffer - contains $8134 which is sent to vdp_control_port (2 bytes)
+	; $F60E-$F613 unused
 v_countdown:		equ $FFFFF614 ; decrements every time VBlank runs, used as a general purpose timer (2 bytes)
 v_fg_y_pos_vsram:	equ $FFFFF616 ; foreground y position, sent to VSRAM during VBlank (2 bytes)
 v_bg_y_pos_vsram:	equ $FFFFF618 ; background y position, sent to VSRAM during VBlank (2 bytes)
 v_fg_x_pos_hscroll:	equ $FFFFF61A ; foreground x position - unused (2 bytes)
 v_bg_x_pos_hscroll:	equ $FFFFF61C ; background x position - unused (2 bytes)
-v_bg3screenposy_dup_unused:	equ $FFFFF61E	; (2 bytes)
-v_bg3screenposx_dup_unused:	equ $FFFFF620	; (2 bytes)
+v_bg3screenposy_dup_unused:	equ $FFFFF61E ; (2 bytes)
+v_bg3screenposx_dup_unused:	equ $FFFFF620 ; (2 bytes)
 
-v_vdp_hint_counter:	equ $FFFFF624 ; VDP register 8A buffer - horizontal interrupt counter (8Axx) (2 bytes)
+	; $F622-$F623 unused
+v_vdp_hint_counter:	equ $FFFFF624 ; VDP register $8A buffer - horizontal interrupt counter ($8Axx) (2 bytes)
 	v_vdp_hint_line:	equ $FFFFF625 ; screen line where water starts and palette is changed by HBlank
-v_pfade_start:	equ $FFFFF626	; palette fading - start position in bytes
-v_pfade_size:	equ $FFFFF627	; palette fading - number of colours
-v_vbla_routine:	equ $FFFFF62A	; VBlank - routine counter
-v_spritecount:	equ $FFFFF62C	; number of sprites on-screen
-v_pcyc_num:	equ $FFFFF632	; palette cycling - current reference number (2 bytes)
-v_pcyc_time:	equ $FFFFF634	; palette cycling - time until the next change (2 bytes)
-v_random:	equ $FFFFF636	; pseudo random number buffer (4 bytes)
-f_pause:		equ $FFFFF63A	; flag set to pause the game (2 bytes)
-v_vdp_buffer2:	equ $FFFFF640	; VDP instruction buffer (2 bytes)
-f_hbla_pal:	equ $FFFFF644	; flag set to change palette during HBlank (0000 = no; 0001 = change) (2 bytes)
-v_waterpos1:	equ $FFFFF646	; water height, actual (2 bytes)
-v_waterpos2:	equ $FFFFF648	; water height, ignoring sway (2 bytes)
-v_waterpos3:	equ $FFFFF64A	; water height, next target (2 bytes)
-f_water:		equ $FFFFF64C	; flag set for water
-v_wtr_routine:	equ $FFFFF64D	; water event - routine counter
-f_wtr_state:	equ $FFFFF64E	; water palette state when water is above/below the screen (00 = partly/all dry; 01 = all underwater)
-
-v_pal_buffer:	equ $FFFFF650	; palette data buffer (used for palette cycling) ($30 bytes)
-v_plc_buffer:	equ $FFFFF680	; pattern load cues buffer (maximum $10 PLCs) ($60 bytes)
-v_ptrnemcode:	equ $FFFFF6E0	; pointer for nemesis decompression code ($1502 or $150C) (4 bytes)
+v_palfade_start:	equ $FFFFF626 ; palette fading - start position in bytes
+v_palfade_size:		equ $FFFFF627 ; palette fading - number of colours
+v_vblank_0e_counter:	equ $FFFFF628 ; counter that increments when VBlank routine $E is run - unused
+	; $F629 unused
+v_vblank_routine:	equ $FFFFF62A ; VBlank routine counter
+	; $F62B unused
+v_spritecount:		equ $FFFFF62C ; number of sprites on-screen
+	; $F62D-$F631 unused
+v_palcycle_num:		equ $FFFFF632 ; palette cycling - current index number (2 bytes)
+v_palcycle_time:	equ $FFFFF634 ; palette cycling - time until the next change (2 bytes)
+v_random:		equ $FFFFF636 ; pseudo random number generator result (4 bytes)
+f_pause:		equ $FFFFF63A ; flag set to pause the game (2 bytes)
+	; $F63C-$F63F unused
+v_vdp_dma_buffer:	equ $FFFFF640 ; VDP DMA command buffer (2 bytes)
+	; $F642-$F643 unused
+f_hblank_pal_change:	equ $FFFFF644 ; flag set to change palette during HBlank (0000 = no; 0001 = change) (2 bytes)
+v_water_height_actual:	equ $FFFFF646 ; water height, actual (2 bytes)
+v_water_height_normal:	equ $FFFFF648 ; water height, ignoring wobble (2 bytes)
+v_water_height_next:	equ $FFFFF64A ; water height, next target (2 bytes)
+v_water_direction:	equ $FFFFF64C ; water setting - 0 = no water; 1 = water moves down; -1 = water moves up
+v_water_routine:	equ $FFFFF64D ; water event routine counter
+f_water_pal_full:	equ $FFFFF64E ; flag set when water covers the entire screen (00 = partly/all dry; 01 = all underwater)
+f_hblank_run_snd:	equ $FFFFF64F ; flag set when sound driver should be run from HBlank
+v_palcycle_buffer:	equ $FFFFF650 ; palette data buffer (used for palette cycling) ($30 bytes)
+v_plc_buffer:		equ $FFFFF680 ; pattern load cues buffer (maximum $10 PLCs) ($60 bytes)
+v_nemdec_ptr:		equ $FFFFF6E0 ; pointer for nemesis decompression code ($1502 or $150C) (4 bytes)
 
 f_plc_execute:	equ $FFFFF6F8	; flag set for pattern load cue execution (2 bytes)
 

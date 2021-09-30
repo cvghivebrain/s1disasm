@@ -571,7 +571,7 @@ Art_Text:	incbin	"Graphics\Level Select & Debug Text.bin" ; text used in level s
 
 VBlank:
 		movem.l	d0-a6,-(sp)
-		tst.b	(v_vbla_routine).w
+		tst.b	(v_vblank_routine).w
 		beq.s	VBla_00
 		move.w	(vdp_control_port).l,d0
 		move.l	#$40000010,(vdp_control_port).l
@@ -584,9 +584,9 @@ VBlank:
 		dbf	d0,@waitPAL ; wait here in a loop doing nothing for a while...
 
 	@notPAL:
-		move.b	(v_vbla_routine).w,d0
-		move.b	#0,(v_vbla_routine).w
-		move.w	#1,(f_hbla_pal).w
+		move.b	(v_vblank_routine).w,d0
+		move.b	#0,(v_vblank_routine).w
+		move.w	#1,(f_hblank_pal_change).w
 		andi.w	#$3E,d0
 		move.w	VBla_Index(pc,d0.w),d0
 		jsr	VBla_Index(pc,d0.w)
@@ -634,10 +634,10 @@ VBla_00:
 		dbf	d0,@waitPAL
 
 	@notPAL:
-		move.w	#1,(f_hbla_pal).w ; set HBlank flag
+		move.w	#1,(f_hblank_pal_change).w ; set HBlank flag
 		stopZ80
 		waitZ80
-		tst.b	(f_wtr_state).w	; is water above top of screen?
+		tst.b	(f_water_pal_full).w	; is water above top of screen?
 		bne.s	@waterabove 	; if yes, branch
 
 		dma	v_pal_dry,$80,cram
@@ -689,7 +689,7 @@ VBla_08:
 		stopZ80
 		waitZ80
 		bsr.w	ReadJoypads
-		tst.b	(f_wtr_state).w
+		tst.b	(f_water_pal_full).w
 		bne.s	@waterabove
 
 		dma	v_pal_dry,$80,cram
@@ -717,7 +717,7 @@ VBla_08:
 		movem.l	d0-d1,(v_fg_scroll_flags_dup).w
 		cmpi.b	#96,(v_vdp_hint_line).w
 		bhs.s	Demo_Time
-		move.b	#1,($FFFFF64F).w
+		move.b	#1,(f_hblank_run_snd).w
 		addq.l	#4,sp
 		bra.w	VBla_Exit
 
@@ -771,7 +771,7 @@ VBla_0C:
 		stopZ80
 		waitZ80
 		bsr.w	ReadJoypads
-		tst.b	(f_wtr_state).w
+		tst.b	(f_water_pal_full).w
 		bne.s	@waterabove
 
 		dma	v_pal_dry,$80,cram
@@ -804,8 +804,8 @@ VBla_0C:
 
 VBla_0E:
 		bsr.w	ReadPad_WaterPal_Sprites_HScroll
-		addq.b	#1,($FFFFF628).w
-		move.b	#$E,(v_vbla_routine).w
+		addq.b	#1,(v_vblank_0e_counter).w
+		move.b	#$E,(v_vblank_routine).w
 		rts	
 ; ===========================================================================
 
@@ -843,7 +843,7 @@ ReadPad_WaterPal_Sprites_HScroll:
 		stopZ80
 		waitZ80
 		bsr.w	ReadJoypads
-		tst.b	(f_wtr_state).w ; is water above top of screen?
+		tst.b	(f_water_pal_full).w ; is water above top of screen?
 		bne.s	@waterabove	; if yes, branch
 		dma	v_pal_dry,$80,cram
 		bra.s	@waterbelow
@@ -867,9 +867,9 @@ ReadPad_WaterPal_Sprites_HScroll:
 
 HBlank:
 		disable_ints
-		tst.w	(f_hbla_pal).w	; is palette set to change?
+		tst.w	(f_hblank_pal_change).w	; is palette set to change?
 		beq.s	@nochg		; if not, branch
-		move.w	#0,(f_hbla_pal).w
+		move.w	#0,(f_hblank_pal_change).w
 		movem.l	a0-a1,-(sp)
 		lea	(vdp_data_port).l,a1
 		lea	(v_pal_water).w,a0 ; get palette from RAM
@@ -908,7 +908,7 @@ HBlank:
 		move.l	(a0)+,(a1)
 		move.w	#$8A00+223,4(a1) ; reset HBlank register
 		movem.l	(sp)+,a0-a1
-		tst.b	($FFFFF64F).w
+		tst.b	(f_hblank_run_snd).w
 		bne.s	loc_119E
 
 	@nochg:
@@ -916,7 +916,7 @@ HBlank:
 ; ===========================================================================
 
 loc_119E:
-		clr.b	($FFFFF64F).w
+		clr.b	(f_hblank_run_snd).w
 		movem.l	d0-a6,-(sp)
 		bsr.w	Demo_Time
 		jsr	(UpdateMusic).l
@@ -1167,7 +1167,7 @@ Pause_StopGame:
 		move.b	#1,(v_snddriver_ram+f_pausemusic).w ; pause music
 
 Pause_Loop:
-		move.b	#$10,(v_vbla_routine).w
+		move.b	#$10,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		tst.b	(f_slomocheat).w ; is slow-motion cheat on?
 		beq.s	Pause_ChkStart	; if not, branch
@@ -1358,7 +1358,7 @@ loc_160E:
 		moveq	#$10,d6
 		moveq	#0,d0
 		move.l	a0,(v_plc_buffer).w
-		move.l	a3,(v_ptrnemcode).w
+		move.l	a3,(v_nemdec_ptr).w
 		move.l	d0,($FFFFF6E4).w
 		move.l	d0,($FFFFF6E8).w
 		move.l	d0,($FFFFF6EC).w
@@ -1405,7 +1405,7 @@ loc_1676:
 		move.l	d0,(a4)
 		subq.w	#4,a4
 		movea.l	(v_plc_buffer).w,a0
-		movea.l	(v_ptrnemcode).w,a3
+		movea.l	(v_nemdec_ptr).w,a3
 		move.l	($FFFFF6E4).w,d0
 		move.l	($FFFFF6E8).w,d1
 		move.l	($FFFFF6EC).w,d2
@@ -1421,7 +1421,7 @@ loc_16AA:
 		subq.w	#1,($FFFFF6FA).w
 		bne.s	loc_16AA
 		move.l	a0,(v_plc_buffer).w
-		move.l	a3,(v_ptrnemcode).w
+		move.l	a3,(v_nemdec_ptr).w
 		move.l	d0,($FFFFF6E4).w
 		move.l	d1,($FFFFF6E8).w
 		move.l	d2,($FFFFF6EC).w
@@ -1531,488 +1531,9 @@ Pal_SBZCyc7:	incbin	"Palettes\Cycle - SBZ 7.bin"
 Pal_SBZCyc8:	incbin	"Palettes\Cycle - SBZ 8.bin"
 Pal_SBZCyc9:	incbin	"Palettes\Cycle - SBZ 9.bin"
 Pal_SBZCyc10:	incbin	"Palettes\Cycle - SBZ 10.bin"
-; ---------------------------------------------------------------------------
-; Subroutine to	fade in from black
-; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-PaletteFadeIn:
-		move.w	#$003F,(v_pfade_start).w ; set start position = 0; size = $40
-
-PalFadeIn_Alt:				; start position and size are already set
-		moveq	#0,d0
-		lea	(v_pal_dry).w,a0
-		move.b	(v_pfade_start).w,d0
-		adda.w	d0,a0
-		moveq	#cBlack,d1
-		move.b	(v_pfade_size).w,d0
-
-	@fill:
-		move.w	d1,(a0)+
-		dbf	d0,@fill 	; fill palette with black
-
-		move.w	#$15,d4
-
-	@mainloop:
-		move.b	#$12,(v_vbla_routine).w
-		bsr.w	WaitForVBlank
-		bsr.s	FadeIn_FromBlack
-		bsr.w	RunPLC
-		dbf	d4,@mainloop
-		rts	
-; End of function PaletteFadeIn
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-FadeIn_FromBlack:
-		moveq	#0,d0
-		lea	(v_pal_dry).w,a0
-		lea	(v_pal_dry_dup).w,a1
-		move.b	(v_pfade_start).w,d0
-		adda.w	d0,a0
-		adda.w	d0,a1
-		move.b	(v_pfade_size).w,d0
-
-	@addcolour:
-		bsr.s	FadeIn_AddColour ; increase colour
-		dbf	d0,@addcolour	; repeat for size of palette
-
-		cmpi.b	#id_LZ,(v_zone).w	; is level Labyrinth?
-		bne.s	@exit		; if not, branch
-
-		moveq	#0,d0
-		lea	(v_pal_water).w,a0
-		lea	(v_pal_water_dup).w,a1
-		move.b	(v_pfade_start).w,d0
-		adda.w	d0,a0
-		adda.w	d0,a1
-		move.b	(v_pfade_size).w,d0
-
-	@addcolour2:
-		bsr.s	FadeIn_AddColour ; increase colour again
-		dbf	d0,@addcolour2 ; repeat
-
-@exit:
-		rts	
-; End of function FadeIn_FromBlack
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-FadeIn_AddColour:
-@addblue:
-		move.w	(a1)+,d2
-		move.w	(a0),d3
-		cmp.w	d2,d3		; is colour already at threshold level?
-		beq.s	@next		; if yes, branch
-		move.w	d3,d1
-		addi.w	#$200,d1	; increase blue	value
-		cmp.w	d2,d1		; has blue reached threshold level?
-		bhi.s	@addgreen	; if yes, branch
-		move.w	d1,(a0)+	; update palette
-		rts	
-; ===========================================================================
-
-@addgreen:
-		move.w	d3,d1
-		addi.w	#$20,d1		; increase green value
-		cmp.w	d2,d1
-		bhi.s	@addred
-		move.w	d1,(a0)+	; update palette
-		rts	
-; ===========================================================================
-
-@addred:
-		addq.w	#2,(a0)+	; increase red value
-		rts	
-; ===========================================================================
-
-@next:
-		addq.w	#2,a0		; next colour
-		rts	
-; End of function FadeIn_AddColour
-
-
-; ---------------------------------------------------------------------------
-; Subroutine to fade out to black
-; ---------------------------------------------------------------------------
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-PaletteFadeOut:
-		move.w	#$003F,(v_pfade_start).w ; start position = 0; size = $40
-		move.w	#$15,d4
-
-	@mainloop:
-		move.b	#$12,(v_vbla_routine).w
-		bsr.w	WaitForVBlank
-		bsr.s	FadeOut_ToBlack
-		bsr.w	RunPLC
-		dbf	d4,@mainloop
-		rts	
-; End of function PaletteFadeOut
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-FadeOut_ToBlack:
-		moveq	#0,d0
-		lea	(v_pal_dry).w,a0
-		move.b	(v_pfade_start).w,d0
-		adda.w	d0,a0
-		move.b	(v_pfade_size).w,d0
-
-	@decolour:
-		bsr.s	FadeOut_DecColour ; decrease colour
-		dbf	d0,@decolour	; repeat for size of palette
-
-		moveq	#0,d0
-		lea	(v_pal_water).w,a0
-		move.b	(v_pfade_start).w,d0
-		adda.w	d0,a0
-		move.b	(v_pfade_size).w,d0
-
-	@decolour2:
-		bsr.s	FadeOut_DecColour
-		dbf	d0,@decolour2
-		rts	
-; End of function FadeOut_ToBlack
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-FadeOut_DecColour:
-@dered:
-		move.w	(a0),d2
-		beq.s	@next
-		move.w	d2,d1
-		andi.w	#$E,d1
-		beq.s	@degreen
-		subq.w	#2,(a0)+	; decrease red value
-		rts	
-; ===========================================================================
-
-@degreen:
-		move.w	d2,d1
-		andi.w	#$E0,d1
-		beq.s	@deblue
-		subi.w	#$20,(a0)+	; decrease green value
-		rts	
-; ===========================================================================
-
-@deblue:
-		move.w	d2,d1
-		andi.w	#$E00,d1
-		beq.s	@next
-		subi.w	#$200,(a0)+	; decrease blue	value
-		rts	
-; ===========================================================================
-
-@next:
-		addq.w	#2,a0
-		rts	
-; End of function FadeOut_DecColour
-
-; ---------------------------------------------------------------------------
-; Subroutine to	fade in from white (Special Stage)
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-PaletteWhiteIn:
-		move.w	#$003F,(v_pfade_start).w ; start position = 0; size = $40
-		moveq	#0,d0
-		lea	(v_pal_dry).w,a0
-		move.b	(v_pfade_start).w,d0
-		adda.w	d0,a0
-		move.w	#cWhite,d1
-		move.b	(v_pfade_size).w,d0
-
-	@fill:
-		move.w	d1,(a0)+
-		dbf	d0,@fill 	; fill palette with white
-
-		move.w	#$15,d4
-
-	@mainloop:
-		move.b	#$12,(v_vbla_routine).w
-		bsr.w	WaitForVBlank
-		bsr.s	WhiteIn_FromWhite
-		bsr.w	RunPLC
-		dbf	d4,@mainloop
-		rts	
-; End of function PaletteWhiteIn
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-WhiteIn_FromWhite:
-		moveq	#0,d0
-		lea	(v_pal_dry).w,a0
-		lea	(v_pal_dry_dup).w,a1
-		move.b	(v_pfade_start).w,d0
-		adda.w	d0,a0
-		adda.w	d0,a1
-		move.b	(v_pfade_size).w,d0
-
-	@decolour:
-		bsr.s	WhiteIn_DecColour ; decrease colour
-		dbf	d0,@decolour	; repeat for size of palette
-
-		cmpi.b	#id_LZ,(v_zone).w	; is level Labyrinth?
-		bne.s	@exit		; if not, branch
-		moveq	#0,d0
-		lea	(v_pal_water).w,a0
-		lea	(v_pal_water_dup).w,a1
-		move.b	(v_pfade_start).w,d0
-		adda.w	d0,a0
-		adda.w	d0,a1
-		move.b	(v_pfade_size).w,d0
-
-	@decolour2:
-		bsr.s	WhiteIn_DecColour
-		dbf	d0,@decolour2
-
-	@exit:
-		rts	
-; End of function WhiteIn_FromWhite
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-WhiteIn_DecColour:
-@deblue:
-		move.w	(a1)+,d2
-		move.w	(a0),d3
-		cmp.w	d2,d3
-		beq.s	@next
-		move.w	d3,d1
-		subi.w	#$200,d1	; decrease blue	value
-		blo.s	@degreen
-		cmp.w	d2,d1
-		blo.s	@degreen
-		move.w	d1,(a0)+
-		rts	
-; ===========================================================================
-
-@degreen:
-		move.w	d3,d1
-		subi.w	#$20,d1		; decrease green value
-		blo.s	@dered
-		cmp.w	d2,d1
-		blo.s	@dered
-		move.w	d1,(a0)+
-		rts	
-; ===========================================================================
-
-@dered:
-		subq.w	#2,(a0)+	; decrease red value
-		rts	
-; ===========================================================================
-
-@next:
-		addq.w	#2,a0
-		rts	
-; End of function WhiteIn_DecColour
-
-; ---------------------------------------------------------------------------
-; Subroutine to fade to white (Special Stage)
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-PaletteWhiteOut:
-		move.w	#$003F,(v_pfade_start).w ; start position = 0; size = $40
-		move.w	#$15,d4
-
-	@mainloop:
-		move.b	#$12,(v_vbla_routine).w
-		bsr.w	WaitForVBlank
-		bsr.s	WhiteOut_ToWhite
-		bsr.w	RunPLC
-		dbf	d4,@mainloop
-		rts	
-; End of function PaletteWhiteOut
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-WhiteOut_ToWhite:
-		moveq	#0,d0
-		lea	(v_pal_dry).w,a0
-		move.b	(v_pfade_start).w,d0
-		adda.w	d0,a0
-		move.b	(v_pfade_size).w,d0
-
-	@addcolour:
-		bsr.s	WhiteOut_AddColour
-		dbf	d0,@addcolour
-
-		moveq	#0,d0
-		lea	(v_pal_water).w,a0
-		move.b	(v_pfade_start).w,d0
-		adda.w	d0,a0
-		move.b	(v_pfade_size).w,d0
-
-	@addcolour2:
-		bsr.s	WhiteOut_AddColour
-		dbf	d0,@addcolour2
-		rts	
-; End of function WhiteOut_ToWhite
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-WhiteOut_AddColour:
-@addred:
-		move.w	(a0),d2
-		cmpi.w	#cWhite,d2
-		beq.s	@next
-		move.w	d2,d1
-		andi.w	#$E,d1
-		cmpi.w	#cRed,d1
-		beq.s	@addgreen
-		addq.w	#2,(a0)+	; increase red value
-		rts	
-; ===========================================================================
-
-@addgreen:
-		move.w	d2,d1
-		andi.w	#$E0,d1
-		cmpi.w	#cGreen,d1
-		beq.s	@addblue
-		addi.w	#$20,(a0)+	; increase green value
-		rts	
-; ===========================================================================
-
-@addblue:
-		move.w	d2,d1
-		andi.w	#$E00,d1
-		cmpi.w	#cBlue,d1
-		beq.s	@next
-		addi.w	#$200,(a0)+	; increase blue	value
-		rts	
-; ===========================================================================
-
-@next:
-		addq.w	#2,a0
-		rts	
-; End of function WhiteOut_AddColour
-
-; ---------------------------------------------------------------------------
-; Palette cycling routine - Sega logo
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-PalCycle_Sega:
-		tst.b	(v_pcyc_time+1).w
-		bne.s	loc_206A
-		lea	(v_pal_dry+$20).w,a1
-		lea	(Pal_Sega1).l,a0
-		moveq	#5,d1
-		move.w	(v_pcyc_num).w,d0
-
-loc_2020:
-		bpl.s	loc_202A
-		addq.w	#2,a0
-		subq.w	#1,d1
-		addq.w	#2,d0
-		bra.s	loc_2020
-; ===========================================================================
-
-loc_202A:
-		move.w	d0,d2
-		andi.w	#$1E,d2
-		bne.s	loc_2034
-		addq.w	#2,d0
-
-loc_2034:
-		cmpi.w	#$60,d0
-		bhs.s	loc_203E
-		move.w	(a0)+,(a1,d0.w)
-
-loc_203E:
-		addq.w	#2,d0
-		dbf	d1,loc_202A
-
-		move.w	(v_pcyc_num).w,d0
-		addq.w	#2,d0
-		move.w	d0,d2
-		andi.w	#$1E,d2
-		bne.s	loc_2054
-		addq.w	#2,d0
-
-loc_2054:
-		cmpi.w	#$64,d0
-		blt.s	loc_2062
-		move.w	#$401,(v_pcyc_time).w
-		moveq	#-$C,d0
-
-loc_2062:
-		move.w	d0,(v_pcyc_num).w
-		moveq	#1,d0
-		rts	
-; ===========================================================================
-
-loc_206A:
-		subq.b	#1,(v_pcyc_time).w
-		bpl.s	loc_20BC
-		move.b	#4,(v_pcyc_time).w
-		move.w	(v_pcyc_num).w,d0
-		addi.w	#$C,d0
-		cmpi.w	#$30,d0
-		blo.s	loc_2088
-		moveq	#0,d0
-		rts	
-; ===========================================================================
-
-loc_2088:
-		move.w	d0,(v_pcyc_num).w
-		lea	(Pal_Sega2).l,a0
-		lea	(a0,d0.w),a0
-		lea	(v_pal_dry+$04).w,a1
-		move.l	(a0)+,(a1)+
-		move.l	(a0)+,(a1)+
-		move.w	(a0)+,(a1)
-		lea	(v_pal_dry+$20).w,a1
-		moveq	#0,d0
-		moveq	#$2C,d1
-
-loc_20A8:
-		move.w	d0,d2
-		andi.w	#$1E,d2
-		bne.s	loc_20B2
-		addq.w	#2,d0
-
-loc_20B2:
-		move.w	(a0),(a1,d0.w)
-		addq.w	#2,d0
-		dbf	d1,loc_20A8
-
-loc_20BC:
-		moveq	#1,d0
-		rts	
-; End of function PalCycle_Sega
-
-; ===========================================================================
-
+		include	"Includes\PaletteFadeIn, PaletteFadeOut, PaletteWhiteIn & PaletteWhiteOut.asm"
+		include	"Includes\PalCycle_Sega.asm"
 Pal_Sega1:	incbin	"Palettes\Sega1.bin"
 Pal_Sega2:	incbin	"Palettes\Sega2.bin"
 
@@ -2183,7 +1704,7 @@ GM_Sega:
 		move.w	#$8400+(vram_bg>>13),(a6) ; set background nametable address
 		move.w	#$8700,(a6)	; set background colour (palette entry 0)
 		move.w	#$8B00,(a6)	; full-screen vertical scrolling
-		clr.b	(f_wtr_state).w
+		clr.b	(f_water_pal_full).w
 		disable_ints
 		move.w	(v_vdp_mode_buffer).w,d0
 		andi.b	#$BF,d0
@@ -2210,27 +1731,27 @@ GM_Sega:
 	@loadpal:
 		moveq	#id_Pal_SegaBG,d0
 		bsr.w	PalLoad2	; load Sega logo palette
-		move.w	#-$A,(v_pcyc_num).w
-		move.w	#0,(v_pcyc_time).w
-		move.w	#0,(v_pal_buffer+$12).w
-		move.w	#0,(v_pal_buffer+$10).w
+		move.w	#-$A,(v_palcycle_num).w
+		move.w	#0,(v_palcycle_time).w
+		move.w	#0,(v_palcycle_buffer+$12).w
+		move.w	#0,(v_palcycle_buffer+$10).w
 		move.w	(v_vdp_mode_buffer).w,d0
 		ori.b	#$40,d0
 		move.w	d0,(vdp_control_port).l
 
 Sega_WaitPal:
-		move.b	#2,(v_vbla_routine).w
+		move.b	#2,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		bsr.w	PalCycle_Sega
 		bne.s	Sega_WaitPal
 
 		sfx	sfx_Sega,0,1,1	; play "SEGA" sound
-		move.b	#$14,(v_vbla_routine).w
+		move.b	#$14,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		move.w	#$1E,(v_countdown).w
 
 Sega_WaitEnd:
-		move.b	#2,(v_vbla_routine).w
+		move.b	#2,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		tst.w	(v_countdown).w
 		beq.s	Sega_GotoTitle
@@ -2260,7 +1781,7 @@ GM_Title:
 		move.w	#$9200,(a6)	; window vertical position
 		move.w	#$8B03,(a6)
 		move.w	#$8720,(a6)	; set background colour (palette line 2, entry 0)
-		clr.b	(f_wtr_state).w
+		clr.b	(f_water_pal_full).w
 		bsr.w	ClearScreen
 
 		lea	(v_ost_all).w,a1
@@ -2322,7 +1843,7 @@ GM_Title:
 		move.w	#0,(f_demo).w	; disable debug mode
 		move.w	#0,($FFFFFFEA).w ; unused variable
 		move.w	#(id_GHZ<<8),(v_zone).w	; set level to GHZ (00)
-		move.w	#0,(v_pcyc_time).w ; disable palette cycling
+		move.w	#0,(v_palcycle_time).w ; disable palette cycling
 		bsr.w	LevelSizeLoad
 		bsr.w	DeformLayers
 		lea	(v_16x16_tiles).w,a1
@@ -2393,7 +1914,7 @@ GM_Title:
 		bsr.w	PaletteFadeIn
 
 Tit_MainLoop:
-		move.b	#4,(v_vbla_routine).w
+		move.b	#4,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		jsr	(ExecuteObjects).l
 		bsr.w	DeformLayers
@@ -2498,7 +2019,7 @@ Tit_ChkLevSel:
 ; ---------------------------------------------------------------------------
 
 LevelSelect:
-		move.b	#4,(v_vbla_routine).w
+		move.b	#4,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		bsr.w	LevSelControls
 		bsr.w	RunPLC
@@ -2658,7 +2179,7 @@ GotoDemo:
 		move.w	#$1E,(v_countdown).w
 
 loc_33B6:
-		move.b	#4,(v_vbla_routine).w
+		move.b	#4,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		bsr.w	DeformLayers
 		bsr.w	PaletteCycle
@@ -2948,7 +2469,7 @@ Level_ClrRam:
 		move.l	d0,(a1)+
 		dbf	d1,Level_ClrObjRam ; clear object RAM
 
-		lea	($FFFFF628).w,a1
+		lea	(v_vblank_0e_counter).w,a1
 		moveq	#0,d0
 		move.w	#$15,d1
 
@@ -2993,12 +2514,12 @@ Level_ClrRam:
 		add.w	d0,d0
 		lea	(WaterHeight).l,a1 ; load water	height array
 		move.w	(a1,d0.w),d0
-		move.w	d0,(v_waterpos1).w ; set water heights
-		move.w	d0,(v_waterpos2).w
-		move.w	d0,(v_waterpos3).w
-		clr.b	(v_wtr_routine).w ; clear water routine counter
-		clr.b	(f_wtr_state).w	; clear	water state
-		move.b	#1,(f_water).w	; enable water
+		move.w	d0,(v_water_height_actual).w ; set water heights
+		move.w	d0,(v_water_height_normal).w
+		move.w	d0,(v_water_height_next).w
+		clr.b	(v_water_routine).w ; clear water routine counter
+		clr.b	(f_water_pal_full).w	; clear	water state
+		move.b	#1,(v_water_direction).w ; enable water
 
 Level_LoadPal:
 		move.w	#30,(v_air).w
@@ -3017,7 +2538,7 @@ Level_LoadPal:
 		bsr.w	PalLoad3_Water	; load underwater palette
 		tst.b	(v_lastlamp).w
 		beq.s	Level_GetBgm
-		move.b	($FFFFFE53).w,(f_wtr_state).w
+		move.b	($FFFFFE53).w,(f_water_pal_full).w
 
 Level_GetBgm:
 		tst.w	(f_demo).w
@@ -3040,7 +2561,7 @@ Level_GetBgm:
 		move.b	#id_TitleCard,(v_ost_titlecard1).w ; load title card object
 
 Level_TtlCardLoop:
-		move.b	#$C,(v_vbla_routine).w
+		move.b	#$C,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
@@ -3149,11 +2670,11 @@ Level_Delay:
 		move.w	#3,d1
 
 	Level_DelayLoop:
-		move.b	#8,(v_vbla_routine).w
+		move.b	#8,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		dbf	d1,Level_DelayLoop
 
-		move.w	#$202F,(v_pfade_start).w ; fade in 2nd, 3rd & 4th palette lines
+		move.w	#$202F,(v_palfade_start).w ; fade in 2nd, 3rd & 4th palette lines
 		bsr.w	PalFadeIn_Alt
 		tst.w	(f_demo).w	; is an ending sequence demo running?
 		bmi.s	Level_ClrCardArt ; if yes, branch
@@ -3181,7 +2702,7 @@ Level_StartGame:
 
 Level_MainLoop:
 		bsr.w	PauseGame
-		move.b	#8,(v_vbla_routine).w
+		move.b	#8,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		addq.w	#1,(v_framecount).w ; add 1 to level timer
 		bsr.w	MoveSonicInDemo
@@ -3242,11 +2763,11 @@ Level_EndDemo:
 
 Level_FadeDemo:
 		move.w	#$3C,(v_countdown).w
-		move.w	#$3F,(v_pfade_start).w
+		move.w	#$3F,(v_palfade_start).w
 		clr.w	(v_palchgspeed).w
 
 	Level_FDLoop:
-		move.b	#8,(v_vbla_routine).w
+		move.b	#8,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		bsr.w	MoveSonicInDemo
 		jsr	(ExecuteObjects).l
@@ -3502,7 +3023,7 @@ GM_Special:
 		move.l	d0,(a1)+
 		dbf	d1,SS_ClrNemRam	; clear	Nemesis	buffer
 
-		clr.b	(f_wtr_state).w
+		clr.b	(f_water_pal_full).w
 		clr.w	(f_restart).w
 		moveq	#id_Pal_Special,d0
 		bsr.w	PalLoad1	; load special stage palette
@@ -3543,7 +3064,7 @@ GM_Special:
 
 SS_MainLoop:
 		bsr.w	PauseGame
-		move.b	#$A,(v_vbla_routine).w
+		move.b	#$A,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		bsr.w	MoveSonicInDemo
 		move.w	(v_joypad_hold_actual).w,(v_joypad_hold).w
@@ -3573,11 +3094,11 @@ SS_MainLoop:
 
 SS_Finish:
 		move.w	#60,(v_countdown).w ; set delay time to 1 second
-		move.w	#$3F,(v_pfade_start).w
+		move.w	#$3F,(v_palfade_start).w
 		clr.w	(v_palchgspeed).w
 
 	SS_FinLoop:
-		move.b	#$16,(v_vbla_routine).w
+		move.b	#$16,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		bsr.w	MoveSonicInDemo
 		move.w	(v_joypad_hold_actual).w,(v_joypad_hold).w
@@ -3629,7 +3150,7 @@ loc_47D4:
 
 SS_NormalExit:
 		bsr.w	PauseGame
-		move.b	#$C,(v_vbla_routine).w
+		move.b	#$C,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
@@ -3999,7 +3520,7 @@ GM_Continue:
 ; ---------------------------------------------------------------------------
 
 Cont_MainLoop:
-		move.b	#$16,(v_vbla_routine).w
+		move.b	#$16,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		cmpi.b	#6,(v_ost_player+ost_routine).w
 		bhs.s	loc_4DF2
@@ -4056,7 +3577,7 @@ GM_Ending:
 		move.l	d0,(a1)+
 		dbf	d1,End_ClrObjRam ; clear object	RAM
 
-		lea	($FFFFF628).w,a1
+		lea	(v_vblank_0e_counter).w,a1
 		moveq	#0,d0
 		move.w	#$15,d1
 	End_ClrRam1:
@@ -4145,12 +3666,12 @@ End_LoadSonic:
 		move.b	#1,(f_ringcount).w
 		move.b	#0,(f_timecount).w
 		move.w	#1800,(v_countdown).w
-		move.b	#$18,(v_vbla_routine).w
+		move.b	#$18,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		move.w	(v_vdp_mode_buffer).w,d0
 		ori.b	#$40,d0
 		move.w	d0,(vdp_control_port).l
-		move.w	#$3F,(v_pfade_start).w
+		move.w	#$3F,(v_palfade_start).w
 		bsr.w	PaletteFadeIn
 
 ; ---------------------------------------------------------------------------
@@ -4159,7 +3680,7 @@ End_LoadSonic:
 
 End_MainLoop:
 		bsr.w	PauseGame
-		move.b	#$18,(v_vbla_routine).w
+		move.b	#$18,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		addq.w	#1,(v_framecount).w
 		bsr.w	End_MoveSonic
@@ -4184,12 +3705,12 @@ End_ChkEmerald:
 		beq.w	End_MainLoop	; if not, branch
 
 		clr.w	(f_restart).w
-		move.w	#$3F,(v_pfade_start).w
+		move.w	#$3F,(v_palfade_start).w
 		clr.w	(v_palchgspeed).w
 
 	End_AllEmlds:
 		bsr.w	PauseGame
-		move.b	#$18,(v_vbla_routine).w
+		move.b	#$18,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		addq.w	#1,(v_framecount).w
 		bsr.w	End_MoveSonic
@@ -4296,7 +3817,7 @@ GM_Credits:
 		move.w	#$9200,(a6)		; window vertical position
 		move.w	#$8B03,(a6)		; line scroll mode
 		move.w	#$8720,(a6)		; set background colour (line 3; colour 0)
-		clr.b	(f_wtr_state).w
+		clr.b	(f_water_pal_full).w
 		bsr.w	ClearScreen
 
 		lea	(v_ost_all).w,a1
@@ -4340,7 +3861,7 @@ GM_Credits:
 		bsr.w	PaletteFadeIn
 
 Cred_WaitLoop:
-		move.b	#4,(v_vbla_routine).w
+		move.b	#4,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		bsr.w	RunPLC
 		tst.w	(v_countdown).w ; have 2 seconds elapsed?
@@ -4425,7 +3946,7 @@ TryAgainEnd:
 		move.w	#$9200,(a6)	; window vertical position
 		move.w	#$8B03,(a6)	; line scroll mode
 		move.w	#$8720,(a6)	; set background colour (line 3; colour 0)
-		clr.b	(f_wtr_state).w
+		clr.b	(f_water_pal_full).w
 		bsr.w	ClearScreen
 
 		lea	(v_ost_all).w,a1
@@ -4459,7 +3980,7 @@ TryAgainEnd:
 ; ---------------------------------------------------------------------------
 TryAg_MainLoop:
 		bsr.w	PauseGame
-		move.b	#4,(v_vbla_routine).w
+		move.b	#4,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
@@ -5015,7 +4536,7 @@ Deform_LZ:
 loc_63C6:
 		move.l	d0,(a1)+
 		dbf	d1,loc_63C6
-		move.w	(v_waterpos1).w,d0
+		move.w	(v_water_height_actual).w,d0
 		sub.w	(v_screenposy).w,d0
 		rts	
 ; End of function Deform_LZ
@@ -7920,8 +7441,10 @@ loc_14CD6:
 ; ---------------------------------------------------------------------------
 ; Subroutine to find the distance of an object to the floor
 
+; Runs FindFloor without the need for inputs, taking inputs from local OST variables
+
 ; input:
-;	d3 = x pos. of object (ObjFloorDist2 only)
+;	d3 = x pos. of object (FindFloorObj2 only)
 
 ; output:
 ;	d1 = distance to the floor
@@ -7934,11 +7457,11 @@ loc_14CD6:
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 
-ObjFloorDist:
+FindFloorObj:
 		move.w	ost_x_pos(a0),d3
 
 
-ObjFloorDist2:
+FindFloorObj2:
 		move.w	ost_y_pos(a0),d2
 		moveq	#0,d0
 		move.b	ost_height(a0),d0
@@ -7958,8 +7481,18 @@ ObjFloorDist2:
 	locret_14E4E:
 		rts	
 
-; End of function ObjFloorDist2
+; End of function FindFloorObj2
 
+; ---------------------------------------------------------------------------
+; Subroutine to	find walls either side of Sonic
+
+; output:
+;	d0 = distance to left wall
+;	d1 = distance to right wall
+;	a1 = address within 256x256 mappings where Sonic is standing
+;	(a1) = 16x16 tile number
+;	(a4) = floor angle
+; ---------------------------------------------------------------------------
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
@@ -7970,31 +7503,31 @@ sub_14E50:
 		moveq	#0,d0
 		move.b	ost_width(a0),d0
 		ext.w	d0
-		sub.w	d0,d2
+		sub.w	d0,d2		; d2 = x pos. of Sonic's left edge
 		move.b	ost_height(a0),d0
 		ext.w	d0
-		add.w	d0,d3
+		add.w	d0,d3		; d3 = y pos. of Sonic's bottom edge
 		lea	(v_angle_right).w,a4
 		movea.w	#$10,a3
 		move.w	#0,d6
 		moveq	#$E,d5
 		bsr.w	FindWall
-		move.w	d1,-(sp)
+		move.w	d1,-(sp)	; save distance to left wall in stack
 		move.w	ost_y_pos(a0),d2
 		move.w	ost_x_pos(a0),d3
 		moveq	#0,d0
 		move.b	ost_width(a0),d0
 		ext.w	d0
-		add.w	d0,d2
+		add.w	d0,d2		; d2 = x pos. of Sonic's right edge
 		move.b	ost_height(a0),d0
 		ext.w	d0
-		add.w	d0,d3
+		add.w	d0,d3		; d3 = y pos. of Sonic's bottom edge
 		lea	(v_angle_left).w,a4
 		movea.w	#$10,a3
 		move.w	#0,d6
 		moveq	#$E,d5
 		bsr.w	FindWall
-		move.w	(sp)+,d0
+		move.w	(sp)+,d0	; retrieve distance to left wall from stack
 		move.b	#-$40,d2
 		bra.w	loc_14DD0
 

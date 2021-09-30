@@ -154,9 +154,9 @@ Lamp_StoreInfo:
 		move.w	(v_bg2screenposy).w,($FFFFFE4A).w ; bg position
 		move.w	(v_bg3screenposx).w,($FFFFFE4C).w ; bg position
 		move.w	(v_bg3screenposy).w,($FFFFFE4E).w ; bg position
-		move.w	(v_waterpos2).w,($FFFFFE50).w 	; water height
-		move.b	(v_wtr_routine).w,($FFFFFE52).w ; rountine counter for water
-		move.b	(f_wtr_state).w,($FFFFFE53).w 	; water direction
+		move.w	(v_water_height_normal).w,($FFFFFE50).w 	; water height
+		move.b	(v_water_routine).w,($FFFFFE52).w ; rountine counter for water
+		move.b	(f_water_pal_full).w,($FFFFFE53).w 	; water direction
 		rts	
 
 ; ---------------------------------------------------------------------------
@@ -178,7 +178,7 @@ Lamp_LoadInfo:
 		move.b	#59,(v_timecent).w
 		subq.b	#1,(v_timesec).w
 		move.b	($FFFFFE3C).w,(v_dle_routine).w
-		move.b	($FFFFFE52).w,(v_wtr_routine).w
+		move.b	($FFFFFE52).w,(v_water_routine).w
 		move.w	($FFFFFE3E).w,(v_limitbtm2).w
 		move.w	($FFFFFE3E).w,(v_limitbtm1).w
 		move.w	($FFFFFE40).w,(v_screenposx).w
@@ -192,9 +192,9 @@ Lamp_LoadInfo:
 		cmpi.b	#1,(v_zone).w	; is this Labyrinth Zone?
 		bne.s	@notlabyrinth	; if not, branch
 
-		move.w	($FFFFFE50).w,(v_waterpos2).w
-		move.b	($FFFFFE52).w,(v_wtr_routine).w
-		move.b	($FFFFFE53).w,(f_wtr_state).w
+		move.w	($FFFFFE50).w,(v_water_height_normal).w
+		move.b	($FFFFFE52).w,(v_water_routine).w
+		move.b	($FFFFFE53).w,(f_water_pal_full).w
 
 	@notlabyrinth:
 		tst.b	(v_lastlamp).w

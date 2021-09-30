@@ -32,7 +32,7 @@ Cat_Main:	; Routine 0
 		move.b	#7,ost_height(a0)
 		move.b	#8,ost_width(a0)
 		jsr	(ObjectFall).l
-		jsr	(ObjFloorDist).l
+		jsr	(FindFloorObj).l
 		tst.w	d1
 		bpl.s	locret_16950
 		add.w	d1,ost_y_pos(a0)
@@ -185,7 +185,7 @@ Cat_Floor:
 		add.l	d0,d2
 		move.l	d2,ost_x_pos(a0)
 		if Revision=0
-			jsr	(ObjFloorDist).l
+			jsr	(FindFloorObj).l
 			move.l	(sp)+,d2
 			cmpi.w	#-8,d1
 			blt.s	@loc_16B70
@@ -199,7 +199,7 @@ Cat_Floor:
 			swap	d3
 			cmp.w	ost_x_pos(a0),d3
 			beq.s	@notmoving
-			jsr	(ObjFloorDist).l
+			jsr	(FindFloorObj).l
 			cmpi.w	#-8,d1
 			blt.s	@loc_16B70
 			cmpi.w	#$C,d1
@@ -382,7 +382,7 @@ loc_16CC0:	; Routine $C
 		jsr	(ObjectFall).l
 		tst.w	ost_y_vel(a0)
 		bmi.s	loc_16CE0
-		jsr	(ObjFloorDist).l
+		jsr	(FindFloorObj).l
 		tst.w	d1
 		bpl.s	loc_16CE0
 		add.w	d1,ost_y_pos(a0)

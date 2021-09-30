@@ -60,7 +60,7 @@ Bub_Animate:	; Routine 2
 		move.b	#1,ost_bubble_inhalable(a0) ; set "inhalable" flag
 
 Bub_ChkWater:	; Routine 4
-		move.w	(v_waterpos1).w,d0
+		move.w	(v_water_height_actual).w,d0
 		cmp.w	ost_y_pos(a0),d0 ; is bubble underwater?
 		bcs.s	@wobble		; if yes, branch
 
@@ -132,7 +132,7 @@ Bub_Delete:	; Routine 8
 Bub_BblMaker:	; Routine $A
 		tst.w	ost_bubble_flag(a0) ; any flags set?
 		bne.s	@loc_12874	; if yes, branch
-		move.w	(v_waterpos1).w,d0
+		move.w	(v_water_height_actual).w,d0
 		cmp.w	ost_y_pos(a0),d0 ; is bubble maker underwater?
 		bcc.w	@chkdel		; if not, branch
 		tst.b	ost_render(a0)	; is bubble maker on screen?
@@ -214,7 +214,7 @@ Bub_BblMaker:	; Routine $A
 
 @chkdel:
 		out_of_range	DeleteObject
-		move.w	(v_waterpos1).w,d0
+		move.w	(v_water_height_actual).w,d0
 		cmp.w	ost_y_pos(a0),d0
 		bcs.w	DisplaySprite
 		rts	

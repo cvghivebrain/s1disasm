@@ -73,14 +73,14 @@ Burro_Move:
 		subi.w	#$18,d3
 
 loc_AD6A:
-		jsr	(ObjFloorDist2).l
+		jsr	(FindFloorObj2).l
 		cmpi.w	#$C,d1
 		bge.s	loc_AD84
 		rts	
 ; ===========================================================================
 
 loc_AD78:
-		jsr	(ObjFloorDist).l
+		jsr	(FindFloorObj).l
 		add.w	d1,ost_y_pos(a0)
 		rts	
 ; ===========================================================================
@@ -107,7 +107,7 @@ Burro_Jump:
 		addi.w	#$18,ost_y_vel(a0)
 		bmi.s	locret_ADF0
 		move.b	#id_ani_burro_fall,ost_anim(a0)
-		jsr	(ObjFloorDist).l
+		jsr	(FindFloorObj).l
 		tst.w	d1
 		bpl.s	locret_ADF0
 		add.w	d1,ost_y_pos(a0)

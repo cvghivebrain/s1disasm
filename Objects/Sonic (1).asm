@@ -188,7 +188,7 @@ Sonic_Water:
 ; ===========================================================================
 
 	@islabyrinth:
-		move.w	(v_waterpos1).w,d0
+		move.w	(v_water_height_actual).w,d0
 		cmp.w	ost_y_pos(a0),d0 ; is Sonic above the water?
 		bge.s	@abovewater	; if yes, branch
 		bset	#status_underwater_bit,ost_status(a0)
@@ -340,7 +340,7 @@ Sonic_Move:
 ; ===========================================================================
 
 Sonic_Balance:
-		jsr	(ObjFloorDist).l
+		jsr	(FindFloorObj).l
 		cmpi.w	#$C,d1
 		blt.s	Sonic_LookUp
 		cmpi.b	#3,ost_sonic_angle_right(a0) ; check for edge to the right

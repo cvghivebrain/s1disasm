@@ -73,7 +73,7 @@ Obj74_Drop:
 		clr.b	ost_subtype(a0)
 		addi.w	#$18,ost_y_vel(a0)
 		bclr	#status_yflip_bit,ost_status(a0) ; yflip fireball so it's poining down
-		bsr.w	ObjFloorDist
+		bsr.w	FindFloorObj
 		tst.w	d1
 		bpl.s	locret_18780
 		addq.b	#2,ost_routine2(a0) ; goto Obj74_MakeFlame when it hits the floor
@@ -128,7 +128,7 @@ locret_187EE:
 ; ===========================================================================
 
 Obj74_FireSpread:
-		bsr.w	ObjFloorDist
+		bsr.w	FindFloorObj
 		tst.w	d1
 		bpl.s	loc_18826
 		move.w	ost_x_pos(a0),d0
@@ -173,7 +173,7 @@ loc_1884A:
 		bclr	#tile_hi_bit,ost_tile(a0)
 
 loc_18856:
-		bsr.w	ObjFloorDist
+		bsr.w	FindFloorObj
 		tst.w	d1
 		bpl.s	locret_1887E
 		subq.b	#1,ost_bfire_wait_time(a0)

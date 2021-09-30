@@ -58,7 +58,7 @@ Drown_Animate:	; Routine 2
 		jsr	(AnimateSprite).l
 
 Drown_ChkWater:	; Routine 4
-		move.w	(v_waterpos1).w,d0
+		move.w	(v_water_height_actual).w,d0
 		cmp.w	ost_y_pos(a0),d0 ; has bubble reached the water surface?
 		bcs.s	@wobble		; if not, branch
 

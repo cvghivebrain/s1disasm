@@ -114,7 +114,7 @@ LBlk_Action:	; Routine 2
 @type06:
 		bsr.w	SpeedToPos
 		addq.w	#8,ost_y_vel(a0) ; make block fall
-		bsr.w	ObjFloorDist
+		bsr.w	FindFloorObj
 		tst.w	d1		; has block hit the floor?
 		bpl.w	@nofloor02	; if not, branch
 		addq.w	#1,d1
@@ -151,7 +151,7 @@ LBlk_Action:	; Routine 2
 ; ===========================================================================
 
 @type07:
-		move.w	(v_waterpos1).w,d0
+		move.w	(v_water_height_actual).w,d0
 		sub.w	ost_y_pos(a0),d0 ; is block level with water?
 		beq.s	@stop07		; if yes, branch
 		bcc.s	@fall07		; branch if block is above water
@@ -177,7 +177,7 @@ LBlk_Action:	; Routine 2
 
 	@loc_1216A:
 		add.w	d0,ost_y_pos(a0) ; make the block sink with water level
-		bsr.w	ObjFloorDist
+		bsr.w	FindFloorObj
 		tst.w	d1
 		bpl.w	@stop07
 		addq.w	#1,d1

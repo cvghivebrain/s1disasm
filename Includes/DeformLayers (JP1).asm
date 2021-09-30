@@ -189,7 +189,7 @@ Deform_LZ:
 		swap	d0
 		move.w	(v_bgscreenposx).w,d0
 		neg.w	d0
-		move.w	(v_waterpos1).w,d4
+		move.w	(v_water_height_actual).w,d4
 		move.w	(v_screenposy).w,d5
 	; write normal scroll before meeting water position
 	@normalLoop:		

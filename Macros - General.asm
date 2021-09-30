@@ -154,8 +154,8 @@ dma:		macro
 		move.l	#$96000000+(((\1>>1)&$FF00)<<8)+$9500+((\1>>1)&$FF),(a5)
 		move.w	#$9700+((((\1>>1)&$FF0000)>>16)&$7F),(a5)
 		move.w	#dma_type+(dma_dest&$3FFF),(a5)
-		move.w	#dma_type2+((dma_dest&$C000)>>14),(v_vdp_buffer2).w
-		move.w	(v_vdp_buffer2).w,(a5)
+		move.w	#dma_type2+((dma_dest&$C000)>>14),(v_vdp_dma_buffer).w
+		move.w	(v_vdp_dma_buffer).w,(a5)
 		endm
 
 ; ---------------------------------------------------------------------------

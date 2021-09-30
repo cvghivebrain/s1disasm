@@ -34,7 +34,7 @@ Cbal_Bounce:	; Routine 2
 		jsr	(ObjectFall).l
 		tst.w	ost_y_vel(a0)
 		bmi.s	Cbal_ChkExplode
-		jsr	(ObjFloorDist).l
+		jsr	(FindFloorObj).l
 		tst.w	d1		; has ball hit the floor?
 		bpl.s	Cbal_ChkExplode	; if not, branch
 

@@ -54,7 +54,7 @@ WFall_ChkDel:	; Routine 4
 ; ===========================================================================
 
 WFall_OnWater:	; Routine 6
-		move.w	(v_waterpos1).w,d0
+		move.w	(v_water_height_actual).w,d0
 		subi.w	#$10,d0
 		move.w	d0,ost_y_pos(a0) ; match object position to water height
 		bra.s	WFall_Animate

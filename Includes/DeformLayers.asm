@@ -144,7 +144,7 @@ Deform_LZ:
 loc_63C6:
 		move.l	d0,(a1)+
 		dbf	d1,loc_63C6
-		move.w	(v_waterpos1).w,d0
+		move.w	(v_water_height_actual).w,d0
 		sub.w	(v_screenposy).w,d0
 		rts	
 ; End of function Deform_LZ

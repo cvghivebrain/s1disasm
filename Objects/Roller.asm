@@ -20,7 +20,7 @@ Roll_Main:	; Routine 0
 		move.b	#$E,ost_height(a0)
 		move.b	#8,ost_width(a0)
 		bsr.w	ObjectFall
-		bsr.w	ObjFloorDist
+		bsr.w	FindFloorObj
 		tst.w	d1
 		bpl.s	locret_E052
 		add.w	d1,ost_y_pos(a0) ; match roller's position with the floor
@@ -108,7 +108,7 @@ loc_E0F8:
 Roll_ChkJump:
 		bsr.w	Roll_Stop
 		bsr.w	SpeedToPos
-		bsr.w	ObjFloorDist
+		bsr.w	FindFloorObj
 		cmpi.w	#-8,d1
 		blt.s	Roll_Jump
 		cmpi.w	#$C,d1
@@ -131,7 +131,7 @@ Roll_MatchFloor:
 		bsr.w	ObjectFall
 		tst.w	ost_y_vel(a0)
 		bmi.s	locret_E150
-		bsr.w	ObjFloorDist
+		bsr.w	FindFloorObj
 		tst.w	d1
 		bpl.s	locret_E150
 		add.w	d1,ost_y_pos(a0) ; match Roller's position with the floor

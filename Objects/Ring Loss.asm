@@ -87,7 +87,7 @@ RLoss_Bounce:	; Routine 2
 		add.b	d7,d0
 		andi.b	#3,d0
 		bne.s	@chkdel
-		jsr	(ObjFloorDist).l
+		jsr	(FindFloorObj).l
 		tst.w	d1
 		bpl.s	@chkdel
 		add.w	d1,ost_y_pos(a0)

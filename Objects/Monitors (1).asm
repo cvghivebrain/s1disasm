@@ -66,7 +66,7 @@ Mon_Solid:	; Routine 2
 
 @fall:		; 2nd Routine 4
 		bsr.w	ObjectFall
-		jsr	(ObjFloorDist).l
+		jsr	(FindFloorObj).l
 		tst.w	d1
 		bpl.w	Mon_Animate
 		add.w	d1,ost_y_pos(a0)

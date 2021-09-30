@@ -58,7 +58,7 @@ Yad_Main:	; Routine 0
 		move.b	#8,ost_width(a0)
 		move.b	#$CC,ost_col_type(a0)
 		bsr.w	ObjectFall
-		bsr.w	ObjFloorDist
+		bsr.w	FindFloorObj
 		tst.w	d1
 		bpl.s	locret_F89E
 		add.w	d1,ost_y_pos(a0) ; match object's position with the floor
@@ -100,7 +100,7 @@ Yad_Move:
 
 Yad_FixToFloor:
 		bsr.w	SpeedToPos
-		bsr.w	ObjFloorDist
+		bsr.w	FindFloorObj
 		cmpi.w	#-8,d1
 		blt.s	Yad_Pause
 		cmpi.w	#$C,d1

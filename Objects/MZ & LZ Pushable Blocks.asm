@@ -128,7 +128,7 @@ loc_C056:
 		btst	#status_air_bit,ost_status(a0) ; has block been thrown into the air?
 		beq.s	PushB_OnLava2	; if not, branch
 		addi.w	#$18,ost_y_vel(a0)
-		jsr	(ObjFloorDist).l
+		jsr	(FindFloorObj).l
 		tst.w	d1
 		bpl.w	loc_C09E
 		add.w	d1,ost_y_pos(a0)
@@ -264,7 +264,7 @@ loc_C1AA:
 		bne.s	loc_C1F2
 		bsr.w	SpeedToPos
 		addi.w	#$18,ost_y_vel(a0)
-		jsr	(ObjFloorDist).l
+		jsr	(FindFloorObj).l
 		tst.w	d1
 		bpl.w	locret_C1F0
 		add.w	d1,ost_y_pos(a0)
@@ -351,7 +351,7 @@ loc_C294:
 		tst.b	ost_subtype(a0)
 		bmi.s	locret_C2E4
 		move.w	d0,-(sp)
-		jsr	(ObjFloorDist).l
+		jsr	(FindFloorObj).l
 		move.w	(sp)+,d0
 		cmpi.w	#4,d1
 		ble.s	loc_C2E0

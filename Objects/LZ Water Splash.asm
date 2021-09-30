@@ -24,7 +24,7 @@ Spla_Main:	; Routine 0
 		move.w	(v_ost_player+ost_x_pos).w,ost_x_pos(a0) ; copy x-position from Sonic
 
 Spla_Display:	; Routine 2
-		move.w	(v_waterpos1).w,ost_y_pos(a0) ; copy y-position from water height
+		move.w	(v_water_height_actual).w,ost_y_pos(a0) ; copy y-position from water height
 		lea	(Ani_Splash).l,a1
 		jsr	(AnimateSprite).l
 		jmp	(DisplaySprite).l

@@ -29,7 +29,7 @@ Crab_Main:	; Routine 0
 		move.b	#6,ost_col_type(a0)
 		move.b	#$15,ost_actwidth(a0)
 		bsr.w	ObjectFall
-		jsr	(ObjFloorDist).l ; find floor
+		jsr	(FindFloorObj).l ; find floor
 		tst.w	d1
 		bpl.s	@floornotfound
 		add.w	d1,ost_y_pos(a0)
@@ -118,7 +118,7 @@ Crab_Action:	; Routine 2
 		subi.w	#$20,d3
 
 loc_9640:
-		jsr	(ObjFloorDist2).l
+		jsr	(FindFloorObj2).l
 		cmpi.w	#-8,d1
 		blt.s	loc_966E
 		cmpi.w	#$C,d1
@@ -127,7 +127,7 @@ loc_9640:
 ; ===========================================================================
 
 loc_9654:
-		jsr	(ObjFloorDist).l
+		jsr	(FindFloorObj).l
 		add.w	d1,ost_y_pos(a0)
 		move.b	d3,ost_angle(a0)
 		bsr.w	Crab_SetAni

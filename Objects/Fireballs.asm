@@ -117,7 +117,7 @@ locret_E452:
 
 LBall_Type05:
 		bclr	#status_yflip_bit,ost_status(a0)
-		bsr.w	ObjFloorDist
+		bsr.w	FindFloorObj
 		tst.w	d1
 		bpl.s	locret_E474
 		move.b	#8,ost_subtype(a0)

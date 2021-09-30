@@ -74,6 +74,7 @@ FindNearestTile:
 ;	d2 = y position of object's bottom edge
 ;	d3 = x position of object
 ;	d5 = bit to test for solidness: $D = top solid; $E = left/right/bottom solid
+;	d6 = eor bitmask for 16x16 tile
 ;	a3 = height of 16x16 tiles: $10 or -$10 if object is inverted
 ;	a4 = RAM address to write angle byte
 
@@ -238,6 +239,24 @@ FindFloor2:
 		rts	
 ; End of function FindFloor2
 
+; ---------------------------------------------------------------------------
+; Subroutine to	find a wall
+
+; input:
+;	d2 = y position of object's bottom edge
+;	d3 = x position of object
+;	d5 = bit to test for solidness: $D = top solid; $E = left/right/bottom solid
+;	d6 = eor bitmask for 16x16 tile
+;	a3 = height of 16x16 tiles: $10 or -$10 if object is inverted
+;	a4 = RAM address to write angle byte
+
+; output:
+;	d1 = distance to the wall
+;	a1 = address within 256x256 mappings where object is standing
+;	(a1) = 16x16 tile number
+;	(a4) = floor angle
+; ---------------------------------------------------------------------------
+
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 
@@ -246,11 +265,11 @@ FindWall:
 		move.w	(a1),d0
 		move.w	d0,d4
 		andi.w	#$7FF,d0
-		beq.s	loc_14B1E
+		beq.s	@isblank
 		btst	d5,d4
-		bne.s	loc_14B2C
+		bne.s	@issolid
 
-loc_14B1E:
+@isblank:
 		add.w	a3,d3
 		bsr.w	FindWall2
 		sub.w	a3,d3
@@ -258,63 +277,63 @@ loc_14B1E:
 		rts	
 ; ===========================================================================
 
-loc_14B2C:
+@issolid:
 		movea.l	(v_collindex).w,a2
-		move.b	(a2,d0.w),d0
+		move.b	(a2,d0.w),d0	; get collision block number
 		andi.w	#$FF,d0
-		beq.s	loc_14B1E
+		beq.s	@isblank	; branch if 0
 		lea	(AngleMap).l,a2
-		move.b	(a2,d0.w),(a4)
+		move.b	(a2,d0.w),(a4)	; get collision angle value
 		lsl.w	#4,d0
-		move.w	d2,d1
-		btst	#$C,d4
-		beq.s	loc_14B5A
+		move.w	d2,d1		; get y pos. of object
+		btst	#$C,d4		; is block flipped vertically?
+		beq.s	@noflip	; if not, branch
 		not.w	d1
 		addi.b	#$40,(a4)
 		neg.b	(a4)
 		subi.b	#$40,(a4)
 
-loc_14B5A:
-		btst	#$B,d4
-		beq.s	loc_14B62
+	@noflip:
+		btst	#$B,d4		; is block flipped horizontally?
+		beq.s	@noflip2
 		neg.b	(a4)
 
-loc_14B62:
+	@noflip2:
 		andi.w	#$F,d1
-		add.w	d0,d1
+		add.w	d0,d1		; (block num. * $10) + x pos. = place in array
 		lea	(CollArray2).l,a2
-		move.b	(a2,d1.w),d0
+		move.b	(a2,d1.w),d0	; get rotated collision height
 		ext.w	d0
 		eor.w	d6,d4
-		btst	#$B,d4
-		beq.s	loc_14B7E
+		btst	#$B,d4		; is block flipped horizontally?
+		beq.s	@noflip3	; if not, branch
 		neg.w	d0
 
-loc_14B7E:
+	@noflip3:
 		tst.w	d0
-		beq.s	loc_14B1E
-		bmi.s	loc_14B9A
+		beq.s	@isblank	; branch if height is 0
+		bmi.s	@negfloor	; branch if height is negative
 		cmpi.b	#$10,d0
-		beq.s	loc_14BA6
-		move.w	d3,d1
+		beq.s	@maxfloor	; branch if height is $10 (max)
+		move.w	d3,d1		; get x pos. of object
 		andi.w	#$F,d1
 		add.w	d1,d0
 		move.w	#$F,d1
-		sub.w	d0,d1
+		sub.w	d0,d1		; return distance to wall
 		rts	
 ; ===========================================================================
 
-loc_14B9A:
+@negfloor:
 		move.w	d3,d1
 		andi.w	#$F,d1
 		add.w	d1,d0
-		bpl.w	loc_14B1E
+		bpl.w	@isblank
 
-loc_14BA6:
+@maxfloor:
 		sub.w	a3,d3
-		bsr.w	FindWall2
+		bsr.w	FindWall2	; try next tile over
 		add.w	a3,d3
-		subi.w	#$10,d1
+		subi.w	#$10,d1		; return distance to wall
 		rts	
 ; End of function FindWall
 

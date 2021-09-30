@@ -34,7 +34,7 @@ Surf_Action:	; Routine 2
 
 	@even:
 		move.w	d1,ost_x_pos(a0) ; match obj x-position to screen position
-		move.w	(v_waterpos1).w,d1
+		move.w	(v_water_height_actual).w,d1
 		move.w	d1,ost_y_pos(a0) ; match obj y-position to water height
 		tst.b	ost_surf_freeze(a0)
 		bne.s	@stopped

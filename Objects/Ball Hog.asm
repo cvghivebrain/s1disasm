@@ -25,7 +25,7 @@ Hog_Main:	; Routine 0
 		move.b	#5,ost_col_type(a0)
 		move.b	#$C,ost_actwidth(a0)
 		bsr.w	ObjectFall
-		jsr	(ObjFloorDist).l ; find floor
+		jsr	(FindFloorObj).l ; find floor
 		tst.w	d1
 		bpl.s	@floornotfound
 		add.w	d1,ost_y_pos(a0)
