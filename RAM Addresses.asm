@@ -255,9 +255,13 @@ v_angle_right:	equ $FFFFF768	; angle of floor on Sonic's right side
 
 v_angle_left:	equ $FFFFF76A	; angle of floor on Sonic's left side
 
-v_opl_routine:	equ $FFFFF76C	; ObjPosLoad - routine counter
-v_opl_screen:	equ $FFFFF76E	; ObjPosLoad - screen variable
-v_opl_data:	equ $FFFFF770	; ObjPosLoad - data buffer ($10 bytes)
+v_opl_routine:		equ $FFFFF76C ; ObjPosLoad - routine counter
+
+v_opl_screen_x_pos:	equ $FFFFF76E ; ObjPosLoad - screen x position, rounded down to nearest $80 (2 bytes)
+v_opl_ptr_right:	equ $FFFFF770 ; ObjPosLoad - pointer to current objpos data (4 bytes)
+v_opl_ptr_left:		equ $FFFFF774 ; ObjPosLoad - pointer to leftmost objpos data (4 bytes)
+v_opl_ptr_alt_right:	equ $FFFFF778 ; ObjPosLoad - pointer to current secondary objpos data (4 bytes)
+v_opl_ptr_alt_left:	equ $FFFFF77C ; ObjPosLoad - pointer to leftmost secondary objpos data (4 bytes)
 
 v_ssangle:	equ $FFFFF780	; Special Stage angle (2 bytes)
 v_ssrotate:	equ $FFFFF782	; Special Stage rotation speed (2 bytes)
