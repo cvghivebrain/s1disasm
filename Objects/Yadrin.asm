@@ -2,7 +2,7 @@
 
 
 Yad_ChkWall:
-		move.w	(v_framecount).w,d0
+		move.w	(v_frame_counter).w,d0
 		add.w	d7,d0
 		andi.w	#3,d0
 		bne.s	loc_F836

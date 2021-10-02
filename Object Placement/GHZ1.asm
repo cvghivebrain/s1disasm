@@ -7,12 +7,12 @@
 		objpos $0334,$0328,Springs,$02
 		objpos $0340,$03AC,MotoBug,$00,rem
 		objpos $0420,$0330,BuzzBomber,$00,rem
-		objpos $0430,$0378,Scenery,$03,xflip
+		objpos $0430,$0378,Scenery,type_scen_stump,xflip
 		objpos $046C,$0320,Rings,$14,rem
 		objpos $04A0,$0460,Chopper,$00,rem
 		objpos $04A8,$0388,WaterSound,$00
 		objpos $04A8,$0388,Bridge,$0C
-		objpos $0510,$0378,Scenery,$03
+		objpos $0510,$0378,Scenery,type_scen_stump
 		objpos $05D6,$0320,Monitor,$05,rem
 		objpos $0680,$0387,Rings,$10,rem
 		objpos $06A0,$0397,Rings,$10,rem
@@ -25,18 +25,18 @@
 		objpos $0960,$02FA,Crabmeat,$00,rem
 		objpos $09C4,$02C0,Rings,$11,rem
 		objpos $09CD,$02FD,PurpleRock,$00
-		objpos $0A30,$0308,Scenery,$03,xflip
+		objpos $0A30,$0308,Scenery,type_scen_stump,xflip
 		objpos $0A78,$0400,Chopper,$00,rem
 		objpos $0AA8,$0318,WaterSound,$00
 		objpos $0AA8,$0318,Bridge,$0C
 		objpos $0AC8,$03C0,Chopper,$00,rem
-		objpos $0B10,$0308,Scenery,$03
+		objpos $0B10,$0308,Scenery,type_scen_stump
 		objpos $0B94,$02D0,Rings,$11,rem
 		objpos $0BA0,$02FE,PurpleRock,$00
-		objpos $0C08,$02F8,EdgeWalls,id_frame_edge_shadow
+		objpos $0C08,$02F8,EdgeWalls,type_edge_shadow
 		objpos $0C50,$034C,MotoBug,$00,rem
-		objpos $0D08,$03B0,EdgeWalls,id_frame_edge_shadow
-		objpos $0D08,$03E0,EdgeWalls,id_frame_edge_light
+		objpos $0D08,$03B0,EdgeWalls,type_edge_shadow
+		objpos $0D08,$03E0,EdgeWalls,type_edge_light
 		objpos $0D28,$0373,Spikes,$00
 		objpos $0D40,$0268,BuzzBomber,$00,rem
 		objpos $0D50,$02B6,Rings,$10,rem
@@ -51,7 +51,7 @@
 		objpos $0DDA,$0277,Rings,$10,rem
 		objpos $0E2C,$0278,Springs,$02
 		objpos $0EB1,$0211,Rings,$10,rem
-		objpos $0ED0,$0240,CollapseLedge,id_frame_ledge_left,rem
+		objpos $0ED0,$0240,CollapseLedge,type_ledge_left,rem
 		objpos $0ED2,$020A,Rings,$10,rem
 		objpos $0EF5,$0203,Rings,$10,rem
 		objpos $0F1A,$0205,Rings,$10,rem
@@ -67,8 +67,8 @@
 		objpos $0FA0,$0201,PurpleRock,$00
 		objpos $0FAC,$03B7,Spikes,$00
 		objpos $0FD8,$0272,PurpleRock,$00
-		objpos $1030,$02B0,CollapseLedge,id_frame_ledge_right,xflip,rem
-		objpos $10A0,$02B0,CollapseLedge,id_frame_ledge_left,rem
+		objpos $1030,$02B0,CollapseLedge,type_ledge_right,xflip,rem
+		objpos $10A0,$02B0,CollapseLedge,type_ledge_left,rem
 		objpos $1100,$01D0,BuzzBomber,$00,rem
 		objpos $1158,$032C,Rings,$12,rem
 		objpos $1170,$0377,Spikes,$00
@@ -116,8 +116,8 @@
 		objpos $1784,$0189,Rings,$10,rem
 		objpos $17A6,$0179,Rings,$10,rem
 		objpos $17E0,$0174,Rings,$10,rem
-		objpos $1808,$01C0,EdgeWalls,id_frame_edge_light
-		objpos $1808,$01F0,EdgeWalls,id_frame_edge_light
+		objpos $1808,$01C0,EdgeWalls,type_edge_light
+		objpos $1808,$01F0,EdgeWalls,type_edge_light
 		objpos $180C,$0174,Rings,$10,rem
 		objpos $1820,$0074,Rings,$16,rem
 		objpos $183C,$0176,Rings,$10,rem
@@ -138,10 +138,10 @@
 		objpos $198C,$017B,Rings,$10,rem
 		objpos $19BC,$0176,Rings,$10,rem
 		objpos $19EC,$0174,Rings,$10,rem
-		objpos $1AF8,$00C0,EdgeWalls,id_frame_edge_dark
-		objpos $1AF8,$00E0,EdgeWalls,id_frame_edge_dark
-		objpos $1AF8,$02B0,EdgeWalls,id_frame_edge_dark
-		objpos $1AF8,$02F0,EdgeWalls,id_frame_edge_dark
+		objpos $1AF8,$00C0,EdgeWalls,type_edge_dark
+		objpos $1AF8,$00E0,EdgeWalls,type_edge_dark
+		objpos $1AF8,$02B0,EdgeWalls,type_edge_dark
+		objpos $1AF8,$02F0,EdgeWalls,type_edge_dark
 		objpos $1B60,$0088,BasicPlatform,$03
 		objpos $1B70,$0288,BasicPlatform,$03
 		objpos $1BA0,$00C8,BasicPlatform,$03
@@ -160,25 +160,25 @@
 		objpos $1D88,$0228,Rings,$13,rem
 		objpos $1DA0,$0320,BuzzBomber,$00,rem
 		objpos $1DE0,$0204,BasicPlatform,$01
-		objpos $1DF8,$04B0,EdgeWalls,id_frame_edge_dark
+		objpos $1DF8,$04B0,EdgeWalls,type_edge_dark
 		objpos $1E00,$0268,Rings,$10,rem
-		objpos $1E08,$0370,EdgeWalls,id_frame_edge_shadow
+		objpos $1E08,$0370,EdgeWalls,type_edge_shadow
 		objpos $1E18,$0368,Newtron,$01,xflip,rem
 		objpos $1E20,$04B4,Spikes,$00
 		objpos $1E40,$0450,Newtron,$01,xflip,rem
-		objpos $1E48,$0340,EdgeWalls,id_frame_edge_shadow
+		objpos $1E48,$0340,EdgeWalls,type_edge_shadow
 		objpos $1E60,$0330,Newtron,$01,xflip,rem
 		objpos $1E60,$0430,Newtron,$01,xflip,rem
 		objpos $1EA0,$02A0,BuzzBomber,$00,rem
 		objpos $1ED8,$02FF,PurpleRock,$00
-		objpos $1F30,$0308,Scenery,$03,xflip
+		objpos $1F30,$0308,Scenery,type_scen_stump,xflip
 		objpos $1F64,$0480,Rings,$15,rem
 		objpos $1F70,$02B4,Rings,$14,rem
 		objpos $1F80,$03C0,Chopper,$00,rem
 		objpos $1FA8,$0318,WaterSound,$00
 		objpos $1FA8,$0318,Bridge,$0C
 		objpos $1FC0,$03D0,Chopper,$00,rem
-		objpos $2010,$030A,Scenery,$03
+		objpos $2010,$030A,Scenery,type_scen_stump
 		objpos $2020,$04B0,Spikes,$00
 		objpos $2048,$0390,Spikes,$20
 		objpos $2058,$038E,Spikes,$20

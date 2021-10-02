@@ -256,7 +256,7 @@ v_angle_right:	equ $FFFFF768	; angle of floor on Sonic's right side
 v_angle_left:	equ $FFFFF76A	; angle of floor on Sonic's left side
 
 v_opl_routine:		equ $FFFFF76C ; ObjPosLoad - routine counter
-
+	; $F76D unused
 v_opl_screen_x_pos:	equ $FFFFF76E ; ObjPosLoad - screen x position, rounded down to nearest $80 (2 bytes)
 v_opl_ptr_right:	equ $FFFFF770 ; ObjPosLoad - pointer to current objpos data (4 bytes)
 v_opl_ptr_left:		equ $FFFFF774 ; ObjPosLoad - pointer to leftmost objpos data (4 bytes)
@@ -321,43 +321,50 @@ v_pal_water_dup:	equ $FFFFFA00 ; duplicate underwater palette, used for transiti
 v_pal_water:	equ $FFFFFA80	; main underwater palette ($80 bytes)
 v_pal_dry:	equ $FFFFFB00	; main palette ($80 bytes)
 v_pal_dry_dup:	equ $FFFFFB80	; duplicate palette, used for transitions ($80 bytes)
-v_objstate:	equ $FFFFFC00	; object state list ($200 bytes)
+v_objstate:	equ $FFFFFC00	; object state list ($100 bytes)
 
 
-v_systemstack:	equ $FFFFFE00
-f_restart:	equ $FFFFFE02	; restart level flag (2 bytes)
-v_framecount:	equ $FFFFFE04	; frame counter (adds 1 every frame) (2 bytes)
-v_framebyte:	equ v_framecount+1; low byte for frame counter
-v_debugitem:	equ $FFFFFE06	; debug item currently selected (NOT the object number of the item)
-v_debuguse:	equ $FFFFFE08	; debug mode use & routine counter (when Sonic is a ring/item) (2 bytes)
-v_debugxspeed:	equ $FFFFFE0A	; debug mode - horizontal speed
-v_debugyspeed:	equ $FFFFFE0B	; debug mode - vertical speed
-v_vbla_count:	equ $FFFFFE0C	; vertical interrupt counter (adds 1 every VBlank) (4 bytes)
-v_vbla_word:	equ v_vbla_count+2 ; low word for vertical interrupt counter (2 bytes)
-v_vbla_byte:	equ v_vbla_word+1	; low byte for vertical interrupt counter
-v_zone:		equ $FFFFFE10	; current zone number
-v_act:		equ $FFFFFE11	; current act number
-v_lives:		equ $FFFFFE12	; number of lives
-v_air:		equ $FFFFFE14	; air remaining while underwater (2 bytes)
-v_airbyte:	equ v_air+1	; low byte for air
-v_lastspecial:	equ $FFFFFE16	; last special stage number
-v_continues:	equ $FFFFFE18	; number of continues
-f_timeover:	equ $FFFFFE1A	; time over flag
-v_lifecount:	equ $FFFFFE1B	; lives counter value (for actual number, see "v_lives")
-f_lifecount:	equ $FFFFFE1C	; lives counter update flag
-f_ringcount:	equ $FFFFFE1D	; ring counter update flag
-f_timecount:	equ $FFFFFE1E	; time counter update flag
-f_scorecount:	equ $FFFFFE1F	; score counter update flag
-v_rings:		equ $FFFFFE20	; rings (2 bytes)
-v_ringbyte:	equ v_rings+1	; low byte for rings
-v_time:		equ $FFFFFE22	; time (4 bytes)
-v_timemin:	equ $FFFFFE23	; time - minutes
-v_timesec:	equ $FFFFFE24	; time - seconds
-v_timecent:	equ $FFFFFE25	; time - centiseconds
-v_score:		equ $FFFFFE26	; score (4 bytes)
-v_shield:	equ $FFFFFE2C	; shield status (00 = no; 01 = yes)
-v_invinc:	equ $FFFFFE2D	; invinciblity status (00 = no; 01 = yes)
-v_shoes:		equ $FFFFFE2E	; speed shoes status (00 = no; 01 = yes)
+v_stack:		equ $FFFFFD00 ; stack ($100 bytes)
+v_stack_pointer:	equ $FFFFFE00 ; stack pointer
+
+f_restart:		equ $FFFFFE02 ; flag set to end/restart level (2 bytes)
+v_frame_counter:	equ $FFFFFE04 ; frame counter, increments every frame (2 bytes)
+v_frame_counter_low:	equ v_frame_counter+1 ; low byte for frame counter
+v_debug_item_index:	equ $FFFFFE06 ; debug item currently selected (NOT the object id of the item)
+
+v_debug_active:		equ $FFFFFE08 ; xx01 when debug mode is in use and Sonic is an item; 0 otherwise (2 bytes)
+v_debug_active_hi:	equ $FFFFFE08 ; high byte of v_debug_active, routine counter for DebugMode (00/02)
+v_debug_x_speed:	equ $FFFFFE0A ; debug mode - horizontal speed
+v_debug_y_speed:	equ $FFFFFE0B ; debug mode - vertical speed
+v_vblank_counter:	equ $FFFFFE0C ; vertical interrupt counter, increments every VBlank (4 bytes)
+v_vblank_counter_word:	equ v_vblank_counter+2 ; low word for v_vblank_counter (2 bytes)
+v_vblank_counter_byte:	equ v_vblank_counter_word+1 ; low byte for v_vblank_counter
+v_zone:			equ $FFFFFE10 ; current zone number
+v_act:			equ $FFFFFE11 ; current act number
+v_lives:		equ $FFFFFE12 ; number of lives
+
+v_air:			equ $FFFFFE14 ; air remaining while underwater (2 bytes)
+v_last_ss_levelid:	equ $FFFFFE16 ; level id of most recent special stage played
+
+v_continues:		equ $FFFFFE18 ; number of continues
+
+f_time_over:		equ $FFFFFE1A ; time over flag
+v_ring_reward:		equ $FFFFFE1B ; tracks which rewards have been given for rings - bit 0 = 50 rings (Special Stage); bit 1 = 100 rings; bit 2 = 200 rings
+f_hud_lives_update:	equ $FFFFFE1C ; lives counter update flag
+v_hud_rings_update:	equ $FFFFFE1D ; ring counter update flag - 1 = general update; $80 = reset to 0
+f_hud_time_update:	equ $FFFFFE1E ; time counter update flag
+f_hud_score_update:	equ $FFFFFE1F ; score counter update flag
+v_rings:		equ $FFFFFE20 ; rings (2 bytes)
+v_time:			equ $FFFFFE22 ; time (4 bytes)
+v_time_min:		equ $FFFFFE23 ; time - minutes
+v_time_sec:		equ $FFFFFE24 ; time - seconds
+v_time_frames:		equ $FFFFFE25 ; time - frames
+v_score:		equ $FFFFFE26 ; score (4 bytes)
+
+v_shield:		equ $FFFFFE2C ; shield status - 00 = no; 01 = yes
+v_invincibility:	equ $FFFFFE2D ; invinciblity status - 00 = no; 01 = yes
+v_shoes:		equ $FFFFFE2E ; speed shoes status - 00 = no; 01 = yes
+
 v_lastlamp:	equ $FFFFFE30	; number of the last lamppost you hit
 v_lamp_xpos:	equ v_lastlamp+2	; x-axis for Sonic to respawn at lamppost (2 bytes)
 v_lamp_ypos:	equ v_lastlamp+4	; y-axis for Sonic to respawn at lamppost (2 bytes)

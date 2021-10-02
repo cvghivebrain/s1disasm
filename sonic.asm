@@ -33,7 +33,7 @@ OptimiseSound:	equ 0	; change to 1 to optimise sound queuing
 ; ===========================================================================
 
 StartOfRom:
-Vectors:	dc.l v_systemstack&$FFFFFF	; Initial stack pointer value
+Vectors:	dc.l v_stack_pointer&$FFFFFF	; Initial stack pointer value
 		dc.l EntryPoint			; Start of program
 		dc.l BusError			; Bus error
 		dc.l AddressError		; Address error (4)
@@ -595,7 +595,7 @@ VBla_Music:
 		jsr	(UpdateMusic).l
 
 VBla_Exit:
-		addq.l	#1,(v_vbla_count).w
+		addq.l	#1,(v_vblank_counter).w
 		movem.l	(sp)+,d0-a6
 		rte	
 ; ===========================================================================
@@ -1839,7 +1839,7 @@ GM_Title:
 		dbf	d1,Tit_LoadText	; load level select font
 
 		move.b	#0,(v_lastlamp).w ; clear lamppost counter
-		move.w	#0,(v_debuguse).w ; disable debug item placement mode
+		move.w	#0,(v_debug_active).w ; disable debug item placement mode
 		move.w	#0,(f_demo).w	; disable debug mode
 		move.w	#0,($FFFFFFEA).w ; unused variable
 		move.w	#(id_GHZ<<8),(v_zone).w	; set level to GHZ (00)
@@ -2096,7 +2096,7 @@ PlayLevel:
 		move.w	d0,(v_rings).w	; clear rings
 		move.l	d0,(v_time).w	; clear time
 		move.l	d0,(v_score).w	; clear score
-		move.b	d0,(v_lastspecial).w ; clear special stage number
+		move.b	d0,(v_last_ss_levelid).w ; clear special stage number
 		move.b	d0,(v_emeralds).w ; clear emeralds
 		move.l	d0,(v_emldlist).w ; clear emeralds
 		move.l	d0,(v_emldlist+4).w ; clear emeralds
@@ -2216,7 +2216,7 @@ loc_3422:
 		bne.s	Demo_Level	; if not, branch
 		move.b	#id_Special,(v_gamemode).w ; set screen mode to $10 (Special Stage)
 		clr.w	(v_zone).w	; clear	level number
-		clr.b	(v_lastspecial).w ; clear special stage number
+		clr.b	(v_last_ss_levelid).w ; clear special stage number
 
 Demo_Level:
 		move.b	#3,(v_lives).w	; set lives to 3
@@ -2615,21 +2615,21 @@ Level_LoadObj:
 		bne.s	Level_SkipClr	; if yes, branch
 		move.w	d0,(v_rings).w	; clear rings
 		move.l	d0,(v_time).w	; clear time
-		move.b	d0,(v_lifecount).w ; clear lives counter
+		move.b	d0,(v_ring_reward).w ; clear lives counter
 
 	Level_SkipClr:
-		move.b	d0,(f_timeover).w
+		move.b	d0,(f_time_over).w
 		move.b	d0,(v_shield).w	; clear shield
-		move.b	d0,(v_invinc).w	; clear invincibility
+		move.b	d0,(v_invincibility).w	; clear invincibility
 		move.b	d0,(v_shoes).w	; clear speed shoes
 		move.b	d0,($FFFFFE2F).w
-		move.w	d0,(v_debuguse).w
+		move.w	d0,(v_debug_active).w
 		move.w	d0,(f_restart).w
-		move.w	d0,(v_framecount).w
+		move.w	d0,(v_frame_counter).w
 		bsr.w	OscillateNumInit
-		move.b	#1,(f_scorecount).w ; update score counter
-		move.b	#1,(f_ringcount).w ; update rings counter
-		move.b	#1,(f_timecount).w ; update time counter
+		move.b	#1,(f_hud_score_update).w ; update score counter
+		move.b	#1,(v_hud_rings_update).w ; update rings counter
+		move.b	#1,(f_hud_time_update).w ; update time counter
 		move.w	#0,(v_btnpushtime1).w
 		lea	(DemoDataPtr).l,a1 ; load demo data
 		moveq	#0,d0
@@ -2704,7 +2704,7 @@ Level_MainLoop:
 		bsr.w	PauseGame
 		move.b	#8,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
-		addq.w	#1,(v_framecount).w ; add 1 to level timer
+		addq.w	#1,(v_frame_counter).w ; add 1 to level timer
 		bsr.w	MoveSonicInDemo
 		bsr.w	LZWaterFeatures
 		jsr	(ExecuteObjects).l
@@ -2713,7 +2713,7 @@ Level_MainLoop:
 			tst.w   (f_restart).w
 			bne     GM_Level
 		endc
-		tst.w	(v_debuguse).w	; is debug mode being used?
+		tst.w	(v_debug_active).w	; is debug mode being used?
 		bne.s	Level_DoScroll	; if yes, branch
 		cmpi.b	#6,(v_ost_player+ost_routine).w ; has Sonic just died?
 		bhs.s	Level_SkipScroll ; if yes, branch
@@ -2937,7 +2937,7 @@ ColPointers:	dc.l Col_GHZ
 
 
 SignpostArtLoad:
-		tst.w	(v_debuguse).w	; is debug mode	being used?
+		tst.w	(v_debug_active).w	; is debug mode	being used?
 		bne.w	@exit		; if yes, branch
 		cmpi.b	#2,(v_act).w	; is act number 02 (act 3)?
 		beq.s	@exit		; if yes, branch
@@ -2947,7 +2947,7 @@ SignpostArtLoad:
 		subi.w	#$100,d1
 		cmp.w	d1,d0		; has Sonic reached the	edge of	the level?
 		blt.s	@exit		; if not, branch
-		tst.b	(f_timecount).w
+		tst.b	(f_hud_time_update).w
 		beq.s	@exit
 		cmp.w	(v_limitleft2).w,d1
 		beq.s	@exit
@@ -3043,8 +3043,8 @@ GM_Special:
 		move.b	1(a1),(v_btnpushtime2).w
 		subq.b	#1,(v_btnpushtime2).w
 		clr.w	(v_rings).w
-		clr.b	(v_lifecount).w
-		move.w	#0,(v_debuguse).w
+		clr.b	(v_ring_reward).w
+		move.w	#0,(v_debug_active).w
 		move.w	#1800,(v_countdown).w
 		tst.b	(f_debugcheat).w ; has debug cheat been entered?
 		beq.s	SS_NoDebug	; if not, branch
@@ -3132,7 +3132,7 @@ loc_47D4:
 		bsr.w	NewPLC
 		moveq	#id_PLC_SSResult,d0
 		bsr.w	AddPLC		; load results screen patterns
-		move.b	#1,(f_scorecount).w ; update score counter
+		move.b	#1,(f_hud_score_update).w ; update score counter
 		move.b	#1,(f_endactbonus).w ; update ring bonus counter
 		move.w	(v_rings).w,d0
 		mulu.w	#10,d0		; multiply rings by 10
@@ -3653,18 +3653,18 @@ End_LoadSonic:
 		moveq	#0,d0
 		move.w	d0,(v_rings).w
 		move.l	d0,(v_time).w
-		move.b	d0,(v_lifecount).w
+		move.b	d0,(v_ring_reward).w
 		move.b	d0,(v_shield).w
-		move.b	d0,(v_invinc).w
+		move.b	d0,(v_invincibility).w
 		move.b	d0,(v_shoes).w
 		move.b	d0,($FFFFFE2F).w
-		move.w	d0,(v_debuguse).w
+		move.w	d0,(v_debug_active).w
 		move.w	d0,(f_restart).w
-		move.w	d0,(v_framecount).w
+		move.w	d0,(v_frame_counter).w
 		bsr.w	OscillateNumInit
-		move.b	#1,(f_scorecount).w
-		move.b	#1,(f_ringcount).w
-		move.b	#0,(f_timecount).w
+		move.b	#1,(f_hud_score_update).w
+		move.b	#1,(v_hud_rings_update).w
+		move.b	#0,(f_hud_time_update).w
 		move.w	#1800,(v_countdown).w
 		move.b	#$18,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
@@ -3682,7 +3682,7 @@ End_MainLoop:
 		bsr.w	PauseGame
 		move.b	#$18,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
-		addq.w	#1,(v_framecount).w
+		addq.w	#1,(v_frame_counter).w
 		bsr.w	End_MoveSonic
 		jsr	(ExecuteObjects).l
 		bsr.w	DeformLayers
@@ -3712,7 +3712,7 @@ End_ChkEmerald:
 		bsr.w	PauseGame
 		move.b	#$18,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
-		addq.w	#1,(v_framecount).w
+		addq.w	#1,(v_frame_counter).w
 		bsr.w	End_MoveSonic
 		jsr	(ExecuteObjects).l
 		bsr.w	DeformLayers
@@ -8144,11 +8144,11 @@ SS_StartLoc:
 
 SS_Load:
 		moveq	#0,d0
-		move.b	(v_lastspecial).w,d0 ; load number of last special stage entered
-		addq.b	#1,(v_lastspecial).w
-		cmpi.b	#6,(v_lastspecial).w
+		move.b	(v_last_ss_levelid).w,d0 ; load number of last special stage entered
+		addq.b	#1,(v_last_ss_levelid).w
+		cmpi.b	#6,(v_last_ss_levelid).w
 		blo.s	SS_ChkEmldNum
-		move.b	#0,(v_lastspecial).w ; reset if higher than 6
+		move.b	#0,(v_last_ss_levelid).w ; reset if higher than 6
 
 SS_ChkEmldNum:
 		cmpi.b	#6,(v_emeralds).w ; do you have all emeralds?

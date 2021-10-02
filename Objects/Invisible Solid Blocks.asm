@@ -44,7 +44,7 @@ Invis_Solid:	; Routine 2
 
 @chkdel:
 		out_of_range.s	@delete
-		tst.w	(v_debuguse).w	; are you using	debug mode?
+		tst.w	(v_debug_active).w	; are you using	debug mode?
 		beq.s	@nodisplay	; if not, branch
 		jmp	(DisplaySprite).l ; if yes, display the object
 

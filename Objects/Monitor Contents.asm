@@ -57,7 +57,7 @@ Pow_ChkSonic:
 
 	ExtraLife:
 		addq.b	#1,(v_lives).w	; add 1 to the number of lives you have
-		addq.b	#1,(f_lifecount).w ; update the lives counter
+		addq.b	#1,(f_hud_lives_update).w ; update the lives counter
 		music	bgm_ExtraLife,1,0,0 ; play extra life music
 ; ===========================================================================
 
@@ -86,7 +86,7 @@ Pow_ChkInvinc:
 		cmpi.b	#5,d0		; does monitor contain invincibility?
 		bne.s	Pow_ChkRings
 
-		move.b	#1,(v_invinc).w	; make Sonic invincible
+		move.b	#1,(v_invincibility).w	; make Sonic invincible
 		move.w	#$4B0,(v_ost_player+ost_sonic_inv_time).w ; time limit for the power-up
 		move.b	#id_ShieldItem,(v_ost_stars1).w ; load stars object ($3801)
 		move.b	#id_ani_stars1,(v_ost_stars1+ost_anim).w
@@ -115,14 +115,14 @@ Pow_ChkRings:
 		bne.s	Pow_ChkS
 
 		addi.w	#10,(v_rings).w	; add 10 rings to the number of rings you have
-		ori.b	#1,(f_ringcount).w ; update the ring counter
+		ori.b	#1,(v_hud_rings_update).w ; update the ring counter
 		cmpi.w	#100,(v_rings).w ; check if you have 100 rings
 		bcs.s	Pow_RingSound
-		bset	#1,(v_lifecount).w
+		bset	#1,(v_ring_reward).w
 		beq.w	ExtraLife
 		cmpi.w	#200,(v_rings).w ; check if you have 200 rings
 		bcs.s	Pow_RingSound
-		bset	#2,(v_lifecount).w
+		bset	#2,(v_ring_reward).w
 		beq.w	ExtraLife
 
 	Pow_RingSound:

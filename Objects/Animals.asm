@@ -162,7 +162,7 @@ loc_912A:
 		move.b	d0,ost_routine(a0)
 		tst.b	(v_bossstatus).w
 		beq.s	loc_9180
-		btst	#4,(v_vbla_byte).w
+		btst	#4,(v_vblank_counter_byte).w
 		beq.s	loc_9180
 		neg.w	ost_x_vel(a0)
 		bchg	#render_xflip_bit,ost_render(a0)

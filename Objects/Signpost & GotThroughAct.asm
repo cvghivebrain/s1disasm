@@ -40,7 +40,7 @@ Sign_Touch:	; Routine 2
 		cmpi.w	#$20,d0		; is Sonic within $20 pixels of	the signpost?
 		bcc.s	@notouch	; if not, branch
 		music	sfx_Signpost,0,0,0 ; play signpost sound
-		clr.b	(f_timecount).w	; stop time counter
+		clr.b	(f_hud_time_update).w	; stop time counter
 		move.w	(v_limitright2).w,(v_limitleft2).w ; lock screen position
 		addq.b	#2,ost_routine(a0)
 
@@ -98,7 +98,7 @@ Sign_SparkPos:	dc.b -$18,-$10		; x-position, y-position
 ; ===========================================================================
 
 Sign_SonicRun:	; Routine 6
-		tst.w	(v_debuguse).w	; is debug mode	on?
+		tst.w	(v_debug_active).w	; is debug mode	on?
 		bne.w	locret_ECEE	; if yes, branch
 		btst	#status_air_bit,(v_ost_player+ost_status).w
 		bne.s	loc_EC70
@@ -129,17 +129,17 @@ GotThroughAct:
 		tst.b	(v_ost_gotthrough1).w
 		bne.s	locret_ECEE
 		move.w	(v_limitright2).w,(v_limitleft2).w
-		clr.b	(v_invinc).w	; disable invincibility
-		clr.b	(f_timecount).w	; stop time counter
+		clr.b	(v_invincibility).w	; disable invincibility
+		clr.b	(f_hud_time_update).w	; stop time counter
 		move.b	#id_GotThroughCard,(v_ost_gotthrough1).w
 		moveq	#id_PLC_TitleCard,d0
 		jsr	(NewPLC).l	; load title card patterns
 		move.b	#1,(f_endactbonus).w
 		moveq	#0,d0
-		move.b	(v_timemin).w,d0
+		move.b	(v_time_min).w,d0
 		mulu.w	#60,d0		; convert minutes to seconds
 		moveq	#0,d1
-		move.b	(v_timesec).w,d1
+		move.b	(v_time_sec).w,d1
 		add.w	d1,d0		; add up your time
 		divu.w	#15,d0		; divide by 15
 		moveq	#$14,d1

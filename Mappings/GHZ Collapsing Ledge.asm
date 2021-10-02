@@ -28,7 +28,7 @@ frame_ledge_left:
 		endsprite
 		
 frame_ledge_right:
-		spritemap		; ledge facing right
+		spritemap		; ledge facing right - actually faces left but is always xflipped in the level
 		piece	$10, -$38, 4x3, $57
 		piece	-$10, -$30, 4x2, $63
 		piece	$10, -$20, 4x2, $6B

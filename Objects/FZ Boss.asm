@@ -260,7 +260,7 @@ loc_19FE6:
 
 loc_1A000:
 		moveq	#$F,d0
-		and.w	(v_vbla_word).w,d0
+		and.w	(v_vblank_counter_word).w,d0
 		bne.s	loc_1A00A
 		bsr.s	loc_1A020
 

@@ -26,7 +26,7 @@ MoveWithPlatform2:			; jump here to use standard height (9)
 		bmi.s	MWP_End
 		cmpi.b	#id_Sonic_Death,(v_ost_player+ost_routine).w ; is Sonic dying?
 		bhs.s	MWP_End		; if yes, branch
-		tst.w	(v_debuguse).w	; is debug mode in use?
+		tst.w	(v_debug_active).w	; is debug mode in use?
 		bne.s	MWP_End		; if yes, branch
 		moveq	#0,d1
 		move.b	ost_height(a1),d1

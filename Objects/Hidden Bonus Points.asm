@@ -30,7 +30,7 @@ Bonus_Main:	; Routine 0
 		add.w	d2,d1
 		cmp.w	d3,d1
 		bcc.s	@chkdel
-		tst.w	(v_debuguse).w
+		tst.w	(v_debug_active).w
 		bne.s	@chkdel
 		tst.b	(f_bigring).w
 		bne.s	@chkdel

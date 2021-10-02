@@ -74,8 +74,8 @@ RLoss_Count:	; Routine 0
 
 @resetcounter:
 		move.w	#0,(v_rings).w	; reset number of rings to zero
-		move.b	#$80,(f_ringcount).w ; update ring counter
-		move.b	#0,(v_lifecount).w
+		move.b	#$80,(v_hud_rings_update).w ; update ring counter
+		move.b	#0,(v_ring_reward).w
 		sfx	sfx_RingLoss,0,0,0 ; play ring loss sound
 
 RLoss_Bounce:	; Routine 2
@@ -83,7 +83,7 @@ RLoss_Bounce:	; Routine 2
 		bsr.w	SpeedToPos
 		addi.w	#$18,ost_y_vel(a0)
 		bmi.s	@chkdel
-		move.b	(v_vbla_byte).w,d0
+		move.b	(v_vblank_counter_byte).w,d0
 		add.b	d7,d0
 		andi.b	#3,d0
 		bne.s	@chkdel

@@ -16,7 +16,7 @@ ResumeMusic:
 	@notsbz:
 		if Revision=0
 		else
-			tst.b	(v_invinc).w ; is Sonic invincible?
+			tst.b	(v_invincibility).w ; is Sonic invincible?
 			beq.s	@notinvinc ; if not, branch
 			move.w	#bgm_Invincible,d0
 	@notinvinc:

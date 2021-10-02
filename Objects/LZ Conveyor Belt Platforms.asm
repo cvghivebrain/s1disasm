@@ -150,7 +150,7 @@ loc_124C2:	; Routine 4
 ; ===========================================================================
 
 LCon_AniWheel:	; Routine 6
-		move.w	(v_framecount).w,d0
+		move.w	(v_frame_counter).w,d0
 		andi.w	#3,d0
 		bne.s	loc_124FC
 		moveq	#1,d1

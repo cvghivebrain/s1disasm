@@ -278,7 +278,7 @@ DynWater_SBZ3:
 
 
 LZWindTunnels:
-		tst.w	(v_debuguse).w	; is debug mode	being used?
+		tst.w	(v_debug_active).w	; is debug mode	being used?
 		bne.w	@quit		; if yes, branch
 		lea	(LZWind_Data+8).l,a2
 		moveq	#0,d0
@@ -305,7 +305,7 @@ LZWindTunnels:
 		bcs.s	@chknext
 		cmp.w	6(a2),d2
 		bcc.s	@chknext	; branch if Sonic is outside a range
-		move.b	(v_vbla_byte).w,d0
+		move.b	(v_vblank_counter_byte).w,d0
 		andi.b	#$3F,d0		; does VInt counter fall on 0, $40, $80 or $C0?
 		bne.s	@skipsound	; if not, branch
 		sfx	sfx_Waterfall,0,0,0 ; play rushing water sound (only every $40 frames)
@@ -423,7 +423,7 @@ loc_3F9A:
 		clr.b	ost_inertia+1(a1)
 		move.b	#id_WaterSlide,ost_anim(a1) ; use Sonic's "sliding" animation
 		move.b	#1,(f_jumponly).w ; lock controls (except jumping)
-		move.b	(v_vbla_byte).w,d0
+		move.b	(v_vblank_counter_byte).w,d0
 		andi.b	#$1F,d0
 		bne.s	locret_3FBE
 		sfx	sfx_Waterfall,0,0,0 ; play water sound

@@ -296,7 +296,7 @@ Drown_Countdown:; Routine $A
 		move.w	d0,ost_y_pos(a1)
 		jsr	(RandomNumber).l
 		move.b	d0,ost_angle(a1)
-		move.w	(v_framecount).w,d0
+		move.w	(v_frame_counter).w,d0
 		andi.b	#3,d0
 		bne.s	@loc_14082
 		move.b	#$E,ost_subtype(a1) ; object is medium bubble

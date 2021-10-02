@@ -4,7 +4,7 @@
 
 DebugMode:
 		moveq	#0,d0
-		move.b	(v_debuguse).w,d0
+		move.b	(v_debug_active_hi).w,d0
 		move.w	Debug_Index(pc,d0.w),d1
 		jmp	Debug_Index(pc,d1.w)
 ; ===========================================================================
@@ -14,7 +14,7 @@ Debug_Index:	index *
 ; ===========================================================================
 
 Debug_Main:	; Routine 0
-		addq.b	#2,(v_debuguse).w
+		addq.b	#2,(v_debug_active_hi).w
 		move.w	(v_limittop2).w,(v_limittopdb).w ; buffer level x-boundary
 		move.w	(v_limitbtm1).w,(v_limitbtmdb).w ; buffer level y-boundary
 		move.w	#0,(v_limittop2).w
@@ -42,14 +42,14 @@ Debug_Main:	; Routine 0
 		add.w	d0,d0
 		adda.w	(a2,d0.w),a2
 		move.w	(a2)+,d6
-		cmp.b	(v_debugitem).w,d6 ; have you gone past the last item?
+		cmp.b	(v_debug_item_index).w,d6 ; have you gone past the last item?
 		bhi.s	@noreset	; if not, branch
-		move.b	#0,(v_debugitem).w ; back to start of list
+		move.b	#0,(v_debug_item_index).w ; back to start of list
 
 	@noreset:
 		bsr.w	Debug_ShowItem
-		move.b	#12,(v_debugxspeed).w
-		move.b	#1,(v_debugyspeed).w
+		move.b	#12,(v_debug_x_speed).w
+		move.b	#1,(v_debug_y_speed).w
 
 Debug_Action:	; Routine 2
 		moveq	#6,d0
@@ -81,25 +81,25 @@ Debug_Control:
 		andi.w	#btnDir,d0	; is up/down/left/right	held?
 		bne.s	@dirheld	; if yes, branch
 
-		move.b	#12,(v_debugxspeed).w
-		move.b	#15,(v_debugyspeed).w
+		move.b	#12,(v_debug_x_speed).w
+		move.b	#15,(v_debug_y_speed).w
 		bra.w	Debug_ChgItem
 ; ===========================================================================
 
 @dirheld:
-		subq.b	#1,(v_debugxspeed).w
+		subq.b	#1,(v_debug_x_speed).w
 		bne.s	loc_1D01C
-		move.b	#1,(v_debugxspeed).w
-		addq.b	#1,(v_debugyspeed).w
+		move.b	#1,(v_debug_x_speed).w
+		addq.b	#1,(v_debug_y_speed).w
 		bne.s	@dirpressed
-		move.b	#-1,(v_debugyspeed).w
+		move.b	#-1,(v_debug_y_speed).w
 
 @dirpressed:
 		move.b	(v_joypad_hold_actual).w,d4
 
 loc_1D01C:
 		moveq	#0,d1
-		move.b	(v_debugyspeed).w,d1
+		move.b	(v_debug_y_speed).w,d1
 		addq.w	#1,d1
 		swap	d1
 		asr.l	#4,d1
@@ -140,19 +140,19 @@ Debug_ChgItem:
 		beq.s	@createitem	; if not, branch
 		btst	#bitC,(v_joypad_press_actual).w ; is button C pressed?
 		beq.s	@nextitem	; if not, branch
-		subq.b	#1,(v_debugitem).w ; go back 1 item
+		subq.b	#1,(v_debug_item_index).w ; go back 1 item
 		bcc.s	@display
-		add.b	d6,(v_debugitem).w
+		add.b	d6,(v_debug_item_index).w
 		bra.s	@display
 ; ===========================================================================
 
 @nextitem:
 		btst	#bitA,(v_joypad_press_actual).w ; is button A pressed?
 		beq.s	@createitem	; if not, branch
-		addq.b	#1,(v_debugitem).w ; go forwards 1 item
-		cmp.b	(v_debugitem).w,d6
+		addq.b	#1,(v_debug_item_index).w ; go forwards 1 item
+		cmp.b	(v_debug_item_index).w,d6
 		bhi.s	@display
-		move.b	#0,(v_debugitem).w ; loop back to first item
+		move.b	#0,(v_debug_item_index).w ; loop back to first item
 
 	@display:
 		bra.w	Debug_ShowItem
@@ -170,7 +170,7 @@ Debug_ChgItem:
 		move.b	ost_render(a0),ost_status(a1)
 		andi.b	#$FF-status_onscreen,ost_status(a1) ; remove onscreen flag from status
 		moveq	#0,d0
-		move.b	(v_debugitem).w,d0
+		move.b	(v_debug_item_index).w,d0
 		lsl.w	#3,d0
 		move.b	4(a2,d0.w),ost_subtype(a1)
 		rts	
@@ -180,7 +180,7 @@ Debug_ChgItem:
 		btst	#bitB,(v_joypad_press_actual).w ; is button B pressed?
 		beq.s	@stayindebug	; if not, branch
 		moveq	#0,d0
-		move.w	d0,(v_debuguse).w ; deactivate debug mode
+		move.w	d0,(v_debug_active).w ; deactivate debug mode
 		move.l	#Map_Sonic,(v_ost_player+ost_mappings).w
 		move.w	#vram_sonic/$20,(v_ost_player+ost_tile).w
 		move.b	d0,(v_ost_player+ost_anim).w
@@ -209,7 +209,7 @@ Debug_ChgItem:
 
 Debug_ShowItem:
 		moveq	#0,d0
-		move.b	(v_debugitem).w,d0
+		move.b	(v_debug_item_index).w,d0
 		lsl.w	#3,d0
 		move.l	(a2,d0.w),ost_mappings(a0) ; load mappings for item
 		move.w	6(a2,d0.w),ost_tile(a0) ; load VRAM setting for item

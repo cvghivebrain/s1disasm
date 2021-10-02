@@ -72,7 +72,7 @@ Gar_FireBall:	; Routine 4
 		sfx	sfx_Fireball,0,0,0 ; play lava ball sound
 
 Gar_AniFire:	; Routine 6
-		move.b	(v_framebyte).w,d0
+		move.b	(v_frame_counter_low).w,d0
 		andi.b	#7,d0
 		bne.s	@nochg
 		bchg	#0,ost_frame(a0) ; change every 8 frames

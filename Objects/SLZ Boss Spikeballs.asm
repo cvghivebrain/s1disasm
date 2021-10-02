@@ -361,7 +361,7 @@ Obj7B_MoveFrag:	; Routine $A
 		move.w	ost_y_pos(a0),ost_bspike_y_start(a0)
 		addi.w	#$18,ost_y_vel(a0)
 		moveq	#4,d0
-		and.w	(v_vbla_word).w,d0
+		and.w	(v_vblank_counter_word).w,d0
 		lsr.w	#2,d0
 		move.b	d0,ost_frame(a0)
 		tst.b	ost_render(a0)

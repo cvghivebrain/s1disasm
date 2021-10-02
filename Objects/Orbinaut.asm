@@ -102,7 +102,7 @@ Orb_ChkSonic:	; Routine 2
 	@isabove:
 		cmpi.w	#$50,d0		; is Sonic within $50 pixels of	orbinaut?
 		bcc.s	@animate	; if not, branch
-		tst.w	(v_debuguse).w	; is debug mode	on?
+		tst.w	(v_debug_active).w	; is debug mode	on?
 		bne.s	@animate	; if yes, branch
 		move.b	#id_ani_orb_angry,ost_anim(a0) ; use "angry" animation
 

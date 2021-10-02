@@ -77,7 +77,7 @@ Saw_Action:	; Routine 2
 	@sameframe01:
 		tst.b	ost_render(a0)
 		bpl.s	@nosound01
-		move.w	(v_framecount).w,d0
+		move.w	(v_frame_counter).w,d0
 		andi.w	#$F,d0
 		bne.s	@nosound01
 		sfx	sfx_Saw,0,0,0	; play saw sound

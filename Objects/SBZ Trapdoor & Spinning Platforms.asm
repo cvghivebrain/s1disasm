@@ -90,7 +90,7 @@ Spin_Trapdoor:	; Routine 2
 ; ===========================================================================
 
 Spin_Spinner:	; Routine 4
-		move.w	(v_framecount).w,d0 ; read frame counter
+		move.w	(v_frame_counter).w,d0 ; read frame counter
 		and.w	ost_spin_sync(a0),d0 ; apply bitmask ($3F or $7F)
 		bne.s	@delay		; branch if not 0
 		move.b	#1,ost_spin_flag(a0) ; set flag (occurs every 64 or 128 frames)

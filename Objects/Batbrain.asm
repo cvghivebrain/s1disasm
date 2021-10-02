@@ -51,10 +51,10 @@ Bat_Action:	; Routine 2
 		bcs.s	@nodrop
 		cmpi.w	#$80,d0		; is Sonic < $80 pixels from basaran?
 		bcc.s	@nodrop		; if not, branch
-		tst.w	(v_debuguse).w	; is debug mode	on?
+		tst.w	(v_debug_active).w	; is debug mode	on?
 		bne.s	@nodrop		; if yes, branch
 
-		move.b	(v_vbla_byte).w,d0
+		move.b	(v_vblank_counter_byte).w,d0
 		add.b	d7,d0
 		andi.b	#7,d0
 		bne.s	@nodrop
@@ -90,7 +90,7 @@ Bat_Action:	; Routine 2
 ; ===========================================================================
 
 @flapsound:
-		move.b	(v_vbla_byte).w,d0
+		move.b	(v_vblank_counter_byte).w,d0
 		andi.b	#$F,d0
 		bne.s	@nosound
 		sfx	sfx_Basaran,0,0,0 ; play flapping sound every 16th frame
@@ -105,7 +105,7 @@ Bat_Action:	; Routine 2
 	@isright:
 		cmpi.w	#$80,d0		; is Sonic within $80 pixels of basaran?
 		bcs.s	@dontflyup	; if yes, branch
-		move.b	(v_vbla_byte).w,d0
+		move.b	(v_vblank_counter_byte).w,d0
 		add.b	d7,d0
 		andi.b	#7,d0
 		bne.s	@dontflyup

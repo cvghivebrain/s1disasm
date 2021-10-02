@@ -47,7 +47,7 @@ VanP_Main:	; Routine 0
 		move.w	d1,ost_vanish_sync_mask(a0)
 
 VanP_Sync:	; Routine 6
-		move.w	(v_framecount).w,d0
+		move.w	(v_frame_counter).w,d0
 		sub.w	ost_vanish_sync_sub(a0),d0
 		and.w	ost_vanish_sync_mask(a0),d0
 		bne.s	@animate

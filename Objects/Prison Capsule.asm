@@ -91,7 +91,7 @@ Pri_Switched:	; Routine 4
 		addq.w	#8,ost_y_pos(a0)
 		move.b	#$A,ost_routine(a0)
 		move.w	#60,ost_anim_time(a0) ; set time between animal spawns
-		clr.b	(f_timecount).w	; stop time counter
+		clr.b	(f_hud_time_update).w	; stop time counter
 		clr.b	(f_lockscreen).w ; lock screen position
 		move.b	#1,(f_lockctrl).w ; lock controls
 		move.w	#(btnR<<8),(v_joypad_hold).w ; make Sonic run to the right
@@ -105,7 +105,7 @@ Pri_Switched:	; Routine 4
 
 Pri_Explosion:	; Routine 6, 8, $A
 		moveq	#7,d0
-		and.b	(v_vbla_byte).w,d0
+		and.b	(v_vblank_counter_byte).w,d0
 		bne.s	@noexplosion
 		jsr	(FindFreeObj).l
 		bne.s	@noexplosion
@@ -156,7 +156,7 @@ Pri_Explosion:	; Routine 6, 8, $A
 
 Pri_Animals:	; Routine $C
 		moveq	#7,d0
-		and.b	(v_vbla_byte).w,d0
+		and.b	(v_vblank_counter_byte).w,d0
 		bne.s	@noanimal
 		jsr	(FindFreeObj).l
 		bne.s	@noanimal

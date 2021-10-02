@@ -48,7 +48,7 @@ Lamp_Main:	; Routine 0
 ; ===========================================================================
 
 Lamp_Blue:	; Routine 2
-		tst.w	(v_debuguse).w	; is debug mode	being used?
+		tst.w	(v_debug_active).w	; is debug mode	being used?
 		bne.w	@donothing	; if yes, branch
 		tst.b	(f_lockmulti).w
 		bmi.w	@donothing
@@ -142,7 +142,7 @@ Lamp_StoreInfo:
 		move.w	ost_x_pos(a0),($FFFFFE32).w	; x-position
 		move.w	ost_y_pos(a0),($FFFFFE34).w	; y-position
 		move.w	(v_rings).w,($FFFFFE36).w 	; rings
-		move.b	(v_lifecount).w,($FFFFFE54).w 	; lives
+		move.b	(v_ring_reward).w,($FFFFFE54).w 	; lives
 		move.l	(v_time).w,($FFFFFE38).w 	; time
 		move.b	(v_dle_routine).w,($FFFFFE3C).w ; routine counter for dynamic level mod
 		move.w	(v_limitbtm2).w,($FFFFFE3E).w 	; lower y-boundary of level
@@ -171,12 +171,12 @@ Lamp_LoadInfo:
 		move.w	($FFFFFE32).w,(v_ost_player+ost_x_pos).w
 		move.w	($FFFFFE34).w,(v_ost_player+ost_y_pos).w
 		move.w	($FFFFFE36).w,(v_rings).w
-		move.b	($FFFFFE54).w,(v_lifecount).w
+		move.b	($FFFFFE54).w,(v_ring_reward).w
 		clr.w	(v_rings).w
-		clr.b	(v_lifecount).w
+		clr.b	(v_ring_reward).w
 		move.l	($FFFFFE38).w,(v_time).w
-		move.b	#59,(v_timecent).w
-		subq.b	#1,(v_timesec).w
+		move.b	#59,(v_time_frames).w
+		subq.b	#1,(v_time_sec).w
 		move.b	($FFFFFE3C).w,(v_dle_routine).w
 		move.b	($FFFFFE52).w,(v_water_routine).w
 		move.w	($FFFFFE3E).w,(v_limitbtm2).w

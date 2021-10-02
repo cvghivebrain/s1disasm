@@ -3,7 +3,7 @@
 ; ---------------------------------------------------------------------------
 
 SonicSpecial:
-		tst.w	(v_debuguse).w	; is debug mode	being used?
+		tst.w	(v_debug_active).w	; is debug mode	being used?
 		beq.s	Obj09_Normal	; if not, branch
 		bsr.w	SS_FixCamera
 		bra.w	DebugMode
@@ -46,7 +46,7 @@ Obj09_ChkDebug:	; Routine 2
 		beq.s	Obj09_NoDebug	; if not, branch
 		btst	#bitB,(v_joypad_press_actual).w ; is button B pressed?
 		beq.s	Obj09_NoDebug	; if not, branch
-		move.w	#1,(v_debuguse).w ; change Sonic into a ring
+		move.w	#1,(v_debug_active).w ; change Sonic into a ring
 
 Obj09_NoDebug:
 		move.b	#0,ost_ss_item(a0)
@@ -487,7 +487,7 @@ Obj09_GetCont:
 		jsr	(CollectRing).l
 		cmpi.w	#50,(v_rings).w	; check if you have 50 rings
 		bcs.s	Obj09_NoCont
-		bset	#0,(v_lifecount).w
+		bset	#0,(v_ring_reward).w
 		bne.s	Obj09_NoCont
 		addq.b	#1,(v_continues).w ; add 1 to number of continues
 		music	sfx_Continue,0,0,0 ; play extra continue sound
@@ -507,7 +507,7 @@ Obj09_Chk1Up:
 
 Obj09_Get1Up:
 		addq.b	#1,(v_lives).w	; add 1 to number of lives
-		addq.b	#1,(f_lifecount).w ; update the lives counter
+		addq.b	#1,(f_hud_lives_update).w ; update the lives counter
 		music	bgm_ExtraLife,0,0,0	; play extra life music
 		moveq	#0,d4
 		rts	

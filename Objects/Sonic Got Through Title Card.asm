@@ -132,7 +132,7 @@ locret_C692:
 
 Got_AddBonus:
 		jsr	(AddPoints).l
-		move.b	(v_vbla_byte).w,d0
+		move.b	(v_vblank_counter_byte).w,d0
 		andi.b	#3,d0
 		bne.s	locret_C692
 		sfx	sfx_Switch,1,0,0	; play "blip" sound

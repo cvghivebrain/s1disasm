@@ -29,7 +29,7 @@ Mon_SolidSides:
 		bmi.s	loc_A4E6
 		cmpi.b	#id_Sonic_Death,(v_ost_player+ost_routine).w
 		bcc.s	loc_A4E6
-		tst.w	(v_debuguse).w
+		tst.w	(v_debug_active).w
 		bne.s	loc_A4E6
 		cmp.w	d0,d1
 		bcc.s	loc_A4DC

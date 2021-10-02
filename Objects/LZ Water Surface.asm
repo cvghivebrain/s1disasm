@@ -28,7 +28,7 @@ Surf_Action:	; Routine 2
 		move.w	(v_screenposx).w,d1
 		andi.w	#$FFE0,d1
 		add.w	ost_surf_x_start(a0),d1
-		btst	#0,(v_framebyte).w
+		btst	#0,(v_frame_counter_low).w
 		beq.s	@even		; branch on even frames
 		addi.w	#$20,d1
 

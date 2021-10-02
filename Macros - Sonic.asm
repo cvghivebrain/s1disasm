@@ -172,11 +172,11 @@ objpos:		macro
 		dc.w \1		; xpos
 		obj_ypos: = \2
 		if strcmp("\3","0")
-		obj_id\@: = 0
+		obj_id: = 0
 		else
-		obj_id\@: = id_\3
+		obj_id: = id_\3
 		endc
-		obj_sub: = \4
+		obj_sub\@: equ \4
 		obj_xflip: = 0
 		obj_yflip: = 0
 		obj_rem: = 0
@@ -193,7 +193,7 @@ objpos:		macro
 		endr
 		
 		dc.w obj_ypos+obj_xflip+obj_yflip
-		dc.b obj_id\@+obj_rem, obj_sub
+		dc.b obj_id+obj_rem, obj_sub\@
 		endm
 
 endobj:		macros

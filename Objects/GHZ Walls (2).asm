@@ -84,7 +84,7 @@ Edge_SolidWall2:
 		bmi.s	loc_8B48
 		cmpi.b	#id_Sonic_Death,(v_ost_player+ost_routine).w
 		bhs.s	loc_8B48
-		tst.w	(v_debuguse).w
+		tst.w	(v_debug_active).w
 		bne.s	loc_8B48
 		move.w	d0,d5
 		cmp.w	d0,d1

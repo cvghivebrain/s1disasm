@@ -195,7 +195,7 @@ CStom_Type00:
 loc_B872:
 		tst.w	ost_cstomp_chain_length(a0)
 		beq.s	loc_B8A0
-		move.b	(v_vbla_byte).w,d0
+		move.b	(v_vblank_counter_byte).w,d0
 		andi.b	#$F,d0
 		bne.s	loc_B892
 		tst.b	1(a0)
@@ -245,7 +245,7 @@ CStom_Type01:
 ; ===========================================================================
 
 loc_B902:
-		move.b	(v_vbla_byte).w,d0
+		move.b	(v_vblank_counter_byte).w,d0
 		andi.b	#$F,d0
 		bne.s	loc_B91C
 		tst.b	ost_render(a0)

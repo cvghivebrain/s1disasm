@@ -165,7 +165,7 @@ React_Monitor:
 ; ===========================================================================
 
 React_Enemy:
-		tst.b	(v_invinc).w	; is Sonic invincible?
+		tst.b	(v_invincibility).w	; is Sonic invincible?
 		bne.s	@donthurtsonic	; if yes, branch
 		cmpi.b	#id_Roll,ost_anim(a0) ; is Sonic rolling/jumping?
 		bne.w	React_ChkHurt	; if not, branch
@@ -233,7 +233,7 @@ React_Caterkiller:
 		bset	#status_onscreen_bit,ost_status(a1)
 
 React_ChkHurt:
-		tst.b	(v_invinc).w	; is Sonic invincible?
+		tst.b	(v_invincibility).w	; is Sonic invincible?
 		beq.s	@notinvincible	; if not, branch
 
 	@isflashing:
@@ -317,9 +317,9 @@ HurtSonic:
 
 
 KillSonic:
-		tst.w	(v_debuguse).w	; is debug mode	active?
+		tst.w	(v_debug_active).w	; is debug mode	active?
 		bne.s	@dontdie	; if yes, branch
-		move.b	#0,(v_invinc).w	; remove invincibility
+		move.b	#0,(v_invincibility).w	; remove invincibility
 		move.b	#id_Sonic_Death,ost_routine(a0)
 		bsr.w	Sonic_ResetOnFloor
 		bset	#status_air_bit,ost_status(a0)

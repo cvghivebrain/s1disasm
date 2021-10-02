@@ -149,7 +149,7 @@ loc_FB0E:
 		else
 			bcc.w	Solid_Debug
 		endc
-		tst.w	(v_debuguse).w	; is debug mode being used?
+		tst.w	(v_debug_active).w	; is debug mode being used?
 		bne.w	Solid_Debug	; if yes, branch
 		move.w	d0,d5
 		cmp.w	d0,d1		; is Sonic right of centre of object?

@@ -9,7 +9,7 @@
 
 
 AddPoints:
-		move.b	#1,(f_scorecount).w ; set score counter to update
+		move.b	#1,(f_hud_score_update).w ; set score counter to update
 
 		if Revision=0
 			lea	(v_scorecopy).w,a2
@@ -44,7 +44,7 @@ AddPoints:
 			tst.b   (v_megadrive).w
 			bmi.s   @noextralife ; branch if Mega Drive is Japanese
 			addq.b  #1,(v_lives).w ; give extra life
-			addq.b  #1,(f_lifecount).w
+			addq.b  #1,(f_hud_lives_update).w
 			music	bgm_ExtraLife,1,0,0
 		endc
 

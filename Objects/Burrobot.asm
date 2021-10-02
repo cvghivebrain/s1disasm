@@ -86,7 +86,7 @@ loc_AD78:
 ; ===========================================================================
 
 loc_AD84:
-		btst	#2,(v_vbla_byte).w
+		btst	#2,(v_vblank_counter_byte).w
 		beq.s	loc_ADA4
 		subq.b	#2,ost_routine2(a0)
 		move.w	#59,ost_burro_turn_time(a0)
@@ -130,7 +130,7 @@ Burro_ChkSonic:
 		bcc.s	locret_AE20
 		cmpi.w	#-$80,d0
 		bcs.s	locret_AE20
-		tst.w	(v_debuguse).w
+		tst.w	(v_debug_active).w
 		bne.s	locret_AE20
 		subq.b	#2,ost_routine2(a0)
 		move.w	d1,ost_x_vel(a0)

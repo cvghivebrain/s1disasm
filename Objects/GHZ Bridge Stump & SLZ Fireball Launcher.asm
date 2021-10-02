@@ -11,13 +11,15 @@ Scenery:
 Scen_Index:	index *
 		ptr Scen_Main
 		ptr Scen_ChkDel
+
+sizeof_scen_values:	equ Scen_Values_1-Scen_Values_0
 ; ===========================================================================
 
 Scen_Main:	; Routine 0
 		addq.b	#2,ost_routine(a0)
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0 ; copy object subtype to d0
-		mulu.w	#$A,d0		; multiply by $A
+		mulu.w	#sizeof_scen_values,d0 ; multiply by $A
 		lea	Scen_Values(pc,d0.w),a1
 		move.l	(a1)+,ost_mappings(a0)
 		move.w	(a1)+,ost_tile(a0)
@@ -34,16 +36,20 @@ Scen_ChkDel:	; Routine 2
 ; ---------------------------------------------------------------------------
 ; Variables for	object $1C are stored in an array
 ; ---------------------------------------------------------------------------
-Scen_Values:	dc.l Map_Scen		; mappings address
+Scen_Values:
+Scen_Values_0:	dc.l Map_Scen		; mappings address
 		dc.w tile_Nem_SlzCannon+tile_pal3 ; VRAM setting
 		dc.b id_frame_scen_cannon, 8, 2, 0 ; frame, width, priority, collision response
-		dc.l Map_Scen
+		
+Scen_Values_1:	dc.l Map_Scen
 		dc.w tile_Nem_SlzCannon+tile_pal3
 		dc.b id_frame_scen_cannon, 8, 2, 0
-		dc.l Map_Scen
+		
+Scen_Values_2:	dc.l Map_Scen
 		dc.w tile_Nem_SlzCannon+tile_pal3
 		dc.b id_frame_scen_cannon, 8, 2, 0
-		dc.l Map_Bri
+		
+Scen_Values_3:	dc.l Map_Bri
 		dc.w tile_Nem_Bridge+tile_pal3
 		dc.b id_frame_bridge_stump, $10, 1, 0
 		even

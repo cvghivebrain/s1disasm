@@ -12,29 +12,29 @@ hudVRAM:	macro loc
 HUD_Update:
 		tst.w	(f_debugmode).w	; is debug mode	on?
 		bne.w	HudDebug	; if yes, branch
-		tst.b	(f_scorecount).w ; does the score need updating?
+		tst.b	(f_hud_score_update).w ; does the score need updating?
 		beq.s	@chkrings	; if not, branch
 
-		clr.b	(f_scorecount).w
+		clr.b	(f_hud_score_update).w
 		hudVRAM	$DC80		; set VRAM address
 		move.l	(v_score).w,d1	; load score
 		bsr.w	Hud_Score
 
 	@chkrings:
-		tst.b	(f_ringcount).w	; does the ring	counter	need updating?
+		tst.b	(v_hud_rings_update).w	; does the ring	counter	need updating?
 		beq.s	@chktime	; if not, branch
 		bpl.s	@notzero
 		bsr.w	Hud_LoadZero	; reset rings to 0 if Sonic is hit
 
 	@notzero:
-		clr.b	(f_ringcount).w
+		clr.b	(v_hud_rings_update).w
 		hudVRAM	$DF40		; set VRAM address
 		moveq	#0,d1
 		move.w	(v_rings).w,d1	; load number of rings
 		bsr.w	Hud_Rings
 
 	@chktime:
-		tst.b	(f_timecount).w	; does the time	need updating?
+		tst.b	(f_hud_time_update).w	; does the time	need updating?
 		beq.s	@chklives	; if not, branch
 		tst.w	(f_pause).w	; is the game paused?
 		bne.s	@chklives	; if yes, branch
@@ -58,17 +58,17 @@ HUD_Update:
 	@updatetime:
 		hudVRAM	$DE40
 		moveq	#0,d1
-		move.b	(v_timemin).w,d1 ; load	minutes
+		move.b	(v_time_min).w,d1 ; load	minutes
 		bsr.w	Hud_Mins
 		hudVRAM	$DEC0
 		moveq	#0,d1
-		move.b	(v_timesec).w,d1 ; load	seconds
+		move.b	(v_time_sec).w,d1 ; load	seconds
 		bsr.w	Hud_Secs
 
 	@chklives:
-		tst.b	(f_lifecount).w ; does the lives counter need updating?
+		tst.b	(f_hud_lives_update).w ; does the lives counter need updating?
 		beq.s	@chkbonus	; if not, branch
-		clr.b	(f_lifecount).w
+		clr.b	(f_hud_lives_update).w
 		bsr.w	Hud_Lives
 
 	@chkbonus:
@@ -88,23 +88,23 @@ HUD_Update:
 ; ===========================================================================
 
 TimeOver:
-		clr.b	(f_timecount).w
+		clr.b	(f_hud_time_update).w
 		lea	(v_ost_player).w,a0
 		movea.l	a0,a2
 		bsr.w	KillSonic
-		move.b	#1,(f_timeover).w
+		move.b	#1,(f_time_over).w
 		rts	
 ; ===========================================================================
 
 HudDebug:
 		bsr.w	HudDb_XY
-		tst.b	(f_ringcount).w	; does the ring	counter	need updating?
+		tst.b	(v_hud_rings_update).w	; does the ring	counter	need updating?
 		beq.s	@objcounter	; if not, branch
 		bpl.s	@notzero
 		bsr.w	Hud_LoadZero	; reset rings to 0 if Sonic is hit
 
 	@notzero:
-		clr.b	(f_ringcount).w
+		clr.b	(v_hud_rings_update).w
 		hudVRAM	$DF40		; set VRAM address
 		moveq	#0,d1
 		move.w	(v_rings).w,d1	; load number of rings
@@ -115,9 +115,9 @@ HudDebug:
 		moveq	#0,d1
 		move.b	(v_spritecount).w,d1 ; load "number of objects" counter
 		bsr.w	Hud_Secs
-		tst.b	(f_lifecount).w ; does the lives counter need updating?
+		tst.b	(f_hud_lives_update).w ; does the lives counter need updating?
 		beq.s	@chkbonus	; if not, branch
-		clr.b	(f_lifecount).w
+		clr.b	(f_hud_lives_update).w
 		bsr.w	Hud_Lives
 
 	@chkbonus:

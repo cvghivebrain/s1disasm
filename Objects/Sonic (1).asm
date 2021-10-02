@@ -3,7 +3,7 @@
 ; ---------------------------------------------------------------------------
 
 SonicPlayer:
-		tst.w	(v_debuguse).w	; is debug mode	being used?
+		tst.w	(v_debug_active).w	; is debug mode	being used?
 		beq.s	Sonic_Normal	; if not, branch
 		jmp	(DebugMode).l
 ; ===========================================================================
@@ -40,7 +40,7 @@ Sonic_Control:	; Routine 2
 		beq.s	loc_12C58	; if not, branch
 		btst	#bitB,(v_joypad_press_actual).w ; is button B pressed?
 		beq.s	loc_12C58	; if not, branch
-		move.w	#1,(v_debuguse).w ; change Sonic into a ring/item
+		move.w	#1,(v_debug_active).w ; change Sonic into a ring/item
 		clr.b	(f_lockctrl).w
 		rts	
 ; ===========================================================================
@@ -117,7 +117,7 @@ Sonic_Display:
 		jsr	(DisplaySprite).l
 
 	@chkinvincible:
-		tst.b	(v_invinc).w	; does Sonic have invincibility?
+		tst.b	(v_invincibility).w	; does Sonic have invincibility?
 		beq.s	@chkshoes	; if not, branch
 		tst.w	ost_sonic_inv_time(a0) ; check invinciblity timer
 		beq.s	@chkshoes	; if 0, branch
@@ -139,7 +139,7 @@ Sonic_Display:
 		jsr	(PlaySound).l	; play normal music
 
 	@removeinvincible:
-		move.b	#0,(v_invinc).w ; cancel invincibility
+		move.b	#0,(v_invincibility).w ; cancel invincibility
 
 	@chkshoes:
 		tst.b	(v_shoes).w	; does Sonic have speed	shoes?
@@ -1427,15 +1427,15 @@ GameOver:
 		bcc.w	locret_13900
 		move.w	#-$38,ost_y_vel(a0)
 		addq.b	#2,ost_routine(a0)
-		clr.b	(f_timecount).w	; stop time counter
-		addq.b	#1,(f_lifecount).w ; update lives counter
+		clr.b	(f_hud_time_update).w	; stop time counter
+		addq.b	#1,(f_hud_lives_update).w ; update lives counter
 		subq.b	#1,(v_lives).w	; subtract 1 from number of lives
 		bne.s	loc_138D4
 		move.w	#0,ost_sonic_restart_time(a0)
 		move.b	#id_GameOverCard,(v_ost_gameover1).w ; load GAME object
 		move.b	#id_GameOverCard,(v_ost_gameover2).w ; load OVER object
 		move.b	#id_frame_gameover_over,(v_ost_gameover2+ost_frame).w ; set OVER object to correct frame
-		clr.b	(f_timeover).w
+		clr.b	(f_time_over).w
 
 loc_138C2:
 		music	bgm_GameOver,0,0,0	; play game over music
@@ -1445,7 +1445,7 @@ loc_138C2:
 
 loc_138D4:
 		move.w	#60,ost_sonic_restart_time(a0) ; set time delay to 1 second
-		tst.b	(f_timeover).w	; is TIME OVER tag set?
+		tst.b	(f_time_over).w	; is TIME OVER tag set?
 		beq.s	locret_13900	; if not, branch
 		move.w	#0,ost_sonic_restart_time(a0)
 		move.b	#id_GameOverCard,(v_ost_gameover1).w ; load TIME object

@@ -138,7 +138,7 @@ loc_1784C:
 
 
 BossDefeated:
-		move.b	(v_vbla_byte).w,d0
+		move.b	(v_vblank_counter_byte).w,d0
 		andi.b	#7,d0
 		bne.s	locret_178A2
 		jsr	(FindFreeObj).l
