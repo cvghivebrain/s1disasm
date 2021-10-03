@@ -50,7 +50,7 @@ Plat_Main:	; Routine 0
 		move.w	#$80,ost_angle(a0)
 		moveq	#0,d1
 		move.b	ost_subtype(a0),d0
-		cmpi.b	#$A,d0		; is object type $A (large platform)?
+		cmpi.b	#id_Plat_Type_UpDown_Large,d0 ; is object type $A (large platform)?
 		bne.s	@setframe	; if not, branch
 		addq.b	#id_frame_plat_large,d1 ; use frame #1
 		move.b	#$20,ost_actwidth(a0) ; set width
@@ -130,82 +130,91 @@ Plat_Move:
 
 ; ===========================================================================
 @index:		index *
-		ptr @type00
-		ptr @type01
-		ptr @type02
-		ptr @type03
-		ptr @type04
-		ptr @type05
-		ptr @type06
-		ptr @type07
-		ptr @type08
-		ptr @type00
-		ptr @type0A
-		ptr @type0B
-		ptr @type0C
+		ptr Plat_Type_Still		; 0
+		ptr Plat_Type_Sideways		; 1
+		ptr Plat_Type_UpDown		; 2
+		ptr Plat_Type_Falls		; 3
+		ptr Plat_Type_Falls_Now		; 4
+		ptr Plat_Type_Sideways_Rev	; 5
+		ptr Plat_Type_UpDown_Rev	; 6
+		ptr Plat_Type_Rises		; 7
+		ptr Plat_Type_Rises_Now		; 8
+		ptr Plat_Type_Still		; 9
+		ptr Plat_Type_UpDown_Large	; $A
+		ptr Plat_Type_UpDown_Slow	; $B
+		ptr Plat_Type_UpDown_Slow_Rev	; $C
 ; ===========================================================================
 
-@type00:
+; Type 0
+; Type 9
+Plat_Type_Still:
 		rts			; platform 00 doesn't move
 ; ===========================================================================
 
-@type05:
+; Type 5
+Plat_Type_Sideways_Rev:
 		move.w	ost_plat_x_start(a0),d0
 		move.b	ost_angle(a0),d1 ; load platform-motion variable
 		neg.b	d1		; reverse platform-motion
 		addi.b	#$40,d1
-		bra.s	@type01_move
+		bra.s	Plat_Type_Sideways_Move
 ; ===========================================================================
 
-@type01:
+; Type 1
+Plat_Type_Sideways:
 		move.w	ost_plat_x_start(a0),d0
 		move.b	ost_angle(a0),d1 ; load platform-motion variable
 		subi.b	#$40,d1
 
-	@type01_move:
+	Plat_Type_Sideways_Move:
 		ext.w	d1
 		add.w	d1,d0
 		move.w	d0,ost_x_pos(a0) ; change position on x-axis
-		bra.w	@chgmotion
+		bra.w	Plat_Type_Update_Angle
 ; ===========================================================================
 
-@type0C:
+; Type $C
+Plat_Type_UpDown_Slow_Rev:
 		move.w	ost_plat_y_start(a0),d0
 		move.b	(v_oscillate+$E).w,d1 ; load platform-motion variable
 		neg.b	d1		; reverse platform-motion
 		addi.b	#$30,d1
-		bra.s	@type02_move
+		bra.s	Plat_Type_UpDown_Move
 ; ===========================================================================
 
-@type0B:
+; Type $B
+Plat_Type_UpDown_Slow:
 		move.w	ost_plat_y_start(a0),d0
 		move.b	(v_oscillate+$E).w,d1 ; load platform-motion variable
 		subi.b	#$30,d1
-		bra.s	@type02_move
+		bra.s	Plat_Type_UpDown_Move
 ; ===========================================================================
 
-@type06:
+; Type 6
+Plat_Type_UpDown_Rev:
 		move.w	ost_plat_y_start(a0),d0
 		move.b	ost_angle(a0),d1 ; load platform-motion variable
 		neg.b	d1		; reverse platform-motion
 		addi.b	#$40,d1
-		bra.s	@type02_move
+		bra.s	Plat_Type_UpDown_Move
 ; ===========================================================================
 
-@type02:
+; Type 2
+Plat_Type_UpDown:
 		move.w	ost_plat_y_start(a0),d0
 		move.b	ost_angle(a0),d1 ; load platform-motion variable
 		subi.b	#$40,d1
 
-	@type02_move:
+	Plat_Type_UpDown_Move:
 		ext.w	d1
 		add.w	d1,d0
 		move.w	d0,ost_plat_y_pos(a0) ; change position on y-axis
-		bra.w	@chgmotion
+		bra.w	Plat_Type_Update_Angle
 ; ===========================================================================
 
-@type03:
-		tst.w	ost_plat_wait_time(a0) ; is time delay	set?
+; Type 3
+Plat_Type_Falls:
+		tst.w	ost_plat_wait_time(a0) ; is time delay set?
 		bne.s	@type03_wait	; if yes, branch
 		btst	#status_platform_bit,ost_status(a0) ; is Sonic standing on the platform?
 		beq.s	@type03_nomove	; if not, branch
@@ -222,7 +231,8 @@ Plat_Move:
 		rts	
 ; ===========================================================================
 
-@type04:
+; Type 4
+Plat_Type_Falls_Now:
 		tst.w	ost_plat_wait_time(a0)
 		beq.s	@loc_8048
 		subq.w	#1,ost_plat_wait_time(a0)
@@ -257,7 +267,8 @@ Plat_Move:
 		rts	
 ; ===========================================================================
 
-@type07:
+; Type 7
+Plat_Type_Rises:
 		tst.w	ost_plat_wait_time(a0) ; is time delay set?
 		bne.s	@type07_wait	; if yes, branch
 		lea	(f_switch).w,a2	; load switch statuses
@@ -278,7 +289,8 @@ Plat_Move:
 		rts	
 ; ===========================================================================
 
-@type08:
+; Type 8
+Plat_Type_Rises_Now:
 		subq.w	#2,ost_plat_y_pos(a0) ; move platform up
 		move.w	ost_plat_y_start(a0),d0
 		subi.w	#$200,d0
@@ -290,7 +302,8 @@ Plat_Move:
 		rts	
 ; ===========================================================================
 
-@type0A:
+; Type $A
+Plat_Type_UpDown_Large:
 		move.w	ost_plat_y_start(a0),d0
 		move.b	ost_angle(a0),d1 ; load platform-motion variable
 		subi.b	#$40,d1
@@ -299,8 +312,8 @@ Plat_Move:
 		add.w	d1,d0
 		move.w	d0,ost_plat_y_pos(a0) ; change position on y-axis
 
-@chgmotion:
-		move.b	(v_oscillate+$1A).w,$26(a0) ; update platform-movement variable
+Plat_Type_Update_Angle:
+		move.b	(v_oscillate+$1A).w,ost_angle(a0) ; update platform-movement variable
 		rts	
 ; ===========================================================================
 

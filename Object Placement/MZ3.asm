@@ -18,7 +18,7 @@
 		objpos $00D0,$0320,LavaMaker,$25
 		objpos $0110,$04F0,Monitor,$04,rem
 		objpos $0110,$06D0,Monitor,$06,rem
-		objpos $0120,$01CC,LargeGrass,$21
+		objpos $0120,$01CC,LargeGrass,type_grass_narrow+type_grass_1
 		objpos $0150,$0610,SmashBlock,$00
 		objpos $0150,$0630,SmashBlock,$00
 		objpos $0150,$0650,SmashBlock,$00
@@ -28,7 +28,7 @@
 		objpos $0160,$0499,GlassBlock,$01
 		objpos $0190,$0548,Button,$01
 		objpos $0190,$0560,MarbleBrick,$00
-		objpos $01A0,$01CC,LargeGrass,$29
+		objpos $01A0,$01CC,LargeGrass,type_grass_narrow+type_grass_1+type_grass_rev
 		objpos $01A0,$0668,GlassBlock,$14
 		objpos $01E0,$0499,GlassBlock,$02
 		objpos $0220,$03A8,CollapseFloor,$01
@@ -37,8 +37,8 @@
 		objpos $0240,$06D0,Caterkiller,$00,xflip,rem
 		objpos $0260,$03A8,CollapseFloor,$01
 		objpos $0280,$04E8,CollapseFloor,$01
-		objpos $0290,$031C,ChainStomp,$23
-		objpos $02D0,$031C,ChainStomp,$23
+		objpos $0290,$031C,ChainStomp,type_cstomp_small+type_cstomp_3
+		objpos $02D0,$031C,ChainStomp,type_cstomp_small+type_cstomp_3
 		objpos $02D0,$046C,Batbrain,$00,rem
 		objpos $02D0,$04F0,MarbleBrick,$00
 		objpos $02F0,$0150,BuzzBomber,$00,rem
@@ -52,8 +52,8 @@
 		objpos $03F0,$06A8,Rings,$14,rem
 		objpos $0420,$04A8,CollapseFloor,$01
 		objpos $0430,$0150,BuzzBomber,$00,rem
-		objpos $0430,$029C,ChainStomp,$02
-		objpos $0470,$041C,ChainStomp,$23
+		objpos $0430,$029C,ChainStomp,type_cstomp_wide+type_cstomp_2
+		objpos $0470,$041C,ChainStomp,type_cstomp_small+type_cstomp_3
 		objpos $0480,$04E8,LavaTag,$02
 		objpos $0480,$06E8,LavaTag,$02
 		objpos $0490,$0680,MarbleBrick,$00
@@ -61,7 +61,7 @@
 		objpos $04B0,$0410,MarbleBrick,$02
 		objpos $04C0,$0160,BuzzBomber,$00,rem
 		objpos $04C8,$06A8,Rings,$14,rem
-		objpos $04F0,$041C,ChainStomp,$23
+		objpos $04F0,$041C,ChainStomp,type_cstomp_small+type_cstomp_3
 		objpos $04F0,$05A0,Invisibarrier,$00
 		objpos $0510,$05B8,MovingBlock,$01
 		objpos $0510,$0610,MarbleBrick,$00
@@ -71,7 +71,7 @@
 		objpos $0540,$02C8,Caterkiller,$00,rem
 		objpos $0554,$01CE,Rings,$10,rem
 		objpos $0570,$01EC,Rings,$10,rem
-		objpos $0570,$041C,ChainStomp,$23
+		objpos $0570,$041C,ChainStomp,type_cstomp_small+type_cstomp_3
 		objpos $0580,$04E8,LavaTag,$02
 		objpos $0580,$06E8,LavaTag,$02
 		objpos $058C,$0208,Rings,$10,rem
@@ -82,14 +82,14 @@
 		objpos $05CA,$0243,Rings,$10,rem
 		objpos $05F4,$0253,Rings,$10,rem
 		objpos $0618,$0454,Rings,$12,rem
-		objpos $0620,$02E8,LargeGrass,$23
+		objpos $0620,$02E8,LargeGrass,type_grass_narrow+type_grass_3
 		objpos $0620,$03B0,LavaMaker,$47
 		objpos $0640,$06E8,LavaTag,$01
 		objpos $0670,$0414,Rings,$10,rem
 		objpos $0680,$0370,LavaMaker,$47
 		objpos $0690,$03D4,Rings,$10,rem
 		objpos $0698,$06C0,Spikes,$10
-		objpos $06A0,$02CC,LargeGrass,$21
+		objpos $06A0,$02CC,LargeGrass,type_grass_narrow+type_grass_1
 		objpos $06B0,$03B4,Rings,$10,rem
 		objpos $06C0,$05A8,Caterkiller,$00,rem
 		objpos $06D0,$0320,LavaMaker,$45
@@ -111,10 +111,10 @@
 		objpos $0888,$0790,Spikes,$52,xflip
 		objpos $08A0,$05D4,Spikes,$01
 		objpos $08D0,$0620,LavaMaker,$35
-		objpos $0930,$053C,ChainStomp,$11
+		objpos $0930,$053C,ChainStomp,type_cstomp_medium+type_cstomp_1
 		objpos $0940,$07C0,Caterkiller,$00,xflip,rem
 		objpos $09B8,$07D0,Springs,$10,xflip
-		objpos $09D0,$053C,ChainStomp,$11
+		objpos $09D0,$053C,ChainStomp,type_cstomp_medium+type_cstomp_1
 		objpos $0AC0,$07E8,LavaTag,$01
 		objpos $0B20,$0768,SwingingPlatform,$04
 		objpos $0B80,$07D0,LavaMaker,$50
@@ -136,7 +136,7 @@
 		objpos $0EC8,$04D0,Spikes,$52,xflip
 		objpos $0ED0,$0328,LavaMaker,$45
 		objpos $0EE0,$06F4,Spikes,$01
-		objpos $0F30,$049C,ChainStomp,$11
+		objpos $0F30,$049C,ChainStomp,type_cstomp_medium+type_cstomp_1
 		objpos $0F60,$0698,GlassBlock,$01
 		objpos $0F90,$048C,Batbrain,$00,rem
 		objpos $0F94,$06F2,Rings,$11,rem
@@ -150,7 +150,7 @@
 		objpos $1008,$0514,Rings,$12,rem
 		objpos $1014,$06F2,Rings,$11,rem
 		objpos $1030,$0540,Invisibarrier,$11
-		objpos $1040,$033C,ChainStomp,$23
+		objpos $1040,$033C,ChainStomp,type_cstomp_small+type_cstomp_3
 		objpos $1060,$069A,GlassBlock,$02
 		objpos $1080,$0598,LavaTag,$02
 		objpos $1094,$06F2,Rings,$11,rem
@@ -170,7 +170,7 @@
 		objpos $1130,$0540,Invisibarrier,$11
 		objpos $1130,$06F0,SmashBlock,$00
 		objpos $1130,$0710,SmashBlock,$00
-		objpos $1140,$033C,ChainStomp,$23
+		objpos $1140,$033C,ChainStomp,type_cstomp_small+type_cstomp_3
 		objpos $1160,$0710,Invisibarrier,$31
 		objpos $1160,$07A7,GlassBlock,$01
 		objpos $1180,$0598,LavaTag,$02
@@ -185,12 +185,12 @@
 		objpos $1210,$07B8,MovingBlock,$02
 		objpos $1230,$0540,Invisibarrier,$11
 		objpos $1230,$0790,MarbleBrick,$00
-		objpos $1250,$031C,ChainStomp,$23
+		objpos $1250,$031C,ChainStomp,type_cstomp_small+type_cstomp_3
 		objpos $1280,$0598,LavaTag,$02
 		objpos $1280,$0620,LavaTag,$02
 		objpos $1280,$07D0,GeyserMaker,$01
 		objpos $1280,$07E8,LavaTag,$02
-		objpos $12B0,$031C,ChainStomp,$23
+		objpos $12B0,$031C,ChainStomp,type_cstomp_small+type_cstomp_3
 		objpos $12D0,$0768,MovingBlock,$02
 		objpos $12F0,$06F0,Monitor,$04,rem
 		objpos $1310,$02F0,MarbleBrick,$00
@@ -219,14 +219,14 @@
 		objpos $14C8,$05D0,Spikes,$52,xflip
 		objpos $14D8,$02D8,LavaMaker,$51
 		objpos $1518,$0752,Rings,$12,rem
-		objpos $1530,$063C,ChainStomp,$11
+		objpos $1530,$063C,ChainStomp,type_cstomp_medium+type_cstomp_1
 		objpos $1550,$02A0,LavaMaker,$41
-		objpos $1580,$02A8,LargeGrass,$2A
+		objpos $1580,$02A8,LargeGrass,type_grass_narrow+type_grass_2+type_grass_rev
 		objpos $1580,$02B8,LavaTag,$01
 		objpos $1590,$0590,MarbleBrick,$00
 		objpos $15B0,$02A0,LavaMaker,$41
 		objpos $15B0,$0590,MarbleBrick,$00
-		objpos $15B0,$05BC,ChainStomp,$11
+		objpos $15B0,$05BC,ChainStomp,type_cstomp_medium+type_cstomp_1
 		objpos $15D0,$0590,MarbleBrick,$00
 		objpos $1640,$0268,Lamppost,$02,rem
 		

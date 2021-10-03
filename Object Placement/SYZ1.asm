@@ -11,7 +11,7 @@
 		objpos $01DC,$03C2,Crabmeat,$00,rem
 		objpos $0200,$03C3,FloatingBlock,$00
 		objpos $0218,$03C2,Springs,$10
-		objpos $0220,$011A,BasicPlatform,$0C
+		objpos $0220,$011A,BasicPlatform,type_plat_updown_slow_rev
 		objpos $02C0,$0370,BuzzBomber,$00,rem
 		objpos $0300,$0368,BuzzBomber,$00,rem
 		objpos $0410,$0108,Rings,$46,rem
@@ -53,13 +53,13 @@
 		objpos $0A58,$0390,Springs,$12,xflip
 		objpos $0A60,$00F0,Rings,$03,rem
 		objpos $0A70,$0390,SpinningLight,$00
-		objpos $0A78,$010A,BasicPlatform,$00
+		objpos $0A78,$010A,BasicPlatform,type_plat_still
 		objpos $0A78,$010A,BigSpikeBall,$F3
 		objpos $0A78,$010A,BigSpikeBall,$F3,yflip
 		objpos $0B60,$0395,Roller,$00,rem
-		objpos $0B30,$0130,BasicPlatform,$00
+		objpos $0B30,$0130,BasicPlatform,type_plat_still
 		objpos $0B68,$0354,Rings,$03,rem
-		objpos $0B80,$036A,BasicPlatform,$07
+		objpos $0B80,$036A,BasicPlatform,type_plat_rises
 		objpos $0BF0,$0130,FloatingBlock,$00
 		objpos $0C00,$03CA,Button,$80
 		objpos $0C10,$0110,FloatingBlock,$01,xflip
@@ -71,7 +71,7 @@
 		objpos $0CB0,$0150,FloatingBlock,$01,xflip
 		objpos $0CD0,$00F0,FloatingBlock,$02
 		objpos $0CD0,$0170,FloatingBlock,$02,xflip
-		objpos $0D20,$0108,BasicPlatform,$02
+		objpos $0D20,$0108,BasicPlatform,type_plat_updown
 		objpos $0D50,$03E0,BigSpikeBall,$02
 		objpos $0D68,$0150,Rings,$25,rem
 		objpos $0E10,$0460,BigSpikeBall,$02,xflip
@@ -130,7 +130,7 @@
 		objpos $1980,$0188,BuzzBomber,$00,rem
 		objpos $19D0,$03C4,Rings,$23,rem
 		objpos $1A08,$01E4,Rings,$03,rem
-		objpos $1A21,$01F9,BasicPlatform,$00
+		objpos $1A21,$01F9,BasicPlatform,type_plat_still
 		objpos $1A50,$03A4,Rings,$00,rem
 		objpos $1A70,$01E3,Springs,$20,yflip
 		objpos $1A70,$0384,Rings,$00,rem
@@ -139,14 +139,14 @@
 		objpos $1AF0,$01C0,Yadrin,$00,rem
 		objpos $1B14,$01D8,Rings,$43,rem
 		objpos $1B60,$0260,Rings,$03,rem
-		objpos $1B78,$020A,BasicPlatform,$00
+		objpos $1B78,$020A,BasicPlatform,type_plat_still
 		objpos $1B78,$020A,BigSpikeBall,$C3
 		objpos $1BA0,$025D,Rings,$00,rem
 		objpos $1BDC,$020A,Rings,$00,rem
 		objpos $1C14,$020A,Rings,$00,rem
 		objpos $1C50,$025D,Rings,$00,rem
 		objpos $1C60,$0260,Rings,$03,rem
-		objpos $1C78,$020A,BasicPlatform,$00
+		objpos $1C78,$020A,BasicPlatform,type_plat_still
 		objpos $1C78,$020A,BigSpikeBall,$C3,yflip
 		objpos $1CA0,$025D,Rings,$00,rem
 		objpos $1CDC,$020A,Rings,$00,rem

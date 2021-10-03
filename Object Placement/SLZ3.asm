@@ -202,19 +202,19 @@
 		objpos $1978,$0370,Scenery,$00,xflip
 		objpos $19F0,$0210,Bomb,$00,yflip,rem
 		objpos $1A10,$0210,Bomb,$00,yflip,rem
-		objpos $1A20,$0668,BasicPlatform,$03
+		objpos $1A20,$0668,BasicPlatform,type_plat_falls
 		objpos $1A30,$0210,Bomb,$00,yflip,rem
-		objpos $1A60,$0668,BasicPlatform,$03
+		objpos $1A60,$0668,BasicPlatform,type_plat_falls
 		objpos $1A88,$0370,Scenery,$00
 		objpos $1AA0,$0370,LavaMaker,$37
 		objpos $1AB0,$05F0,Seesaw,$00
 		objpos $1B10,$02F0,Staircase,$00,xflip
-		objpos $1B20,$0668,BasicPlatform,$03
+		objpos $1B20,$0668,BasicPlatform,type_plat_falls
 		objpos $1B30,$05C0,Orbinaut,$02,xflip,rem
 		objpos $1B60,$0370,LavaMaker,$36
 		objpos $1B78,$02D0,Springs,$10,xflip
 		objpos $1B78,$0370,Scenery,$00,xflip
-		objpos $1B60,$0668,BasicPlatform,$03
+		objpos $1B60,$0668,BasicPlatform,type_plat_falls
 		objpos $1B70,$0490,Bomb,$00,yflip,rem
 		objpos $1B90,$0490,Bomb,$00,yflip,rem
 		objpos $1BA0,$0310,Rings,$14,rem

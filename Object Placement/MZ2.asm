@@ -1,9 +1,9 @@
 ; ---------------------------------------------------------------------------
 ; MZ2 object placement
 ; ---------------------------------------------------------------------------
-		objpos $0120,$02E8,LargeGrass,$23
+		objpos $0120,$02E8,LargeGrass,type_grass_narrow+type_grass_3
 		objpos $0154,$0258,Rings,$11,rem
-		objpos $01A0,$02F0,LargeGrass,$2B
+		objpos $01A0,$02F0,LargeGrass,type_grass_narrow+type_grass_3+type_grass_rev
 		objpos $0200,$02A8,Caterkiller,$00,rem
 		objpos $0220,$04B0,LavaMaker,$37
 		objpos $0250,$05C0,LavaWall,$00,rem
@@ -19,7 +19,7 @@
 		objpos $0350,$0490,MarbleBrick,$00
 		objpos $0350,$05E0,MarbleBrick,$00
 		objpos $0370,$0260,BuzzBomber,$00,rem
-		objpos $0380,$02E8,LargeGrass,$15
+		objpos $0380,$02E8,LargeGrass,type_grass_sloped+type_grass_sinks
 		objpos $0380,$02F8,LavaTag,$02
 		objpos $0380,$04D0,GeyserMaker,$01
 		objpos $0380,$04E8,LavaTag,$02
@@ -72,14 +72,14 @@
 		objpos $0990,$02E0,LavaMaker,$41
 		objpos $0990,$04B0,Monitor,$02,rem
 		objpos $09B0,$04B0,Monitor,$06,rem
-		objpos $09C0,$02D0,LargeGrass,$21
+		objpos $09C0,$02D0,LargeGrass,type_grass_narrow+type_grass_1
 		objpos $09C0,$02F8,LavaTag,$01
 		objpos $09F0,$02E0,LavaMaker,$31
 		objpos $0A00,$0568,SwingingPlatform,$04
 		objpos $0A14,$026C,Rings,$11,rem
 		objpos $0A50,$0290,LavaMaker,$41
 		objpos $0A68,$0358,Rings,$12,rem
-		objpos $0A80,$02B0,LargeGrass,$22
+		objpos $0A80,$02B0,LargeGrass,type_grass_narrow+type_grass_2
 		objpos $0A80,$02B8,LavaTag,$01
 		objpos $0A80,$05E8,LavaTag,$02
 		objpos $0AB0,$0290,LavaMaker,$31
@@ -88,7 +88,7 @@
 		objpos $0AE8,$047C,Spikes,$10,xflip
 		objpos $0B10,$03F0,MarbleBrick,$00
 		objpos $0B10,$0468,MovingBlock,$02
-		objpos $0B20,$029C,LargeGrass,$29
+		objpos $0B20,$029C,LargeGrass,type_grass_narrow+type_grass_1+type_grass_rev
 		objpos $0B54,$01FC,Rings,$11,rem
 		objpos $0B80,$0498,LavaTag,$02
 		objpos $0B80,$05E8,LavaTag,$02
@@ -97,11 +97,11 @@
 		objpos $0BA0,$0568,SwingingPlatform,$04
 		objpos $0BD4,$01AC,Rings,$11,rem
 		objpos $0C08,$0414,Rings,$12,rem
-		objpos $0C20,$01E0,LargeGrass,$22
+		objpos $0C20,$01E0,LargeGrass,type_grass_narrow+type_grass_2
 		objpos $0C20,$0440,Invisibarrier,$31
 		objpos $0C54,$016C,Rings,$11,rem
 		objpos $0C80,$0498,LavaTag,$02
-		objpos $0CA0,$01E0,LargeGrass,$2A
+		objpos $0CA0,$01E0,LargeGrass,type_grass_narrow+type_grass_2+type_grass_rev
 		objpos $0CB0,$0150,BuzzBomber,$00,rem
 		objpos $0D08,$0414,Rings,$12,rem
 		objpos $0D20,$0440,Invisibarrier,$31
@@ -143,12 +143,12 @@
 		objpos $1010,$0560,Monitor,$05,rem
 		objpos $1010,$0580,MarbleBrick,$00
 		objpos $1010,$0590,MarbleBrick,$00
-		objpos $1020,$02E8,LargeGrass,$23
+		objpos $1020,$02E8,LargeGrass,type_grass_narrow+type_grass_3
 		objpos $1030,$0590,MarbleBrick,$00
 		objpos $1050,$0530,MarbleBrick,$00
 		objpos $1050,$05D0,GeyserMaker,$01
 		objpos $1080,$05E8,LavaTag,$02
-		objpos $10A0,$02D8,LargeGrass,$22
+		objpos $10A0,$02D8,LargeGrass,type_grass_narrow+type_grass_2
 		objpos $10C0,$05D0,GeyserMaker,$01
 		objpos $10D0,$05B8,MovingBlock,$02
 		objpos $1108,$0490,Rings,$13,rem
@@ -186,12 +186,12 @@
 		objpos $1270,$0410,MarbleBrick,$00
 		objpos $1280,$05E8,LavaTag,$02
 		objpos $13F0,$052C,Batbrain,$00,rem
-		objpos $1430,$043C,ChainStomp,$11
+		objpos $1430,$043C,ChainStomp,type_cstomp_medium+type_cstomp_1
 		objpos $1438,$0550,Caterkiller,$00,rem
 		objpos $14B0,$0488,Caterkiller,$00,rem
-		objpos $1530,$039C,ChainStomp,$12
-		objpos $1630,$033C,ChainStomp,$12
-		objpos $16D0,$031C,ChainStomp,$12
+		objpos $1530,$039C,ChainStomp,type_cstomp_medium+type_cstomp_2
+		objpos $1630,$033C,ChainStomp,type_cstomp_medium+type_cstomp_2
+		objpos $16D0,$031C,ChainStomp,type_cstomp_medium+type_cstomp_2
 		
 		objpos $1860,$0270,HiddenBonus,$03
 		objpos $1860,$02A0,Signpost,$00

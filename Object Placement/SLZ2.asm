@@ -128,9 +128,9 @@
 		objpos $1790,$01F0,Staircase,$00,xflip
 		objpos $1790,$0270,Fan,$02,xflip
 		objpos $17D8,$01AC,Orbinaut,$02,rem
-		objpos $17E0,$05C8,BasicPlatform,$03
-		objpos $1820,$05A8,BasicPlatform,$03
-		objpos $1860,$0588,BasicPlatform,$03
+		objpos $17E0,$05C8,BasicPlatform,type_plat_falls
+		objpos $1820,$05A8,BasicPlatform,type_plat_falls
+		objpos $1860,$0588,BasicPlatform,type_plat_falls
 		objpos $1890,$0210,Rings,$14,rem
 		objpos $1928,$0350,Rings,$45,rem
 		objpos $1940,$0350,Rings,$45,rem

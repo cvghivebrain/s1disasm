@@ -13,11 +13,11 @@ LGrass_Index:	index *,,2
 		ptr LGrass_Action
 
 LGrass_Data:	index *
-		ptr LGrass_Data1	 	; collision angle data
+LGrass_Data_0:	ptr LGrass_Coll_Wide	 	; collision angle data
 		dc.b id_frame_grass_wide, $40	; frame number,	platform width
-		ptr LGrass_Data3
+LGrass_Data_1:	ptr LGrass_Coll_Sloped
 		dc.b id_frame_grass_sloped, $40
-		ptr LGrass_Data2
+LGrass_Data_2:	ptr LGrass_Coll_Narrow
 		dc.b id_frame_grass_narrow, $20
 
 ost_grass_x_start:	equ $2A	; original x position (2 bytes)
@@ -26,6 +26,8 @@ ost_grass_coll_ptr:	equ $30	; pointer to collision data (4 bytes)
 ost_grass_sink:		equ $34	; pixels the platform has sunk when stood on
 ost_grass_burn_flag:	equ $35	; 0 = not burning; 1 = burning
 ost_grass_children:	equ $36	; OST indices of child objects (8 bytes)
+
+sizeof_grass_data:	equ LGrass_Data_1-LGrass_Data
 ; ===========================================================================
 
 LGrass_Main:	; Routine 0
@@ -96,15 +98,16 @@ LGrass_Display:
 
 LGrass_Types:
 		moveq	#0,d0
-		move.b	ost_subtype(a0),d0
-		andi.w	#7,d0
+		move.b	ost_subtype(a0),d0 ; get subtype (high nybble was removed earlier)
+		andi.w	#7,d0		; read only bits 0-2
 		add.w	d0,d0
 		move.w	LGrass_TypeIndex(pc,d0.w),d1
 		jmp	LGrass_TypeIndex(pc,d1.w)
 ; End of function LGrass_Types
 
 ; ===========================================================================
-LGrass_TypeIndex:index *
+LGrass_TypeIndex:
+		index *
 		ptr LGrass_Type00
 		ptr LGrass_Type01
 		ptr LGrass_Type02
@@ -140,12 +143,12 @@ LGrass_Type04:
 		move.w	#$60,d1
 
 LGrass_Move:
-		btst	#3,ost_subtype(a0)
-		beq.s	loc_AFF2
-		neg.w	d0
+		btst	#3,ost_subtype(a0) ; is bit 3 of subtype set? (+8)
+		beq.s	@no_rev		; if not, branch
+		neg.w	d0		; reverse direction
 		add.w	d1,d0
 
-loc_AFF2:
+	@no_rev:
 		move.w	ost_grass_y_start(a0),d1
 		sub.w	d0,d1
 		move.w	d1,ost_y_pos(a0) ; update position on y-axis
@@ -270,9 +273,9 @@ locret_B116:
 ; ---------------------------------------------------------------------------
 ; Collision data for large moving platforms (MZ)
 ; ---------------------------------------------------------------------------
-LGrass_Data1:	incbin	"Misc Data\mz_pfm1.bin"
-		even
-LGrass_Data2:	incbin	"Misc Data\mz_pfm2.bin"
-		even
-LGrass_Data3:	incbin	"Misc Data\mz_pfm3.bin"
-		even
+LGrass_Coll_Wide:	incbin	"Misc Data\mz_pfm1.bin"
+			even
+LGrass_Coll_Narrow:	incbin	"Misc Data\mz_pfm2.bin"
+			even
+LGrass_Coll_Sloped:	incbin	"Misc Data\mz_pfm3.bin"
+			even

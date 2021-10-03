@@ -32,7 +32,7 @@
 		objpos $0430,$0258,BuzzBomber,$00,rem
 		objpos $0440,$0300,MotoBug,$00,rem
 		objpos $0470,$0100,Crabmeat,$00,rem
-		objpos $0480,$02C8,BasicPlatform,$01
+		objpos $0480,$02C8,BasicPlatform,type_plat_sideways
 		objpos $04F8,$0332,PurpleRock,$00
 		objpos $0508,$02F0,EdgeWalls,type_edge_shadow+$10
 		objpos $0530,$0108,Scenery,type_scen_stump,xflip
@@ -52,16 +52,16 @@
 		objpos $067C,$0185,Spikes,$20
 		objpos $0690,$017F,Spikes,$20
 		objpos $0690,$02B8,MotoBug,$00,xflip,rem
-		objpos $06A0,$0360,BasicPlatform,$03
+		objpos $06A0,$0360,BasicPlatform,type_plat_falls
 		objpos $06A4,$0179,Spikes,$20
 		objpos $06B0,$03D0,Spikes,$40
 		objpos $06F0,$0170,PurpleRock,$00
 		objpos $0708,$02B0,EdgeWalls,type_edge_shadow
-		objpos $0720,$0380,BasicPlatform,$03
+		objpos $0720,$0380,BasicPlatform,type_plat_falls
 		objpos $0740,$03D0,Spikes,$40
 		objpos $0750,$00D0,BuzzBomber,$00,rem
 		objpos $07A0,$00F0,BuzzBomber,$00,xflip,rem
-		objpos $07A0,$03A0,BasicPlatform,$03
+		objpos $07A0,$03A0,BasicPlatform,type_plat_falls
 		objpos $07AC,$03D0,Spikes,$30
 		objpos $07D0,$0210,BuzzBomber,$00,rem
 		objpos $07DC,$03D0,Spikes,$20
@@ -142,23 +142,23 @@
 		objpos $0FF0,$0270,PurpleRock,$00
 		objpos $1054,$0230,Rings,$11,rem
 		objpos $1060,$02D0,Spikes,$00
-		objpos $10A0,$0288,BasicPlatform,$0A
+		objpos $10A0,$0288,BasicPlatform,type_plat_updown_large
 		objpos $10D0,$0370,Crabmeat,$00,rem
 		objpos $10D4,$0210,Rings,$11,rem
 		objpos $10E0,$02D0,Spikes,$00
 		objpos $1194,$0230,Rings,$11,rem
 		objpos $11A0,$02D0,Spikes,$00
-		objpos $11E0,$0288,BasicPlatform,$0A
+		objpos $11E0,$0288,BasicPlatform,type_plat_updown_large
 		objpos $1214,$0218,Rings,$11,rem
 		objpos $1220,$02D0,Spikes,$00
-		objpos $1260,$0288,BasicPlatform,$0A
+		objpos $1260,$0288,BasicPlatform,type_plat_updown_large
 		objpos $1280,$0220,BuzzBomber,$00,rem
 		objpos $1294,$0218,Rings,$11,rem
 		objpos $12A0,$02D0,Spikes,$00
 		objpos $1310,$026C,Lamppost,$01,rem
 		objpos $1354,$0218,Rings,$11,rem
 		objpos $1360,$02D0,Spikes,$00
-		objpos $13A0,$0288,BasicPlatform,$0A
+		objpos $13A0,$0288,BasicPlatform,type_plat_updown_large
 		objpos $13C0,$0240,BuzzBomber,$00,rem
 		objpos $13D4,$0230,Rings,$11,rem
 		objpos $13E0,$02D0,Spikes,$00
@@ -210,7 +210,7 @@
 		objpos $198F,$023D,Rings,$10,rem
 		objpos $198F,$0260,Rings,$10,rem
 		objpos $1994,$0285,Rings,$10,rem
-		objpos $19A0,$0488,BasicPlatform,$01
+		objpos $19A0,$0488,BasicPlatform,type_plat_sideways
 		objpos $19A7,$02A3,Rings,$10,rem
 		objpos $19AC,$04D0,Spikes,$40
 		objpos $19C8,$02B4,Rings,$10,rem

@@ -15,7 +15,7 @@ CStom_Index:	index *,,2
 		ptr CStom_Display2
 		ptr loc_B7E2
 
-CStom_SwchNums:	dc.b 0,	0		; switch number, obj number
+CStom_SwchNums:	dc.b 0,	0		; switch number, replacement subtype
 		dc.b 1,	0
 
 CStom_Var:	dc.b 2,	0, id_frame_cstomp_wideblock		; routine number, y-position, frame number
@@ -23,10 +23,14 @@ CStom_Var:	dc.b 2,	0, id_frame_cstomp_wideblock		; routine number, y-position, f
 		dc.b 8,	$CC, id_frame_cstomp_chain1
 		dc.b 6,	$F0, id_frame_cstomp_ceiling
 
-Stomp_Lengths:	dc.w $7000, $A000
-		dc.w $5000, $7800
-		dc.w $3800, $5800
-		dc.w $B800
+CStom_Lengths:
+CStom_Length_0:	dc.w $7000	; 0
+CStom_Length_1:	dc.w $A000	; 1
+CStom_Length_2:	dc.w $5000	; 2
+CStom_Length_3:	dc.w $7800	; 3
+CStom_Length_4:	dc.w $3800	; 4 - unused
+CStom_Length_5:	dc.w $5800	; 5 - unused
+CStom_Length_6:	dc.w $B800	; 6 - unused
 
 ost_cstomp_y_start:		equ $30	; original y position (2 bytes)
 ost_cstomp_chain_length:	equ $32	; current chain length (2 bytes)
@@ -40,18 +44,18 @@ ost_cstomp_parent:		equ $3C	; address of OST of parent object (4 bytes)
 CStom_Main:	; Routine 0
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0 ; get subtype
-		bpl.s	loc_B6CE	; branch if 0-$7F
+		bpl.s	@not_80	; branch if 0-$7F
 		andi.w	#$7F,d0
 		add.w	d0,d0
 		lea	CStom_SwchNums(pc,d0.w),a2
 		move.b	(a2)+,ost_cstomp_switch_id(a0) ; get switch number
 		move.b	(a2)+,d0	; get replacement subtype
-		move.b	d0,ost_subtype(a0) ; change subtype
+		move.b	d0,ost_subtype(a0) ; change subtype to 0
 
-loc_B6CE:
+	@not_80:
 		andi.b	#$F,d0		; read low nybble of subtype
 		add.w	d0,d0
-		move.w	Stomp_Lengths(pc,d0.w),d2 ; get length
+		move.w	CStom_Lengths(pc,d0.w),d2 ; get length
 		tst.w	d0
 		bne.s	loc_B6E0
 		move.w	d2,ost_cstomp_chain_length(a0) ; if subtype is 0, chain starts at max length
@@ -84,18 +88,18 @@ CStom_MakeStomper:
 		move.w	d2,ost_cstomp_chain_max(a1)
 		move.b	#4,ost_priority(a1)
 		move.b	(a2)+,ost_frame(a1)
-		cmpi.b	#id_frame_cstomp_spikes,ost_frame(a1)
-		bne.s	loc_B76A
+		cmpi.b	#id_frame_cstomp_spikes,ost_frame(a1) ; is the spikes component being loaded?
+		bne.s	@not_spikes	; if not, branch
 		subq.w	#1,d1
 		move.b	ost_subtype(a0),d0
-		andi.w	#$F0,d0
-		cmpi.w	#$20,d0
-		beq.s	CStom_MakeStomper
+		andi.w	#$F0,d0		; read high nybble of subtype
+		cmpi.w	#$20,d0		; is subtype $2x (no spikes)?
+		beq.s	CStom_MakeStomper ; if yes, branch
 		move.b	#$38,ost_actwidth(a1)
-		move.b	#$90,ost_col_type(a1)
+		move.b	#$90,ost_col_type(a1) ; make spikes harmful
 		addq.w	#1,d1
 
-loc_B76A:
+	@not_spikes:
 		move.l	a0,ost_cstomp_parent(a1)
 		dbf	d1,CStom_Loop
 
@@ -103,17 +107,20 @@ loc_B76A:
 
 CStom_SetSize:
 		moveq	#0,d0
-		move.b	ost_subtype(a0),d0
+		move.b	ost_subtype(a0),d0 ; get subtype
 		lsr.w	#3,d0
-		andi.b	#$E,d0
+		andi.b	#$E,d0		; read only high nybble
 		lea	CStom_Var2(pc,d0.w),a2
 		move.b	(a2)+,ost_actwidth(a0)
 		move.b	(a2)+,ost_frame(a0)
 		bra.s	loc_B798
 ; ===========================================================================
-CStom_Var2:	dc.b $38, id_frame_cstomp_wideblock		; width, frame number
-		dc.b $30, id_frame_cstomp_mediumblock
-		dc.b $10, id_frame_cstomp_smallblock
+CStom_Var2:
+CStom_Var2_0:	dc.b $38, id_frame_cstomp_wideblock	; width, frame number
+CStom_Var2_1:	dc.b $30, id_frame_cstomp_mediumblock
+CStom_Var2_2:	dc.b $10, id_frame_cstomp_smallblock
+
+sizeof_cstom_var2:	equ CStom_Var2_1-CStom_Var2
 ; ===========================================================================
 
 loc_B798:	; Routine 2
@@ -289,9 +296,9 @@ CStom_Type03:
 		neg.w	d0
 
 loc_B98C:
-		cmpi.w	#$90,d0
-		bcc.s	loc_B996
-		addq.b	#1,ost_subtype(a0)
+		cmpi.w	#$90,d0		; is Sonic within $90 pixels?
+		bcc.s	loc_B996	; if not, branch
+		addq.b	#1,ost_subtype(a0) ; allow stomper to drop by changing subtype
 
 loc_B996:
 		bra.w	CStom_Restart

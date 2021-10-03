@@ -74,11 +74,11 @@
 		objpos $1170,$0377,Spikes,$00
 		objpos $11D4,$0370,Spikes,$00
 		objpos $11E8,$022C,Lamppost,$01,rem
-		objpos $1220,$01E8,BasicPlatform,$01
+		objpos $1220,$01E8,BasicPlatform,type_plat_sideways
 		objpos $1220,$032C,Rings,$12,rem
 		objpos $1234,$0373,Spikes,$00
 		objpos $125C,$023E,Rings,$10,rem
-		objpos $1260,$01A8,BasicPlatform,$05
+		objpos $1260,$01A8,BasicPlatform,type_plat_sideways_rev
 		objpos $1280,$0249,Rings,$10,rem
 		objpos $12A2,$0259,Rings,$10,rem
 		objpos $12C0,$0330,Monitor,$06,rem
@@ -90,10 +90,10 @@
 		objpos $1308,$0170,Monitor,$06,rem
 		objpos $1320,$0330,Monitor,$05,rem
 		objpos $13A0,$0130,BuzzBomber,$00,rem
-		objpos $13A0,$0188,BasicPlatform,$03
-		objpos $1420,$01A8,BasicPlatform,$03
+		objpos $13A0,$0188,BasicPlatform,type_plat_falls
+		objpos $1420,$01A8,BasicPlatform,type_plat_falls
 		objpos $1448,$0304,MotoBug,$00,rem
-		objpos $14A0,$01C8,BasicPlatform,$03
+		objpos $14A0,$01C8,BasicPlatform,type_plat_falls
 		objpos $14D0,$0334,Spikes,$00
 		objpos $1500,$0331,Spikes,$00
 		objpos $1510,$017C,BuzzBomber,$00,rem
@@ -105,13 +105,13 @@
 		objpos $15AF,$0230,Rings,$10,rem
 		objpos $15C3,$0260,Rings,$10,rem
 		objpos $1610,$0130,BuzzBomber,$00,rem
-		objpos $1620,$0160,BasicPlatform,$06
-		objpos $1660,$01E8,BasicPlatform,$02
-		objpos $1690,$00E0,BasicPlatform,$02
+		objpos $1620,$0160,BasicPlatform,type_plat_updown_rev
+		objpos $1660,$01E8,BasicPlatform,type_plat_updown
+		objpos $1690,$00E0,BasicPlatform,type_plat_updown
 		objpos $16E4,$01B5,Rings,$10,rem
 		objpos $170C,$01B5,Rings,$10,rem
 		objpos $1734,$01AB,Rings,$10,rem
-		objpos $1740,$00A0,BasicPlatform,$01
+		objpos $1740,$00A0,BasicPlatform,type_plat_sideways
 		objpos $175B,$019C,Rings,$10,rem
 		objpos $1784,$0189,Rings,$10,rem
 		objpos $17A6,$0179,Rings,$10,rem
@@ -142,16 +142,16 @@
 		objpos $1AF8,$00E0,EdgeWalls,type_edge_dark
 		objpos $1AF8,$02B0,EdgeWalls,type_edge_dark
 		objpos $1AF8,$02F0,EdgeWalls,type_edge_dark
-		objpos $1B60,$0088,BasicPlatform,$03
-		objpos $1B70,$0288,BasicPlatform,$03
-		objpos $1BA0,$00C8,BasicPlatform,$03
-		objpos $1BE0,$0108,BasicPlatform,$03
+		objpos $1B60,$0088,BasicPlatform,type_plat_falls
+		objpos $1B70,$0288,BasicPlatform,type_plat_falls
+		objpos $1BA0,$00C8,BasicPlatform,type_plat_falls
+		objpos $1BE0,$0108,BasicPlatform,type_plat_falls
 		objpos $1C00,$02C0,BuzzBomber,$00,xflip,rem
-		objpos $1C20,$0148,BasicPlatform,$03
-		objpos $1C60,$0188,BasicPlatform,$03
-		objpos $1CA0,$01C8,BasicPlatform,$03
-		objpos $1CE0,$0208,BasicPlatform,$03
-		objpos $1D40,$0208,BasicPlatform,$03
+		objpos $1C20,$0148,BasicPlatform,type_plat_falls
+		objpos $1C60,$0188,BasicPlatform,type_plat_falls
+		objpos $1CA0,$01C8,BasicPlatform,type_plat_falls
+		objpos $1CE0,$0208,BasicPlatform,type_plat_falls
+		objpos $1D40,$0208,BasicPlatform,type_plat_falls
 		objpos $1D58,$0268,Rings,$16,rem
 		objpos $1D64,$0258,Rings,$16,rem
 		objpos $1D70,$0248,Rings,$15,rem
@@ -159,7 +159,7 @@
 		objpos $1D7C,$0238,Rings,$14,rem
 		objpos $1D88,$0228,Rings,$13,rem
 		objpos $1DA0,$0320,BuzzBomber,$00,rem
-		objpos $1DE0,$0204,BasicPlatform,$01
+		objpos $1DE0,$0204,BasicPlatform,type_plat_sideways
 		objpos $1DF8,$04B0,EdgeWalls,type_edge_dark
 		objpos $1E00,$0268,Rings,$10,rem
 		objpos $1E08,$0370,EdgeWalls,type_edge_shadow
@@ -198,7 +198,7 @@
 		objpos $2334,$0320,Monitor,$06,rem
 		objpos $2342,$0475,Rings,$10,rem
 		objpos $2367,$047E,Rings,$10,rem
-		objpos $2378,$0408,BasicPlatform,$02
+		objpos $2378,$0408,BasicPlatform,type_plat_updown
 		objpos $2386,$048D,Rings,$10,rem
 		objpos $23A5,$049D,Rings,$10,rem
 		objpos $23C6,$04AE,Rings,$10,rem
