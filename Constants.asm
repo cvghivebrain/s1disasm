@@ -38,12 +38,12 @@ TrackGoSubStack:	equ TrackSz	; All tracks (multiple bytes. This constant won't g
 TrackSz:	equ $30
 
 ; VRAM data
-vram_window:	equ $A000	; window namespace
-vram_fg:	equ $C000	; foreground namespace
-vram_bg:	equ $E000	; background namespace
-vram_sonic:	equ $F000	; Sonic graphics
-vram_sprites:	equ $F800	; sprite table
-vram_hscroll:	equ $FC00	; horizontal scroll table
+vram_window:	equ $A000	; window namespace - unused
+vram_fg:	equ $C000	; foreground namespace ($1000 bytes)
+vram_bg:	equ $E000	; background namespace ($1000 bytes)
+vram_sonic:	equ $F000	; Sonic graphics ($2E0 bytes)
+vram_sprites:	equ $F800	; sprite table ($280 bytes)
+vram_hscroll:	equ $FC00	; horizontal scroll table ($380 bytes)
 
 ; Levels
 id_GHZ:		equ 0

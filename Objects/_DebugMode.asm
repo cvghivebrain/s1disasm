@@ -27,8 +27,8 @@ Debug_Main:	; Routine 0
 		cmpi.b	#id_Special,(v_gamemode).w ; is game mode $10 (special stage)?
 		bne.s	@islevel	; if not, branch
 
-		move.w	#0,(v_ssrotate).w ; stop special stage rotating
-		move.w	#0,(v_ssangle).w ; make	special	stage "upright"
+		move.w	#0,(v_ss_rotation_speed).w ; stop special stage rotating
+		move.w	#0,(v_ss_angle).w ; make	special	stage "upright"
 		moveq	#6,d0		; use 6th debug	item list
 		bra.s	@selectlist
 ; ===========================================================================
@@ -191,8 +191,8 @@ Debug_ChgItem:
 		cmpi.b	#id_Special,(v_gamemode).w ; are you in the special stage?
 		bne.s	@stayindebug	; if not, branch
 
-		clr.w	(v_ssangle).w
-		move.w	#$40,(v_ssrotate).w ; set new level rotation speed
+		clr.w	(v_ss_angle).w
+		move.w	#$40,(v_ss_rotation_speed).w ; set new level rotation speed
 		move.l	#Map_Sonic,(v_ost_player+ost_mappings).w
 		move.w	#vram_sonic/$20,(v_ost_player+ost_tile).w
 		move.b	#id_Roll,(v_ost_player+ost_anim).w

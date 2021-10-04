@@ -31,9 +31,9 @@ Sonic_Main:	; Routine 0
 		move.b	#2,ost_priority(a0)
 		move.b	#$18,ost_actwidth(a0)
 		move.b	#render_rel,ost_render(a0)
-		move.w	#$600,(v_sonspeedmax).w ; Sonic's top speed
-		move.w	#$C,(v_sonspeedacc).w ; Sonic's acceleration
-		move.w	#$80,(v_sonspeeddec).w ; Sonic's deceleration
+		move.w	#$600,(v_sonic_max_speed).w ; Sonic's top speed
+		move.w	#$C,(v_sonic_acceleration).w ; Sonic's acceleration
+		move.w	#$80,(v_sonic_deceleration).w ; Sonic's deceleration
 
 Sonic_Control:	; Routine 2
 		tst.w	(f_debugmode).w	; is debug cheat enabled?
@@ -148,9 +148,9 @@ Sonic_Display:
 		beq.s	@exit		; if 0, branch
 		subq.w	#1,ost_sonic_shoe_time(a0) ; decrement timer
 		bne.s	@exit
-		move.w	#$600,(v_sonspeedmax).w ; restore Sonic's speed
-		move.w	#$C,(v_sonspeedacc).w ; restore Sonic's acceleration
-		move.w	#$80,(v_sonspeeddec).w ; restore Sonic's deceleration
+		move.w	#$600,(v_sonic_max_speed).w ; restore Sonic's speed
+		move.w	#$C,(v_sonic_acceleration).w ; restore Sonic's acceleration
+		move.w	#$80,(v_sonic_deceleration).w ; restore Sonic's deceleration
 		move.b	#0,(v_shoes).w	; cancel speed shoes
 		music	bgm_Slowdown,1,0,0 ; run music at normal speed
 
@@ -196,9 +196,9 @@ Sonic_Water:
 		bsr.w	ResumeMusic
 		move.b	#id_DrownCount,(v_ost_all+$340).w ; load bubbles object from Sonic's mouth
 		move.b	#$81,(v_ost_all+$340+ost_subtype).w
-		move.w	#$300,(v_sonspeedmax).w ; change Sonic's top speed
-		move.w	#6,(v_sonspeedacc).w ; change Sonic's acceleration
-		move.w	#$40,(v_sonspeeddec).w ; change Sonic's deceleration
+		move.w	#$300,(v_sonic_max_speed).w ; change Sonic's top speed
+		move.w	#6,(v_sonic_acceleration).w ; change Sonic's acceleration
+		move.w	#$40,(v_sonic_deceleration).w ; change Sonic's deceleration
 		asr	ost_x_vel(a0)
 		asr	ost_y_vel(a0)
 		asr	ost_y_vel(a0)	; slow Sonic
@@ -211,9 +211,9 @@ Sonic_Water:
 		bclr	#status_underwater_bit,ost_status(a0)
 		beq.s	@exit
 		bsr.w	ResumeMusic
-		move.w	#$600,(v_sonspeedmax).w ; restore Sonic's speed
-		move.w	#$C,(v_sonspeedacc).w ; restore Sonic's acceleration
-		move.w	#$80,(v_sonspeeddec).w ; restore Sonic's deceleration
+		move.w	#$600,(v_sonic_max_speed).w ; restore Sonic's speed
+		move.w	#$C,(v_sonic_acceleration).w ; restore Sonic's acceleration
+		move.w	#$80,(v_sonic_deceleration).w ; restore Sonic's deceleration
 		asl	ost_y_vel(a0)
 		beq.w	@exit
 		move.b	#id_Splash,(v_ost_all+$300).w ; load splash object
@@ -290,9 +290,9 @@ loc_12EA6:
 
 
 Sonic_Move:
-		move.w	(v_sonspeedmax).w,d6
-		move.w	(v_sonspeedacc).w,d5
-		move.w	(v_sonspeeddec).w,d4
+		move.w	(v_sonic_max_speed).w,d6
+		move.w	(v_sonic_acceleration).w,d5
+		move.w	(v_sonic_deceleration).w,d4
 		tst.b	(f_jumponly).w
 		bne.w	Sonic_InertiaLR
 		tst.w	ost_sonic_lock_time(a0) ; are controls locked?
@@ -581,11 +581,11 @@ locret_1314E:
 
 
 Sonic_RollSpeed:
-		move.w	(v_sonspeedmax).w,d6
+		move.w	(v_sonic_max_speed).w,d6
 		asl.w	#1,d6
-		move.w	(v_sonspeedacc).w,d5
+		move.w	(v_sonic_acceleration).w,d5
 		asr.w	#1,d5
-		move.w	(v_sonspeeddec).w,d4
+		move.w	(v_sonic_deceleration).w,d4
 		asr.w	#2,d4
 		tst.b	(f_jumponly).w
 		bne.w	loc_131CC
@@ -706,8 +706,8 @@ loc_13242:
 
 
 Sonic_JumpDirection:
-		move.w	(v_sonspeedmax).w,d6
-		move.w	(v_sonspeedacc).w,d5
+		move.w	(v_sonic_max_speed).w,d6
+		move.w	(v_sonic_acceleration).w,d5
 		asl.w	#1,d5
 		btst	#status_rolljump_bit,ost_status(a0) ; is Sonic jumping while rolling?
 		bne.s	Obj01_ResetScr2	; if yes, branch
@@ -1745,10 +1745,10 @@ Ani_Sonic:	include "Animations\Sonic.asm"
 Sonic_LoadGfx:
 		moveq	#0,d0
 		move.b	ost_frame(a0),d0 ; load frame number
-		cmp.b	(v_sonframenum).w,d0 ; has frame changed?
+		cmp.b	(v_sonic_last_frame_id).w,d0 ; has frame changed?
 		beq.s	@nochange	; if not, branch
 
-		move.b	d0,(v_sonframenum).w
+		move.b	d0,(v_sonic_last_frame_id).w
 		lea	(SonicDynPLC).l,a2 ; load PLC script
 		add.w	d0,d0
 		adda.w	(a2,d0.w),a2
@@ -1757,7 +1757,7 @@ Sonic_LoadGfx:
 		subq.b	#1,d1
 		bmi.s	@nochange	; if zero, branch
 		lea	(v_sonic_gfx_buffer).w,a3
-		move.b	#1,(f_sonframechg).w ; set flag for Sonic graphics DMA
+		move.b	#1,(f_sonic_dma_gfx).w ; set flag for Sonic graphics DMA
 
 	@readentry:
 		moveq	#0,d2

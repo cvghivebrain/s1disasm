@@ -80,9 +80,9 @@ Obj09_Display:
 		bsr.w	Obj09_ChkItems2
 		jsr	(SpeedToPos).l
 		bsr.w	SS_FixCamera
-		move.w	(v_ssangle).w,d0
-		add.w	(v_ssrotate).w,d0
-		move.w	d0,(v_ssangle).w
+		move.w	(v_ss_angle).w,d0
+		add.w	(v_ss_rotation_speed).w,d0
+		move.w	d0,(v_ss_angle).w
 		jsr	(Sonic_Animate).l
 		rts	
 
@@ -124,7 +124,7 @@ loc_1BAA4:
 		move.w	d0,ost_inertia(a0)
 
 loc_1BAA8:
-		move.b	(v_ssangle).w,d0
+		move.b	(v_ss_angle).w,d0
 		addi.b	#$20,d0
 		andi.b	#$C0,d0
 		neg.b	d0
@@ -219,7 +219,7 @@ Obj09_Jump:
 		move.b	(v_joypad_press).w,d0
 		andi.b	#btnABC,d0	; is A,	B or C pressed?
 		beq.s	Obj09_NoJump	; if not, branch
-		move.b	(v_ssangle).w,d0
+		move.b	(v_ss_angle).w,d0
 		andi.b	#$FC,d0
 		neg.b	d0
 		subi.b	#$40,d0
@@ -289,23 +289,23 @@ locret_1BBDE:
 ; ===========================================================================
 
 Obj09_ExitStage:
-		addi.w	#$40,(v_ssrotate).w ; increase stage rotation
-		cmpi.w	#$1800,(v_ssrotate).w ; check if it's up to $1800
+		addi.w	#$40,(v_ss_rotation_speed).w ; increase stage rotation
+		cmpi.w	#$1800,(v_ss_rotation_speed).w ; check if it's up to $1800
 		bne.s	@not1800	; if not, branch
 		move.b	#id_Level,(v_gamemode).w ; set game mode to normal level
 
 	@not1800:
-		cmpi.w	#$3000,(v_ssrotate).w ; check if it's up to $3000
+		cmpi.w	#$3000,(v_ss_rotation_speed).w ; check if it's up to $3000
 		blt.s	@not3000	; if not, branch
-		move.w	#0,(v_ssrotate).w ; stop rotation
-		move.w	#$4000,(v_ssangle).w
+		move.w	#0,(v_ss_rotation_speed).w ; stop rotation
+		move.w	#$4000,(v_ss_angle).w
 		addq.b	#2,ost_routine(a0) ; goto Obj09_Exit2 next
 		move.w	#$3C,ost_ss_restart_time(a0)
 
 	@not3000:
-		move.w	(v_ssangle).w,d0
-		add.w	(v_ssrotate).w,d0
-		move.w	d0,(v_ssangle).w
+		move.w	(v_ss_angle).w,d0
+		add.w	(v_ss_rotation_speed).w,d0
+		move.w	d0,(v_ss_angle).w
 		jsr	(Sonic_Animate).l
 		jsr	(Sonic_LoadGfx).l
 		bsr.w	SS_FixCamera
@@ -329,7 +329,7 @@ loc_1BC40:
 Obj09_Fall:
 		move.l	ost_y_pos(a0),d2
 		move.l	ost_x_pos(a0),d3
-		move.b	(v_ssangle).w,d0
+		move.b	(v_ss_angle).w,d0
 		andi.b	#$FC,d0
 		jsr	(CalcSine).l
 		move.w	ost_x_vel(a0),d4
@@ -653,7 +653,7 @@ Obj09_UPblock:
 		move.b	#$1E,ost_ss_updown_time(a0)
 		btst	#6,($FFFFF783).w
 		beq.s	Obj09_UPsnd
-		asl	(v_ssrotate).w	; increase stage rotation speed
+		asl	(v_ss_rotation_speed).w	; increase stage rotation speed
 		movea.l	ost_ss_item_address(a0),a1
 		subq.l	#1,a1
 		move.b	#$2A,(a1)	; change item to a "DOWN" block
@@ -668,9 +668,9 @@ Obj09_DOWNblock:
 		tst.b	ost_ss_updown_time(a0)
 		bne.w	Obj09_NoGlass
 		move.b	#$1E,ost_ss_updown_time(a0)
-		btst	#6,(v_ssrotate+1).w
+		btst	#6,(v_ss_rotation_speed+1).w
 		bne.s	Obj09_DOWNsnd
-		asr	(v_ssrotate).w	; reduce stage rotation speed
+		asr	(v_ss_rotation_speed).w	; reduce stage rotation speed
 		movea.l	ost_ss_item_address(a0),a1
 		subq.l	#1,a1
 		move.b	#$29,(a1)	; change item to an "UP" block
@@ -693,7 +693,7 @@ Obj09_Rblock:
 		move.l	d0,4(a2)
 
 Obj09_RevStage:
-		neg.w	(v_ssrotate).w	; reverse stage rotation
+		neg.w	(v_ss_rotation_speed).w	; reverse stage rotation
 		sfx	sfx_SSItem,1,0,0 ; play sound
 ; ===========================================================================
 

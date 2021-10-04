@@ -246,14 +246,15 @@ v_bg1_scroll_flags:	equ $FFFFF756	; screen redraw flags for background 1
 v_bg2_scroll_flags:	equ $FFFFF758	; screen redraw flags for background 2
 v_bg3_scroll_flags:	equ $FFFFF75A	; screen redraw flags for background 3
 f_bgscrollvert:	equ $FFFFF75C	; flag for vertical background scrolling
-v_sonspeedmax:	equ $FFFFF760	; Sonic's maximum speed (2 bytes)
-v_sonspeedacc:	equ $FFFFF762	; Sonic's acceleration (2 bytes)
-v_sonspeeddec:	equ $FFFFF764	; Sonic's deceleration (2 bytes)
-v_sonframenum:	equ $FFFFF766	; frame to display for Sonic
-f_sonframechg:	equ $FFFFF767	; flag set to update Sonic's sprite frame
-v_angle_right:	equ $FFFFF768	; angle of floor on Sonic's right side
 
-v_angle_left:	equ $FFFFF76A	; angle of floor on Sonic's left side
+v_sonic_max_speed:	equ $FFFFF760 ; Sonic's maximum speed (2 bytes)
+v_sonic_acceleration:	equ $FFFFF762 ; Sonic's acceleration (2 bytes)
+v_sonic_deceleration:	equ $FFFFF764 ; Sonic's deceleration (2 bytes)
+v_sonic_last_frame_id:	equ $FFFFF766 ; Sonic's last frame id, compared with current frame to determine if graphics need updating
+f_sonic_dma_gfx:	equ $FFFFF767 ; flag set to DMA Sonic's graphics from RAM to VRAM
+v_angle_right:		equ $FFFFF768 ; angle of floor on Sonic's right side
+
+v_angle_left:		equ $FFFFF76A ; angle of floor on Sonic's left side
 
 v_opl_routine:		equ $FFFFF76C ; ObjPosLoad - routine counter
 	; $F76D unused
@@ -263,14 +264,17 @@ v_opl_ptr_left:		equ $FFFFF774 ; ObjPosLoad - pointer to leftmost objpos data (4
 v_opl_ptr_alt_right:	equ $FFFFF778 ; ObjPosLoad - pointer to current secondary objpos data (4 bytes)
 v_opl_ptr_alt_left:	equ $FFFFF77C ; ObjPosLoad - pointer to leftmost secondary objpos data (4 bytes)
 
-v_ssangle:	equ $FFFFF780	; Special Stage angle (2 bytes)
-v_ssrotate:	equ $FFFFF782	; Special Stage rotation speed (2 bytes)
-v_btnpushtime1:	equ $FFFFF790	; button push duration - in level (2 bytes)
-v_btnpushtime2:	equ $FFFFF792	; button push duration - in demo (2 bytes)
-v_palchgspeed:	equ $FFFFF794	; palette fade/transition speed (0 is fastest) (2 bytes)
-v_collindex:	equ $FFFFF796	; ROM address for collision index of current level (4 bytes)
-v_palss_num:	equ $FFFFF79A	; palette cycling in Special Stage - reference number (2 bytes)
-v_palss_time:	equ $FFFFF79C	; palette cycling in Special Stage - time until next change (2 bytes)
+v_ss_angle:		equ $FFFFF780 ; Special Stage angle (2 bytes)
+v_ss_rotation_speed:	equ $FFFFF782 ; Special Stage rotation speed (2 bytes)
+
+v_demo_input_counter:	equ $FFFFF790 ; tracks progress in the demo input data, increases by 2 when input changes (2 bytes)
+v_demo_input_time:	equ $FFFFF792 ; time remaining for current demo "button press"
+
+v_palfade_time:		equ $FFFFF794 ; palette fading - time until next change (2 bytes)
+v_collision_index_ptr:	equ $FFFFF796 ; ROM address for collision index of current level (4 bytes)
+v_palcycle_ss_num:	equ $FFFFF79A ; palette cycling in Special Stage - current index number (2 bytes)
+v_palcycle_ss_time:	equ $FFFFF79C ; palette cycling in Special Stage - time until next change (2 bytes)
+v_palcycle_ss_unused:	equ $FFFFF79E ; palette cycling in Special Stage - unused offset value, always 0 (2 bytes)
 
 v_obj31ypos:	equ $FFFFF7A4	; y-position of object 31 (MZ stomper) (2 bytes)
 v_bossstatus:	equ $FFFFF7A7	; status of boss and prison capsule (01 = boss defeated; 02 = prison opened)

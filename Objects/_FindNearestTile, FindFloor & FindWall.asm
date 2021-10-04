@@ -106,7 +106,7 @@ FindFloor:
 ; ===========================================================================
 
 @issolid:
-		movea.l	(v_collindex).w,a2
+		movea.l	(v_collision_index_ptr).w,a2
 		move.b	(a2,d0.w),d0	; get collision block number
 		andi.w	#$FF,d0
 		beq.s	@isblank	; branch if 0
@@ -187,7 +187,7 @@ FindFloor2:
 ; ===========================================================================
 
 @issolid:
-		movea.l	(v_collindex).w,a2
+		movea.l	(v_collision_index_ptr).w,a2
 		move.b	(a2,d0.w),d0
 		andi.w	#$FF,d0
 		beq.s	@isblank2
@@ -278,7 +278,7 @@ FindWall:
 ; ===========================================================================
 
 @issolid:
-		movea.l	(v_collindex).w,a2
+		movea.l	(v_collision_index_ptr).w,a2
 		move.b	(a2,d0.w),d0	; get collision block number
 		andi.w	#$FF,d0
 		beq.s	@isblank	; branch if 0
@@ -359,7 +359,7 @@ loc_14BC6:
 ; ===========================================================================
 
 loc_14BD4:
-		movea.l	(v_collindex).w,a2
+		movea.l	(v_collision_index_ptr).w,a2
 		move.b	(a2,d0.w),d0
 		andi.w	#$FF,d0
 		beq.s	loc_14BC6

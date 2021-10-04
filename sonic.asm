@@ -703,11 +703,11 @@ VBla_08:
 
 		dma	v_hscroll_buffer,$380,vram_hscroll
 		dma	v_spritetablebuffer,$280,vram_sprites
-		tst.b	(f_sonframechg).w ; has Sonic's sprite changed?
+		tst.b	(f_sonic_dma_gfx).w ; has Sonic's sprite changed?
 		beq.s	@nochg		; if not, branch
 
 		dma	v_sonic_gfx_buffer,$2E0,vram_sonic ; load new Sonic gfx
-		move.b	#0,(f_sonframechg).w
+		move.b	#0,(f_sonic_dma_gfx).w
 
 	@nochg:
 		startZ80
@@ -752,11 +752,11 @@ VBla_0A:
 		dma	v_hscroll_buffer,$380,vram_hscroll
 		startZ80
 		bsr.w	PalCycle_SS
-		tst.b	(f_sonframechg).w ; has Sonic's sprite changed?
+		tst.b	(f_sonic_dma_gfx).w ; has Sonic's sprite changed?
 		beq.s	@nochg		; if not, branch
 
 		dma	v_sonic_gfx_buffer,$2E0,vram_sonic ; load new Sonic gfx
-		move.b	#0,(f_sonframechg).w
+		move.b	#0,(f_sonic_dma_gfx).w
 
 	@nochg:
 		tst.w	(v_countdown).w ; is there time left on the demo?
@@ -784,10 +784,10 @@ VBla_0C:
 		move.w	(v_vdp_hint_counter).w,(a5)
 		dma	v_hscroll_buffer,$380,vram_hscroll
 		dma	v_spritetablebuffer,$280,vram_sprites
-		tst.b	(f_sonframechg).w
+		tst.b	(f_sonic_dma_gfx).w
 		beq.s	@nochg
 		dma	v_sonic_gfx_buffer,$2E0,vram_sonic
-		move.b	#0,(f_sonframechg).w
+		move.b	#0,(f_sonic_dma_gfx).w
 
 	@nochg:
 		startZ80
@@ -823,10 +823,10 @@ VBla_16:
 		dma	v_spritetablebuffer,$280,vram_sprites
 		dma	v_hscroll_buffer,$380,vram_hscroll
 		startZ80
-		tst.b	(f_sonframechg).w
+		tst.b	(f_sonic_dma_gfx).w
 		beq.s	@nochg
 		dma	v_sonic_gfx_buffer,$2E0,vram_sonic
-		move.b	#0,(f_sonframechg).w
+		move.b	#0,(f_sonic_dma_gfx).w
 
 	@nochg:
 		tst.w	(v_countdown).w
@@ -2630,7 +2630,7 @@ Level_LoadObj:
 		move.b	#1,(f_hud_score_update).w ; update score counter
 		move.b	#1,(v_hud_rings_update).w ; update rings counter
 		move.b	#1,(f_hud_time_update).w ; update time counter
-		move.w	#0,(v_btnpushtime1).w
+		move.w	#0,(v_demo_input_counter).w
 		lea	(DemoDataPtr).l,a1 ; load demo data
 		moveq	#0,d0
 		move.b	(v_zone).w,d0
@@ -2645,8 +2645,8 @@ Level_LoadObj:
 		movea.l	(a1,d0.w),a1
 
 Level_Demo:
-		move.b	1(a1),(v_btnpushtime2).w ; load key press duration
-		subq.b	#1,(v_btnpushtime2).w ; subtract 1 from duration
+		move.b	1(a1),(v_demo_input_time).w ; load key press duration
+		subq.b	#1,(v_demo_input_time).w ; subtract 1 from duration
 		move.w	#1800,(v_countdown).w
 		tst.w	(f_demo).w
 		bpl.s	Level_ChkWaterPal
@@ -2764,7 +2764,7 @@ Level_EndDemo:
 Level_FadeDemo:
 		move.w	#$3C,(v_countdown).w
 		move.w	#$3F,(v_palfade_start).w
-		clr.w	(v_palchgspeed).w
+		clr.w	(v_palfade_time).w
 
 	Level_FDLoop:
 		move.b	#8,(v_vblank_routine).w
@@ -2773,9 +2773,9 @@ Level_FadeDemo:
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
 		jsr	(ObjPosLoad).l
-		subq.w	#1,(v_palchgspeed).w
+		subq.w	#1,(v_palfade_time).w
 		bpl.s	loc_3BC8
-		move.w	#2,(v_palchgspeed).w
+		move.w	#2,(v_palfade_time).w
 		bsr.w	FadeOut_ToBlack
 
 loc_3BC8:
@@ -2803,7 +2803,7 @@ MoveSonicInDemo:
 
 DemoRecorder:
 		lea	($80000).l,a1
-		move.w	(v_btnpushtime1).w,d0
+		move.w	(v_demo_input_counter).w,d0
 		adda.w	d0,a1
 		move.b	(v_joypad_hold_actual).w,d0
 		cmp.b	(a1),d0
@@ -2816,8 +2816,8 @@ DemoRecorder:
 	@next:
 		move.b	d0,2(a1)
 		move.b	#0,3(a1)
-		addq.w	#2,(v_btnpushtime1).w
-		andi.w	#$3FF,(v_btnpushtime1).w
+		addq.w	#2,(v_demo_input_counter).w
+		andi.w	#$3FF,(v_demo_input_counter).w
 		rts	
 ; ===========================================================================
 
@@ -2848,7 +2848,7 @@ MDemo_On:
 		movea.l	(a1,d0.w),a1	; fetch address for credits demo
 
 	@notcredits:
-		move.w	(v_btnpushtime1).w,d0
+		move.w	(v_demo_input_counter).w,d0
 		adda.w	d0,a1
 		move.b	(a1),d0
 		lea	(v_joypad_hold_actual).w,a0
@@ -2862,10 +2862,10 @@ MDemo_On:
 		move.b	d1,(a0)+
 		and.b	d1,d0
 		move.b	d0,(a0)+
-		subq.b	#1,(v_btnpushtime2).w
+		subq.b	#1,(v_demo_input_time).w
 		bcc.s	@end
-		move.b	3(a1),(v_btnpushtime2).w
-		addq.w	#2,(v_btnpushtime1).w
+		move.b	3(a1),(v_demo_input_time).w
+		addq.w	#2,(v_demo_input_counter).w
 
 	@end:
 		rts	
@@ -2909,7 +2909,7 @@ ColIndexLoad:
 		moveq	#0,d0
 		move.b	(v_zone).w,d0
 		lsl.w	#2,d0
-		move.l	ColPointers(pc,d0.w),(v_collindex).w
+		move.l	ColPointers(pc,d0.w),(v_collision_index_ptr).w
 		rts	
 ; End of function ColIndexLoad
 
@@ -3032,16 +3032,16 @@ GM_Special:
 		move.l	#0,(v_screenposy).w
 		move.b	#id_SonicSpecial,(v_ost_player).w ; load special stage Sonic object
 		bsr.w	PalCycle_SS
-		clr.w	(v_ssangle).w	; set stage angle to "upright"
-		move.w	#$40,(v_ssrotate).w ; set stage rotation speed
+		clr.w	(v_ss_angle).w	; set stage angle to "upright"
+		move.w	#$40,(v_ss_rotation_speed).w ; set stage rotation speed
 		music	bgm_SS,0,1,0	; play special stage BG	music
-		move.w	#0,(v_btnpushtime1).w
+		move.w	#0,(v_demo_input_counter).w
 		lea	(DemoDataPtr).l,a1
 		moveq	#6,d0
 		lsl.w	#2,d0
 		movea.l	(a1,d0.w),a1
-		move.b	1(a1),(v_btnpushtime2).w
-		subq.b	#1,(v_btnpushtime2).w
+		move.b	1(a1),(v_demo_input_time).w
+		subq.b	#1,(v_demo_input_time).w
 		clr.w	(v_rings).w
 		clr.b	(v_ring_reward).w
 		move.w	#0,(v_debug_active).w
@@ -3095,7 +3095,7 @@ SS_MainLoop:
 SS_Finish:
 		move.w	#60,(v_countdown).w ; set delay time to 1 second
 		move.w	#$3F,(v_palfade_start).w
-		clr.w	(v_palchgspeed).w
+		clr.w	(v_palfade_time).w
 
 	SS_FinLoop:
 		move.b	#$16,(v_vblank_routine).w
@@ -3106,9 +3106,9 @@ SS_Finish:
 		jsr	(BuildSprites).l
 		jsr	(SS_ShowLayout).l
 		bsr.w	SS_BGAnimate
-		subq.w	#1,(v_palchgspeed).w
+		subq.w	#1,(v_palfade_time).w
 		bpl.s	loc_47D4
-		move.w	#2,(v_palchgspeed).w
+		move.w	#2,(v_palfade_time).w
 		bsr.w	WhiteOut_ToWhite
 
 loc_47D4:
@@ -3257,99 +3257,129 @@ loc_491C:
 
 
 PalCycle_SS:
-		tst.w	(f_pause).w
-		bne.s	locret_49E6
-		subq.w	#1,(v_palss_time).w
-		bpl.s	locret_49E6
+		tst.w	(f_pause).w	; is game paused?
+		bne.s	@exit		; if yes, branch
+		subq.w	#1,(v_palcycle_ss_time).w ; decrement timer
+		bpl.s	@exit		; branch if time remains
 		lea	(vdp_control_port).l,a6
-		move.w	(v_palss_num).w,d0
-		addq.w	#1,(v_palss_num).w
-		andi.w	#$1F,d0
-		lsl.w	#2,d0
-		lea	(byte_4A3C).l,a0
+		move.w	(v_palcycle_ss_num).w,d0 ; get cycle index counter
+		addq.w	#1,(v_palcycle_ss_num).w ; increment
+		andi.w	#$1F,d0		; read only bits 0-4
+		lsl.w	#2,d0		; multiply by 4
+		lea	(SS_Timing_Values).l,a0
 		adda.w	d0,a0
-		move.b	(a0)+,d0
-		bpl.s	loc_4992
-		move.w	#$1FF,d0
+		move.b	(a0)+,d0	; get time byte
+		bpl.s	@use_time	; branch if not -1
+		move.w	#$1FF,d0	; use $1FF if -1
 
-loc_4992:
-		move.w	d0,(v_palss_time).w
+	@use_time:
+		move.w	d0,(v_palcycle_ss_time).w ; set time until next palette change
 		moveq	#0,d0
-		move.b	(a0)+,d0
+		move.b	(a0)+,d0	; get bg mode byte
 		move.w	d0,($FFFFF7A0).w
-		lea	(byte_4ABC).l,a1
-		lea	(a1,d0.w),a1
-		move.w	#-$7E00,d0
-		move.b	(a1)+,d0
-		move.w	d0,(a6)
-		move.b	(a1),(v_fg_y_pos_vsram).w
-		move.w	#-$7C00,d0
-		move.b	(a0)+,d0
-		move.w	d0,(a6)
-		move.l	#$40000010,(vdp_control_port).l
-		move.l	(v_fg_y_pos_vsram).w,(vdp_data_port).l
+		lea	(SS_BG_Modes).l,a1
+		lea	(a1,d0.w),a1	; jump to mode data
+		move.w	#$8200,d0	; VDP register - fg nametable address
+		move.b	(a1)+,d0	; apply address from mode data
+		move.w	d0,(a6)		; send VDP instruction
+		move.b	(a1),(v_fg_y_pos_vsram).w ; get byte to send to VSRAM
+		move.w	#$8400,d0	; VDP register - bg nametable address
+		move.b	(a0)+,d0	; apply address from list
+		move.w	d0,(a6)		; send VDP instruction
+		move.l	#$40000010,(vdp_control_port).l ; set VDP to VSRAM write mode
+		move.l	(v_fg_y_pos_vsram).w,(vdp_data_port).l ; update VSRAM
 		moveq	#0,d0
-		move.b	(a0)+,d0
-		bmi.s	loc_49E8
-		lea	(Pal_SSCyc1).l,a1
+		move.b	(a0)+,d0	; get palette offset
+		bmi.s	PalCycle_SS_2	; branch if $80+
+		lea	(Pal_SSCyc1).l,a1 ; use palette cycle set 1
 		adda.w	d0,a1
 		lea	(v_pal_dry+$4E).w,a2
 		move.l	(a1)+,(a2)+
 		move.l	(a1)+,(a2)+
-		move.l	(a1)+,(a2)+
+		move.l	(a1)+,(a2)+	; write palette
 
-locret_49E6:
+	@exit:
 		rts	
 ; ===========================================================================
 
-loc_49E8:
-		move.w	($FFFFF79E).w,d1
-		cmpi.w	#$8A,d0
-		blo.s	loc_49F4
+PalCycle_SS_2:
+		move.w	(v_palcycle_ss_unused).w,d1 ; this is always 0
+		cmpi.w	#$8A,d0		; is offset $80-$89?
+		blo.s	@offset_80_89	; if yes, branch
 		addq.w	#1,d1
 
-loc_49F4:
-		mulu.w	#$2A,d1
-		lea	(Pal_SSCyc2).l,a1
+	@offset_80_89:
+		mulu.w	#$2A,d1		; d1 = always 0 or $2A
+		lea	(Pal_SSCyc2).l,a1 ; use palette cycle set 2
 		adda.w	d1,a1
-		andi.w	#$7F,d0
-		bclr	#0,d0
-		beq.s	loc_4A18
+		andi.w	#$7F,d0		; ignore bit 7
+		bclr	#0,d0		; clear bit 0
+		beq.s	@offset_even	; branch if already clear
 		lea	(v_pal_dry+$6E).w,a2
 		move.l	(a1),(a2)+
 		move.l	4(a1),(a2)+
-		move.l	8(a1),(a2)+
+		move.l	8(a1),(a2)+	; write palette
 
-loc_4A18:
+	@offset_even:
 		adda.w	#$C,a1
 		lea	(v_pal_dry+$5A).w,a2
-		cmpi.w	#$A,d0
-		blo.s	loc_4A2E
+		cmpi.w	#$A,d0		; is offset 0-8?
+		blo.s	@offset_0_8	; if yes, branch
 		subi.w	#$A,d0
 		lea	(v_pal_dry+$7A).w,a2
 
-loc_4A2E:
+	@offset_0_8:
 		move.w	d0,d1
 		add.w	d0,d0
-		add.w	d1,d0
+		add.w	d1,d0		; multiply d0 by 3
 		adda.w	d0,a1
 		move.l	(a1)+,(a2)+
-		move.w	(a1)+,(a2)+
+		move.w	(a1)+,(a2)+	; write palette
 		rts	
 ; End of function PalCycle_SS
 
 ; ===========================================================================
-byte_4A3C:	dc.b 3,	0, 7, $92, 3, 0, 7, $90, 3, 0, 7, $8E, 3, 0, 7,	$8C
-
-		dc.b 3,	0, 7, $8B, 3, 0, 7, $80, 3, 0, 7, $82, 3, 0, 7,	$84
-		dc.b 3,	0, 7, $86, 3, 0, 7, $88, 7, 8, 7, 0, 7,	$A, 7, $C
-		dc.b $FF, $C, 7, $18, $FF, $C, 7, $18, 7, $A, 7, $C, 7,	8, 7, 0
-		dc.b 3,	0, 6, $88, 3, 0, 6, $86, 3, 0, 6, $84, 3, 0, 6,	$82
-		dc.b 3,	0, 6, $81, 3, 0, 6, $8A, 3, 0, 6, $8C, 3, 0, 6,	$8E
-		dc.b 3,	0, 6, $90, 3, 0, 6, $92, 7, 2, 6, $24, 7, 4, 6,	$30
-		dc.b $FF, 6, 6,	$3C, $FF, 6, 6,	$3C, 7,	4, 6, $30, 7, 2, 6, $24
+SS_Timing_Values:
+		dc.b 3,	0, $E000>>13, $92	; time until next, bg mode, bg namespace address in VRAM, palette offset
+		dc.b 3, 0, $E000>>13, $90
+		dc.b 3, 0, $E000>>13, $8E
+		dc.b 3, 0, $E000>>13, $8C
+		dc.b 3,	0, $E000>>13, $8B
+		dc.b 3, 0, $E000>>13, $80
+		dc.b 3, 0, $E000>>13, $82
+		dc.b 3, 0, $E000>>13, $84
+		dc.b 3,	0, $E000>>13, $86
+		dc.b 3, 0, $E000>>13, $88
+		dc.b 7, 8, $E000>>13, 0
+		dc.b 7,	$A, $E000>>13, $C
+		dc.b -1, $C, $E000>>13, $18
+		dc.b -1, $C, $E000>>13, $18
+		dc.b 7, $A, $E000>>13, $C
+		dc.b 7,	8, $E000>>13, 0
+		dc.b 3,	0, $C000>>13, $88
+		dc.b 3, 0, $C000>>13, $86
+		dc.b 3, 0, $C000>>13, $84
+		dc.b 3, 0, $C000>>13, $82
+		dc.b 3,	0, $C000>>13, $81
+		dc.b 3, 0, $C000>>13, $8A
+		dc.b 3, 0, $C000>>13, $8C
+		dc.b 3, 0, $C000>>13, $8E
+		dc.b 3,	0, $C000>>13, $90
+		dc.b 3, 0, $C000>>13, $92
+		dc.b 7, 2, $C000>>13, $24
+		dc.b 7, 4, $C000>>13, $30
+		dc.b -1, 6, $C000>>13, $3C
+		dc.b -1, 6, $C000>>13, $3C
+		dc.b 7,	4, $C000>>13, $30
+		dc.b 7, 2, $C000>>13, $24
 		even
-byte_4ABC:	dc.b $10, 1, $18, 0, $18, 1, $20, 0, $20, 1, $28, 0, $28, 1
+SS_BG_Modes:	dc.b $4000>>10, 1	; fg namespace address in VRAM, VScroll value
+		dc.b $6000>>10, 0
+		dc.b $6000>>10, 1
+		dc.b $8000>>10, 0
+		dc.b $8000>>10, 1
+		dc.b $A000>>10, 0
+		dc.b $A000>>10, 1
 		even
 
 Pal_SSCyc1:	incbin	"Palettes\Cycle - Special Stage 1.bin"
@@ -3628,7 +3658,7 @@ End_LoadData:
 		bset	#2,(v_fg_scroll_flags).w
 		bsr.w	LevelDataLoad
 		bsr.w	LoadTilesFromStart
-		move.l	#Col_GHZ,(v_collindex).w ; load collision index
+		move.l	#Col_GHZ,(v_collision_index_ptr).w ; load collision index
 		enable_ints
 		lea	(Kos_EndFlowers).l,a0 ;	load extra flower patterns
 		lea	($FFFF9400).w,a1 ; RAM address to buffer the patterns
@@ -3706,7 +3736,7 @@ End_ChkEmerald:
 
 		clr.w	(f_restart).w
 		move.w	#$3F,(v_palfade_start).w
-		clr.w	(v_palchgspeed).w
+		clr.w	(v_palfade_time).w
 
 	End_AllEmlds:
 		bsr.w	PauseGame
@@ -3720,9 +3750,9 @@ End_ChkEmerald:
 		jsr	(ObjPosLoad).l
 		bsr.w	OscillateNumDo
 		bsr.w	SynchroAnimate
-		subq.w	#1,(v_palchgspeed).w
+		subq.w	#1,(v_palfade_time).w
 		bpl.s	End_SlowFade
-		move.w	#2,(v_palchgspeed).w
+		move.w	#2,(v_palfade_time).w
 		bsr.w	WhiteOut_ToWhite
 
 	End_SlowFade:
@@ -7677,7 +7707,7 @@ SS_ShowLayout:
 		bsr.w	SS_AniItems
 		move.w	d5,-(sp)
 		lea	($FFFF8000).w,a1
-		move.b	(v_ssangle).w,d0
+		move.b	(v_ss_angle).w,d0
 		andi.b	#$FC,d0
 		jsr	(CalcSine).l
 		move.w	d0,d4
@@ -7806,7 +7836,7 @@ loc_1B288:
 SS_AniWallsRings:
 		lea	($FF400C).l,a1
 		moveq	#0,d0
-		move.b	(v_ssangle).w,d0
+		move.b	(v_ss_angle).w,d0
 		lsr.b	#2,d0
 		andi.w	#$F,d0
 		moveq	#$23,d1

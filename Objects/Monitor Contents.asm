@@ -67,9 +67,9 @@ Pow_ChkShoes:
 
 		move.b	#1,(v_shoes).w	; speed up the BG music
 		move.w	#$4B0,(v_ost_player+ost_sonic_shoe_time).w ; time limit for the power-up
-		move.w	#$C00,(v_sonspeedmax).w ; change Sonic's top speed
-		move.w	#$18,(v_sonspeedacc).w	; change Sonic's acceleration
-		move.w	#$80,(v_sonspeeddec).w	; change Sonic's deceleration
+		move.w	#$C00,(v_sonic_max_speed).w ; change Sonic's top speed
+		move.w	#$18,(v_sonic_acceleration).w	; change Sonic's acceleration
+		move.w	#$80,(v_sonic_deceleration).w	; change Sonic's deceleration
 		music	bgm_Speedup,1,0,0 ; speed up the music
 ; ===========================================================================
 
