@@ -271,9 +271,9 @@ loc_18B52:
 		bclr	#status_onscreen_bit,ost_status(a0)
 		clr.w	ost_x_vel(a0)
 		move.b	#-$18,ost_bslz_wait_time(a0)
-		tst.b	(v_bossstatus).w
+		tst.b	(v_boss_status).w
 		bne.s	loc_18B7C
-		move.b	#1,(v_bossstatus).w
+		move.b	#1,(v_boss_status).w
 
 loc_18B7C:
 		bra.w	loc_189FE

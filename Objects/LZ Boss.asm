@@ -283,7 +283,7 @@ loc_18112:
 		music	bgm_LZ,0,0,0		; play LZ music
 		if Revision=0
 		else
-			clr.b	(f_lockscreen).w
+			clr.b	(f_boss_boundary).w
 		endc
 		bset	#status_xflip_bit,ost_status(a0)
 		addq.b	#2,ost_routine2(a0)

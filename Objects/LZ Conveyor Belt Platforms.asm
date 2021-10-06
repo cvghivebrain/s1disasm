@@ -72,7 +72,7 @@ loc_123E2:
 		lsl.w	#2,d1		; multiply by 4
 		move.b	d1,$38(a0)
 		move.b	#4,$3A(a0)
-		tst.b	(f_conveyrev).w	; is conveyor set to reverse?
+		tst.b	(f_convey_reverse).w	; is conveyor set to reverse?
 		beq.s	loc_1244C	; if not, branch
 		move.b	#1,ost_lcon_reverse(a0)
 		neg.b	$3A(a0)
@@ -154,7 +154,7 @@ LCon_AniWheel:	; Routine 6
 		andi.w	#3,d0
 		bne.s	loc_124FC
 		moveq	#1,d1
-		tst.b	(f_conveyrev).w
+		tst.b	(f_convey_reverse).w
 		beq.s	loc_124F2
 		neg.b	d1
 
@@ -175,7 +175,7 @@ sub_12502:
 		tst.b	ost_lcon_reverse(a0)
 		bne.s	loc_12520
 		move.b	#1,ost_lcon_reverse(a0)
-		move.b	#1,(f_conveyrev).w
+		move.b	#1,(f_convey_reverse).w
 		neg.b	$3A(a0)
 		bra.s	loc_12534
 ; ===========================================================================

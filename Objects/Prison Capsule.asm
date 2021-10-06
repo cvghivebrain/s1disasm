@@ -55,7 +55,7 @@ Pri_Main:	; Routine 0
 ; ===========================================================================
 
 Pri_BodyMain:	; Routine 2
-		cmpi.b	#2,(v_bossstatus).w
+		cmpi.b	#2,(v_boss_status).w
 		beq.s	@chkopened
 		move.w	#$2B,d1
 		move.w	#$18,d2
@@ -92,7 +92,7 @@ Pri_Switched:	; Routine 4
 		move.b	#$A,ost_routine(a0)
 		move.w	#60,ost_anim_time(a0) ; set time between animal spawns
 		clr.b	(f_hud_time_update).w	; stop time counter
-		clr.b	(f_lockscreen).w ; lock screen position
+		clr.b	(f_boss_boundary).w ; lock screen position
 		move.b	#1,(f_lockctrl).w ; lock controls
 		move.w	#(btnR<<8),(v_joypad_hold).w ; make Sonic run to the right
 		clr.b	ost_routine2(a0)
@@ -129,7 +129,7 @@ Pri_Explosion:	; Routine 6, 8, $A
 ; ===========================================================================
 
 @makeanimal:
-		move.b	#2,(v_bossstatus).w
+		move.b	#2,(v_boss_status).w
 		move.b	#id_Pri_Animals,ost_routine(a0) ; replace explosions with animals
 		move.b	#id_frame_prison_blank,ost_frame(a0)
 		move.w	#150,ost_anim_time(a0)

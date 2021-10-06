@@ -162,7 +162,7 @@ loc_6EB0:
 
 loc_6ED0:
 		music	bgm_Boss,0,1,0	; play boss music
-		move.b	#1,(f_lockscreen).w ; lock screen
+		move.b	#1,(f_boss_boundary).w ; lock screen
 		addq.b	#2,(v_dle_routine).w
 		moveq	#id_PLC_Boss,d0
 		bra.w	AddPLC		; load boss patterns
@@ -220,7 +220,7 @@ loc_6F28:
 
 loc_6F4A:
 		music	bgm_Boss,0,1,0	; play boss music
-		move.b	#1,(f_lockscreen).w ; lock screen
+		move.b	#1,(f_boss_boundary).w ; lock screen
 		addq.b	#2,(v_dle_routine).w
 		moveq	#id_PLC_Boss,d0
 		bra.w	AddPLC		; load boss patterns
@@ -405,7 +405,7 @@ DLE_MZ3boss:
 
 loc_70D0:
 		music	bgm_Boss,0,1,0	; play boss music
-		move.b	#1,(f_lockscreen).w ; lock screen
+		move.b	#1,(f_boss_boundary).w ; lock screen
 		addq.b	#2,(v_dle_routine).w
 		moveq	#id_PLC_Boss,d0
 		bra.w	AddPLC		; load boss patterns
@@ -471,7 +471,7 @@ DLE_SLZ3boss:
 
 loc_7144:
 		music	bgm_Boss,0,1,0	; play boss music
-		move.b	#1,(f_lockscreen).w ; lock screen
+		move.b	#1,(f_boss_boundary).w ; lock screen
 		addq.b	#2,(v_dle_routine).w
 		moveq	#id_PLC_Boss,d0
 		bra.w	AddPLC		; load boss patterns
@@ -555,7 +555,7 @@ DLE_SYZ3boss:
 
 loc_71EC:
 		music	bgm_Boss,0,1,0	; play boss music
-		move.b	#1,(f_lockscreen).w ; lock screen
+		move.b	#1,(f_boss_boundary).w ; lock screen
 		moveq	#id_PLC_Boss,d0
 		bra.w	AddPLC		; load boss patterns
 ; ===========================================================================
@@ -648,7 +648,7 @@ DLE_SBZ2boss2:
 		addq.b	#2,(v_dle_routine).w
 
 loc_72B0:
-		move.b	#1,(f_lockscreen).w ; lock screen
+		move.b	#1,(f_boss_boundary).w ; lock screen
 
 loc_72B6:
 		bra.s	loc_72C2
@@ -697,7 +697,7 @@ DLE_FZboss:
 		bne.s	loc_7312
 		move.b	#id_BossFinal,(a1) ; load FZ boss object
 		addq.b	#2,(v_dle_routine).w
-		move.b	#1,(f_lockscreen).w ; lock screen
+		move.b	#1,(f_boss_boundary).w ; lock screen
 
 loc_7312:
 		bra.s	loc_72C2

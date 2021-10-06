@@ -275,30 +275,34 @@ v_collision_index_ptr:	equ $FFFFF796 ; ROM address for collision index of curren
 v_palcycle_ss_num:	equ $FFFFF79A ; palette cycling in Special Stage - current index number (2 bytes)
 v_palcycle_ss_time:	equ $FFFFF79C ; palette cycling in Special Stage - time until next change (2 bytes)
 v_palcycle_ss_unused:	equ $FFFFF79E ; palette cycling in Special Stage - unused offset value, always 0 (2 bytes)
+v_ss_bg_mode:		equ $FFFFF7A0 ; Special Stage fish/bird background animation mode (2 byes)
 
-v_obj31ypos:	equ $FFFFF7A4	; y-position of object 31 (MZ stomper) (2 bytes)
-v_bossstatus:	equ $FFFFF7A7	; status of boss and prison capsule (01 = boss defeated; 02 = prison opened)
-v_trackpos:	equ $FFFFF7A8	; position tracking reference number (2 bytes)
-v_trackbyte:	equ $FFFFF7A9	; low byte for position tracking
-f_lockscreen:	equ $FFFFF7AA	; flag set to lock screen during bosses
-v_256loop1:	equ $FFFFF7AC	; 256x256 level tile which contains a loop (GHZ/SLZ)
-v_256loop2:	equ $FFFFF7AD	; 256x256 level tile which contains a loop (GHZ/SLZ)
-v_256roll1:	equ $FFFFF7AE	; 256x256 level tile which contains a roll tunnel (GHZ)
-v_256roll2:	equ $FFFFF7AF	; 256x256 level tile which contains a roll tunnel (GHZ)
-v_lani0_frame:	equ $FFFFF7B0	; level graphics animation 0 - current frame
-v_lani0_time:	equ $FFFFF7B1	; level graphics animation 0 - time until next frame
-v_lani1_frame:	equ $FFFFF7B2	; level graphics animation 1 - current frame
-v_lani1_time:	equ $FFFFF7B3	; level graphics animation 1 - time until next frame
-v_lani2_frame:	equ $FFFFF7B4	; level graphics animation 2 - current frame
-v_lani2_time:	equ $FFFFF7B5	; level graphics animation 2 - time until next frame
-v_lani3_frame:	equ $FFFFF7B6	; level graphics animation 3 - current frame
-v_lani3_time:	equ $FFFFF7B7	; level graphics animation 3 - time until next frame
-v_lani4_frame:	equ $FFFFF7B8	; level graphics animation 4 - current frame
-v_lani4_time:	equ $FFFFF7B9	; level graphics animation 4 - time until next frame
-v_lani5_frame:	equ $FFFFF7BA	; level graphics animation 5 - current frame
-v_lani5_time:	equ $FFFFF7BB	; level graphics animation 5 - time until next frame
-v_gfxbigring:	equ $FFFFF7BE	; settings for giant ring graphics loading (2 bytes)
-f_conveyrev:	equ $FFFFF7C0	; flag set to reverse conveyor belts in LZ/SBZ
+v_cstomp_y_pos:		equ $FFFFF7A4 ; y position of MZ chain stomper, used for interaction with pushable green block (2 bytes)
+
+v_boss_status:		equ $FFFFF7A7 ; status of boss and prison capsule - 01 = boss defeated; 02 = prison opened
+v_sonic_pos_tracker_num:	equ $FFFFF7A8 ; current location within position tracking data (2 bytes)
+v_sonic_pos_tracker_num_low:	equ v_sonic_pos_tracker_num+1
+f_boss_boundary:	equ $FFFFF7AA ; flag set to stop Sonic moving off the right side of the screen at a boss
+
+v_256x256_with_loop_1:	equ $FFFFF7AC ; 256x256 level tile which contains a loop (GHZ/SLZ)
+v_256x256_with_loop_2:	equ $FFFFF7AD ; 256x256 level tile which contains a loop (GHZ/SLZ)
+v_256x256_with_tunnel_1:	equ $FFFFF7AE ; 256x256 level tile which contains a roll tunnel (GHZ)
+v_256x256_with_tunnel_2:	equ $FFFFF7AF ; 256x256 level tile which contains a roll tunnel (GHZ)
+v_levelani_0_frame:	equ $FFFFF7B0 ; level graphics animation 0 - current frame
+v_levelani_0_time:	equ $FFFFF7B1 ; level graphics animation 0 - time until next frame
+v_levelani_1_frame:	equ $FFFFF7B2 ; level graphics animation 1 - current frame
+v_levelani_1_time:	equ $FFFFF7B3 ; level graphics animation 1 - time until next frame
+v_levelani_2_frame:	equ $FFFFF7B4 ; level graphics animation 2 - current frame
+v_levelani_2_time:	equ $FFFFF7B5 ; level graphics animation 2 - time until next frame
+v_levelani_3_frame:	equ $FFFFF7B6 ; level graphics animation 3 - current frame
+v_levelani_3_time:	equ $FFFFF7B7 ; level graphics animation 3 - time until next frame
+v_levelani_4_frame:	equ $FFFFF7B8 ; level graphics animation 4 - current frame
+v_levelani_4_time:	equ $FFFFF7B9 ; level graphics animation 4 - time until next frame
+v_levelani_5_frame:	equ $FFFFF7BA ; level graphics animation 5 - current frame
+v_levelani_5_time:	equ $FFFFF7BB ; level graphics animation 5 - time until next frame
+
+v_giantring_gfx_offset:	equ $FFFFF7BE ; address of art for next giant ring frame, relative to Art_BigRing (counts backwards from $C40; 0 means no more art) (2 bytes)
+f_convey_reverse:	equ $FFFFF7C0 ; flag set to reverse conveyor belts in LZ/SBZ
 v_obj63:		equ $FFFFF7C1	; object 63 (LZ/SBZ platforms) variables (6 bytes)
 f_wtunnelmode:	equ $FFFFF7C7	; LZ water tunnel mode
 f_lockmulti:	equ $FFFFF7C8	; +1 = lock controls, lock Sonic's position & animation; +$80 = no collision with objects

@@ -270,9 +270,9 @@ loc_18500:
 		clr.w	ost_x_vel(a0)
 		addq.b	#2,ost_routine2(a0)
 		move.w	#-$26,ost_bmz_wait_time(a0)
-		tst.b	(v_bossstatus).w
+		tst.b	(v_boss_status).w
 		bne.s	locret_1852A
-		move.b	#1,(v_bossstatus).w
+		move.b	#1,(v_boss_status).w
 		clr.w	ost_y_vel(a0)
 
 locret_1852A:

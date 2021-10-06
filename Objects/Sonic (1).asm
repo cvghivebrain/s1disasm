@@ -123,7 +123,7 @@ Sonic_Display:
 		beq.s	@chkshoes	; if 0, branch
 		subq.w	#1,ost_sonic_inv_time(a0) ; decrement timer
 		bne.s	@chkshoes
-		tst.b	(f_lockscreen).w
+		tst.b	(f_boss_boundary).w
 		bne.s	@removeinvincible
 		cmpi.w	#$C,(v_air).w	; is air < $C?
 		bcs.s	@removeinvincible ; if yes, branch
@@ -164,12 +164,12 @@ Sonic_Display:
 
 
 Sonic_RecordPosition:
-		move.w	(v_trackpos).w,d0
+		move.w	(v_sonic_pos_tracker_num).w,d0
 		lea	(v_sonic_pos_tracker).w,a1
 		lea	(a1,d0.w),a1
 		move.w	ost_x_pos(a0),(a1)+
 		move.w	ost_y_pos(a0),(a1)+
-		addq.b	#4,(v_trackbyte).w
+		addq.b	#4,(v_sonic_pos_tracker_num_low).w
 		rts	
 ; End of function Sonic_RecordPosition
 ; ---------------------------------------------------------------------------
@@ -812,7 +812,7 @@ Sonic_LevelBound:
 		bhi.s	@sides		; if yes, branch
 		move.w	(v_limitright2).w,d0
 		addi.w	#$128,d0
-		tst.b	(f_lockscreen).w
+		tst.b	(f_boss_boundary).w
 		bne.s	@screenlocked
 		addi.w	#$40,d0
 
@@ -1495,14 +1495,14 @@ Sonic_Loops:
 		lea	(v_level_layout).w,a1
 		move.b	(a1,d0.w),d1	; d1 is	the 256x256 tile Sonic is currently on
 
-		cmp.b	(v_256roll1).w,d1 ; is Sonic on a "roll tunnel" tile?
+		cmp.b	(v_256x256_with_tunnel_1).w,d1 ; is Sonic on a "roll tunnel" tile?
 		beq.w	Sonic_ChkRoll	; if yes, branch
-		cmp.b	(v_256roll2).w,d1
+		cmp.b	(v_256x256_with_tunnel_2).w,d1
 		beq.w	Sonic_ChkRoll
 
-		cmp.b	(v_256loop1).w,d1 ; is Sonic on a loop tile?
+		cmp.b	(v_256x256_with_loop_1).w,d1 ; is Sonic on a loop tile?
 		beq.s	@chkifleft	; if yes, branch
-		cmp.b	(v_256loop2).w,d1
+		cmp.b	(v_256x256_with_loop_2).w,d1
 		beq.s	@chkifinair
 		bclr	#render_behind_bit,ost_render(a0) ; return Sonic to high plane
 		rts	

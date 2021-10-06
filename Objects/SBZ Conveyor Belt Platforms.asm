@@ -61,7 +61,7 @@ SpinC_Main:	; Routine 0
 		lsl.w	#2,d1
 		move.b	d1,$38(a0)
 		move.b	#4,$3A(a0)
-		tst.b	(f_conveyrev).w
+		tst.b	(f_convey_reverse).w
 		beq.s	loc_16356
 		move.b	#1,ost_spinc_reverse(a0)
 		neg.b	$3A(a0)

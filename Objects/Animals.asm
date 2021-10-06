@@ -122,7 +122,7 @@ loc_90C0:
 		move.b	#7,ost_anim_time(a0)
 		move.b	#2,ost_frame(a0)
 		move.w	#-$400,ost_y_vel(a0)
-		tst.b	(v_bossstatus).w
+		tst.b	(v_boss_status).w
 		bne.s	loc_911C
 		bsr.w	FindFreeObj
 		bne.s	Anml_Display
@@ -160,7 +160,7 @@ loc_912A:
 		add.b	d0,d0
 		addq.b	#4,d0
 		move.b	d0,ost_routine(a0)
-		tst.b	(v_bossstatus).w
+		tst.b	(v_boss_status).w
 		beq.s	loc_9180
 		btst	#4,(v_vblank_counter_byte).w
 		beq.s	loc_9180

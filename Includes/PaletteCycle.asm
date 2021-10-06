@@ -90,7 +90,7 @@ PCycLZ_Skip1:
 		move.b	PCycLZ_Seq(pc,d0.w),d0 ; get byte from palette sequence
 		beq.s	PCycLZ_Skip2	; if byte is 0, branch
 		moveq	#1,d1
-		tst.b	(f_conveyrev).w	; have conveyor belts been reversed?
+		tst.b	(f_convey_reverse).w	; have conveyor belts been reversed?
 		beq.s	PCycLZ_NoRev	; if not, branch
 		neg.w	d1
 
@@ -238,7 +238,7 @@ loc_1B06:
 
 loc_1B2E:
 		moveq	#-1,d1
-		tst.b	(f_conveyrev).w
+		tst.b	(f_convey_reverse).w
 		beq.s	loc_1B38
 		neg.w	d1
 

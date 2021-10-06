@@ -76,10 +76,10 @@ PushB_Action:	; Routine 2
 		cmpi.w	#$AA1,d0	; is block between $A20 and $AA1 on x axis?
 		bcc.s	PushB_Display	; if not, branch
 		
-		move.w	(v_obj31ypos).w,d0
+		move.w	(v_cstomp_y_pos).w,d0
 		subi.w	#$1C,d0
 		move.w	d0,ost_y_pos(a0)
-		bset	#7,(v_obj31ypos).w
+		bset	#7,(v_cstomp_y_pos).w
 		bset	#7,ost_subtype(a0)
 
 	PushB_Display:

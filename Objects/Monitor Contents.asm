@@ -96,7 +96,7 @@ Pow_ChkInvinc:
 		move.b	#id_ani_stars3,(v_ost_stars3+ost_anim).w
 		move.b	#id_ShieldItem,(v_ost_stars4).w ; load stars object ($3804)
 		move.b	#id_ani_stars4,(v_ost_stars4+ost_anim).w
-		tst.b	(f_lockscreen).w ; is boss mode on?
+		tst.b	(f_boss_boundary).w ; is boss mode on?
 		bne.s	Pow_NoMusic	; if yes, branch
 		if Revision=0
 		else

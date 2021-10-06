@@ -390,9 +390,9 @@ loc_1947E:
 		bclr	#status_onscreen_bit,ost_status(a0)
 		clr.w	ost_x_vel(a0)
 		move.w	#-1,ost_bsyz_wait_time(a0)
-		tst.b	(v_bossstatus).w
+		tst.b	(v_boss_status).w
 		bne.s	loc_194A8
-		move.b	#1,(v_bossstatus).w
+		move.b	#1,(v_boss_status).w
 
 loc_194A8:
 		bra.w	loc_19202

@@ -3276,7 +3276,7 @@ PalCycle_SS:
 		move.w	d0,(v_palcycle_ss_time).w ; set time until next palette change
 		moveq	#0,d0
 		move.b	(a0)+,d0	; get bg mode byte
-		move.w	d0,($FFFFF7A0).w
+		move.w	d0,(v_ss_bg_mode).w
 		lea	(SS_BG_Modes).l,a1
 		lea	(a1,d0.w),a1	; jump to mode data
 		move.w	#$8200,d0	; VDP register - fg nametable address
@@ -3373,13 +3373,14 @@ SS_Timing_Values:
 		dc.b 7,	4, $C000>>13, $30
 		dc.b 7, 2, $C000>>13, $24
 		even
-SS_BG_Modes:	dc.b $4000>>10, 1	; fg namespace address in VRAM, VScroll value
-		dc.b $6000>>10, 0
-		dc.b $6000>>10, 1
-		dc.b $8000>>10, 0
-		dc.b $8000>>10, 1
-		dc.b $A000>>10, 0
-		dc.b $A000>>10, 1
+SS_BG_Modes:				; fg namespace address in VRAM, VScroll value
+		dc.b $4000>>10, 1	; 0 - grid
+		dc.b $6000>>10, 0	; 2 - fish morph 1
+		dc.b $6000>>10, 1	; 4 - fish morph 2
+		dc.b $8000>>10, 0	; 6 - fish
+		dc.b $8000>>10, 1	; 8 - bird morph 1
+		dc.b $A000>>10, 0	; $A - bird morph 2
+		dc.b $A000>>10, 1	; $C - bird
 		even
 
 Pal_SSCyc1:	incbin	"Palettes\Cycle - Special Stage 1.bin"
@@ -3395,21 +3396,21 @@ Pal_SSCyc2:	incbin	"Palettes\Cycle - Special Stage 2.bin"
 
 
 SS_BGAnimate:
-		move.w	($FFFFF7A0).w,d0
-		bne.s	loc_4BF6
+		move.w	(v_ss_bg_mode).w,d0 ; get frame for fish/bird animation
+		bne.s	@not_0		; branch if not 0
 		move.w	#0,(v_bgscreenposy).w
-		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w
+		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w ; reset vertical scroll for bubble/cloud layer
 
-loc_4BF6:
+	@not_0:
 		cmpi.w	#8,d0
-		bhs.s	loc_4C4E
+		bhs.s	loc_4C4E	; branch if d0 is 8-$C
 		cmpi.w	#6,d0
-		bne.s	loc_4C10
+		bne.s	@not_6		; branch if d0 isn't 6
 		addq.w	#1,(v_bg3screenposx).w
 		addq.w	#1,(v_bgscreenposy).w
-		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w
+		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w ; scroll bubble layer
 
-loc_4C10:
+	@not_6:
 		moveq	#0,d0
 		move.w	(v_bgscreenposx).w,d0
 		neg.w	d0
@@ -3437,22 +3438,22 @@ loc_4C26:
 
 loc_4C4E:
 		cmpi.w	#$C,d0
-		bne.s	loc_4C74
+		bne.s	@not_C		; branch if d0 isn't $C
 		subq.w	#1,(v_bg3screenposx).w
 		lea	($FFFFAB00).w,a3
 		move.l	#$18000,d2
 		moveq	#6,d1
 
-loc_4C64:
+	@loop:
 		move.l	(a3),d0
 		sub.l	d2,d0
 		move.l	d0,(a3)+
 		subi.l	#$2000,d2
-		dbf	d1,loc_4C64
+		dbf	d1,@loop
 
-loc_4C74:
+	@not_C:
 		lea	($FFFFAB00).w,a3
-		lea	(byte_4CC4).l,a2
+		lea	(SS_Bubble_ScrollBlocks).l,a2
 
 loc_4C7E:
 		lea	(v_hscroll_buffer).w,a1
@@ -3485,7 +3486,10 @@ loc_4CA4:
 ; ===========================================================================
 byte_4CB8:	dc.b 9,	$28, $18, $10, $28, $18, $10, $30, $18,	8, $10,	0
 		even
-byte_4CC4:	dc.b 6,	$30, $30, $30, $28, $18, $18, $18
+SS_Bubble_ScrollBlocks:
+		dc.b @end-@start-1
+	@start:	dc.b $30, $30, $30, $28, $18, $18, $18
+	@end:
 		even
 byte_4CCC:	dc.b 8,	2, 4, $FF, 2, 3, 8, $FF, 4, 2, 2, 3, 8,	$FD, 4,	2, 2, 3, 2, $FF
 		even
@@ -4211,7 +4215,7 @@ SetScreen:
 		moveq	#0,d0
 		move.b	(v_zone).w,d0
 		lsl.b	#2,d0
-		move.l	LoopTileNums(pc,d0.w),(v_256loop1).w
+		move.l	LoopTileNums(pc,d0.w),(v_256x256_with_loop_1).w
 		bra.w	LevSz_LoadScrollBlockSize
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
@@ -5329,7 +5333,7 @@ SetScreen:
 		moveq	#0,d0
 		move.b	(v_zone).w,d0
 		lsl.b	#2,d0
-		move.l	LoopTileNums(pc,d0.w),(v_256loop1).w
+		move.l	LoopTileNums(pc,d0.w),(v_256x256_with_loop_1).w
 		rts
 ; ===========================================================================
 ; ---------------------------------------------------------------------------

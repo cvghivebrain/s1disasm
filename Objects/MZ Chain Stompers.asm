@@ -10,18 +10,18 @@ ChainStomp:
 ; ===========================================================================
 CStom_Index:	index *,,2
 		ptr CStom_Main
-		ptr loc_B798
-		ptr loc_B7FE
-		ptr CStom_Display2
-		ptr loc_B7E2
+		ptr CStom_Block
+		ptr CStom_Spikes
+		ptr CStom_Ceiling
+		ptr CStom_Chain
 
 CStom_SwchNums:	dc.b 0,	0		; switch number, replacement subtype
 		dc.b 1,	0
 
-CStom_Var:	dc.b 2,	0, id_frame_cstomp_wideblock		; routine number, y-position, frame number
-		dc.b 4,	$1C, id_frame_cstomp_spikes
-		dc.b 8,	$CC, id_frame_cstomp_chain1
-		dc.b 6,	$F0, id_frame_cstomp_ceiling
+CStom_Var:	dc.b id_CStom_Block, 0, id_frame_cstomp_wideblock ; routine number, y-position, frame number
+		dc.b id_CStom_Spikes, $1C, id_frame_cstomp_spikes
+		dc.b id_CStom_Chain, $CC, id_frame_cstomp_chain1
+		dc.b id_CStom_Ceiling, $F0, id_frame_cstomp_ceiling
 
 CStom_Lengths:
 CStom_Length_0:	dc.w $7000	; 0
@@ -113,7 +113,7 @@ CStom_SetSize:
 		lea	CStom_Var2(pc,d0.w),a2
 		move.b	(a2)+,ost_actwidth(a0)
 		move.b	(a2)+,ost_frame(a0)
-		bra.s	loc_B798
+		bra.s	CStom_Block
 ; ===========================================================================
 CStom_Var2:
 CStom_Var2_0:	dc.b $38, id_frame_cstomp_wideblock	; width, frame number
@@ -123,9 +123,9 @@ CStom_Var2_2:	dc.b $10, id_frame_cstomp_smallblock
 sizeof_cstom_var2:	equ CStom_Var2_1-CStom_Var2
 ; ===========================================================================
 
-loc_B798:	; Routine 2
+CStom_Block:	; Routine 2
 		bsr.w	CStom_Types
-		move.w	ost_y_pos(a0),(v_obj31ypos).w
+		move.w	ost_y_pos(a0),(v_cstomp_y_pos).w ; store y position for pushable green block interaction
 		moveq	#0,d1
 		move.b	ost_actwidth(a0),d1
 		addi.w	#$B,d1
@@ -133,37 +133,37 @@ loc_B798:	; Routine 2
 		move.w	#$D,d3
 		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject
-		btst	#status_platform_bit,ost_status(a0)
-		beq.s	CStom_Display
-		cmpi.b	#$10,ost_cstomp_chain_length(a0)
-		bcc.s	CStom_Display
+		btst	#status_platform_bit,ost_status(a0) ; is Sonic standing on it?
+		beq.s	@display	; if not, branch
+		cmpi.b	#$10,ost_cstomp_chain_length(a0) ; is chain longer than $10?
+		bcc.s	@display	; if yes, branch
 		movea.l	a0,a2
 		lea	(v_ost_player).w,a0
-		jsr	(KillSonic).l
+		jsr	(KillSonic).l	; Sonic gets crushed against ceiling
 		movea.l	a2,a0
 
-CStom_Display:
+	@display:
 		bsr.w	DisplaySprite
 		bra.w	CStom_ChkDel
 ; ===========================================================================
 
-loc_B7E2:	; Routine 8
+CStom_Chain:	; Routine 8
 		move.b	#$80,ost_height(a0)
 		bset	#render_useheight_bit,ost_render(a0)
 		movea.l	ost_cstomp_parent(a0),a1
-		move.b	ost_cstomp_chain_length(a1),d0
+		move.b	ost_cstomp_chain_length(a1),d0 ; get current chain length
 		lsr.b	#5,d0
-		addq.b	#3,d0
-		move.b	d0,ost_frame(a0)
+		addq.b	#3,d0		; convert to frame number
+		move.b	d0,ost_frame(a0) ; update frame
 
-loc_B7FE:	; Routine 4
+CStom_Spikes:	; Routine 4
 		movea.l	ost_cstomp_parent(a0),a1
 		moveq	#0,d0
 		move.b	ost_cstomp_chain_length(a1),d0
 		add.w	ost_cstomp_y_start(a0),d0
-		move.w	d0,ost_y_pos(a0)
+		move.w	d0,ost_y_pos(a0) ; update y position (chain and spikes)
 
-CStom_Display2:	; Routine 6
+CStom_Ceiling:	; Routine 6
 		bsr.w	DisplaySprite
 
 CStom_ChkDel:
@@ -172,20 +172,20 @@ CStom_ChkDel:
 ; ===========================================================================
 
 CStom_Types:
-		move.b	ost_subtype(a0),d0
-		andi.w	#$F,d0
+		move.b	ost_subtype(a0),d0 ; get subtype (for button-controlled stompers this will have changed to 0)
+		andi.w	#$F,d0		; read low nybble
 		add.w	d0,d0
 		move.w	CStom_TypeIndex(pc,d0.w),d1
 		jmp	CStom_TypeIndex(pc,d1.w)
 ; ===========================================================================
 CStom_TypeIndex:index *
-		ptr CStom_Type00
-		ptr CStom_Type01
-		ptr CStom_Type01
-		ptr CStom_Type03
-		ptr CStom_Type01
-		ptr CStom_Type03
-		ptr CStom_Type01
+		ptr CStom_Type00	; 0
+		ptr CStom_Type01	; 1
+		ptr CStom_Type01	; 2
+		ptr CStom_Type03	; 3
+		ptr CStom_Type01	; 4
+		ptr CStom_Type03	; 5
+		ptr CStom_Type01	; 6
 ; ===========================================================================
 
 CStom_Type00:
@@ -194,7 +194,7 @@ CStom_Type00:
 		move.b	ost_cstomp_switch_id(a0),d0 ; move number 0 or 1 to d0
 		tst.b	(a2,d0.w)	; has switch (d0) been pressed?
 		beq.s	loc_B8A8	; if not, branch
-		tst.w	(v_obj31ypos).w
+		tst.w	(v_cstomp_y_pos).w
 		bpl.s	loc_B872
 		cmpi.b	#$10,ost_cstomp_chain_length(a0)
 		beq.s	loc_B8A0

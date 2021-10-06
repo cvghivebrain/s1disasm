@@ -259,9 +259,9 @@ loc_17984:
 		clr.w	ost_x_vel(a0)
 		addq.b	#2,ost_routine2(a0)
 		move.w	#-$26,ost_bghz_wait_time(a0)
-		tst.b	(v_bossstatus).w
+		tst.b	(v_boss_status).w
 		bne.s	locret_179AA
-		move.b	#1,(v_bossstatus).w
+		move.b	#1,(v_boss_status).w
 
 locret_179AA:
 		rts	
