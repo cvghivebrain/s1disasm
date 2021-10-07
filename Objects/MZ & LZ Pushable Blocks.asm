@@ -13,8 +13,11 @@ PushB_Index:	index *,,2
 		ptr PushB_Action
 		ptr PushB_ChkVisible
 
-PushB_Var:	dc.b $10, id_frame_pblock_single	; object width,	frame number
-		dc.b $40, id_frame_pblock_four
+PushB_Var:
+PushB_Var_0:	dc.b $10, id_frame_pblock_single	; object width,	frame number
+PushB_Var_1:	dc.b $40, id_frame_pblock_four
+
+sizeof_PushB_Var:	equ PushB_Var_1-PushB_Var
 
 ost_pblock_lava_speed:	equ $30	; x axis speed when block is on lava (2 bytes)
 ost_pblock_lava_flag:	equ $32	; 1 = block is on lava
@@ -348,8 +351,8 @@ loc_C294:
 		move.w	d0,-(sp)
 		sfx	sfx_Push,0,0,0 ; play pushing sound
 		move.w	(sp)+,d0
-		tst.b	ost_subtype(a0)
-		bmi.s	locret_C2E4
+		tst.b	ost_subtype(a0)	; is bit 7 of subtype set?
+		bmi.s	locret_C2E4	; if yes, branch
 		move.w	d0,-(sp)
 		jsr	(FindFloorObj).l
 		move.w	(sp)+,d0

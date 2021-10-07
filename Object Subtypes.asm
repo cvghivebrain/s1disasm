@@ -49,6 +49,40 @@ type_cstomp_4:		equ (CStom_Length_4-CStom_Lengths)/2			; $x4 - chain length $38
 type_cstomp_5:		equ (CStom_Length_5-CStom_Lengths)/2			; $x5 - chain length $58, only triggers when Sonic is near
 type_cstomp_6:		equ (CStom_Length_6-CStom_Lengths)/2			; $x6 - chain length $B8
 
+; MarbleBrick
+type_brick_still:	equ id_Brick_Still		; 0 - doesn't move
+type_brick_wobbles:	equ id_Brick_Wobbles		; 1 - wobbles but doesn't fall
+type_brick_falls:	equ id_Brick_Falls		; 2 - falls when Sonic is near
+type_brick_rev:		equ 8				; +8 - reverse wobble direction
+
+; GlassBlock
+type_glass_still:	equ id_Glass_Still		; 0 - doesn't move
+type_glass_updown:	equ id_Glass_UpDown		; 1 - moves up and down
+type_glass_updown_rev:	equ id_Glass_UpDown_Rev		; 2 - moves up and down, reversed
+type_glass_drop_jump:	equ id_Glass_Drop_Jump		; 3 - drops each time it's jumped on
+type_glass_drop_button:	equ id_Glass_Drop_Button	; 4 - drops when button is pressed
+type_glass_button_0:	equ 0				; $0x - button 0
+type_glass_button_1:	equ $10				; $1x - button 1
+
+; MovingBlock
+type_mblock_1:		equ ((MBlock_Var_0-MBlock_Var)/sizeof_MBlock_Var)<<4	; $0x - single block
+type_mblock_2:		equ ((MBlock_Var_1-MBlock_Var)/sizeof_MBlock_Var)<<4	; $1x - double block
+type_mblock_sbz:	equ ((MBlock_Var_2-MBlock_Var)/sizeof_MBlock_Var)<<4	; $2x - SBZ black & yellow platform
+type_mblock_sbzwide:	equ ((MBlock_Var_3-MBlock_Var)/sizeof_MBlock_Var)<<4	; $3x - SBZ red horizontal door
+type_mblock_3:		equ ((MBlock_Var_4-MBlock_Var)/sizeof_MBlock_Var)<<4	; $4x - triple block
+type_mblock_still:	equ id_MBlock_Still					; $x0 - doesn't move
+type_mblock_leftright:	equ id_MBlock_LeftRight					; $x1 - moves side to side
+type_mblock_right:	equ id_MBlock_Right					; $x2 - moves right when stood on, stops at wall
+type_mblock_rightdrop:	equ id_MBlock_RightDrop					; $x4 - moves right when stood on, stops at wall and drops
+type_mblock_rightdrop_button: equ id_MBlock_RightDrop_Button			; $x7 - appears when button 2 is pressed; moves right when stood on, stops at wall and drops
+type_mblock_updown:	equ id_MBlock_UpDown					; $x8 - moves up and down
+type_mblock_slide:	equ id_MBlock_Slide					; $x9 - quickly slides right when stood on
+
+; PushBlock
+type_pblock_single:	equ (PushB_Var_0-PushB_Var)/sizeof_PushB_Var		; 0 - single block
+type_pblock_four:	equ (PushB_Var_1-PushB_Var)/sizeof_PushB_Var		; 1 - four blocks in a row
+type_pblock_nograv:	equ $80							; +$80 - no gravity
+
 ; Harpoon
 type_harp_h:		equ id_ani_harp_h_extending	; 0 - horizontal
 type_harp_v:		equ id_ani_harp_v_extending	; 2 - vertical

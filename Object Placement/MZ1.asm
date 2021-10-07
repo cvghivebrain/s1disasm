@@ -42,7 +42,7 @@
 		objpos $09A0,$02C8,LargeGrass,type_grass_narrow+type_grass_1
 		objpos $0A10,$0550,Monitor,$04,rem
 		objpos $0A60,$037C,ChainStomp,type_cstomp_controlled
-		objpos $0A78,$03D0,PushBlock,$00,rem
+		objpos $0A78,$03D0,PushBlock,type_pblock_single,rem
 		objpos $0A80,$054C,Lamppost,$01,rem
 		objpos $0AD0,$03F8,Button,$80
 		objpos $0B00,$02F8,LavaTag,$02
@@ -52,74 +52,74 @@
 		objpos $0B40,$03F4,Spikes,$01
 		objpos $0B60,$036C,Batbrain,$00,rem
 		objpos $0B60,$0510,Invisibarrier,$31
-		objpos $0B60,$05A7,GlassBlock,$01
+		objpos $0B60,$05A7,GlassBlock,type_glass_updown
 		objpos $0BA0,$036C,Batbrain,$00,rem
-		objpos $0BD0,$03F0,MarbleBrick,$00
+		objpos $0BD0,$03F0,MarbleBrick,type_brick_still
 		objpos $0C00,$02E8,LargeGrass,type_grass_sloped+type_grass_sinks
 		objpos $0C00,$02F8,LavaTag,$02
 		objpos $0C14,$03F0,Rings,$11,rem
-		objpos $0C50,$0530,MarbleBrick,$0A
-		objpos $0C60,$0398,GlassBlock,$02
-		objpos $0C70,$0530,MarbleBrick,$02
+		objpos $0C50,$0530,MarbleBrick,type_brick_falls+type_brick_rev
+		objpos $0C60,$0398,GlassBlock,type_glass_updown_rev
+		objpos $0C70,$0530,MarbleBrick,type_brick_falls
 		objpos $0C80,$05E8,LavaTag,$02
-		objpos $0C90,$0530,MarbleBrick,$0A
+		objpos $0C90,$0530,MarbleBrick,type_brick_falls+type_brick_rev
 		objpos $0C94,$03F0,Rings,$11,rem
-		objpos $0CD0,$0520,MarbleBrick,$00
+		objpos $0CD0,$0520,MarbleBrick,type_brick_still
 		objpos $0CE0,$02E8,LargeGrass,type_grass_sloped+type_grass_sinks
-		objpos $0CE0,$0398,GlassBlock,$01
-		objpos $0CF0,$0530,MarbleBrick,$02
+		objpos $0CE0,$0398,GlassBlock,type_glass_updown
+		objpos $0CF0,$0530,MarbleBrick,type_brick_falls
 		objpos $0D00,$02F8,LavaTag,$02
-		objpos $0D10,$0530,MarbleBrick,$0A
+		objpos $0D10,$0530,MarbleBrick,type_brick_falls+type_brick_rev
 		objpos $0D14,$03F0,Rings,$11,rem
-		objpos $0D30,$0530,MarbleBrick,$02
-		objpos $0D50,$0530,MarbleBrick,$0A
-		objpos $0D60,$0398,GlassBlock,$02
-		objpos $0D70,$0530,MarbleBrick,$01
+		objpos $0D30,$0530,MarbleBrick,type_brick_falls
+		objpos $0D50,$0530,MarbleBrick,type_brick_falls+type_brick_rev
+		objpos $0D60,$0398,GlassBlock,type_glass_updown_rev
+		objpos $0D70,$0530,MarbleBrick,type_brick_wobbles
 		objpos $0D80,$05E8,LavaTag,$02
-		objpos $0D90,$0530,MarbleBrick,$00
+		objpos $0D90,$0530,MarbleBrick,type_brick_still
 		objpos $0D94,$03F0,Rings,$11,rem
-		objpos $0DB0,$0530,MarbleBrick,$02
+		objpos $0DB0,$0530,MarbleBrick,type_brick_falls
 		objpos $0DC0,$02E8,LargeGrass,type_grass_sloped+type_grass_sinks
 		objpos $0DC0,$02F8,LavaTag,$01
-		objpos $0DD0,$0530,MarbleBrick,$0A
-		objpos $0DE0,$0398,GlassBlock,$01
-		objpos $0DF0,$0530,MarbleBrick,$02
-		objpos $0E10,$0530,MarbleBrick,$00
-		objpos $0E30,$0530,MarbleBrick,$01
+		objpos $0DD0,$0530,MarbleBrick,type_brick_falls+type_brick_rev
+		objpos $0DE0,$0398,GlassBlock,type_glass_updown
+		objpos $0DF0,$0530,MarbleBrick,type_brick_falls
+		objpos $0E10,$0530,MarbleBrick,type_brick_still
+		objpos $0E30,$0530,MarbleBrick,type_brick_wobbles
 		objpos $0E50,$04B1,Monitor,$06,rem
-		objpos $0E50,$0530,MarbleBrick,$02
+		objpos $0E50,$0530,MarbleBrick,type_brick_falls
 		objpos $0E70,$02E8,Rings,$40,rem
 		objpos $0E70,$04B1,Monitor,$06,rem
-		objpos $0E70,$0530,MarbleBrick,$02
+		objpos $0E70,$0530,MarbleBrick,type_brick_falls
 		objpos $0E80,$05E8,LavaTag,$02
 		objpos $0E88,$0300,Rings,$40,rem
 		objpos $0E90,$04B1,Monitor,$02,rem
 		objpos $0EA0,$0318,Rings,$40,rem
 		objpos $0EB0,$04B1,Monitor,$06,rem
-		objpos $0EB0,$0530,MarbleBrick,$02
+		objpos $0EB0,$0530,MarbleBrick,type_brick_falls
 		objpos $0EB8,$0330,Rings,$40,rem
 		objpos $0ED0,$04B1,Monitor,$06,rem
-		objpos $0ED0,$0530,MarbleBrick,$01
+		objpos $0ED0,$0530,MarbleBrick,type_brick_wobbles
 		objpos $0ED8,$0348,Rings,$40,rem
-		objpos $0EF0,$0530,MarbleBrick,$02
+		objpos $0EF0,$0530,MarbleBrick,type_brick_falls
 		objpos $0F20,$03D8,LargeGrass,type_grass_narrow+type_grass_3
-		objpos $0F50,$0530,MarbleBrick,$02
+		objpos $0F50,$0530,MarbleBrick,type_brick_falls
 		objpos $0F60,$0398,LargeGrass,type_grass_narrow+type_grass_still
 		objpos $0F70,$035D,Monitor,$04,rem
-		objpos $0F70,$0510,MarbleBrick,$01
-		objpos $0FB0,$0510,MarbleBrick,$02
+		objpos $0F70,$0510,MarbleBrick,type_brick_wobbles
+		objpos $0FB0,$0510,MarbleBrick,type_brick_falls
 		objpos $1008,$0550,Rings,$13,rem
-		objpos $1010,$03D0,MarbleBrick,$00
+		objpos $1010,$03D0,MarbleBrick,type_brick_still
 		objpos $1030,$032C,Batbrain,$00,rem
 		objpos $1030,$043C,ChainStomp,type_cstomp_medium+type_cstomp_1
-		objpos $1050,$0330,MarbleBrick,$00
+		objpos $1050,$0330,MarbleBrick,type_brick_still
 		objpos $1050,$035C,ChainStomp,type_cstomp_small+type_cstomp_3
 		objpos $1070,$032C,Batbrain,$00,rem
 		objpos $1070,$03F0,Invisibarrier,$11
-		objpos $1090,$0408,MovingBlock,$41
+		objpos $1090,$0408,MovingBlock,type_mblock_3+type_mblock_leftright
 		objpos $10C0,$033C,ChainStomp,type_cstomp_wide+type_cstomp_2
 		objpos $1110,$0440,Invisibarrier,$00
-		objpos $1130,$0458,MovingBlock,$41
+		objpos $1130,$0458,MovingBlock,type_mblock_3+type_mblock_leftright
 		objpos $1250,$0270,BuzzBomber,$00,rem
 		objpos $1294,$0268,Rings,$11,rem
 		objpos $12A0,$02EA,LavaMaker,$41

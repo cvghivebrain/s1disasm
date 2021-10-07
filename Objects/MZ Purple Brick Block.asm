@@ -32,7 +32,7 @@ Brick_Action:	; Routine 2
 		bpl.s	@chkdel
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0 ; get object type
-		andi.w	#7,d0		; read only the	1st digit
+		andi.w	#7,d0		; read only bits 0-2
 		add.w	d0,d0
 		move.w	Brick_TypeIndex(pc,d0.w),d1
 		jsr	Brick_TypeIndex(pc,d1.w)
@@ -44,53 +44,57 @@ Brick_Action:	; Routine 2
 
 	@chkdel:
 		if Revision=0
-		bsr.w	DisplaySprite
-		out_of_range	DeleteObject
-		rts	
+			bsr.w	DisplaySprite
+			out_of_range	DeleteObject
+			rts	
 		else
 			out_of_range	DeleteObject
 			bra.w	DisplaySprite
 		endc
 ; ===========================================================================
 Brick_TypeIndex:index *
-		ptr Brick_Type00 ; doesn't move
-		ptr Brick_Type01 ; wobbles
-		ptr Brick_Type02 ; wobbles and falls
-		ptr Brick_Type03 ; falls immediately
-		ptr Brick_Type04 ; wobbles slowly (it's on the lava now)
+		ptr Brick_Still		; doesn't move
+		ptr Brick_Wobbles	; wobbles
+		ptr Brick_Falls		; wobbles and falls
+		ptr Brick_FallNow	; falls immediately
+		ptr Brick_FallLava	; wobbles slowly (it's on the lava now)
 ; ===========================================================================
 
-Brick_Type00:
+; Type 0
+Brick_Still:
 		rts	
 ; ===========================================================================
 
-Brick_Type02:
+; Type 2
+Brick_Falls:
 		move.w	(v_ost_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0
 		bcc.s	loc_E888
 		neg.w	d0
 
-loc_E888:
+	loc_E888:
 		cmpi.w	#$90,d0		; is Sonic within $90 pixels of	the block?
-		bcc.s	Brick_Type01	; if not, resume wobbling
-		move.b	#3,ost_subtype(a0) ; if yes, make the block fall
+		bcc.s	Brick_Wobbles	; if not, resume wobbling
+		move.b	#id_Brick_FallNow,ost_subtype(a0) ; if yes, make the block fall
 
-Brick_Type01:
+; Type 1
+Brick_Wobbles:
 		moveq	#0,d0
 		move.b	(v_oscillate+$16).w,d0
 		btst	#3,ost_subtype(a0) ; is subtype 8 or above?
-		beq.s	loc_E8A8	; if not, branch
+		beq.s	@no_rev		; if not, branch
 		neg.w	d0		; wobble the opposite way
 		addi.w	#$10,d0
 
-loc_E8A8:
+	@no_rev:
 		move.w	ost_brick_y_start(a0),d1
 		sub.w	d0,d1
-		move.w	d1,ost_y_pos(a0)	; update the block's position to make it wobble
+		move.w	d1,ost_y_pos(a0) ; update the block's position to make it wobble
 		rts	
 ; ===========================================================================
 
-Brick_Type03:
+; Type 3
+Brick_FallNow:
 		bsr.w	SpeedToPos
 		addi.w	#$18,ost_y_vel(a0) ; increase falling speed
 		bsr.w	FindFloorObj
@@ -99,22 +103,23 @@ Brick_Type03:
 		add.w	d1,ost_y_pos(a0)
 		clr.w	ost_y_vel(a0)	; stop the block falling
 		move.w	ost_y_pos(a0),ost_brick_y_start(a0)
-		move.b	#4,ost_subtype(a0) ; final subtype - slow wobble
+		move.b	#id_Brick_FallLava,ost_subtype(a0) ; final subtype - slow wobble
 		move.w	(a1),d0
 		andi.w	#$3FF,d0
 		if Revision=0
-		cmpi.w	#$2E8,d0	; wrong 16x16 tile check in rev. 0
+			cmpi.w	#$2E8,d0 ; wrong 16x16 tile check in rev. 0
 		else
 			cmpi.w	#$16A,d0 ; is the 16x16 tile it's landed on lava?
 		endc
 		bcc.s	locret_E8EE	; if yes, branch
 		move.b	#0,ost_subtype(a0) ; don't wobble
 
-locret_E8EE:
+	locret_E8EE:
 		rts	
 ; ===========================================================================
 
-Brick_Type04:
+; Type 4
+Brick_FallLava:
 		moveq	#0,d0
 		move.b	(v_oscillate+$12).w,d0
 		lsr.w	#3,d0
