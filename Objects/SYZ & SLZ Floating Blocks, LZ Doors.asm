@@ -17,7 +17,7 @@ FBlock_Var:	; width/2, height/2
 		dc.b  $20, $20	; subtype 1x/9x
 		dc.b  $10, $20	; subtype 2x/Ax
 		dc.b  $20, $1A	; subtype 3x/Bx
-		dc.b  $10, $27	; subtype 4x/Cx
+		dc.b  $10, $27	; subtype 4x/Cx - unused
 		dc.b  $10, $10	; subtype 5x/Dx
 		dc.b	8, $20	; subtype 6x/Ex
 		dc.b  $40, $10	; subtype 7x/Fx
@@ -43,7 +43,7 @@ FBlock_Main:	; Routine 0
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0 ; get subtype
 		lsr.w	#3,d0
-		andi.w	#$E,d0		; read only the 1st digit
+		andi.w	#$E,d0		; read only the high nybble
 		lea	FBlock_Var(pc,d0.w),a2 ; get size data
 		move.b	(a2)+,ost_actwidth(a0)
 		move.b	(a2),ost_height(a0)
@@ -90,10 +90,10 @@ FBlock_Main:	; Routine 0
 		bpl.s	FBlock_Action	; if subtype is 0-$7F, branch
 		andi.b	#$F,d0		; read low nybble
 		move.b	d0,ost_fblock_switch_num(a0) ; save to variable
-		move.b	#5,ost_subtype(a0) ; force subtype to 5 (moves up when switch is pressed)
+		move.b	#id_FBlock_UpButton,ost_subtype(a0) ; force subtype to 5 (moves up when switch is pressed)
 		cmpi.b	#id_frame_fblock_lzhoriz,ost_frame(a0) ; is object a large horizontal LZ door?
 		bne.s	@chkstate	; if not, branch
-		move.b	#$C,ost_subtype(a0) ; force subtype to $C (moves left when switch is pressed)
+		move.b	#id_FBlock_LeftButton,ost_subtype(a0) ; force subtype to $C (moves left when switch is pressed)
 		move.w	#$80,ost_fblock_height(a0)
 
 @chkstate:
@@ -113,8 +113,8 @@ FBlock_Action:	; Routine 2
 		move.b	ost_subtype(a0),d0 ; get object subtype
 		andi.w	#$F,d0		; read only the	2nd digit
 		add.w	d0,d0
-		move.w	@index(pc,d0.w),d1
-		jsr	@index(pc,d1.w)	; block movement subroutines
+		move.w	FBlock_Types(pc,d0.w),d1
+		jsr	FBlock_Types(pc,d1.w)	; block movement subroutines
 		move.w	(sp)+,d4
 		tst.b	ost_render(a0)
 		bpl.s	@chkdel
@@ -136,7 +136,7 @@ FBlock_Action:	; Routine 2
 		@display:
 			bra.w	DisplaySprite
 		@chkdel2:
-			cmpi.b	#$37,ost_subtype(a0)
+			cmpi.b	#type_fblock_syzrect2x2+type_fblock_farrightbutton,ost_subtype(a0)
 			bne.s	@delete
 			tst.b	ost_fblock_move_flag(a0)
 			bne.s	@display
@@ -144,43 +144,46 @@ FBlock_Action:	; Routine 2
 			jmp	(DeleteObject).l
 		endc
 ; ===========================================================================
-@index:		index *
-		ptr @type00
-		ptr @type01
-		ptr @type02
-		ptr @type03
-		ptr @type04
-		ptr @type05
-		ptr @type06
-		ptr @type07
-		ptr @type08
-		ptr @type09
-		ptr @type0A
-		ptr @type0B
-		ptr @type0C
-		ptr @type0D
+FBlock_Types:	index *
+		ptr FBlock_Still
+		ptr FBlock_LeftRight
+		ptr FBlock_LeftRightWide
+		ptr FBlock_UpDown
+		ptr FBlock_UpDownWide
+		ptr FBlock_UpButton
+		ptr FBlock_DownButton
+		ptr FBlock_FarRightButton
+		ptr FBlock_SquareSmall
+		ptr FBlock_SquareMedium
+		ptr FBlock_SquareBig
+		ptr FBlock_SquareBiggest
+		ptr FBlock_LeftButton
+		ptr FBlock_RightButton
 ; ===========================================================================
 
-@type00:
+; Type 0
 ; doesn't move
+FBlock_Still:
 		rts	
 ; ===========================================================================
 
-@type01:
+; Type 1
 ; moves side-to-side
+FBlock_LeftRight:
 		move.w	#$40,d1		; set move distance
 		moveq	#0,d0
 		move.b	(v_oscillate+$A).w,d0
-		bra.s	@moveLR
+		bra.s	FBlock_LeftRight_Move
 ; ===========================================================================
 
-@type02:
+; Type 2
 ; moves side-to-side
+FBlock_LeftRightWide:
 		move.w	#$80,d1		; set move distance
 		moveq	#0,d0
 		move.b	(v_oscillate+$1E).w,d0
 
-	@moveLR:
+FBlock_LeftRight_Move:
 		btst	#status_xflip_bit,ost_status(a0)
 		beq.s	@noflip
 		neg.w	d0
@@ -193,35 +196,38 @@ FBlock_Action:	; Routine 2
 		rts	
 ; ===========================================================================
 
-@type03:
+; Type 3
 ; moves up/down
+FBlock_UpDown:
 		move.w	#$40,d1		; set move distance
 		moveq	#0,d0
 		move.b	(v_oscillate+$A).w,d0
-		bra.s	@moveUD
+		bra.s	FBlock_UpDown_Move
 ; ===========================================================================
 
-@type04:
+; Type 4
 ; moves up/down
+FBlock_UpDownWide:
 		move.w	#$80,d1		; set move distance
 		moveq	#0,d0
 		move.b	(v_oscillate+$1E).w,d0
 
-	@moveUD:
+FBlock_UpDown_Move:
 		btst	#status_xflip_bit,ost_status(a0)
-		beq.s	@noflip04
+		beq.s	@noflip
 		neg.w	d0
 		add.w	d1,d0
 
-	@noflip04:
+	@noflip:
 		move.w	ost_fblock_y_start(a0),d1
 		sub.w	d0,d1
 		move.w	d1,ost_y_pos(a0) ; move object vertically
 		rts	
 ; ===========================================================================
 
-@type05:
+; Type 5
 ; moves up when a switch is pressed
+FBlock_UpButton:
 		tst.b	ost_fblock_move_flag(a0)
 		bne.s	@loc_104A4
 		cmpi.w	#(id_LZ<<8)+0,(v_zone).w ; is level LZ1 ?
@@ -257,10 +263,10 @@ FBlock_Action:	; Routine 2
 @loc_104AE:
 		move.w	ost_fblock_height(a0),d0
 		btst	#status_xflip_bit,ost_status(a0)
-		beq.s	@loc_104BC
+		beq.s	@no_xflip
 		neg.w	d0
 
-@loc_104BC:
+	@no_xflip:
 		move.w	ost_fblock_y_start(a0),d1
 		add.w	d0,d1
 		move.w	d1,ost_y_pos(a0)
@@ -278,7 +284,9 @@ FBlock_Action:	; Routine 2
 		bra.s	@loc_104AE
 ; ===========================================================================
 
-@type06:
+; Type 6
+; moves down when button is pressed
+FBlock_DownButton:
 		tst.b	ost_fblock_move_flag(a0)
 		bne.s	@loc_10500
 		lea	(f_switch).w,a2
@@ -320,7 +328,9 @@ FBlock_Action:	; Routine 2
 		bra.s	@loc_10512
 ; ===========================================================================
 
-@type07:
+; Type 7
+; moves far right when button $F is pressed
+FBlock_FarRightButton:
 		tst.b	ost_fblock_move_flag(a0)
 		bne.s	@loc_1055E
 		tst.b	(f_switch+$F).w	; has switch number $F been pressed?
@@ -345,7 +355,9 @@ FBlock_Action:	; Routine 2
 		rts	
 ; ===========================================================================
 
-@type0C:
+; Type $C
+; moves left when button is pressed
+FBlock_LeftButton:
 		tst.b	ost_fblock_move_flag(a0)
 		bne.s	@loc_10598
 		lea	(f_switch).w,a2
@@ -385,7 +397,9 @@ FBlock_Action:	; Routine 2
 		bra.s	@loc_105A2
 ; ===========================================================================
 
-@type0D:
+; Type D
+; moves right when button is pressed
+FBlock_RightButton:
 		tst.b	ost_fblock_move_flag(a0)
 		bne.s	@loc_105F8
 		lea	(f_switch).w,a2
@@ -426,38 +440,43 @@ FBlock_Action:	; Routine 2
 		bra.s	@wtf
 ; ===========================================================================
 
-@type08:
+; Type 8
+; moves around in a square
+FBlock_SquareSmall:
 		move.w	#$10,d1
 		moveq	#0,d0
 		move.b	(v_oscillate+$2A).w,d0
 		lsr.w	#1,d0
 		move.w	(v_oscillate+$2C).w,d3
-		bra.s	@square
+		bra.s	FBlock_Square_Move
 ; ===========================================================================
 
-@type09:
+; Type 9
+FBlock_SquareMedium:
 		move.w	#$30,d1
 		moveq	#0,d0
 		move.b	(v_oscillate+$2E).w,d0
 		move.w	(v_oscillate+$30).w,d3
-		bra.s	@square
+		bra.s	FBlock_Square_Move
 ; ===========================================================================
 
-@type0A:
+; Type $A
+FBlock_SquareBig:
 		move.w	#$50,d1
 		moveq	#0,d0
 		move.b	(v_oscillate+$32).w,d0
 		move.w	(v_oscillate+$34).w,d3
-		bra.s	@square
+		bra.s	FBlock_Square_Move
 ; ===========================================================================
 
-@type0B:
+; Type $B
+FBlock_SquareBiggest:
 		move.w	#$70,d1
 		moveq	#0,d0
 		move.b	(v_oscillate+$36).w,d0
 		move.w	(v_oscillate+$38).w,d3
 
-@square:
+FBlock_Square_Move:
 		tst.w	d3
 		bne.s	@loc_1068E
 		addq.b	#status_xflip,ost_status(a0)
@@ -465,8 +484,8 @@ FBlock_Action:	; Routine 2
 
 @loc_1068E:
 		move.b	ost_status(a0),d2
-		andi.b	#status_xflip+status_yflip,d2
-		bne.s	@loc_106AE
+		andi.b	#status_xflip+status_yflip,d2 ; read xflip and yflip bits
+		bne.s	@xflip		; branch if either are set
 		sub.w	d1,d0
 		add.w	ost_fblock_x_start(a0),d0
 		move.w	d0,ost_x_pos(a0)
@@ -476,9 +495,9 @@ FBlock_Action:	; Routine 2
 		rts	
 ; ===========================================================================
 
-@loc_106AE:
+@xflip:
 		subq.b	#1,d2
-		bne.s	@loc_106CC
+		bne.s	@yflip
 		subq.w	#1,d1
 		sub.w	d1,d0
 		neg.w	d0
@@ -490,9 +509,9 @@ FBlock_Action:	; Routine 2
 		rts	
 ; ===========================================================================
 
-@loc_106CC:
+@yflip:
 		subq.b	#1,d2
-		bne.s	@loc_106EA
+		bne.s	@xflip_and_yflip
 		subq.w	#1,d1
 		sub.w	d1,d0
 		neg.w	d0
@@ -504,7 +523,7 @@ FBlock_Action:	; Routine 2
 		rts	
 ; ===========================================================================
 
-@loc_106EA:
+@xflip_and_yflip:
 		sub.w	d1,d0
 		add.w	ost_fblock_y_start(a0),d0
 		move.w	d0,ost_y_pos(a0)

@@ -39,7 +39,7 @@ frame_fblock_syzrect2x2:
 		endsprite
 		
 frame_fblock_syzrect1x3:
-		spritemap			; SYZ - 1x3 rectangular blocks
+		spritemap			; SYZ - 1x3 rectangular blocks (unused)
 		piece	-$10, -$27, 4x4, $81
 		piece	-$10, -$D, 4x4, $81
 		piece	-$10, $D, 4x4, $81

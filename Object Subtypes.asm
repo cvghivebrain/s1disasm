@@ -83,6 +83,37 @@ type_pblock_single:	equ (PushB_Var_0-PushB_Var)/sizeof_PushB_Var		; 0 - single b
 type_pblock_four:	equ (PushB_Var_1-PushB_Var)/sizeof_PushB_Var		; 1 - four blocks in a row
 type_pblock_nograv:	equ $80							; +$80 - no gravity
 
+; FloatingBlock
+type_fblock_syz1x1:	equ id_frame_fblock_syz1x1<<4		; $0x - single 32x32 square
+type_fblock_syz2x2:	equ id_frame_fblock_syz2x2<<4		; $1x - 2x2 32x32 squares
+type_fblock_syz1x2:	equ id_frame_fblock_syz1x2<<4		; $2x - 1x2 32x32 squares
+type_fblock_syzrect2x2:	equ id_frame_fblock_syzrect2x2<<4	; $3x - 2x2 32x26 squares
+type_fblock_syzrect1x3:	equ id_frame_fblock_syzrect1x3<<4	; $4x - 1x3 32x26 squares
+type_fblock_slz:	equ id_frame_fblock_slz<<4		; $5x - 32x32 square
+type_fblock_lzvert:	equ id_frame_fblock_lzvert<<4		; $6x - LZ vertical door
+type_fblock_lzhoriz:	equ id_frame_fblock_lzhoriz<<4		; $7x - LZ large horizontal door
+type_fblock_still:	equ id_FBlock_Still			; $x0 - doesn't move
+type_fblock_leftright:	equ id_FBlock_LeftRight			; $x1 - moves side to side
+type_fblock_leftrightwide: equ id_FBlock_LeftRightWide		; $x2 - moves side to side, larger distance
+type_fblock_updown:	equ id_FBlock_UpDown			; $x3 - moves up and down
+type_fblock_updownwide:	equ id_FBlock_UpDownWide		; $x4 - moves up and down, larger distance
+type_fblock_upbutton:	equ id_FBlock_UpButton			; $x5 - moves up when button is pressed
+type_fblock_downbutton:	equ id_FBlock_DownButton		; $x6 - moves down when button is pressed
+type_fblock_farrightbutton: equ id_FBlock_FarRightButton	; $x7 - moves far right when button $F is pressed
+type_fblock_squaresmall: equ id_FBlock_SquareSmall		; $x8 - moves in a small square
+type_fblock_squaremedium: equ id_FBlock_SquareMedium		; $x9 - moves in a medium square
+type_fblock_squarebig:	equ id_FBlock_SquareBig			; $xA - moves in a big square
+type_fblock_squarebiggest: equ id_FBlock_SquareBiggest		; $xB - moves in a bigger square
+type_fblock_leftbutton:	equ id_FBlock_LeftButton		; $xC - moves left when button is pressed
+type_fblock_rightbutton: equ id_FBlock_RightButton		; $xD - moves right when button is pressed
+type_fblock_button:	equ $80					; +$80 - links block to button and forces it to be type_fblock_upbutton or type_fblock_leftbutton
+
+; BigSpikeBall
+type_bball_still:	equ id_BBall_Still		; 0 - doesn't move
+type_bball_sideways:	equ id_BBall_Sideways		; 1 - moves side-to-side
+type_bball_updown:	equ id_BBall_UpDown		; 2 - moves up and down
+type_bball_circle:	equ id_BBall_Circle		; 3 - moves in a circle
+
 ; Harpoon
 type_harp_h:		equ id_ani_harp_h_extending	; 0 - horizontal
 type_harp_v:		equ id_ani_harp_v_extending	; 2 - vertical

@@ -12,9 +12,9 @@
 		objpos $03D0,$0551,Rings,$00,rem
 		objpos $03F0,$03D8,Rings,$54,rem
 		objpos $0440,$03C2,Crabmeat,$00,xflip,rem
-		objpos $0450,$04E0,BigSpikeBall,$02
+		objpos $0450,$04E0,BigSpikeBall,type_bball_updown
 		objpos $0500,$03C2,Crabmeat,$00,rem
-		objpos $0530,$0570,BigSpikeBall,$02,xflip
+		objpos $0530,$0570,BigSpikeBall,type_bball_updown,xflip
 		objpos $0608,$02E4,Rings,$03,rem
 		objpos $0610,$00D4,Rings,$25,rem
 		objpos $0620,$02F9,BasicPlatform,type_plat_still
@@ -27,60 +27,60 @@
 		objpos $0758,$0568,Rings,$04,rem
 		objpos $0760,$02F4,Rings,$03,rem
 		objpos $0778,$030A,BasicPlatform,type_plat_still
-		objpos $0778,$030A,BigSpikeBall,$E3
-		objpos $0778,$030A,BigSpikeBall,$E3,yflip
+		objpos $0778,$030A,BigSpikeBall,type_bball_circle+$E0
+		objpos $0778,$030A,BigSpikeBall,type_bball_circle+$E0,yflip
 		objpos $0778,$05A8,SpikeBall,$54,xflip
-		objpos $0778,$05A9,FloatingBlock,$00
+		objpos $0778,$05A9,FloatingBlock,type_fblock_syz1x1+type_fblock_still
 		objpos $0780,$00D3,Monitor,$05,rem
 		objpos $07B0,$00D4,Rings,$22,rem
 		objpos $07F0,$028A,Rings,$01,rem
 		objpos $07F8,$0298,Rings,$32,rem
-		objpos $0860,$0110,FloatingBlock,$00
+		objpos $0860,$0110,FloatingBlock,type_fblock_syz1x1+type_fblock_still
 		objpos $0860,$02F4,Rings,$03,rem
 		objpos $0878,$030A,BasicPlatform,type_plat_still
-		objpos $0878,$030A,BigSpikeBall,$E3,xflip
-		objpos $0878,$030A,BigSpikeBall,$E3,xflip,yflip
-		objpos $0880,$00F0,FloatingBlock,$01,xflip
-		objpos $0880,$0130,FloatingBlock,$01
+		objpos $0878,$030A,BigSpikeBall,type_bball_circle+$E0,xflip
+		objpos $0878,$030A,BigSpikeBall,type_bball_circle+$E0,xflip,yflip
+		objpos $0880,$00F0,FloatingBlock,type_fblock_syz1x1+type_fblock_leftright,xflip
+		objpos $0880,$0130,FloatingBlock,type_fblock_syz1x1+type_fblock_leftright
 		objpos $0880,$0590,SpinningLight,$00
-		objpos $08A0,$00D0,FloatingBlock,$02,xflip
-		objpos $08A0,$0150,FloatingBlock,$02
-		objpos $0900,$01B0,FloatingBlock,$00
+		objpos $08A0,$00D0,FloatingBlock,type_fblock_syz1x1+type_fblock_leftrightwide,xflip
+		objpos $08A0,$0150,FloatingBlock,type_fblock_syz1x1+type_fblock_leftrightwide
+		objpos $0900,$01B0,FloatingBlock,type_fblock_syz1x1+type_fblock_still
 		objpos $0910,$02A0,BasicPlatform,type_plat_updown_slow
-		objpos $0920,$0190,FloatingBlock,$01,xflip
-		objpos $0920,$01D0,FloatingBlock,$01
-		objpos $0920,$0548,BigSpikeBall,$01
+		objpos $0920,$0190,FloatingBlock,type_fblock_syz1x1+type_fblock_leftright,xflip
+		objpos $0920,$01D0,FloatingBlock,type_fblock_syz1x1+type_fblock_leftright
+		objpos $0920,$0548,BigSpikeBall,type_bball_sideways
 		objpos $0930,$02F1,Crabmeat,$00,xflip,rem
-		objpos $0940,$0170,FloatingBlock,$02,xflip
-		objpos $0940,$01F0,FloatingBlock,$02
+		objpos $0940,$0170,FloatingBlock,type_fblock_syz1x1+type_fblock_leftrightwide,xflip
+		objpos $0940,$01F0,FloatingBlock,type_fblock_syz1x1+type_fblock_leftrightwide
 		objpos $0990,$0240,BasicPlatform,type_plat_updown_slow_rev
-		objpos $09A0,$0130,FloatingBlock,$00
-		objpos $09C0,$0110,FloatingBlock,$01,xflip
-		objpos $09C0,$0150,FloatingBlock,$01
+		objpos $09A0,$0130,FloatingBlock,type_fblock_syz1x1+type_fblock_still
+		objpos $09C0,$0110,FloatingBlock,type_fblock_syz1x1+type_fblock_leftright,xflip
+		objpos $09C0,$0150,FloatingBlock,type_fblock_syz1x1+type_fblock_leftright
 		objpos $09D0,$02F1,Crabmeat,$00,rem
-		objpos $09E0,$00F0,FloatingBlock,$02,xflip
-		objpos $09E0,$0170,FloatingBlock,$02
+		objpos $09E0,$00F0,FloatingBlock,type_fblock_syz1x1+type_fblock_leftrightwide,xflip
+		objpos $09E0,$0170,FloatingBlock,type_fblock_syz1x1+type_fblock_leftrightwide
 		objpos $09F0,$02F9,Springs,$00
 		objpos $0A30,$00F1,Crabmeat,$00,xflip,rem
-		objpos $0A30,$0548,BigSpikeBall,$01
+		objpos $0A30,$0548,BigSpikeBall,type_bball_sideways
 		objpos $0AD0,$00F1,Crabmeat,$00,rem
 		objpos $0AF0,$05CE,Invisibarrier,$11
 		objpos $0B10,$0ABA,Springs,$02
-		objpos $0B20,$015E,FloatingBlock,$13
-		objpos $0B20,$021B,FloatingBlock,$13
-		objpos $0B20,$02D8,FloatingBlock,$13
-		objpos $0B60,$0120,FloatingBlock,$13,xflip
-		objpos $0B60,$01DD,FloatingBlock,$13,xflip
-		objpos $0B60,$029A,FloatingBlock,$13,xflip
-		objpos $0B60,$0357,FloatingBlock,$13,xflip
+		objpos $0B20,$015E,FloatingBlock,type_fblock_syz2x2+type_fblock_updown
+		objpos $0B20,$021B,FloatingBlock,type_fblock_syz2x2+type_fblock_updown
+		objpos $0B20,$02D8,FloatingBlock,type_fblock_syz2x2+type_fblock_updown
+		objpos $0B60,$0120,FloatingBlock,type_fblock_syz2x2+type_fblock_updown,xflip
+		objpos $0B60,$01DD,FloatingBlock,type_fblock_syz2x2+type_fblock_updown,xflip
+		objpos $0B60,$029A,FloatingBlock,type_fblock_syz2x2+type_fblock_updown,xflip
+		objpos $0B60,$0357,FloatingBlock,type_fblock_syz2x2+type_fblock_updown,xflip
 		objpos $0B60,$0390,Rings,$92,rem
 		objpos $0B70,$0380,Rings,$46,rem
 		objpos $0B80,$0390,Rings,$62,rem
 		objpos $0B90,$0538,Springs,$00
-		objpos $0B90,$0550,FloatingBlock,$00
-		objpos $0BA0,$015E,FloatingBlock,$13
-		objpos $0BA0,$021B,FloatingBlock,$13
-		objpos $0BA0,$02D8,FloatingBlock,$13
+		objpos $0B90,$0550,FloatingBlock,type_fblock_syz1x1+type_fblock_still
+		objpos $0BA0,$015E,FloatingBlock,type_fblock_syz2x2+type_fblock_updown
+		objpos $0BA0,$021B,FloatingBlock,type_fblock_syz2x2+type_fblock_updown
+		objpos $0BA0,$02D8,FloatingBlock,type_fblock_syz2x2+type_fblock_updown
 		objpos $0BB2,$05CA,Springs,$00
 		objpos $0BF0,$00EE,Yadrin,$00,rem
 		objpos $0C70,$00EE,Yadrin,$00,rem
@@ -97,17 +97,17 @@
 		objpos $0E92,$02C0,Springs,$00
 		objpos $0E94,$0180,Rings,$45,rem
 		objpos $0E94,$0210,Rings,$44,rem
-		objpos $0F80,$0580,FloatingBlock,$13
+		objpos $0F80,$0580,FloatingBlock,type_fblock_syz2x2+type_fblock_updown
 		objpos $0FB0,$0580,Rings,$25,rem
 		objpos $1080,$0540,Invisibarrier,$31
-		objpos $1080,$05C0,FloatingBlock,$13,xflip
+		objpos $1080,$05C0,FloatingBlock,type_fblock_syz2x2+type_fblock_updown,xflip
 		objpos $10B0,$0580,Rings,$25,rem
-		objpos $1180,$0580,FloatingBlock,$13
+		objpos $1180,$0580,FloatingBlock,type_fblock_syz2x2+type_fblock_updown
 		objpos $11B0,$0580,Rings,$25,rem
 		objpos $1280,$0540,Invisibarrier,$31
-		objpos $1280,$05C0,FloatingBlock,$13,xflip
+		objpos $1280,$05C0,FloatingBlock,type_fblock_syz2x2+type_fblock_updown,xflip
 		objpos $12B0,$0580,Rings,$25,rem
-		objpos $1380,$0580,FloatingBlock,$13
+		objpos $1380,$0580,FloatingBlock,type_fblock_syz2x2+type_fblock_updown
 		objpos $140F,$05B2,Monitor,$02,rem
 		objpos $1410,$04A0,Bumper,$00,rem
 		objpos $1410,$04F9,Springs,$02
@@ -140,8 +140,8 @@
 		objpos $1608,$02E4,Rings,$03,rem
 		objpos $1620,$02FA,BasicPlatform,type_plat_still
 		objpos $1670,$02E3,Springs,$20,yflip
-		objpos $1750,$02E0,BigSpikeBall,$02
-		objpos $1830,$0370,BigSpikeBall,$02,xflip
+		objpos $1750,$02E0,BigSpikeBall,type_bball_updown
+		objpos $1830,$0370,BigSpikeBall,type_bball_updown,xflip
 		objpos $18F0,$038D,Lamppost,$01,rem
 		objpos $1930,$0252,Crabmeat,$00,xflip,rem
 		objpos $1980,$0390,SpinningLight,$00
@@ -150,41 +150,41 @@
 		objpos $1AA0,$01A0,Rings,$56,rem
 		objpos $1AA0,$0260,Rings,$55,rem
 		objpos $1AA0,$03DA,Springs,$00
-		objpos $1AB0,$03B0,BigSpikeBall,$01
-		objpos $1C90,$0290,FloatingBlock,$00
-		objpos $1CB0,$0290,FloatingBlock,$01
-		objpos $1CB0,$0290,FloatingBlock,$01,xflip
-		objpos $1CD0,$0290,FloatingBlock,$02
-		objpos $1CD0,$0290,FloatingBlock,$02,xflip
+		objpos $1AB0,$03B0,BigSpikeBall,type_bball_sideways
+		objpos $1C90,$0290,FloatingBlock,type_fblock_syz1x1+type_fblock_still
+		objpos $1CB0,$0290,FloatingBlock,type_fblock_syz1x1+type_fblock_leftright
+		objpos $1CB0,$0290,FloatingBlock,type_fblock_syz1x1+type_fblock_leftright,xflip
+		objpos $1CD0,$0290,FloatingBlock,type_fblock_syz1x1+type_fblock_leftrightwide
+		objpos $1CD0,$0290,FloatingBlock,type_fblock_syz1x1+type_fblock_leftrightwide,xflip
 		objpos $1D00,$03C4,Roller,$00,rem
-		objpos $1D50,$02D0,FloatingBlock,$00
-		objpos $1D70,$02D0,FloatingBlock,$01
-		objpos $1D70,$02D0,FloatingBlock,$01,xflip
-		objpos $1D90,$02D0,FloatingBlock,$02
-		objpos $1D90,$02D0,FloatingBlock,$02,xflip
-		objpos $1E10,$0290,FloatingBlock,$00
-		objpos $1E30,$0290,FloatingBlock,$01
-		objpos $1E30,$0290,FloatingBlock,$01,xflip
-		objpos $1E50,$0290,FloatingBlock,$02
-		objpos $1E50,$0290,FloatingBlock,$02,xflip
+		objpos $1D50,$02D0,FloatingBlock,type_fblock_syz1x1+type_fblock_still
+		objpos $1D70,$02D0,FloatingBlock,type_fblock_syz1x1+type_fblock_leftright
+		objpos $1D70,$02D0,FloatingBlock,type_fblock_syz1x1+type_fblock_leftright,xflip
+		objpos $1D90,$02D0,FloatingBlock,type_fblock_syz1x1+type_fblock_leftrightwide
+		objpos $1D90,$02D0,FloatingBlock,type_fblock_syz1x1+type_fblock_leftrightwide,xflip
+		objpos $1E10,$0290,FloatingBlock,type_fblock_syz1x1+type_fblock_still
+		objpos $1E30,$0290,FloatingBlock,type_fblock_syz1x1+type_fblock_leftright
+		objpos $1E30,$0290,FloatingBlock,type_fblock_syz1x1+type_fblock_leftright,xflip
+		objpos $1E50,$0290,FloatingBlock,type_fblock_syz1x1+type_fblock_leftrightwide
+		objpos $1E50,$0290,FloatingBlock,type_fblock_syz1x1+type_fblock_leftrightwide,xflip
 		objpos $1F00,$0353,Roller,$00,rem
-		objpos $1F70,$0270,FloatingBlock,$00
-		objpos $1F90,$0270,FloatingBlock,$01
-		objpos $1F90,$0270,FloatingBlock,$01,xflip
-		objpos $1FB0,$0270,FloatingBlock,$02
-		objpos $1FB0,$0270,FloatingBlock,$02,xflip
-		objpos $2010,$02F0,FloatingBlock,$00
-		objpos $2030,$02D0,FloatingBlock,$01
-		objpos $2030,$0310,FloatingBlock,$01,xflip
-		objpos $2050,$02B0,FloatingBlock,$02
-		objpos $2050,$0330,FloatingBlock,$02,xflip
+		objpos $1F70,$0270,FloatingBlock,type_fblock_syz1x1+type_fblock_still
+		objpos $1F90,$0270,FloatingBlock,type_fblock_syz1x1+type_fblock_leftright
+		objpos $1F90,$0270,FloatingBlock,type_fblock_syz1x1+type_fblock_leftright,xflip
+		objpos $1FB0,$0270,FloatingBlock,type_fblock_syz1x1+type_fblock_leftrightwide
+		objpos $1FB0,$0270,FloatingBlock,type_fblock_syz1x1+type_fblock_leftrightwide,xflip
+		objpos $2010,$02F0,FloatingBlock,type_fblock_syz1x1+type_fblock_still
+		objpos $2030,$02D0,FloatingBlock,type_fblock_syz1x1+type_fblock_leftright
+		objpos $2030,$0310,FloatingBlock,type_fblock_syz1x1+type_fblock_leftright,xflip
+		objpos $2050,$02B0,FloatingBlock,type_fblock_syz1x1+type_fblock_leftrightwide
+		objpos $2050,$0330,FloatingBlock,type_fblock_syz1x1+type_fblock_leftrightwide,xflip
 		objpos $20C0,$03C0,SpinningLight,$00
 		objpos $20E0,$02CA,BasicPlatform,type_plat_sideways
 		objpos $2110,$03D8,Rings,$42,rem
 		objpos $2150,$045C,Rings,$00,rem
 		objpos $2168,$0460,Rings,$12,rem
 		objpos $2180,$040A,BasicPlatform,type_plat_still
-		objpos $2180,$040A,BigSpikeBall,$C3,yflip
+		objpos $2180,$040A,BigSpikeBall,type_bball_circle+$C0,yflip
 		objpos $21A0,$030A,BasicPlatform,type_plat_sideways_rev
 		objpos $21B0,$045C,Rings,$00,rem
 		objpos $21F0,$03D8,Rings,$42,rem

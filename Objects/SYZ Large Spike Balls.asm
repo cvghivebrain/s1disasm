@@ -44,23 +44,25 @@ BBall_Move:	; Routine 2
 		move.b	ost_subtype(a0),d0 ; get object type
 		andi.w	#7,d0		; read only the	2nd digit
 		add.w	d0,d0
-		move.w	@index(pc,d0.w),d1
-		jsr	@index(pc,d1.w)
+		move.w	BBall_Types(pc,d0.w),d1
+		jsr	BBall_Types(pc,d1.w)
 		out_of_range	DeleteObject,ost_bball_x_start(a0)
 		bra.w	DisplaySprite
 ; ===========================================================================
-@index:		index *
-		ptr @type00
-		ptr @type01
-		ptr @type02
-		ptr @type03
+BBall_Types:	index *
+		ptr BBall_Still
+		ptr BBall_Sideways
+		ptr BBall_UpDown
+		ptr BBall_Circle
 ; ===========================================================================
 
-@type00:
+; Type 0
+BBall_Still:
 		rts	
 ; ===========================================================================
 
-@type01:
+; Type 1
+BBall_Sideways:
 		move.w	#$60,d1
 		moveq	#0,d0
 		move.b	(v_oscillate+$E).w,d0
@@ -76,7 +78,8 @@ BBall_Move:	; Routine 2
 		rts	
 ; ===========================================================================
 
-@type02:
+; Type 2
+BBall_UpDown:
 		move.w	#$60,d1
 		moveq	#0,d0
 		move.b	(v_oscillate+$E).w,d0
@@ -92,7 +95,8 @@ BBall_Move:	; Routine 2
 		rts	
 ; ===========================================================================
 
-@type03:
+; Type 3
+BBall_Circle:
 		move.w	ost_bball_speed(a0),d0
 		add.w	d0,ost_angle(a0)
 		move.b	ost_angle(a0),d0
