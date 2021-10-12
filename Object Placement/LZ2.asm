@@ -117,21 +117,21 @@
 		objpos $0C68,$0588,Rings,$12,rem
 		objpos $0D20,$03F0,Spikes,$30
 		objpos $0D20,$0430,Spikes,$30,yflip
-		objpos $0D2C,$048D,LabyrinthConvey,$7F,xflip
-		objpos $0D2C,$05D2,LabyrinthConvey,$7F,xflip
+		objpos $0D2C,$048D,LabyrinthConvey,type_lcon_wheel,xflip
+		objpos $0D2C,$05D2,LabyrinthConvey,type_lcon_wheel,xflip
 		objpos $0D68,$0480,LabyrinthConvey,$82,xflip
-		objpos $0D6D,$03AB,LabyrinthConvey,$7F
-		objpos $0D6D,$04D4,LabyrinthConvey,$7F
+		objpos $0D6D,$03AB,LabyrinthConvey,type_lcon_wheel
+		objpos $0D6D,$04D4,LabyrinthConvey,type_lcon_wheel
 		objpos $0D78,$0384,Rings,$14,rem
 		objpos $0D80,$05F8,Bubble,$81
 		objpos $0DA0,$0380,LabyrinthConvey,$83
 		objpos $0DA0,$0430,Spikes,$30
 		objpos $0DA0,$0470,Spikes,$30,yflip
-		objpos $0DA5,$048D,LabyrinthConvey,$7F,xflip
-		objpos $0DA5,$05D3,LabyrinthConvey,$7F,xflip
+		objpos $0DA5,$048D,LabyrinthConvey,type_lcon_wheel,xflip
+		objpos $0DA5,$05D3,LabyrinthConvey,type_lcon_wheel,xflip
 		objpos $0DE8,$05F0,Spikes,$00
-		objpos $0DE4,$03AD,LabyrinthConvey,$7F
-		objpos $0DE4,$04D3,LabyrinthConvey,$7F
+		objpos $0DE4,$03AD,LabyrinthConvey,type_lcon_wheel
+		objpos $0DE4,$04D3,LabyrinthConvey,type_lcon_wheel
 		
 		objpos $1050,$03CC,HiddenBonus,$03
 		objpos $1150,$03E8,Signpost,$00

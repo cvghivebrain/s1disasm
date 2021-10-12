@@ -88,8 +88,8 @@
 		objpos $1008,$0180,Waterfall,$08,xflip
 		objpos $1018,$0590,Rings,$11,rem
 		objpos $1020,$0210,Spikes,$00,yflip
-		objpos $102F,$024C,LabyrinthConvey,$7F
-		objpos $102F,$0387,LabyrinthConvey,$7F
+		objpos $102F,$024C,LabyrinthConvey,type_lcon_wheel
+		objpos $102F,$0387,LabyrinthConvey,type_lcon_wheel
 		objpos $1030,$04F8,Bubble,$81
 		objpos $1050,$0330,LabyrinthBlock,type_lblock_solid
 		objpos $1050,$05D8,Harpoon,type_harp_v,rem
@@ -97,12 +97,12 @@
 		objpos $1060,$0430,LabyrinthBlock,type_lblock_solid
 		objpos $1070,$0280,LabyrinthConvey,$80
 		objpos $1070,$0330,LabyrinthBlock,type_lblock_solid
-		objpos $1076,$022C,LabyrinthConvey,$7F
-		objpos $108B,$03B2,LabyrinthConvey,$7F
+		objpos $1076,$022C,LabyrinthConvey,type_lcon_wheel
+		objpos $108B,$03B2,LabyrinthConvey,type_lcon_wheel
 		objpos $1090,$0330,LabyrinthBlock,type_lblock_solid
 		objpos $10A0,$05E8,Bubble,$80
-		objpos $10B1,$0266,LabyrinthConvey,$7F
-		objpos $10B1,$038D,LabyrinthConvey,$7F
+		objpos $10B1,$0266,LabyrinthConvey,type_lcon_wheel
+		objpos $10B1,$038D,LabyrinthConvey,type_lcon_wheel
 		objpos $10C0,$03F8,Bubble,$81
 		objpos $10D0,$05F8,Button,$85
 		objpos $10E0,$0210,Spikes,$00,yflip
@@ -115,13 +115,13 @@
 		objpos $11B0,$05BC,Rings,$41,rem
 		objpos $11D0,$05DC,Rings,$41,rem
 		objpos $1220,$0460,Orbinaut,$00,xflip,rem
-		objpos $123E,$0417,LabyrinthConvey,$7F
-		objpos $123F,$02D3,LabyrinthConvey,$7F
+		objpos $123E,$0417,LabyrinthConvey,type_lcon_wheel
+		objpos $123F,$02D3,LabyrinthConvey,type_lcon_wheel
 		objpos $1270,$05C8,Harpoon,type_harp_v,yflip,rem
-		objpos $127F,$0290,LabyrinthConvey,$7F
+		objpos $127F,$0290,LabyrinthConvey,type_lcon_wheel
 		objpos $1280,$0300,LabyrinthConvey,$81
-		objpos $12C1,$02D5,LabyrinthConvey,$7F
-		objpos $12C8,$0460,LabyrinthConvey,$7F
+		objpos $12C1,$02D5,LabyrinthConvey,type_lcon_wheel
+		objpos $12C8,$0460,LabyrinthConvey,type_lcon_wheel
 		objpos $12CC,$06D0,Spikes,$40
 		objpos $12D0,$05F8,Harpoon,type_harp_v,rem
 		objpos $12F0,$0280,Gargoyle,$01,rem

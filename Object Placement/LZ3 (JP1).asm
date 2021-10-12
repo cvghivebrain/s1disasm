@@ -90,13 +90,13 @@
 		objpos $0BD0,$03B1,Monitor,$06,rem
 		objpos $0BE0,$0290,Burrobot,$00,rem
 		objpos $0C40,$0470,FloatingBlock,$F6,xflip,rem
-		objpos $0C5C,$03D4,LabyrinthConvey,$7F
-		objpos $0C5F,$02A3,LabyrinthConvey,$7F
+		objpos $0C5C,$03D4,LabyrinthConvey,type_lcon_wheel
+		objpos $0C5F,$02A3,LabyrinthConvey,type_lcon_wheel
 		objpos $0C60,$04B8,Bubble,$80
 		objpos $0C90,$04C8,Button,$01
 		objpos $0C98,$0450,Spikes,$00
 		objpos $0CB0,$0438,Springs,$00
-		objpos $0CB1,$024F,LabyrinthConvey,$7F
+		objpos $0CB1,$024F,LabyrinthConvey,type_lcon_wheel
 		objpos $0CD8,$0420,Spikes,$00
 		objpos $0CF0,$03F8,Button,$06
 		objpos $0CF0,$0510,Burrobot,$00,rem
@@ -106,8 +106,8 @@
 		objpos $0D80,$0280,LabyrinthConvey,$84
 		objpos $0D90,$04D0,Burrobot,$00,rem
 		objpos $0DB4,$03F0,Spikes,$30
-		objpos $0DD4,$024C,LabyrinthConvey,$7F
-		objpos $0DD4,$03D4,LabyrinthConvey,$7F
+		objpos $0DD4,$024C,LabyrinthConvey,type_lcon_wheel
+		objpos $0DD4,$03D4,LabyrinthConvey,type_lcon_wheel
 		objpos $0E20,$02D0,Spikes,$30
 		objpos $0E90,$03A1,Monitor,$06,rem
 		objpos $0E90,$04A8,Bubble,$80
@@ -129,8 +129,8 @@
 		objpos $1218,$02F0,Spikes,$00
 		objpos $1240,$04F8,Bubble,$80
 		objpos $1250,$0668,Spikes,$10
-		objpos $125C,$02B3,LabyrinthConvey,$7F
-		objpos $125D,$0214,LabyrinthConvey,$7F
+		objpos $125C,$02B3,LabyrinthConvey,type_lcon_wheel
+		objpos $125D,$0214,LabyrinthConvey,type_lcon_wheel
 		objpos $1270,$0670,LabyrinthBlock,type_lblock_solid
 		objpos $1290,$04AC,Lamppost,$01,rem
 		objpos $12CC,$06D0,Spikes,$40
@@ -147,8 +147,8 @@
 		objpos $13A0,$0330,Spikes,$30
 		objpos $13A0,$0450,SpikeBall,$26
 		objpos $13B0,$05F8,Bubble,$81
-		objpos $13D4,$0214,LabyrinthConvey,$7F
-		objpos $13D4,$02B3,LabyrinthConvey,$7F
+		objpos $13D4,$0214,LabyrinthConvey,type_lcon_wheel
+		objpos $13D4,$02B3,LabyrinthConvey,type_lcon_wheel
 		objpos $1400,$04F8,Bubble,$80
 		objpos $1420,$0410,SpikeBall,$26
 		objpos $1420,$0660,Pole,$04

@@ -93,7 +93,7 @@ loc_1636C:
 		move.b	#0,ost_anim(a0)
 
 loc_16378:
-		bsr.w	LCon_ChangeDir
+		bsr.w	LCon_Platform_Move
 		bra.w	loc_163D8
 ; ===========================================================================
 
@@ -195,7 +195,7 @@ loc_16474:
 		move.b	#0,ost_anim(a0)
 
 loc_16480:
-		bsr.w	LCon_ChangeDir
+		bsr.w	LCon_Platform_Move
 
 loc_16484:
 		jmp	(SpeedToPos).l
