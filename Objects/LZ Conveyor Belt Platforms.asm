@@ -7,23 +7,23 @@ LabyrinthConvey:
 		move.b	ost_routine(a0),d0
 		move.w	LCon_Index(pc,d0.w),d1
 		jsr	LCon_Index(pc,d1.w)
-		out_of_range.s	loc_1236A,ost_lcon_x_pos_centre(a0)
+		out_of_range.s	LCon_ChkDel,ost_lcon_x_pos_centre(a0)
 
 LCon_Display:
 		bra.w	DisplaySprite
 ; ===========================================================================
 
-loc_1236A:
-		cmpi.b	#2,(v_act).w
-		bne.s	loc_12378
-		cmpi.w	#-$80,d0
-		bcc.s	LCon_Display
+LCon_ChkDel:
+		cmpi.b	#2,(v_act).w	; is this act 3?
+		bne.s	@not_act3	; if not, branch
+		cmpi.w	#-$80,d0	; is object to the right?
+		bcc.s	LCon_Display	; if yes, branch
 
-loc_12378:
-		move.b	ost_lcon_subtype_copy(a0),d0
-		bpl.w	DeleteObject
+	@not_act3:
+		move.b	ost_lcon_subtype_copy(a0),d0 ; get original subtype
+		bpl.w	DeleteObject	; branch if not the parent object
 		andi.w	#$7F,d0
-		lea	(v_obj63).w,a2
+		lea	(v_convey_init_list).w,a2
 		bclr	#0,(a2,d0.w)
 		bra.w	DeleteObject
 ; ===========================================================================
@@ -108,7 +108,7 @@ LCon_Platform_Init:
 LCon_LoadPlatforms:
 		move.b	d0,ost_lcon_subtype_copy(a0)
 		andi.w	#$7F,d0		; d0 = bits 0-6 of subtype
-		lea	(v_obj63).w,a2
+		lea	(v_convey_init_list).w,a2
 		bset	#0,(a2,d0.w)	; set flag to indicate object exists
 		bne.w	DeleteObject	; delete now if already set
 		add.w	d0,d0

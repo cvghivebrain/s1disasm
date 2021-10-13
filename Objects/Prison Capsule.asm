@@ -93,7 +93,7 @@ Pri_Switched:	; Routine 4
 		move.w	#60,ost_anim_time(a0) ; set time between animal spawns
 		clr.b	(f_hud_time_update).w	; stop time counter
 		clr.b	(f_boss_boundary).w ; lock screen position
-		move.b	#1,(f_lockctrl).w ; lock controls
+		move.b	#1,(f_lock_controls).w ; lock controls
 		move.w	#(btnR<<8),(v_joypad_hold).w ; make Sonic run to the right
 		clr.b	ost_routine2(a0)
 		bclr	#status_platform_bit,(v_ost_player+ost_status).w

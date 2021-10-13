@@ -3677,7 +3677,7 @@ End_LoadData:
 End_LoadSonic:
 		move.b	#id_SonicPlayer,(v_ost_player).w ; load Sonic object
 		bset	#0,(v_ost_player+ost_status).w ; make Sonic face left
-		move.b	#1,(f_lockctrl).w ; lock controls
+		move.b	#1,(f_lock_controls).w ; lock controls
 		move.w	#(btnL<<8),(v_joypad_hold).w ; move Sonic to the left
 		move.w	#$F800,(v_ost_player+ost_inertia).w ; set Sonic's speed
 		move.b	#id_HUD,(v_ost_hud).w ; load HUD object
@@ -3789,7 +3789,7 @@ End_MoveSonic:
 		bhs.s	End_MoveSonExit	; if not, branch
 
 		addq.b	#2,(v_sonicend).w
-		move.b	#1,(f_lockctrl).w ; lock player's controls
+		move.b	#1,(f_lock_controls).w ; lock player's controls
 		move.w	#(btnR<<8),(v_joypad_hold).w ; move Sonic to the right
 		rts	
 ; ===========================================================================
@@ -3802,10 +3802,10 @@ End_MoveSon2:
 
 		addq.b	#2,(v_sonicend).w
 		moveq	#0,d0
-		move.b	d0,(f_lockctrl).w
+		move.b	d0,(f_lock_controls).w
 		move.w	d0,(v_joypad_hold).w ; stop Sonic moving
 		move.w	d0,(v_ost_player+ost_inertia).w
-		move.b	#$81,(f_lockmulti).w ; lock controls & position
+		move.b	#$81,(v_lock_multi).w ; lock controls & position
 		move.b	#id_frame_Wait2,(v_ost_player+ost_frame).w
 		move.w	#(id_Wait<<8)+id_Wait,(v_ost_player+ost_anim).w ; use "standing" animation
 		move.b	#3,(v_ost_player+ost_anim_time).w

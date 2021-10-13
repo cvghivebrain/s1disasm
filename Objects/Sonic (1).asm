@@ -41,17 +41,17 @@ Sonic_Control:	; Routine 2
 		btst	#bitB,(v_joypad_press_actual).w ; is button B pressed?
 		beq.s	loc_12C58	; if not, branch
 		move.w	#1,(v_debug_active).w ; change Sonic into a ring/item
-		clr.b	(f_lockctrl).w
+		clr.b	(f_lock_controls).w
 		rts	
 ; ===========================================================================
 
 loc_12C58:
-		tst.b	(f_lockctrl).w	; are controls locked?
+		tst.b	(f_lock_controls).w	; are controls locked?
 		bne.s	loc_12C64	; if yes, branch
 		move.w	(v_joypad_hold_actual).w,(v_joypad_hold).w ; enable joypad control
 
 loc_12C64:
-		btst	#0,(f_lockmulti).w ; are controls locked?
+		btst	#0,(v_lock_multi).w ; are controls locked?
 		bne.s	loc_12C7E	; if yes, branch
 		moveq	#0,d0
 		move.b	ost_status(a0),d0
@@ -65,7 +65,7 @@ loc_12C7E:
 		bsr.w	Sonic_Water
 		move.b	(v_angle_right).w,ost_sonic_angle_right(a0)
 		move.b	(v_angle_left).w,ost_sonic_angle_left(a0)
-		tst.b	(f_wtunnelmode).w
+		tst.b	(f_water_tunnel_now).w
 		beq.s	loc_12CA6
 		tst.b	ost_anim(a0)
 		bne.s	loc_12CA6
@@ -73,7 +73,7 @@ loc_12C7E:
 
 loc_12CA6:
 		bsr.w	Sonic_Animate
-		tst.b	(f_lockmulti).w	; are controls locked?
+		tst.b	(v_lock_multi).w	; are controls locked?
 		bmi.s	loc_12CB6	; if yes, branch
 		jsr	(ReactToItem).l	; run collisions with enemies or anything that uses ost_col_type
 
@@ -293,7 +293,7 @@ Sonic_Move:
 		move.w	(v_sonic_max_speed).w,d6
 		move.w	(v_sonic_acceleration).w,d5
 		move.w	(v_sonic_deceleration).w,d4
-		tst.b	(f_jumponly).w
+		tst.b	(f_jump_only).w
 		bne.w	Sonic_InertiaLR
 		tst.w	ost_sonic_lock_time(a0) ; are controls locked?
 		bne.w	Sonic_ResetScr	; if yes, branch
@@ -587,7 +587,7 @@ Sonic_RollSpeed:
 		asr.w	#1,d5
 		move.w	(v_sonic_deceleration).w,d4
 		asr.w	#2,d4
-		tst.b	(f_jumponly).w
+		tst.b	(f_jump_only).w
 		bne.w	loc_131CC
 		tst.w	ost_sonic_lock_time(a0)
 		bne.s	@notright
@@ -854,7 +854,7 @@ Sonic_LevelBound:
 
 
 Sonic_Roll:
-		tst.b	(f_jumponly).w
+		tst.b	(f_jump_only).w
 		bne.s	@noroll
 		move.w	ost_inertia(a0),d0
 		bpl.s	@ispositive

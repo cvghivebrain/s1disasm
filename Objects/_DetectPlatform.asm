@@ -39,7 +39,7 @@ DetectPlatform:
 		cmpi.w	#-$10,d0
 		blo.w	Plat_Exit
 
-		tst.b	(f_lockmulti).w ; is object collision off?
+		tst.b	(v_lock_multi).w ; is object collision off?
 		bmi.w	Plat_Exit	; if yes, branch
 		cmpi.b	#id_Sonic_Death,ost_routine(a1) ; is Sonic dying?
 		bhs.w	Plat_Exit	; if yes, branch

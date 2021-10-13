@@ -55,7 +55,7 @@ Tele_Action:	; Routine 2
 		addi.w	#$20,d1
 		cmpi.w	#$40,d1		; is Sonic within $20 pixels on y-axis?
 		bcc.s	@do_nothing	; if not, branch
-		tst.b	(f_lockmulti).w
+		tst.b	(v_lock_multi).w
 		bne.s	@do_nothing
 		cmpi.b	#7,ost_subtype(a0) ; is this teleport #7?
 		bne.s	@not7		; if not, branch
@@ -64,7 +64,7 @@ Tele_Action:	; Routine 2
 
 	@not7:
 		addq.b	#2,ost_routine(a0)
-		move.b	#$81,(f_lockmulti).w ; lock controls
+		move.b	#$81,(v_lock_multi).w ; lock controls
 		move.b	#id_Roll,ost_anim(a1) ; use Sonic's rolling animation
 		move.w	#$800,ost_inertia(a1)
 		move.w	#0,ost_x_vel(a1)
@@ -143,7 +143,7 @@ loc_167DA:
 loc_16800:
 		andi.w	#$7FF,ost_y_pos(a1)
 		clr.b	ost_routine(a0)
-		clr.b	(f_lockmulti).w
+		clr.b	(v_lock_multi).w
 		move.w	#0,ost_x_vel(a1)
 		move.w	#$200,ost_y_vel(a1)
 		rts	

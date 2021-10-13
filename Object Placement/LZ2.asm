@@ -86,10 +86,10 @@
 		objpos $0910,$06C8,Harpoon,type_harp_v,yflip,rem
 		objpos $0930,$0670,Jaws,$09,xflip,rem
 		objpos $0940,$06F8,Bubble,$80
-		objpos $0948,$01A0,FloatingBlock,$E2,rem
+		objpos $0948,$01A0,FloatingBlock,type_fblock_lzvert+type_fblock_button+2,rem
 		objpos $0970,$05C0,SpikeBall,$54
-		objpos $09C0,$0310,FloatingBlock,$F0,rem
-		objpos $09C0,$0510,FloatingBlock,$F1,rem
+		objpos $09C0,$0310,FloatingBlock,type_fblock_lzhoriz+type_fblock_button,rem
+		objpos $09C0,$0510,FloatingBlock,type_fblock_lzhoriz+type_fblock_button+1,rem
 		objpos $09C0,$06A4,Jaws,$09,rem
 		objpos $09E0,$01EC,Lamppost,$01,rem
 		objpos $09E0,$05B0,Spikes,$30,yflip

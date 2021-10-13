@@ -32,7 +32,7 @@ Bonus_Main:	; Routine 0
 		bcc.s	@chkdel
 		tst.w	(v_debug_active).w
 		bne.s	@chkdel
-		tst.b	(f_bigring).w
+		tst.b	(f_giantring_collected).w
 		bne.s	@chkdel
 		addq.b	#2,ost_routine(a0)
 		move.l	#Map_Bonus,ost_mappings(a0)

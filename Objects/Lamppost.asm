@@ -50,7 +50,7 @@ Lamp_Main:	; Routine 0
 Lamp_Blue:	; Routine 2
 		tst.w	(v_debug_active).w	; is debug mode	being used?
 		bne.w	@donothing	; if yes, branch
-		tst.b	(f_lockmulti).w
+		tst.b	(v_lock_multi).w
 		bmi.w	@donothing
 		move.b	(v_lastlamp).w,d1
 		andi.b	#$7F,d1

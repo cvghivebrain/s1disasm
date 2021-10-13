@@ -70,7 +70,7 @@ Drown_ChkWater:	; Routine 4
 ; ===========================================================================
 
 @wobble:
-		tst.b	(f_wtunnelmode).w ; is Sonic in a water tunnel?
+		tst.b	(f_water_tunnel_now).w ; is Sonic in a water tunnel?
 		beq.s	@notunnel	; if not, branch
 		addq.w	#4,ost_drown_x_start(a0)
 
@@ -224,7 +224,7 @@ Drown_Countdown:; Routine $A
 
 		; Sonic drowns here
 		bsr.w	ResumeMusic
-		move.b	#$81,(f_lockmulti).w ; lock controls
+		move.b	#$81,(v_lock_multi).w ; lock controls
 		sfx	sfx_Drown,0,0,0	; play drowning sound
 		move.b	#$A,ost_drown_extra_bub(a0)
 		move.w	#1,ost_drown_extra_flag(a0)

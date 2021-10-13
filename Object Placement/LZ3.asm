@@ -31,12 +31,12 @@
 		objpos $0658,$02F0,Waterfall,$A9
 		objpos $0660,$0458,Rings,$13,rem
 		objpos $0660,$04A0,Rings,$13,rem
-		objpos $06C0,$0570,FloatingBlock,$F0,rem
+		objpos $06C0,$0570,FloatingBlock,type_fblock_lzhoriz+type_fblock_button,rem
 		objpos $06F0,$03E0,LabyrinthBlock,type_lblock_solid
 		objpos $06F8,$01F8,Waterfall,$04
 		objpos $0708,$06F8,Waterfall,$04,xflip
 		objpos $0710,$04F8,Jaws,$0C,xflip,rem
-		objpos $0740,$03E0,FloatingBlock,$FA,xflip,rem
+		objpos $0740,$03E0,FloatingBlock,type_fblock_lzhoriz+type_fblock_button+$A,xflip,rem
 		objpos $0770,$0378,Button,$0A
 		objpos $0770,$0390,LabyrinthBlock,type_lblock_solid
 		objpos $07C0,$0480,SpikeBall,$C4
@@ -89,7 +89,7 @@
 		objpos $0BD0,$01B0,Spikes,$30,yflip
 		objpos $0BD0,$03B1,Monitor,$06,rem
 		objpos $0BE0,$0290,Burrobot,$00,rem
-		objpos $0C40,$0470,FloatingBlock,$F6,xflip,rem
+		objpos $0C40,$0470,FloatingBlock,type_fblock_lzhoriz+type_fblock_button+6,xflip,rem
 		objpos $0C5C,$03D4,LabyrinthConvey,type_lcon_wheel
 		objpos $0C5F,$02A3,LabyrinthConvey,type_lcon_wheel
 		objpos $0C60,$04B8,Bubble,$80
@@ -101,7 +101,7 @@
 		objpos $0CF0,$03F8,Button,$06
 		objpos $0CF0,$0510,Burrobot,$00,rem
 		objpos $0D00,$0280,LabyrinthConvey,$84
-		objpos $0D08,$04A0,FloatingBlock,$E1,rem
+		objpos $0D08,$04A0,FloatingBlock,type_fblock_lzvert+type_fblock_button+1,rem
 		objpos $0D48,$03F0,Spikes,$40
 		objpos $0D80,$0280,LabyrinthConvey,$84
 		objpos $0D90,$04D0,Burrobot,$00,rem
@@ -125,7 +125,7 @@
 		objpos $11D0,$0421,Monitor,$05,rem
 		objpos $11D0,$04F8,Button,$02
 		objpos $11E0,$0680,Pole,$04
-		objpos $1208,$04A0,FloatingBlock,$E2,rem
+		objpos $1208,$04A0,FloatingBlock,type_fblock_lzvert+type_fblock_button+2,rem
 		objpos $1218,$02F0,Spikes,$00
 		objpos $1240,$04F8,Bubble,$80
 		objpos $1250,$0668,Spikes,$10
@@ -174,7 +174,7 @@
 		objpos $1580,$0550,Jaws,$0C,rem
 		objpos $1588,$0240,Waterfall,$08,xflip
 		objpos $1590,$03B1,Monitor,$06,rem
-		objpos $15A0,$0510,FloatingBlock,$F3,xflip,rem
+		objpos $15A0,$0510,FloatingBlock,type_fblock_lzhoriz+type_fblock_button+3,xflip,rem
 		objpos $15A8,$0250,Waterfall,$08,xflip
 		objpos $15B8,$01F0,Spikes,$30,yflip
 		objpos $15C0,$0558,Button,$03
@@ -196,7 +196,7 @@
 		objpos $1708,$02F8,Waterfall,$02,xflip
 		objpos $1720,$07F8,Bubble,$80
 		objpos $1720,$0270,Spikes,$30,yflip
-		objpos $1798,$06A0,FloatingBlock,$E7,rem
+		objpos $1798,$06A0,FloatingBlock,type_fblock_lzvert+type_fblock_button+7,rem
 		objpos $17C0,$06F8,Bubble,$80
 		objpos $1808,$03F8,Waterfall,$03,xflip
 		objpos $1808,$04F0,Waterfall,$00,xflip
@@ -211,7 +211,7 @@
 		objpos $1890,$05B0,LabyrinthBlock,type_lblock_solid
 		objpos $1890,$05F0,LabyrinthBlock,type_lblock_solid
 		objpos $18A0,$06F8,Bubble,$80
-		objpos $18C0,$0510,FloatingBlock,$F9,xflip,rem
+		objpos $18C0,$0510,FloatingBlock,type_fblock_lzhoriz+type_fblock_button+9,xflip,rem
 		objpos $18C0,$0530,LabyrinthBlock,type_lblock_solid
 		objpos $18D0,$06E8,Orbinaut,$00,rem
 		objpos $18E0,$0530,LabyrinthBlock,type_lblock_solid
@@ -229,7 +229,7 @@
 		objpos $1AD0,$0250,Burrobot,$00,rem
 		objpos $1B20,$0210,Burrobot,$00,rem
 		objpos $1B60,$0010,Burrobot,$00,rem
-		objpos $1BC0,$0810,FloatingBlock,$F8,rem
+		objpos $1BC0,$0810,FloatingBlock,type_fblock_lzhoriz+type_fblock_button+8,rem
 		objpos $1BC0,$0030,LabyrinthBlock,type_lblock_solid
 		objpos $1BE0,$0030,LabyrinthBlock,type_lblock_solid
 		objpos $1C00,$0010,Burrobot,$00,rem

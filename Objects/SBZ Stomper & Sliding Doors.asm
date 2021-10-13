@@ -33,7 +33,7 @@ Sto_Main:	; Routine 0
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0 ; get subtype
 		lsr.w	#2,d0
-		andi.w	#$1C,d0		; read only high nybble
+		andi.w	#$1C,d0		; read only high nybble without bit 7
 		lea	Sto_Var(pc,d0.w),a3 ; get variables from list
 		move.b	(a3)+,ost_actwidth(a0)
 		move.b	(a3)+,ost_height(a0)
@@ -43,8 +43,8 @@ Sto_Main:	; Routine 0
 		move.w	#tile_Nem_Stomper+tile_pal2,ost_tile(a0)
 		cmpi.b	#id_LZ,(v_zone).w ; check if level is LZ/SBZ3
 		bne.s	@isSBZ12	; if not, branch
-		bset	#0,(v_obj6B).w
-		beq.s	@isSBZ3
+		bset	#0,(f_stomp_sbz3_init).w ; flag object as loaded
+		beq.s	@SBZ3_init	; branch if not previously loaded
 
 @chkdel:
 		lea	(v_objstate).w,a2
@@ -57,7 +57,7 @@ Sto_Main:	; Routine 0
 		jmp	(DeleteObject).l
 ; ===========================================================================
 
-@isSBZ3:
+@SBZ3_init:
 		move.w	#tile_Nem_LzBlock2+tile_pal3,ost_tile(a0)
 		cmpi.w	#$A80,ost_x_pos(a0)
 		bne.s	@isSBZ12
@@ -67,7 +67,7 @@ Sto_Main:	; Routine 0
 		beq.s	@isSBZ12
 		btst	#0,2(a2,d0.w)
 		beq.s	@isSBZ12
-		clr.b	(v_obj6B).w
+		clr.b	(f_stomp_sbz3_init).w
 		bra.s	@chkdel
 ; ===========================================================================
 
@@ -123,7 +123,7 @@ Sto_Action:	; Routine 2
 	@chkgone:
 		cmpi.b	#id_LZ,(v_zone).w
 		bne.s	@delete
-		clr.b	(v_obj6B).w
+		clr.b	(f_stomp_sbz3_init).w
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0

@@ -69,4 +69,4 @@ ObjPos_LZ3pf2:
 		dc.w $129E,$02BE,$0053
 		dc.w $1252,$028A,$0050
 	@end:
-		dc.w $FFFF,$0000,$0000
+		endobj

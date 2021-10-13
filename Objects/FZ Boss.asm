@@ -444,7 +444,7 @@ loc_1A210:
 loc_1A216:
 		cmpi.w	#$2790,(v_ost_player+ost_x_pos).w
 		blt.s	loc_1A23A
-		move.b	#1,(f_lockctrl).w
+		move.b	#1,(f_lock_controls).w
 		move.w	#0,(v_joypad_hold).w
 		clr.w	(v_ost_player+ost_inertia).w
 		tst.w	ost_y_vel(a0)

@@ -141,7 +141,7 @@ Solid_ChkEnter2:
 		bcc.w	Solid_Ignore	; branch if Sonic is outside lower boundary
 
 loc_FB0E:
-		tst.b	(f_lockmulti).w	; are controls locked?
+		tst.b	(v_lock_multi).w	; are controls locked?
 		bmi.w	Solid_Ignore	; if yes, branch
 		cmpi.b	#id_Sonic_Death,(v_ost_player+ost_routine).w ; is Sonic dying?
 		if Revision=0

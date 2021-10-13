@@ -156,7 +156,7 @@ Got_NextLevel:	; Routine $A
 
 Got_ChkSS:
 		clr.b	(v_lastlamp).w	; clear	lamppost counter
-		tst.b	(f_bigring).w	; has Sonic jumped into	a giant	ring?
+		tst.b	(f_giantring_collected).w	; has Sonic jumped into	a giant	ring?
 		beq.s	VBla_08A	; if not, branch
 		move.b	#id_Special,(v_gamemode).w ; set game mode to Special Stage (10)
 		bra.s	Got_Display2
@@ -236,7 +236,7 @@ Got_SBZ2:
 		cmpi.b	#4,ost_frame(a0)
 		bne.w	DeleteObject
 		addq.b	#2,ost_routine(a0)
-		clr.b	(f_lockctrl).w	; unlock controls
+		clr.b	(f_lock_controls).w	; unlock controls
 		music	bgm_FZ,1,0,0	; play FZ music
 ; ===========================================================================
 

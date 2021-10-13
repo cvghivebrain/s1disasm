@@ -22,7 +22,7 @@ MoveWithPlatform2:			; jump here to use standard height (9)
 		subi.w	#9,d0
 
 	MWP_MoveSonic:
-		tst.b	(f_lockmulti).w
+		tst.b	(v_lock_multi).w
 		bmi.s	MWP_End
 		cmpi.b	#id_Sonic_Death,(v_ost_player+ost_routine).w ; is Sonic dying?
 		bhs.s	MWP_End		; if yes, branch

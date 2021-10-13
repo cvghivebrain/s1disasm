@@ -45,7 +45,7 @@ Flash_Collect:
 		movea.l	ost_flash_parent(a0),a1	; get parent object address
 		move.b	#id_GRing_Delete,ost_routine(a1) ; delete parent object
 		move.b	#id_Blank,(v_ost_player+ost_anim).w ; make Sonic invisible
-		move.b	#1,(f_bigring).w ; stop	Sonic getting bonuses
+		move.b	#1,(f_giantring_collected).w ; stop	Sonic getting bonuses
 		clr.b	(v_invincibility).w	; remove invincibility
 		clr.b	(v_shield).w	; remove shield
 

@@ -303,14 +303,14 @@ v_levelani_5_time:	equ $FFFFF7BB ; level graphics animation 5 - time until next 
 
 v_giantring_gfx_offset:	equ $FFFFF7BE ; address of art for next giant ring frame, relative to Art_BigRing (counts backwards from $C40; 0 means no more art) (2 bytes)
 f_convey_reverse:	equ $FFFFF7C0 ; flag set to reverse conveyor belts in LZ/SBZ
-v_obj63:		equ $FFFFF7C1	; object 63 (LZ/SBZ platforms) variables (6 bytes)
-f_wtunnelmode:	equ $FFFFF7C7	; LZ water tunnel mode
-f_lockmulti:	equ $FFFFF7C8	; +1 = lock controls, lock Sonic's position & animation; +$80 = no collision with objects
-f_wtunnelallow:	equ $FFFFF7C9	; LZ water tunnels (00 = enabled; 01 = disabled)
-f_jumponly:	equ $FFFFF7CA	; flag set to lock controls apart from jumping
-v_obj6B:		equ $FFFFF7CB	; object 6B (SBZ stomper) variable
-f_lockctrl:	equ $FFFFF7CC	; flag set to lock controls during ending sequence
-f_bigring:	equ $FFFFF7CD	; flag set when Sonic collects the giant ring
+v_convey_init_list:	equ $FFFFF7C1 ; LZ/SBZ conveyor belt platform flags set when the parent object is loaded - 1 byte per conveyor set (6 bytes)
+f_water_tunnel_now:	equ $FFFFF7C7 ; flag set when Sonic is in a LZ water tunnel
+v_lock_multi:		equ $FFFFF7C8 ; +1 = lock controls, lock Sonic's position & animation; +$80 = no collision with objects
+f_water_tunnel_disable:	equ $FFFFF7C9 ; flag set to disable LZ water tunnels
+f_jump_only:		equ $FFFFF7CA ; flag set to lock controls except jumping
+f_stomp_sbz3_init:	equ $FFFFF7CB ; flag set when huge sliding platform in SBZ3 is loaded
+f_lock_controls:	equ $FFFFF7CC ; flag set to lock player controls
+f_giantring_collected:	equ $FFFFF7CD ; flag set when Sonic collects a giant ring
 f_obj56:	equ $FFFFF7CE	; flag set for something related to obj56 (REV01 only)
 v_itembonus:	equ $FFFFF7D0	; item bonus from broken enemies, blocks etc. (2 bytes)
 v_timebonus:	equ $FFFFF7D2	; time bonus at the end of an act (2 bytes)

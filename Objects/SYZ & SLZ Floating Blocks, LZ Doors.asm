@@ -234,11 +234,11 @@ FBlock_UpButton:
 		bne.s	@aaa		; if not, branch
 		cmpi.b	#3,ost_fblock_switch_num(a0)
 		bne.s	@aaa
-		clr.b	(f_wtunnelallow).w
+		clr.b	(f_water_tunnel_disable).w
 		move.w	(v_ost_player+ost_x_pos).w,d0
 		cmp.w	ost_x_pos(a0),d0
 		bcc.s	@aaa
-		move.b	#1,(f_wtunnelallow).w
+		move.b	#1,(f_water_tunnel_disable).w
 
 	@aaa:
 		lea	(f_switch).w,a2
@@ -250,7 +250,7 @@ FBlock_UpButton:
 		bne.s	@loc_1049E	; if not, branch
 		cmpi.b	#3,d0
 		bne.s	@loc_1049E
-		clr.b	(f_wtunnelallow).w
+		clr.b	(f_water_tunnel_disable).w
 
 @loc_1049E:
 		move.b	#1,ost_fblock_move_flag(a0)

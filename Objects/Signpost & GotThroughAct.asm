@@ -102,7 +102,7 @@ Sign_SonicRun:	; Routine 6
 		bne.w	locret_ECEE	; if yes, branch
 		btst	#status_air_bit,(v_ost_player+ost_status).w
 		bne.s	loc_EC70
-		move.b	#1,(f_lockctrl).w ; lock controls
+		move.b	#1,(f_lock_controls).w ; lock controls
 		move.w	#btnR<<8,(v_joypad_hold).w ; make Sonic run to the right
 
 	loc_EC70:

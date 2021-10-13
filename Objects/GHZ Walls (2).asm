@@ -80,7 +80,7 @@ Edge_SolidWall2:
 		add.w	d4,d4
 		cmp.w	d4,d3
 		bhs.s	loc_8B48
-		tst.b	(f_lockmulti).w
+		tst.b	(v_lock_multi).w
 		bmi.s	loc_8B48
 		cmpi.b	#id_Sonic_Death,(v_ost_player+ost_routine).w
 		bhs.s	loc_8B48

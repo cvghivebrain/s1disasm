@@ -25,7 +25,7 @@ Mon_SolidSides:
 		add.w	d2,d2
 		cmp.w	d2,d3
 		bcc.s	loc_A4E6
-		tst.b	(f_lockmulti).w
+		tst.b	(v_lock_multi).w
 		bmi.s	loc_A4E6
 		cmpi.b	#id_Sonic_Death,(v_ost_player+ost_routine).w
 		bcc.s	loc_A4E6

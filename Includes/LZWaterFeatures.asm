@@ -311,11 +311,11 @@ LZWindTunnels:
 		sfx	sfx_Waterfall,0,0,0 ; play rushing water sound (only every $40 frames)
 
 	@skipsound:
-		tst.b	(f_wtunnelallow).w ; are wind tunnels disabled?
+		tst.b	(f_water_tunnel_disable).w ; are wind tunnels disabled?
 		bne.w	@quit	; if yes, branch
 		cmpi.b	#id_Sonic_Hurt,ost_routine(a1) ; is Sonic hurt/dying?
 		bcc.s	@clrquit	; if yes, branch
-		move.b	#1,(f_wtunnelmode).w
+		move.b	#1,(f_water_tunnel_now).w
 		subi.w	#$80,d0
 		cmp.w	(a2),d0
 		bcc.s	@movesonic
@@ -349,12 +349,12 @@ LZWindTunnels:
 @chknext:
 		addq.w	#8,a2		; use second set of values (act 1 only)
 		dbf	d1,@chksonic	; on act 1, repeat for a second tunnel
-		tst.b	(f_wtunnelmode).w ; is Sonic still in a tunnel?
+		tst.b	(f_water_tunnel_now).w ; is Sonic still in a tunnel?
 		beq.s	@quit		; if yes, branch
 		move.b	#id_Walk,ost_anim(a1) ; use walking animation
 
 @clrquit:
-		clr.b	(f_wtunnelmode).w ; finish tunnel
+		clr.b	(f_water_tunnel_now).w ; finish tunnel
 
 @quit:
 		rts	
@@ -398,10 +398,10 @@ loc_3F62:
 		beq.s	LZSlide_Move
 
 loc_3F6A:
-		tst.b	(f_jumponly).w
+		tst.b	(f_jump_only).w
 		beq.s	locret_3F7A
 		move.w	#5,ost_sonic_lock_time(a1)
-		clr.b	(f_jumponly).w
+		clr.b	(f_jump_only).w
 
 locret_3F7A:
 		rts	
@@ -422,7 +422,7 @@ loc_3F84:
 loc_3F9A:
 		clr.b	ost_inertia+1(a1)
 		move.b	#id_WaterSlide,ost_anim(a1) ; use Sonic's "sliding" animation
-		move.b	#1,(f_jumponly).w ; lock controls (except jumping)
+		move.b	#1,(f_jump_only).w ; lock controls (except jumping)
 		move.b	(v_vblank_counter_byte).w,d0
 		andi.b	#$1F,d0
 		bne.s	locret_3FBE
