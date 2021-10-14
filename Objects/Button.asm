@@ -39,7 +39,7 @@ But_Action:	; Routine 2
 		bclr	#0,ost_frame(a0) ; use "unpressed" frame
 		move.b	ost_subtype(a0),d0
 		andi.w	#$F,d0		; get low nybble of subtype
-		lea	(f_switch).w,a3
+		lea	(v_button_state).w,a3
 		lea	(a3,d0.w),a3	; (a3) = button status
 		moveq	#0,d3
 		btst	#6,ost_subtype(a0) ; is subtype $4x or $Cx? (unused)

@@ -229,7 +229,7 @@ Glass_Drop_Button:
 Glass_ChkSwitch:
 		tst.b	ost_glass_move_mode(a0) ; is block already moving?
 		bne.s	loc_B5E0	; if yes, branch
-		lea	(f_switch).w,a2
+		lea	(v_button_state).w,a2
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0 ; load object type number
 		lsr.w	#4,d0		; read only the	first nybble

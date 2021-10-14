@@ -129,7 +129,7 @@ Jun_Release:	; Routine 6
 
 
 Jun_ChkSwitch:
-		lea	(f_switch).w,a2
+		lea	(v_button_state).w,a2
 		moveq	#0,d0
 		move.b	ost_junc_switch_num(a0),d0
 		btst	#0,(a2,d0.w)	; is switch pressed?

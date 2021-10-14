@@ -178,7 +178,7 @@ LCon_Wheel:	; Routine 6
 
 
 LCon_Platform_Update:
-		tst.b	(f_switch+$E).w	; has button $E been pressed?
+		tst.b	(v_button_state+$E).w	; has button $E been pressed?
 		beq.s	@no_reverse	; if not, branch
 		tst.b	ost_lcon_reverse(a0) ; is reverse flag already set?
 		bne.s	@no_reverse	; if yes, branch

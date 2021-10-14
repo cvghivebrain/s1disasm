@@ -199,7 +199,7 @@ DLE_LZ12:
 ; ===========================================================================
 
 DLE_LZ3:
-		tst.b	(f_switch+$F).w	; has switch $F	been pressed?
+		tst.b	(v_button_state+$F).w	; has switch $F	been pressed?
 		beq.s	loc_6F28	; if not, branch
 		lea	(v_level_layout+$106).w,a1
 		cmpi.b	#7,(a1)

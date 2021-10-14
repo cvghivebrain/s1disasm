@@ -150,7 +150,7 @@ Sto_Action:	; Routine 2
 @type01:
 		tst.b	ost_stomp_flag(a0)
 		bne.s	@isactive01
-		lea	(f_switch).w,a2
+		lea	(v_button_state).w,a2
 		moveq	#0,d0
 		move.b	ost_stomp_switch_num(a0),d0
 		btst	#0,(a2,d0.w)	; has switch been pressed?
@@ -312,7 +312,7 @@ Sto_Action:	; Routine 2
 @type05:
 		tst.b	ost_stomp_flag(a0)
 		bne.s	@loc_15F3E
-		lea	(f_switch).w,a2
+		lea	(v_button_state).w,a2
 		moveq	#0,d0
 		move.b	ost_stomp_switch_num(a0),d0
 		btst	#0,(a2,d0.w)

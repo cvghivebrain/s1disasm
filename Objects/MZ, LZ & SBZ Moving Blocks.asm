@@ -189,7 +189,7 @@ MBlock_Drop_Now:
 
 ; Type 7
 MBlock_RightDrop_Button:
-		tst.b	(f_switch+2).w	; has switch number 02 been pressed?
+		tst.b	(v_button_state+2).w	; has switch number 02 been pressed?
 		beq.s	@not_pressed
 		subq.b	#3,ost_subtype(a0) ; if yes, change object type to 04
 

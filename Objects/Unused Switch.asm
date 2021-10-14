@@ -34,7 +34,7 @@ Swi_Action:	; Routine 2
 
 		addq.w	#2,ost_y_pos(a0) ; move object 2 pixels
 		moveq	#1,d0
-		move.w	d0,(f_switch).w	; set switch 0 as "pressed"
+		move.w	d0,(v_button_state).w	; set switch 0 as "pressed"
 
 Swi_ChkDel:
 		bsr.w	DisplaySprite

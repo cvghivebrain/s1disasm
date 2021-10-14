@@ -189,7 +189,7 @@ CStom_TypeIndex:index *
 ; ===========================================================================
 
 CStom_Type00:
-		lea	(f_switch).w,a2	; load switch statuses
+		lea	(v_button_state).w,a2	; load switch statuses
 		moveq	#0,d0
 		move.b	ost_cstomp_switch_id(a0),d0 ; move number 0 or 1 to d0
 		tst.b	(a2,d0.w)	; has switch (d0) been pressed?

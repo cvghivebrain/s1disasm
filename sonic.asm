@@ -2622,7 +2622,7 @@ Level_LoadObj:
 		move.b	d0,(v_shield).w	; clear shield
 		move.b	d0,(v_invincibility).w	; clear invincibility
 		move.b	d0,(v_shoes).w	; clear speed shoes
-		move.b	d0,($FFFFFE2F).w
+		move.b	d0,(v_unused_powerup).w
 		move.w	d0,(v_debug_active).w
 		move.w	d0,(f_restart).w
 		move.w	d0,(v_frame_counter).w
@@ -3691,7 +3691,7 @@ End_LoadSonic:
 		move.b	d0,(v_shield).w
 		move.b	d0,(v_invincibility).w
 		move.b	d0,(v_shoes).w
-		move.b	d0,($FFFFFE2F).w
+		move.b	d0,(v_unused_powerup).w
 		move.w	d0,(v_debug_active).w
 		move.w	d0,(f_restart).w
 		move.w	d0,(v_frame_counter).w
@@ -4058,7 +4058,6 @@ Demo_EndSBZ2:	incbin	"demodata\Ending - SBZ2.bin"
 Demo_EndGHZ2:	incbin	"demodata\Ending - GHZ2.bin"
 		even
 
-		if Revision=0
 ; ---------------------------------------------------------------------------
 ; Subroutine to	load level boundaries and start	locations
 ; ---------------------------------------------------------------------------
@@ -4216,7 +4215,11 @@ SetScreen:
 		move.b	(v_zone).w,d0
 		lsl.b	#2,d0
 		move.l	LoopTileNums(pc,d0.w),(v_256x256_with_loop_1).w
+		if revision=0
 		bra.w	LevSz_LoadScrollBlockSize
+		else
+		rts
+		endc
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Sonic start location array
@@ -4282,6 +4285,9 @@ LoopTileNums:
 		even
 
 ; ===========================================================================
+
+		if revision=0
+
 ; LevSz_Unk:
 LevSz_LoadScrollBlockSize:
 		moveq	#0,d0
@@ -4333,6 +4339,8 @@ BGScrollBlockSizes:
 		dc.w $100
 		dc.w $100
 		dc.w $100
+		
+		endc
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	set scroll speed of some backgrounds
@@ -4371,1071 +4379,9 @@ BgScroll_Index:	index *
 ; ===========================================================================
 
 BgScroll_GHZ:
+		if revision=0
 		bra.w	Deform_GHZ
-; ===========================================================================
-
-BgScroll_LZ:
-		asr.l	#1,d0
-		move.w	d0,(v_bgscreenposy).w
-		rts	
-; ===========================================================================
-
-BgScroll_MZ:
-		rts	
-; ===========================================================================
-
-BgScroll_SLZ:
-		asr.l	#1,d0
-		addi.w	#$C0,d0
-		move.w	d0,(v_bgscreenposy).w
-		rts	
-; ===========================================================================
-
-BgScroll_SYZ:
-		asl.l	#4,d0
-		move.l	d0,d2
-		asl.l	#1,d0
-		add.l	d2,d0
-		asr.l	#8,d0
-		move.w	d0,(v_bgscreenposy).w
-		move.w	d0,(v_bg2screenposy).w
-		rts	
-; ===========================================================================
-
-BgScroll_SBZ:
-		asl.l	#4,d0
-		asl.l	#1,d0
-		asr.l	#8,d0
-		move.w	d0,(v_bgscreenposy).w
-		rts	
-; ===========================================================================
-
-BgScroll_End:
-		move.w	#$1E,(v_bgscreenposy).w
-		move.w	#$1E,(v_bg2screenposy).w
-		rts	
-; ===========================================================================
-		move.w	#$A8,(v_bgscreenposx).w
-		move.w	#$1E,(v_bgscreenposy).w
-		move.w	#-$40,(v_bg2screenposx).w
-		move.w	#$1E,(v_bg2screenposy).w
-		rts
-; ---------------------------------------------------------------------------
-; Background layer deformation subroutines
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-DeformLayers:
-		tst.b	(f_nobgscroll).w
-		beq.s	@bgscroll
-		rts	
-; ===========================================================================
-
-	@bgscroll:
-		clr.w	(v_fg_scroll_flags).w
-		clr.w	(v_bg1_scroll_flags).w
-		clr.w	(v_bg2_scroll_flags).w
-		clr.w	(v_bg3_scroll_flags).w
-		bsr.w	ScrollHorizontal
-		bsr.w	ScrollVertical
-		bsr.w	DynamicLevelEvents
-		move.w	(v_screenposx).w,(v_fg_x_pos_hscroll).w
-		move.w	(v_screenposy).w,(v_fg_y_pos_vsram).w
-		move.w	(v_bgscreenposx).w,(v_bgscreenposx_dup_unused).w
-		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w
-		move.w	(v_bg3screenposx).w,(v_bg3screenposx_dup_unused).w
-		move.w	(v_bg3screenposy).w,(v_bg3screenposy_dup_unused).w
-		moveq	#0,d0
-		move.b	(v_zone).w,d0
-		add.w	d0,d0
-		move.w	Deform_Index(pc,d0.w),d0
-		jmp	Deform_Index(pc,d0.w)
-; End of function DeformLayers
-
-; ===========================================================================
-; ---------------------------------------------------------------------------
-; Offset index for background layer deformation	code
-; ---------------------------------------------------------------------------
-Deform_Index:	index *
-		ptr Deform_GHZ
-		ptr Deform_LZ
-		ptr Deform_MZ
-		ptr Deform_SLZ
-		ptr Deform_SYZ
-		ptr Deform_SBZ
-		zonewarning Deform_Index,2
-		ptr Deform_GHZ
-; ---------------------------------------------------------------------------
-; Green	Hill Zone background layer deformation code
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Deform_GHZ:
-		move.w	(v_scrshiftx).w,d4
-		ext.l	d4
-		asl.l	#5,d4
-		move.l	d4,d1
-		asl.l	#1,d4
-		add.l	d1,d4
-		moveq	#0,d5
-		bsr.w	ScrollBlock1
-		bsr.w	ScrollBlock4
-		lea	(v_hscroll_buffer).w,a1
-		move.w	(v_screenposy).w,d0
-		andi.w	#$7FF,d0
-		lsr.w	#5,d0
-		neg.w	d0
-		addi.w	#$26,d0
-		move.w	d0,(v_bg2screenposy).w
-		move.w	d0,d4
-		bsr.w	ScrollBlock3
-		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w
-		move.w	#$6F,d1
-		sub.w	d4,d1
-		move.w	(v_screenposx).w,d0
-		cmpi.b	#id_Title,(v_gamemode).w
-		bne.s	loc_633C
-		moveq	#0,d0
-
-loc_633C:
-		neg.w	d0
-		swap	d0
-		move.w	(v_bgscreenposx).w,d0
-		neg.w	d0
-
-loc_6346:
-		move.l	d0,(a1)+
-		dbf	d1,loc_6346
-		move.w	#$27,d1
-		move.w	(v_bg2screenposx).w,d0
-		neg.w	d0
-
-loc_6356:
-		move.l	d0,(a1)+
-		dbf	d1,loc_6356
-		move.w	(v_bg2screenposx).w,d0
-		addi.w	#0,d0
-		move.w	(v_screenposx).w,d2
-		addi.w	#-$200,d2
-		sub.w	d0,d2
-		ext.l	d2
-		asl.l	#8,d2
-		divs.w	#$68,d2
-		ext.l	d2
-		asl.l	#8,d2
-		moveq	#0,d3
-		move.w	d0,d3
-		move.w	#$47,d1
-		add.w	d4,d1
-
-loc_6384:
-		move.w	d3,d0
-		neg.w	d0
-		move.l	d0,(a1)+
-		swap	d3
-		add.l	d2,d3
-		swap	d3
-		dbf	d1,loc_6384
-		rts	
-; End of function Deform_GHZ
-
-; ---------------------------------------------------------------------------
-; Labyrinth Zone background layer deformation code
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Deform_LZ:
-		move.w	(v_scrshiftx).w,d4
-		ext.l	d4
-		asl.l	#7,d4
-		move.w	(v_scrshifty).w,d5
-		ext.l	d5
-		asl.l	#7,d5
-		bsr.w	ScrollBlock1
-		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w
-		lea	(v_hscroll_buffer).w,a1
-		move.w	#223,d1
-		move.w	(v_screenposx).w,d0
-		neg.w	d0
-		swap	d0
-		move.w	(v_bgscreenposx).w,d0
-		neg.w	d0
-
-loc_63C6:
-		move.l	d0,(a1)+
-		dbf	d1,loc_63C6
-		move.w	(v_water_height_actual).w,d0
-		sub.w	(v_screenposy).w,d0
-		rts	
-; End of function Deform_LZ
-
-; ---------------------------------------------------------------------------
-; Marble Zone background layer deformation code
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Deform_MZ:
-		move.w	(v_scrshiftx).w,d4
-		ext.l	d4
-		asl.l	#6,d4
-		move.l	d4,d1
-		asl.l	#1,d4
-		add.l	d1,d4
-		moveq	#0,d5
-		bsr.w	ScrollBlock1
-		move.w	#$200,d0
-		move.w	(v_screenposy).w,d1
-		subi.w	#$1C8,d1
-		bcs.s	loc_6402
-		move.w	d1,d2
-		add.w	d1,d1
-		add.w	d2,d1
-		asr.w	#2,d1
-		add.w	d1,d0
-
-loc_6402:
-		move.w	d0,(v_bg2screenposy).w
-		bsr.w	ScrollBlock3
-		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w
-		lea	(v_hscroll_buffer).w,a1
-		move.w	#223,d1
-		move.w	(v_screenposx).w,d0
-		neg.w	d0
-		swap	d0
-		move.w	(v_bgscreenposx).w,d0
-		neg.w	d0
-
-loc_6426:
-		move.l	d0,(a1)+
-		dbf	d1,loc_6426
-		rts	
-; End of function Deform_MZ
-
-; ---------------------------------------------------------------------------
-; Star Light Zone background layer deformation code
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Deform_SLZ:
-		move.w	(v_scrshiftx).w,d4
-		ext.l	d4
-		asl.l	#7,d4
-		move.w	(v_scrshifty).w,d5
-		ext.l	d5
-		asl.l	#7,d5
-		bsr.w	ScrollBlock2
-		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w
-		bsr.w	Deform_SLZ_2
-		lea	(v_bgscroll_buffer).w,a2
-		move.w	(v_bgscreenposy).w,d0
-		move.w	d0,d2
-		subi.w	#$C0,d0
-		andi.w	#$3F0,d0
-		lsr.w	#3,d0
-		lea	(a2,d0.w),a2
-		lea	(v_hscroll_buffer).w,a1
-		move.w	#$E,d1
-		move.w	(v_screenposx).w,d0
-		neg.w	d0
-		swap	d0
-		andi.w	#$F,d2
-		add.w	d2,d2
-		move.w	(a2)+,d0
-		jmp	loc_6482(pc,d2.w)
-; ===========================================================================
-
-loc_6480:
-		move.w	(a2)+,d0
-
-loc_6482:
-		move.l	d0,(a1)+
-		move.l	d0,(a1)+
-		move.l	d0,(a1)+
-		move.l	d0,(a1)+
-		move.l	d0,(a1)+
-		move.l	d0,(a1)+
-		move.l	d0,(a1)+
-		move.l	d0,(a1)+
-		move.l	d0,(a1)+
-		move.l	d0,(a1)+
-		move.l	d0,(a1)+
-		move.l	d0,(a1)+
-		move.l	d0,(a1)+
-		move.l	d0,(a1)+
-		move.l	d0,(a1)+
-		move.l	d0,(a1)+
-		dbf	d1,loc_6480
-		rts	
-; End of function Deform_SLZ
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Deform_SLZ_2:
-		lea	(v_bgscroll_buffer).w,a1
-		move.w	(v_screenposx).w,d2
-		neg.w	d2
-		move.w	d2,d0
-		asr.w	#3,d0
-		sub.w	d2,d0
-		ext.l	d0
-		asl.l	#4,d0
-		divs.w	#$1C,d0
-		ext.l	d0
-		asl.l	#4,d0
-		asl.l	#8,d0
-		moveq	#0,d3
-		move.w	d2,d3
-		move.w	#$1B,d1
-
-loc_64CE:
-		move.w	d3,(a1)+
-		swap	d3
-		add.l	d0,d3
-		swap	d3
-		dbf	d1,loc_64CE
-		move.w	d2,d0
-		asr.w	#3,d0
-		move.w	#4,d1
-
-loc_64E2:
-		move.w	d0,(a1)+
-		dbf	d1,loc_64E2
-		move.w	d2,d0
-		asr.w	#2,d0
-		move.w	#4,d1
-
-loc_64F0:
-		move.w	d0,(a1)+
-		dbf	d1,loc_64F0
-		move.w	d2,d0
-		asr.w	#1,d0
-		move.w	#$1D,d1
-
-loc_64FE:
-		move.w	d0,(a1)+
-		dbf	d1,loc_64FE
-		rts	
-; End of function Deform_SLZ_2
-
-; ---------------------------------------------------------------------------
-; Spring Yard Zone background layer deformation	code
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Deform_SYZ:
-		move.w	(v_scrshiftx).w,d4
-		ext.l	d4
-		asl.l	#6,d4
-		move.w	(v_scrshifty).w,d5
-		ext.l	d5
-		asl.l	#4,d5
-		move.l	d5,d1
-		asl.l	#1,d5
-		add.l	d1,d5
-		bsr.w	ScrollBlock1
-		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w
-		lea	(v_hscroll_buffer).w,a1
-		move.w	#223,d1
-		move.w	(v_screenposx).w,d0
-		neg.w	d0
-		swap	d0
-		move.w	(v_bgscreenposx).w,d0
-		neg.w	d0
-
-loc_653C:
-		move.l	d0,(a1)+
-		dbf	d1,loc_653C
-		rts	
-; End of function Deform_SYZ
-
-; ---------------------------------------------------------------------------
-; Scrap	Brain Zone background layer deformation	code
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Deform_SBZ:
-		move.w	(v_scrshiftx).w,d4
-		ext.l	d4
-		asl.l	#6,d4
-		move.w	(v_scrshifty).w,d5
-		ext.l	d5
-		asl.l	#4,d5
-		asl.l	#1,d5
-		bsr.w	ScrollBlock1
-		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w
-		lea	(v_hscroll_buffer).w,a1
-		move.w	#223,d1
-		move.w	(v_screenposx).w,d0
-		neg.w	d0
-		swap	d0
-		move.w	(v_bgscreenposx).w,d0
-		neg.w	d0
-
-loc_6576:
-		move.l	d0,(a1)+
-		dbf	d1,loc_6576
-		rts	
-; End of function Deform_SBZ
-
-; ---------------------------------------------------------------------------
-; Subroutine to	scroll the level horizontally as Sonic moves
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-ScrollHorizontal:
-		move.w	(v_screenposx).w,d4 ; save old screen position
-		bsr.s	MoveScreenHoriz
-		move.w	(v_screenposx).w,d0
-		andi.w	#$10,d0
-		move.b	($FFFFF74A).w,d1
-		eor.b	d1,d0
-		bne.s	locret_65B0
-		eori.b	#$10,($FFFFF74A).w
-		move.w	(v_screenposx).w,d0
-		sub.w	d4,d0		; compare new with old screen position
-		bpl.s	SH_Forward
-
-		bset	#2,(v_fg_scroll_flags).w ; screen moves backward
-		rts	
-
-	SH_Forward:
-		bset	#3,(v_fg_scroll_flags).w ; screen moves forward
-
-locret_65B0:
-		rts	
-; End of function ScrollHorizontal
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-MoveScreenHoriz:
-		move.w	(v_ost_player+ost_x_pos).w,d0
-		sub.w	(v_screenposx).w,d0 ; Sonic's distance from left edge of screen
-		subi.w	#144,d0		; is distance less than 144px?
-		bcs.s	SH_BehindMid	; if yes, branch
-		subi.w	#16,d0		; is distance more than 160px?
-		bcc.s	SH_AheadOfMid	; if yes, branch
-		clr.w	(v_scrshiftx).w
-		rts	
-; ===========================================================================
-
-SH_AheadOfMid:
-		cmpi.w	#16,d0		; is Sonic within 16px of middle area?
-		bcs.s	SH_Ahead16	; if yes, branch
-		move.w	#16,d0		; set to 16 if greater
-
-	SH_Ahead16:
-		add.w	(v_screenposx).w,d0
-		cmp.w	(v_limitright2).w,d0
-		blt.s	SH_SetScreen
-		move.w	(v_limitright2).w,d0
-
-SH_SetScreen:
-		move.w	d0,d1
-		sub.w	(v_screenposx).w,d1
-		asl.w	#8,d1
-		move.w	d0,(v_screenposx).w ; set new screen position
-		move.w	d1,(v_scrshiftx).w ; set distance for screen movement
-		rts	
-; ===========================================================================
-
-SH_BehindMid:
-		add.w	(v_screenposx).w,d0
-		cmp.w	(v_limitleft2).w,d0
-		bgt.s	SH_SetScreen
-		move.w	(v_limitleft2).w,d0
-		bra.s	SH_SetScreen
-; End of function MoveScreenHoriz
-
-; ===========================================================================
-		tst.w	d0
-		bpl.s	loc_6610
-		move.w	#-2,d0
-		bra.s	SH_BehindMid
-
-loc_6610:
-		move.w	#2,d0
-		bra.s	SH_AheadOfMid
-
-; ---------------------------------------------------------------------------
-; Subroutine to	scroll the level vertically as Sonic moves
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-ScrollVertical:
-		moveq	#0,d1
-		move.w	(v_ost_player+ost_y_pos).w,d0
-		sub.w	(v_screenposy).w,d0 ; Sonic's distance from top of screen
-		btst	#2,(v_ost_player+ost_status).w ; is Sonic rolling?
-		beq.s	SV_NotRolling	; if not, branch
-		subq.w	#5,d0
-
-	SV_NotRolling:
-		btst	#1,(v_ost_player+ost_status).w ; is Sonic jumping?
-		beq.s	loc_664A	; if not, branch
-
-		addi.w	#32,d0
-		sub.w	(v_lookshift).w,d0
-		bcs.s	loc_6696
-		subi.w	#64,d0
-		bcc.s	loc_6696
-		tst.b	(f_bgscrollvert).w
-		bne.s	loc_66A8
-		bra.s	loc_6656
-; ===========================================================================
-
-loc_664A:
-		sub.w	(v_lookshift).w,d0
-		bne.s	loc_665C
-		tst.b	(f_bgscrollvert).w
-		bne.s	loc_66A8
-
-loc_6656:
-		clr.w	(v_scrshifty).w
-		rts	
-; ===========================================================================
-
-loc_665C:
-		cmpi.w	#$60,(v_lookshift).w
-		bne.s	loc_6684
-		move.w	(v_ost_player+ost_inertia).w,d1
-		bpl.s	loc_666C
-		neg.w	d1
-
-loc_666C:
-		cmpi.w	#$800,d1
-		bcc.s	loc_6696
-		move.w	#$600,d1
-		cmpi.w	#6,d0
-		bgt.s	loc_66F6
-		cmpi.w	#-6,d0
-		blt.s	loc_66C0
-		bra.s	loc_66AE
-; ===========================================================================
-
-loc_6684:
-		move.w	#$200,d1
-		cmpi.w	#2,d0
-		bgt.s	loc_66F6
-		cmpi.w	#-2,d0
-		blt.s	loc_66C0
-		bra.s	loc_66AE
-; ===========================================================================
-
-loc_6696:
-		move.w	#$1000,d1
-		cmpi.w	#$10,d0
-		bgt.s	loc_66F6
-		cmpi.w	#-$10,d0
-		blt.s	loc_66C0
-		bra.s	loc_66AE
-; ===========================================================================
-
-loc_66A8:
-		moveq	#0,d0
-		move.b	d0,(f_bgscrollvert).w
-
-loc_66AE:
-		moveq	#0,d1
-		move.w	d0,d1
-		add.w	(v_screenposy).w,d1
-		tst.w	d0
-		bpl.w	loc_6700
-		bra.w	loc_66CC
-; ===========================================================================
-
-loc_66C0:
-		neg.w	d1
-		ext.l	d1
-		asl.l	#8,d1
-		add.l	(v_screenposy).w,d1
-		swap	d1
-
-loc_66CC:
-		cmp.w	(v_limittop2).w,d1
-		bgt.s	loc_6724
-		cmpi.w	#-$100,d1
-		bgt.s	loc_66F0
-		andi.w	#$7FF,d1
-		andi.w	#$7FF,(v_ost_player+ost_y_pos).w
-		andi.w	#$7FF,(v_screenposy).w
-		andi.w	#$3FF,(v_bgscreenposy).w
-		bra.s	loc_6724
-; ===========================================================================
-
-loc_66F0:
-		move.w	(v_limittop2).w,d1
-		bra.s	loc_6724
-; ===========================================================================
-
-loc_66F6:
-		ext.l	d1
-		asl.l	#8,d1
-		add.l	(v_screenposy).w,d1
-		swap	d1
-
-loc_6700:
-		cmp.w	(v_limitbtm2).w,d1
-		blt.s	loc_6724
-		subi.w	#$800,d1
-		bcs.s	loc_6720
-		andi.w	#$7FF,(v_ost_player+ost_y_pos).w
-		subi.w	#$800,(v_screenposy).w
-		andi.w	#$3FF,(v_bgscreenposy).w
-		bra.s	loc_6724
-; ===========================================================================
-
-loc_6720:
-		move.w	(v_limitbtm2).w,d1
-
-loc_6724:
-		move.w	(v_screenposy).w,d4
-		swap	d1
-		move.l	d1,d3
-		sub.l	(v_screenposy).w,d3
-		ror.l	#8,d3
-		move.w	d3,(v_scrshifty).w
-		move.l	d1,(v_screenposy).w
-		move.w	(v_screenposy).w,d0
-		andi.w	#$10,d0
-		move.b	($FFFFF74B).w,d1
-		eor.b	d1,d0
-		bne.s	locret_6766
-		eori.b	#$10,($FFFFF74B).w
-		move.w	(v_screenposy).w,d0
-		sub.w	d4,d0
-		bpl.s	loc_6760
-		bset	#0,(v_fg_scroll_flags).w
-		rts	
-; ===========================================================================
-
-loc_6760:
-		bset	#1,(v_fg_scroll_flags).w
-
-locret_6766:
-		rts	
-; End of function ScrollVertical
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-ScrollBlock1:
-		move.l	(v_bgscreenposx).w,d2
-		move.l	d2,d0
-		add.l	d4,d0
-		move.l	d0,(v_bgscreenposx).w
-		move.l	d0,d1
-		swap	d1
-		andi.w	#$10,d1
-		move.b	($FFFFF74C).w,d3
-		eor.b	d3,d1
-		bne.s	loc_679C
-		eori.b	#$10,($FFFFF74C).w
-		sub.l	d2,d0
-		bpl.s	loc_6796
-		bset	#2,(v_bg1_scroll_flags).w
-		bra.s	loc_679C
-; ===========================================================================
-
-loc_6796:
-		bset	#3,(v_bg1_scroll_flags).w
-
-loc_679C:
-		move.l	(v_bgscreenposy).w,d3
-		move.l	d3,d0
-		add.l	d5,d0
-		move.l	d0,(v_bgscreenposy).w
-		move.l	d0,d1
-		swap	d1
-		andi.w	#$10,d1
-		move.b	($FFFFF74D).w,d2
-		eor.b	d2,d1
-		bne.s	locret_67D0
-		eori.b	#$10,($FFFFF74D).w
-		sub.l	d3,d0
-		bpl.s	loc_67CA
-		bset	#0,(v_bg1_scroll_flags).w
-		rts	
-; ===========================================================================
-
-loc_67CA:
-		bset	#1,(v_bg1_scroll_flags).w
-
-locret_67D0:
-		rts	
-; End of function ScrollBlock1
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-ScrollBlock2:
-		move.l	(v_bgscreenposx).w,d2
-		move.l	d2,d0
-		add.l	d4,d0
-		move.l	d0,(v_bgscreenposx).w
-		move.l	(v_bgscreenposy).w,d3
-		move.l	d3,d0
-		add.l	d5,d0
-		move.l	d0,(v_bgscreenposy).w
-		move.l	d0,d1
-		swap	d1
-		andi.w	#$10,d1
-		move.b	($FFFFF74D).w,d2
-		eor.b	d2,d1
-		bne.s	locret_6812
-		eori.b	#$10,($FFFFF74D).w
-		sub.l	d3,d0
-		bpl.s	loc_680C
-		bset	#0,(v_bg1_scroll_flags).w
-		rts	
-; ===========================================================================
-
-loc_680C:
-		bset	#1,(v_bg1_scroll_flags).w
-
-locret_6812:
-		rts	
-; End of function ScrollBlock2
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-ScrollBlock3:
-		move.w	(v_bgscreenposy).w,d3
-		move.w	d0,(v_bgscreenposy).w
-		move.w	d0,d1
-		andi.w	#$10,d1
-		move.b	($FFFFF74D).w,d2
-		eor.b	d2,d1
-		bne.s	locret_6842
-		eori.b	#$10,($FFFFF74D).w
-		sub.w	d3,d0
-		bpl.s	loc_683C
-		bset	#0,(v_bg1_scroll_flags).w
-		rts	
-; ===========================================================================
-
-loc_683C:
-		bset	#1,(v_bg1_scroll_flags).w
-
-locret_6842:
-		rts	
-; End of function ScrollBlock3
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-ScrollBlock4:
-		move.w	(v_bg2screenposx).w,d2
-		move.w	(v_bg2screenposy).w,d3
-		move.w	(v_scrshiftx).w,d0
-		ext.l	d0
-		asl.l	#7,d0
-		add.l	d0,(v_bg2screenposx).w
-		move.w	(v_bg2screenposx).w,d0
-		andi.w	#$10,d0
-		move.b	($FFFFF74E).w,d1
-		eor.b	d1,d0
-		bne.s	locret_6884
-		eori.b	#$10,($FFFFF74E).w
-		move.w	(v_bg2screenposx).w,d0
-		sub.w	d2,d0
-		bpl.s	loc_687E
-		bset	#2,(v_bg2_scroll_flags).w
-		bra.s	locret_6884
-; ===========================================================================
-
-loc_687E:
-		bset	#3,(v_bg2_scroll_flags).w
-
-locret_6884:
-		rts	
-; End of function ScrollBlock4
 		else
-; ---------------------------------------------------------------------------
-; Subroutine to	load level boundaries and start	locations
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-LevelSizeLoad:
-		moveq	#0,d0
-		move.b	d0,($FFFFF740).w
-		move.b	d0,($FFFFF741).w
-		move.b	d0,($FFFFF746).w
-		move.b	d0,($FFFFF748).w
-		move.b	d0,(v_dle_routine).w
-		move.w	(v_zone).w,d0
-		lsl.b	#6,d0
-		lsr.w	#4,d0
-		move.w	d0,d1
-		add.w	d0,d0
-		add.w	d1,d0
-		lea	LevelSizeArray(pc,d0.w),a0 ; load level	boundaries
-		move.w	(a0)+,d0
-		move.w	d0,($FFFFF730).w
-		move.l	(a0)+,d0
-		move.l	d0,(v_limitleft2).w
-		move.l	d0,(v_limitleft1).w
-		move.l	(a0)+,d0
-		move.l	d0,(v_limittop2).w
-		move.l	d0,(v_limittop1).w
-		move.w	(v_limitleft2).w,d0
-		addi.w	#$240,d0
-		move.w	d0,(v_limitleft3).w
-		move.w	#$1010,($FFFFF74A).w
-		move.w	(a0)+,d0
-		move.w	d0,(v_lookshift).w
-		bra.w	LevSz_ChkLamp
-; ===========================================================================
-; ---------------------------------------------------------------------------
-; Level size array
-; ---------------------------------------------------------------------------
-LevelSizeArray:
-		; GHZ
-		dc.w $0004, $0000, $24BF, $0000, $0300, $0060
-		dc.w $0004, $0000, $1EBF, $0000, $0300, $0060
-		dc.w $0004, $0000, $2960, $0000, $0300, $0060
-		dc.w $0004, $0000, $2ABF, $0000, $0300, $0060
-		; LZ
-		dc.w $0004, $0000, $19BF, $0000, $0530, $0060
-		dc.w $0004, $0000, $10AF, $0000, $0720, $0060
-		dc.w $0004, $0000, $202F, $FF00, $0800, $0060
-		dc.w $0004, $0000, $20BF, $0000, $0720, $0060
-		; MZ
-		dc.w $0004, $0000, $17BF, $0000, $01D0, $0060
-		dc.w $0004, $0000, $17BF, $0000, $0520, $0060
-		dc.w $0004, $0000, $1800, $0000, $0720, $0060
-		dc.w $0004, $0000, $16BF, $0000, $0720, $0060
-		; SLZ
-		dc.w $0004, $0000, $1FBF, $0000, $0640, $0060
-		dc.w $0004, $0000, $1FBF, $0000, $0640, $0060
-		dc.w $0004, $0000, $2000, $0000, $06C0, $0060
-		dc.w $0004, $0000, $3EC0, $0000, $0720, $0060
-		; SYZ
-		dc.w $0004, $0000, $22C0, $0000, $0420, $0060
-		dc.w $0004, $0000, $28C0, $0000, $0520, $0060
-		dc.w $0004, $0000, $2C00, $0000, $0620, $0060
-		dc.w $0004, $0000, $2EC0, $0000, $0620, $0060
-		; SBZ
-		dc.w $0004, $0000, $21C0, $0000, $0720, $0060
-		dc.w $0004, $0000, $1E40, $FF00, $0800, $0060
-		dc.w $0004, $2080, $2460, $0510, $0510, $0060
-		dc.w $0004, $0000, $3EC0, $0000, $0720, $0060
-		zonewarning LevelSizeArray,$30
-		; Ending
-		dc.w $0004, $0000, $0500, $0110, $0110, $0060
-		dc.w $0004, $0000, $0DC0, $0110, $0110, $0060
-		dc.w $0004, $0000, $2FFF, $0000, $0320, $0060
-		dc.w $0004, $0000, $2FFF, $0000, $0320, $0060
-
-; ---------------------------------------------------------------------------
-; Ending start location array
-; ---------------------------------------------------------------------------
-EndingStLocArray:
-
-		incbin	"startpos\ghz1 (Credits demo 1).bin"
-		incbin	"startpos\mz2 (Credits demo).bin"
-		incbin	"startpos\syz3 (Credits demo).bin"
-		incbin	"startpos\lz3 (Credits demo).bin"
-		incbin	"startpos\slz3 (Credits demo).bin"
-		incbin	"startpos\sbz1 (Credits demo).bin"
-		incbin	"startpos\sbz2 (Credits demo).bin"
-		incbin	"startpos\ghz1 (Credits demo 2).bin"
-		even
-
-; ===========================================================================
-
-LevSz_ChkLamp:
-		tst.b	(v_lastlamp).w	; have any lampposts been hit?
-		beq.s	LevSz_StartLoc	; if not, branch
-
-		jsr	(Lamp_LoadInfo).l
-		move.w	(v_ost_player+ost_x_pos).w,d1
-		move.w	(v_ost_player+ost_y_pos).w,d0
-		bra.s	LevSz_SkipStartPos
-; ===========================================================================
-
-LevSz_StartLoc:
-		move.w	(v_zone).w,d0
-		lsl.b	#6,d0
-		lsr.w	#4,d0
-		lea	StartLocArray(pc,d0.w),a1 ; load Sonic's start location
-		tst.w	(f_demo).w	; is ending demo mode on?
-		bpl.s	LevSz_SonicPos	; if not, branch
-
-		move.w	(v_creditsnum).w,d0
-		subq.w	#1,d0
-		lsl.w	#2,d0
-		lea	EndingStLocArray(pc,d0.w),a1 ; load Sonic's start location
-
-LevSz_SonicPos:
-		moveq	#0,d1
-		move.w	(a1)+,d1
-		move.w	d1,(v_ost_player+ost_x_pos).w ; set Sonic's position on x-axis
-		moveq	#0,d0
-		move.w	(a1),d0
-		move.w	d0,(v_ost_player+ost_y_pos).w ; set Sonic's position on y-axis
-
-SetScreen:
-	LevSz_SkipStartPos:
-		subi.w	#160,d1		; is Sonic more than 160px from left edge?
-		bcc.s	SetScr_WithinLeft ; if yes, branch
-		moveq	#0,d1
-
-	SetScr_WithinLeft:
-		move.w	(v_limitright2).w,d2
-		cmp.w	d2,d1		; is Sonic inside the right edge?
-		bcs.s	SetScr_WithinRight ; if yes, branch
-		move.w	d2,d1
-
-	SetScr_WithinRight:
-		move.w	d1,(v_screenposx).w ; set horizontal screen position
-
-		subi.w	#96,d0		; is Sonic within 96px of upper edge?
-		bcc.s	SetScr_WithinTop ; if yes, branch
-		moveq	#0,d0
-
-	SetScr_WithinTop:
-		cmp.w	(v_limitbtm2).w,d0 ; is Sonic above the bottom edge?
-		blt.s	SetScr_WithinBottom ; if yes, branch
-		move.w	(v_limitbtm2).w,d0
-
-	SetScr_WithinBottom:
-		move.w	d0,(v_screenposy).w ; set vertical screen position
-		bsr.w	BgScrollSpeed
-		moveq	#0,d0
-		move.b	(v_zone).w,d0
-		lsl.b	#2,d0
-		move.l	LoopTileNums(pc,d0.w),(v_256x256_with_loop_1).w
-		rts
-; ===========================================================================
-; ---------------------------------------------------------------------------
-; Sonic start location array
-; ---------------------------------------------------------------------------
-StartLocArray:
-
-		incbin	"startpos\ghz1.bin"
-		incbin	"startpos\ghz2.bin"
-		incbin	"startpos\ghz3.bin"
-		dc.w	$80,$A8
-
-		incbin	"startpos\lz1.bin"
-		incbin	"startpos\lz2.bin"
-		incbin	"startpos\lz3.bin"
-		incbin	"startpos\sbz3.bin"
-
-		incbin	"startpos\mz1.bin"
-		incbin	"startpos\mz2.bin"
-		incbin	"startpos\mz3.bin"
-		dc.w	$80,$A8
-
-		incbin	"startpos\slz1.bin"
-		incbin	"startpos\slz2.bin"
-		incbin	"startpos\slz3.bin"
-		dc.w	$80,$A8
-
-		incbin	"startpos\syz1.bin"
-		incbin	"startpos\syz2.bin"
-		incbin	"startpos\syz3.bin"
-		dc.w	$80,$A8
-
-		incbin	"startpos\sbz1.bin"
-		incbin	"startpos\sbz2.bin"
-		incbin	"startpos\fz.bin"
-		dc.w	$80,$A8
-
-		zonewarning StartLocArray,$10
-
-		incbin	"startpos\end1.bin"
-		incbin	"startpos\end2.bin"
-		dc.w	$80,$A8
-		dc.w	$80,$A8
-
-		even
-
-; ---------------------------------------------------------------------------
-; Which	256x256	tiles contain loops or roll-tunnels
-; ---------------------------------------------------------------------------
-
-LoopTileNums:
-
-; 		loop	loop	tunnel	tunnel
-
-	dc.b	$B5,	$7F,	$1F,	$20	; Green Hill
-	dc.b	$7F,	$7F,	$7F,	$7F	; Labyrinth
-	dc.b	$7F,	$7F,	$7F,	$7F	; Marble
-	dc.b	$AA,	$B4,	$7F,	$7F	; Star Light
-	dc.b	$7F,	$7F,	$7F,	$7F	; Spring Yard
-	dc.b	$7F,	$7F,	$7F,	$7F	; Scrap Brain
-	zonewarning LoopTileNums,4
-	dc.b	$7F,	$7F,	$7F,	$7F	; Ending (Green Hill)
-
-		even
-
-; ---------------------------------------------------------------------------
-; Subroutine to	set scroll speed of some backgrounds
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-BgScrollSpeed:
-		tst.b	(v_lastlamp).w
-		bne.s	loc_6206
-		move.w	d0,(v_bgscreenposy).w
-		move.w	d0,(v_bg2screenposy).w
-		move.w	d1,(v_bgscreenposx).w
-		move.w	d1,(v_bg2screenposx).w
-		move.w	d1,(v_bg3screenposx).w
-
-loc_6206:
-		moveq	#0,d2
-		move.b	(v_zone).w,d2
-		add.w	d2,d2
-		move.w	BgScroll_Index(pc,d2.w),d2
-		jmp	BgScroll_Index(pc,d2.w)
-; End of function BgScrollSpeed
-
-; ===========================================================================
-BgScroll_Index:	index *
-		ptr BgScroll_GHZ
-		ptr BgScroll_LZ
-		ptr BgScroll_MZ
-		ptr BgScroll_SLZ
-		ptr BgScroll_SYZ
-		ptr BgScroll_SBZ
-		zonewarning BgScroll_Index,2
-		ptr BgScroll_End
-; ===========================================================================
-
-BgScroll_GHZ:
 		clr.l	(v_bgscreenposx).w
 		clr.l	(v_bgscreenposy).w
 		clr.l	(v_bg2screenposy).w
@@ -5445,6 +4391,7 @@ BgScroll_GHZ:
 		clr.l	(a2)+
 		clr.l	(a2)+
 		rts
+		endc
 ; ===========================================================================
 
 BgScroll_LZ:
@@ -5461,7 +4408,10 @@ BgScroll_SLZ:
 		asr.l	#1,d0
 		addi.w	#$C0,d0
 		move.w	d0,(v_bgscreenposy).w
+		if revision=0
+		else
 		clr.l	(v_bgscreenposx).w
+		endc
 		rts	
 ; ===========================================================================
 
@@ -5471,21 +4421,43 @@ BgScroll_SYZ:
 		asl.l	#1,d0
 		add.l	d2,d0
 		asr.l	#8,d0
+		if revision=0
+		move.w	d0,(v_bgscreenposy).w
+		move.w	d0,(v_bg2screenposy).w
+		else
 		addq.w	#1,d0
 		move.w	d0,(v_bgscreenposy).w
 		clr.l	(v_bgscreenposx).w
+		endc
 		rts	
 ; ===========================================================================
 
 BgScroll_SBZ:
+		if revision=0
+		asl.l	#4,d0
+		asl.l	#1,d0
+		asr.l	#8,d0
+		else
 		andi.w	#$7F8,d0
 		asr.w	#3,d0
 		addq.w	#1,d0
+		endc
 		move.w	d0,(v_bgscreenposy).w
 		rts	
 ; ===========================================================================
 
 BgScroll_End:
+		if revision=0
+		move.w	#$1E,(v_bgscreenposy).w
+		move.w	#$1E,(v_bg2screenposy).w
+		rts	
+; ===========================================================================
+		move.w	#$A8,(v_bgscreenposx).w
+		move.w	#$1E,(v_bgscreenposy).w
+		move.w	#-$40,(v_bg2screenposx).w
+		move.w	#$1E,(v_bg2screenposy).w
+		rts
+		else
 		move.w	(v_screenposx).w,d0
 		asr.w	#1,d0
 		move.w	d0,(v_bgscreenposx).w
@@ -5503,6 +4475,7 @@ BgScroll_End:
 		clr.l	(a2)+
 		clr.l	(a2)+
 		rts
+		endc
 
 		if revision=0
 		include	"Includes\DeformLayers.asm"
@@ -5558,6 +4531,12 @@ BGScroll_YRelative:
 ; End of function BGScroll_XY
 
 Bg_Scroll_Y:
+		if revision=0
+		move.l	(v_bgscreenposx).w,d2
+		move.l	d2,d0
+		add.l	d4,d0
+		move.l	d0,(v_bgscreenposx).w
+		endc
 		move.l	(v_bgscreenposy).w,d3
 		move.l	d3,d0
 		add.l	d5,d0
@@ -5571,10 +4550,18 @@ Bg_Scroll_Y:
 		eori.b	#$10,(v_bg1_yblock).w
 		sub.l	d3,d0
 		bpl.s	@scrollBottom
+		if revision=0
+		bset	#0,(v_bg1_scroll_flags).w
+		else
 		bset	#4,(v_bg1_scroll_flags).w
+		endc
 		rts
 	@scrollBottom:
+		if revision=0
+		bset	#1,(v_bg1_scroll_flags).w
+		else
 		bset	#5,(v_bg1_scroll_flags).w
+		endc
 	@return:
 		rts
 
@@ -5600,6 +4587,39 @@ BGScroll_YAbsolute:
 	@return:
 		rts
 ; End of function BGScroll_YAbsolute
+
+
+		if revision=0
+; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+
+
+ScrollBlock4:
+		move.w	(v_bg2screenposx).w,d2
+		move.w	(v_bg2screenposy).w,d3
+		move.w	(v_scrshiftx).w,d0
+		ext.l	d0
+		asl.l	#7,d0
+		add.l	d0,(v_bg2screenposx).w
+		move.w	(v_bg2screenposx).w,d0
+		andi.w	#$10,d0
+		move.b	($FFFFF74E).w,d1
+		eor.b	d1,d0
+		bne.s	locret_6884
+		eori.b	#$10,($FFFFF74E).w
+		move.w	(v_bg2screenposx).w,d0
+		sub.w	d2,d0
+		bpl.s	loc_687E
+		bset	#2,(v_bg2_scroll_flags).w
+		bra.s	locret_6884
+; ===========================================================================
+
+loc_687E:
+		bset	#3,(v_bg2_scroll_flags).w
+
+locret_6884:
+		rts	
+; End of function ScrollBlock4
+		else
 
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||

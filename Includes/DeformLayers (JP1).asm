@@ -173,9 +173,9 @@ Deform_LZ:
 		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w
 		lea	(Lz_Scroll_Data).l,a3 ; get foreground wobble data
 		lea	(Drown_WobbleData).l,a2 ; get background wobble data
-		move.b	(v_water_wobble_y_pos).w,d2 ; get high byte of y pos. of wobble effect
+		move.b	(v_water_ripple_y_pos).w,d2 ; get high byte of y pos. of wobble effect
 		move.b	d2,d3
-		addi.w	#$80,(v_water_wobble_y_pos).w ; high byte increments every other frame
+		addi.w	#$80,(v_water_ripple_y_pos).w ; high byte increments every other frame
 
 		add.w	(v_bgscreenposy).w,d2
 		andi.w	#$FF,d2

@@ -241,7 +241,7 @@ FBlock_UpButton:
 		move.b	#1,(f_water_tunnel_disable).w
 
 	@aaa:
-		lea	(f_switch).w,a2
+		lea	(v_button_state).w,a2
 		moveq	#0,d0
 		move.b	ost_fblock_switch_num(a0),d0
 		btst	#0,(a2,d0.w)
@@ -289,7 +289,7 @@ FBlock_UpButton:
 FBlock_DownButton:
 		tst.b	ost_fblock_move_flag(a0)
 		bne.s	@loc_10500
-		lea	(f_switch).w,a2
+		lea	(v_button_state).w,a2
 		moveq	#0,d0
 		move.b	ost_fblock_switch_num(a0),d0
 		tst.b	(a2,d0.w)
@@ -333,7 +333,7 @@ FBlock_DownButton:
 FBlock_FarRightButton:
 		tst.b	ost_fblock_move_flag(a0) ; is object moving already?
 		bne.s	@is_moving	; if yes, branch
-		tst.b	(f_switch+$F).w	; has button number $F been pressed?
+		tst.b	(v_button_state+$F).w	; has button number $F been pressed?
 		beq.s	@end		; if not, branch
 		move.b	#1,ost_fblock_move_flag(a0)
 		clr.w	ost_fblock_height(a0)
@@ -360,7 +360,7 @@ FBlock_FarRightButton:
 FBlock_LeftButton:
 		tst.b	ost_fblock_move_flag(a0)
 		bne.s	@loc_10598
-		lea	(f_switch).w,a2
+		lea	(v_button_state).w,a2
 		moveq	#0,d0
 		move.b	ost_fblock_switch_num(a0),d0
 		btst	#0,(a2,d0.w)
@@ -402,7 +402,7 @@ FBlock_LeftButton:
 FBlock_RightButton:
 		tst.b	ost_fblock_move_flag(a0)
 		bne.s	@loc_105F8
-		lea	(f_switch).w,a2
+		lea	(v_button_state).w,a2
 		moveq	#0,d0
 		move.b	ost_fblock_switch_num(a0),d0
 		tst.b	(a2,d0.w)

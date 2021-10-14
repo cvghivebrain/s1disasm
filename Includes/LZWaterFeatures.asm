@@ -100,7 +100,7 @@ DynWater_LZ1:
 		move.w	#$318,d1
 		cmpi.w	#$1080,d0
 		bcs.s	@setwater
-		move.b	#$80,(f_switch+5).w
+		move.b	#$80,(v_button_state+5).w
 		move.w	#$5C8,d1
 		cmpi.w	#$1380,d0
 		bcs.s	@setwater
@@ -241,7 +241,7 @@ DynWater_LZ3:
 		move.b	#4,(v_water_routine).w
 		move.w	#$608,(v_water_height_next).w
 		move.w	#$7C0,(v_water_height_normal).w
-		move.b	#1,(f_switch+8).w
+		move.b	#1,(v_button_state+8).w
 		rts	
 ; ===========================================================================
 

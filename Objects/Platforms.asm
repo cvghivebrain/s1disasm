@@ -271,7 +271,7 @@ Plat_Type_Falls_Now:
 Plat_Type_Rises:
 		tst.w	ost_plat_wait_time(a0) ; is time delay set?
 		bne.s	@type07_wait	; if yes, branch
-		lea	(f_switch).w,a2	; load switch statuses
+		lea	(v_button_state).w,a2	; load switch statuses
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0 ; move object type ($x7) to d0
 		lsr.w	#4,d0		; divide d0 by 8, round	down

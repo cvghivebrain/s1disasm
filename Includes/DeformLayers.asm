@@ -19,9 +19,9 @@ DeformLayers:
 		bsr.w	ScrollHorizontal
 		bsr.w	ScrollVertical
 		bsr.w	DynamicLevelEvents
-		move.w	(v_screenposx).w,(v_scrposx_dup).w
+		move.w	(v_screenposx).w,(v_fg_x_pos_hscroll).w
 		move.w	(v_screenposy).w,(v_fg_y_pos_vsram).w
-		move.w	(v_bgscreenposx).w,(v_bgscreenposx_dup_unused).w
+		move.w	(v_bgscreenposx).w,(v_bg_x_pos_hscroll).w
 		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w
 		move.w	(v_bg3screenposx).w,(v_bg3screenposx_dup_unused).w
 		move.w	(v_bg3screenposy).w,(v_bg3screenposy_dup_unused).w
@@ -56,9 +56,9 @@ Deform_GHZ:
 		asl.l	#1,d4
 		add.l	d1,d4
 		moveq	#0,d5
-		bsr.w	ScrollBlock1
+		bsr.w	BGScroll_XY
 		bsr.w	ScrollBlock4
-		lea	(v_hscrolltablebuffer).w,a1
+		lea	(v_hscroll_buffer).w,a1
 		move.w	(v_screenposy).w,d0
 		andi.w	#$7FF,d0
 		lsr.w	#5,d0
@@ -66,7 +66,7 @@ Deform_GHZ:
 		addi.w	#$26,d0
 		move.w	d0,(v_bg2screenposy).w
 		move.w	d0,d4
-		bsr.w	ScrollBlock3
+		bsr.w	BGScroll_YAbsolute
 		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w
 		move.w	#$6F,d1
 		sub.w	d4,d1
@@ -131,9 +131,9 @@ Deform_LZ:
 		move.w	(v_scrshifty).w,d5
 		ext.l	d5
 		asl.l	#7,d5
-		bsr.w	ScrollBlock1
+		bsr.w	BGScroll_XY
 		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w
-		lea	(v_hscrolltablebuffer).w,a1
+		lea	(v_hscroll_buffer).w,a1
 		move.w	#223,d1
 		move.w	(v_screenposx).w,d0
 		neg.w	d0
@@ -164,7 +164,7 @@ Deform_MZ:
 		asl.l	#1,d4
 		add.l	d1,d4
 		moveq	#0,d5
-		bsr.w	ScrollBlock1
+		bsr.w	BGScroll_XY
 		move.w	#$200,d0
 		move.w	(v_screenposy).w,d1
 		subi.w	#$1C8,d1
@@ -177,9 +177,9 @@ Deform_MZ:
 
 loc_6402:
 		move.w	d0,(v_bg2screenposy).w
-		bsr.w	ScrollBlock3
+		bsr.w	BGScroll_YAbsolute
 		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w
-		lea	(v_hscrolltablebuffer).w,a1
+		lea	(v_hscroll_buffer).w,a1
 		move.w	#223,d1
 		move.w	(v_screenposx).w,d0
 		neg.w	d0
@@ -207,7 +207,7 @@ Deform_SLZ:
 		move.w	(v_scrshifty).w,d5
 		ext.l	d5
 		asl.l	#7,d5
-		bsr.w	ScrollBlock2
+		bsr.w	Bg_Scroll_Y
 		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w
 		bsr.w	Deform_SLZ_2
 		lea	(v_bgscroll_buffer).w,a2
@@ -217,7 +217,7 @@ Deform_SLZ:
 		andi.w	#$3F0,d0
 		lsr.w	#3,d0
 		lea	(a2,d0.w),a2
-		lea	(v_hscrolltablebuffer).w,a1
+		lea	(v_hscroll_buffer).w,a1
 		move.w	#$E,d1
 		move.w	(v_screenposx).w,d0
 		neg.w	d0
@@ -320,9 +320,9 @@ Deform_SYZ:
 		move.l	d5,d1
 		asl.l	#1,d5
 		add.l	d1,d5
-		bsr.w	ScrollBlock1
+		bsr.w	BGScroll_XY
 		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w
-		lea	(v_hscrolltablebuffer).w,a1
+		lea	(v_hscroll_buffer).w,a1
 		move.w	#223,d1
 		move.w	(v_screenposx).w,d0
 		neg.w	d0
@@ -351,9 +351,9 @@ Deform_SBZ:
 		ext.l	d5
 		asl.l	#4,d5
 		asl.l	#1,d5
-		bsr.w	ScrollBlock1
+		bsr.w	BGScroll_XY
 		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w
-		lea	(v_hscrolltablebuffer).w,a1
+		lea	(v_hscroll_buffer).w,a1
 		move.w	#223,d1
 		move.w	(v_screenposx).w,d0
 		neg.w	d0
