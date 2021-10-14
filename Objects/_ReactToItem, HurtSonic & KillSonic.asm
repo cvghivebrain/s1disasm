@@ -190,8 +190,8 @@ React_Enemy:
 @breakenemy:
 		bset	#status_onscreen_bit,ost_status(a1)
 		moveq	#0,d0
-		move.w	(v_itembonus).w,d0
-		addq.w	#2,(v_itembonus).w ; add 2 to item bonus counter
+		move.w	(v_enemy_combo).w,d0
+		addq.w	#2,(v_enemy_combo).w ; add 2 to item bonus counter
 		cmpi.w	#6,d0
 		bcs.s	@bonusokay
 		moveq	#6,d0		; max bonus is lvl6
@@ -199,7 +199,7 @@ React_Enemy:
 	@bonusokay:
 		move.w	d0,ost_enemy_combo(a1)
 		move.w	@points(pc,d0.w),d0
-		cmpi.w	#$20,(v_itembonus).w ; have 16 enemies been destroyed?
+		cmpi.w	#$20,(v_enemy_combo).w ; have 16 enemies been destroyed?
 		bcs.s	@lessthan16	; if not, branch
 		move.w	#1000,d0	; fix bonus to 10000
 		move.w	#$A,ost_enemy_combo(a1)

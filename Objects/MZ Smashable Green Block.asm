@@ -29,7 +29,7 @@ Smab_Main:	; Routine 0
 
 Smab_Solid:	; Routine 2
 
-		move.w	(v_itembonus).w,ost_smash_count(a0)
+		move.w	(v_enemy_combo).w,ost_smash_count(a0)
 		move.b	(v_ost_player+ost_anim).w,ost_smash_sonic_ani(a0) ; load Sonic's animation number
 		move.w	#$1B,d1
 		move.w	#$10,d2
@@ -46,7 +46,7 @@ Smab_Solid:	; Routine 2
 @smash:
 		cmpi.b	#id_Roll,ost_smash_sonic_ani(a0) ; is Sonic rolling/jumping?
 		bne.s	@notspinning	; if not, branch
-		move.w	ost_smash_count(a0),(v_itembonus).w
+		move.w	ost_smash_count(a0),(v_enemy_combo).w
 		bset	#status_jump_bit,ost_status(a1)
 		move.b	#$E,ost_height(a1)
 		move.b	#7,ost_width(a1)
@@ -67,8 +67,8 @@ Smab_Solid:	; Routine 2
 		move.b	#id_Points,0(a1) ; load points object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
-		move.w	(v_itembonus).w,d2
-		addq.w	#2,(v_itembonus).w ; increment bonus counter
+		move.w	(v_enemy_combo).w,d2
+		addq.w	#2,(v_enemy_combo).w ; increment bonus counter
 		cmpi.w	#6,d2		; have fewer than 3 blocks broken?
 		bcs.s	@bonus		; if yes, branch
 		moveq	#6,d2		; set cap for points
@@ -76,7 +76,7 @@ Smab_Solid:	; Routine 2
 	@bonus:
 		moveq	#0,d0
 		move.w	Smab_Scores(pc,d2.w),d0
-		cmpi.w	#$20,(v_itembonus).w ; have 16 blocks been smashed?
+		cmpi.w	#$20,(v_enemy_combo).w ; have 16 blocks been smashed?
 		bcs.s	@givepoints	; if not, branch
 		move.w	#1000,d0	; give higher points for 16th block
 		moveq	#10,d2

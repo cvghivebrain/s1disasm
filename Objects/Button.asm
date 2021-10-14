@@ -10,7 +10,7 @@ Button:
 ; ===========================================================================
 But_Index:	index *,,2
 		ptr But_Main
-		ptr But_Pressed
+		ptr But_Action
 ; ===========================================================================
 
 But_Main:	; Routine 0
@@ -18,19 +18,19 @@ But_Main:	; Routine 0
 		move.l	#Map_But,ost_mappings(a0)
 		move.w	#tile_Nem_MzSwitch+tile_pal3,ost_tile(a0) ; MZ specific code
 		cmpi.b	#id_MZ,(v_zone).w ; is level Marble Zone?
-		beq.s	But_IsMZ	; if yes, branch
+		beq.s	@is_marble	; if yes, branch
 
 		move.w	#$513,ost_tile(a0) ; SYZ, LZ and SBZ specific code
 
-	But_IsMZ:
+	@is_marble:
 		move.b	#render_rel,ost_render(a0)
 		move.b	#$10,ost_actwidth(a0)
 		move.b	#4,ost_priority(a0)
 		addq.w	#3,ost_y_pos(a0)
 
-But_Pressed:	; Routine 2
-		tst.b	ost_render(a0)
-		bpl.s	But_Display
+But_Action:	; Routine 2
+		tst.b	ost_render(a0)	; is button on screen?
+		bpl.s	But_Display	; if not, branch
 		move.w	#$1B,d1
 		move.w	#5,d2
 		move.w	#5,d3
@@ -38,43 +38,43 @@ But_Pressed:	; Routine 2
 		bsr.w	SolidObject
 		bclr	#0,ost_frame(a0) ; use "unpressed" frame
 		move.b	ost_subtype(a0),d0
-		andi.w	#$F,d0
+		andi.w	#$F,d0		; get low nybble of subtype
 		lea	(f_switch).w,a3
-		lea	(a3,d0.w),a3
+		lea	(a3,d0.w),a3	; (a3) = button status
 		moveq	#0,d3
-		btst	#6,ost_subtype(a0)
-		beq.s	loc_BDB2
-		moveq	#7,d3
+		btst	#6,ost_subtype(a0) ; is subtype $4x or $Cx? (unused)
+		beq.s	@not_secondary	; if not, branch
+		moveq	#7,d3		; d3 = bit to set/clear in button status
 
-loc_BDB2:
-		tst.b	ost_subtype(a0)
-		bpl.s	loc_BDBE
-		bsr.w	But_MZBlock
-		bne.s	loc_BDC8
+	@not_secondary:
+		tst.b	ost_subtype(a0)	; is subtype +$80?
+		bpl.s	@subtype_0x	; if not, branch
+		bsr.w	But_PBlock_Chk	; check collision with MZ pushable block
+		bne.s	But_Press	; branch if found
 
-loc_BDBE:
-		tst.b	ost_routine2(a0)
-		bne.s	loc_BDC8
-		bclr	d3,(a3)
+	@subtype_0x:
+		tst.b	ost_solid(a0)	 ; is Sonic standing on the button?
+		bne.s	But_Press	; if yes, branch
+		bclr	d3,(a3)		; clear button status
 		bra.s	loc_BDDE
 ; ===========================================================================
 
-loc_BDC8:
-		tst.b	(a3)
-		bne.s	loc_BDD6
-		sfx	sfx_Switch,0,0,0 ; play switch sound
+But_Press:
+		tst.b	(a3)		; is button already pressed?
+		bne.s	@already_pressed ; if yes, branch
+		sfx	sfx_Switch,0,0,0 ; play "bip" sound
 
-loc_BDD6:
+	@already_pressed:
 		bset	d3,(a3)
 		bset	#0,ost_frame(a0) ; use "pressed" frame
 
 loc_BDDE:
-		btst	#5,ost_subtype(a0)
-		beq.s	But_Display
-		subq.b	#1,ost_anim_time(a0)
-		bpl.s	But_Display
-		move.b	#7,ost_anim_time(a0)
-		bchg	#1,ost_frame(a0)
+		btst	#5,ost_subtype(a0) ; is subtype +$20?
+		beq.s	But_Display	; if not, branch
+		subq.b	#1,ost_anim_time(a0) ; decrement timer
+		bpl.s	But_Display	; branch if time remains
+		move.b	#7,ost_anim_time(a0) ; set timer to 7 frames
+		bchg	#1,ost_frame(a0) ; use frame 2/3
 
 But_Display:
 		bsr.w	DisplaySprite
@@ -89,7 +89,7 @@ But_Delete:
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 
-But_MZBlock:
+But_PBlock_Chk:
 		move.w	d3,-(sp)
 		move.w	ost_x_pos(a0),d2
 		move.w	ost_y_pos(a0),d3
@@ -100,65 +100,63 @@ But_MZBlock:
 		lea	(v_ost_level_obj).w,a1 ; begin checking object RAM
 		move.w	#$5F,d6
 
-But_MZLoop:
-		tst.b	ost_render(a1)
-		bpl.s	loc_BE4E
+@loop:
+		tst.b	ost_render(a1)	; is object on screen?
+		bpl.s	@next		; if not, branch
 		cmpi.b	#id_PushBlock,(a1) ; is the object a green MZ block?
-		beq.s	loc_BE5E	; if yes, branch
+		beq.s	@is_pblock	; if yes, branch
 
-loc_BE4E:
-		lea	$40(a1),a1	; check	next object
-		dbf	d6,But_MZLoop	; repeat $5F times
+	@next:
+		lea	sizeof_ost(a1),a1 ; check next object
+		dbf	d6,@loop	; repeat $5F times
 
 		move.w	(sp)+,d3
 		moveq	#0,d0
-
-locret_BE5A:
 		rts	
 ; ===========================================================================
-But_MZData:	dc.b $10, $10
+@xy_radius:	dc.b $10, $10		; x and y radius of button collision
 ; ===========================================================================
 
-loc_BE5E:
+@is_pblock:
 		moveq	#1,d0
 		andi.w	#$3F,d0
-		add.w	d0,d0
-		lea	But_MZData-2(pc,d0.w),a2
+		add.w	d0,d0		; d0 = 2
+		lea	@xy_radius-2(pc,d0.w),a2
 		move.b	(a2)+,d1
-		ext.w	d1
-		move.w	ost_x_pos(a1),d0
+		ext.w	d1		; d1 = $10
+		move.w	ost_x_pos(a1),d0 ; d0 = x pos. of pblock
 		sub.w	d1,d0
-		sub.w	d2,d0
-		bcc.s	loc_BE80
+		sub.w	d2,d0		; d0 = pblock-button
+		bcc.s	@pblock_right	; branch if pblock is right of button
 		add.w	d1,d1
 		add.w	d1,d0
-		bcs.s	loc_BE84
-		bra.s	loc_BE4E
+		bcs.s	@pblock_x_ok	; branch if pblock is within $20 pixels of button
+		bra.s	@next
 ; ===========================================================================
 
-loc_BE80:
-		cmp.w	d4,d0
-		bhi.s	loc_BE4E
+@pblock_right:
+		cmp.w	d4,d0		; are pblock and button within $20 pixels?
+		bhi.s	@next		; if not, branch
 
-loc_BE84:
+@pblock_x_ok:
 		move.b	(a2)+,d1
-		ext.w	d1
+		ext.w	d1		; d1 = $10
 		move.w	ost_y_pos(a1),d0
 		sub.w	d1,d0
 		sub.w	d3,d0
-		bcc.s	loc_BE9A
+		bcc.s	@pblock_above
 		add.w	d1,d1
 		add.w	d1,d0
-		bcs.s	loc_BE9E
-		bra.s	loc_BE4E
+		bcs.s	@pblock_y_ok
+		bra.s	@next
 ; ===========================================================================
 
-loc_BE9A:
+@pblock_above:
 		cmp.w	d5,d0
-		bhi.s	loc_BE4E
+		bhi.s	@next
 
-loc_BE9E:
+@pblock_y_ok:
 		move.w	(sp)+,d3
 		moveq	#1,d0
 		rts	
-; End of function But_MZBlock
+; End of function But_PBlock_Chk

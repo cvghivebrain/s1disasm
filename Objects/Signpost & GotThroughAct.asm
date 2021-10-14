@@ -134,7 +134,7 @@ GotThroughAct:
 		move.b	#id_GotThroughCard,(v_ost_gotthrough1).w
 		moveq	#id_PLC_TitleCard,d0
 		jsr	(NewPLC).l	; load title card patterns
-		move.b	#1,(f_endactbonus).w
+		move.b	#1,(f_pass_bonus_update).w
 		moveq	#0,d0
 		move.b	(v_time_min).w,d0
 		mulu.w	#60,d0		; convert minutes to seconds
@@ -149,10 +149,10 @@ GotThroughAct:
 
 	@hastimebonus:
 		add.w	d0,d0
-		move.w	TimeBonuses(pc,d0.w),(v_timebonus).w ; set time bonus
+		move.w	TimeBonuses(pc,d0.w),(v_time_bonus).w ; set time bonus
 		move.w	(v_rings).w,d0	; load number of rings
 		mulu.w	#10,d0		; multiply by 10
-		move.w	d0,(v_ringbonus).w ; set ring bonus
+		move.w	d0,(v_ring_bonus).w ; set ring bonus
 		sfx	bgm_GotThrough,0,0,0 ; play "Sonic got through" music
 
 locret_ECEE:

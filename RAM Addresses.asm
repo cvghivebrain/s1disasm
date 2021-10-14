@@ -311,13 +311,15 @@ f_jump_only:		equ $FFFFF7CA ; flag set to lock controls except jumping
 f_stomp_sbz3_init:	equ $FFFFF7CB ; flag set when huge sliding platform in SBZ3 is loaded
 f_lock_controls:	equ $FFFFF7CC ; flag set to lock player controls
 f_giantring_collected:	equ $FFFFF7CD ; flag set when Sonic collects a giant ring
-f_obj56:	equ $FFFFF7CE	; flag set for something related to obj56 (REV01 only)
-v_itembonus:	equ $FFFFF7D0	; item bonus from broken enemies, blocks etc. (2 bytes)
-v_timebonus:	equ $FFFFF7D2	; time bonus at the end of an act (2 bytes)
-v_ringbonus:	equ $FFFFF7D4	; ring bonus at the end of an act (2 bytes)
-f_endactbonus:	equ $FFFFF7D6	; time/ring bonus update flag at the end of an act
-v_sonicend:	equ $FFFFF7D7	; routine counter for Sonic in the ending sequence
-v_lz_deform:	equ	$FFFFF7D8	; LZ deformtaion offset, in units of $80 (2 bytes)
+f_fblock_finish:	equ $FFFFF7CE ; flag set when FloatingBlock subtype $37 reaches its destination (REV01 only)
+
+v_enemy_combo:		equ $FFFFF7D0 ; number of enemies/blocks broken in a row, times 2 (2 bytes)
+v_time_bonus:		equ $FFFFF7D2 ; time bonus at the end of an act (2 bytes)
+v_ring_bonus:		equ $FFFFF7D4 ; ring bonus at the end of an act (2 bytes)
+f_pass_bonus_update:	equ $FFFFF7D6 ; flag set to update time/ring bonus at the end of an act
+v_end_sonic_routine:	equ $FFFFF7D7 ; routine counter for Sonic in the ending sequence
+v_water_wobble_y_pos:	equ $FFFFF7D8 ; y position of bg/fg water wobble effects; $80 added every frame, meaning high byte increments every 2 frames (2 bytes)
+
 f_switch:	equ $FFFFF7E0	; flags set when Sonic stands on a switch ($10 bytes)
 v_scroll_block_1_size:	equ $FFFFF7F0	; (2 bytes)
 v_scroll_block_2_size:	equ $FFFFF7F2	; unused (2 bytes)

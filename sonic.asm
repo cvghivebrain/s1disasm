@@ -3133,10 +3133,10 @@ loc_47D4:
 		moveq	#id_PLC_SSResult,d0
 		bsr.w	AddPLC		; load results screen patterns
 		move.b	#1,(f_hud_score_update).w ; update score counter
-		move.b	#1,(f_endactbonus).w ; update ring bonus counter
+		move.b	#1,(f_pass_bonus_update).w ; update ring bonus counter
 		move.w	(v_rings).w,d0
 		mulu.w	#10,d0		; multiply rings by 10
-		move.w	d0,(v_ringbonus).w ; set rings bonus
+		move.w	d0,(v_ring_bonus).w ; set rings bonus
 		sfx	bgm_GotThrough,0,0,0	 ; play end-of-level music
 
 		lea	(v_ost_all).w,a1
@@ -3783,12 +3783,12 @@ End_ChkEmerald:
 
 
 End_MoveSonic:
-		move.b	(v_sonicend).w,d0
+		move.b	(v_end_sonic_routine).w,d0
 		bne.s	End_MoveSon2
 		cmpi.w	#$90,(v_ost_player+ost_x_pos).w ; has Sonic passed $90 on x-axis?
 		bhs.s	End_MoveSonExit	; if not, branch
 
-		addq.b	#2,(v_sonicend).w
+		addq.b	#2,(v_end_sonic_routine).w
 		move.b	#1,(f_lock_controls).w ; lock player's controls
 		move.w	#(btnR<<8),(v_joypad_hold).w ; move Sonic to the right
 		rts	
@@ -3800,7 +3800,7 @@ End_MoveSon2:
 		cmpi.w	#$A0,(v_ost_player+ost_x_pos).w ; has Sonic passed $A0 on x-axis?
 		blo.s	End_MoveSonExit	; if not, branch
 
-		addq.b	#2,(v_sonicend).w
+		addq.b	#2,(v_end_sonic_routine).w
 		moveq	#0,d0
 		move.b	d0,(f_lock_controls).w
 		move.w	d0,(v_joypad_hold).w ; stop Sonic moving
@@ -3815,7 +3815,7 @@ End_MoveSon2:
 End_MoveSon3:
 		subq.b	#2,d0
 		bne.s	End_MoveSonExit
-		addq.b	#2,(v_sonicend).w
+		addq.b	#2,(v_end_sonic_routine).w
 		move.w	#$A0,(v_ost_player+ost_x_pos).w
 		move.b	#id_EndSonic,(v_ost_player).w ; load Sonic ending sequence object
 		clr.w	(v_ost_player+ost_routine).w

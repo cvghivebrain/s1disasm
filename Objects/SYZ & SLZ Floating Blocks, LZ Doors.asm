@@ -57,16 +57,16 @@ FBlock_Main:	; Routine 0
 		move.w	d0,ost_fblock_height(a0)
 		if Revision=0
 		else
-			cmpi.b	#$37,ost_subtype(a0)
-			bne.s	@dontdelete
-			cmpi.w	#$1BB8,ost_x_pos(a0)
-			bne.s	@notatpos
-			tst.b	($FFFFF7CE).w
-			beq.s	@dontdelete
+			cmpi.b	#type_fblock_syzrect2x2+type_fblock_farrightbutton,ost_subtype(a0) ; is the subtype $37? (used once in SYZ3)
+			bne.s	@dontdelete	; if not, branch
+			cmpi.w	#$1BB8,ost_x_pos(a0) ; is object in its start position?
+			bne.s	@notatpos	; if not, branch
+			tst.b	(f_fblock_finish).w ; has similar object reached its destination?
+			beq.s	@dontdelete	; if not, branch
 			jmp	(DeleteObject).l
 	@notatpos:
-			clr.b	ost_subtype(a0)
-			tst.b	($FFFFF7CE).w
+			clr.b	ost_subtype(a0) ; stop object moving
+			tst.b	(f_fblock_finish).w
 			bne.s	@dontdelete
 			jmp	(DeleteObject).l
 	@dontdelete:
@@ -331,27 +331,27 @@ FBlock_DownButton:
 ; Type 7
 ; moves far right when button $F is pressed
 FBlock_FarRightButton:
-		tst.b	ost_fblock_move_flag(a0)
-		bne.s	@loc_1055E
-		tst.b	(f_switch+$F).w	; has switch number $F been pressed?
-		beq.s	@locret_10578
+		tst.b	ost_fblock_move_flag(a0) ; is object moving already?
+		bne.s	@is_moving	; if yes, branch
+		tst.b	(f_switch+$F).w	; has button number $F been pressed?
+		beq.s	@end		; if not, branch
 		move.b	#1,ost_fblock_move_flag(a0)
 		clr.w	ost_fblock_height(a0)
 
-@loc_1055E:
-		addq.w	#1,ost_x_pos(a0)
+	@is_moving:
+		addq.w	#1,ost_x_pos(a0) ; move object right
 		move.w	ost_x_pos(a0),ost_fblock_x_start(a0)
-		addq.w	#1,ost_fblock_height(a0)
-		cmpi.w	#$380,ost_fblock_height(a0)
-		bne.s	@locret_10578
+		addq.w	#1,ost_fblock_height(a0) ; increment movement counter
+		cmpi.w	#$380,ost_fblock_height(a0) ; has object moved $380 pixels?
+		bne.s	@end		; if not, branch
 		if Revision=0
 		else
-			move.b	#1,($FFFFF7CE).w
+			move.b	#1,(f_fblock_finish).w
 			clr.b	ost_fblock_move_flag(a0)
 		endc
-		clr.b	ost_subtype(a0)
+		clr.b	ost_subtype(a0)	; stop object moving
 
-@locret_10578:
+	@end:
 		rts	
 ; ===========================================================================
 

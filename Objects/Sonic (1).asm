@@ -1356,7 +1356,7 @@ loc_137AE:
 
 loc_137E4:
 		move.b	#0,ost_sonic_jump(a0)
-		move.w	#0,(v_itembonus).w
+		move.w	#0,(v_enemy_combo).w
 		rts	
 ; End of function Sonic_ResetOnFloor
 ; ---------------------------------------------------------------------------

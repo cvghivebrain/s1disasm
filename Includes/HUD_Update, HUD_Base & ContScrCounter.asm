@@ -72,15 +72,15 @@ HUD_Update:
 		bsr.w	Hud_Lives
 
 	@chkbonus:
-		tst.b	(f_endactbonus).w ; do time/ring bonus counters need updating?
+		tst.b	(f_pass_bonus_update).w ; do time/ring bonus counters need updating?
 		beq.s	@finish		; if not, branch
-		clr.b	(f_endactbonus).w
+		clr.b	(f_pass_bonus_update).w
 		locVRAM	$AE00
 		moveq	#0,d1
-		move.w	(v_timebonus).w,d1 ; load time bonus
+		move.w	(v_time_bonus).w,d1 ; load time bonus
 		bsr.w	Hud_TimeRingBonus
 		moveq	#0,d1
-		move.w	(v_ringbonus).w,d1 ; load ring bonus
+		move.w	(v_ring_bonus).w,d1 ; load ring bonus
 		bsr.w	Hud_TimeRingBonus
 
 	@finish:
@@ -121,15 +121,15 @@ HudDebug:
 		bsr.w	Hud_Lives
 
 	@chkbonus:
-		tst.b	(f_endactbonus).w ; does the ring/time bonus counter need updating?
+		tst.b	(f_pass_bonus_update).w ; does the ring/time bonus counter need updating?
 		beq.s	@finish		; if not, branch
-		clr.b	(f_endactbonus).w
+		clr.b	(f_pass_bonus_update).w
 		locVRAM	$AE00		; set VRAM address
 		moveq	#0,d1
-		move.w	(v_timebonus).w,d1 ; load time bonus
+		move.w	(v_time_bonus).w,d1 ; load time bonus
 		bsr.w	Hud_TimeRingBonus
 		moveq	#0,d1
-		move.w	(v_ringbonus).w,d1 ; load ring bonus
+		move.w	(v_ring_bonus).w,d1 ; load ring bonus
 		bsr.w	Hud_TimeRingBonus
 
 	@finish:
