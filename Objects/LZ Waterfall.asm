@@ -25,12 +25,12 @@ WFall_Main:	; Routine 0
 		move.b	#1,ost_priority(a0)
 		move.b	ost_subtype(a0),d0 ; get object type
 		bpl.s	@under80	; branch if $00-$7F
-		bset	#7,ost_tile(a0)
+		bset	#tile_hi_bit,ost_tile(a0)
 
 	@under80:
 		andi.b	#$F,d0		; read only the	2nd digit
 		move.b	d0,ost_frame(a0) ; set frame number
-		cmpi.b	#9,d0		; is object type $x9 ?
+		cmpi.b	#type_wfall_splash,d0 ; is object type $x9 (splash)?
 		bne.s	WFall_ChkDel	; if not, branch
 
 		clr.b	ost_priority(a0) ; object is in front of Sonic

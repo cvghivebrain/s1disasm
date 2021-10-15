@@ -37,7 +37,7 @@ Bub_Main:	; Routine 0
 		bpl.s	@bubble		; if type is $0-$7F, branch
 
 		addq.b	#8,ost_routine(a0) ; goto Bub_BblMaker next
-		andi.w	#$7F,d0		; read only last 7 bits	(deduct	$80)
+		andi.w	#$7F,d0		; ignore bit 7 (deduct $80)
 		move.b	d0,ost_bubble_wait_time(a0)
 		move.b	d0,ost_bubble_wait_master(a0) ; set bubble frequency
 		move.b	#id_ani_bubble_bubmaker,ost_anim(a0)

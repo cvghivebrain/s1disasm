@@ -32,7 +32,7 @@
 		objpos $09B0,$0170,Jaws,$0C,xflip,rem
 		objpos $09B0,$0198,Bubble,$81
 		objpos $09B0,$0280,Jaws,$06,rem
-		objpos $09C0,$0108,MovingBlock,$07
+		objpos $09C0,$0108,MovingBlock,type_mblock_1+type_mblock_rightdrop_button
 		objpos $09F8,$02A0,FloatingBlock,type_fblock_lzvert+type_fblock_button+2,rem
 		objpos $0A10,$02F8,Button,$02
 		objpos $0A20,$0230,Spikes,$30,yflip
@@ -72,20 +72,20 @@
 		objpos $0EC8,$03F0,Rings,$12,rem
 		objpos $0F38,$056C,Lamppost,$01,rem
 		objpos $0F50,$0380,SpikeBall,$B5
-		objpos $0F58,$0110,Waterfall,$07
-		objpos $0F58,$0120,Waterfall,$09
-		objpos $0F68,$0130,Waterfall,$08,xflip
-		objpos $0F88,$0140,Waterfall,$08,xflip
+		objpos $0F58,$0110,Waterfall,type_wfall_vertwide
+		objpos $0F58,$0120,Waterfall,type_wfall_splash
+		objpos $0F68,$0130,Waterfall,type_wfall_diagonal,xflip
+		objpos $0F88,$0140,Waterfall,type_wfall_diagonal,xflip
 		objpos $0FA0,$0510,Burrobot,$00,xflip,rem
-		objpos $0FA8,$0150,Waterfall,$08,xflip
+		objpos $0FA8,$0150,Waterfall,type_wfall_diagonal,xflip
 		objpos $0FB0,$04F8,Bubble,$80
 		objpos $0FB8,$02B0,Rings,$12,rem
 		objpos $0FC0,$0410,FloatingBlock,type_fblock_lzhoriz+type_fblock_button+4,rem
-		objpos $0FC8,$0160,Waterfall,$08,xflip
+		objpos $0FC8,$0160,Waterfall,type_wfall_diagonal,xflip
 		objpos $0FD0,$05A8,Harpoon,type_harp_v,rem
 		objpos $0FD8,$0570,Rings,$11,rem
-		objpos $0FE8,$0170,Waterfall,$08,xflip
-		objpos $1008,$0180,Waterfall,$08,xflip
+		objpos $0FE8,$0170,Waterfall,type_wfall_diagonal,xflip
+		objpos $1008,$0180,Waterfall,type_wfall_diagonal,xflip
 		objpos $1018,$0590,Rings,$11,rem
 		objpos $1020,$0210,Spikes,$00,yflip
 		objpos $102F,$024C,LabyrinthConvey,type_lcon_wheel

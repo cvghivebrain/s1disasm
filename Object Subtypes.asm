@@ -126,3 +126,17 @@ type_lblock_solid:	equ id_frame_lblock_block<<4		; $30 - doesn't move
 
 ; LabyrinthConvey
 type_lcon_wheel:	equ $7F				; wheel on conveyor belt corner
+
+; Waterfall
+type_wfall_vert:	equ id_frame_wfall_vertnarrow		; 0 - vertical narrow
+type_wfall_cornermedium: equ id_frame_wfall_cornermedium	; 2 - corner
+type_wfall_cornernarrow: equ id_frame_wfall_cornernarrow	; 3 - corner narrow
+type_wfall_cornermedium2: equ id_frame_wfall_cornermedium2	; 4 - corner
+type_wfall_cornernarrow2: equ id_frame_wfall_cornernarrow2	; 5 - corner narrow
+type_wfall_cornernarrow3: equ id_frame_wfall_cornernarrow3	; 6 - corner narrow
+type_wfall_vertwide:	equ id_frame_wfall_vertwide		; 7 - vertical wide
+type_wfall_diagonal:	equ id_frame_wfall_diagonal		; 8 - diagonal
+type_wfall_splash:	equ id_frame_wfall_splash1		; 9 - splash
+type_wfall_splash_match: equ id_frame_wfall_splash1+$40		; $49 - splash, matches y position to water surface
+type_wfall_splash_low:	equ id_frame_wfall_splash1+$20		; $29 - splash, low priority sprite on specific level tile
+type_wfall_hi:		equ $80					; +$80 - high priority sprite
