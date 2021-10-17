@@ -7,6 +7,12 @@
 
 ; ===========================================================================
 
+		opt l@				; @ is the local label symbol
+		opt ae-				; automatic even's are disabled by default
+		opt ws+				; allow statements to contain white-spaces
+		opt w+				; print warnings
+		opt m-				; do not expand macros - if enabled, this can break assembling
+
 		include "Mega Drive.asm"
 		include "Macros - More CPUs.asm"
 		include "Macros - 68k Extended.asm"
@@ -21,15 +27,14 @@ EnableSRAM:	equ 0	; change to 1 to enable SRAM
 BackupSRAM:	equ 1
 AddressSRAM:	equ 3	; 0 = odd+even; 2 = even only; 3 = odd only
 
-Revision:	equ 1
 ; Change to 0 to build the original version of the game, dubbed REV00
 ; Change to 1 to build the later vesion, dubbed REV01, which includes various bugfixes and enhancements
 ; Change to 2 to build the version from Sonic Mega Collection, dubbed REVXB, which fixes the infamous "spike bug"
+Revision:	equ 1
 
 ZoneCount:	equ 6	; discrete zones are: GHZ, MZ, SYZ, LZ, SLZ, and SBZ
 
 OptimiseSound:	equ 0	; change to 1 to optimise sound queuing
-
 ; ===========================================================================
 
 StartOfRom:
@@ -116,24 +121,32 @@ Console:	dc.b "SEGA MEGA DRIVE " ; Hardware system ID (Console name)
 Date:		dc.b "(C)SEGA 1991.APR" ; Copyright holder and release date (generally year)
 Title_Local:	dc.b "SONIC THE               HEDGEHOG                " ; Domestic name
 Title_Int:	dc.b "SONIC THE               HEDGEHOG                " ; International name
-Serial:		if Revision=0
-			dc.b "GM 00001009-00"   ; Serial/version number (Rev 0)
-		else
-			dc.b "GM 00004049-01" ; Serial/version number (Rev non-0)
-		endc
+
+Serial:
+	if Revision=0
+		dc.b "GM 00001009-00"   ; Serial/version number (Rev 0)
+	else
+		dc.b "GM 00004049-01"	; Serial/version number (Rev non-0)
+	endc
+
 Checksum: 	dc.w $0
 		dc.b "J               " ; I/O support
 RomStartLoc:	dc.l StartOfRom		; Start address of ROM
 RomEndLoc:	dc.l EndOfRom-1		; End address of ROM
 RamStartLoc:	dc.l $FF0000		; Start address of RAM
 RamEndLoc:	dc.l $FFFFFF		; End address of RAM
-SRAMSupport:	if EnableSRAM=1
-			dc.b $52, $41, $A0+(BackupSRAM<<6)+(AddressSRAM<<3), $20
-		else
-			dc.l $20202020
-		endc
-		dc.l $20202020		; SRAM start ($200001)
-		dc.l $20202020		; SRAM end ($20xxxx)
+
+SRAMSupport:
+	if EnableSRAM=1
+		dc.b "RA", $A0+(BackupSRAM<<6)+(AddressSRAM<<3), $20
+		dc.l $200001		; SRAM start
+		dc.l $200FFF		; SRAM end
+	else
+		dc.l $20202020		; dummy values (SRAM disabled)
+		dc.l $20202020		; SRAM start
+		dc.l $20202020		; SRAM end
+	endc
+
 Notes:		dc.b "                                                    " ; Notes (unused, anything can be put in this space, but it has to be 52 bytes.)
 Region:		dc.b "JUE             " ; Region (Country code)
 EndOfHeader:
@@ -142,8 +155,8 @@ EndOfHeader:
 ; Crash/Freeze the 68000. Unlike Sonic 2, Sonic 1 uses the 68000 for playing music, so it stops too
 
 ErrorTrap:
-		nop	
-		nop	
+		nop
+		nop
 		bra.s	ErrorTrap
 ; ===========================================================================
 
@@ -174,7 +187,7 @@ VDPInitLoop:
 		move.w	d5,(a4)		; move value to	VDP register
 		add.w	d7,d5		; next register
 		dbf	d1,VDPInitLoop
-		
+
 		move.l	(a5)+,(a4)
 		move.w	d0,(a3)		; clear	the VRAM
 		move.w	d7,(a1)		; stop the Z80
@@ -188,7 +201,7 @@ WaitForZ80:
 Z80InitLoop:
 		move.b	(a5)+,(a0)+
 		dbf	d2,Z80InitLoop
-		
+
 		move.w	d0,(a2)
 		move.w	d0,(a1)		; start	the Z80
 		move.w	d7,(a2)		; reset	the Z80
@@ -261,9 +274,9 @@ Z80_Startup:
 		phase 	0
 
 		xor	a
-		ld	bc,1fd9h
-		ld	de,0027h
-		ld	hl,0026h
+		ld	bc,2000h-1-@end
+		ld	de,@end+1
+		ld	hl,@end
 		ld	sp,hl
 		ld	(hl),a
 		ldir
@@ -274,7 +287,7 @@ Z80_Startup:
 		pop	de
 		pop	hl
 		pop	af
-		ex	af,af;'
+		ex	af,af
 		exx
 		pop	bc
 		pop	de
@@ -283,8 +296,9 @@ Z80_Startup:
 		ld	sp,hl
 		di
 		im	1
-		ld	(hl),0e9h
+		ld	(hl),0E9h		; 0E9h = jp (hl)
 		jp	(hl)
+	@end:					; the space from here til end of Z80 RAM will be filled with 00's
 
 Z80_Startup_end:
 		cpu	68000
