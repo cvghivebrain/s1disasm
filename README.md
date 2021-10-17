@@ -15,3 +15,4 @@ Differences with the disassembly on the [Sonic Retro Github page](https://github
 * Different labels used for object status table.
   * Constants used for render and status flags.
 * Different labels used for some RAM addresses and routines.
+* Automatic recompression of Kosinski-compressed data. Thanks to [Clownacy](https://github.com/Clownacy) for [the compressor](https://github.com/Clownacy/accurate-kosinski).

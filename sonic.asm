@@ -7715,39 +7715,39 @@ Blk16_GHZ:	incbin	"map16\GHZ.bin"
 		even
 		nemfile	Nem_GHZ_1st
 		nemfile	Nem_GHZ_2nd
-Blk256_GHZ:	incbin	"map256\GHZ.bin"
+Blk256_GHZ:	incbin	"256x256 Mappings\GHZ.kos"
 		even
 Blk16_LZ:	incbin	"map16\LZ.bin"
 		even
 		nemfile	Nem_LZ
-Blk256_LZ:	incbin	"map256\LZ.bin"
+Blk256_LZ:	incbin	"256x256 Mappings\LZ.kos"
 		even
 Blk16_MZ:	incbin	"map16\MZ.bin"
 		even
 		nemfile	Nem_MZ
 Blk256_MZ:	if Revision=0
-			incbin	"map256\MZ.bin"
+			incbin	"256x256 Mappings\MZ.kos"
 		else
-			incbin	"map256\MZ (JP1).bin"
+			incbin	"256x256 Mappings\MZ (JP1).kos"
 		endc
 		even
 Blk16_SLZ:	incbin	"map16\SLZ.bin"
 		even
 		nemfile	Nem_SLZ
-Blk256_SLZ:	incbin	"map256\SLZ.bin"
+Blk256_SLZ:	incbin	"256x256 Mappings\SLZ.kos"
 		even
 Blk16_SYZ:	incbin	"map16\SYZ.bin"
 		even
 		nemfile	Nem_SYZ
-Blk256_SYZ:	incbin	"map256\SYZ.bin"
+Blk256_SYZ:	incbin	"256x256 Mappings\SYZ.kos"
 		even
 Blk16_SBZ:	incbin	"map16\SBZ.bin"
 		even
 		nemfile	Nem_SBZ
 Blk256_SBZ:	if Revision=0
-			incbin	"map256\SBZ.bin"
+			incbin	"256x256 Mappings\SBZ.kos"
 		else
-			incbin	"map256\SBZ (JP1).bin"
+			incbin	"256x256 Mappings\SBZ (JP1).kos"
 		endc
 		even
 ; ---------------------------------------------------------------------------

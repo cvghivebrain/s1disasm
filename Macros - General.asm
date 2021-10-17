@@ -86,12 +86,16 @@ ptr:		macro
 		dc.\index_width \1-index_start
 		endc
 		
+		if ~def(prefix_id)
+		prefix_id: equs "id_"
+		endc
+		
 		if instr("\1","@")=1	; check if pointer is local
 		else
-			if ~def(id_\1)
-			id_\1: equ ptr_id	; create id for pointer
+			if ~def(\prefix_id\\1)
+			\prefix_id\\1: equ ptr_id	; create id for pointer
 			else
-			id_\1_\$ptr_id: equ ptr_id ; if id already exists, append number
+			\prefix_id\\1_\$ptr_id: equ ptr_id ; if id already exists, append number
 			endc
 		endc
 		
