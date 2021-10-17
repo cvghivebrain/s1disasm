@@ -5763,7 +5763,7 @@ LevLoad_Row:
 
 		include "Includes\DynamicLevelEvents.asm"
 
-		include "Objects\GHZ Bridge (1).asm" ; Bridge
+		include "Objects\GHZ Bridge.asm" ; Bridge
 
 		include "Objects\_DetectPlatform.asm"
 		include "Objects\_SlopeObject.asm"
@@ -5789,35 +5789,23 @@ Swing_Solid:
 
 ; ===========================================================================
 
-		include "Objects\GHZ Bridge (2).asm"
+		include_Bridge_2 ; Objects\GHZ Bridge.asm
 
 		include "Objects\_ExitPlatform.asm"
 
-		include "Objects\GHZ Bridge (3).asm"
+		include_Bridge_3 ; Objects\GHZ Bridge.asm
 		include "Mappings\GHZ Bridge.asm" ; Map_Bri
 
-		include "Objects\GHZ, MZ & SLZ Swinging Platforms, SBZ Ball on Chain (1).asm" ; SwingingPlatform
+		include "Objects\GHZ, MZ & SLZ Swinging Platforms, SBZ Ball on Chain.asm" ; SwingingPlatform
 		
 		include "Objects\_MoveWithPlatform.asm"
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+		include_SwingingPlatform_2 ; Objects\GHZ, MZ & SLZ Swinging Platforms, SBZ Ball on Chain.asm
 
+		include "Objects\GHZ Boss Ball.asm" ; BossBall
+		include_BossBall_2
 
-Swing_Move:
-		move.b	(v_oscillate+$1A).w,d0
-		move.w	#$80,d1
-		btst	#status_xflip_bit,ost_status(a0)
-		beq.s	loc_7B78
-		neg.w	d0
-		add.w	d1,d0
-
-loc_7B78:
-		bra.s	Swing_Move2
-; End of function Swing_Move
-
-		include "Objects\GHZ Boss Ball (2).asm"
-
-		include "Objects\GHZ, MZ & SLZ Swinging Platforms, SBZ Ball on Chain (2).asm"
+		include_SwingingPlatform_3 ; Objects\GHZ, MZ & SLZ Swinging Platforms, SBZ Ball on Chain.asm
 		
 		include "Mappings\GHZ & MZ Swinging Platforms.asm" ; Map_Swing_GHZ
 		include "Mappings\SLZ Swinging Platforms.asm" ; Map_Swing_SLZ
@@ -5840,9 +5828,9 @@ Obj19:
 		
 		include "Mappings\GHZ Giant Ball.asm" ; Map_GBall
 
-		include "Objects\GHZ Collapsing Ledge (1).asm" ; CollapseLedge
+		include "Objects\GHZ Collapsing Ledge.asm" ; CollapseLedge
 		include "Objects\MZ, SLZ & SBZ Collapsing Floors.asm" ; CollapseFloor
-		include "Objects\GHZ Collapsing Ledge (2).asm"
+		include_CollapseLedge_2 ; Objects\GHZ Collapsing Ledge.asm
 
 ; ---------------------------------------------------------------------------
 ; Disintegration data for collapsing ledges (MZ, SLZ, SBZ)
@@ -5875,7 +5863,8 @@ Ledge_SlopeData:
 		include "Animations\SBZ Door.asm" ; Ani_ADoor
 		include "Mappings\SBZ Door.asm" ; Map_ADoor
 
-		include "Objects\GHZ Walls (2).asm"
+		include "Objects\GHZ Walls.asm" ; EdgeWalls
+		include_EdgeWalls_2
 
 		include "Objects\Ball Hog.asm" ; BallHog
 		include "Objects\Ball Hog Cannonball.asm" ; Cannonball
@@ -5916,9 +5905,9 @@ Map_Animal3:	include "Mappings\Animals 3.asm"
 		include "Mappings\Giant Ring.asm" ; Map_GRing
 		include "Mappings\Giant Ring Flash.asm" ; Map_Flash
 
-		include "Objects\Monitors (1).asm" ; Monitor
+		include "Objects\Monitors.asm" ; Monitor
 		include "Objects\Monitor Contents.asm" ; PowerUp
-		include "Objects\Monitors (2).asm" ; Mon_SolidSides
+		include_Monitor_2 ; Objects\Monitors.asm
 
 		include "Animations\Monitors.asm" ; Ani_Monitor
 		include "Mappings\Monitors.asm" ; Map_Monitor
@@ -6017,7 +6006,7 @@ NullObject:
 		include "Animations\Roller.asm" ; Ani_Roll
 		include "Mappings\Roller.asm" ; Map_Roll
 
-		include "Objects\GHZ Walls (1).asm" ; EdgeWalls
+		include_EdgeWalls_1 ; Objects\GHZ Walls.asm
 		include "Mappings\GHZ Walls.asm" ; Map_Edge
 
 		include "Objects\MZ & SLZ Fireball Launchers.asm"
@@ -6675,7 +6664,7 @@ Teleport:	include "Objects\SBZ Teleporter.asm"
 		include "Mappings\Credits & Sonic Team Presents.asm" ; Map_Cred
 
 BossGreenHill:	include "Objects\GHZ Boss, BossDefeated & BossMove.asm"
-		include "Objects\GHZ Boss Ball (1).asm" ; BossBall
+		include_BossBall_1	; Objects\GHZ Boss Ball.asm; BossBall
 		include "Animations\Bosses.asm" ; Ani_Eggman
 		include "Mappings\Bosses.asm" ; Map_Eggman
 		include "Mappings\Boss Extras.asm" ; Map_BossItems
