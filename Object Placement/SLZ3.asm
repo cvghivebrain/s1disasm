@@ -16,9 +16,9 @@
 		objpos $0590,$0110,Bomb,$00,yflip,rem
 		objpos $05D0,$0110,Bomb,$00,yflip,rem
 		objpos $05D8,$0151,Monitor,$05,rem
-		objpos $0610,$0050,Fan,$02,xflip
+		objpos $0610,$0050,Fan,type_fan_left_on,xflip
 		objpos $0610,$0110,Bomb,$00,yflip,rem
-		objpos $0610,$04D0,Fan,$02,xflip
+		objpos $0610,$04D0,Fan,type_fan_left_on,xflip
 		objpos $0640,$0260,Seesaw,$00
 		objpos $0650,$0110,Bomb,$00,yflip,rem
 		objpos $0660,$0200,Rings,$42,rem
@@ -26,7 +26,7 @@
 		objpos $0674,$02B0,Rings,$45,rem
 		objpos $0684,$02BC,Rings,$41,rem
 		objpos $0690,$0110,Bomb,$00,yflip,rem
-		objpos $0690,$0650,Fan,$02,xflip
+		objpos $0690,$0650,Fan,type_fan_left_on,xflip
 		objpos $0720,$04E8,CollapseFloor,$81
 		objpos $0728,$04D0,Rings,$12,rem
 		objpos $0728,$0548,Rings,$12,rem
@@ -35,7 +35,7 @@
 		objpos $0770,$04B0,Orbinaut,$02,rem
 		objpos $0790,$0670,Bomb,$00,xflip,rem
 		objpos $07F0,$0670,Bomb,$00,rem
-		objpos $0810,$0450,Fan,$01,xflip
+		objpos $0810,$0450,Fan,type_fan_right_onoff,xflip
 		objpos $0810,$0670,Bomb,$00,xflip,rem
 		objpos $0818,$0050,Rings,$14,rem
 		objpos $0870,$0670,Bomb,$00,rem
@@ -43,7 +43,7 @@
 		objpos $0884,$01EC,Rings,$21,rem
 		objpos $0894,$01C8,Rings,$45,rem
 		objpos $08E0,$02D0,LavaMaker,$36
-		objpos $08F8,$02D0,Scenery,$00,xflip
+		objpos $08F8,$02D0,Scenery,type_scen_cannon,xflip
 		objpos $08F8,$0658,Springs,$02
 		objpos $0910,$04D1,Monitor,$02,rem
 		objpos $0920,$0658,Springs,$02
@@ -62,7 +62,7 @@
 		objpos $0AF0,$05D0,Bomb,$00,rem
 		objpos $0AF8,$03D0,Springs,$10,xflip
 		objpos $0B00,$00AC,Orbinaut,$02,rem
-		objpos $0B10,$0050,Fan,$02,xflip
+		objpos $0B10,$0050,Fan,type_fan_left_on,xflip
 		objpos $0B68,$05E0,Rings,$12,rem
 		objpos $0B80,$05E0,CirclingPlatform,$00
 		objpos $0B80,$05E0,CirclingPlatform,$01
@@ -81,21 +81,21 @@
 		objpos $0C80,$05E0,CirclingPlatform,$07
 		objpos $0C8C,$014C,Rings,$10,rem
 		objpos $0CB0,$0170,Rings,$44,rem
-		objpos $0D88,$06D0,Scenery,$00
-		objpos $0D90,$05F0,Staircase,$00,xflip
-		objpos $0D90,$06F0,Staircase,$00,xflip
+		objpos $0D88,$06D0,Scenery,type_scen_cannon
+		objpos $0D90,$05F0,Staircase,type_stair_above,xflip
+		objpos $0D90,$06F0,Staircase,type_stair_above,xflip
 		objpos $0DA0,$06D0,LavaMaker,$37
-		objpos $0E10,$0670,Staircase,$00
+		objpos $0E10,$0670,Staircase,type_stair_above
 		objpos $0E30,$0110,Rings,$44,rem
 		objpos $0E68,$0030,Rings,$12,rem
 		objpos $0E60,$0650,LavaMaker,$36
-		objpos $0E78,$0650,Scenery,$00,xflip
+		objpos $0E78,$0650,Scenery,type_scen_cannon,xflip
 		objpos $0F20,$0768,CollapseFloor,$01
 		objpos $0F28,$0750,Rings,$12,rem
 		objpos $0F30,$0210,Rings,$44,rem
 		objpos $0F60,$0768,CollapseFloor,$01
 		objpos $0F68,$0130,Rings,$12,rem
-		objpos $1000,$0750,Fan,$02,xflip
+		objpos $1000,$0750,Fan,type_fan_left_on,xflip
 		objpos $1010,$05D1,Monitor,$05,rem
 		objpos $103C,$0270,Rings,$10,rem
 		objpos $1044,$024E,Rings,$10,rem
@@ -114,15 +114,15 @@
 		objpos $1170,$00A0,Rings,$12,rem
 		objpos $1170,$0770,Bomb,$00,rem
 		objpos $117C,$0088,Rings,$11,rem
-		objpos $1180,$0420,FloatingBlock,$58
-		objpos $1180,$0420,FloatingBlock,$58,yflip
-		objpos $1180,$0420,FloatingBlock,$59
-		objpos $1180,$0420,FloatingBlock,$59,yflip
-		objpos $1180,$0420,FloatingBlock,$5A
-		objpos $1180,$0420,FloatingBlock,$5A,yflip
-		objpos $1180,$0420,FloatingBlock,$5B
-		objpos $1180,$0420,FloatingBlock,$5B,yflip
-		objpos $1184,$0750,Fan,$00
+		objpos $1180,$0420,FloatingBlock,type_fblock_slz+type_fblock_squaresmall
+		objpos $1180,$0420,FloatingBlock,type_fblock_slz+type_fblock_squaresmall,yflip
+		objpos $1180,$0420,FloatingBlock,type_fblock_slz+type_fblock_squaremedium
+		objpos $1180,$0420,FloatingBlock,type_fblock_slz+type_fblock_squaremedium,yflip
+		objpos $1180,$0420,FloatingBlock,type_fblock_slz+type_fblock_squarebig
+		objpos $1180,$0420,FloatingBlock,type_fblock_slz+type_fblock_squarebig,yflip
+		objpos $1180,$0420,FloatingBlock,type_fblock_slz+type_fblock_squarebiggest
+		objpos $1180,$0420,FloatingBlock,type_fblock_slz+type_fblock_squarebiggest,yflip
+		objpos $1184,$0750,Fan,type_fan_left_onoff
 		objpos $1188,$0070,Rings,$10,rem
 		objpos $1200,$00C0,SwingingPlatform,$07
 		objpos $1220,$0768,CollapseFloor,$01
@@ -142,15 +142,15 @@
 		objpos $12F0,$0370,Bomb,$00,rem
 		objpos $1310,$0370,Bomb,$00,xflip,rem
 		objpos $1310,$0448,Rings,$12,rem
-		objpos $1310,$06D0,Fan,$02,xflip
-		objpos $1328,$05E8,Elevator,$8A
-		objpos $1358,$0168,Elevator,$00
-		objpos $1358,$0268,Elevator,$00
+		objpos $1310,$06D0,Fan,type_fan_left_on,xflip
+		objpos $1328,$05E8,Elevator,type_elev_up_vanish+$A
+		objpos $1358,$0168,Elevator,type_elev_up_short
+		objpos $1358,$0268,Elevator,type_elev_up_short
 		objpos $1370,$0370,Bomb,$00,rem
 		objpos $13A8,$00D0,Rings,$12,rem
 		objpos $13C0,$0448,Rings,$12,rem
-		objpos $13D8,$05E8,Elevator,$8A
-		objpos $1440,$06E8,Elevator,$01
+		objpos $13D8,$05E8,Elevator,type_elev_up_vanish+$A
+		objpos $1440,$06E8,Elevator,type_elev_up_medium
 		objpos $1460,$04E8,CollapseFloor,$81
 		objpos $1510,$0550,Bomb,$00,xflip,rem
 		objpos $1520,$03E8,CollapseFloor,$81
@@ -160,23 +160,23 @@
 		objpos $1560,$03E8,CollapseFloor,$81
 		objpos $1560,$0550,Bomb,$00,rem
 		objpos $1570,$0550,Bomb,$00,xflip,rem
-		objpos $1580,$0670,FloatingBlock,$58
-		objpos $1580,$0670,FloatingBlock,$58,yflip
-		objpos $1580,$0670,FloatingBlock,$59
-		objpos $1580,$0670,FloatingBlock,$59,yflip
-		objpos $1580,$0670,FloatingBlock,$5A
-		objpos $1580,$0670,FloatingBlock,$5A,yflip
-		objpos $1580,$0670,FloatingBlock,$5B
-		objpos $1580,$0670,FloatingBlock,$5B,yflip
+		objpos $1580,$0670,FloatingBlock,type_fblock_slz+type_fblock_squaresmall
+		objpos $1580,$0670,FloatingBlock,type_fblock_slz+type_fblock_squaresmall,yflip
+		objpos $1580,$0670,FloatingBlock,type_fblock_slz+type_fblock_squaremedium
+		objpos $1580,$0670,FloatingBlock,type_fblock_slz+type_fblock_squaremedium,yflip
+		objpos $1580,$0670,FloatingBlock,type_fblock_slz+type_fblock_squarebig
+		objpos $1580,$0670,FloatingBlock,type_fblock_slz+type_fblock_squarebig,yflip
+		objpos $1580,$0670,FloatingBlock,type_fblock_slz+type_fblock_squarebiggest
+		objpos $1580,$0670,FloatingBlock,type_fblock_slz+type_fblock_squarebiggest,yflip
 		objpos $15C0,$04F0,Seesaw,$00
 		objpos $15F0,$0550,Bomb,$00,rem
-		objpos $1610,$0350,Fan,$02,xflip
+		objpos $1610,$0350,Fan,type_fan_left_on,xflip
 		objpos $1620,$0450,Rings,$12,rem
 		objpos $1630,$0210,Rings,$42,rem
 		objpos $1668,$0130,Rings,$12,rem
-		objpos $1710,$0250,Fan,$02,xflip
+		objpos $1710,$0250,Fan,type_fan_left_on,xflip
 		objpos $1710,$05D1,Monitor,$04,rem
-		objpos $1710,$0650,Fan,$02,xflip
+		objpos $1710,$0650,Fan,type_fan_left_on,xflip
 		objpos $1720,$0320,Orbinaut,$02,rem
 		objpos $1730,$05D1,Monitor,$06,rem
 		objpos $1750,$0471,Monitor,$06,rem
@@ -195,33 +195,33 @@
 		objpos $1930,$0451,Monitor,$06,rem
 		objpos $1950,$03C0,SmashWall,id_frame_smash_middle,rem
 		objpos $1950,$0451,Monitor,$06,rem
-		objpos $1958,$01E8,Elevator,$03
+		objpos $1958,$01E8,Elevator,type_elev_down_short
 		objpos $1960,$0370,LavaMaker,$36
 		objpos $1970,$03C0,SmashWall,id_frame_smash_middle,rem
 		objpos $1970,$0451,Monitor,$06,rem
-		objpos $1978,$0370,Scenery,$00,xflip
+		objpos $1978,$0370,Scenery,type_scen_cannon,xflip
 		objpos $19F0,$0210,Bomb,$00,yflip,rem
 		objpos $1A10,$0210,Bomb,$00,yflip,rem
 		objpos $1A20,$0668,BasicPlatform,type_plat_falls
 		objpos $1A30,$0210,Bomb,$00,yflip,rem
 		objpos $1A60,$0668,BasicPlatform,type_plat_falls
-		objpos $1A88,$0370,Scenery,$00
+		objpos $1A88,$0370,Scenery,type_scen_cannon
 		objpos $1AA0,$0370,LavaMaker,$37
 		objpos $1AB0,$05F0,Seesaw,$00
-		objpos $1B10,$02F0,Staircase,$00,xflip
+		objpos $1B10,$02F0,Staircase,type_stair_above,xflip
 		objpos $1B20,$0668,BasicPlatform,type_plat_falls
 		objpos $1B30,$05C0,Orbinaut,$02,xflip,rem
 		objpos $1B60,$0370,LavaMaker,$36
 		objpos $1B78,$02D0,Springs,$10,xflip
-		objpos $1B78,$0370,Scenery,$00,xflip
+		objpos $1B78,$0370,Scenery,type_scen_cannon,xflip
 		objpos $1B60,$0668,BasicPlatform,type_plat_falls
 		objpos $1B70,$0490,Bomb,$00,yflip,rem
 		objpos $1B90,$0490,Bomb,$00,yflip,rem
 		objpos $1BA0,$0310,Rings,$14,rem
 		objpos $1BB0,$0490,Bomb,$00,yflip,rem
-		objpos $1BD0,$0350,Fan,$02,xflip
+		objpos $1BD0,$0350,Fan,type_fan_left_on,xflip
 		objpos $1BD0,$0490,Bomb,$00,yflip,rem
-		objpos $1BF0,$0450,Fan,$02,xflip
+		objpos $1BF0,$0450,Fan,type_fan_left_on,xflip
 		objpos $1CD0,$0410,Bomb,$00,yflip,rem
 		objpos $1CD0,$05C0,Orbinaut,$02,rem
 		objpos $1CE0,$0450,Rings,$14,rem
@@ -239,13 +239,13 @@
 		objpos $1D80,$0344,Orbinaut,$02,rem
 		objpos $1DA0,$0310,Bomb,$00,yflip,rem
 		objpos $1DC0,$0310,Bomb,$00,yflip,rem
-		objpos $1DE8,$02D0,Fan,$02,xflip
-		objpos $1E10,$03F0,Staircase,$02,xflip
+		objpos $1DE8,$02D0,Fan,type_fan_left_on,xflip
+		objpos $1E10,$03F0,Staircase,type_stair_below,xflip
 		objpos $1E78,$0470,Springs,$10,xflip
 		objpos $1EB0,$0450,Rings,$12,rem
 		objpos $1EE0,$03F0,LavaMaker,$36
 		objpos $1EF8,$02CC,Lamppost,$01,rem
-		objpos $1EF8,$03F0,Scenery,$00,xflip
+		objpos $1EF8,$03F0,Scenery,type_scen_cannon,xflip
 		
 		objpos $203C,$02D4,Seesaw,$FF
 		objpos $20A0,$02D4,Seesaw,$FF

@@ -49,16 +49,16 @@ CFlo_Touch:	; Routine 2
 		subq.b	#1,ost_cfloor_wait_time(a0) ; subtract 1 from time
 
 	@solid:
-		move.w	#$20,d1
-		bsr.w	DetectPlatform
-		tst.b	ost_subtype(a0)
-		bpl.s	@remstate
+		move.w	#$20,d1		; width
+		bsr.w	DetectPlatform	; set platform status bit & goto CFlo_Collapse next if platform is touched
+		tst.b	ost_subtype(a0)	; is subtype over $80?
+		bpl.s	@remstate	; if not, branch
 		btst	#status_platform_bit,ost_status(a1)
 		beq.s	@remstate
 		bclr	#render_xflip_bit,ost_render(a0)
 		move.w	ost_x_pos(a1),d0
 		sub.w	ost_x_pos(a0),d0
-		bcc.s	@remstate
+		bcc.s	@remstate	; branch if Sonic is left of the platform
 		bset	#render_xflip_bit,ost_render(a0)
 
 	@remstate:
@@ -66,8 +66,8 @@ CFlo_Touch:	; Routine 2
 ; ===========================================================================
 
 CFlo_Collapse:	; Routine 4
-		tst.b	ost_cfloor_wait_time(a0)
-		beq.w	loc_8458
+		tst.b	ost_cfloor_wait_time(a0) ; has time delay reached zero?
+		beq.w	CFlo_Collapse_Now	; if yes, branch
 		move.b	#1,ost_cfloor_flag(a0) ; set object as "touched"
 		subq.b	#1,ost_cfloor_wait_time(a0)
 
@@ -129,7 +129,7 @@ CFlo_Delete:	; Routine 8
 CFlo_Fragment:
 		move.b	#0,ost_cfloor_flag(a0)
 
-loc_8458:
+CFlo_Collapse_Now:
 		lea	(CFlo_Data2).l,a4
 		btst	#0,ost_subtype(a0)
 		beq.s	loc_846C
@@ -138,5 +138,5 @@ loc_8458:
 loc_846C:
 		moveq	#7,d1
 		addq.b	#1,ost_frame(a0)
-		bra.s	loc_8486	; jump to address in GHZ Collapsing Ledge (2).asm
+		bra.s	loc_8486	; jump to address in GHZ Collapsing Ledge.asm
 

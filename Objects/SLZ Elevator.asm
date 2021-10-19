@@ -18,21 +18,24 @@ Elev_Index:	index *,,2
 
 Elev_Var1:	dc.b $28, 0		; width, frame number
 
-Elev_Var2:	dc.b $10, 1		; distance to move, action type
-		dc.b $20, 1
-		dc.b $34, 1
-		dc.b $10, 3
-		dc.b $20, 3
-		dc.b $34, 3
-		dc.b $14, 1
-		dc.b $24, 1
-		dc.b $2C, 1
-		dc.b $14, 3
-		dc.b $24, 3
-		dc.b $2C, 3
-		dc.b $20, 5
-		dc.b $20, 7
-		dc.b $30, 9
+Elev_Var2:				; distance to move, action type
+Elev_Var2_0:	dc.b $10, id_Elev_Up
+Elev_Var2_1:	dc.b $20, id_Elev_Up
+Elev_Var2_2:	dc.b $34, id_Elev_Up	; unused
+Elev_Var2_3:	dc.b $10, id_Elev_Down
+Elev_Var2_4:	dc.b $20, id_Elev_Down	; unused
+Elev_Var2_5:	dc.b $34, id_Elev_Down	; unused
+Elev_Var2_6:	dc.b $14, id_Elev_Up	; unused
+Elev_Var2_7:	dc.b $24, id_Elev_Up	; unused
+Elev_Var2_8:	dc.b $2C, id_Elev_Up	; unused
+Elev_Var2_9:	dc.b $14, id_Elev_Down	; unused
+Elev_Var2_A:	dc.b $24, id_Elev_Down	; unused
+Elev_Var2_B:	dc.b $2C, id_Elev_Down	; unused
+Elev_Var2_C:	dc.b $20, id_Elev_UpRight
+Elev_Var2_D:	dc.b $20, id_Elev_DownLeft ; unused
+Elev_Var2_E:	dc.b $30, id_Elev_UpVanish
+
+sizeof_Elev_Var2:	equ Elev_Var2_1-Elev_Var2
 
 ost_elev_y_start:	equ $30	; original y-axis position (2 bytes)
 ost_elev_x_start:	equ $32	; original x-axis position (2 bytes)
@@ -106,28 +109,32 @@ Elev_Types:
 		move.b	ost_subtype(a0),d0 ; subtype has changed by now, see Elev_Var2
 		andi.w	#$F,d0
 		add.w	d0,d0
-		move.w	@index(pc,d0.w),d1
-		jmp	@index(pc,d1.w)
+		move.w	Elev_Type_Index(pc,d0.w),d1
+		jmp	Elev_Type_Index(pc,d1.w)
 ; ===========================================================================
-@index:		index *
-		ptr @type00	; doesn't move
-		ptr @type01	; rises when stood on
-		ptr @type02	
-		ptr @type01	; falls when stood on
-		ptr @type04
-		ptr @type01	; rises diagonally when stood on
-		ptr @type06
-		ptr @type01	; falls diagonally when stood on
-		ptr @type08
-		ptr @type09	; rises and vanishes
+Elev_Type_Index:
+		index *
+		ptr Elev_Still		; 0 - doesn't move
+		ptr Elev_Up		; 1 - rises when stood on
+		ptr Elev_Up_Now	
+		ptr Elev_Down		; 3 - falls when stood on
+		ptr Elev_Down_Now
+		ptr Elev_UpRight	; 5 - rises diagonally when stood on
+		ptr Elev_UpRight_Now
+		ptr Elev_DownLeft	; 7 - falls diagonally when stood on
+		ptr Elev_DownLeft_Now
+		ptr Elev_UpVanish	; 9 - rises and vanishes
 ; ===========================================================================
 
-@type00:
+Elev_Still:
 		rts	
 ; ===========================================================================
 
 ; Moves when stood on - serves types 1, 3, 5 and 7
-@type01:
+Elev_Up:
+Elev_Down:
+Elev_UpRight:
+Elev_DownLeft:
 		cmpi.b	#4,ost_routine(a0) ; check if Sonic is standing on the object
 		bne.s	@notstanding
 		addq.b	#1,ost_subtype(a0) ; if yes, add 1 to type (goes to 2, 4, 6 or 8)
@@ -136,7 +143,8 @@ Elev_Types:
 		rts	
 ; ===========================================================================
 
-@type02:
+; Type 2
+Elev_Up_Now:
 		bsr.w	Elev_Move
 		move.w	ost_elev_moved(a0),d0
 		neg.w	d0
@@ -145,7 +153,8 @@ Elev_Types:
 		rts	
 ; ===========================================================================
 
-@type04:
+; Type 4
+Elev_Down_Now:
 		bsr.w	Elev_Move
 		move.w	ost_elev_moved(a0),d0
 		add.w	ost_elev_y_start(a0),d0
@@ -153,7 +162,8 @@ Elev_Types:
 		rts	
 ; ===========================================================================
 
-@type06:
+; Type 6
+Elev_UpRight_Now:
 		bsr.w	Elev_Move
 		move.w	ost_elev_moved(a0),d0
 		asr.w	#1,d0
@@ -166,7 +176,8 @@ Elev_Types:
 		rts	
 ; ===========================================================================
 
-@type08:
+; Type 8
+Elev_DownLeft_Now:
 		bsr.w	Elev_Move
 		move.w	ost_elev_moved(a0),d0
 		asr.w	#1,d0
@@ -179,14 +190,15 @@ Elev_Types:
 		rts	
 ; ===========================================================================
 
-@type09:
+; Type 9
+Elev_UpVanish:
 		bsr.w	Elev_Move
 		move.w	ost_elev_moved(a0),d0
 		neg.w	d0
 		add.w	ost_elev_y_start(a0),d0
 		move.w	d0,ost_y_pos(a0)
-		tst.b	ost_subtype(a0)
-		beq.w	@typereset
+		tst.b	ost_subtype(a0)	; has platform reached destination?
+		beq.w	@typereset	; if yes, branch
 		rts	
 ; ===========================================================================
 

@@ -140,3 +140,20 @@ type_wfall_splash:	equ id_frame_wfall_splash1		; 9 - splash
 type_wfall_splash_match: equ id_frame_wfall_splash1+$40		; $49 - splash, matches y position to water surface
 type_wfall_splash_low:	equ id_frame_wfall_splash1+$20		; $29 - splash, low priority sprite on specific level tile
 type_wfall_hi:		equ $80					; +$80 - high priority sprite
+
+; Staircase
+type_stair_above:	equ id_Stair_Type00		; 0 - forms a staircase when stood on
+type_stair_below:	equ id_Stair_Type02		; 2 - forms a staircase when hit from below
+
+; Fan
+type_fan_left_onoff:	equ 0				; 0 - blows left, turns on/off every 3 seconds
+type_fan_right_onoff:	equ 1				; 1 - blows right, turns on/off every 3 seconds
+type_fan_left_on:	equ 2				; 2 - blows left, always on
+type_fan_right_on:	equ 3				; 3 - blows right, always on
+
+; Elevator
+type_elev_up_short:	equ (Elev_Var2_0-Elev_Var2)/sizeof_Elev_Var2	; 0 - rises 128px when stood on
+type_elev_up_medium:	equ (Elev_Var2_1-Elev_Var2)/sizeof_Elev_Var2	; 1 - rises 256px when stood on
+type_elev_down_short:	equ (Elev_Var2_3-Elev_Var2)/sizeof_Elev_Var2	; 3 - falls 128px when stood on
+type_elev_upright:	equ (Elev_Var2_C-Elev_Var2)/sizeof_Elev_Var2	; $C - rises diagonally right when stood on
+type_elev_up_vanish:	equ $80						; $80 - rises when stood on and vanishes
