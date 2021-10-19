@@ -1,9 +1,9 @@
-sonic.lst
+*.lst
 *.txt
+*.lnk
 s1built.bin
 s1built.prev.bin
 smps*
 samples/*
-*.lnk
 sonic.asm_unsplit
 Unsplit.exe
