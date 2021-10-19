@@ -677,9 +677,8 @@ ld:		macro
 				getindex \1
 				dc.b ireg, $70|zreg, \1
 			else			; ld (ix+n),n
-				getindex \2
-				dc.b ireg, $36, \2
-			dc.b \2
+				getindex \1
+				dc.b ireg, $36, \1, \2
 			endc
 		else			; ld (n),?
 			if strcmp("\2","a")
@@ -1163,7 +1162,7 @@ add:		macro
 				shift		; ignore a
 			endc
 
-			if narg=1
+			if (narg=1) | (narg=2)
 				if instr("a b c d e h l (hl) ","\1\ ")
 				getzreg	\1
 				dc.b $80+zreg

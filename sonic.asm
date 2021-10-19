@@ -388,13 +388,13 @@ gmptr:		macro
 GameModeArray:
 		gmptr Sega		; Sega Screen ($00)
 		gmptr Title		; Title	Screen ($04)
-		gmptr Demo,Level	; Demo Mode ($08)
+		gmptr Demo, Level	; Demo Mode ($08)
 		gmptr Level		; Normal Level ($0C)
 		gmptr Special		; Special Stage	($10)
 		gmptr Continue		; Continue Screen ($14)
 		gmptr Ending		; End of game sequence ($18)
 		gmptr Credits		; Credits ($1C)
-		rts	
+		rts
 ; ===========================================================================
 
 CheckSumError:

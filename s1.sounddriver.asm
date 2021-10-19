@@ -2469,15 +2469,15 @@ cfOpF9:
 ; ===========================================================================
 
 Kos_Z80:
-		incbin	"sound\z80.bin", 0, $15
-		dc.b ((SegaPCM&$FF8000)/$8000)&1						; Least bit of bank ID (bit 15 of address)
-		incbin	"sound\z80.bin", $16, 6
-		dc.b ((SegaPCM&$FF8000)/$8000)>>1						; ... the remaining bits of bank ID (bits 16-23)
-		incbin	"sound\z80.bin", $1D, $93
-		dc.w ((SegaPCM&$FF)<<8)+((SegaPCM&$7F00)>>8)|$80				; Pointer to Sega PCM, relative to start of ROM bank (i.e., little_endian($8000 + SegaPCM&$7FFF)
-		incbin	"sound\z80.bin", $B2, 1
-		dc.w (((SegaPCM_End-SegaPCM)&$FF)<<8)+(((SegaPCM_End-SegaPCM)&$FF00)>>8)	; ... the size of the Sega PCM (little endian)
-		incbin	"sound\z80.bin", $B5, $16AB
+		incbin	"sound\DAC Driver.kos", 0, $15
+		dc.b ((SegaPCM&$FF8000)/$8000)&1					; Least bit of bank ID (bit 15 of address)
+		incbin	"sound\DAC Driver.kos", $16, 6
+		dc.b ((SegaPCM&$FF8000)/$8000)>>1					; ... the remaining bits of bank ID (bits 16-23)
+		incbin	"sound\DAC Driver.kos", $1D, $93
+		dc.w ((SegaPCM&$FF)<<8)+((SegaPCM&$7F00)>>8)|$80			; Pointer to Sega PCM, relative to start of ROM bank (i.e., little_endian($8000 + SegaPCM&$7FFF)
+		incbin	"sound\DAC Driver.kos", $B2, 1
+		dc.w (((SegaPCM_End-SegaPCM)&$FF)<<8)+(((SegaPCM_End-SegaPCM)&$FF00)>>8); ... the size of the Sega PCM (little endian)
+		incbin	"sound\DAC Driver.kos", $B5, $16AB
 		even
 
 Music81:	incbin	"sound/music/Mus81 - GHZ.bin"
