@@ -20,6 +20,7 @@
 		include "RAM Addresses.asm"
 		include "Macros - General.asm"
 		include "Macros - Sonic.asm"
+		include "sound/Sound Equates.asm"
 
 		cpu	68000
 
@@ -1120,7 +1121,7 @@ SoundDriverLoad:
 		nop	
 		stopZ80
 		resetZ80_release
-		lea	(Kos_Z80).l,a0	; load sound driver
+		lea	(Kos_DacDriver).l,a0	; load sound driver
 		lea	(z80_ram).l,a1	; target Z80 RAM
 		bsr.w	KosDec		; decompress
 		resetZ80_assert
@@ -1144,7 +1145,7 @@ SoundDriverLoad:
 
 
 PlaySound:
-		move.b	d0,(v_snddriver_ram+v_soundqueue0).w
+		move.b	d0,(v_snddriver_ram+v_soundqueue+0).w
 		rts	
 ; End of function PlaySound
 
@@ -1156,7 +1157,7 @@ PlaySound:
 
 
 PlaySound_Special:
-		move.b	d0,(v_snddriver_ram+v_soundqueue1).w
+		move.b	d0,(v_snddriver_ram+v_soundqueue+1).w
 		rts	
 ; End of function PlaySound_Special
 
@@ -1166,7 +1167,7 @@ PlaySound_Special:
 ; ---------------------------------------------------------------------------
 
 PlaySound_Unused:
-		move.b	d0,(v_snddriver_ram+v_soundqueue2).w
+		move.b	d0,(v_snddriver_ram+v_soundqueue+2).w
 		rts	
 ; ---------------------------------------------------------------------------
 ; Subroutine to	pause the game
@@ -8227,11 +8228,12 @@ ObjPos_Null:	endobj
 		endc
 		;dcb.b ($10000-(*%$10000))-(EndOfRom-SoundDriver),$FF
 
-SoundDriver:	include "s1.sounddriver.asm"
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Include sound driver data
+; ---------------------------------------------------------------------------
 
-; end of 'ROM'
-		even
+		include "sound/Sound Data.asm"
+
 EndOfRom:
-
-
 		END

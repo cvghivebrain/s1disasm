@@ -1,102 +1,4 @@
 ; ---------------------------------------------------------------------------
-; Modified SMPS 68k Type 1b sound driver
-; ---------------------------------------------------------------------------
-; Go_SoundTypes:
-Go_SoundPriorities:	dc.l SoundPriorities
-; Go_SoundD0:
-Go_SpecSoundIndex:	dc.l SpecSoundIndex
-Go_MusicIndex:		dc.l MusicIndex
-Go_SoundIndex:		dc.l SoundIndex
-; off_719A0:
-Go_SpeedUpIndex:	dc.l SpeedUpIndex
-Go_PSGIndex:		dc.l PSG_Index
-; ---------------------------------------------------------------------------
-; PSG instruments used in music
-; ---------------------------------------------------------------------------
-PSG_Index:
-		dc.l PSG1, PSG2, PSG3
-		dc.l PSG4, PSG5, PSG6
-		dc.l PSG7, PSG8, PSG9
-PSG1:		incbin	"sound/psg/psg1.bin"
-PSG2:		incbin	"sound/psg/psg2.bin"
-PSG3:		incbin	"sound/psg/psg3.bin"
-PSG4:		incbin	"sound/psg/psg4.bin"
-PSG6:		incbin	"sound/psg/psg6.bin"
-PSG5:		incbin	"sound/psg/psg5.bin"
-PSG7:		incbin	"sound/psg/psg7.bin"
-PSG8:		incbin	"sound/psg/psg8.bin"
-PSG9:		incbin	"sound/psg/psg9.bin"
-; ---------------------------------------------------------------------------
-; New tempos for songs during speed shoes
-; ---------------------------------------------------------------------------
-; DANGER! several songs will use the first few bytes of MusicIndex as their main
-; tempos while speed shoes are active. If you don't want that, you should add
-; their "correct" sped-up main tempos to the list.
-; byte_71A94:
-SpeedUpIndex:
-		dc.b 7		; GHZ
-		dc.b $72	; LZ
-		dc.b $73	; MZ
-		dc.b $26	; SLZ
-		dc.b $15	; SYZ
-		dc.b 8		; SBZ
-		dc.b $FF	; Invincibility
-		dc.b 5		; Extra Life
-		;dc.b ?		; Special Stage
-		;dc.b ?		; Title Screen
-		;dc.b ?		; Ending
-		;dc.b ?		; Boss
-		;dc.b ?		; FZ
-		;dc.b ?		; Sonic Got Through
-		;dc.b ?		; Game Over
-		;dc.b ?		; Continue Screen
-		;dc.b ?		; Credits
-		;dc.b ?		; Drowning
-		;dc.b ?		; Get Emerald
-
-; ---------------------------------------------------------------------------
-; Music	Pointers
-; ---------------------------------------------------------------------------
-MusicIndex:
-ptr_mus81:	dc.l Music81
-ptr_mus82:	dc.l Music82
-ptr_mus83:	dc.l Music83
-ptr_mus84:	dc.l Music84
-ptr_mus85:	dc.l Music85
-ptr_mus86:	dc.l Music86
-ptr_mus87:	dc.l Music87
-ptr_mus88:	dc.l Music88
-ptr_mus89:	dc.l Music89
-ptr_mus8A:	dc.l Music8A
-ptr_mus8B:	dc.l Music8B
-ptr_mus8C:	dc.l Music8C
-ptr_mus8D:	dc.l Music8D
-ptr_mus8E:	dc.l Music8E
-ptr_mus8F:	dc.l Music8F
-ptr_mus90:	dc.l Music90
-ptr_mus91:	dc.l Music91
-ptr_mus92:	dc.l Music92
-ptr_mus93:	dc.l Music93
-ptr_musend
-; ---------------------------------------------------------------------------
-; Priority of sound. New music or SFX must have a priority higher than or equal
-; to what is stored in v_sndprio or it won't play. If bit 7 of new priority is
-; set ($80 and up), the new music or SFX will not set its priority -- meaning
-; any music or SFX can override it (as long as it can override whatever was
-; playing before). Usually, SFX will only override SFX, special SFX ($D0-$DF)
-; will only override special SFX and music will only override music.
-; ---------------------------------------------------------------------------
-; SoundTypes:
-SoundPriorities:
-		dc.b     $90,$90,$90,$90,$90,$90,$90,$90,$90,$90,$90,$90,$90,$90,$90	; $81
-		dc.b $90,$90,$90,$90,$90,$90,$90,$90,$90,$90,$90,$90,$90,$90,$90,$90	; $90
-		dc.b $80,$70,$70,$70,$70,$70,$70,$70,$70,$70,$68,$70,$70,$70,$60,$70	; $A0
-		dc.b $70,$60,$70,$60,$70,$70,$70,$70,$70,$70,$70,$70,$70,$70,$70,$7F	; $B0
-		dc.b $60,$70,$70,$70,$70,$70,$70,$70,$70,$70,$70,$70,$70,$70,$70,$70	; $C0
-		dc.b $80,$80,$80,$80,$80,$80,$80,$80,$80,$80,$80,$80,$80,$80,$80,$80	; $D0
-		dc.b $90,$90,$90,$90,$90                                            	; $E0
-
-; ---------------------------------------------------------------------------
 ; Subroutine to update music more than once per frame
 ; (Called by horizontal & vert. interrupts)
 ; ---------------------------------------------------------------------------
@@ -106,9 +8,9 @@ SoundPriorities:
 ; sub_71B4C:
 UpdateMusic:
 		stopZ80
-		nop	
-		nop	
-		nop	
+		nop
+		nop
+		nop
 ; loc_71B5A:
 @updateloop:
 		btst	#0,(z80_bus_request).l		; Is the z80 busy?
@@ -117,11 +19,11 @@ UpdateMusic:
 		btst	#7,(z80_dac_status).l		; Is DAC accepting new samples?
 		beq.s	@driverinput			; Branch if yes
 		startZ80
-		nop	
-		nop	
-		nop	
-		nop	
-		nop	
+		nop
+		nop
+		nop
+		nop
+		nop
 		bra.s	UpdateMusic
 ; ===========================================================================
 ; loc_71B82:
@@ -145,8 +47,8 @@ UpdateMusic:
 		jsr	DoFadeIn(pc)
 ; loc_71BB2:
 @skipfadein:
-		; DANGER! The following line only checks v_soundqueue0 and v_soundqueue1, breaking v_soundqueue2.
-		tst.w	v_soundqueue0(a6)	; is a music or sound queued for played?
+		; DANGER! The following line only checks v_soundqueue and v_soundqueue+1, breaking v_soundqueue+2.
+		tst.w	v_soundqueue(a6)	; is a music or sound queued for played?
 		beq.s	@nosndinput		; if not, branch
 		jsr	CycleSoundQueue(pc)
 ; loc_71BBC:
@@ -207,7 +109,7 @@ UpdateMusic:
 ; loc_71C22:
 @sfxpsgnext:
 		dbf	d7,@sfxpsgloop
-		
+
 		move.b	#$40,f_voice_selector(a6) ; Now at special SFX tracks
 		adda.w	#TrackSz,a5
 		tst.b	(a5)			; Is track playing? (TrackPlaybackControl)
@@ -222,7 +124,7 @@ UpdateMusic:
 ; loc_71C44:
 DoStartZ80:
 		startZ80
-		rts	
+		rts
 ; End of function UpdateMusic
 
 
@@ -272,7 +174,7 @@ DACUpdateTrack:
 		move.b	d0,(z80_dac_sample).l
 ; locret_71CAA:
 @locret:
-		rts	
+		rts
 ; ===========================================================================
 ; loc_71CAC:
 @timpani:
@@ -282,7 +184,7 @@ DACUpdateTrack:
 		; use this value from then on.
 		move.b	d0,(z80_dac3_pitch).l
 		move.b	#$83,(z80_dac_sample).l	; Use timpani
-		rts	
+		rts
 ; End of function DACUpdateTrack
 
 ; ===========================================================================
@@ -355,7 +257,7 @@ FMSetFreq:
 		lea	FMFrequencies(pc),a0
 		move.w	(a0,d5.w),d6
 		move.w	d6,TrackFreq(a5)	; Store new frequency
-		rts	
+		rts
 ; End of function FMSetFreq
 
 
@@ -376,7 +278,7 @@ SetDuration:
 @donemult:
 		move.b	d0,TrackSavedDuration(a5)	; Save duration
 		move.b	d0,TrackDurationTimeout(a5)	; Save duration timeout
-		rts	
+		rts
 ; End of function SetDuration
 
 ; ===========================================================================
@@ -407,7 +309,7 @@ FinishTrackUpdate:
 		clr.w	TrackModulationVal(a5)		; Reset frequency change
 ; locret_71D9C:
 @locret:
-		rts	
+		rts
 ; End of function FinishTrackUpdate
 
 
@@ -424,7 +326,7 @@ NoteTimeoutUpdate:
 		bmi.w	@psgnoteoff			; If yes, branch
 		jsr	FMNoteOff(pc)
 		addq.w	#4,sp				; Do not return to caller
-		rts	
+		rts
 ; ===========================================================================
 ; loc_71DBE:
 @psgnoteoff:
@@ -432,7 +334,7 @@ NoteTimeoutUpdate:
 		addq.w	#4,sp		; Do not return to caller
 ; locret_71DC4:
 @locret:
-		rts	
+		rts
 ; End of function NoteTimeoutUpdate
 
 
@@ -446,13 +348,13 @@ DoModulation:
 		tst.b	TrackModulationWait(a5)	; Has modulation wait expired?
 		beq.s	@waitdone			; If yes, branch
 		subq.b	#1,TrackModulationWait(a5)	; Update wait timeout
-		rts	
+		rts
 ; ===========================================================================
 ; loc_71DDA:
 @waitdone:
 		subq.b	#1,TrackModulationSpeed(a5)	; Update speed
 		beq.s	@updatemodulation		; If it expired, want to update modulation
-		rts	
+		rts
 ; ===========================================================================
 ; loc_71DE2:
 @updatemodulation:
@@ -462,7 +364,7 @@ DoModulation:
 		bne.s	@calcfreq			; If nonzero, branch
 		move.b	3(a0),TrackModulationSteps(a5)	; Restore from modulation data
 		neg.b	TrackModulationDelta(a5)	; Negate modulation delta
-		rts	
+		rts
 ; ===========================================================================
 ; loc_71DFE:
 @calcfreq:
@@ -475,7 +377,7 @@ DoModulation:
 		subq.w	#4,sp		; In this case, we want to return to caller after all
 ; locret_71E16:
 @locret:
-		rts	
+		rts
 ; End of function DoModulation
 
 
@@ -503,12 +405,12 @@ FMUpdateFreq:
 		jsr	WriteFMIorII(pc)	; (It would be better if this were a jmp)
 ; locret_71E48:
 locret_71E48:
-		rts	
+		rts
 ; ===========================================================================
 ; loc_71E4A:
 FMSetRest:
 		bset	#1,(a5)		; Set 'track at rest' bit (TrackPlaybackControl)
-		rts	
+		rts
 ; End of function FMPrepareNote
 
 ; ===========================================================================
@@ -598,9 +500,9 @@ PauseMusic:
 ; Sound_Play:
 CycleSoundQueue:
 		movea.l	(Go_SoundPriorities).l,a0
-		lea	v_soundqueue0(a6),a1	; load music track number
+		lea	v_soundqueue(a6),a1	; load music track number
 		move.b	v_sndprio(a6),d3	; Get priority of currently playing SFX
-		moveq	#2,d4			; Number of queues-1 (v_soundqueue0, v_soundqueue1, v_soundqueue2)
+		moveq	#v_soundqueue_size-1,d4	; size of the sound queue
 ; loc_71F12:
 @inputloop:
 		move.b	(a1),d0			; move track number to d0
@@ -610,7 +512,7 @@ CycleSoundQueue:
 		bcs.s	@nextinput		; If negative (i.e., it was $80 or lower), branch
 		cmpi.b	#$80,v_sound_id(a6)	; Is v_sound_id a $80 (silence/empty)?
 		beq.s	@havesound		; If yes, branch
-		move.b	d1,v_soundqueue0(a6)	; Put sound into v_soundqueue0
+		move.b	d1,v_soundqueue(a6)	; Put sound into v_soundqueue+0
 		bra.s	@nextinput
 ; ===========================================================================
 ; loc_71F2C:
@@ -630,7 +532,7 @@ CycleSoundQueue:
 		move.b	d3,v_sndprio(a6)	; Set new sound priority
 ; locret_71F4A:
 @locret:
-		rts	
+		rts
 ; End of function CycleSoundQueue
 
 
@@ -665,7 +567,7 @@ PlaySoundID:
 		bls.s	Sound_E0toE4		; Branch if yes
 ; locret_71F8C:
 @locret:
-		rts	
+		rts
 ; ===========================================================================
 
 Sound_E0toE4:
@@ -695,13 +597,13 @@ PlaySegaSound:
 		move.w	#-1,d0
 ; loc_71FC4:
 @busyloop:
-		nop	
+		nop
 		dbf	d0,@busyloop
 
 		dbf	d1,@busyloop_outer
 
 		addq.w	#4,sp	; Tamper return value so we don't return to caller
-		rts	
+		rts
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Play music track $81-$9F
@@ -795,7 +697,7 @@ Sound_PlayBGM:
 		move.w	(a4)+,TrackTranspose(a1)	; load FM channel modifier
 		adda.w	d6,a1
 		dbf	d7,@bmg_fmloadloop
-		
+
 		cmpi.b	#7,2(a3)	; Are 7 FM tracks defined?
 		bne.s	@silencefm6
 		moveq	#$2B,d0		; DAC enable/disable register
@@ -901,7 +803,7 @@ Sound_PlayBGM:
 ; loc_721B6:
 @locdblret:
 		addq.w	#4,sp	; Tamper with return value to not return to caller
-		rts	
+		rts
 ; ===========================================================================
 ; byte_721BA:
 FMDACInitBytes:	dc.b 6,	0, 1, 2, 4, 5, 6	; first byte is for DAC; then notice the 0, 1, 2 then 4, 5, 6; this is the gap between parts I and II for YM2612 port writes
@@ -1016,12 +918,12 @@ Sound_PlaySFX:
 		bset	#2,v_spcsfx_psg3_track+TrackPlaybackControl(a6)	; Set 'SFX is overriding' bit
 ; locret_722C4:
 @locret:
-		rts	
+		rts
 ; ===========================================================================
 ; loc_722C6:
 @clear_sndprio:
 		clr.b	v_sndprio(a6)	; Clear priority
-		rts	
+		rts
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; RAM addresses for FM and PSG channel variables used by the SFX
@@ -1124,7 +1026,7 @@ Sound_PlaySpecial:
 		move.b	d4,(psg_input).l
 ; locret_723C6:
 @locret:
-		rts	
+		rts
 ; End of function PlaySoundID
 
 ; ===========================================================================
@@ -1221,7 +1123,7 @@ StopSFX:
 		adda.w	#TrackSz,a5
 		dbf	d7,@trackloop
 
-		rts	
+		rts
 ; End of function StopSFX
 
 
@@ -1263,7 +1165,7 @@ StopSpecialSFX:
 		move.b	TrackPSGNoise(a5),(psg_input).l ; Set noise type
 ; locret_724E4:
 @fadedpsg:
-		rts	
+		rts
 ; End of function StopSpecialSFX
 
 ; ===========================================================================
@@ -1278,7 +1180,7 @@ FadeOutMusic:
 		move.b	#$28,v_fadeout_counter(a6)		; Set fadeout counter
 		clr.b	v_music_dac_track+TrackPlaybackControl(a6)	; Stop DAC track
 		clr.b	f_speedup(a6)				; Disable speed shoes tempo
-		rts	
+		rts
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
@@ -1287,7 +1189,7 @@ DoFadeOut:
 		move.b	v_fadeout_delay(a6),d0	; Has fadeout delay expired?
 		beq.s	@continuefade		; Branch if yes
 		subq.b	#1,v_fadeout_delay(a6)
-		rts	
+		rts
 ; ===========================================================================
 ; loc_72510:
 @continuefade:
@@ -1333,7 +1235,7 @@ DoFadeOut:
 		adda.w	#TrackSz,a5
 		dbf	d7,@psgloop
 
-		rts	
+		rts
 ; End of function DoFadeOut
 
 
@@ -1367,7 +1269,7 @@ FMSilenceAll:
 		subi.b	#$F,d0		; Move to TL operator 1 of next channel
 		dbf	d4,@channelloop
 
-		rts	
+		rts
 ; End of function FMSilenceAll
 
 ; ===========================================================================
@@ -1405,8 +1307,8 @@ InitMusicPlayback:
 		move.b	f_1up_playing(a6),d2
 		move.b	f_speedup(a6),d3
 		move.b	v_fadein_counter(a6),d4
-		; DANGER! Only v_soundqueue0 and v_soundqueue1 are backed up, once again breaking v_soundqueue2
-		move.w	v_soundqueue0(a6),d5
+		; DANGER! Only v_soundqueue and v_soundqueue+1 are backed up, once again breaking v_soundqueue+2
+		move.w	v_soundqueue(a6),d5
 		move.w	#((v_music_track_ram_end-v_startofvariables)/4)-1,d0	; Clear $220 bytes: all variables and music track data
 ; loc_725E4:
 @clearramloop:
@@ -1418,7 +1320,7 @@ InitMusicPlayback:
 		move.b	d2,f_1up_playing(a6)
 		move.b	d3,f_speedup(a6)
 		move.b	d4,v_fadein_counter(a6)
-		move.w	d5,v_soundqueue0(a6)
+		move.w	d5,v_soundqueue(a6)
 		move.b	#$80,v_sound_id(a6)	; set music to $80 (silence)
 		; DANGER! This silences ALL channels, even the ones being used
 		; by SFX, and not music! @sendfmnoteoff does this already, and
@@ -1447,7 +1349,7 @@ InitMusicPlayback:
 		;dbf	d1,@writeloop		; Loop for all DAC/FM/PSG tracks
 
 		;rts
-	
+
 ; End of function InitMusicPlayback
 
 
@@ -1465,7 +1367,7 @@ TempoWait:
 		adda.w	d0,a0	; Advance to next track
 		dbf	d1,@tempoloop
 
-		rts	
+		rts
 ; End of function TempoWait
 
 ; ===========================================================================
@@ -1479,14 +1381,14 @@ SpeedUpMusic:
 		move.b	v_speeduptempo(a6),v_main_tempo(a6)
 		move.b	v_speeduptempo(a6),v_main_tempo_timeout(a6)
 		move.b	#$80,f_speedup(a6)
-		rts	
+		rts
 ; ===========================================================================
 ; loc_7263E:
 @speedup_1up:
 		move.b	v_1up_ram_copy+v_speeduptempo(a6),v_1up_ram_copy+v_main_tempo(a6)
 		move.b	v_1up_ram_copy+v_speeduptempo(a6),v_1up_ram_copy+v_main_tempo_timeout(a6)
 		move.b	#$80,v_1up_ram_copy+f_speedup(a6)
-		rts	
+		rts
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Change music back to normal speed
@@ -1498,14 +1400,14 @@ SlowDownMusic:
 		move.b	v_tempo_mod(a6),v_main_tempo(a6)
 		move.b	v_tempo_mod(a6),v_main_tempo_timeout(a6)
 		clr.b	f_speedup(a6)
-		rts	
+		rts
 ; ===========================================================================
 ; loc_7266A:
 @slowdown_1up:
 		move.b	v_1up_ram_copy+v_tempo_mod(a6),v_1up_ram_copy+v_main_tempo(a6)
 		move.b	v_1up_ram_copy+v_tempo_mod(a6),v_1up_ram_copy+v_main_tempo_timeout(a6)
 		clr.b	v_1up_ram_copy+f_speedup(a6)
-		rts	
+		rts
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
@@ -1514,7 +1416,7 @@ DoFadeIn:
 		tst.b	v_fadein_delay(a6)	; Has fadein delay expired?
 		beq.s	@continuefade		; Branch if yes
 		subq.b	#1,v_fadein_delay(a6)
-		rts	
+		rts
 ; ===========================================================================
 ; loc_72688:
 @continuefade:
@@ -1551,13 +1453,13 @@ DoFadeIn:
 @nextpsg:
 		adda.w	#TrackSz,a5
 		dbf	d7,@psgloop
-		rts	
+		rts
 ; ===========================================================================
 ; loc_726D6:
 @fadedone:
 		bclr	#2,v_music_dac_track+TrackPlaybackControl(a6)	; Clear 'SFX overriding' bit
 		clr.b	f_fadein_flag(a6)				; Stop fadein
-		rts	
+		rts
 ; End of function DoFadeIn
 
 ; ===========================================================================
@@ -1574,7 +1476,7 @@ FMNoteOn:
 ; ===========================================================================
 ; locret_726FC:
 @locret:
-		rts	
+		rts
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
@@ -1592,7 +1494,7 @@ SendFMNoteOff:
 ; ===========================================================================
 
 locret_72714:
-		rts	
+		rts
 ; End of function FMNoteOff
 
 ; ===========================================================================
@@ -1604,7 +1506,7 @@ WriteFMIorIIMain:
 ; ===========================================================================
 ; locret_72720:
 @locret:
-		rts	
+		rts
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
@@ -1629,9 +1531,9 @@ WriteFMI:
 		btst	#7,d2		; Is FM busy?
 		bne.s	WriteFMI	; Loop if so
 		move.b	d0,(ym2612_a0).l
-		nop	
-		nop	
-		nop	
+		nop
+		nop
+		nop
 ; loc_72746:
 @waitloop:
 		move.b	(ym2612_a0).l,d2
@@ -1639,7 +1541,7 @@ WriteFMI:
 		bne.s	@waitloop	; Loop if so
 
 		move.b	d1,(ym2612_d0).l
-		rts	
+		rts
 ; End of function WriteFMI
 
 ; ===========================================================================
@@ -1657,9 +1559,9 @@ WriteFMII:
 		btst	#7,d2		; Is FM busy?
 		bne.s	WriteFMII	; Loop if so
 		move.b	d0,(ym2612_a1).l
-		nop	
-		nop	
-		nop	
+		nop
+		nop
+		nop
 ; loc_7277C:
 @waitloop:
 		move.b	(ym2612_a0).l,d2
@@ -1667,7 +1569,7 @@ WriteFMII:
 		bne.s	@waitloop	; Loop if so
 
 		move.b	d1,(ym2612_d1).l
-		rts	
+		rts
 ; End of function WriteFMII
 
 ; ===========================================================================
@@ -1796,14 +1698,14 @@ PSGUpdateFreq:
 		move.b	d6,(psg_input).l
 ; locret_7291E:
 @locret:
-		rts	
+		rts
 ; End of function PSGUpdateFreq
 
 ; ===========================================================================
 ; loc_72920:
 PSGSetRest:
 		bset	#1,(a5)	; Set 'track at rest' bit (TrackPlaybackControl)
-		rts	
+		rts
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
@@ -1817,7 +1719,7 @@ PSGDoVolFX:	; This can actually be made a bit more efficient, see the comments f
 		moveq	#0,d0
 		move.b	TrackVoiceIndex(a5),d0	; Get PSG tone
 		beq.s	SetPSGVolume
-		movea.l	(Go_PSGIndex).l,a0
+		movea.l	(Go_Envelopes).l,a0
 		subq.w	#1,d0
 		lsl.w	#2,d0
 		movea.l	(a0,d0.w),a0
@@ -1854,7 +1756,7 @@ PSGSendVolume:
 		move.b	d6,(psg_input).l
 
 locret_7298A:
-		rts	
+		rts
 ; ===========================================================================
 ; loc_7298C: PSGCheckNoteFill:
 PSGCheckNoteTimeout:
@@ -1862,14 +1764,14 @@ PSGCheckNoteTimeout:
 		beq.s	PSGSendVolume			; Branch if not
 		tst.b	TrackNoteTimeout(a5)		; Has note timeout expired?
 		bne.s	PSGSendVolume			; Branch if not
-		rts	
+		rts
 ; End of function SetPSGVolume
 
 ; ===========================================================================
 ; loc_7299A: FlutterDone:
 VolEnvHold:
 		subq.b	#1,TrackVolEnvIndex(a5)	; Decrement volume envelope index
-		rts	
+		rts
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
@@ -1891,7 +1793,7 @@ SendPSGNoteOff:
 		;move.b	#$FF,(psg_input).l		; If so, stop noise channel while we're at it
 
 locret_729B4:
-		rts	
+		rts
 ; End of function PSGNoteOff
 
 
@@ -1904,7 +1806,7 @@ PSGSilenceAll:
 		move.b	#$BF,(a0)	; Silence PSG 2
 		move.b	#$DF,(a0)	; Silence PSG 3
 		move.b	#$FF,(a0)	; Silence noise channel
-		rts	
+		rts
 ; End of function PSGSilenceAll
 
 ; ===========================================================================
@@ -1998,17 +1900,17 @@ cfPanningAMSFMS:
 ; ===========================================================================
 
 locret_72AEA:
-		rts	
+		rts
 ; ===========================================================================
 ; loc_72AEC: cfAlterNotes:
 cfDetune:
 		move.b	(a4)+,TrackDetune(a5)	; Set detune value
-		rts	
+		rts
 ; ===========================================================================
 ; loc_72AF2: cfUnknown1:
 cfSetCommunication:
 		move.b	(a4)+,v_communication_byte(a6)	; Set otherwise unused communication byte to parameter
-		rts	
+		rts
 ; ===========================================================================
 ; loc_72AF8:
 cfJumpReturn:
@@ -2019,7 +1921,7 @@ cfJumpReturn:
 		addq.w	#2,a4			; Skip jump target address from gosub flag
 		addq.b	#4,d0			; Actually 'pop' value
 		move.b	d0,TrackStackPointer(a5) ; Set new stack pointer
-		rts	
+		rts
 ; ===========================================================================
 ; loc_72B14:
 cfFadeInToPrevious:
@@ -2066,19 +1968,19 @@ cfFadeInToPrevious:
 @nextpsg:
 		adda.w	#TrackSz,a5
 		dbf	d7,@psgloop
-		
+
 		movea.l	a3,a5
 		move.b	#$80,f_fadein_flag(a6)		; Trigger fade-in
 		move.b	#$28,v_fadein_counter(a6)	; Fade-in delay
 		clr.b	f_1up_playing(a6)
 		startZ80
 		addq.w	#8,sp		; Tamper return value so we don't return to caller
-		rts	
+		rts
 ; ===========================================================================
 ; loc_72B9E:
 cfSetTempoDivider:
 		move.b	(a4)+,TrackTempoDivider(a5)	; Set tempo divider on current track
-		rts	
+		rts
 ; ===========================================================================
 ; loc_72BA4: cfSetVolume:
 cfChangeFMVolume:
@@ -2089,25 +1991,25 @@ cfChangeFMVolume:
 ; loc_72BAE: cfPreventAttack:
 cfHoldNote:
 		bset	#4,(a5)		; Set 'do not attack next note' bit (TrackPlaybackControl)
-		rts	
+		rts
 ; ===========================================================================
 ; loc_72BB4: cfNoteFill
 cfNoteTimeout:
 		move.b	(a4),TrackNoteTimeout(a5)		; Note fill timeout
 		move.b	(a4)+,TrackNoteTimeoutMaster(a5)	; Note fill master
-		rts	
+		rts
 ; ===========================================================================
 ; loc_72BBE: cfAddKey:
 cfChangeTransposition:
 		move.b	(a4)+,d0		; Get parameter
 		add.b	d0,TrackTranspose(a5)	; Add to transpose value
-		rts	
+		rts
 ; ===========================================================================
 ; loc_72BC6:
 cfSetTempo:
 		move.b	(a4),v_main_tempo(a6)		; Set main tempo
 		move.b	(a4)+,v_main_tempo_timeout(a6)	; And reset timeout (!)
-		rts	
+		rts
 ; ===========================================================================
 ; loc_72BD0: cfSetTempoMod:
 cfSetTempoDividerAll:
@@ -2121,18 +2023,18 @@ cfSetTempoDividerAll:
 		adda.w	d1,a0
 		dbf	d2,@trackloop
 
-		rts	
+		rts
 ; ===========================================================================
 ; loc_72BE6: cfChangeVolume:
 cfChangePSGVolume:
 		move.b	(a4)+,d0		; Get volume change
 		add.b	d0,TrackVolume(a5)	; Apply it
-		rts	
+		rts
 ; ===========================================================================
 ; loc_72BEE:
 cfClearPush:
 		clr.b	f_push_playing(a6)	; Allow push sound to be played once more
-		rts	
+		rts
 ; ===========================================================================
 ; loc_72BF4:
 cfStopSpecialFM4:
@@ -2152,7 +2054,7 @@ cfStopSpecialFM4:
 ; loc_72C22:
 @locexit:
 		addq.w	#8,sp		; Tamper with return value so we don't return to caller
-		rts	
+		rts
 ; ===========================================================================
 ; loc_72C26:
 cfSetVoice:
@@ -2211,13 +2113,13 @@ SetVoice:
 @sendtl:
 		jsr	WriteFMIorII(pc)
 		dbf	d5,@sendtlloop
-		
+
 		move.b	#$B4,d0			; Register for AMS/FMS/Panning
 		move.b	TrackAMSFMSPan(a5),d1	; Value to send
 		jsr	WriteFMIorII(pc) 	; (It would be better if this were a jmp)
 
 locret_72CAA:
-		rts	
+		rts
 ; End of function SetVoice
 
 ; ===========================================================================
@@ -2274,7 +2176,7 @@ SendVoiceTL:
 		dbf	d5,@sendtlloop
 ; locret_72D16:
 @locret:
-		rts	
+		rts
 ; End of function SendVoiceTL
 
 ; ===========================================================================
@@ -2320,12 +2222,12 @@ cfModulation:
 		lsr.b	#1,d0				; ... divided by 2...
 		move.b	d0,TrackModulationSteps(a5)	; ... before being stored
 		clr.w	TrackModulationVal(a5)		; Total accumulated modulation frequency change
-		rts	
+		rts
 ; ===========================================================================
 ; loc_72D52:
 cfEnableModulation:
 		bset	#3,(a5)		; Turn on modulation (TrackPlaybackControl)
-		rts	
+		rts
 ; ===========================================================================
 ; loc_72D58:
 cfStopTrack:
@@ -2402,7 +2304,7 @@ cfStopTrack:
 ; loc_72E02:
 @locexit:
 		addq.w	#8,sp		; Tamper with return value so we don't go back to caller
-		rts	
+		rts
 ; ===========================================================================
 ; loc_72E06:
 cfSetPSGNoise:
@@ -2413,17 +2315,17 @@ cfSetPSGNoise:
 		move.b	-1(a4),(psg_input).l		; Set tone
 ; locret_72E1E:
 @locret:
-		rts	
+		rts
 ; ===========================================================================
 ; loc_72E20:
 cfDisableModulation:
 		bclr	#3,(a5)		; Disable modulation (TrackPlaybackControl)
-		rts	
+		rts
 ; ===========================================================================
 ; loc_72E26:
 cfSetPSGTone:
 		move.b	(a4)+,TrackVoiceIndex(a5)	; Set current PSG tone
-		rts	
+		rts
 ; ===========================================================================
 ; loc_72E2C:
 cfJumpTo:
@@ -2432,7 +2334,7 @@ cfJumpTo:
 		move.b	(a4)+,d0	; Low byte of offset
 		adda.w	d0,a4		; Add to current position
 		subq.w	#1,a4		; Put back one byte
-		rts	
+		rts
 ; ===========================================================================
 ; loc_72E38:
 cfRepeatAtPos:
@@ -2447,7 +2349,7 @@ cfRepeatAtPos:
 		subq.b	#1,TrackLoopCounters(a5,d0.w)	; Decrease loop's repeat count
 		bne.s	cfJumpTo			; If nonzero, branch to target
 		addq.w	#2,a4				; Skip target address
-		rts	
+		rts
 ; ===========================================================================
 ; loc_72E52:
 cfJumpToGosub:
@@ -2467,228 +2369,3 @@ cfOpF9:
 		move.b	#$F,d1		; Loaded with fixed value (max RR, 1TL)
 		bra.w	WriteFMI
 ; ===========================================================================
-
-Kos_Z80:
-		incbin	"sound\DAC Driver.kos", 0, $15
-		dc.b ((SegaPCM&$FF8000)/$8000)&1					; Least bit of bank ID (bit 15 of address)
-		incbin	"sound\DAC Driver.kos", $16, 6
-		dc.b ((SegaPCM&$FF8000)/$8000)>>1					; ... the remaining bits of bank ID (bits 16-23)
-		incbin	"sound\DAC Driver.kos", $1D, $93
-		dc.w ((SegaPCM&$FF)<<8)+((SegaPCM&$7F00)>>8)|$80			; Pointer to Sega PCM, relative to start of ROM bank (i.e., little_endian($8000 + SegaPCM&$7FFF)
-		incbin	"sound\DAC Driver.kos", $B2, 1
-		dc.w (((SegaPCM_End-SegaPCM)&$FF)<<8)+(((SegaPCM_End-SegaPCM)&$FF00)>>8); ... the size of the Sega PCM (little endian)
-		incbin	"sound\DAC Driver.kos", $B5, $16AB
-		even
-
-Music81:	incbin	"sound/music/Mus81 - GHZ.bin"
-		even
-Music82:	incbin	"sound/music/Mus82 - LZ.bin"
-		even
-Music83:	incbin	"sound/music/Mus83 - MZ.bin"
-		even
-Music84:	incbin	"sound/music/Mus84 - SLZ.bin"
-		even
-Music85:	incbin	"sound/music/Mus85 - SYZ.bin"
-		even
-Music86:	incbin	"sound/music/Mus86 - SBZ.bin"
-		even
-Music87:	incbin	"sound/music/Mus87 - Invincibility.bin"
-		even
-Music88:	incbin	"sound/music/Mus88 - Extra Life.bin"
-		even
-Music89:	incbin	"sound/music/Mus89 - Special Stage.bin"
-		even
-Music8A:	incbin	"sound/music/Mus8A - Title Screen.bin"
-		even
-Music8B:	incbin	"sound/music/Mus8B - Ending.bin"
-		even
-Music8C:	incbin	"sound/music/Mus8C - Boss.bin"
-		even
-Music8D:	incbin	"sound/music/Mus8D - FZ.bin"
-		even
-Music8E:	incbin	"sound/music/Mus8E - Sonic Got Through.bin"
-		even
-Music8F:	incbin	"sound/music/Mus8F - Game Over.bin"
-		even
-Music90:	incbin	"sound/music/Mus90 - Continue Screen.bin"
-		even
-Music91:	incbin	"sound/music/Mus91 - Credits.bin"
-		even
-Music92:	incbin	"sound/music/Mus92 - Drowning.bin"
-		even
-Music93:	incbin	"sound/music/Mus93 - Get Emerald.bin"
-		even
-; ---------------------------------------------------------------------------
-; Sound	effect pointers
-; ---------------------------------------------------------------------------
-SoundIndex:
-ptr_sndA0:	dc.l SoundA0
-ptr_sndA1:	dc.l SoundA1
-ptr_sndA2:	dc.l SoundA2
-ptr_sndA3:	dc.l SoundA3
-ptr_sndA4:	dc.l SoundA4
-ptr_sndA5:	dc.l SoundA5
-ptr_sndA6:	dc.l SoundA6
-ptr_sndA7:	dc.l SoundA7
-ptr_sndA8:	dc.l SoundA8
-ptr_sndA9:	dc.l SoundA9
-ptr_sndAA:	dc.l SoundAA
-ptr_sndAB:	dc.l SoundAB
-ptr_sndAC:	dc.l SoundAC
-ptr_sndAD:	dc.l SoundAD
-ptr_sndAE:	dc.l SoundAE
-ptr_sndAF:	dc.l SoundAF
-ptr_sndB0:	dc.l SoundB0
-ptr_sndB1:	dc.l SoundB1
-ptr_sndB2:	dc.l SoundB2
-ptr_sndB3:	dc.l SoundB3
-ptr_sndB4:	dc.l SoundB4
-ptr_sndB5:	dc.l SoundB5
-ptr_sndB6:	dc.l SoundB6
-ptr_sndB7:	dc.l SoundB7
-ptr_sndB8:	dc.l SoundB8
-ptr_sndB9:	dc.l SoundB9
-ptr_sndBA:	dc.l SoundBA
-ptr_sndBB:	dc.l SoundBB
-ptr_sndBC:	dc.l SoundBC
-ptr_sndBD:	dc.l SoundBD
-ptr_sndBE:	dc.l SoundBE
-ptr_sndBF:	dc.l SoundBF
-ptr_sndC0:	dc.l SoundC0
-ptr_sndC1:	dc.l SoundC1
-ptr_sndC2:	dc.l SoundC2
-ptr_sndC3:	dc.l SoundC3
-ptr_sndC4:	dc.l SoundC4
-ptr_sndC5:	dc.l SoundC5
-ptr_sndC6:	dc.l SoundC6
-ptr_sndC7:	dc.l SoundC7
-ptr_sndC8:	dc.l SoundC8
-ptr_sndC9:	dc.l SoundC9
-ptr_sndCA:	dc.l SoundCA
-ptr_sndCB:	dc.l SoundCB
-ptr_sndCC:	dc.l SoundCC
-ptr_sndCD:	dc.l SoundCD
-ptr_sndCE:	dc.l SoundCE
-ptr_sndCF:	dc.l SoundCF
-ptr_sndend
-; ---------------------------------------------------------------------------
-; Special sound effect pointers
-; ---------------------------------------------------------------------------
-SpecSoundIndex:
-ptr_sndD0:	dc.l SoundD0
-ptr_specend
-SoundA0:	incbin	"sound/sfx/SndA0 - Jump.bin"
-		even
-SoundA1:	incbin	"sound/sfx/SndA1 - Lamppost.bin"
-		even
-SoundA2:	incbin	"sound/sfx/SndA2.bin"
-		even
-SoundA3:	incbin	"sound/sfx/SndA3 - Death.bin"
-		even
-SoundA4:	incbin	"sound/sfx/SndA4 - Skid.bin"
-		even
-SoundA5:	incbin	"sound/sfx/SndA5.bin"
-		even
-SoundA6:	incbin	"sound/sfx/SndA6 - Hit Spikes.bin"
-		even
-SoundA7:	incbin	"sound/sfx/SndA7 - Push Block.bin"
-		even
-SoundA8:	incbin	"sound/sfx/SndA8 - SS Goal.bin"
-		even
-SoundA9:	incbin	"sound/sfx/SndA9 - SS Item.bin"
-		even
-SoundAA:	incbin	"sound/sfx/SndAA - Splash.bin"
-		even
-SoundAB:	incbin	"sound/sfx/SndAB.bin"
-		even
-SoundAC:	incbin	"sound/sfx/SndAC - Hit Boss.bin"
-		even
-SoundAD:	incbin	"sound/sfx/SndAD - Get Bubble.bin"
-		even
-SoundAE:	incbin	"sound/sfx/SndAE - Fireball.bin"
-		even
-SoundAF:	incbin	"sound/sfx/SndAF - Shield.bin"
-		even
-SoundB0:	incbin	"sound/sfx/SndB0 - Saw.bin"
-		even
-SoundB1:	incbin	"sound/sfx/SndB1 - Electric.bin"
-		even
-SoundB2:	incbin	"sound/sfx/SndB2 - Drown Death.bin"
-		even
-SoundB3:	incbin	"sound/sfx/SndB3 - Flamethrower.bin"
-		even
-SoundB4:	incbin	"sound/sfx/SndB4 - Bumper.bin"
-		even
-SoundB5:	incbin	"sound/sfx/SndB5 - Ring.bin"
-		even
-SoundB6:	incbin	"sound/sfx/SndB6 - Spikes Move.bin"
-		even
-SoundB7:	incbin	"sound/sfx/SndB7 - Rumbling.bin"
-		even
-SoundB8:	incbin	"sound/sfx/SndB8.bin"
-		even
-SoundB9:	incbin	"sound/sfx/SndB9 - Collapse.bin"
-		even
-SoundBA:	incbin	"sound/sfx/SndBA - SS Glass.bin"
-		even
-SoundBB:	incbin	"sound/sfx/SndBB - Door.bin"
-		even
-SoundBC:	incbin	"sound/sfx/SndBC - Teleport.bin"
-		even
-SoundBD:	incbin	"sound/sfx/SndBD - ChainStomp.bin"
-		even
-SoundBE:	incbin	"sound/sfx/SndBE - Roll.bin"
-		even
-SoundBF:	incbin	"sound/sfx/SndBF - Get Continue.bin"
-		even
-SoundC0:	incbin	"sound/sfx/SndC0 - Basaran Flap.bin"
-		even
-SoundC1:	incbin	"sound/sfx/SndC1 - Break Item.bin"
-		even
-SoundC2:	incbin	"sound/sfx/SndC2 - Drown Warning.bin"
-		even
-SoundC3:	incbin	"sound/sfx/SndC3 - Giant Ring.bin"
-		even
-SoundC4:	incbin	"sound/sfx/SndC4 - Bomb.bin"
-		even
-SoundC5:	incbin	"sound/sfx/SndC5 - Cash Register.bin"
-		even
-SoundC6:	incbin	"sound/sfx/SndC6 - Ring Loss.bin"
-		even
-SoundC7:	incbin	"sound/sfx/SndC7 - Chain Rising.bin"
-		even
-SoundC8:	incbin	"sound/sfx/SndC8 - Burning.bin"
-		even
-SoundC9:	incbin	"sound/sfx/SndC9 - Hidden Bonus.bin"
-		even
-SoundCA:	incbin	"sound/sfx/SndCA - Enter SS.bin"
-		even
-SoundCB:	incbin	"sound/sfx/SndCB - Wall Smash.bin"
-		even
-SoundCC:	incbin	"sound/sfx/SndCC - Spring.bin"
-		even
-SoundCD:	incbin	"sound/sfx/SndCD - Switch.bin"
-		even
-SoundCE:	incbin	"sound/sfx/SndCE - Ring Left Speaker.bin"
-		even
-SoundCF:	incbin	"sound/sfx/SndCF - Signpost.bin"
-		even
-SoundD0:	incbin	"sound/sfx/SndD0 - Waterfall.bin"
-		even
-
-		; Don't let Sega sample cross $8000-byte boundary
-		; (DAC driver doesn't switch banks automatically)
-		if (*&$7FFF)+Size_of_SegaPCM>$8000
-			align $8000
-		endif
-SegaPCM:	incbin	"sound/dac/sega.pcm"
-SegaPCM_End
-		even
-
-		if SegaPCM_End-SegaPCM>$8000
-			inform 3,"Sega sound must fit within $8000 bytes, but you have a $%h byte Sega sound.",SegaPCM_End-SegaPCM
-		endc
-		if SegaPCM_End-SegaPCM>Size_of_SegaPCM
-			inform 3,"Size_of_SegaPCM = $%h, but you have a $%h byte Sega sound.",Size_of_SegaPCM,SegaPCM_End-SegaPCM
-		endc
-
