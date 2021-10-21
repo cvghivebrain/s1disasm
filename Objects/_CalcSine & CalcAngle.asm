@@ -67,6 +67,7 @@ CalcSqrt:
 		movem.l	(sp)+,d1-d2
 		rts
 		endc
+; End of function CalcSqrt
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to convert x/y distance to an angle
