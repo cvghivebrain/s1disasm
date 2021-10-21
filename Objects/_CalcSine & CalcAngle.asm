@@ -24,11 +24,21 @@ CalcSine:
 
 Sine_Data:	incbin	"Misc Data\Sine & Cosine Waves.bin" ; values for a 360 degree sine wave
 
-; ===========================================================================
+; ---------------------------------------------------------------------------
+; Subroutine to calcuate the square root of a number (0 to $FFFF)
 
-; The following code is unused garbage.
+; input:
+;	d0 = number
+
+; output:
+;	d0 = square root of number
+; ---------------------------------------------------------------------------
+
+; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+
 
 		if Revision=0
+CalcSqrt:
 		movem.l	d1-d2,-(sp)
 		move.w	d0,d1
 		swap	d1
