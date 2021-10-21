@@ -126,7 +126,7 @@ SmashObject:
 		dbf	d1,@loop
 
 	@playsnd:
-		sfx	sfx_WallSmash,1,0,0 ; play smashing sound
+		sfx	sfx_Smash,1,0,0 ; play smashing sound
 
 ; End of function SmashObject
 

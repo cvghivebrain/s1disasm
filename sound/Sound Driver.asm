@@ -508,7 +508,7 @@ CycleSoundQueue:
 		move.b	(a1),d0			; move track number to d0
 		move.b	d0,d1
 		clr.b	(a1)+			; Clear entry
-		subi.b	#bgm__First,d0		; Make it into 0-based index
+		subi.b	#_firstMusic,d0		; Make it into 0-based index
 		bcs.s	@nextinput		; If negative (i.e., it was $80 or lower), branch
 		cmpi.b	#$80,v_sound_id(a6)	; Is v_sound_id a $80 (silence/empty)?
 		beq.s	@havesound		; If yes, branch
@@ -542,28 +542,28 @@ CycleSoundQueue:
 PlaySoundID:
 		moveq	#0,d7
 		move.b	v_sound_id(a6),d7
-		beq.w	StopAllSound
+		beq.w	SoundCmd_Stop
 		bpl.s	@locret			; If >= 0, return (not a valid sound, bgm or command)
 		move.b	#$80,v_sound_id(a6)	; reset	music flag
 		; DANGER! Music ends at $93, yet this checks until $9F; attempting to
 		; play sounds $94-$9F will cause a crash! Remove the '+$C' to fix this.
 		; See LevSel_NoCheat for more.
-		cmpi.b	#bgm__Last+$C,d7	; Is this music ($81-$9F)?
+		cmpi.b	#_lastMusic+$C,d7	; Is this music ($81-$9F)?
 		bls.w	Sound_PlayBGM		; Branch if yes
-		cmpi.b	#sfx__First,d7		; Is this after music but before sfx? (redundant check)
+		cmpi.b	#_firstSfx,d7		; Is this after music but before sfx? (redundant check)
 		blo.w	@locret			; Return if yes
-		cmpi.b	#sfx__Last,d7		; Is this sfx ($A0-$CF)?
+		cmpi.b	#_lastSfx,d7		; Is this sfx ($A0-$CF)?
 		bls.w	Sound_PlaySFX		; Branch if yes
-		cmpi.b	#spec__First,d7		; Is this after sfx but before special sfx? (redundant check)
+		cmpi.b	#_firstSpecSfx,d7		; Is this after sfx but before special sfx? (redundant check)
 		blo.w	@locret			; Return if yes
 		; DANGER! Special SFXes end at $D0, yet this checks until $DF; attempting to
 		; play sounds $D1-$DF will cause a crash! Remove the '+$10' and change the 'blo' to a 'bls'
 		; and uncomment the two lines below to fix this.
-		cmpi.b	#spec__Last+$10,d7	; Is this special sfx ($D0-$DF)?
+		cmpi.b	#_lastSpecSfx+$10,d7	; Is this special sfx ($D0-$DF)?
 		blo.w	Sound_PlaySpecial	; Branch if yes
-		;cmpi.b	#flg__First,d7		; Is this after special sfx but before $E0?
+		;cmpi.b	#_firstCmd,d7		; Is this after special sfx but before $E0?
 		;blo.w	@locret			; Return if yes
-		cmpi.b	#flg__Last,d7		; Is this $E0-$E4?
+		cmpi.b	#_lastCmd,d7		; Is this $E0-$E4?
 		bls.s	Sound_E0toE4		; Branch if yes
 ; locret_71F8C:
 @locret:
@@ -571,24 +571,24 @@ PlaySoundID:
 ; ===========================================================================
 
 Sound_E0toE4:
-		subi.b	#flg__First,d7
+		subi.b	#_firstCmd,d7
 		lsl.w	#2,d7
 		jmp	Sound_ExIndex(pc,d7.w)
 ; ===========================================================================
 
+GenSoundCmds	macro	name
+		bra.w	SoundCmd_\name			; generate a jump for every command
+		endm
+
 Sound_ExIndex:
-ptr_flgE0:	bra.w	FadeOutMusic		; $E0
-ptr_flgE1:	bra.w	PlaySegaSound		; $E1
-ptr_flgE2:	bra.w	SpeedUpMusic		; $E2
-ptr_flgE3:	bra.w	SlowDownMusic		; $E3
-ptr_flgE4:	bra.w	StopAllSound		; $E4
-ptr_flgend
+		DriverCmdFiles	GenSoundCmds		; generate includes for all the files
+
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Play "Say-gaa" PCM sound
 ; ---------------------------------------------------------------------------
 ; Sound_E1: PlaySega:
-PlaySegaSound:
+SoundCmd_Sega:
 		move.b	#$88,(z80_dac_sample).l	; Queue Sega PCM
 		startZ80
 		move.w	#$11,d1
@@ -610,7 +610,7 @@ PlaySegaSound:
 ; ---------------------------------------------------------------------------
 ; Sound_81to9F:
 Sound_PlayBGM:
-		cmpi.b	#bgm_ExtraLife,d7	; is the "extra life" music to be played?
+		cmpi.b	#mus_ExtraLife,d7	; is the "extra life" music to be played?
 		bne.s	@bgmnot1up		; if not, branch
 		tst.b	f_1up_playing(a6)	; Is a 1-up music playing?
 		bne.w	@locdblret		; if yes, branch
@@ -651,7 +651,7 @@ Sound_PlayBGM:
 @bgm_loadMusic:
 		jsr	InitMusicPlayback(pc)
 		movea.l	(Go_SpeedUpIndex).l,a4
-		subi.b	#bgm__First,d7
+		subi.b	#_firstMusic,d7
 		move.b	(a4,d7.w),v_speeduptempo(a6)
 		movea.l	(Go_MusicIndex).l,a4
 		lsl.w	#2,d7
@@ -841,7 +841,7 @@ Sound_PlaySFX:
 ; Sound_notA7:
 @sfx_notPush:
 		movea.l	(Go_SoundIndex).l,a0
-		subi.b	#sfx__First,d7		; Make it 0-based
+		subi.b	#_firstSfx,d7		; Make it 0-based
 		lsl.w	#2,d7			; Convert sfx ID into index
 		movea.l	(a0,d7.w),a3		; SFX data pointer
 		movea.l	a3,a1
@@ -961,7 +961,7 @@ Sound_PlaySpecial:
 		tst.b	f_fadein_flag(a6)	; Is music being faded in?
 		bne.w	@locret			; Exit if it is
 		movea.l	(Go_SpecSoundIndex).l,a0
-		subi.b	#spec__First,d7		; Make it 0-based
+		subi.b	#_firstSpecSfx,d7		; Make it 0-based
 		lsl.w	#2,d7
 		movea.l	(a0,d7.w),a3
 		movea.l	a3,a1
@@ -1173,7 +1173,7 @@ StopSpecialSFX:
 ; Fade out music
 ; ---------------------------------------------------------------------------
 ; Sound_E0:
-FadeOutMusic:
+SoundCmd_Fade:
 		jsr	StopSFX(pc)
 		jsr	StopSpecialSFX(pc)
 		move.b	#3,v_fadeout_delay(a6)			; Set fadeout delay to 3
@@ -1194,7 +1194,7 @@ DoFadeOut:
 ; loc_72510:
 @continuefade:
 		subq.b	#1,v_fadeout_counter(a6)	; Update fade counter
-		beq.w	StopAllSound			; Branch if fade is done
+		beq.w	SoundCmd_Stop			; Branch if fade is done
 		move.b	#3,v_fadeout_delay(a6)		; Reset fade delay
 		lea	v_music_fm_tracks(a6),a5
 		moveq	#((v_music_fm_tracks_end-v_music_fm_tracks)/TrackSz)-1,d7	; 6 FM tracks
@@ -1277,7 +1277,7 @@ FMSilenceAll:
 ; Stop music
 ; ---------------------------------------------------------------------------
 ; Sound_E4: StopSoundAndMusic:
-StopAllSound:
+SoundCmd_Stop:
 		moveq	#$2B,d0		; Enable/disable DAC
 		move.b	#$80,d1		; Enable DAC
 		jsr	WriteFMI(pc)
@@ -1375,7 +1375,7 @@ TempoWait:
 ; Speed	up music
 ; ---------------------------------------------------------------------------
 ; Sound_E2:
-SpeedUpMusic:
+SoundCmd_Speedup:
 		tst.b	f_1up_playing(a6)
 		bne.s	@speedup_1up
 		move.b	v_speeduptempo(a6),v_main_tempo(a6)
@@ -1394,7 +1394,7 @@ SpeedUpMusic:
 ; Change music back to normal speed
 ; ---------------------------------------------------------------------------
 ; Sound_E3:
-SlowDownMusic:
+SoundCmd_Slowdown:
 		tst.b	f_1up_playing(a6)
 		bne.s	@slowdown_1up
 		move.b	v_tempo_mod(a6),v_main_tempo(a6)

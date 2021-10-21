@@ -58,7 +58,7 @@ Pow_ChkSonic:
 	ExtraLife:
 		addq.b	#1,(v_lives).w	; add 1 to the number of lives you have
 		addq.b	#1,(f_hud_lives_update).w ; update the lives counter
-		music	bgm_ExtraLife,1,0,0 ; play extra life music
+		music	mus_ExtraLife,1,0,0 ; play extra life music
 ; ===========================================================================
 
 Pow_ChkShoes:
@@ -70,7 +70,7 @@ Pow_ChkShoes:
 		move.w	#$C00,(v_sonic_max_speed).w ; change Sonic's top speed
 		move.w	#$18,(v_sonic_acceleration).w	; change Sonic's acceleration
 		move.w	#$80,(v_sonic_deceleration).w	; change Sonic's deceleration
-		music	bgm_Speedup,1,0,0 ; speed up the music
+		music	cmd_Speedup,1,0,0 ; speed up the music
 ; ===========================================================================
 
 Pow_ChkShield:
@@ -103,7 +103,7 @@ Pow_ChkInvinc:
 			cmpi.w	#$C,(v_air).w
 			bls.s	Pow_NoMusic
 		endc
-		music	bgm_Invincible,1,0,0 ; play invincibility music
+		music	mus_Invincible,1,0,0 ; play invincibility music
 ; ===========================================================================
 
 Pow_NoMusic:

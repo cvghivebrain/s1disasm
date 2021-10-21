@@ -40,7 +40,7 @@ Obj74_Main:	; Routine 0
 ; Original fireball launched from Eggman's ship
 Obj74_First:
 		move.b	#30,ost_bfire_wait_time(a0) ; wait half a second before dropping
-		sfx	sfx_Fireball,0,0,0 ; play lava sound
+		sfx	sfx_LavaBall,0,0,0 ; play lava sound
 
 Obj74_Action:	; Routine 2
 		moveq	#0,d0

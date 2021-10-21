@@ -133,7 +133,7 @@ loc_189FE:
 		tst.b	ost_bslz_flash_num(a0)
 		bne.s	loc_18A28
 		move.b	#$20,ost_bslz_flash_num(a0)
-		sfx	sfx_HitBoss,0,0,0 ; play boss damage sound
+		sfx	sfx_BossHit,0,0,0 ; play boss damage sound
 
 loc_18A28:
 		lea	(v_pal_dry+$22).w,a1
@@ -309,7 +309,7 @@ loc_18BAE:
 
 loc_18BB4:
 		clr.w	ost_y_vel(a0)
-		music	bgm_SLZ,0,0,0	; play SLZ music
+		music	mus_SLZ,0,0,0	; play SLZ music
 
 loc_18BC2:
 		bra.w	loc_189EE

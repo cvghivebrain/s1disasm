@@ -297,7 +297,7 @@ HurtSonic:
 		bne.s	@sound		; if not, branch
 		cmpi.b	#id_Harpoon,(a2) ; was damage caused by LZ harpoon?
 		bne.s	@sound		; if not, branch
-		move.w	#sfx_HitSpikes,d0 ; load spikes damage sound
+		move.w	#sfx_SpikeHit,d0 ; load spikes damage sound
 
 	@sound:
 		jsr	(PlaySound_Special).l
@@ -332,7 +332,7 @@ KillSonic:
 		move.w	#sfx_Death,d0	; play normal death sound
 		cmpi.b	#id_Spikes,(a2)	; check	if you were killed by spikes
 		bne.s	@sound
-		move.w	#sfx_HitSpikes,d0 ; play spikes death sound
+		move.w	#sfx_SpikeHit,d0 ; play spikes death sound
 
 	@sound:
 		jsr	(PlaySound_Special).l

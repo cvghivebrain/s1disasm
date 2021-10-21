@@ -92,12 +92,12 @@ Sonic_Modes:	index *,,2
 ; Music	to play	after invincibility wears off
 ; ---------------------------------------------------------------------------
 MusicList2:
-		dc.b bgm_GHZ
-		dc.b bgm_LZ
-		dc.b bgm_MZ
-		dc.b bgm_SLZ
-		dc.b bgm_SYZ
-		dc.b bgm_SBZ
+		dc.b mus_GHZ
+		dc.b mus_LZ
+		dc.b mus_MZ
+		dc.b mus_SLZ
+		dc.b mus_SYZ
+		dc.b mus_SBZ
 		zonewarning MusicList2,1
 		; The ending doesn't get an entry
 		even
@@ -152,7 +152,7 @@ Sonic_Display:
 		move.w	#$C,(v_sonic_acceleration).w ; restore Sonic's acceleration
 		move.w	#$80,(v_sonic_deceleration).w ; restore Sonic's deceleration
 		move.b	#0,(v_shoes).w	; cancel speed shoes
-		music	bgm_Slowdown,1,0,0 ; run music at normal speed
+		music	cmd_Slowdown,1,0,0 ; run music at normal speed
 
 	@exit:
 		rts	
@@ -1438,7 +1438,7 @@ GameOver:
 		clr.b	(f_time_over).w
 
 loc_138C2:
-		music	bgm_GameOver,0,0,0	; play game over music
+		music	mus_GameOver,0,0,0	; play game over music
 		moveq	#3,d0
 		jmp	(AddPLC).l	; load game over patterns
 ; ===========================================================================

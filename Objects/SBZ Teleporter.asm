@@ -94,7 +94,7 @@ Tele_Bump:	; Routine 4
 		bne.s	locret_16796	; if not, branch
 		bsr.w	Tele_Move
 		addq.b	#2,ost_routine(a0)
-		sfx	sfx_Teleport,0,0,0 ; play teleport sound
+		sfx	sfx_Dash,0,0,0 ; play teleport sound
 
 locret_16796:
 		rts	

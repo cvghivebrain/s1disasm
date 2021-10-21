@@ -122,92 +122,48 @@ v_1up_ram_copy:		rs.b v_music_track_ram_end-v_startofvariables
 ; ---------------------------------------------------------------------------
 
 ; Background music
-bgm__First:	equ $81
-bgm_GHZ:	equ ((ptr_mus81-MusicIndex)/4)+bgm__First
-bgm_LZ:		equ ((ptr_mus82-MusicIndex)/4)+bgm__First
-bgm_MZ:		equ ((ptr_mus83-MusicIndex)/4)+bgm__First
-bgm_SLZ:	equ ((ptr_mus84-MusicIndex)/4)+bgm__First
-bgm_SYZ:	equ ((ptr_mus85-MusicIndex)/4)+bgm__First
-bgm_SBZ:	equ ((ptr_mus86-MusicIndex)/4)+bgm__First
-bgm_Invincible:	equ ((ptr_mus87-MusicIndex)/4)+bgm__First
-bgm_ExtraLife:	equ ((ptr_mus88-MusicIndex)/4)+bgm__First
-bgm_SS:		equ ((ptr_mus89-MusicIndex)/4)+bgm__First
-bgm_Title:	equ ((ptr_mus8A-MusicIndex)/4)+bgm__First
-bgm_Ending:	equ ((ptr_mus8B-MusicIndex)/4)+bgm__First
-bgm_Boss:	equ ((ptr_mus8C-MusicIndex)/4)+bgm__First
-bgm_FZ:		equ ((ptr_mus8D-MusicIndex)/4)+bgm__First
-bgm_GotThrough:	equ ((ptr_mus8E-MusicIndex)/4)+bgm__First
-bgm_GameOver:	equ ((ptr_mus8F-MusicIndex)/4)+bgm__First
-bgm_Continue:	equ ((ptr_mus90-MusicIndex)/4)+bgm__First
-bgm_Credits:	equ ((ptr_mus91-MusicIndex)/4)+bgm__First
-bgm_Drowning:	equ ((ptr_mus92-MusicIndex)/4)+bgm__First
-bgm_Emerald:	equ ((ptr_mus93-MusicIndex)/4)+bgm__First
-bgm__Last:	equ ((ptr_musend-MusicIndex-4)/4)+bgm__First
+		rsset $81				; ID of the first music file
+_firstMusic	rs.b 0					; constant for the first music
+
+GenMusicConst	macro	name
+mus_\name	rs.b 1					; use the next ID for music
+		endm
+
+		MusicFiles	GenMusicConst		; generate constants for each music file
+_lastMusic	equ __rs-1				; constant for the last music
+; ---------------------------------------------------------------------------
 
 ; Sound effects
-sfx__First:	equ $A0
-sfx_Jump:	equ ((ptr_sndA0-SoundIndex)/4)+sfx__First
-sfx_Lamppost:	equ ((ptr_sndA1-SoundIndex)/4)+sfx__First
-sfx_A2:		equ ((ptr_sndA2-SoundIndex)/4)+sfx__First
-sfx_Death:	equ ((ptr_sndA3-SoundIndex)/4)+sfx__First
-sfx_Skid:	equ ((ptr_sndA4-SoundIndex)/4)+sfx__First
-sfx_A5:		equ ((ptr_sndA5-SoundIndex)/4)+sfx__First
-sfx_HitSpikes:	equ ((ptr_sndA6-SoundIndex)/4)+sfx__First
-sfx_Push:	equ ((ptr_sndA7-SoundIndex)/4)+sfx__First
-sfx_SSGoal:	equ ((ptr_sndA8-SoundIndex)/4)+sfx__First
-sfx_SSItem:	equ ((ptr_sndA9-SoundIndex)/4)+sfx__First
-sfx_Splash:	equ ((ptr_sndAA-SoundIndex)/4)+sfx__First
-sfx_AB:		equ ((ptr_sndAB-SoundIndex)/4)+sfx__First
-sfx_HitBoss:	equ ((ptr_sndAC-SoundIndex)/4)+sfx__First
-sfx_Bubble:	equ ((ptr_sndAD-SoundIndex)/4)+sfx__First
-sfx_Fireball:	equ ((ptr_sndAE-SoundIndex)/4)+sfx__First
-sfx_Shield:	equ ((ptr_sndAF-SoundIndex)/4)+sfx__First
-sfx_Saw:	equ ((ptr_sndB0-SoundIndex)/4)+sfx__First
-sfx_Electric:	equ ((ptr_sndB1-SoundIndex)/4)+sfx__First
-sfx_Drown:	equ ((ptr_sndB2-SoundIndex)/4)+sfx__First
-sfx_Flamethrower:equ ((ptr_sndB3-SoundIndex)/4)+sfx__First
-sfx_Bumper:	equ ((ptr_sndB4-SoundIndex)/4)+sfx__First
-sfx_Ring:	equ ((ptr_sndB5-SoundIndex)/4)+sfx__First
-sfx_SpikesMove:	equ ((ptr_sndB6-SoundIndex)/4)+sfx__First
-sfx_Rumbling:	equ ((ptr_sndB7-SoundIndex)/4)+sfx__First
-sfx_B8:		equ ((ptr_sndB8-SoundIndex)/4)+sfx__First
-sfx_Collapse:	equ ((ptr_sndB9-SoundIndex)/4)+sfx__First
-sfx_SSGlass:	equ ((ptr_sndBA-SoundIndex)/4)+sfx__First
-sfx_Door:	equ ((ptr_sndBB-SoundIndex)/4)+sfx__First
-sfx_Teleport:	equ ((ptr_sndBC-SoundIndex)/4)+sfx__First
-sfx_ChainStomp:	equ ((ptr_sndBD-SoundIndex)/4)+sfx__First
-sfx_Roll:	equ ((ptr_sndBE-SoundIndex)/4)+sfx__First
-sfx_Continue:	equ ((ptr_sndBF-SoundIndex)/4)+sfx__First
-sfx_Basaran:	equ ((ptr_sndC0-SoundIndex)/4)+sfx__First
-sfx_BreakItem:	equ ((ptr_sndC1-SoundIndex)/4)+sfx__First
-sfx_Warning:	equ ((ptr_sndC2-SoundIndex)/4)+sfx__First
-sfx_GiantRing:	equ ((ptr_sndC3-SoundIndex)/4)+sfx__First
-sfx_Bomb:	equ ((ptr_sndC4-SoundIndex)/4)+sfx__First
-sfx_Cash:	equ ((ptr_sndC5-SoundIndex)/4)+sfx__First
-sfx_RingLoss:	equ ((ptr_sndC6-SoundIndex)/4)+sfx__First
-sfx_ChainRise:	equ ((ptr_sndC7-SoundIndex)/4)+sfx__First
-sfx_Burning:	equ ((ptr_sndC8-SoundIndex)/4)+sfx__First
-sfx_Bonus:	equ ((ptr_sndC9-SoundIndex)/4)+sfx__First
-sfx_EnterSS:	equ ((ptr_sndCA-SoundIndex)/4)+sfx__First
-sfx_WallSmash:	equ ((ptr_sndCB-SoundIndex)/4)+sfx__First
-sfx_Spring:	equ ((ptr_sndCC-SoundIndex)/4)+sfx__First
-sfx_Switch:	equ ((ptr_sndCD-SoundIndex)/4)+sfx__First
-sfx_RingLeft:	equ ((ptr_sndCE-SoundIndex)/4)+sfx__First
-sfx_Signpost:	equ ((ptr_sndCF-SoundIndex)/4)+sfx__First
-sfx__Last:	equ ((ptr_sndend-SoundIndex-4)/4)+sfx__First
+		rsset $A0				; ID of the first sfx file
+_firstSfx	rs.b 0					; constant for the first sfx
+
+GenSfxConst	macro	name
+sfx_\name	rs.b 1					; use the next ID for sfx
+		endm
+		opt m+
+		SfxFiles	GenSfxConst		; generate constants for each sfx file
+_lastSfx	equ __rs-1				; constant for the last sfx
+		opt m-
+; ---------------------------------------------------------------------------
 
 ; Special sound effects
-spec__First:	equ $D0
-sfx_Waterfall:	equ ((ptr_sndD0-SpecSoundIndex)/4)+spec__First
-spec__Last:	equ ((ptr_specend-SpecSoundIndex-4)/4)+spec__First
+		rsset $D0				; ID of the first special sfx file
+_firstSpecSfx	rs.b 0					; constant for the first special sfx
 
-flg__First:	equ $E0
-bgm_Fade:	equ ((ptr_flgE0-Sound_ExIndex)/4)+flg__First
-sfx_Sega:	equ ((ptr_flgE1-Sound_ExIndex)/4)+flg__First
-bgm_Speedup:	equ ((ptr_flgE2-Sound_ExIndex)/4)+flg__First
-bgm_Slowdown:	equ ((ptr_flgE3-Sound_ExIndex)/4)+flg__First
-bgm_Stop:	equ ((ptr_flgE4-Sound_ExIndex)/4)+flg__First
-flg__Last:	equ ((ptr_flgend-Sound_ExIndex-4)/4)+flg__First
+		SpecSfxFiles	GenSfxConst		; generate constants for each special sfx file
+_lastSpecSfx	equ __rs-1				; constant for the last special sfx
+; ---------------------------------------------------------------------------
+
+; Sound commands
+		rsset $E0				; ID of the first command
+_firstCmd	rs.b 0					; constant for the first command
+
+GenCmdConst	macro	name
+cmd_\name	rs.b 1					; use the next ID for command
+		endm
+
+		DriverCmdFiles	GenCmdConst		; generate constants for each command
+_lastCmd	equ __rs-1				; constant for the last command
 ; ---------------------------------------------------------------------------
 
 		popo					; restore options
