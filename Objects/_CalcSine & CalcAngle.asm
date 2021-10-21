@@ -25,7 +25,7 @@ CalcSine:
 Sine_Data:	incbin	"Misc Data\Sine & Cosine Waves.bin" ; values for a 360 degree sine wave
 
 ; ---------------------------------------------------------------------------
-; Subroutine to calcuate the square root of a number (0 to $FFFF)
+; Subroutine to calculate the square root of a number (0 to $FFFF)
 
 ; input:
 ;	d0 = number
