@@ -118,7 +118,7 @@ SSR_RingBonus:	; Routine 6
 ; ===========================================================================
 
 loc_C8C4:
-		sfx	sfx_Cash,0,0,0	; play "ker-ching" sound
+		sfx	sfx_Register,0,0,0	; play "ker-ching" sound
 		addq.b	#2,ost_routine(a0)
 		move.w	#180,ost_anim_time(a0) ; set time delay to 3 seconds
 		cmpi.w	#50,(v_rings).w	; do you have at least 50 rings?

@@ -7,11 +7,11 @@
 
 ; ===========================================================================
 
-		opt l@				; @ is the local label symbol
-		opt ae-				; automatic even's are disabled by default
-		opt ws+				; allow statements to contain white-spaces
-		opt w+				; print warnings
-		opt m-				; do not expand macros - if enabled, this can break assembling
+		opt	l@				; @ is the local label symbol
+		opt	ae-				; automatic even's are disabled by default
+		opt	ws+				; allow statements to contain white-spaces
+		opt	w+				; print warnings
+		opt	m-				; do not expand macros - if enabled, this can break assembling
 
 		include "Mega Drive.asm"
 		include "Macros - More CPUs.asm"
@@ -20,6 +20,7 @@
 		include "RAM Addresses.asm"
 		include "Macros - General.asm"
 		include "Macros - Sonic.asm"
+		include "sound/Sounds.asm"
 		include "sound/Sound Equates.asm"
 
 		cpu	68000
@@ -1718,7 +1719,7 @@ Pal_Ending:	incbin	"Palettes\Ending.bin"
 ; ---------------------------------------------------------------------------
 
 GM_Sega:
-		sfx	bgm_Stop,0,1,1 ; stop music
+		sfx	cmd_Stop,0,1,1 ; stop music
 		bsr.w	ClearPLC
 		bsr.w	PaletteFadeOut
 		lea	(vdp_control_port).l,a6
@@ -1768,7 +1769,7 @@ Sega_WaitPal:
 		bsr.w	PalCycle_Sega
 		bne.s	Sega_WaitPal
 
-		sfx	sfx_Sega,0,1,1	; play "SEGA" sound
+		sfx	cmd_Sega,0,1,1	; play "SEGA" sound
 		move.b	#$14,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		move.w	#$1E,(v_countdown).w
@@ -1791,7 +1792,7 @@ Sega_GotoTitle:
 ; ---------------------------------------------------------------------------
 
 GM_Title:
-		sfx	bgm_Stop,0,1,1 ; stop music
+		sfx	cmd_Stop,0,1,1 ; stop music
 		bsr.w	ClearPLC
 		bsr.w	PaletteFadeOut
 		disable_ints
@@ -1898,7 +1899,7 @@ GM_Title:
 		bsr.w	NemDec
 		moveq	#id_Pal_Title,d0 ; load title screen palette
 		bsr.w	PalLoad1
-		sfx	bgm_Title,0,1,1	; play title screen music
+		sfx	mus_TitleScreen,0,1,1	; play title screen music
 		move.b	#0,(f_debugmode).w ; disable debug mode
 		move.w	#$178,(v_countdown).w ; run title screen for $178 frames
 		lea	(v_ost_all+(sizeof_ost*2)).w,a1
@@ -2065,9 +2066,9 @@ LevelSelect:
 LevSel_NoCheat:
 		; This is a workaround for a bug, see Sound_ChkValue for more.
 		; Once you've fixed the bugs there, comment these four instructions out
-		cmpi.w	#bgm__Last+1,d0	; is sound $80-$93 being played?
+		cmpi.w	#_lastMusic+1,d0	; is sound $80-$93 being played?
 		blo.s	LevSel_PlaySnd	; if yes, branch
-		cmpi.w	#sfx__First,d0	; is sound $94-$9F being played?
+		cmpi.w	#_firstSfx,d0	; is sound $94-$9F being played?
 		blo.s	LevelSelect	; if yes, branch
 
 LevSel_PlaySnd:
@@ -2083,7 +2084,7 @@ LevSel_Ending:
 
 LevSel_Credits:
 		move.b	#id_Credits,(v_gamemode).w ; set screen mode to $1C (Credits)
-		sfx	bgm_Credits,0,1,1 ; play credits music
+		sfx	mus_Credits,0,1,1 ; play credits music
 		move.w	#0,(v_creditsnum).w
 		rts	
 ; ===========================================================================
@@ -2128,7 +2129,7 @@ PlayLevel:
 		else
 			move.l	#5000,(v_scorelife).w ; extra life is awarded at 50000 points
 		endc
-		sfx	bgm_Fade,0,1,1 ; fade out music
+		sfx	cmd_Fade,0,1,1 ; fade out music
 		rts	
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
@@ -2221,7 +2222,7 @@ loc_33E4:
 		bne.w	Tit_ChkLevSel	; if yes, branch
 		tst.w	(v_countdown).w
 		bne.w	loc_33B6
-		sfx	bgm_Fade,0,1,1 ; fade out music
+		sfx	cmd_Fade,0,1,1 ; fade out music
 		move.w	(v_demonum).w,d0 ; load	demo number
 		andi.w	#7,d0
 		add.w	d0,d0
@@ -2438,14 +2439,14 @@ LevelMenuText:	if Revision=0
 ; Music	playlist
 ; ---------------------------------------------------------------------------
 MusicList:
-		dc.b bgm_GHZ	; GHZ
-		dc.b bgm_LZ	; LZ
-		dc.b bgm_MZ	; MZ
-		dc.b bgm_SLZ	; SLZ
-		dc.b bgm_SYZ	; SYZ
-		dc.b bgm_SBZ	; SBZ
+		dc.b mus_GHZ	; GHZ
+		dc.b mus_LZ	; LZ
+		dc.b mus_MZ	; MZ
+		dc.b mus_SLZ	; SLZ
+		dc.b mus_SYZ	; SYZ
+		dc.b mus_SBZ	; SBZ
 		zonewarning MusicList,1
-		dc.b bgm_FZ	; Ending
+		dc.b mus_FZ	; Ending
 		even
 ; ===========================================================================
 
@@ -2457,7 +2458,7 @@ GM_Level:
 		bset	#7,(v_gamemode).w ; add $80 to screen mode (for pre level sequence)
 		tst.w	(f_demo).w
 		bmi.s	Level_NoMusicFade
-		sfx	bgm_Fade,0,1,1 ; fade out music
+		sfx	cmd_Fade,0,1,1 ; fade out music
 
 	Level_NoMusicFade:
 		bsr.w	ClearPLC
@@ -3057,7 +3058,7 @@ GM_Special:
 		bsr.w	PalCycle_SS
 		clr.w	(v_ss_angle).w	; set stage angle to "upright"
 		move.w	#$40,(v_ss_rotation_speed).w ; set stage rotation speed
-		music	bgm_SS,0,1,0	; play special stage BG	music
+		music	mus_SpecialStage,0,1,0	; play special stage BG	music
 		move.w	#0,(v_demo_input_counter).w
 		lea	(DemoDataPtr).l,a1
 		moveq	#6,d0
@@ -3160,7 +3161,7 @@ loc_47D4:
 		move.w	(v_rings).w,d0
 		mulu.w	#10,d0		; multiply rings by 10
 		move.w	d0,(v_ring_bonus).w ; set rings bonus
-		sfx	bgm_GotThrough,0,0,0	 ; play end-of-level music
+		sfx	mus_GotThrough,0,0,0	 ; play end-of-level music
 
 		lea	(v_ost_all).w,a1
 		moveq	#0,d0
@@ -3554,7 +3555,7 @@ GM_Continue:
 		jsr	(ContScrCounter).l	; run countdown	(start from 10)
 		moveq	#id_Pal_Continue,d0
 		bsr.w	PalLoad1	; load continue	screen palette
-		music	bgm_Continue,0,1,1	; play continue	music
+		music	mus_Continue,0,1,1	; play continue	music
 		move.w	#659,(v_countdown).w ; set time delay to 11 seconds
 		clr.l	(v_screenposx).w
 		move.l	#$1000000,(v_screenposy).w
@@ -3624,7 +3625,7 @@ Cont_GotoLevel:
 ; ---------------------------------------------------------------------------
 
 GM_Ending:
-		sfx	bgm_Stop,0,1,1 ; stop music
+		sfx	cmd_Stop,0,1,1 ; stop music
 		bsr.w	PaletteFadeOut
 
 		lea	(v_ost_all).w,a1
@@ -3692,7 +3693,7 @@ End_LoadData:
 		bsr.w	KosDec
 		moveq	#id_Pal_Sonic,d0
 		bsr.w	PalLoad1	; load Sonic's palette
-		music	bgm_Ending,0,1,0	; play ending sequence music
+		music	mus_Ending,0,1,0	; play ending sequence music
 		btst	#bitA,(v_joypad_hold_actual).w ; is button A pressed?
 		beq.s	End_LoadSonic	; if not, branch
 		move.b	#1,(f_debugmode).w ; enable debug mode
@@ -3752,7 +3753,7 @@ End_MainLoop:
 		beq.s	End_ChkEmerald	; if yes, branch
 
 		move.b	#id_Credits,(v_gamemode).w ; goto credits
-		sfx	bgm_Credits,0,1,1 ; play credits music
+		sfx	mus_Credits,0,1,1 ; play credits music
 		move.w	#0,(v_creditsnum).w ; set credits index number to 0
 		rts	
 ; ===========================================================================
@@ -7148,7 +7149,7 @@ SS_AniEmeraldSparks:
 		clr.l	(a0)
 		clr.l	4(a0)
 		move.b	#4,($FFFFD024).w
-		sfx	sfx_SSGoal,0,0,0	; play special stage GOAL sound
+		sfx	sfx_Goal,0,0,0	; play special stage GOAL sound
 
 locret_1B60C:
 		rts	
@@ -7498,14 +7499,14 @@ lhead:	macro plc1,lvlgfx,plc2,sixteen,twofivesix,music,pal
 ;		1st PLC				2nd PLC				256x256 data			palette
 ;				level gfx*			16x16 data			music*
 
-	lhead	id_PLC_GHZ,	Nem_GHZ_2nd,	id_PLC_GHZ2,	Blk16_GHZ,	Blk256_GHZ,	bgm_GHZ,	id_Pal_GHZ	; Green Hill
-	lhead	id_PLC_LZ,	Nem_LZ,		id_PLC_LZ2,	Blk16_LZ,	Blk256_LZ,	bgm_LZ,		id_Pal_LZ	; Labyrinth
-	lhead	id_PLC_MZ,	Nem_MZ,		id_PLC_MZ2,	Blk16_MZ,	Blk256_MZ,	bgm_MZ,		id_Pal_MZ	; Marble
-	lhead	id_PLC_SLZ,	Nem_SLZ,	id_PLC_SLZ2,	Blk16_SLZ,	Blk256_SLZ,	bgm_SLZ,	id_Pal_SLZ	; Star Light
-	lhead	id_PLC_SYZ,	Nem_SYZ,	id_PLC_SYZ2,	Blk16_SYZ,	Blk256_SYZ,	bgm_SYZ,	id_Pal_SYZ	; Spring Yard
-	lhead	id_PLC_SBZ,	Nem_SBZ,	id_PLC_SBZ2,	Blk16_SBZ,	Blk256_SBZ,	bgm_SBZ,	id_Pal_SBZ1	; Scrap Brain
+	lhead	id_PLC_GHZ,	Nem_GHZ_2nd,	id_PLC_GHZ2,	Blk16_GHZ,	Blk256_GHZ,	mus_GHZ,	id_Pal_GHZ	; Green Hill
+	lhead	id_PLC_LZ,	Nem_LZ,		id_PLC_LZ2,	Blk16_LZ,	Blk256_LZ,	mus_LZ,		id_Pal_LZ	; Labyrinth
+	lhead	id_PLC_MZ,	Nem_MZ,		id_PLC_MZ2,	Blk16_MZ,	Blk256_MZ,	mus_MZ,		id_Pal_MZ	; Marble
+	lhead	id_PLC_SLZ,	Nem_SLZ,	id_PLC_SLZ2,	Blk16_SLZ,	Blk256_SLZ,	mus_SLZ,	id_Pal_SLZ	; Star Light
+	lhead	id_PLC_SYZ,	Nem_SYZ,	id_PLC_SYZ2,	Blk16_SYZ,	Blk256_SYZ,	mus_SYZ,	id_Pal_SYZ	; Spring Yard
+	lhead	id_PLC_SBZ,	Nem_SBZ,	id_PLC_SBZ2,	Blk16_SBZ,	Blk256_SBZ,	mus_SBZ,	id_Pal_SBZ1	; Scrap Brain
 	zonewarning LevelHeaders,$10
-	lhead	0,		Nem_GHZ_2nd,	0,		Blk16_GHZ,	Blk256_GHZ,	bgm_SBZ,	id_Pal_Ending	; Ending
+	lhead	0,		Nem_GHZ_2nd,	0,		Blk16_GHZ,	Blk256_GHZ,	mus_SBZ,	id_Pal_Ending	; Ending
 	even
 
 ;	* music and level gfx are actually set elsewhere, so these values are useless

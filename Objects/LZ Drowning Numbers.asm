@@ -205,7 +205,7 @@ Drown_Countdown:; Routine $A
 		bhi.s	@reduceair	; if air is above 12, branch
 
 		bne.s	@skipmusic	; if air is less than 12, branch
-		music	bgm_Drowning,0,0,0 ; play countdown music
+		music	mus_Drowning,0,0,0 ; play countdown music
 
 	@skipmusic:
 		subq.b	#1,ost_drown_disp_time(a0)
@@ -216,7 +216,7 @@ Drown_Countdown:; Routine $A
 ; ===========================================================================
 
 @warnsound:
-		sfx	sfx_Warning,0,0,0	; play "ding-ding" warning sound
+		sfx	sfx_Ding,0,0,0	; play "ding-ding" warning sound
 
 @reduceair:
 		subq.w	#1,(v_air).w	; subtract 1 from air remaining

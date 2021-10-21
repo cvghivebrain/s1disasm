@@ -57,7 +57,7 @@ CSon_GetUp:
 		move.b	#id_Float4,ost_anim(a0) ; use "getting up" animation
 		clr.w	ost_inertia(a0)
 		subq.w	#8,ost_y_pos(a0)
-		sfx	bgm_Fade,0,1,1 ; fade out music
+		sfx	cmd_Fade,0,1,1 ; fade out music
 
 CSon_Run:	; Routine 6
 		cmpi.w	#$800,ost_inertia(a0) ; check Sonic's inertia

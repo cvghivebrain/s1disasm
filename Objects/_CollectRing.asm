@@ -17,7 +17,7 @@ CollectRing:
 	@got100:
 		addq.b	#1,(v_lives).w	; add 1 to the number of lives you have
 		addq.b	#1,(f_hud_lives_update).w ; update the lives counter
-		move.w	#bgm_ExtraLife,d0 ; play extra life music
+		move.w	#mus_ExtraLife,d0 ; play extra life music
 
 	@playsnd:
 		jmp	(PlaySound_Special).l

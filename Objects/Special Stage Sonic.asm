@@ -508,7 +508,7 @@ Obj09_Chk1Up:
 Obj09_Get1Up:
 		addq.b	#1,(v_lives).w	; add 1 to number of lives
 		addq.b	#1,(f_hud_lives_update).w ; update the lives counter
-		music	bgm_ExtraLife,0,0,0	; play extra life music
+		music	mus_ExtraLife,0,0,0	; play extra life music
 		moveq	#0,d4
 		rts	
 ; ===========================================================================
@@ -534,7 +534,7 @@ Obj09_GetEmer:
 		addq.b	#1,(v_emeralds).w ; add 1 to number of emeralds
 
 Obj09_NoEmer:
-		sfx	bgm_Emerald,0,0,0 ; play emerald music
+		sfx	mus_Emerald,0,0,0 ; play emerald music
 		moveq	#0,d4
 		rts	
 ; ===========================================================================
@@ -641,7 +641,7 @@ Obj09_GOAL:
 		cmpi.b	#$27,d0		; is the item a	"GOAL"?
 		bne.s	Obj09_UPblock
 		addq.b	#2,ost_routine(a0) ; run routine "Obj09_ExitStage"
-		sfx	sfx_SSGoal,0,0,0 ; play "GOAL" sound
+		sfx	sfx_Goal,0,0,0 ; play "GOAL" sound
 		rts	
 ; ===========================================================================
 
@@ -659,7 +659,7 @@ Obj09_UPblock:
 		move.b	#$2A,(a1)	; change item to a "DOWN" block
 
 Obj09_UPsnd:
-		sfx	sfx_SSItem,1,0,0 ; play up/down sound
+		sfx	sfx_ActionBlock,1,0,0 ; play up/down sound
 ; ===========================================================================
 
 Obj09_DOWNblock:
@@ -676,7 +676,7 @@ Obj09_DOWNblock:
 		move.b	#$29,(a1)	; change item to an "UP" block
 
 Obj09_DOWNsnd:
-		sfx	sfx_SSItem,1,0,0 ; play up/down sound
+		sfx	sfx_ActionBlock,1,0,0 ; play up/down sound
 ; ===========================================================================
 
 Obj09_Rblock:
@@ -694,7 +694,7 @@ Obj09_Rblock:
 
 Obj09_RevStage:
 		neg.w	(v_ss_rotation_speed).w	; reverse stage rotation
-		sfx	sfx_SSItem,1,0,0 ; play sound
+		sfx	sfx_ActionBlock,1,0,0 ; play sound
 ; ===========================================================================
 
 Obj09_ChkGlass:
@@ -724,7 +724,7 @@ Obj09_GlassUpdate:
 		move.b	d0,4(a2)	; update the stage layout
 
 Obj09_GlassSnd:
-		sfx	sfx_SSGlass,1,0,0	; play glass block sound
+		sfx	sfx_Diamonds,1,0,0	; play glass block sound
 ; ===========================================================================
 
 Obj09_NoGlass:
