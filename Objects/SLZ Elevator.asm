@@ -263,7 +263,7 @@ Elev_MakeMulti:	; Routine 6
 		move.b	#id_Elevator,0(a1) ; duplicate the object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
-		move.b	#$E,ost_subtype(a1)
+		move.b	#type_elev_up_vanish_1,ost_subtype(a1)
 
 @chkdel:
 		addq.l	#4,sp

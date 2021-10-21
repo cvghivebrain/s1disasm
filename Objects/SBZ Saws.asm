@@ -35,27 +35,30 @@ Saw_Action:	; Routine 2
 		move.b	ost_subtype(a0),d0
 		andi.w	#7,d0
 		add.w	d0,d0
-		move.w	@index(pc,d0.w),d1
-		jsr	@index(pc,d1.w)
+		move.w	Saw_Type_Index(pc,d0.w),d1
+		jsr	Saw_Type_Index(pc,d1.w)
 		out_of_range.s	@delete,ost_saw_x_start(a0)
 		jmp	(DisplaySprite).l
 
 	@delete:
 		jmp	(DeleteObject).l
 ; ===========================================================================
-@index:		index *
-		ptr @type00 	; pizza cutters
-		ptr @type01
-		ptr @type02
-		ptr @type03 	; ground saws
-		ptr @type04
+Saw_Type_Index:
+		index *
+		ptr Saw_Pizza_Still 	; pizza cutter, doesn't move - unused
+		ptr Saw_Pizza_Sideways	; pizza cutter, moves side-to-side
+		ptr Saw_Pizza_UpDown	; pizza cutter, moves up and down
+		ptr Saw_Ground_Left 	; ground saw, moves left
+		ptr Saw_Ground_Right 	; ground saw, moves right - unused
 ; ===========================================================================
 
-@type00:
+; Type 0
+Saw_Pizza_Still:
 		rts			; doesn't move
 ; ===========================================================================
 
-@type01:
+; Type 1
+Saw_Pizza_Sideways:
 		move.w	#$60,d1
 		moveq	#0,d0
 		move.b	(v_oscillate+$E).w,d0
@@ -86,7 +89,8 @@ Saw_Action:	; Routine 2
 		rts	
 ; ===========================================================================
 
-@type02:
+; Type 2
+Saw_Pizza_UpDown:
 		move.w	#$30,d1
 		moveq	#0,d0
 		move.b	(v_oscillate+6).w,d0
@@ -116,7 +120,8 @@ Saw_Action:	; Routine 2
 		rts	
 ; ===========================================================================
 
-@type03:
+; Type 3
+Saw_Ground_Left:
 		tst.b	ost_saw_flag(a0) ; has the saw appeared already?
 		bne.s	@here03		; if yes, branch
 
@@ -157,7 +162,8 @@ Saw_Action:	; Routine 2
 		rts	
 ; ===========================================================================
 
-@type04:
+; Type 4
+Saw_Ground_Right:
 		tst.b	ost_saw_flag(a0)
 		bne.s	@here04
 		move.w	(v_ost_player+ost_x_pos).w,d0
