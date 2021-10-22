@@ -30,10 +30,10 @@ Hog_Main:	; Routine 0
 		bpl.s	@floornotfound
 		add.w	d1,ost_y_pos(a0)
 		move.w	#0,ost_y_vel(a0)
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0) ; move to Hog_Action
 
 	@floornotfound:
-		rts	
+		rts
 ; ===========================================================================
 
 Hog_Action:	; Routine 2
