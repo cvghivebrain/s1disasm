@@ -1,5 +1,4 @@
 @echo off
-cd "..\..\"
 
 echo assemble Z80 sound driver - same on all revisions
 axm68k /m /k /p "sound\DAC Driver.asm", "sound\DAC Driver.unc"
