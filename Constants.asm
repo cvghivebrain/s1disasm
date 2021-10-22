@@ -54,7 +54,7 @@ bitUp:		equ 0
 
 ; Object variables
 ost_render:		equ 1	; bitfield for x/y flip, display mode
-	render_xflip:		equ 1	; xflip
+	render_xflip:		equ 1	; xflip ; x flips sprites left facting or not 
 	render_yflip:		equ 2	; yflip
 	render_rel:		equ 4	; relative screen position - coordinates are based on the level
 	render_abs:		equ 0	; absolute screen position - coordinates are based on the screen (e.g. the HUD)
