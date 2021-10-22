@@ -53,7 +53,7 @@ UpdateMusic:
 		jsr	CycleSoundQueue(pc)
 ; loc_71BBC:
 @nosndinput:
-		cmpi.b	#$80,v_sound_id(a6)	; is song queue set for silence (empty)?
+		cmpi.b	#com_Null,v_sound_id(a6)	; is song queue set for silence (empty)?
 		beq.s	@nonewsound		; If yes, branch
 		jsr	PlaySoundID(pc)
 ; loc_71BC8:
@@ -141,9 +141,9 @@ DACUpdateTrack:
 @sampleloop:
 		moveq	#0,d5
 		move.b	(a4)+,d5	; Get next SMPS unit
-		cmpi.b	#$E0,d5		; Is it a coord. flag?
+		cmpi.b	#_firstCom,d5		; Is it a coord. flag?
 		blo.s	@notcoord	; Branch if not
-		jsr	CoordFlag(pc)
+		jsr	SongCommand(pc)
 		bra.s	@sampleloop
 ; ===========================================================================
 ; loc_71C6E:
@@ -167,7 +167,7 @@ DACUpdateTrack:
 		bne.s	@locret			; Return if yes
 		moveq	#0,d0
 		move.b	TrackSavedDAC(a5),d0	; Get sample
-		cmpi.b	#$80,d0			; Is it a rest?
+		cmpi.b	#nR,d0			; Is it a rest?
 		beq.s	@locret			; Return if yes
 		btst	#3,d0			; Is bit 3 set (samples between $88-$8F)?
 		bne.s	@timpani		; Various timpani
@@ -222,9 +222,9 @@ FMDoNext:
 @noteloop:
 		moveq	#0,d5
 		move.b	(a4)+,d5	; Get byte from track
-		cmpi.b	#$E0,d5		; Is this a coord. flag?
+		cmpi.b	#_firstCom,d5		; Is this a coord. flag?
 		blo.s	@gotnote	; Branch if not
-		jsr	CoordFlag(pc)
+		jsr	SongCommand(pc)
 		bra.s	@noteloop
 ; ===========================================================================
 ; loc_71D04:
@@ -249,7 +249,7 @@ FMDoNext:
 
 ; sub_71D22:
 FMSetFreq:
-		subi.b	#$80,d5			; Make it a zero-based index
+		subi.b	#_firstNote-1,d5			; Make it a zero-based index
 		beq.s	TrackSetRest
 		add.b	TrackTranspose(a5),d5	; Add track transposition
 		andi.w	#$7F,d5			; Clear high byte and sign bit
@@ -510,7 +510,7 @@ CycleSoundQueue:
 		clr.b	(a1)+			; Clear entry
 		subi.b	#_firstMusic,d0		; Make it into 0-based index
 		bcs.s	@nextinput		; If negative (i.e., it was $80 or lower), branch
-		cmpi.b	#$80,v_sound_id(a6)	; Is v_sound_id a $80 (silence/empty)?
+		cmpi.b	#com_Null,v_sound_id(a6)	; Is v_sound_id a $80 (silence/empty)?
 		beq.s	@havesound		; If yes, branch
 		move.b	d1,v_soundqueue(a6)	; Put sound into v_soundqueue+0
 		bra.s	@nextinput
@@ -544,7 +544,7 @@ PlaySoundID:
 		move.b	v_sound_id(a6),d7
 		beq.w	SoundCmd_Stop
 		bpl.s	@locret			; If >= 0, return (not a valid sound, bgm or command)
-		move.b	#$80,v_sound_id(a6)	; reset	music flag
+		move.b	#com_Null,v_sound_id(a6)	; reset	music flag
 		; DANGER! Music ends at $93, yet this checks until $9F; attempting to
 		; play sounds $94-$9F will cause a crash! Remove the '+$C' to fix this.
 		; See LevSel_NoCheat for more.
@@ -1321,7 +1321,7 @@ InitMusicPlayback:
 		move.b	d3,f_speedup(a6)
 		move.b	d4,v_fadein_counter(a6)
 		move.w	d5,v_soundqueue(a6)
-		move.b	#$80,v_sound_id(a6)	; set music to $80 (silence)
+		move.b	#com_Null,v_sound_id(a6)	; set music to $80 (silence)
 		; DANGER! This silences ALL channels, even the ones being used
 		; by SFX, and not music! @sendfmnoteoff does this already, and
 		; doesn't affect SFX channels, either.
@@ -1577,15 +1577,15 @@ WriteFMII:
 ; FM Note Values: b-0 to a#8
 ; ---------------------------------------------------------------------------
 ; word_72790: FM_Notes:
+
+GenNoteFM	macro	const, psgfq, fmfq
+		if strlen("\fmfq")>0
+			dc.w \fmfq			; add FM note value into ROM
+		endc
+	endm
+
 FMFrequencies:
-	dc.w $025E,$0284,$02AB,$02D3,$02FE,$032D,$035C,$038F,$03C5,$03FF,$043C,$047C
-	dc.w $0A5E,$0A84,$0AAB,$0AD3,$0AFE,$0B2D,$0B5C,$0B8F,$0BC5,$0BFF,$0C3C,$0C7C
-	dc.w $125E,$1284,$12AB,$12D3,$12FE,$132D,$135C,$138F,$13C5,$13FF,$143C,$147C
-	dc.w $1A5E,$1A84,$1AAB,$1AD3,$1AFE,$1B2D,$1B5C,$1B8F,$1BC5,$1BFF,$1C3C,$1C7C
-	dc.w $225E,$2284,$22AB,$22D3,$22FE,$232D,$235C,$238F,$23C5,$23FF,$243C,$247C
-	dc.w $2A5E,$2A84,$2AAB,$2AD3,$2AFE,$2B2D,$2B5C,$2B8F,$2BC5,$2BFF,$2C3C,$2C7C
-	dc.w $325E,$3284,$32AB,$32D3,$32FE,$332D,$335C,$338F,$33C5,$33FF,$343C,$347C
-	dc.w $3A5E,$3A84,$3AAB,$3AD3,$3AFE,$3B2D,$3B5C,$3B8F,$3BC5,$3BFF,$3C3C,$3C7C
+		DefineNotes	GenNoteFM		; generate note constants
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
@@ -1618,9 +1618,9 @@ PSGDoNext:
 @noteloop:
 		moveq	#0,d5
 		move.b	(a4)+,d5	; Get byte from track
-		cmpi.b	#$E0,d5		; Is it a coord. flag?
+		cmpi.b	#_firstCom,d5		; Is it a coord. flag?
 		blo.s	@gotnote	; Branch if not
-		jsr	CoordFlag(pc)
+		jsr	SongCommand(pc)
 		bra.s	@noteloop
 ; ===========================================================================
 ; loc_72890:
@@ -1645,7 +1645,7 @@ PSGDoNext:
 
 ; sub_728AC:
 PSGSetFreq:
-		subi.b	#$81,d5		; Convert to 0-based index
+		subi.b	#_firstNote,d5		; Convert to 0-based index
 		bcs.s	@restpsg	; If $80, put track at rest
 		add.b	TrackTranspose(a5),d5 ; Add in channel transposition
 		andi.w	#$7F,d5		; Clear high byte and sign bit
@@ -1810,84 +1810,38 @@ PSGSilenceAll:
 ; End of function PSGSilenceAll
 
 ; ===========================================================================
-; word_729CE:
+
+GenNotePSG	macro	const, psgfq, fmfq
+		if strlen("\psgfq")>0
+			dc.w \psgfq			; add PSG note value into ROM
+		endc
+	endm
+
 PSGFrequencies:
-		dc.w $356, $326, $2F9, $2CE, $2A5, $280, $25C, $23A
-		dc.w $21A, $1FB, $1DF, $1C4, $1AB, $193, $17D, $167
-		dc.w $153, $140, $12E, $11D, $10D,  $FE,  $EF,  $E2
-		dc.w  $D6,  $C9,  $BE,  $B4,  $A9,  $A0,  $97,  $8F
-		dc.w  $87,  $7F,  $78,  $71,  $6B,  $65,  $5F,  $5A
-		dc.w  $55,  $50,  $4B,  $47,  $43,  $40,  $3C,  $39
-		dc.w  $36,  $33,  $30,  $2D,  $2B,  $28,  $26,  $24
-		dc.w  $22,  $20,  $1F,  $1D,  $1B,  $1A,  $18,  $17
-		dc.w  $16,  $15,  $13,  $12,  $11,    0
+		DefineNotes	GenNotePSG		; generate note constants
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 ; sub_72A5A:
-CoordFlag:
-		subi.w	#$E0,d5
+SongCommand:
+		subi.w	#_firstCom,d5
 		lsl.w	#2,d5
-		jmp	coordflagLookup(pc,d5.w)
-; End of function CoordFlag
+		jmp	SongCommandTable(pc,d5.w)
+; End of function SongCommand
 
 ; ===========================================================================
+
+GenComJump	macro	name
+		bra.w	SongCom_\name			; jump to the command code
+	endm
+
 ; loc_72A64:
-coordflagLookup:
-		bra.w	cfPanningAMSFMS		; $E0
-; ===========================================================================
-		bra.w	cfDetune		; $E1
-; ===========================================================================
-		bra.w	cfSetCommunication	; $E2
-; ===========================================================================
-		bra.w	cfJumpReturn		; $E3
-; ===========================================================================
-		bra.w	cfFadeInToPrevious	; $E4
-; ===========================================================================
-		bra.w	cfSetTempoDivider	; $E5
-; ===========================================================================
-		bra.w	cfChangeFMVolume	; $E6
-; ===========================================================================
-		bra.w	cfHoldNote		; $E7
-; ===========================================================================
-		bra.w	cfNoteTimeout		; $E8
-; ===========================================================================
-		bra.w	cfChangeTransposition	; $E9
-; ===========================================================================
-		bra.w	cfSetTempo		; $EA
-; ===========================================================================
-		bra.w	cfSetTempoDividerAll	; $EB
-; ===========================================================================
-		bra.w	cfChangePSGVolume	; $EC
-; ===========================================================================
-		bra.w	cfClearPush		; $ED
-; ===========================================================================
-		bra.w	cfStopSpecialFM4	; $EE
-; ===========================================================================
-		bra.w	cfSetVoice		; $EF
-; ===========================================================================
-		bra.w	cfModulation		; $F0
-; ===========================================================================
-		bra.w	cfEnableModulation	; $F1
-; ===========================================================================
-		bra.w	cfStopTrack		; $F2
-; ===========================================================================
-		bra.w	cfSetPSGNoise		; $F3
-; ===========================================================================
-		bra.w	cfDisableModulation	; $F4
-; ===========================================================================
-		bra.w	cfSetPSGTone		; $F5
-; ===========================================================================
-		bra.w	cfJumpTo		; $F6
-; ===========================================================================
-		bra.w	cfRepeatAtPos		; $F7
-; ===========================================================================
-		bra.w	cfJumpToGosub		; $F8
-; ===========================================================================
-		bra.w	cfOpF9			; $F9
+SongCommandTable:
+		TrackCommand	GenComJump		; generate jumps for all commands
+
 ; ===========================================================================
 ; loc_72ACC:
-cfPanningAMSFMS:
+SongCom_Pan:
 		move.b	(a4)+,d1		; New AMS/FMS/panning value
 		tst.b	TrackVoiceControl(a5)	; Is this a PSG track?
 		bmi.s	locret_72AEA		; Return if yes
@@ -1903,17 +1857,17 @@ locret_72AEA:
 		rts
 ; ===========================================================================
 ; loc_72AEC: cfAlterNotes:
-cfDetune:
+SongCom_Detune:
 		move.b	(a4)+,TrackDetune(a5)	; Set detune value
 		rts
 ; ===========================================================================
 ; loc_72AF2: cfUnknown1:
-cfSetCommunication:
+SongCom_Timing:
 		move.b	(a4)+,v_communication_byte(a6)	; Set otherwise unused communication byte to parameter
 		rts
 ; ===========================================================================
 ; loc_72AF8:
-cfJumpReturn:
+SongCom_Ret:
 		moveq	#0,d0
 		move.b	TrackStackPointer(a5),d0 ; Track stack pointer
 		movea.l	(a5,d0.w),a4		; Set track return address
@@ -1924,7 +1878,7 @@ cfJumpReturn:
 		rts
 ; ===========================================================================
 ; loc_72B14:
-cfFadeInToPrevious:
+SongCom_RestoreSong:
 		movea.l	a6,a0
 		lea	v_1up_ram_copy(a6),a1
 		move.w	#((v_music_track_ram_end-v_startofvariables)/4)-1,d0	; $220 bytes to restore: all variables and music track data
@@ -1978,41 +1932,41 @@ cfFadeInToPrevious:
 		rts
 ; ===========================================================================
 ; loc_72B9E:
-cfSetTempoDivider:
+SongCom_ChannelTick:
 		move.b	(a4)+,TrackTempoDivider(a5)	; Set tempo divider on current track
 		rts
 ; ===========================================================================
 ; loc_72BA4: cfSetVolume:
-cfChangeFMVolume:
+SongCom_VolAddFM:
 		move.b	(a4)+,d0		; Get parameter
 		add.b	d0,TrackVolume(a5)	; Add to current volume
 		bra.w	SendVoiceTL
 ; ===========================================================================
 ; loc_72BAE: cfPreventAttack:
-cfHoldNote:
+SongCom_Tie:
 		bset	#4,(a5)		; Set 'do not attack next note' bit (TrackPlaybackControl)
 		rts
 ; ===========================================================================
 ; loc_72BB4: cfNoteFill
-cfNoteTimeout:
+SongCom_Gate:
 		move.b	(a4),TrackNoteTimeout(a5)		; Note fill timeout
 		move.b	(a4)+,TrackNoteTimeoutMaster(a5)	; Note fill master
 		rts
 ; ===========================================================================
 ; loc_72BBE: cfAddKey:
-cfChangeTransposition:
+SongCom_TransAdd:
 		move.b	(a4)+,d0		; Get parameter
 		add.b	d0,TrackTranspose(a5)	; Add to transpose value
 		rts
 ; ===========================================================================
 ; loc_72BC6:
-cfSetTempo:
+SongCom_TempoSet:
 		move.b	(a4),v_main_tempo(a6)		; Set main tempo
 		move.b	(a4)+,v_main_tempo_timeout(a6)	; And reset timeout (!)
 		rts
 ; ===========================================================================
-; loc_72BD0: cfSetTempoMod:
-cfSetTempoDividerAll:
+; loc_72BD0: SongCom_TempoSetMod:
+SongCom_SongTick:
 		lea	v_music_track_ram(a6),a0
 		move.b	(a4)+,d0			; Get new tempo divider
 		moveq	#TrackSz,d1
@@ -2026,18 +1980,18 @@ cfSetTempoDividerAll:
 		rts
 ; ===========================================================================
 ; loc_72BE6: cfChangeVolume:
-cfChangePSGVolume:
+SongCom_VolAddPSG:
 		move.b	(a4)+,d0		; Get volume change
 		add.b	d0,TrackVolume(a5)	; Apply it
 		rts
 ; ===========================================================================
 ; loc_72BEE:
-cfClearPush:
+SongCom_ClearPush:
 		clr.b	f_push_playing(a6)	; Allow push sound to be played once more
 		rts
 ; ===========================================================================
 ; loc_72BF4:
-cfStopSpecialFM4:
+SongCom_EndSpec:
 		bclr	#7,(a5)		; Stop track (TrackPlaybackControl)
 		bclr	#4,(a5)		; Clear 'do not attack next note' bit (TrackPlaybackControl)
 		jsr	FMNoteOff(pc)
@@ -2057,7 +2011,7 @@ cfStopSpecialFM4:
 		rts
 ; ===========================================================================
 ; loc_72C26:
-cfSetVoice:
+SongCom_Voice:
 		moveq	#0,d0
 		move.b	(a4)+,d0		; Get new voice
 		move.b	d0,TrackVoiceIndex(a5)	; Store it
@@ -2212,7 +2166,7 @@ FMInstrumentTLTable:
 FMInstrumentTLTable_End
 ; ===========================================================================
 ; loc_72D30:
-cfModulation:
+SongCom_Vib:
 		bset	#3,(a5)				; Turn on modulation (TrackPlaybackControl)
 		move.l	a4,TrackModulationPtr(a5)	; Save pointer to modulation data
 		move.b	(a4)+,TrackModulationWait(a5)	; Modulation delay
@@ -2225,12 +2179,12 @@ cfModulation:
 		rts
 ; ===========================================================================
 ; loc_72D52:
-cfEnableModulation:
+SongCom_VibOn:
 		bset	#3,(a5)		; Turn on modulation (TrackPlaybackControl)
 		rts
 ; ===========================================================================
 ; loc_72D58:
-cfStopTrack:
+SongCom_End:
 		bclr	#7,(a5)			; Stop track (TrackPlaybackControl)
 		bclr	#4,(a5)			; Clear 'do not attack next note' bit (TrackPlaybackControl)
 		tst.b	TrackVoiceControl(a5)	; Is this a PSG track?
@@ -2307,7 +2261,7 @@ cfStopTrack:
 		rts
 ; ===========================================================================
 ; loc_72E06:
-cfSetPSGNoise:
+SongCom_NoiseSet:
 		move.b	#$E0,TrackVoiceControl(a5)	; Turn channel into noise channel
 		move.b	(a4)+,TrackPSGNoise(a5)	; Save noise tone
 		btst	#2,(a5)				; Is track being overridden? (TrackPlaybackControl)
@@ -2318,17 +2272,17 @@ cfSetPSGNoise:
 		rts
 ; ===========================================================================
 ; loc_72E20:
-cfDisableModulation:
+SongCom_VibOff:
 		bclr	#3,(a5)		; Disable modulation (TrackPlaybackControl)
 		rts
 ; ===========================================================================
 ; loc_72E26:
-cfSetPSGTone:
+SongCom_Env:
 		move.b	(a4)+,TrackVoiceIndex(a5)	; Set current PSG tone
 		rts
 ; ===========================================================================
 ; loc_72E2C:
-cfJumpTo:
+SongCom_Jump:
 		move.b	(a4)+,d0	; High byte of offset
 		lsl.w	#8,d0		; Shift it into place
 		move.b	(a4)+,d0	; Low byte of offset
@@ -2337,7 +2291,7 @@ cfJumpTo:
 		rts
 ; ===========================================================================
 ; loc_72E38:
-cfRepeatAtPos:
+SongCom_Loop:
 		moveq	#0,d0
 		move.b	(a4)+,d0			; Loop index
 		move.b	(a4)+,d1			; Repeat count
@@ -2347,21 +2301,21 @@ cfRepeatAtPos:
 ; loc_72E48:
 @loopexists:
 		subq.b	#1,TrackLoopCounters(a5,d0.w)	; Decrease loop's repeat count
-		bne.s	cfJumpTo			; If nonzero, branch to target
+		bne.s	SongCom_Jump			; If nonzero, branch to target
 		addq.w	#2,a4				; Skip target address
 		rts
 ; ===========================================================================
 ; loc_72E52:
-cfJumpToGosub:
+SongCom_Call:
 		moveq	#0,d0
 		move.b	TrackStackPointer(a5),d0	; Current stack pointer
 		subq.b	#4,d0				; Add space for another target
 		move.l	a4,(a5,d0.w)			; Put in current address (*before* target for jump!)
 		move.b	d0,TrackStackPointer(a5)	; Store new stack pointer
-		bra.s	cfJumpTo
+		bra.s	SongCom_Jump
 ; ===========================================================================
 ; loc_72E64:
-cfOpF9:
+SongCom_Release34:
 		move.b	#$88,d0		; D1L/RR of Operator 3
 		move.b	#$F,d1		; Loaded with fixed value (max RR, 1TL)
 		jsr	WriteFMI(pc)

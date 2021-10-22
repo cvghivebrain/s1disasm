@@ -56,7 +56,7 @@ SpeedUpIndex:
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
-; song address table
+; Song address table
 ; ---------------------------------------------------------------------------
 
 GenMusicTable	macro	name
@@ -68,7 +68,7 @@ MusicIndex:
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
-; priority table
+; Priority table
 ;
 ; New music or SFX must have a priority higher than or equal to what is
 ; stored in v_sndprio or it won't play. If bit 7 of new priority is set
