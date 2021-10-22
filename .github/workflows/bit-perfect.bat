@@ -1,5 +1,4 @@
 @echo off
-cd "..\..\"
 
 echo assemble revision %1 rom
 axm68k /e Revision=%1 /m /k /p sonic.asm, %1.bin
