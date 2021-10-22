@@ -156,4 +156,25 @@ type_elev_up_short:	equ (Elev_Var2_0-Elev_Var2)/sizeof_Elev_Var2	; 0 - rises 128
 type_elev_up_medium:	equ (Elev_Var2_1-Elev_Var2)/sizeof_Elev_Var2	; 1 - rises 256px when stood on
 type_elev_down_short:	equ (Elev_Var2_3-Elev_Var2)/sizeof_Elev_Var2	; 3 - falls 128px when stood on
 type_elev_upright:	equ (Elev_Var2_C-Elev_Var2)/sizeof_Elev_Var2	; $C - rises diagonally right when stood on
-type_elev_up_vanish:	equ $80						; $80 - rises when stood on and vanishes
+type_elev_up_vanish_1:	equ (Elev_Var2_E-Elev_Var2)/sizeof_Elev_Var2	; $E - rises when stood on and vanishes
+type_elev_up_vanish:	equ $80						; $80 - rises when stood on and vanishes, respawns repeatedly
+
+; SpinPlatform
+type_spin_trapdoor:	equ 0				; $0x - trapdoor
+type_spin_platform:	equ $80				; $8x - small spinning platform
+type_spin_platform_alt:	equ $90				; $9x - small spinning platform, longer delay between spins
+
+; Saws
+type_saw_pizza_still:	equ id_Saw_Pizza_Still	 	; 0 - pizza cutter, doesn't move
+type_saw_pizza_sideways: equ id_Saw_Pizza_Sideways 	; 1 - pizza cutter, moves side-to-side
+type_saw_pizza_updown:	equ id_Saw_Pizza_UpDown	 	; 2 - pizza cutter, moves up and down
+type_saw_ground_left:	equ id_Saw_Ground_Left	 	; 3 - ground saw, moves left
+type_saw_ground_right:	equ id_Saw_Ground_Right	 	; 4 - ground saw, moves right
+
+; ScrapStomp
+type_stomp_door:	equ (((Sto_Var_0-Sto_Var)/sizeof_Sto_Var)<<4)+$80			; $8x - horizontal door, activated by button x
+type_stomp_slow:	equ (((Sto_Var_1-Sto_Var)/sizeof_Sto_Var)<<4)+id_Sto_Drop_RiseSlow	; $13 - stomper, drops quickly and rises slowly
+type_stomp_fast_short:	equ (((Sto_Var_2-Sto_Var)/sizeof_Sto_Var)<<4)+id_Sto_Drop_RiseFast	; $24 - stomper, drops quickly and rises quickly (64px)
+type_stomp_fast_long:	equ (((Sto_Var_3-Sto_Var)/sizeof_Sto_Var)<<4)+id_Sto_Drop_RiseFast	; $34 - stomper, drops quickly and rises quickly (96px)
+type_stomp_sbz3:	equ (((Sto_Var_4-Sto_Var)/sizeof_Sto_Var)<<4)+$80			; $Cx - large SBZ3 diagonal door, activated by button x
+type_stomp_sbz3_final:	equ (((Sto_Var_4-Sto_Var)/sizeof_Sto_Var)<<4)+id_Sto_Still		; $40 - large SBZ3 diagonal door in final position

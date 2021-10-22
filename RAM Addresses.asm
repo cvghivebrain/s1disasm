@@ -260,7 +260,7 @@ v_objstate:	equ $FFFFFC00	; object state list ($100 bytes)
 
 
 v_stack:		equ $FFFFFD00 ; stack ($100 bytes)
-v_stack_pointer:	equ $FFFFFE00 ; stack pointer
+v_stack_pointer:	equ $FFFFFE00 ; initial stack pointer - items are added to the stack backwards from this address
 
 			rsset $FFFFFE02
 f_restart:		rs.w 1 ; $FFFFFE02 ; flag set to end/restart level

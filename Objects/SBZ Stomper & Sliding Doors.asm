@@ -13,11 +13,13 @@ Sto_Index:	index *,,2
 		ptr Sto_Action
 
 Sto_Var:	; width, height, move distance, type number
-		dc.b  $40,  $C,	$80,   1	; door
-		dc.b  $1C, $20,	$38,   3	; stomper
-		dc.b  $1C, $20,	$40,   4	; stomper
-		dc.b  $1C, $20,	$60,   4	; stomper
-		dc.b  $80, $40,	  0,   5	; huge sliding door in SBZ3
+Sto_Var_0:	dc.b  $40,  $C,	$80,   id_Sto_SlideOpen		; door
+Sto_Var_1:	dc.b  $1C, $20,	$38,   id_Sto_Drop_RiseSlow	; stomper
+Sto_Var_2:	dc.b  $1C, $20,	$40,   id_Sto_Drop_RiseFast	; stomper
+Sto_Var_3:	dc.b  $1C, $20,	$60,   id_Sto_Drop_RiseFast	; stomper
+Sto_Var_4:	dc.b  $80, $40,	  0,   id_Sto_SlideDiagonal	; huge sliding door in SBZ3
+
+sizeof_Sto_Var:	equ Sto_Var_1-Sto_Var
 
 ost_stomp_y_start:	equ $30	; original y-axis position (2 bytes)
 ost_stomp_x_start:	equ $34	; original x-axis position (2 bytes)
@@ -38,7 +40,7 @@ Sto_Main:	; Routine 0
 		move.b	(a3)+,ost_actwidth(a0)
 		move.b	(a3)+,ost_height(a0)
 		lsr.w	#2,d0
-		move.b	d0,ost_frame(a0)
+		move.b	d0,ost_frame(a0) ; high nybble = frame
 		move.l	#Map_Stomp,ost_mappings(a0)
 		move.w	#tile_Nem_Stomper+tile_pal2,ost_tile(a0)
 		cmpi.b	#id_LZ,(v_zone).w ; check if level is LZ/SBZ3
@@ -81,7 +83,8 @@ Sto_Main:	; Routine 0
 		move.w	d0,ost_stomp_distance(a0)
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0 ; get subtype
-		bpl.s	Sto_Action
+		bpl.s	Sto_Action	; branch if 0-$7F
+		
 		andi.b	#$F,d0		; read only low nybble
 		move.b	d0,ost_stomp_switch_num(a0) ; copy to ost_stomp_switch_num
 		move.b	(a3),ost_subtype(a0) ; update subtype with value from list
@@ -102,8 +105,8 @@ Sto_Action:	; Routine 2
 		move.b	ost_subtype(a0),d0
 		andi.w	#$F,d0
 		add.w	d0,d0
-		move.w	@index(pc,d0.w),d1
-		jsr	@index(pc,d1.w)
+		move.w	Sto_Type_Index(pc,d0.w),d1
+		jsr	Sto_Type_Index(pc,d1.w)
 		move.w	(sp)+,d4
 		tst.b	ost_render(a0)
 		bpl.s	@chkdel
@@ -133,21 +136,24 @@ Sto_Action:	; Routine 2
 	@delete:
 		jmp	(DeleteObject).l
 ; ===========================================================================
-@index:		index *
-		ptr @type00
-		ptr @type01
-		ptr @type02
-		ptr @type03
-		ptr @type04
-		ptr @type05
+Sto_Type_Index:
+		index *
+		ptr Sto_Still
+		ptr Sto_SlideOpen
+		ptr Sto_SlideClose
+		ptr Sto_Drop_RiseSlow
+		ptr Sto_Drop_RiseFast
+		ptr Sto_SlideDiagonal
 ; ===========================================================================
 
-@type00:
+; Type 0
+Sto_Still:
 		rts
 ; ===========================================================================
 
+; Type 1
 ; Horizonal door, opens when switch (ost_stomp_switch_num) is pressed
-@type01:
+Sto_SlideOpen:
 		tst.b	ost_stomp_flag(a0)
 		bne.s	@isactive01
 		lea	(v_button_state).w,a2
@@ -189,8 +195,9 @@ Sto_Action:	; Routine 2
 		bra.s	@loc_15DC2
 ; ===========================================================================
 
+; Type 2
 ; Horizonal door, returns to its original position after 3 seconds
-@type02:
+Sto_SlideClose:
 		tst.b	ost_stomp_flag(a0)
 		bne.s	@isactive02
 		subq.w	#1,ost_stomp_wait_time(a0)
@@ -227,8 +234,9 @@ Sto_Action:	; Routine 2
 		bra.s	@loc_15E1E
 ; ===========================================================================
 
+; Type 3
 ; Stomper, drops quickly and rises slowly
-@type03:
+Sto_Drop_RiseSlow:
 		tst.b	ost_stomp_flag(a0)
 		bne.s	@isactive03
 		tst.w	ost_stomp_moved(a0)
@@ -264,8 +272,9 @@ Sto_Action:	; Routine 2
 		rts	
 ; ===========================================================================
 
+; Type 4
 ; Stomper, drops quickly and rises quickly
-@type04:
+Sto_Drop_RiseFast:
 		tst.b	ost_stomp_flag(a0)
 		bne.s	@isactive04
 		tst.w	ost_stomp_moved(a0)
@@ -308,8 +317,9 @@ Sto_Action:	; Routine 2
 		rts	
 ; ===========================================================================
 
+; Type 5
 ; Huge sliding door from SBZ3
-@type05:
+Sto_SlideDiagonal:
 		tst.b	ost_stomp_flag(a0)
 		bne.s	@loc_15F3E
 		lea	(v_button_state).w,a2

@@ -27,7 +27,7 @@ Spin_Main:	; Routine 0
 		move.b	#$80,ost_actwidth(a0)
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0 ; get subtype
-		andi.w	#$F,d0		; read only 2nd digit
+		andi.w	#$F,d0		; read only low nybble
 		mulu.w	#60,d0		; multiply by 60 (1 second)
 		move.w	d0,ost_spin_wait_master(a0)
 		tst.b	ost_subtype(a0)	; is subtype $8x?
@@ -45,7 +45,7 @@ Spin_Main:	; Routine 0
 		mulu.w	#6,d0		; multiply by 6
 		move.w	d0,ost_spin_wait_time(a0)
 		move.w	d0,ost_spin_wait_master(a0) ; set time delay
-		andi.w	#$70,d1		; read 2nd digit (e.g. $80/$90), ignore high bit ($00/$10)
+		andi.w	#$70,d1		; read high nybble (e.g. $80/$90), ignore high bit ($00/$10)
 		addi.w	#$10,d1		; add $10 ($10/$20)
 		lsl.w	#2,d1		; multiply by 4 ($40/$80)
 		subq.w	#1,d1		; subtract 1 ($3F/$7F)

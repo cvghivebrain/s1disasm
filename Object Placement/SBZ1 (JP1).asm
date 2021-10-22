@@ -4,11 +4,11 @@
 		objpos $00D0,$04B0,Rings,$14,rem
 		objpos $01F0,$04D0,Invisibarrier,$15
 		objpos $0228,$048C,Rings,$12,rem
-		objpos $0240,$04AC,SpinPlatform,$02
+		objpos $0240,$04AC,SpinPlatform,type_spin_trapdoor+2
 		objpos $0290,$04D0,Invisibarrier,$15
 		objpos $02F0,$04D0,Invisibarrier,$15
 		objpos $0328,$048C,Rings,$12,rem
-		objpos $0340,$04AC,SpinPlatform,$01
+		objpos $0340,$04AC,SpinPlatform,type_spin_trapdoor+1
 		objpos $0390,$04D0,Invisibarrier,$15
 		objpos $0415,$0486,Flamethrower,$43
 		objpos $0480,$0468,Caterkiller,$00,rem
@@ -19,20 +19,20 @@
 		objpos $0594,$04C0,Rings,$46,rem
 		objpos $05DC,$05AC,Rings,$12,rem
 		objpos $05F0,$03C0,Invisibarrier,$13
-		objpos $0620,$03A7,SpinPlatform,$80
-		objpos $0640,$03A7,SpinPlatform,$80
-		objpos $0650,$0407,SpinPlatform,$80
+		objpos $0620,$03A7,SpinPlatform,type_spin_platform+0
+		objpos $0640,$03A7,SpinPlatform,type_spin_platform+0
+		objpos $0650,$0407,SpinPlatform,type_spin_platform+0
 		objpos $0660,$05F8,Invisibarrier,$70
 		objpos $0660,$0678,Invisibarrier,$70
 		objpos $0660,$06F8,Invisibarrier,$70
-		objpos $0670,$0407,SpinPlatform,$80
-		objpos $0690,$0467,SpinPlatform,$80
-		objpos $0698,$0387,SpinPlatform,$80
+		objpos $0670,$0407,SpinPlatform,type_spin_platform+0
+		objpos $0690,$0467,SpinPlatform,type_spin_platform+0
+		objpos $0698,$0387,SpinPlatform,type_spin_platform+0
 		objpos $06A0,$0618,Girder,$00
 		objpos $06A0,$0698,Girder,$00
 		objpos $06A0,$0718,Girder,$00
-		objpos $06B0,$0467,SpinPlatform,$80
-		objpos $06B8,$0387,SpinPlatform,$80
+		objpos $06B0,$0467,SpinPlatform,type_spin_platform+0
+		objpos $06B8,$0387,SpinPlatform,type_spin_platform+0
 		objpos $0700,$05D8,Invisibarrier,$17
 		objpos $0700,$0658,Invisibarrier,$17
 		objpos $0700,$06D8,Invisibarrier,$17
@@ -59,23 +59,23 @@
 		objpos $0950,$03F1,Monitor,$06,rem
 		objpos $0954,$0790,Rings,$11,rem
 		objpos $09A0,$0290,Bomb,$00,xflip,rem
-		objpos $09A0,$0760,ScrapStomp,$34
+		objpos $09A0,$0760,ScrapStomp,type_stomp_fast_long
 		objpos $09C0,$0678,Electro,$08,yflip
 		objpos $09C0,$06A8,Caterkiller,$00,rem
 		objpos $09E0,$0730,Invisibarrier,$E1
 		objpos $09F0,$0290,Bomb,$00,rem
 		objpos $0A15,$0288,Flamethrower,$43
-		objpos $0A20,$0760,ScrapStomp,$24
+		objpos $0A20,$0760,ScrapStomp,type_stomp_fast_short
 		objpos $0A30,$06A8,Caterkiller,$00,rem
 		objpos $0A40,$0290,Bomb,$00,rem
 		objpos $0A40,$0678,Electro,$08,yflip
 		objpos $0A54,$0790,Rings,$11,rem
-		objpos $0AA0,$0760,ScrapStomp,$34
+		objpos $0AA0,$0760,ScrapStomp,type_stomp_fast_long
 		objpos $0AD0,$0688,Caterkiller,$00,rem
 		objpos $0AE0,$0730,Invisibarrier,$E1
 		objpos $0B10,$0268,VanishPlatform,$00
 		objpos $0B10,$04F1,Monitor,$04,rem
-		objpos $0B20,$0760,ScrapStomp,$24
+		objpos $0B20,$0760,ScrapStomp,type_stomp_fast_short
 		objpos $0B30,$0268,VanishPlatform,$00
 		objpos $0B38,$0680,AutoDoor,$00
 		objpos $0B50,$0508,VanishPlatform,$40
@@ -85,7 +85,7 @@
 		objpos $0B70,$02A7,VanishPlatform,$40
 		objpos $0B90,$02A7,VanishPlatform,$40
 		objpos $0BA0,$0730,Invisibarrier,$61
-		objpos $0BA0,$0760,ScrapStomp,$34
+		objpos $0BA0,$0760,ScrapStomp,type_stomp_fast_long
 		objpos $0BB0,$0548,VanishPlatform,$00
 		objpos $0BB0,$05C8,VanishPlatform,$80
 		objpos $0BB0,$0648,VanishPlatform,$00
@@ -105,7 +105,7 @@
 		objpos $0CD0,$02E8,VanishPlatform,$00
 		objpos $0CD0,$0792,Rings,$14,rem
 		objpos $0D00,$04E8,Electro,$08
-		objpos $0D00,$07C0,Saws,$03
+		objpos $0D00,$07C0,Saws,type_saw_ground_left
 		objpos $0D54,$0510,Rings,$11,rem
 		objpos $0D60,$02C7,VanishPlatform,$40
 		objpos $0D80,$02C7,VanishPlatform,$40
@@ -113,9 +113,9 @@
 		objpos $0DBB,$0787,Flamethrower,$43,yflip
 		objpos $0DD0,$07B2,Rings,$14,rem
 		objpos $0DD4,$0550,Rings,$11,rem
-		objpos $0DE0,$07C0,Saws,$03
+		objpos $0DE0,$07C0,Saws,type_saw_ground_left
 		objpos $0DF0,$03C0,Invisibarrier,$13
-		objpos $0E00,$0280,ScrapStomp,$88
+		objpos $0E00,$0280,ScrapStomp,type_stomp_door+8
 		objpos $0E10,$0265,Monitor,$06,rem
 		objpos $0E30,$0265,Monitor,$04,rem
 		objpos $0E3B,$0548,Flamethrower,$43,xflip
@@ -123,13 +123,13 @@
 		objpos $0EA5,$0548,Flamethrower,$43
 		objpos $0ED0,$0792,Rings,$14,rem
 		objpos $0EF0,$05F0,Invisibarrier,$17
-		objpos $0F40,$060C,ScrapStomp,$81,xflip
+		objpos $0F40,$060C,ScrapStomp,type_stomp_door+1,xflip
 		objpos $0F40,$06E8,Electro,$08
 		objpos $0F70,$0648,VanishPlatform,$00
 		objpos $0F70,$06A8,VanishPlatform,$C0
 		objpos $0F80,$0300,SpinConvey,$81
 		objpos $0F80,$0500,SpinConvey,$83
-		objpos $0FA0,$07C0,Saws,$03
+		objpos $0FA0,$07C0,Saws,type_saw_ground_left
 		objpos $0FBB,$0787,Flamethrower,$43,yflip
 		objpos $0FD0,$07B2,Rings,$14,rem
 		objpos $1000,$05F8,Button,$01
@@ -157,25 +157,25 @@
 		objpos $11F0,$0300,Invisibarrier,$13
 		objpos $11F0,$0710,Bomb,$00,yflip,rem
 		objpos $1210,$05F1,Monitor,$06,rem
-		objpos $1220,$01A7,SpinPlatform,$80
+		objpos $1220,$01A7,SpinPlatform,type_spin_platform+0
 		objpos $1228,$03B0,Rings,$44,rem
 		objpos $1230,$05F8,Springs,$00
-		objpos $1240,$0308,MovingBlock,$39,xflip
+		objpos $1240,$0308,MovingBlock,type_mblock_sbzwide+type_mblock_slide,xflip
 		objpos $1240,$03B0,Rings,$44,rem
-		objpos $1240,$04AC,SpinPlatform,$02
-		objpos $1240,$0768,MovingBlock,$39
+		objpos $1240,$04AC,SpinPlatform,type_spin_trapdoor+2
+		objpos $1240,$0768,MovingBlock,type_mblock_sbzwide+type_mblock_slide
 		objpos $1250,$05F8,Springs,$00
 		objpos $1258,$03B0,Rings,$44,rem
-		objpos $1260,$01A7,SpinPlatform,$80
+		objpos $1260,$01A7,SpinPlatform,type_spin_platform+0
 		objpos $1270,$05F1,Monitor,$06,rem
 		objpos $1290,$06F2,Rings,$14,rem
 		objpos $1290,$0760,Invisibarrier,$17
-		objpos $12A0,$01A7,SpinPlatform,$80
-		objpos $12C0,$0308,MovingBlock,$39
-		objpos $12E0,$01A7,SpinPlatform,$80
+		objpos $12A0,$01A7,SpinPlatform,type_spin_platform+0
+		objpos $12C0,$0308,MovingBlock,type_mblock_sbzwide+type_mblock_slide
+		objpos $12E0,$01A7,SpinPlatform,type_spin_platform+0
 		objpos $1310,$0300,Invisibarrier,$13
 		objpos $1318,$0194,Rings,$12,rem
-		objpos $1340,$0708,MovingBlock,$39
+		objpos $1340,$0708,MovingBlock,type_mblock_sbzwide+type_mblock_slide
 		objpos $1378,$0174,Rings,$12,rem
 		objpos $1390,$04A0,Caterkiller,$00,rem
 		objpos $1390,$0700,Invisibarrier,$17
@@ -197,24 +197,24 @@
 		objpos $1590,$016C,Lamppost,$02,rem
 		objpos $1598,$03AC,Rings,$16,rem
 		objpos $15A0,$0630,Invisibarrier,$51
-		objpos $15A0,$0660,ScrapStomp,$34
+		objpos $15A0,$0660,ScrapStomp,type_stomp_fast_long
 		objpos $15EB,$0670,Flamethrower,$43,yflip
 		objpos $1610,$0168,VanishPlatform,$00
 		objpos $1620,$0630,Invisibarrier,$51
-		objpos $1620,$0660,ScrapStomp,$24
+		objpos $1620,$0660,ScrapStomp,type_stomp_fast_short
 		objpos $1650,$0128,VanishPlatform,$40
 		objpos $1650,$01E8,Electro,$08
 		objpos $1690,$00E8,VanishPlatform,$80
 		objpos $1694,$02F0,Rings,$45,rem
 		objpos $16A0,$0630,Invisibarrier,$51
-		objpos $16A0,$0660,ScrapStomp,$34
+		objpos $16A0,$0660,ScrapStomp,type_stomp_fast_long
 		objpos $16B0,$01F1,Monitor,$06,rem
 		objpos $16EB,$0670,Flamethrower,$43,yflip
 		objpos $16F0,$00E8,VanishPlatform,$C0
 		objpos $1700,$01E8,Electro,$08
 		objpos $1728,$0590,Rings,$12,rem
 		objpos $1730,$00A8,VanishPlatform,$00
-		objpos $1740,$05AC,SpinPlatform,$01
+		objpos $1740,$05AC,SpinPlatform,type_spin_trapdoor+1
 		objpos $174B,$06A8,Flamethrower,$43,xflip
 		objpos $1760,$02F8,Invisibarrier,$70
 		objpos $1760,$0378,Invisibarrier,$70
@@ -233,7 +233,7 @@
 		objpos $1808,$0480,AutoDoor,$00
 		objpos $1815,$0686,Flamethrower,$43
 		objpos $1828,$0590,Rings,$12,rem
-		objpos $1840,$05AC,SpinPlatform,$01
+		objpos $1840,$05AC,SpinPlatform,type_spin_trapdoor+1
 		objpos $18BA,$0490,Flamethrower,$43,yflip
 		objpos $18C0,$0618,Electro,$08,yflip
 		objpos $18DC,$060D,Rings,$13,rem
@@ -242,9 +242,9 @@
 		objpos $193B,$0646,Flamethrower,$43,xflip
 		objpos $1940,$0618,Electro,$08,yflip
 		objpos $195C,$060D,Rings,$13,rem
-		objpos $1980,$04CC,ScrapStomp,$80
-		objpos $1980,$050D,MovingBlock,$39
-		objpos $1980,$0550,MovingBlock,$39
+		objpos $1980,$04CC,ScrapStomp,type_stomp_door+0
+		objpos $1980,$050D,MovingBlock,type_mblock_sbzwide+type_mblock_slide
+		objpos $1980,$0550,MovingBlock,type_mblock_sbzwide+type_mblock_slide
 		objpos $1994,$00F1,Rings,$44,rem
 		objpos $19A5,$0646,Flamethrower,$43
 		objpos $19B0,$059B,Button,$00
@@ -268,10 +268,10 @@
 		objpos $1B00,$01D8,Invisibarrier,$17
 		objpos $1B00,$0258,Invisibarrier,$17
 		objpos $1B00,$02D8,Invisibarrier,$17
-		objpos $1B10,$04A7,SpinPlatform,$80
-		objpos $1B30,$04A7,SpinPlatform,$81
-		objpos $1B50,$04A7,SpinPlatform,$82
-		objpos $1B70,$04A7,SpinPlatform,$83
+		objpos $1B10,$04A7,SpinPlatform,type_spin_platform+0
+		objpos $1B30,$04A7,SpinPlatform,type_spin_platform+1
+		objpos $1B50,$04A7,SpinPlatform,type_spin_platform+2
+		objpos $1B70,$04A7,SpinPlatform,type_spin_platform+3
 		objpos $1B76,$0490,Flamethrower,$43,yflip
 		objpos $1B80,$0600,SpinConvey,$84
 		objpos $1B90,$04C0,Invisibarrier,$13
@@ -279,11 +279,11 @@
 		objpos $1BC0,$0378,Electro,$08,yflip
 		objpos $1BD0,$03B4,Rings,$14,rem
 		objpos $1BF0,$04C0,Invisibarrier,$13
-		objpos $1C10,$04A7,SpinPlatform,$80
-		objpos $1C30,$04A7,SpinPlatform,$81
+		objpos $1C10,$04A7,SpinPlatform,type_spin_platform+0
+		objpos $1C30,$04A7,SpinPlatform,type_spin_platform+1
 		objpos $1C40,$0378,Electro,$08,yflip
-		objpos $1C50,$04A7,SpinPlatform,$82
-		objpos $1C70,$04A7,SpinPlatform,$83
+		objpos $1C50,$04A7,SpinPlatform,type_spin_platform+2
+		objpos $1C70,$04A7,SpinPlatform,type_spin_platform+3
 		objpos $1C76,$0490,Flamethrower,$43,yflip
 		objpos $1C80,$0580,SpinConvey,$85
 		objpos $1C90,$04C0,Invisibarrier,$13
