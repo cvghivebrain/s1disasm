@@ -1,0 +1,29 @@
+name: Hivebrain 2021+ bit-perfect
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [windows-latest]
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Prepare check
+      run: .\.github\workflows\bit-perfect-init.bat
+
+    - name: Revision 00
+      run: .\.github\workflows\bit-perfect.bat 00
+
+    - name: Revision 01
+      run: .\.github\workflows\bit-perfect.bat 01
