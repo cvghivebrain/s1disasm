@@ -54,7 +54,7 @@ bitUp:		equ 0
 
 ; Object variables
 ost_render:		equ 1	; bitfield for x/y flip, display mode
-	render_xflip:		equ 1	; xflip ; x flips sprites left facting or not 
+	render_xflip:		equ 1	; xflip ; x flips sprites left facing or not
 	render_yflip:		equ 2	; yflip
 	render_rel:		equ 4	; relative screen position - coordinates are based on the level
 	render_abs:		equ 0	; absolute screen position - coordinates are based on the screen (e.g. the HUD)
@@ -154,3 +154,4 @@ afReset:	equ $FB	; reset animation and 2nd object routine counter
 af2ndRoutine:	equ $FA	; increment 2nd routine counter
 afxflip:	equ $20
 afyflip:	equ $40
+SST_size = $40 ; the object size of every entry of an object 

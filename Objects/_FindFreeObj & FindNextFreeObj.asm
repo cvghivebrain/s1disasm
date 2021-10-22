@@ -10,16 +10,16 @@
 
 FindFreeObj:
 		lea	(v_ost_level_obj).w,a1 ; start address for OSTs
-		move.w	#$5F,d0 ; loop the $60 level slots 
+		move.w	#$5F,d0 ; loop the $60 level slots
 
 	@loop:
 		tst.b	(a1)		; is OST slot empty?
 		beq.s	@found		; if yes, branch
-		lea	$40(a1),a1	; goto next OST
+		lea	SST_size(a1),a1	; goto next OST
 		dbf	d0,@loop	; repeat $5F times
 
 	@found:
-		rts	
+		rts
 
 ; End of function FindFreeObj
 
@@ -45,11 +45,11 @@ FindNextFreeObj:
 	@loop:
 		tst.b	(a1)		; is OST slot empty?
 		beq.s	@found		; if yes, branch
-		lea	$40(a1),a1	; goto next OST
+		lea	SST_size(a1),a1	; goto next OST
 		dbf	d0,@loop	; repeat until end of OSTs
 
 	@use_current:
 	@found:
-		rts	
+		rts
 
 ; End of function FindNextFreeObj

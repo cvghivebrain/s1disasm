@@ -21,7 +21,7 @@ loc_D348:
 		moveq	#0,d0
 
 loc_D358:
-		lea	$40(a0),a0	; next object
+		lea	SST_size(a0),a0	; next object
 		dbf	d7,loc_D348
 		rts	
 ; ===========================================================================
@@ -40,11 +40,11 @@ loc_D368:
 		bsr.w	DisplaySprite
 
 loc_D378:
-		lea	$40(a0),a0
+		lea	SST_size(a0),a0
 
 loc_D37C:
 		dbf	d7,loc_D368
-		rts	
+		rts
 ; End of function ExecuteObjects
 
 ; ===========================================================================
@@ -53,7 +53,7 @@ loc_D37C:
 ; ---------------------------------------------------------------------------
 Obj_Index:
 		index.l 0,1		; longword, absolute (relative to 0), start ids at 1
-		
+
 		ptr SonicPlayer		; $01
 		ptr NullObject
 		ptr NullObject

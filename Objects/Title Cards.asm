@@ -67,7 +67,7 @@ Card_Loop:
 		move.b	#render_abs,ost_render(a1)
 		move.b	#0,ost_priority(a1)
 		move.w	#60,ost_anim_time(a1) ; set time delay to 1 second
-		lea	$40(a1),a1	; next object
+		lea	SST_size(a1),a1	; next object
 		dbf	d1,Card_Loop	; repeat sequence another 3 times
 
 Card_ChkPos:	; Routine 2
@@ -90,7 +90,7 @@ Card_NoMove:
 ; ===========================================================================
 
 locret_C3D8:
-		rts	
+		rts
 ; ===========================================================================
 
 Card_Wait:	; Routine 4/6
@@ -120,7 +120,7 @@ Card_Move2:
 ; ===========================================================================
 
 locret_C412:
-		rts	
+		rts
 ; ===========================================================================
 
 Card_ChangeArt:
