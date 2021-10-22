@@ -10,7 +10,7 @@
 
 FindFreeObj:
 		lea	(v_ost_level_obj).w,a1 ; start address for OSTs
-		move.w	#$5F,d0
+		move.w	#$5F,d0 ; loop the $60 level slots 
 
 	@loop:
 		tst.b	(a1)		; is OST slot empty?
