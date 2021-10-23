@@ -1,3 +1,21 @@
+; ---------------------------------------------------------------------------
+; Object subtypes
+; ---------------------------------------------------------------------------
+
+; Springs
+type_spring_red:	equ 0				; x0 - red
+type_spring_yellow:	equ 2				; x2 - yellow
+type_spring_up:		equ 0				; $0x - facing up
+type_spring_right:	equ $10				; $1x - facing right (or left if xflipped)
+type_spring_down:	equ $20				; $2x - facing down (must also be yflipped)
+
+; Monitor
+type_monitor_eggman:	equ id_ani_monitor_eggman	; 1 - Eggman, does nothing
+type_monitor_1up:	equ id_ani_monitor_sonic	; 2 - Extra life
+type_monitor_shoes:	equ id_ani_monitor_shoes	; 3 - speed shoes
+type_monitor_shield:	equ id_ani_monitor_shield	; 4 - shield
+type_monitor_invincible: equ id_ani_monitor_invincible	; 5 - invincibility
+type_monitor_rings:	equ id_ani_monitor_rings	; 6 - 10 rings
 
 ; Scenery
 type_scen_cannon:	equ (Scen_Values_0-Scen_Values)/sizeof_scen_values	; 0 - SLZ cannon

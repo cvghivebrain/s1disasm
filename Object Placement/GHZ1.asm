@@ -2,9 +2,9 @@
 ; Green Hill Zone 1 object placement
 ; ---------------------------------------------------------------------------
 		objpos $0144,$0360,Rings,$12,rem
-		objpos $0248,$0351,Monitor,$06,rem
+		objpos $0248,$0351,Monitor,type_monitor_rings,rem
 		objpos $0334,$022C,Rings,$45,rem
-		objpos $0334,$0328,Springs,$02
+		objpos $0334,$0328,Springs,type_spring_yellow+type_spring_up
 		objpos $0340,$03AC,MotoBug,$00,rem
 		objpos $0420,$0330,BuzzBomber,$00,rem
 		objpos $0430,$0378,Scenery,type_scen_stump,xflip
@@ -13,7 +13,7 @@
 		objpos $04A8,$0388,WaterSound,$00
 		objpos $04A8,$0388,Bridge,$0C
 		objpos $0510,$0378,Scenery,type_scen_stump
-		objpos $05D6,$0320,Monitor,$05,rem
+		objpos $05D6,$0320,Monitor,type_monitor_invincible,rem
 		objpos $0680,$0387,Rings,$10,rem
 		objpos $06A0,$0397,Rings,$10,rem
 		objpos $06C0,$03A5,Rings,$10,rem
@@ -44,12 +44,12 @@
 		objpos $0D70,$02A9,Rings,$10,rem
 		objpos $0D88,$0377,Spikes,$00
 		objpos $0D92,$0297,Rings,$10,rem
-		objpos $0DB0,$037B,Springs,$02
+		objpos $0DB0,$037B,Springs,type_spring_yellow+type_spring_up
 		objpos $0DB4,$0287,Rings,$10,rem
 		objpos $0DD0,$0270,BuzzBomber,$00,rem
 		objpos $0DD8,$0370,Spikes,$00
 		objpos $0DDA,$0277,Rings,$10,rem
-		objpos $0E2C,$0278,Springs,$02
+		objpos $0E2C,$0278,Springs,type_spring_yellow+type_spring_up
 		objpos $0EB1,$0211,Rings,$10,rem
 		objpos $0ED0,$0240,CollapseLedge,type_ledge_left,rem
 		objpos $0ED2,$020A,Rings,$10,rem
@@ -62,7 +62,7 @@
 		objpos $0F66,$0208,Rings,$10,rem
 		objpos $0F68,$028C,Spikes,$20
 		objpos $0F78,$0287,Spikes,$20
-		objpos $0F80,$03BF,Springs,$02
+		objpos $0F80,$03BF,Springs,type_spring_yellow+type_spring_up
 		objpos $0F88,$02D8,Rings,$12,rem
 		objpos $0FA0,$0201,PurpleRock,$00
 		objpos $0FAC,$03B7,Spikes,$00
@@ -81,14 +81,14 @@
 		objpos $1260,$01A8,BasicPlatform,type_plat_sideways_rev
 		objpos $1280,$0249,Rings,$10,rem
 		objpos $12A2,$0259,Rings,$10,rem
-		objpos $12C0,$0330,Monitor,$06,rem
+		objpos $12C0,$0330,Monitor,type_monitor_rings,rem
 		objpos $12C3,$0269,Rings,$10,rem
-		objpos $12E0,$0330,Monitor,$06,rem
+		objpos $12E0,$0330,Monitor,type_monitor_rings,rem
 		objpos $12EA,$0271,Rings,$10,rem
 		objpos $12F8,$0238,Newtron,$00,rem
-		objpos $1300,$0330,Monitor,$06,rem
-		objpos $1308,$0170,Monitor,$06,rem
-		objpos $1320,$0330,Monitor,$05,rem
+		objpos $1300,$0330,Monitor,type_monitor_rings,rem
+		objpos $1308,$0170,Monitor,type_monitor_rings,rem
+		objpos $1320,$0330,Monitor,type_monitor_invincible,rem
 		objpos $13A0,$0130,BuzzBomber,$00,rem
 		objpos $13A0,$0188,BasicPlatform,type_plat_falls
 		objpos $1420,$01A8,BasicPlatform,type_plat_falls
@@ -100,7 +100,7 @@
 		objpos $1530,$0330,Spikes,$00
 		objpos $153C,$0260,Rings,$10,rem
 		objpos $154E,$0230,Rings,$10,rem
-		objpos $1580,$01F1,Monitor,$04,rem
+		objpos $1580,$01F1,Monitor,type_monitor_shield,rem
 		objpos $1580,$021D,Rings,$10,rem
 		objpos $15AF,$0230,Rings,$10,rem
 		objpos $15C3,$0260,Rings,$10,rem
@@ -194,8 +194,8 @@
 		objpos $219C,$0397,Rings,$10,rem
 		objpos $21BE,$03A8,Rings,$10,rem
 		objpos $21E2,$03B1,Rings,$10,rem
-		objpos $2248,$0350,Monitor,$06,rem
-		objpos $2334,$0320,Monitor,$06,rem
+		objpos $2248,$0350,Monitor,type_monitor_rings,rem
+		objpos $2334,$0320,Monitor,type_monitor_rings,rem
 		objpos $2342,$0475,Rings,$10,rem
 		objpos $2367,$047E,Rings,$10,rem
 		objpos $2378,$0408,BasicPlatform,type_plat_updown

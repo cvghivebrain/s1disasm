@@ -1,8 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Labyrinth Zone 2 object placement
 ; ---------------------------------------------------------------------------
-		objpos $0050,$0411,Monitor,$06,rem
-		objpos $0090,$0451,Monitor,$06,rem
+		objpos $0050,$0411,Monitor,type_monitor_rings,rem
+		objpos $0090,$0451,Monitor,type_monitor_rings,rem
 		objpos $00B0,$0460,Jaws,$0C,xflip,rem
 		objpos $00B8,$00B8,Rings,$12,rem
 		objpos $00E0,$0478,Bubble,$81
@@ -36,7 +36,7 @@
 		objpos $03C8,$0160,Waterfall,type_wfall_diagonal,xflip
 		objpos $03D0,$02B0,Spikes,$30,yflip
 		objpos $03E8,$0170,Waterfall,type_wfall_diagonal,xflip
-		objpos $03F0,$0391,Monitor,$05,rem
+		objpos $03F0,$0391,Monitor,type_monitor_invincible,rem
 		objpos $03F8,$02F8,Waterfall,type_wfall_cornernarrow3
 		objpos $03F8,$0310,Waterfall,type_wfall_vert
 		objpos $03FC,$0328,Waterfall,type_wfall_splash_match
@@ -54,19 +54,19 @@
 		objpos $0508,$0250,Waterfall,type_wfall_vert,xflip
 		objpos $0508,$0270,Waterfall,type_wfall_vert,xflip
 		objpos $0570,$01D0,Spikes,$30,yflip
-		objpos $05F8,$01F0,Springs,$10,xflip
-		objpos $0670,$0231,Monitor,$06,rem
-		objpos $06A0,$0291,Monitor,$06,rem
+		objpos $05F8,$01F0,Springs,type_spring_red+type_spring_right,xflip
+		objpos $0670,$0231,Monitor,type_monitor_rings,rem
+		objpos $06A0,$0291,Monitor,type_monitor_rings,rem
 		objpos $0710,$04B8,Jaws,$0A,xflip,rem
 		objpos $0720,$0330,Spikes,$30,yflip
 		objpos $0740,$0490,Spikes,$30,yflip
 		objpos $0770,$0190,Rings,$46,rem
-		objpos $0770,$04F8,Springs,$00
+		objpos $0770,$04F8,Springs,type_spring_red+type_spring_up
 		objpos $0788,$0330,Rings,$12,rem
 		objpos $07A0,$04F8,Bubble,$80
 		objpos $07D0,$029C,Button,$02
-		objpos $07D0,$02A1,Monitor,$06,rem
-		objpos $07D0,$0441,Monitor,$04,rem
+		objpos $07D0,$02A1,Monitor,type_monitor_rings,rem
+		objpos $07D0,$0441,Monitor,type_monitor_shield,rem
 		objpos $07E0,$02D0,Spikes,$30,yflip
 		objpos $07E0,$04D0,Spikes,$30,yflip
 		objpos $07F0,$0458,Jaws,$06,xflip,rem
@@ -82,7 +82,7 @@
 		objpos $08A0,$0670,Gargoyle,$04,rem
 		objpos $08D6,$0550,Spikes,$30,yflip
 		objpos $08F0,$020C,Gargoyle,$02,rem
-		objpos $08F0,$0391,Monitor,$06,rem
+		objpos $08F0,$0391,Monitor,type_monitor_rings,rem
 		objpos $0910,$06C8,Harpoon,type_harp_v,yflip,rem
 		objpos $0930,$0670,Jaws,$09,xflip,rem
 		objpos $0940,$06F8,Bubble,$80
@@ -107,7 +107,7 @@
 		objpos $0A98,$04B0,Harpoon,type_harp_h,xflip,rem
 		objpos $0AC0,$06F8,Bubble,$80
 		objpos $0AE0,$06E4,Orbinaut,$00,rem
-		objpos $0AF0,$01F1,Monitor,$05,rem
+		objpos $0AF0,$01F1,Monitor,type_monitor_invincible,rem
 		objpos $0B00,$0200,SpikeBall,$D5
 		objpos $0B50,$0680,SpikeBall,$C5
 		objpos $0BC0,$05F8,Bubble,$80

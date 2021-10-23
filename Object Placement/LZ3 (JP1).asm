@@ -15,7 +15,7 @@
 		objpos $02E8,$0370,Waterfall,type_wfall_diagonal,xflip
 		objpos $0308,$0380,Waterfall,type_wfall_diagonal,xflip
 		objpos $0408,$03F8,Waterfall,type_wfall_cornermedium,xflip
-		objpos $0450,$02F1,Monitor,$06,rem
+		objpos $0450,$02F1,Monitor,type_monitor_rings,rem
 		objpos $0490,$02B8,Button,$0F
 		objpos $0508,$04F8,Waterfall,type_wfall_cornermedium2,xflip
 		objpos $0578,$0510,Waterfall,type_wfall_vert
@@ -25,7 +25,7 @@
 		objpos $0580,$0570,Waterfall,type_wfall_splash
 		objpos $05F8,$02F8,Waterfall,type_wfall_cornernarrow
 		objpos $0608,$05F8,Waterfall,type_wfall_cornermedium2,xflip
-		objpos $0630,$01C1,Monitor,$04,rem
+		objpos $0630,$01C1,Monitor,type_monitor_shield,rem
 		objpos $0648,$0470,Rings,$15,rem
 		objpos $0648,$0488,Rings,$15,rem
 		objpos $0658,$02F0,Waterfall,type_wfall_splash_low+type_wfall_hi
@@ -45,7 +45,7 @@
 		objpos $0800,$00F8,Waterfall,type_wfall_splash
 		objpos $0808,$00F0,Waterfall,type_wfall_vert,xflip
 		objpos $0808,$07F8,Waterfall,type_wfall_cornernarrow2,xflip
-		objpos $0810,$0391,Monitor,$06,rem
+		objpos $0810,$0391,Monitor,type_monitor_rings,rem
 		objpos $0820,$0678,Jaws,$0C,xflip,rem
 		objpos $0820,$06E0,Jaws,$0C,xflip,rem
 		objpos $0830,$05F8,Harpoon,type_harp_v,rem
@@ -71,7 +71,7 @@
 		objpos $09D0,$04F8,Bubble,$80
 		objpos $09E0,$03F4,Spikes,$01
 		objpos $0A00,$0300,SpikeBall,$45
-		objpos $0A30,$0251,Monitor,$06,rem
+		objpos $0A30,$0251,Monitor,type_monitor_rings,rem
 		objpos $0A50,$02F0,Spikes,$00
 		objpos $0A50,$0510,Burrobot,$00,rem
 		objpos $0AA0,$0300,SpikeBall,$65
@@ -79,15 +79,15 @@
 		objpos $0AA8,$0450,Harpoon,type_harp_h,rem
 		objpos $0B08,$0660,FlapDoor,$02
 		objpos $0B20,$02D0,Spikes,$30
-		objpos $0B50,$03B1,Monitor,$02,rem
+		objpos $0B50,$03B1,Monitor,type_monitor_1up,rem
 		objpos $0B64,$02D0,Burrobot,$00,rem
 		objpos $0B70,$01D0,Spikes,$30,yflip
-		objpos $0B70,$03B1,Monitor,$06,rem
-		objpos $0B90,$03B1,Monitor,$06,rem
+		objpos $0B70,$03B1,Monitor,type_monitor_rings,rem
+		objpos $0B90,$03B1,Monitor,type_monitor_rings,rem
 		objpos $0BA0,$02B0,Burrobot,$00,rem
-		objpos $0BB0,$03B1,Monitor,$06,rem
+		objpos $0BB0,$03B1,Monitor,type_monitor_rings,rem
 		objpos $0BD0,$01B0,Spikes,$30,yflip
-		objpos $0BD0,$03B1,Monitor,$06,rem
+		objpos $0BD0,$03B1,Monitor,type_monitor_rings,rem
 		objpos $0BE0,$0290,Burrobot,$00,rem
 		objpos $0C40,$0470,FloatingBlock,type_fblock_lzhoriz+type_fblock_button+6,xflip,rem
 		objpos $0C5C,$03D4,LabyrinthConvey,type_lcon_wheel
@@ -95,7 +95,7 @@
 		objpos $0C60,$04B8,Bubble,$80
 		objpos $0C90,$04C8,Button,$01
 		objpos $0C98,$0450,Spikes,$00
-		objpos $0CB0,$0438,Springs,$00
+		objpos $0CB0,$0438,Springs,type_spring_red+type_spring_up
 		objpos $0CB1,$024F,LabyrinthConvey,type_lcon_wheel
 		objpos $0CD8,$0420,Spikes,$00
 		objpos $0CF0,$03F8,Button,$06
@@ -109,11 +109,11 @@
 		objpos $0DD4,$024C,LabyrinthConvey,type_lcon_wheel
 		objpos $0DD4,$03D4,LabyrinthConvey,type_lcon_wheel
 		objpos $0E20,$02D0,Spikes,$30
-		objpos $0E90,$03A1,Monitor,$06,rem
+		objpos $0E90,$03A1,Monitor,type_monitor_rings,rem
 		objpos $0E90,$04A8,Bubble,$80
 		objpos $0EA0,$0290,Spikes,$30
 		objpos $0EE0,$0338,Bubble,$80
-		objpos $0EF0,$0271,Monitor,$05,rem
+		objpos $0EF0,$0271,Monitor,type_monitor_invincible,rem
 		objpos $0F20,$0660,Pole,$04
 		objpos $0FB0,$0648,Spikes,$10
 		objpos $0FF0,$06B8,Spikes,$10
@@ -122,7 +122,7 @@
 		objpos $1160,$04B8,Bubble,$80
 		objpos $1190,$0490,Rings,$14,rem
 		objpos $11B0,$0648,Spikes,$10
-		objpos $11D0,$0421,Monitor,$05,rem
+		objpos $11D0,$0421,Monitor,type_monitor_invincible,rem
 		objpos $11D0,$04F8,Button,$02
 		objpos $11E0,$0680,Pole,$04
 		objpos $1208,$04A0,FloatingBlock,type_fblock_lzvert+type_fblock_button+2,rem
@@ -162,15 +162,15 @@
 		objpos $14B0,$0648,Spikes,$10
 		objpos $14C0,$0210,Burrobot,$00,rem
 		objpos $14E0,$0210,Burrobot,$00,rem
-		objpos $14F0,$05F1,Monitor,$06,rem
+		objpos $14F0,$05F1,Monitor,type_monitor_rings,rem
 		objpos $1510,$0680,Pole,$04
 		objpos $1558,$0210,Waterfall,type_wfall_vertwide
 		objpos $1558,$0220,Waterfall,type_wfall_splash
 		objpos $1568,$0230,Waterfall,type_wfall_diagonal,xflip
-		objpos $1570,$05D1,Monitor,$06,rem
+		objpos $1570,$05D1,Monitor,type_monitor_rings,rem
 		objpos $1570,$0668,Spikes,$10
 		objpos $1588,$0240,Waterfall,type_wfall_diagonal,xflip
-		objpos $1590,$03B1,Monitor,$06,rem
+		objpos $1590,$03B1,Monitor,type_monitor_rings,rem
 		objpos $15A0,$0510,FloatingBlock,type_fblock_lzhoriz+type_fblock_button+3,xflip,rem
 		objpos $15A8,$0250,Waterfall,type_wfall_diagonal,xflip
 		objpos $15B8,$01F0,Spikes,$30,yflip
@@ -181,15 +181,15 @@
 		objpos $1608,$0280,Waterfall,type_wfall_diagonal,xflip
 		objpos $1620,$0230,Spikes,$30,yflip
 		objpos $1640,$0790,Spikes,$30,yflip
-		objpos $1660,$04F8,Springs,$00
+		objpos $1660,$04F8,Springs,type_spring_red+type_spring_up
 		objpos $1680,$0638,Button,$07
 		objpos $1680,$0650,LabyrinthBlock,type_lblock_solid
 		objpos $16A0,$04F8,Bubble,$80
 		objpos $16A0,$07F8,Bubble,$80
 		objpos $16C0,$0770,Spikes,$30,yflip
-		objpos $16D0,$0748,Springs,$00
+		objpos $16D0,$0748,Springs,type_spring_red+type_spring_up
 		objpos $16E0,$0290,Spikes,$30,yflip
-		objpos $16F0,$0471,Monitor,$04,rem
+		objpos $16F0,$0471,Monitor,type_monitor_shield,rem
 		objpos $1708,$02F8,Waterfall,type_wfall_cornermedium,xflip
 		objpos $1720,$0270,Spikes,$30,yflip
 		objpos $1720,$07F8,Bubble,$80
@@ -228,7 +228,7 @@
 		objpos $1B60,$0010,Burrobot,$00,rem
 		objpos $1BC0,$0810,FloatingBlock,type_fblock_lzhoriz+type_fblock_button+8,rem
 		objpos $1C00,$0010,Burrobot,$00,rem
-		objpos $1C10,$05F1,Monitor,$04,rem
+		objpos $1C10,$05F1,Monitor,type_monitor_shield,rem
 		
 		objpos $1E10,$0530,Gargoyle,$03,xflip,rem
 		objpos $1E30,$01D0,Gargoyle,$03,xflip,rem

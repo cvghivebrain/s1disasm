@@ -150,7 +150,7 @@ React_Monitor:
 		move.w	#-$180,ost_y_vel(a1)
 		tst.b	ost_routine2(a1)
 		bne.s	@donothing
-		addq.b	#4,ost_routine2(a1) ; advance the monitor's routine counter
+		addq.b	#4,ost_routine2(a1) ; set routine counter to goto Mon_Solid_Fall
 		rts	
 ; ===========================================================================
 
