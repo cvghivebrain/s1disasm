@@ -161,7 +161,7 @@ loc_84EE:
 
 loc_84F2:
 		bsr.w	DisplaySprite
-		sfx	sfx_Collapse,1,0,0 ; play collapsing sound
+		play.w	1, jmp, sfx_Collapse		; play collapsing sound
 		
 		endm
 		

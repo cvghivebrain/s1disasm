@@ -34,7 +34,7 @@ Flap_OpenClose:	; Routine 2
 		bchg	#0,ost_anim(a0)	; open/close door
 		tst.b	ost_render(a0)
 		bpl.s	@nosound
-		sfx	sfx_Door,0,0,0	; play door sound
+		play.w	1, jsr, sfx_Door		; play door sound
 
 	@wait:
 	@nosound:

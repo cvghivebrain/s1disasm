@@ -85,7 +85,7 @@ Geyser_Main:	; Routine 0
 		move.b	#0,ost_subtype(a0)
 
 	@sound:
-		sfx	sfx_Burning,0,0,0 ; play flame sound
+		play.w	1, jsr, sfx_Burning		; play flame sound
 
 Geyser_Action:	; Routine 2
 		moveq	#0,d0

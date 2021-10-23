@@ -42,7 +42,7 @@ Bonus_Main:	; Routine 0
 		move.b	#$10,ost_actwidth(a0)
 		move.b	ost_subtype(a0),ost_frame(a0)
 		move.w	#119,ost_bonus_wait_time(a0) ; set display time to 2 seconds
-		sfx	sfx_Bonus,0,0,0	; play bonus sound
+		play.w	1, jsr, sfx_Bonus		; play bonus sound
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0
 		add.w	d0,d0

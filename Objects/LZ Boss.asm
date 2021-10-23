@@ -107,7 +107,7 @@ loc_17F48:
 		tst.b	ost_blz_flash_num(a0)
 		bne.s	loc_17F70
 		move.b	#$20,ost_blz_flash_num(a0)
-		sfx	sfx_BossHit,0,0,0
+		play.w	1, jsr, sfx_BossHit		; play boss damage sound
 
 loc_17F70:
 		lea	(v_pal_dry+$22).w,a1
@@ -280,9 +280,8 @@ loc_180F6:
 		move.b	#$32,ost_blz_wait_time(a0)
 
 loc_18112:
-		music	mus_LZ,0,0,0		; play LZ music
-		if Revision=0
-		else
+		play.w	0, jsr, mus_LZ		; play LZ music
+		if Revision<>0
 			clr.b	(f_boss_boundary).w
 		endc
 		bset	#status_xflip_bit,ost_status(a0)

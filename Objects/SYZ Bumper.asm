@@ -44,7 +44,7 @@ Bump_Hit:	; Routine 2
 		bclr	#status_pushing_bit,ost_status(a1)
 		clr.b	ost_sonic_jump(a1)
 		move.b	#id_ani_bump_bumped,ost_anim(a0) ; use "hit" animation
-		sfx	sfx_Bumper,0,0,0 ; play bumper sound
+		play.w	1, jsr, sfx_Bumper		; play bumper sound
 		lea	(v_objstate).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0

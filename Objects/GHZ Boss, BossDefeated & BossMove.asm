@@ -104,7 +104,7 @@ loc_177E6:
 		tst.b	ost_bghz_flash_num(a0)
 		bne.s	BGHZ_ShipFlash
 		move.b	#$20,ost_bghz_flash_num(a0) ; set number of times for ship to flash
-		sfx	sfx_BossHit,0,0,0 ; play boss damage sound
+		play.w	1, jsr, sfx_BossHit		; play boss damage sound
 
 BGHZ_ShipFlash:
 		lea	(v_pal_dry+$22).w,a1 ; load 2nd palette, 2nd entry
@@ -297,7 +297,7 @@ loc_179DA:
 
 loc_179E0:
 		clr.w	ost_y_vel(a0)
-		music	mus_GHZ,0,0,0 ; play GHZ music
+		play.w	0, jsr, mus_GHZ		; play GHZ music
 
 loc_179EE:
 		bsr.w	BossMove

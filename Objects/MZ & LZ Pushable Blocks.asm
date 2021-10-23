@@ -349,7 +349,7 @@ loc_C294:
 		move.w	d1,ost_inertia(a1)
 		move.w	#0,ost_x_vel(a1)
 		move.w	d0,-(sp)
-		sfx	sfx_Push,0,0,0 ; play pushing sound
+		play.w	1, jsr, sfx_Push		; play pushing sound
 		move.w	(sp)+,d0
 		tst.b	ost_subtype(a0)	; is bit 7 of subtype set?
 		bmi.s	locret_C2E4	; if yes, branch

@@ -62,7 +62,7 @@ But_Action:	; Routine 2
 But_Press:
 		tst.b	(a3)		; is button already pressed?
 		bne.s	@already_pressed ; if yes, branch
-		sfx	sfx_Switch,0,0,0 ; play "bip" sound
+		play.w	1, jsr, sfx_Switch		; play "blip" sound
 
 	@already_pressed:
 		bset	d3,(a3)

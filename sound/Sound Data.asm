@@ -96,7 +96,7 @@ SoundPriorities:
 ; include the actual sound driver program
 ; ---------------------------------------------------------------------------
 
-UpdateSound:	include "sound/Sound Driver.asm"
+		include "sound/Sound Driver.asm"
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------

@@ -6,7 +6,7 @@
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 ; sub_71B4C:
-UpdateMusic:
+UpdateSound:
 		stopZ80
 		nop
 		nop
@@ -24,7 +24,7 @@ UpdateMusic:
 		nop
 		nop
 		nop
-		bra.s	UpdateMusic
+		bra.s	UpdateSound
 ; ===========================================================================
 ; loc_71B82:
 @driverinput:
@@ -125,7 +125,7 @@ UpdateMusic:
 DoStartZ80:
 		startZ80
 		rts
-; End of function UpdateMusic
+; End of function UpdateSound
 
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
@@ -191,7 +191,7 @@ DACUpdateTrack:
 ; Note: this only defines rates for samples $88-$8D, meaning $8E-$8F are invalid.
 ; Also, $8C-$8D are so slow you may want to skip them.
 ; byte_71CC4:
-DAC_sample_rate: dc.b $12, $15, $1C, $1D, $FF, $FF
+DAC_sample_rate: dc.b 18, 21, 28, 29, $FF, $FF
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 

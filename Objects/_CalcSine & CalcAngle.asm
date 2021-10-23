@@ -22,7 +22,9 @@ CalcSine:
 		rts	
 ; End of function CalcSine
 
-Sine_Data:	incbin	"Misc Data\Sine & Cosine Waves.bin" ; values for a 360 degree sine wave
+Sine_Data:
+		incbin	"Misc Data\Sine & Cosine Waves.bin"	; values for a 256 degree sine wave
+		incbin	"Misc Data\Sine & Cosine Waves.bin",, $80; contains duplicate data at the end!
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to calculate the square root of a number (0 to $FFFF)
