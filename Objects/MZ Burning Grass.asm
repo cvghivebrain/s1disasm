@@ -29,7 +29,7 @@ GFire_Main:	; Routine 0
 		move.b	#1,ost_priority(a0)
 		move.b	#$8B,ost_col_type(a0)
 		move.b	#8,ost_actwidth(a0)
-		sfx	sfx_Burning,0,0,0 ; play burning sound
+		play.w	1, jsr, sfx_Burning		; play burning sound
 		tst.b	ost_subtype(a0)
 		beq.s	loc_B238
 		addq.b	#2,ost_routine(a0)

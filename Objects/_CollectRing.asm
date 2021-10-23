@@ -20,5 +20,5 @@ CollectRing:
 		move.w	#mus_ExtraLife,d0 ; play extra life music
 
 	@playsnd:
-		jmp	(PlaySound_Special).l
+		jmp	(PlaySound1).l
 ; End of function CollectRing

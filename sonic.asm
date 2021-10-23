@@ -367,7 +367,7 @@ GameInit:
 		dbf	d6,@clearRAM	; clear RAM ($0000-$FDFF)
 
 		bsr.w	VDPSetupGame
-		bsr.w	SoundDriverLoad
+		bsr.w	DacDriverLoad
 		bsr.w	JoypadInit
 		move.b	#id_Sega,(v_gamemode).w ; set Game Mode to Sega Screen
 
@@ -618,7 +618,7 @@ VBlank:
 		jsr	VBla_Index(pc,d0.w)
 
 VBla_Music:
-		jsr	(UpdateMusic).l
+		jsr	(UpdateSound).l
 
 VBla_Exit:
 		addq.l	#1,(v_vblank_counter).w
@@ -945,7 +945,7 @@ loc_119E:
 		clr.b	(f_hblank_run_snd).w
 		movem.l	d0-a6,-(sp)
 		bsr.w	Demo_Time
-		jsr	(UpdateMusic).l
+		jsr	(UpdateSound).l
 		movem.l	(sp)+,d0-a6
 		rte	
 ; End of function HBlank
@@ -1113,65 +1113,13 @@ ClearScreen:
 		rts	
 ; End of function ClearScreen
 
-; ---------------------------------------------------------------------------
-; Subroutine to	load the sound driver
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-SoundDriverLoad:
-		nop	
-		stopZ80
-		resetZ80_release
-		lea	(Kos_DacDriver).l,a0	; load sound driver
-		lea	(z80_ram).l,a1	; target Z80 RAM
-		bsr.w	KosDec		; decompress
-		resetZ80_assert
-		nop	
-		nop	
-		nop	
-		nop	
-		resetZ80_release
-		startZ80
-		rts	
-; End of function SoundDriverLoad
-
-; ---------------------------------------------------------------------------
-; Subroutine to	play a music track
-
-; input:
-;	d0 = track to play
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-PlaySound:
-		move.b	d0,(v_snddriver_ram+v_soundqueue+0).w
-		rts	
-; End of function PlaySound
-
-; ---------------------------------------------------------------------------
-; Subroutine to	play a sound effect
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-PlaySound_Special:
-		move.b	d0,(v_snddriver_ram+v_soundqueue+1).w
-		rts	
-; End of function PlaySound_Special
-
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
-; Unused sound/music subroutine
+; Functions for loading the DAC driver and playing sounds
 ; ---------------------------------------------------------------------------
 
-PlaySound_Unused:
-		move.b	d0,(v_snddriver_ram+v_soundqueue+2).w
-		rts	
+	include "sound/PlaySound + DacDriverLoad.asm"
+
 ; ---------------------------------------------------------------------------
 ; Subroutine to	pause the game
 ; ---------------------------------------------------------------------------
@@ -1721,7 +1669,7 @@ Pal_Ending:	incbin	"Palettes\Ending.bin"
 ; ---------------------------------------------------------------------------
 
 GM_Sega:
-		sfx	cmd_Stop,0,1,1 ; stop music
+		play.b	1, bsr.w, cmd_Stop		; stop music
 		bsr.w	ClearPLC
 		bsr.w	PaletteFadeOut
 		lea	(vdp_control_port).l,a6
@@ -1771,7 +1719,7 @@ Sega_WaitPal:
 		bsr.w	PalCycle_Sega
 		bne.s	Sega_WaitPal
 
-		sfx	cmd_Sega,0,1,1	; play "SEGA" sound
+		play.b	1, bsr.w, cmd_Sega		; play "SEGA" sound
 		move.b	#$14,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		move.w	#$1E,(v_countdown).w
@@ -1794,11 +1742,11 @@ Sega_GotoTitle:
 ; ---------------------------------------------------------------------------
 
 GM_Title:
-		sfx	cmd_Stop,0,1,1 ; stop music
+		play.b	1, bsr.w, cmd_Stop		; stop music
 		bsr.w	ClearPLC
 		bsr.w	PaletteFadeOut
 		disable_ints
-		bsr.w	SoundDriverLoad
+		bsr.w	DacDriverLoad
 		lea	(vdp_control_port).l,a6
 		move.w	#$8004,(a6)	; 8-colour mode
 		move.w	#$8200+(vram_fg>>10),(a6) ; set foreground nametable address
@@ -1901,7 +1849,7 @@ GM_Title:
 		bsr.w	NemDec
 		moveq	#id_Pal_Title,d0 ; load title screen palette
 		bsr.w	PalLoad1
-		sfx	mus_TitleScreen,0,1,1	; play title screen music
+		play.b	1, bsr.w, mus_TitleScreen	; play title screen music
 		move.b	#0,(f_debugmode).w ; disable debug mode
 		move.w	#$178,(v_countdown).w ; run title screen for $178 frames
 		lea	(v_ost_all+(sizeof_ost*2)).w,a1
@@ -1989,7 +1937,7 @@ Tit_EnterCheat:
 
 	Tit_PlayRing:
 		move.b	#1,(a0,d1.w)	; activate cheat
-		sfx	sfx_Ring,0,1,1	; play ring sound when code is entered
+		play.b	1, bsr.w, sfx_Ring		; play ring sound when code is entered
 		bra.s	Tit_CountC
 ; ===========================================================================
 
@@ -2074,7 +2022,7 @@ LevSel_NoCheat:
 		blo.s	LevelSelect	; if yes, branch
 
 LevSel_PlaySnd:
-		bsr.w	PlaySound_Special
+		bsr.w	PlaySound1
 		bra.s	LevelSelect
 ; ===========================================================================
 
@@ -2086,7 +2034,7 @@ LevSel_Ending:
 
 LevSel_Credits:
 		move.b	#id_Credits,(v_gamemode).w ; set screen mode to $1C (Credits)
-		sfx	mus_Credits,0,1,1 ; play credits music
+		play.b	1, bsr.w, mus_Credits		; play credits music
 		move.w	#0,(v_creditsnum).w
 		rts	
 ; ===========================================================================
@@ -2131,7 +2079,7 @@ PlayLevel:
 		else
 			move.l	#5000,(v_scorelife).w ; extra life is awarded at 50000 points
 		endc
-		sfx	cmd_Fade,0,1,1 ; fade out music
+		play.b	1, bsr.w, cmd_Fade		; fade out music
 		rts	
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
@@ -2224,7 +2172,7 @@ loc_33E4:
 		bne.w	Tit_ChkLevSel	; if yes, branch
 		tst.w	(v_countdown).w
 		bne.w	loc_33B6
-		sfx	cmd_Fade,0,1,1 ; fade out music
+		play.b	1, bsr.w, cmd_Fade		; fade out music
 		move.w	(v_demonum).w,d0 ; load	demo number
 		andi.w	#7,d0
 		add.w	d0,d0
@@ -2438,7 +2386,7 @@ LevelMenuText:	if Revision=0
 		endc
 		even
 ; ---------------------------------------------------------------------------
-; Music	playlist
+; Music playlist
 ; ---------------------------------------------------------------------------
 MusicList:
 		dc.b mus_GHZ	; GHZ
@@ -2460,7 +2408,7 @@ GM_Level:
 		bset	#7,(v_gamemode).w ; add $80 to screen mode (for pre level sequence)
 		tst.w	(f_demo).w
 		bmi.s	Level_NoMusicFade
-		sfx	cmd_Fade,0,1,1 ; fade out music
+		play.b	1, bsr.w, cmd_Fade		; fade out music
 
 	Level_NoMusicFade:
 		bsr.w	ClearPLC
@@ -2583,7 +2531,7 @@ Level_GetBgm:
 	Level_PlayBgm:
 		lea	(MusicList).l,a1 ; load	music playlist
 		move.b	(a1,d0.w),d0
-		bsr.w	PlaySound	; play music
+		bsr.w	PlaySound0	; play music
 		move.b	#id_TitleCard,(v_ost_titlecard1).w ; load title card object
 
 Level_TtlCardLoop:
@@ -2997,7 +2945,7 @@ Demo_SS:	incbin	"demodata\Intro - Special Stage.bin"
 ; ---------------------------------------------------------------------------
 
 GM_Special:
-		sfx	sfx_EnterSS,0,1,0 ; play special stage entry sound
+		play.w	1, bsr.w, sfx_EnterSS		; play special stage entry sound
 		bsr.w	PaletteWhiteOut
 		disable_ints
 		lea	(vdp_control_port).l,a6
@@ -3060,7 +3008,7 @@ GM_Special:
 		bsr.w	PalCycle_SS
 		clr.w	(v_ss_angle).w	; set stage angle to "upright"
 		move.w	#$40,(v_ss_rotation_speed).w ; set stage rotation speed
-		music	mus_SpecialStage,0,1,0	; play special stage BG	music
+		play.w	0, bsr.w, mus_SpecialStage	; play special stage BG	music
 		move.w	#0,(v_demo_input_counter).w
 		lea	(DemoDataPtr).l,a1
 		moveq	#6,d0
@@ -3163,7 +3111,7 @@ loc_47D4:
 		move.w	(v_rings).w,d0
 		mulu.w	#10,d0		; multiply rings by 10
 		move.w	d0,(v_ring_bonus).w ; set rings bonus
-		sfx	mus_GotThrough,0,0,0	 ; play end-of-level music
+		play.w	1, jsr, mus_GotThrough		; play end-of-level music
 
 		lea	(v_ost_all).w,a1
 		moveq	#0,d0
@@ -3185,7 +3133,7 @@ SS_NormalExit:
 		beq.s	SS_NormalExit
 		tst.l	(v_plc_buffer).w
 		bne.s	SS_NormalExit
-		sfx	sfx_EnterSS,0,1,0 ; play special stage exit sound
+		play.w	1, bsr.w, sfx_EnterSS		; play special stage exit sound
 		bsr.w	PaletteWhiteOut
 		rts	
 ; ===========================================================================
@@ -3557,7 +3505,7 @@ GM_Continue:
 		jsr	(ContScrCounter).l	; run countdown	(start from 10)
 		moveq	#id_Pal_Continue,d0
 		bsr.w	PalLoad1	; load continue	screen palette
-		music	mus_Continue,0,1,1	; play continue	music
+		play.b	0, bsr.w, mus_Continue	; play continue	music
 		move.w	#659,(v_countdown).w ; set time delay to 11 seconds
 		clr.l	(v_screenposx).w
 		move.l	#$1000000,(v_screenposy).w
@@ -3627,7 +3575,7 @@ Cont_GotoLevel:
 ; ---------------------------------------------------------------------------
 
 GM_Ending:
-		sfx	cmd_Stop,0,1,1 ; stop music
+		play.b	1, bsr.w, cmd_Stop		; stop music
 		bsr.w	PaletteFadeOut
 
 		lea	(v_ost_all).w,a1
@@ -3695,7 +3643,7 @@ End_LoadData:
 		bsr.w	KosDec
 		moveq	#id_Pal_Sonic,d0
 		bsr.w	PalLoad1	; load Sonic's palette
-		music	mus_Ending,0,1,0	; play ending sequence music
+		play.w	0, bsr.w, mus_Ending	; play ending sequence music
 		btst	#bitA,(v_joypad_hold_actual).w ; is button A pressed?
 		beq.s	End_LoadSonic	; if not, branch
 		move.b	#1,(f_debugmode).w ; enable debug mode
@@ -3755,7 +3703,7 @@ End_MainLoop:
 		beq.s	End_ChkEmerald	; if yes, branch
 
 		move.b	#id_Credits,(v_gamemode).w ; goto credits
-		sfx	mus_Credits,0,1,1 ; play credits music
+		play.b	1, bsr.w, mus_Credits		; play credits music
 		move.w	#0,(v_creditsnum).w ; set credits index number to 0
 		rts	
 ; ===========================================================================
@@ -7164,7 +7112,7 @@ SS_AniEmeraldSparks:
 		clr.l	(a0)
 		clr.l	4(a0)
 		move.b	#4,($FFFFD024).w
-		sfx	sfx_Goal,0,0,0	; play special stage GOAL sound
+		play.w	1, jsr, sfx_Goal		; play special stage GOAL sound
 
 locret_1B60C:
 		rts	

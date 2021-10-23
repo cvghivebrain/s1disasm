@@ -48,7 +48,7 @@ Flame_Action:	; Routine 2
 		bchg	#0,ost_anim(a0)
 		beq.s	loc_E57A
 		move.w	ost_flame_on_master(a0),ost_flame_time(a0) ; begin flaming time
-		sfx	sfx_Flame,0,0,0 ; play flame sound
+		play.w	1, jsr, sfx_Flame		; play flame sound
 
 loc_E57A:
 		lea	(Ani_Flame).l,a1

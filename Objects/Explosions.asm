@@ -33,7 +33,7 @@ ExItem_Main:	; Routine 2
 		move.b	#$C,ost_actwidth(a0)
 		move.b	#7,ost_anim_time(a0) ; set frame duration to 7 frames
 		move.b	#id_frame_ex_0,ost_frame(a0)
-		sfx	sfx_Break,0,0,0 ; play breaking enemy sound
+		play.w	1, jsr, sfx_Break		; play breaking enemy sound
 
 ExItem_Animate:	; Routine 4 (2 for ExplosionBomb)
 ExBom_Animate:
@@ -72,4 +72,4 @@ ExBom_Main:	; Routine 0
 		move.b	#$C,ost_actwidth(a0)
 		move.b	#7,ost_anim_time(a0)
 		move.b	#id_frame_ex_0_0,ost_frame(a0)
-		sfx	sfx_Bomb,1,0,0	; play exploding bomb sound
+		play.w	1, jmp, sfx_Bomb		; play exploding bomb sound

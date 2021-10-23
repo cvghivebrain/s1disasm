@@ -58,7 +58,7 @@ Pow_ChkSonic:
 	ExtraLife:
 		addq.b	#1,(v_lives).w	; add 1 to the number of lives you have
 		addq.b	#1,(f_hud_lives_update).w ; update the lives counter
-		music	mus_ExtraLife,1,0,0 ; play extra life music
+		play.w	0, jmp, mus_ExtraLife	; play extra life music
 ; ===========================================================================
 
 Pow_ChkShoes:
@@ -70,7 +70,7 @@ Pow_ChkShoes:
 		move.w	#$C00,(v_sonic_max_speed).w ; change Sonic's top speed
 		move.w	#$18,(v_sonic_acceleration).w	; change Sonic's acceleration
 		move.w	#$80,(v_sonic_deceleration).w	; change Sonic's deceleration
-		music	cmd_Speedup,1,0,0 ; speed up the music
+		play.w	0, jmp, cmd_Speedup	; speed up the music
 ; ===========================================================================
 
 Pow_ChkShield:
@@ -79,7 +79,7 @@ Pow_ChkShield:
 
 		move.b	#1,(v_shield).w	; give Sonic a shield
 		move.b	#id_ShieldItem,(v_ost_shield).w ; load shield object ($38)
-		music	sfx_Shield,1,0,0 ; play shield sound
+		play.w	0, jmp, sfx_Shield	; play shield sound
 ; ===========================================================================
 
 Pow_ChkInvinc:
@@ -98,12 +98,11 @@ Pow_ChkInvinc:
 		move.b	#id_ani_stars4,(v_ost_stars4+ost_anim).w
 		tst.b	(f_boss_boundary).w ; is boss mode on?
 		bne.s	Pow_NoMusic	; if yes, branch
-		if Revision=0
-		else
+		if Revision<>0
 			cmpi.w	#$C,(v_air).w
 			bls.s	Pow_NoMusic
 		endc
-		music	mus_Invincible,1,0,0 ; play invincibility music
+		play.w	0, jmp, mus_Invincible	; play invincibility music
 ; ===========================================================================
 
 Pow_NoMusic:
@@ -126,7 +125,7 @@ Pow_ChkRings:
 		beq.w	ExtraLife
 
 	Pow_RingSound:
-		music	sfx_Ring,1,0,0	; play ring sound
+		play.w	0, jmp, sfx_Ring	; play ring sound
 ; ===========================================================================
 
 Pow_ChkS:

@@ -93,7 +93,7 @@ Bat_Action:	; Routine 2
 		move.b	(v_vblank_counter_byte).w,d0
 		andi.b	#$F,d0
 		bne.s	@nosound
-		sfx	sfx_Basaran,0,0,0 ; play flapping sound every 16th frame
+		play.w	1, jsr, sfx_Basaran		; play flapping sound every 16th frame
 
 	@nosound:
 		bsr.w	SpeedToPos

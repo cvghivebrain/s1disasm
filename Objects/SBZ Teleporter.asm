@@ -75,7 +75,7 @@ Tele_Action:	; Routine 2
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		clr.b	ost_tele_bump(a0)
-		sfx	sfx_Roll,0,0,0	; play Sonic rolling sound
+		play.w	1, jsr, sfx_Roll		; play Sonic rolling sound
 
 @do_nothing:
 		rts	
@@ -94,7 +94,7 @@ Tele_Bump:	; Routine 4
 		bne.s	locret_16796	; if not, branch
 		bsr.w	Tele_Move
 		addq.b	#2,ost_routine(a0)
-		sfx	sfx_Dash,0,0,0 ; play teleport sound
+		play.w	1, jsr, sfx_Dash		; play Sonic dashing sound
 
 locret_16796:
 		rts	

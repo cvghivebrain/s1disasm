@@ -54,7 +54,7 @@ LBall_Main:	; Routine 0
 		move.w	#0,ost_y_vel(a0) ; delete vertical speed
 
 	@sound:
-		sfx	sfx_LavaBall,0,0,0 ; play lava ball sound
+		play.w	1, jsr, sfx_LavaBall		; play lava ball sound
 
 LBall_Action:	; Routine 2
 		moveq	#0,d0

@@ -85,7 +85,7 @@ Spring_BounceUp:
 		move.b	#id_Sonic_Control,ost_routine(a1)
 		bclr	#status_platform_bit,ost_status(a0)
 		clr.b	ost_solid(a0)
-		sfx	sfx_Spring,0,0,0 ; play spring sound
+		play.w	1, jsr, sfx_Spring		; play spring sound
 
 Spring_AniUp:	; Routine 4
 		lea	(Ani_Spring).l,a1
@@ -134,7 +134,7 @@ Spring_BounceLR:
 loc_DC56:
 		bclr	#status_pushing_bit,ost_status(a0)
 		bclr	#status_pushing_bit,ost_status(a1)
-		sfx	sfx_Spring,0,0,0 ; play spring sound
+		play.w	1, jsr, sfx_Spring		; play spring sound
 
 Spring_AniLR:	; Routine $A
 		lea	(Ani_Spring).l,a1
@@ -177,7 +177,7 @@ Spring_BounceDwn:
 		move.b	#id_Sonic_Control,ost_routine(a1)
 		bclr	#status_platform_bit,ost_status(a0)
 		clr.b	ost_solid(a0)
-		sfx	sfx_Spring,0,0,0 ; play spring sound
+		play.w	1, jsr, sfx_Spring		; play spring sound
 
 Spring_AniDwn:	; Routine $10
 		lea	(Ani_Spring).l,a1

@@ -1,5 +1,20 @@
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
+; Macro for playing a sound or a command
+; ---------------------------------------------------------------------------
+
+play		macro	queue, command, song
+		move.\0	#\song,d0			; load the song to d0
+
+		if (\queue < 0) | (\queue > v_soundqueue_size)
+			inform 2,"Invalid or undefined sound queue slot. Must be between 0 and \#v_soundqueue_size"
+		endc
+
+		\command	PlaySound\queue		; call playsound based on the slot ID
+	endm
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
 ; Define background music
 ;
 ; By default, range from $81 to $9F. The first entries have lower ID.

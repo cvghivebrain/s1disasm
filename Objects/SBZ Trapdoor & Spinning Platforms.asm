@@ -61,7 +61,7 @@ Spin_Trapdoor:	; Routine 2
 		bchg	#0,ost_anim(a0)	; switch between opening/closing animations
 		tst.b	ost_render(a0)
 		bpl.s	@animate
-		sfx	sfx_Door,0,0,0	; play door sound
+		play.w	1, jsr, sfx_Door		; play door sound
 
 	@animate:
 		lea	(Ani_Spin).l,a1

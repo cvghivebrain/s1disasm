@@ -255,7 +255,7 @@ See_Spring:
 		clr.b	ost_sonic_jump(a2)
 		move.b	#id_Spring,ost_anim(a2) ; change Sonic's animation to "spring" ($10)
 		move.b	#2,ost_routine(a2)
-		sfx	sfx_Spring,0,0,0 ; play spring sound
+		play.w	1, jsr, sfx_Spring		; play spring sound
 
 loc_1192C:
 		clr.w	ost_x_vel(a0)

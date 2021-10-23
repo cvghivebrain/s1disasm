@@ -141,7 +141,7 @@ loc_197AA:
 		dbf	d1,Obj76_LoopFrag ; repeat sequence 3 more times
 
 loc_197D4:
-		sfx	sfx_Smash,1,0,0 ; play smashing sound
+		play.w	1, jmp, sfx_Smash		; play smashing sound
 ; End of function Obj76_Break
 
 ; ===========================================================================

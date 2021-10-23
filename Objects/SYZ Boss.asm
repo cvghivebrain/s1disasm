@@ -117,7 +117,7 @@ loc_19202:
 		tst.b	ost_bsyz_flash_num(a0)
 		bne.s	loc_1923A
 		move.b	#$20,ost_bsyz_flash_num(a0)
-		sfx	sfx_BossHit,0,0,0 ; play boss damage sound
+		play.w	1, jsr, sfx_BossHit		; play boss damage sound
 
 loc_1923A:
 		lea	(v_pal_dry+$22).w,a1
@@ -428,7 +428,7 @@ loc_194DA:
 
 loc_194E0:
 		clr.w	ost_y_vel(a0)
-		music	mus_SYZ,0,0,0	; play SYZ music
+		play.w	0, jsr, mus_SYZ		; play SYZ music
 
 loc_194EE:
 		bra.w	loc_191F2

@@ -136,7 +136,7 @@ Sonic_Display:
 	@music:
 		lea	(MusicList2).l,a1
 		move.b	(a1,d0.w),d0
-		jsr	(PlaySound).l	; play normal music
+		jsr	(PlaySound0).l	; play normal music
 
 	@removeinvincible:
 		move.b	#0,(v_invincibility).w ; cancel invincibility
@@ -152,7 +152,7 @@ Sonic_Display:
 		move.w	#$C,(v_sonic_acceleration).w ; restore Sonic's acceleration
 		move.w	#$80,(v_sonic_deceleration).w ; restore Sonic's deceleration
 		move.b	#0,(v_shoes).w	; cancel speed shoes
-		music	cmd_Slowdown,1,0,0 ; run music at normal speed
+		play.w	0, jmp, cmd_Slowdown		; run music at normal speed
 
 	@exit:
 		rts	
@@ -204,7 +204,7 @@ Sonic_Water:
 		asr	ost_y_vel(a0)	; slow Sonic
 		beq.s	@exit		; branch if Sonic stops moving
 		move.b	#id_Splash,(v_ost_all+$300).w ; load splash object
-		sfx	sfx_Splash,1,0,0  ; play splash sound
+		play.w	1, jmp, sfx_Splash		; play splash sound
 ; ===========================================================================
 
 @abovewater:
@@ -222,7 +222,7 @@ Sonic_Water:
 		move.w	#-$1000,ost_y_vel(a0) ; set maximum speed on leaving water
 
 	@belowmaxspeed:
-		sfx	sfx_Splash,1,0,0  ; play splash sound
+		play.w	1, jmp, sfx_Splash		; play splash sound
 ; End of function Sonic_Water
 
 ; ===========================================================================
@@ -523,7 +523,7 @@ loc_130BA:
 		blt.s	locret_130E8
 		move.b	#id_Stop,ost_anim(a0) ; use "stopping" animation
 		bclr	#0,ost_status(a0)
-		sfx	sfx_Skid,0,0,0	; play stopping sound
+		play.w	1, jsr, sfx_Skid		; play stopping sound
 
 locret_130E8:
 		rts	
@@ -568,7 +568,7 @@ loc_13120:
 		bgt.s	locret_1314E
 		move.b	#id_Stop,ost_anim(a0) ; use "stopping" animation
 		bset	#0,ost_status(a0)
-		sfx	sfx_Skid,0,0,0	; play stopping sound
+		play.w	1, jsr, sfx_Skid		; play stopping sound
 
 locret_1314E:
 		rts	
@@ -885,7 +885,7 @@ Sonic_ChkRoll:
 		move.b	#7,ost_width(a0)
 		move.b	#id_Roll,ost_anim(a0) ; use "rolling" animation
 		addq.w	#5,ost_y_pos(a0)
-		sfx	sfx_Roll,0,0,0	; play rolling sound
+		play.w	1, jsr, sfx_Roll		; play rolling sound
 		tst.w	ost_inertia(a0)
 		bne.s	@ismoving
 		move.w	#$200,ost_inertia(a0) ; set inertia if 0
@@ -931,7 +931,7 @@ loc_1341C:
 		addq.l	#4,sp
 		move.b	#1,ost_sonic_jump(a0)
 		clr.b	ost_sonic_sbz_disc(a0)
-		sfx	sfx_Jump,0,0,0	; play jumping sound
+		play.w	1, jsr, sfx_Jump		; play jumping sound
 		move.b	#$13,ost_height(a0)
 		move.b	#9,ost_width(a0)
 		btst	#status_jump_bit,ost_status(a0) ; is Sonic rolling?
@@ -1438,7 +1438,7 @@ GameOver:
 		clr.b	(f_time_over).w
 
 loc_138C2:
-		music	mus_GameOver,0,0,0	; play game over music
+		play.w	0, jsr, mus_GameOver		; play game over music
 		moveq	#3,d0
 		jmp	(AddPLC).l	; load game over patterns
 ; ===========================================================================

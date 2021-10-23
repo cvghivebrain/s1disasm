@@ -157,7 +157,7 @@ Spik_Wait:
 		bne.s	locret_CFE6
 		tst.b	ost_render(a0)
 		bpl.s	locret_CFE6
-		sfx	sfx_SpikeMove,0,0,0 ; play "spikes moving" sound
+		play.w	1, jsr, sfx_SpikeMove		; play "spikes moving" sound
 		bra.s	locret_CFE6
 ; ===========================================================================
 
