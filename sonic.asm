@@ -367,7 +367,7 @@ GameInit:
 		dbf	d6,@clearRAM	; clear RAM ($0000-$FDFF)
 
 		bsr.w	VDPSetupGame
-		bsr.w	SoundDriverLoad
+		bsr.w	DacDriverLoad
 		bsr.w	JoypadInit
 		move.b	#id_Sega,(v_gamemode).w ; set Game Mode to Sega Screen
 
@@ -1113,65 +1113,13 @@ ClearScreen:
 		rts	
 ; End of function ClearScreen
 
-; ---------------------------------------------------------------------------
-; Subroutine to	load the sound driver
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-SoundDriverLoad:
-		nop	
-		stopZ80
-		resetZ80_release
-		lea	(Kos_DacDriver).l,a0	; load sound driver
-		lea	(z80_ram).l,a1	; target Z80 RAM
-		bsr.w	KosDec		; decompress
-		resetZ80_assert
-		nop	
-		nop	
-		nop	
-		nop	
-		resetZ80_release
-		startZ80
-		rts	
-; End of function SoundDriverLoad
-
-; ---------------------------------------------------------------------------
-; Subroutine to	play a music track
-
-; input:
-;	d0 = track to play
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-PlaySound:
-		move.b	d0,(v_snddriver_ram+v_soundqueue+0).w
-		rts	
-; End of function PlaySound
-
-; ---------------------------------------------------------------------------
-; Subroutine to	play a sound effect
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-PlaySound_Special:
-		move.b	d0,(v_snddriver_ram+v_soundqueue+1).w
-		rts	
-; End of function PlaySound_Special
-
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
-; Unused sound/music subroutine
+; Functions for loading the DAC driver and playing sounds
 ; ---------------------------------------------------------------------------
 
-PlaySound_Unused:
-		move.b	d0,(v_snddriver_ram+v_soundqueue+2).w
-		rts	
+	include "sound/PlaySound + DacDriverLoad.asm"
+
 ; ---------------------------------------------------------------------------
 ; Subroutine to	pause the game
 ; ---------------------------------------------------------------------------
@@ -1798,7 +1746,7 @@ GM_Title:
 		bsr.w	ClearPLC
 		bsr.w	PaletteFadeOut
 		disable_ints
-		bsr.w	SoundDriverLoad
+		bsr.w	DacDriverLoad
 		lea	(vdp_control_port).l,a6
 		move.w	#$8004,(a6)	; 8-colour mode
 		move.w	#$8200+(vram_fg>>10),(a6) ; set foreground nametable address
@@ -2074,7 +2022,7 @@ LevSel_NoCheat:
 		blo.s	LevelSelect	; if yes, branch
 
 LevSel_PlaySnd:
-		bsr.w	PlaySound_Special
+		bsr.w	PlaySound1
 		bra.s	LevelSelect
 ; ===========================================================================
 
@@ -2583,7 +2531,7 @@ Level_GetBgm:
 	Level_PlayBgm:
 		lea	(MusicList).l,a1 ; load	music playlist
 		move.b	(a1,d0.w),d0
-		bsr.w	PlaySound	; play music
+		bsr.w	PlaySound0	; play music
 		move.b	#id_TitleCard,(v_ost_titlecard1).w ; load title card object
 
 Level_TtlCardLoop:

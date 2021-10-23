@@ -136,7 +136,7 @@ Sonic_Display:
 	@music:
 		lea	(MusicList2).l,a1
 		move.b	(a1,d0.w),d0
-		jsr	(PlaySound).l	; play normal music
+		jsr	(PlaySound0).l	; play normal music
 
 	@removeinvincible:
 		move.b	#0,(v_invincibility).w ; cancel invincibility
