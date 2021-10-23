@@ -5,17 +5,17 @@
 		objpos $00C0,$03C0,SpinningLight,$00
 		objpos $0120,$00D4,Rings,$26,rem
 		objpos $0125,$03C2,Crabmeat,$00,rem
-		objpos $0170,$00D3,Monitor,$02,rem
+		objpos $0170,$00D3,Monitor,type_monitor_1up,rem
 		objpos $0183,$03C2,Crabmeat,$00,rem
-		objpos $0190,$00D3,Monitor,$03,rem
+		objpos $0190,$00D3,Monitor,type_monitor_shoes,rem
 		objpos $01DC,$03C2,Crabmeat,$00,rem
 		objpos $0200,$03C3,FloatingBlock,type_fblock_syz1x1+type_fblock_still
-		objpos $0218,$03C2,Springs,$10
+		objpos $0218,$03C2,Springs,type_spring_red+type_spring_right
 		objpos $0220,$011A,BasicPlatform,type_plat_updown_slow_rev
 		objpos $02C0,$0370,BuzzBomber,$00,rem
 		objpos $0300,$0368,BuzzBomber,$00,rem
 		objpos $0410,$0108,Rings,$46,rem
-		objpos $0410,$0248,Springs,$00
+		objpos $0410,$0248,Springs,type_spring_red+type_spring_up
 		objpos $0460,$0090,Rings,$12,rem
 		objpos $0480,$00F0,Bumper,$00,rem
 		objpos $04B8,$0138,Bumper,$00,rem
@@ -26,12 +26,12 @@
 		objpos $0528,$00A8,Bumper,$00,rem
 		objpos $0528,$0138,Bumper,$00,rem
 		objpos $0560,$00F0,Bumper,$00,rem
-		objpos $0568,$0261,Springs,$12,xflip
+		objpos $0568,$0261,Springs,type_spring_yellow+type_spring_right,xflip
 		objpos $0580,$01B0,Bumper,$00,rem
 		objpos $0580,$0262,FloatingBlock,type_fblock_syz1x1+type_fblock_still
 		objpos $0598,$00A8,Bumper,$00,rem
 		objpos $0598,$0138,Bumper,$00,rem
-		objpos $0598,$0261,Springs,$10
+		objpos $0598,$0261,Springs,type_spring_red+type_spring_right
 		objpos $05D0,$00F0,Bumper,$00,rem
 		objpos $05E0,$00B0,BuzzBomber,$00,xflip,rem
 		objpos $05EC,$0040,Bumper,$00,rem
@@ -48,9 +48,9 @@
 		objpos $07A0,$01DC,FloatingBlock,type_fblock_syz2x2+type_fblock_updown
 		objpos $0850,$00C0,BuzzBomber,$00,rem
 		objpos $08B0,$00A0,BuzzBomber,$00,rem
-		objpos $0930,$00F2,Monitor,$04,rem
-		objpos $0950,$00F2,Monitor,$06,rem
-		objpos $0A58,$0390,Springs,$12,xflip
+		objpos $0930,$00F2,Monitor,type_monitor_shield,rem
+		objpos $0950,$00F2,Monitor,type_monitor_rings,rem
+		objpos $0A58,$0390,Springs,type_spring_yellow+type_spring_right,xflip
 		objpos $0A60,$00F0,Rings,$03,rem
 		objpos $0A70,$0390,SpinningLight,$00
 		objpos $0A78,$010A,BasicPlatform,type_plat_still
@@ -84,7 +84,7 @@
 		objpos $1058,$0470,Rings,$04,rem
 		objpos $1078,$04A8,SpikeBall,$54,xflip
 		objpos $1078,$04A9,FloatingBlock,type_fblock_syz1x1+type_fblock_still
-		objpos $10B0,$0238,Springs,$02
+		objpos $10B0,$0238,Springs,type_spring_yellow+type_spring_up
 		objpos $10B0,$0250,SpinningLight,$00
 		objpos $10D5,$0252,Crabmeat,$00,xflip,rem
 		objpos $1118,$0160,Rings,$03,rem
@@ -95,7 +95,7 @@
 		objpos $1220,$0448,BigSpikeBall,type_bball_sideways
 		objpos $1318,$0160,Rings,$03,rem
 		objpos $1330,$0448,BigSpikeBall,type_bball_sideways
-		objpos $1370,$01E3,Springs,$20,yflip
+		objpos $1370,$01E3,Springs,type_spring_red+type_spring_down,yflip
 		objpos $1380,$0490,SpinningLight,$00
 		objpos $1430,$01BD,Lamppost,$01,rem
 		objpos $1458,$0460,Rings,$04,rem
@@ -103,36 +103,36 @@
 		objpos $1478,$04A8,SpikeBall,$54,xflip
 		objpos $1478,$04A9,FloatingBlock,type_fblock_syz1x1+type_fblock_still
 		objpos $14C0,$01C0,SpinningLight,$00
-		objpos $150E,$03CA,Springs,$00
-		objpos $152E,$03CA,Springs,$00
-		objpos $154E,$03CA,Springs,$00
+		objpos $150E,$03CA,Springs,type_spring_red+type_spring_up
+		objpos $152E,$03CA,Springs,type_spring_red+type_spring_up
+		objpos $154E,$03CA,Springs,type_spring_red+type_spring_up
 		objpos $1560,$048D,Lamppost,$02,rem
 		objpos $1580,$01C0,FloatingBlock,type_fblock_syz1x1+type_fblock_still
-		objpos $1580,$03C3,Monitor,$05,rem
-		objpos $1598,$0490,Springs,$12
+		objpos $1580,$03C3,Monitor,type_monitor_invincible,rem
+		objpos $1598,$0490,Springs,type_spring_yellow+type_spring_right
 		objpos $15A0,$01A0,FloatingBlock,type_fblock_syz1x1+type_fblock_leftright,xflip
 		objpos $15A0,$01E0,FloatingBlock,type_fblock_syz1x1+type_fblock_leftright
-		objpos $15B2,$03CA,Springs,$00
+		objpos $15B2,$03CA,Springs,type_spring_red+type_spring_up
 		objpos $15C0,$0180,FloatingBlock,type_fblock_syz1x1+type_fblock_leftrightwide,xflip
 		objpos $15C0,$0200,FloatingBlock,type_fblock_syz1x1+type_fblock_leftrightwide
-		objpos $15D2,$03CA,Springs,$00
-		objpos $15F2,$03CA,Springs,$00
+		objpos $15D2,$03CA,Springs,type_spring_red+type_spring_up
+		objpos $15F2,$03CA,Springs,type_spring_red+type_spring_up
 		objpos $1620,$01C4,Rings,$25,rem
-		objpos $16E8,$01CA,Springs,$02
+		objpos $16E8,$01CA,Springs,type_spring_yellow+type_spring_up
 		objpos $1820,$025F,FloatingBlock,type_fblock_syz2x2+type_fblock_updown
 		objpos $1820,$02DD,FloatingBlock,type_fblock_syz2x2+type_fblock_updown
 		objpos $1860,$0221,FloatingBlock,type_fblock_syz2x2+type_fblock_updown,xflip
 		objpos $1860,$029F,FloatingBlock,type_fblock_syz2x2+type_fblock_updown,xflip
 		objpos $1860,$031D,FloatingBlock,type_fblock_syz2x2+type_fblock_updown,xflip
 		objpos $18A0,$025F,FloatingBlock,type_fblock_syz2x2+type_fblock_updown
-		objpos $18B2,$03CA,Springs,$02
+		objpos $18B2,$03CA,Springs,type_spring_yellow+type_spring_up
 		objpos $1900,$0168,BuzzBomber,$00,rem
 		objpos $1980,$0188,BuzzBomber,$00,rem
 		objpos $19D0,$03C4,Rings,$23,rem
 		objpos $1A08,$01E4,Rings,$03,rem
 		objpos $1A21,$01F9,BasicPlatform,type_plat_still
 		objpos $1A50,$03A4,Rings,$00,rem
-		objpos $1A70,$01E3,Springs,$20,yflip
+		objpos $1A70,$01E3,Springs,type_spring_red+type_spring_down,yflip
 		objpos $1A70,$0384,Rings,$00,rem
 		objpos $1A90,$0354,Rings,$00,rem
 		objpos $1AB0,$0344,Rings,$22,rem
@@ -150,29 +150,29 @@
 		objpos $1C78,$020A,BigSpikeBall,type_bball_circle+$C0,yflip
 		objpos $1CA0,$025D,Rings,$00,rem
 		objpos $1CDC,$020A,Rings,$00,rem
-		objpos $1D0E,$02CA,Springs,$00
+		objpos $1D0E,$02CA,Springs,type_spring_red+type_spring_up
 		objpos $1D28,$0098,Rings,$12,rem
-		objpos $1D2E,$02CA,Springs,$00
+		objpos $1D2E,$02CA,Springs,type_spring_red+type_spring_up
 		objpos $1D4C,$0088,Rings,$14,rem
-		objpos $1D4E,$02CA,Springs,$00
+		objpos $1D4E,$02CA,Springs,type_spring_red+type_spring_up
 		objpos $1DA8,$0098,Rings,$12,rem
-		objpos $1DB2,$02CA,Springs,$00
-		objpos $1DD2,$02CA,Springs,$00
-		objpos $1DF2,$02CA,Springs,$00
+		objpos $1DB2,$02CA,Springs,type_spring_red+type_spring_up
+		objpos $1DD2,$02CA,Springs,type_spring_red+type_spring_up
+		objpos $1DF2,$02CA,Springs,type_spring_red+type_spring_up
 		objpos $1E30,$00C2,Crabmeat,$00,xflip,rem
 		objpos $1ED0,$00C2,Crabmeat,$00,rem
-		objpos $1F0E,$02CA,Springs,$00
+		objpos $1F0E,$02CA,Springs,type_spring_red+type_spring_up
 		objpos $1F28,$0098,Rings,$12,rem
-		objpos $1F2E,$02CA,Springs,$00
+		objpos $1F2E,$02CA,Springs,type_spring_red+type_spring_up
 		objpos $1F4C,$0088,Rings,$14,rem
-		objpos $1F4E,$02CA,Springs,$00
-		objpos $1F7E,$02C3,Monitor,$06,rem
+		objpos $1F4E,$02CA,Springs,type_spring_red+type_spring_up
+		objpos $1F7E,$02C3,Monitor,type_monitor_rings,rem
 		objpos $1FA8,$0098,Rings,$12,rem
-		objpos $1FAE,$02CA,Springs,$00
-		objpos $1FCE,$02CA,Springs,$00
-		objpos $1FEE,$02CA,Springs,$00
+		objpos $1FAE,$02CA,Springs,type_spring_red+type_spring_up
+		objpos $1FCE,$02CA,Springs,type_spring_red+type_spring_up
+		objpos $1FEE,$02CA,Springs,type_spring_red+type_spring_up
 		objpos $2010,$02C0,SpinningLight,$00
-		objpos $2027,$02C2,Springs,$12
+		objpos $2027,$02C2,Springs,type_spring_yellow+type_spring_right
 		objpos $2040,$02CA,Button,$00
 		objpos $2080,$00C0,Yadrin,$00,rem
 		objpos $20F0,$00C0,Yadrin,$00,rem

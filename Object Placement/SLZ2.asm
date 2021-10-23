@@ -2,7 +2,7 @@
 ; SLZ2 object placement
 ; ---------------------------------------------------------------------------
 		objpos $0000,$0000,Pylon,$00
-		objpos $0008,$0150,Springs,$10
+		objpos $0008,$0150,Springs,type_spring_red+type_spring_right
 		objpos $0118,$0130,Rings,$12,rem
 		objpos $0210,$00D0,Fan,type_fan_left_on,xflip
 		objpos $02E0,$00B0,Rings,$12,rem
@@ -30,7 +30,7 @@
 		objpos $0D90,$0270,Bomb,$00,xflip,rem
 		objpos $0DE0,$0270,Bomb,$00,xflip,rem
 		objpos $0DF0,$00F0,Rings,$42,rem
-		objpos $0DF0,$0178,Springs,$02
+		objpos $0DF0,$0178,Springs,type_spring_yellow+type_spring_up
 		objpos $0E10,$0550,Fan,type_fan_left_on,xflip
 		objpos $0E18,$0210,Bomb,$00,yflip,rem
 		objpos $0E18,$0270,Bomb,$00,xflip,rem
@@ -39,7 +39,7 @@
 		objpos $0E80,$00A8,Orbinaut,$02,rem
 		objpos $0E80,$0410,Rings,$46,rem
 		objpos $0E90,$041C,Rings,$45,rem
-		objpos $0EF0,$0558,Springs,$02
+		objpos $0EF0,$0558,Springs,type_spring_yellow+type_spring_up
 		objpos $0F00,$00A8,Orbinaut,$02,rem
 		objpos $0F68,$0170,Rings,$12,rem
 		objpos $0F68,$0450,Bomb,$00,rem
@@ -88,27 +88,27 @@
 		objpos $13A8,$05D4,Rings,$12,rem
 		objpos $13BB,$014E,Rings,$10,rem
 		objpos $13C5,$016F,Rings,$10,rem
-		objpos $1410,$03F8,Springs,$00
+		objpos $1410,$03F8,Springs,type_spring_red+type_spring_up
 		objpos $1420,$0288,CollapseFloor,$81
-		objpos $1430,$03F8,Springs,$00
-		objpos $1450,$03F8,Springs,$00
+		objpos $1430,$03F8,Springs,type_spring_red+type_spring_up
+		objpos $1450,$03F8,Springs,type_spring_red+type_spring_up
 		objpos $1460,$02A8,CollapseFloor,$81
-		objpos $1470,$03F8,Springs,$00
-		objpos $1490,$03F8,Springs,$00
+		objpos $1470,$03F8,Springs,type_spring_red+type_spring_up
+		objpos $1490,$03F8,Springs,type_spring_red+type_spring_up
 		objpos $14A0,$02C8,CollapseFloor,$81
-		objpos $14B0,$03F8,Springs,$00
-		objpos $14D0,$03F8,Springs,$00
+		objpos $14B0,$03F8,Springs,type_spring_red+type_spring_up
+		objpos $14D0,$03F8,Springs,type_spring_red+type_spring_up
 		objpos $14E0,$02E8,CollapseFloor,$81
 		objpos $14E8,$00D4,Rings,$12,rem
-		objpos $14F0,$03F8,Springs,$00
+		objpos $14F0,$03F8,Springs,type_spring_red+type_spring_up
 		objpos $1508,$0150,Fan,type_fan_left_on,xflip
 		objpos $1518,$0550,Fan,type_fan_left_on,xflip
 		objpos $1548,$02D0,Fan,type_fan_left_on,xflip
-		objpos $15F0,$02D8,Springs,$02
+		objpos $15F0,$02D8,Springs,type_spring_yellow+type_spring_up
 		objpos $1610,$0070,Staircase,type_stair_above,xflip
 		objpos $1610,$012C,Orbinaut,$02,rem
-		objpos $1610,$04D1,Monitor,$02,rem
-		objpos $1630,$04D8,Springs,$00
+		objpos $1610,$04D1,Monitor,type_monitor_1up,rem
+		objpos $1630,$04D8,Springs,type_spring_red+type_spring_up
 		objpos $163A,$066F,Rings,$10,rem
 		objpos $1643,$064E,Rings,$10,rem
 		objpos $165D,$0635,Rings,$10,rem
@@ -118,10 +118,10 @@
 		objpos $16A1,$0635,Rings,$10,rem
 		objpos $16BB,$064E,Rings,$10,rem
 		objpos $16C5,$066F,Rings,$10,rem
-		objpos $16D0,$04D1,Monitor,$06,rem
+		objpos $16D0,$04D1,Monitor,type_monitor_rings,rem
 		objpos $16F0,$0210,Bomb,$00,yflip,rem
-		objpos $16F0,$04D1,Monitor,$05,rem
-		objpos $16F8,$0050,Springs,$10,xflip
+		objpos $16F0,$04D1,Monitor,type_monitor_invincible,rem
+		objpos $16F8,$0050,Springs,type_spring_red+type_spring_right,xflip
 		objpos $1720,$0210,Bomb,$00,yflip,rem
 		objpos $1728,$0168,Elevator,type_elev_down_short
 		objpos $1750,$0210,Bomb,$00,yflip,rem
@@ -148,7 +148,7 @@
 		objpos $1980,$0660,FloatingBlock,type_fblock_slz+type_fblock_squarebiggest,yflip
 		objpos $19C0,$0200,Seesaw,$00
 		objpos $19E0,$0038,Rings,$44,rem
-		objpos $19F0,$0458,Springs,$02
+		objpos $19F0,$0458,Springs,type_spring_yellow+type_spring_up
 		objpos $1A28,$05D0,Rings,$12,rem
 		objpos $1A70,$0110,Bomb,$00,yflip,rem
 		objpos $1AC0,$0440,Rings,$44,rem
@@ -168,13 +168,13 @@
 		objpos $1BD8,$01E8,Elevator,type_elev_down_short
 		objpos $1BD8,$02E8,Elevator,type_elev_up_short
 		objpos $1C18,$03D0,Fan,type_fan_left_on,xflip
-		objpos $1C70,$00D1,Monitor,$06,rem
-		objpos $1C90,$00D1,Monitor,$06,rem
+		objpos $1C70,$00D1,Monitor,type_monitor_rings,rem
+		objpos $1C90,$00D1,Monitor,type_monitor_rings,rem
 		objpos $1CA0,$03E8,CollapseFloor,$81
-		objpos $1CB0,$00D1,Monitor,$06,rem
-		objpos $1CD0,$00D1,Monitor,$06,rem
+		objpos $1CB0,$00D1,Monitor,type_monitor_rings,rem
+		objpos $1CD0,$00D1,Monitor,type_monitor_rings,rem
 		objpos $1CE0,$03E8,CollapseFloor,$81
-		objpos $1CF0,$00D1,Monitor,$06,rem
+		objpos $1CF0,$00D1,Monitor,type_monitor_rings,rem
 		objpos $1D18,$03D0,Rings,$14,rem
 		objpos $1D70,$0390,Bomb,$00,yflip,rem
 		objpos $1D90,$03D0,Rings,$12,rem

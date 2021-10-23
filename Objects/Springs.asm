@@ -37,8 +37,8 @@ Spring_Main:	; Routine 0
 		move.b	#$10,ost_actwidth(a0)
 		move.b	#4,ost_priority(a0)
 		move.b	ost_subtype(a0),d0
-		btst	#4,d0		; does the spring face left/right?
-		beq.s	Spring_NotLR	; if not, branch
+		btst	#4,d0		; is spring type $1x? (horizontal)
+		beq.s	@not_horizontal	; if not, branch
 
 		move.b	#id_Spring_LR,ost_routine(a0) ; use "Spring_LR" routine
 		move.b	#id_ani_spring_left,ost_anim(a0)
@@ -46,19 +46,19 @@ Spring_Main:	; Routine 0
 		move.w	#tile_Nem_VSpring,ost_tile(a0)
 		move.b	#8,ost_actwidth(a0)
 
-	Spring_NotLR:
-		btst	#5,d0		; does the spring face downwards?
-		beq.s	Spring_NotDwn	; if not, branch
+	@not_horizontal:
+		btst	#5,d0		; is spring type $2x? (downwards)
+		beq.s	@not_down	; if not, branch
 
 		move.b	#id_Spring_Dwn,ost_routine(a0) ; use "Spring_Dwn" routine
 		bset	#status_yflip_bit,ost_status(a0)
 
-	Spring_NotDwn:
+	@not_down:
 		btst	#1,d0		; is spring subtype $x2?
-		beq.s	loc_DB72	; if not, branch
+		beq.s	@not_yellow	; if not, branch
 		bset	#tile_pal12_bit,ost_tile(a0) ; use 2nd palette (yellow spring)
 
-loc_DB72:
+	@not_yellow:
 		andi.w	#$F,d0
 		move.w	Spring_Powers(pc,d0.w),ost_spring_power(a0)
 		rts	

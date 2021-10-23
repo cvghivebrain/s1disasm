@@ -52,7 +52,7 @@ Pow_ChkEggman:
 ; ===========================================================================
 
 Pow_ChkSonic:
-		cmpi.b	#2,d0		; does monitor contain Sonic?
+		cmpi.b	#id_ani_monitor_sonic,d0 ; does monitor contain Sonic?
 		bne.s	Pow_ChkShoes
 
 	ExtraLife:
@@ -62,7 +62,7 @@ Pow_ChkSonic:
 ; ===========================================================================
 
 Pow_ChkShoes:
-		cmpi.b	#3,d0		; does monitor contain speed shoes?
+		cmpi.b	#id_ani_monitor_shoes,d0 ; does monitor contain speed shoes?
 		bne.s	Pow_ChkShield
 
 		move.b	#1,(v_shoes).w	; speed up the BG music
@@ -74,7 +74,7 @@ Pow_ChkShoes:
 ; ===========================================================================
 
 Pow_ChkShield:
-		cmpi.b	#4,d0		; does monitor contain a shield?
+		cmpi.b	#id_ani_monitor_shield,d0 ; does monitor contain a shield?
 		bne.s	Pow_ChkInvinc
 
 		move.b	#1,(v_shield).w	; give Sonic a shield
@@ -83,7 +83,7 @@ Pow_ChkShield:
 ; ===========================================================================
 
 Pow_ChkInvinc:
-		cmpi.b	#5,d0		; does monitor contain invincibility?
+		cmpi.b	#id_ani_monitor_invincible,d0 ; does monitor contain invincibility?
 		bne.s	Pow_ChkRings
 
 		move.b	#1,(v_invincibility).w	; make Sonic invincible
@@ -111,7 +111,7 @@ Pow_NoMusic:
 ; ===========================================================================
 
 Pow_ChkRings:
-		cmpi.b	#6,d0		; does monitor contain 10 rings?
+		cmpi.b	#id_ani_monitor_rings,d0 ; does monitor contain 10 rings?
 		bne.s	Pow_ChkS
 
 		addi.w	#10,(v_rings).w	; add 10 rings to the number of rings you have
@@ -130,7 +130,7 @@ Pow_ChkRings:
 ; ===========================================================================
 
 Pow_ChkS:
-		cmpi.b	#7,d0		; does monitor contain 'S'?
+		cmpi.b	#id_ani_monitor_s,d0 ; does monitor contain 'S'?
 		bne.s	Pow_ChkEnd
 		nop	
 

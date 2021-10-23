@@ -92,12 +92,12 @@
 		objpos $06B0,$01A7,SpinPlatform,type_spin_platform_alt+4
 		objpos $06D0,$01A7,SpinPlatform,type_spin_platform_alt+2
 		objpos $06D0,$0690,Caterkiller,$00,rem
-		objpos $06F0,$01F1,Monitor,$06,rem
+		objpos $06F0,$01F1,Monitor,type_monitor_rings,rem
 		objpos $0710,$01B0,Monitor,$11,rem
 		objpos $0728,$0140,Rings,$12,rem
 		objpos $0730,$0340,Rings,$12,rem
 		objpos $0740,$0418,Electro,$04,yflip
-		objpos $0758,$0490,Springs,$10,xflip
+		objpos $0758,$0490,Springs,type_spring_red+type_spring_right,xflip
 		objpos $0794,$0690,Teleport,$00
 		objpos $0794,$0390,Teleport,$02
 		objpos $07C0,$0418,Electro,$04,yflip
@@ -126,10 +126,10 @@
 		objpos $09D0,$05B4,Rings,$14,rem
 		objpos $09D0,$0660,Rings,$14,rem
 		objpos $09F0,$03D0,Bomb,$00,yflip,rem
-		objpos $0A10,$0291,Monitor,$06,rem
-		objpos $0A10,$04F1,Monitor,$06,rem
+		objpos $0A10,$0291,Monitor,type_monitor_rings,rem
+		objpos $0A10,$04F1,Monitor,type_monitor_rings,rem
 		objpos $0A30,$0200,Monitor,$17,rem
-		objpos $0A30,$0291,Monitor,$06,rem
+		objpos $0A30,$0291,Monitor,type_monitor_rings,rem
 		objpos $0A50,$0450,RunningDisc,$40
 		objpos $0A60,$01C7,SpinPlatform,type_spin_platform+0
 		objpos $0A60,$0217,SpinPlatform,type_spin_platform+0
@@ -154,9 +154,9 @@
 		objpos $0B60,$00A8,CollapseFloor,$01
 		objpos $0B90,$0094,Rings,$14,rem
 		objpos $0B90,$06A8,VanishPlatform,$80
-		objpos $0BA0,$07F1,Monitor,$02,rem
+		objpos $0BA0,$07F1,Monitor,type_monitor_1up,rem
 		objpos $0BB0,$03B0,RunningDisc,$40
-		objpos $0BC4,$0301,Monitor,$04,rem
+		objpos $0BC4,$0301,Monitor,type_monitor_shield,rem
 		objpos $0BD0,$06A8,VanishPlatform,$C0
 		objpos $0BF8,$0180,AutoDoor,$00
 		objpos $0C00,$07E8,Electro,$04
@@ -164,11 +164,11 @@
 		objpos $0C20,$00A8,CollapseFloor,$01
 		objpos $0C50,$06A8,VanishPlatform,$40
 		objpos $0C60,$00A8,CollapseFloor,$01
-		objpos $0C60,$07F1,Monitor,$06,rem
+		objpos $0C60,$07F1,Monitor,type_monitor_rings,rem
 		objpos $0C70,$0168,Caterkiller,$00,rem
 		objpos $0C80,$0568,ScrapStomp,type_stomp_slow
 		objpos $0C80,$05D0,Conveyor,$20
-		objpos $0C80,$07F1,Monitor,$06,rem
+		objpos $0C80,$07F1,Monitor,type_monitor_rings,rem
 		objpos $0C90,$0094,Rings,$14,rem
 		objpos $0C90,$06A8,VanishPlatform,$80
 		objpos $0CC0,$0118,Electro,$04,yflip
@@ -176,7 +176,7 @@
 		objpos $0CF0,$0710,VanishPlatform,$40
 		objpos $0CF0,$0770,VanishPlatform,$00
 		objpos $0CF0,$07D0,VanishPlatform,$C0
-		objpos $0D08,$02B0,Springs,$10
+		objpos $0D08,$02B0,Springs,type_spring_red+type_spring_right
 		objpos $0D20,$00A8,CollapseFloor,$01
 		objpos $0D48,$0170,Conveyor,$21
 		objpos $0D50,$0694,Rings,$10,rem
@@ -219,15 +219,15 @@
 		objpos $1080,$06D0,Conveyor,$20
 		objpos $10BA,$0090,Flamethrower,$43,yflip
 		objpos $10C0,$06A0,Saws,type_saw_pizza_updown
-		objpos $1110,$00F1,Monitor,$06,rem
+		objpos $1110,$00F1,Monitor,type_monitor_rings,rem
 		objpos $1120,$01D8,Electro,$02,yflip
-		objpos $1130,$00F1,Monitor,$06,rem
+		objpos $1130,$00F1,Monitor,type_monitor_rings,rem
 		objpos $1130,$0340,Rings,$12,rem
 		objpos $1140,$0080,Electro,$04,yflip
-		objpos $1150,$00F1,Monitor,$02,rem
-		objpos $1170,$00F1,Monitor,$06,rem
+		objpos $1150,$00F1,Monitor,type_monitor_1up,rem
+		objpos $1170,$00F1,Monitor,type_monitor_rings,rem
 		objpos $1180,$00D0,Conveyor,$E0
-		objpos $1190,$00F1,Monitor,$06,rem
+		objpos $1190,$00F1,Monitor,type_monitor_rings,rem
 		objpos $1194,$0390,Teleport,$04
 		objpos $11C0,$0080,Electro,$04,yflip
 		objpos $11E0,$01B0,Invisibarrier,$31,yflip
@@ -257,7 +257,7 @@
 		objpos $13F5,$04A6,Flamethrower,$43
 		objpos $1420,$02F0,MovingBlock,type_mblock_sbz+type_mblock_updown
 		objpos $1438,$0588,Electro,$02
-		objpos $1470,$02F1,Monitor,$04,rem
+		objpos $1470,$02F1,Monitor,type_monitor_shield,rem
 		objpos $1476,$0190,Flamethrower,$43,yflip
 		objpos $1490,$01D0,Invisibarrier,$15
 		objpos $14C1,$01FC,ScrapStomp,type_stomp_door+3
@@ -283,7 +283,7 @@
 		objpos $1790,$030C,BallHog,$08,rem
 		objpos $1790,$0510,Rings,$14,rem
 		objpos $17E0,$020C,BallHog,$08,rem
-		objpos $17F0,$0111,Monitor,$05,rem
+		objpos $17F0,$0111,Monitor,type_monitor_invincible,rem
 		objpos $1850,$04F0,Caterkiller,$00,rem
 		objpos $1875,$0490,Flamethrower,$43,yflip
 		objpos $1900,$04F0,Caterkiller,$00,rem

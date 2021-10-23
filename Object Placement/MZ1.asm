@@ -28,10 +28,10 @@
 		objpos $0730,$01E0,LavaMaker,$42
 		objpos $0798,$0150,Rings,$11,rem
 		objpos $07A0,$01E8,LargeGrass,type_grass_narrow+type_grass_3
-		objpos $0830,$02D1,Monitor,$06,rem
-		objpos $0850,$02D1,Monitor,$06,rem
+		objpos $0830,$02D1,Monitor,type_monitor_rings,rem
+		objpos $0850,$02D1,Monitor,type_monitor_rings,rem
 		objpos $0870,$01E8,Rings,$40,rem
-		objpos $0870,$02D1,Monitor,$06,rem
+		objpos $0870,$02D1,Monitor,type_monitor_rings,rem
 		objpos $0888,$0200,Rings,$40,rem
 		objpos $08A0,$0218,Rings,$40,rem
 		objpos $08B8,$0230,Rings,$40,rem
@@ -40,7 +40,7 @@
 		objpos $0958,$0240,Rings,$11,rem
 		objpos $0998,$0258,Rings,$11,rem
 		objpos $09A0,$02C8,LargeGrass,type_grass_narrow+type_grass_1
-		objpos $0A10,$0550,Monitor,$04,rem
+		objpos $0A10,$0550,Monitor,type_monitor_shield,rem
 		objpos $0A60,$037C,ChainStomp,type_cstomp_controlled
 		objpos $0A78,$03D0,PushBlock,type_pblock_single,rem
 		objpos $0A80,$054C,Lamppost,$01,rem
@@ -86,26 +86,26 @@
 		objpos $0DF0,$0530,MarbleBrick,type_brick_falls
 		objpos $0E10,$0530,MarbleBrick,type_brick_still
 		objpos $0E30,$0530,MarbleBrick,type_brick_wobbles
-		objpos $0E50,$04B1,Monitor,$06,rem
+		objpos $0E50,$04B1,Monitor,type_monitor_rings,rem
 		objpos $0E50,$0530,MarbleBrick,type_brick_falls
 		objpos $0E70,$02E8,Rings,$40,rem
-		objpos $0E70,$04B1,Monitor,$06,rem
+		objpos $0E70,$04B1,Monitor,type_monitor_rings,rem
 		objpos $0E70,$0530,MarbleBrick,type_brick_falls
 		objpos $0E80,$05E8,LavaTag,$02
 		objpos $0E88,$0300,Rings,$40,rem
-		objpos $0E90,$04B1,Monitor,$02,rem
+		objpos $0E90,$04B1,Monitor,type_monitor_1up,rem
 		objpos $0EA0,$0318,Rings,$40,rem
-		objpos $0EB0,$04B1,Monitor,$06,rem
+		objpos $0EB0,$04B1,Monitor,type_monitor_rings,rem
 		objpos $0EB0,$0530,MarbleBrick,type_brick_falls
 		objpos $0EB8,$0330,Rings,$40,rem
-		objpos $0ED0,$04B1,Monitor,$06,rem
+		objpos $0ED0,$04B1,Monitor,type_monitor_rings,rem
 		objpos $0ED0,$0530,MarbleBrick,type_brick_wobbles
 		objpos $0ED8,$0348,Rings,$40,rem
 		objpos $0EF0,$0530,MarbleBrick,type_brick_falls
 		objpos $0F20,$03D8,LargeGrass,type_grass_narrow+type_grass_3
 		objpos $0F50,$0530,MarbleBrick,type_brick_falls
 		objpos $0F60,$0398,LargeGrass,type_grass_narrow+type_grass_still
-		objpos $0F70,$035D,Monitor,$04,rem
+		objpos $0F70,$035D,Monitor,type_monitor_shield,rem
 		objpos $0F70,$0510,MarbleBrick,type_brick_wobbles
 		objpos $0FB0,$0510,MarbleBrick,type_brick_falls
 		objpos $1008,$0550,Rings,$13,rem

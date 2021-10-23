@@ -2,16 +2,16 @@
 ; Animation script - monitors
 ; ---------------------------------------------------------------------------
 Ani_Monitor:	index *
-		ptr ani_monitor_static
-		ptr ani_monitor_eggman
-		ptr ani_monitor_sonic
-		ptr ani_monitor_shoes
-		ptr ani_monitor_shield
-		ptr ani_monitor_invincible
-		ptr ani_monitor_rings
-		ptr ani_monitor_s
-		ptr ani_monitor_goggles
-		ptr ani_monitor_breaking
+		ptr ani_monitor_static		; 0
+		ptr ani_monitor_eggman		; 1
+		ptr ani_monitor_sonic		; 2
+		ptr ani_monitor_shoes		; 3
+		ptr ani_monitor_shield		; 4
+		ptr ani_monitor_invincible	; 5
+		ptr ani_monitor_rings		; 6
+		ptr ani_monitor_s		; 7
+		ptr ani_monitor_goggles		; 8
+		ptr ani_monitor_breaking	; 9
 		
 ani_monitor_static:	dc.b 1,	id_frame_monitor_static0, id_frame_monitor_static1, id_frame_monitor_static2, afEnd
 			even

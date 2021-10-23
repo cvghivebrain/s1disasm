@@ -7,11 +7,11 @@
 		objpos $02E8,$0074,Rings,$12,rem
 		objpos $03B0,$00D0,Burrobot,$00,rem
 		objpos $04E0,$0110,Burrobot,$00,rem
-		objpos $0510,$01F1,Monitor,$06,rem
+		objpos $0510,$01F1,Monitor,type_monitor_rings,rem
 		objpos $0530,$0210,Burrobot,$00,rem
 		objpos $0550,$0210,Burrobot,$00,rem
 		objpos $0570,$0130,SpikeBall,$D5
-		objpos $05F0,$00F0,Monitor,$04,rem
+		objpos $05F0,$00F0,Monitor,type_monitor_shield,rem
 		objpos $05F0,$01F8,Button,$00
 		objpos $0608,$01A0,FloatingBlock,type_fblock_lzvert+type_fblock_button,rem
 		objpos $0640,$01F8,Bubble,$80
@@ -20,13 +20,13 @@
 		objpos $0720,$01F8,Bubble,$80
 		objpos $0728,$0190,Rings,$10,rem
 		objpos $0730,$0210,Burrobot,$00,rem
-		objpos $0750,$00F1,Monitor,$06,rem
+		objpos $0750,$00F1,Monitor,type_monitor_rings,rem
 		objpos $0750,$0150,Rings,$41,rem
 		objpos $0790,$01A8,Button,$01
 		objpos $07F0,$0130,LabyrinthBlock,type_lblock_solid
 		objpos $0880,$0110,Burrobot,$00,rem
 		objpos $08D0,$0110,Burrobot,$00,rem
-		objpos $0910,$02F1,Monitor,$06,rem
+		objpos $0910,$02F1,Monitor,type_monitor_rings,rem
 		objpos $0920,$0110,Burrobot,$00,rem
 		objpos $0940,$02F8,Bubble,$80
 		objpos $09B0,$0170,Jaws,$0C,xflip,rem
@@ -109,7 +109,7 @@
 		objpos $10E0,$0210,Spikes,$00,yflip
 		objpos $10F0,$0268,Button,$04
 		objpos $10F0,$027B,LabyrinthBlock,type_lblock_solid
-		objpos $10F0,$03F8,Springs,$00
+		objpos $10F0,$03F8,Springs,type_spring_red+type_spring_up
 		objpos $1118,$05A0,FloatingBlock,type_fblock_lzvert+type_fblock_button+5,rem
 		objpos $1150,$05DC,Rings,$41,rem
 		objpos $1170,$05BC,Rings,$41,rem
@@ -142,7 +142,7 @@
 		objpos $1420,$0390,Burrobot,$00,xflip,rem
 		objpos $1430,$0230,Invisibarrier,$31
 		objpos $1430,$0290,LabyrinthBlock,type_lblock_cork
-		objpos $1430,$05F8,Springs,$00
+		objpos $1430,$05F8,Springs,type_spring_red+type_spring_up
 		objpos $1454,$0294,Rings,$11,rem
 		objpos $1494,$0284,Rings,$11,rem
 		objpos $14A0,$02A0,Burrobot,$00,rem
@@ -182,7 +182,7 @@
 		objpos $1798,$0198,Harpoon,type_harp_h,xflip,rem
 		objpos $17A0,$0130,FloatingBlock,type_fblock_lzhoriz+type_fblock_button+$A,xflip,rem
 		objpos $17B0,$016C,Button,$0A
-		objpos $17F0,$01F1,Monitor,$06,rem
+		objpos $17F0,$01F1,Monitor,type_monitor_rings,rem
 		
 		objpos $1A50,$00CC,HiddenBonus,$03
 		objpos $1A50,$00E8,Signpost,$00

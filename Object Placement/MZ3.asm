@@ -16,8 +16,8 @@
 		objpos $0080,$0370,LavaMaker,$37
 		objpos $00A0,$05F4,Spikes,$01
 		objpos $00D0,$0320,LavaMaker,$25
-		objpos $0110,$04F0,Monitor,$04,rem
-		objpos $0110,$06D0,Monitor,$06,rem
+		objpos $0110,$04F0,Monitor,type_monitor_shield,rem
+		objpos $0110,$06D0,Monitor,type_monitor_rings,rem
 		objpos $0120,$01CC,LargeGrass,type_grass_narrow+type_grass_1
 		objpos $0150,$0610,SmashBlock,$00
 		objpos $0150,$0630,SmashBlock,$00
@@ -102,7 +102,7 @@
 		objpos $07A0,$05F4,Spikes,$01
 		objpos $07D0,$0550,MarbleBrick,type_brick_still
 		objpos $07E8,$05D4,Rings,$12,rem
-		objpos $07F0,$02B0,Monitor,$06,rem
+		objpos $07F0,$02B0,Monitor,type_monitor_rings,rem
 		objpos $07F0,$0550,MarbleBrick,type_brick_still
 		objpos $0820,$06B0,LavaMaker,$37
 		objpos $0848,$0750,Spikes,$52,xflip
@@ -113,23 +113,23 @@
 		objpos $08D0,$0620,LavaMaker,$35
 		objpos $0930,$053C,ChainStomp,type_cstomp_medium+type_cstomp_1
 		objpos $0940,$07C0,Caterkiller,$00,xflip,rem
-		objpos $09B8,$07D0,Springs,$10,xflip
+		objpos $09B8,$07D0,Springs,type_spring_red+type_spring_right,xflip
 		objpos $09D0,$053C,ChainStomp,type_cstomp_medium+type_cstomp_1
 		objpos $0AC0,$07E8,LavaTag,$01
 		objpos $0B20,$0768,SwingingPlatform,$04
 		objpos $0B80,$07D0,LavaMaker,$50
 		objpos $0B80,$07E8,LavaTag,$02
-		objpos $0B90,$05B0,Monitor,$02,rem
+		objpos $0B90,$05B0,Monitor,type_monitor_1up,rem
 		objpos $0BE0,$0768,SwingingPlatform,$04,xflip
 		objpos $0C40,$07D0,LavaMaker,$50
 		objpos $0C80,$07E8,LavaTag,$02
 		objpos $0CA0,$0768,SwingingPlatform,$04
-		objpos $0D10,$06F1,Monitor,$04,rem
+		objpos $0D10,$06F1,Monitor,type_monitor_shield,rem
 		objpos $0DA0,$06EC,Lamppost,$01,rem
 		objpos $0DEC,$0710,Spikes,$52,xflip
 		objpos $0E00,$0748,Caterkiller,$10,rem
 		objpos $0E28,$03B0,LavaMaker,$47
-		objpos $0E30,$0431,Monitor,$06
+		objpos $0E30,$0431,Monitor,type_monitor_rings
 		objpos $0E48,$0450,Spikes,$52,xflip
 		objpos $0E88,$0370,LavaMaker,$47
 		objpos $0E88,$0490,Spikes,$52,xflip
@@ -192,7 +192,7 @@
 		objpos $1280,$07E8,LavaTag,$02
 		objpos $12B0,$031C,ChainStomp,type_cstomp_small+type_cstomp_3
 		objpos $12D0,$0768,MovingBlock,type_mblock_1+type_mblock_right
-		objpos $12F0,$06F0,Monitor,$04,rem
+		objpos $12F0,$06F0,Monitor,type_monitor_shield,rem
 		objpos $1310,$02F0,MarbleBrick,type_brick_still
 		objpos $1310,$0550,PushBlock,type_pblock_single,rem
 		objpos $1310,$0710,MarbleBrick,type_brick_still

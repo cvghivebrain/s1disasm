@@ -9,21 +9,21 @@
 		objpos $0250,$02C0,SmashWall,id_frame_smash_middle,rem
 		objpos $0270,$0270,Bomb,$00,rem
 		objpos $0270,$02C0,SmashWall,id_frame_smash_middle,rem
-		objpos $0290,$03F1,Monitor,$06,rem
-		objpos $0290,$03F8,Springs,$00
-		objpos $02B0,$03F1,Monitor,$06,rem
-		objpos $02B0,$03F8,Springs,$00
-		objpos $02D0,$03F1,Monitor,$06,rem
-		objpos $02D0,$03F8,Springs,$00
-		objpos $02F0,$0258,Springs,$02
-		objpos $02F0,$03F1,Monitor,$05,rem
-		objpos $02F0,$03F8,Springs,$00
+		objpos $0290,$03F1,Monitor,type_monitor_rings,rem
+		objpos $0290,$03F8,Springs,type_spring_red+type_spring_up
+		objpos $02B0,$03F1,Monitor,type_monitor_rings,rem
+		objpos $02B0,$03F8,Springs,type_spring_red+type_spring_up
+		objpos $02D0,$03F1,Monitor,type_monitor_rings,rem
+		objpos $02D0,$03F8,Springs,type_spring_red+type_spring_up
+		objpos $02F0,$0258,Springs,type_spring_yellow+type_spring_up
+		objpos $02F0,$03F1,Monitor,type_monitor_invincible,rem
+		objpos $02F0,$03F8,Springs,type_spring_red+type_spring_up
 		objpos $0368,$01B0,Rings,$12,rem
 		objpos $03E8,$01D0,Bomb,$00,rem
 		objpos $0410,$01F0,Staircase,type_stair_above,xflip
-		objpos $0410,$0271,Monitor,$02,rem
+		objpos $0410,$0271,Monitor,type_monitor_1up,rem
 		objpos $082B,$02A7,Rings,$10,rem
-		objpos $0830,$02F8,Springs,$00
+		objpos $0830,$02F8,Springs,type_spring_red+type_spring_up
 		objpos $0830,$03F0,Rings,$46,rem
 		objpos $0830,$0498,Rings,$46,rem
 		objpos $0834,$0286,Rings,$10,rem
@@ -54,7 +54,7 @@
 		objpos $0C43,$064E,Rings,$10,rem
 		objpos $0C5D,$0635,Rings,$10,rem
 		objpos $0C70,$0100,Rings,$44,rem
-		objpos $0C70,$01D8,Springs,$02
+		objpos $0C70,$01D8,Springs,type_spring_yellow+type_spring_up
 		objpos $0C80,$062C,Rings,$10,rem
 		objpos $0C88,$0570,Scenery,type_scen_cannon
 		objpos $0C90,$02F0,Staircase,type_stair_above
@@ -82,7 +82,7 @@
 		objpos $0EA0,$0668,CollapseFloor,$81
 		objpos $0EC0,$02C8,Orbinaut,$02,rem
 		objpos $0EE0,$0668,CollapseFloor,$81
-		objpos $0EF0,$02D1,Monitor,$05,rem
+		objpos $0EF0,$02D1,Monitor,type_monitor_invincible,rem
 		objpos $0EF0,$03D0,Bomb,$00,rem
 		objpos $0F60,$0570,LavaMaker,$36
 		objpos $0F78,$0570,Scenery,type_scen_cannon,xflip
@@ -96,12 +96,12 @@
 		objpos $1080,$0680,CirclingPlatform,$01
 		objpos $1080,$0680,CirclingPlatform,$02
 		objpos $1080,$0680,CirclingPlatform,$03
-		objpos $1110,$02D1,Monitor,$06,rem
+		objpos $1110,$02D1,Monitor,type_monitor_rings,rem
 		objpos $1158,$02D0,Bomb,$00,rem
 		objpos $1170,$0670,Bomb,$00,rem
 		objpos $1178,$02D0,Bomb,$00,xflip,rem
 		objpos $1188,$0180,Rings,$12,rem
-		objpos $1188,$0470,Springs,$10
+		objpos $1188,$0470,Springs,type_spring_red+type_spring_right
 		objpos $11A0,$0180,CirclingPlatform,$00
 		objpos $11A0,$0180,CirclingPlatform,$01
 		objpos $11A0,$0180,CirclingPlatform,$02
@@ -109,11 +109,11 @@
 		objpos $11A0,$0470,Rings,$16,rem
 		objpos $11D8,$02D0,Bomb,$00,rem
 		objpos $11F8,$02D0,Bomb,$00,xflip,rem
-		objpos $1210,$0351,Monitor,$05,rem
+		objpos $1210,$0351,Monitor,type_monitor_invincible,rem
 		objpos $1248,$0470,Rings,$11,rem
 		objpos $1258,$02D0,Bomb,$00,rem
 		objpos $1278,$0180,Rings,$12,rem
-		objpos $1278,$0470,Springs,$10,xflip
+		objpos $1278,$0470,Springs,type_spring_red+type_spring_right,xflip
 		objpos $1290,$0180,CirclingPlatform,$00
 		objpos $1290,$0180,CirclingPlatform,$01
 		objpos $1290,$0180,CirclingPlatform,$02
@@ -128,13 +128,13 @@
 		objpos $1370,$0100,CirclingPlatform,$02
 		objpos $1370,$0100,CirclingPlatform,$03
 		objpos $13D8,$05E8,Elevator,type_elev_up_medium
-		objpos $13F8,$03D0,Springs,$10,xflip
+		objpos $13F8,$03D0,Springs,type_spring_red+type_spring_right,xflip
 		objpos $1410,$0250,Fan,type_fan_left_on,xflip
 		objpos $1488,$0670,Scenery,type_scen_cannon
 		objpos $14A0,$0670,LavaMaker,$37
 		objpos $1508,$0050,Fan,type_fan_left_onoff
 		objpos $1510,$0270,Staircase,type_stair_below,xflip
-		objpos $1530,$0358,Springs,$00
+		objpos $1530,$0358,Springs,type_spring_red+type_spring_up
 		objpos $1568,$05A0,Rings,$12,rem
 		objpos $1568,$0670,Rings,$12,rem
 		objpos $1580,$0240,Orbinaut,$02,rem
@@ -146,15 +146,15 @@
 		objpos $1580,$0670,CirclingPlatform,$01
 		objpos $1580,$0670,CirclingPlatform,$02
 		objpos $1580,$0670,CirclingPlatform,$03
-		objpos $15E0,$0358,Springs,$02
+		objpos $15E0,$0358,Springs,type_spring_yellow+type_spring_up
 		objpos $1620,$0568,CollapseFloor,$81
 		objpos $1630,$0030,Orbinaut,$02,rem
 		objpos $1638,$0250,Rings,$16,rem
 		objpos $1660,$0568,CollapseFloor,$81
 		objpos $16A8,$0520,Rings,$12,rem
-		objpos $16D0,$02D1,Monitor,$06,rem
+		objpos $16D0,$02D1,Monitor,type_monitor_rings,rem
 		objpos $16E0,$0250,Rings,$10,rem
-		objpos $16F0,$02D1,Monitor,$06,rem
+		objpos $16F0,$02D1,Monitor,type_monitor_rings,rem
 		objpos $1708,$00D0,Rings,$16,rem
 		objpos $1768,$05A0,Rings,$12,rem
 		objpos $1780,$05A0,CirclingPlatform,$00
@@ -169,13 +169,13 @@
 		objpos $1800,$0640,CirclingPlatform,$06
 		objpos $1800,$0640,CirclingPlatform,$07
 		objpos $1810,$00A0,Orbinaut,$02,rem
-		objpos $1888,$0470,Springs,$10
+		objpos $1888,$0470,Springs,type_spring_red+type_spring_right
 		objpos $1970,$0590,Staircase,type_stair_below,xflip
-		objpos $1978,$0470,Springs,$10,xflip
+		objpos $1978,$0470,Springs,type_spring_red+type_spring_right,xflip
 		objpos $1990,$0530,Staircase,type_stair_below
 		objpos $1990,$05F0,Staircase,type_stair_below
 		objpos $1A2B,$02A7,Rings,$10,rem
-		objpos $1A30,$02F8,Springs,$00
+		objpos $1A30,$02F8,Springs,type_spring_red+type_spring_up
 		objpos $1A34,$0286,Rings,$10,rem
 		objpos $1A3C,$0170,Rings,$10,rem
 		objpos $1A42,$0150,Rings,$10,rem
@@ -190,21 +190,21 @@
 		objpos $1ABC,$0150,Rings,$10,rem
 		objpos $1AC4,$0170,Rings,$10,rem
 		objpos $1B78,$0250,Fan,type_fan_left_on,xflip
-		objpos $1B90,$0271,Monitor,$06,rem
+		objpos $1B90,$0271,Monitor,type_monitor_rings,rem
 		objpos $1BA0,$01E8,CollapseFloor,$81
 		objpos $1BE0,$01E8,CollapseFloor,$81
-		objpos $1BF8,$0450,Springs,$10,xflip
-		objpos $1C10,$03D1,Monitor,$06,rem
-		objpos $1C10,$0651,Monitor,$06,rem
+		objpos $1BF8,$0450,Springs,type_spring_red+type_spring_right,xflip
+		objpos $1C10,$03D1,Monitor,type_monitor_rings,rem
+		objpos $1C10,$0651,Monitor,type_monitor_rings,rem
 		objpos $1C20,$0140,Orbinaut,$02,xflip,rem
-		objpos $1C70,$0271,Monitor,$06,rem
+		objpos $1C70,$0271,Monitor,type_monitor_rings,rem
 		objpos $1CC8,$0580,Rings,$12,rem
 		objpos $1CD8,$0368,Elevator,type_elev_up_short
 		objpos $1CE0,$0580,CirclingPlatform,$00
 		objpos $1CE0,$0580,CirclingPlatform,$01
 		objpos $1CE0,$0580,CirclingPlatform,$02
 		objpos $1CE0,$0580,CirclingPlatform,$03
-		objpos $1CF0,$0151,Monitor,$06,rem
+		objpos $1CF0,$0151,Monitor,type_monitor_rings,rem
 		objpos $1D28,$0668,Elevator,type_elev_upright
 		objpos $1D50,$04D0,Rings,$14,rem
 		objpos $1D98,$0210,Rings,$14,rem

@@ -3,10 +3,10 @@
 ; ---------------------------------------------------------------------------
 		objpos $0040,$02B2,Spikes,$40
 		objpos $00E6,$00FF,PurpleRock,$00
-		objpos $00F0,$02B1,Monitor,$04,rem
-		objpos $0110,$02B1,Monitor,$06,rem
+		objpos $00F0,$02B1,Monitor,type_monitor_shield,rem
+		objpos $0110,$02B1,Monitor,type_monitor_rings,rem
 		objpos $0130,$0108,Scenery,type_scen_stump,xflip
-		objpos $0130,$02B1,Monitor,$06,rem
+		objpos $0130,$02B1,Monitor,type_monitor_rings,rem
 		objpos $0180,$00BF,Rings,$13,rem
 		objpos $0180,$01F0,Chopper,$00,rem
 		objpos $01A8,$0118,WaterSound,$00
@@ -24,10 +24,10 @@
 		objpos $02B0,$02A0,SmashWall,id_frame_smash_middle,rem
 		objpos $02D0,$02A0,SmashWall,id_frame_smash_middle,rem
 		objpos $02F0,$0058,Rings,$44,rem
-		objpos $02F0,$0158,Springs,$02
+		objpos $02F0,$0158,Springs,type_spring_yellow+type_spring_up
 		objpos $02F0,$0170,PurpleRock,$00
 		objpos $02F0,$02A0,SmashWall,id_frame_smash_right,rem
-		objpos $0338,$02B5,Monitor,$03,rem
+		objpos $0338,$02B5,Monitor,type_monitor_shoes,rem
 		objpos $03F8,$02F0,EdgeWalls,type_edge_dark
 		objpos $0430,$0258,BuzzBomber,$00,rem
 		objpos $0440,$0300,MotoBug,$00,rem
@@ -68,7 +68,7 @@
 		objpos $07F4,$03D0,Spikes,$20
 		objpos $0800,$01B0,PurpleRock,$00
 		objpos $0808,$03F0,EdgeWalls,type_edge_shadow
-		objpos $0834,$0124,Monitor,$04,rem
+		objpos $0834,$0124,Monitor,type_monitor_shield,rem
 		objpos $0860,$01A1,Rings,$10,rem
 		objpos $086A,$01DD,Rings,$10,rem
 		objpos $0874,$0334,Rings,$42,rem
@@ -100,13 +100,13 @@
 		objpos $0AA8,$0218,Bridge,$0C
 		objpos $0AD8,$02E0,Chopper,$00,rem
 		objpos $0B10,$0208,Scenery,type_scen_stump
-		objpos $0B58,$03B0,Springs,$10,xflip
+		objpos $0B58,$03B0,Springs,type_spring_red+type_spring_right,xflip
 		objpos $0B90,$0218,Rings,$10,rem
 		objpos $0B90,$0240,Rings,$10,rem
 		objpos $0B91,$0268,Rings,$10,rem
 		objpos $0B98,$0290,Rings,$10,rem
 		objpos $0BB8,$02AE,Rings,$10,rem
-		objpos $0BB8,$0390,Springs,$10,xflip
+		objpos $0BB8,$0390,Springs,type_spring_red+type_spring_right,xflip
 		objpos $0BE8,$02B5,Rings,$10,rem
 		objpos $0C19,$02B5,Rings,$10,rem
 		objpos $0C20,$0370,PurpleRock,$00
@@ -121,7 +121,7 @@
 		objpos $0D44,$023E,Rings,$10,rem
 		objpos $0D44,$0282,Rings,$10,rem
 		objpos $0D5C,$0223,Rings,$10,rem
-		objpos $0D80,$01F1,Monitor,$02,rem
+		objpos $0D80,$01F1,Monitor,type_monitor_1up,rem
 		objpos $0D80,$021C,Rings,$10,rem
 		objpos $0D80,$0350,Crabmeat,$00,rem
 		objpos $0DA0,$01F0,Rings,$13,rem
@@ -132,13 +132,13 @@
 		objpos $0DBC,$0282,Rings,$10,rem
 		objpos $0DC4,$01C0,Rings,$10,rem
 		objpos $0DC4,$0260,Rings,$10,rem
-		objpos $0E30,$0338,Springs,$00,xflip
+		objpos $0E30,$0338,Springs,type_spring_red+type_spring_up,xflip
 		objpos $0F00,$02B4,Rings,$10,rem
 		objpos $0F28,$02B4,Rings,$10,rem
 		objpos $0F4D,$02A6,Rings,$10,rem
 		objpos $0F62,$0286,Rings,$10,rem
 		objpos $0F67,$0261,Rings,$10,rem
-		objpos $0F74,$021F,Monitor,$05,rem
+		objpos $0F74,$021F,Monitor,type_monitor_invincible,rem
 		objpos $0FF0,$0270,PurpleRock,$00
 		objpos $1054,$0230,Rings,$11,rem
 		objpos $1060,$02D0,Spikes,$00
@@ -171,9 +171,9 @@
 		objpos $15BB,$0277,Rings,$10,rem
 		objpos $15C4,$004C,Rings,$41,rem
 		objpos $15D4,$0040,Rings,$45,rem
-		objpos $15D4,$0145,Springs,$02,xflip
+		objpos $15D4,$0145,Springs,type_spring_yellow+type_spring_up,xflip
 		objpos $15E4,$004C,Rings,$41,rem
-		objpos $1650,$0150,Monitor,$06,rem
+		objpos $1650,$0150,Monitor,type_monitor_rings,rem
 		objpos $16A0,$01B0,MotoBug,$00,rem
 		objpos $16B0,$01A0,Newtron,$01,xflip,rem
 		objpos $16F8,$01F0,EdgeWalls,type_edge_dark+$10
@@ -183,7 +183,7 @@
 		objpos $16F8,$0370,EdgeWalls,type_edge_dark
 		objpos $16F8,$03B0,EdgeWalls,type_edge_dark
 		objpos $16F8,$03F0,EdgeWalls,type_edge_dark
-		objpos $1710,$0400,Monitor,$04,rem
+		objpos $1710,$0400,Monitor,type_monitor_shield,rem
 		objpos $1720,$03C0,BuzzBomber,$00,rem
 		objpos $1760,$0238,Newtron,$01,rem
 		objpos $1790,$0370,BuzzBomber,$00,rem
@@ -232,8 +232,8 @@
 		objpos $1C90,$03F0,BuzzBomber,$00,rem
 		objpos $1CA0,$0470,CollapseLedge,type_ledge_left,rem
 		objpos $1CE0,$03E0,BuzzBomber,$00,rem
-		objpos $1D38,$0428,Springs,$10,xflip
-		objpos $1DA0,$0407,Monitor,$06,rem
+		objpos $1D38,$0428,Springs,type_spring_red+type_spring_right,xflip
+		objpos $1DA0,$0407,Monitor,type_monitor_rings,rem
 		objpos $1DE4,$0403,Spikes,$00
 		objpos $1DF8,$0440,EdgeWalls,type_edge_dark
 		objpos $1DF8,$0480,EdgeWalls,type_edge_dark

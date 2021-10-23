@@ -33,8 +33,8 @@
 		objpos $0470,$034C,Batbrain,$00,rem
 		objpos $0480,$04E8,LavaTag,$02
 		objpos $0488,$05D4,Rings,$12,rem
-		objpos $0490,$03D0,Monitor,$06,rem
-		objpos $04B0,$03D0,Monitor,$04,rem
+		objpos $0490,$03D0,Monitor,type_monitor_rings,rem
+		objpos $04B0,$03D0,Monitor,type_monitor_shield,rem
 		objpos $04D0,$038C,Batbrain,$00,rem
 		objpos $04F0,$0430,MarbleBrick,type_brick_still
 		objpos $0510,$0490,PushBlock,type_pblock_single,rem
@@ -50,7 +50,7 @@
 		objpos $0634,$0354,Rings,$11,rem
 		objpos $0640,$0428,GlassBlock,type_glass_drop_button+type_glass_button_1
 		objpos $0670,$0310,MarbleBrick,type_brick_still
-		objpos $0710,$02B1,Monitor,$06,rem
+		objpos $0710,$02B1,Monitor,type_monitor_rings,rem
 		objpos $0728,$0510,Spikes,$52,xflip
 		objpos $0730,$048C,Batbrain,$00,rem
 		objpos $0780,$029C,Lamppost,$05,rem
@@ -67,11 +67,11 @@
 		objpos $0930,$0328,MovingBlock,type_mblock_3+type_mblock_leftright
 		objpos $0930,$0568,SwingingPlatform,$05,xflip
 		objpos $0948,$03C8,Caterkiller,$00,xflip,rem
-		objpos $0970,$04B0,Monitor,$06,rem
+		objpos $0970,$04B0,Monitor,type_monitor_rings,rem
 		objpos $0980,$05E8,LavaTag,$02
 		objpos $0990,$02E0,LavaMaker,$41
-		objpos $0990,$04B0,Monitor,$02,rem
-		objpos $09B0,$04B0,Monitor,$06,rem
+		objpos $0990,$04B0,Monitor,type_monitor_1up,rem
+		objpos $09B0,$04B0,Monitor,type_monitor_rings,rem
 		objpos $09C0,$02D0,LargeGrass,type_grass_narrow+type_grass_1
 		objpos $09C0,$02F8,LavaTag,$01
 		objpos $09F0,$02E0,LavaMaker,$31
@@ -116,7 +116,7 @@
 		objpos $0E00,$0498,LavaTag,$00
 		objpos $0E30,$0450,PushBlock,type_pblock_single,rem
 		objpos $0E38,$0480,Spikes,$10
-		objpos $0E58,$0550,Springs,$10,xflip
+		objpos $0E58,$0550,Springs,type_spring_red+type_spring_right,xflip
 		objpos $0E60,$0160,BuzzBomber,$00,rem
 		objpos $0E80,$019C,Caterkiller,$00,rem
 		objpos $0EB0,$04D8,Button,$00
@@ -128,7 +128,7 @@
 		objpos $0ED0,$0570,MarbleBrick,type_brick_still
 		objpos $0ED0,$0590,MarbleBrick,type_brick_still
 		objpos $0EE0,$0548,GlassBlock,type_glass_drop_button
-		objpos $0EF0,$0410,Monitor,$04,rem
+		objpos $0EF0,$0410,Monitor,type_monitor_shield,rem
 		objpos $0EF0,$0430,MarbleBrick,type_brick_still
 		objpos $0EF0,$04F0,MarbleBrick,type_brick_still
 		objpos $0EF0,$0510,MarbleBrick,type_brick_still
@@ -136,11 +136,11 @@
 		objpos $0EF0,$0550,MarbleBrick,type_brick_still
 		objpos $0EF0,$0570,MarbleBrick,type_brick_still
 		objpos $0EF0,$0590,MarbleBrick,type_brick_still
-		objpos $0F30,$02D0,Monitor,$06,rem
+		objpos $0F30,$02D0,Monitor,type_monitor_rings,rem
 		objpos $0F40,$022C,Batbrain,$00,rem
-		objpos $0F50,$02D0,Monitor,$06,rem
+		objpos $0F50,$02D0,Monitor,type_monitor_rings,rem
 		objpos $0F70,$024C,Batbrain,$00,rem
-		objpos $1010,$0560,Monitor,$05,rem
+		objpos $1010,$0560,Monitor,type_monitor_invincible,rem
 		objpos $1010,$0580,MarbleBrick,type_brick_still
 		objpos $1010,$0590,MarbleBrick,type_brick_still
 		objpos $1020,$02E8,LargeGrass,type_grass_narrow+type_grass_3
@@ -176,7 +176,7 @@
 		objpos $11F0,$0350,SmashBlock,$00
 		objpos $11F0,$0370,SmashBlock,$00
 		objpos $11F0,$03D0,SmashBlock,$00
-		objpos $11F0,$0490,Monitor,$04,rem
+		objpos $11F0,$0490,Monitor,type_monitor_shield,rem
 		objpos $11F8,$05A0,Rings,$12,rem
 		objpos $1210,$03D0,SmashBlock,$00
 		objpos $1210,$03F0,SmashBlock,$00
