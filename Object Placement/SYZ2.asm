@@ -1,6 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; SYZ2 object placement
 ; ---------------------------------------------------------------------------
+ObjPos_SYZ2:
 		objpos $0008,$01C2,Springs,type_spring_red+type_spring_right
 		objpos $0310,$01D8,Rings,$56,rem
 		objpos $0310,$03D8,Rings,$56,rem

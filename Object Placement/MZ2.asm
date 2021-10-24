@@ -1,6 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; MZ2 object placement
 ; ---------------------------------------------------------------------------
+ObjPos_MZ2:
 		objpos $0120,$02E8,LargeGrass,type_grass_narrow+type_grass_3
 		objpos $0154,$0258,Rings,$11,rem
 		objpos $01A0,$02F0,LargeGrass,type_grass_narrow+type_grass_3+type_grass_rev

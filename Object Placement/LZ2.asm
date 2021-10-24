@@ -1,6 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Labyrinth Zone 2 object placement
 ; ---------------------------------------------------------------------------
+ObjPos_LZ2:
 		objpos $0050,$0411,Monitor,type_monitor_rings,rem
 		objpos $0090,$0451,Monitor,type_monitor_rings,rem
 		objpos $00B0,$0460,Jaws,$0C,xflip,rem

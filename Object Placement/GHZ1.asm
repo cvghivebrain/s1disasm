@@ -1,6 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Green Hill Zone 1 object placement
 ; ---------------------------------------------------------------------------
+ObjPos_GHZ1:
 		objpos $0144,$0360,Rings,$12,rem
 		objpos $0248,$0351,Monitor,type_monitor_rings,rem
 		objpos $0334,$022C,Rings,$45,rem

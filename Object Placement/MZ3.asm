@@ -1,6 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; MZ3 object placement
 ; ---------------------------------------------------------------------------
+ObjPos_MZ3:
 		objpos $0010,$0410,MarbleBrick,type_brick_still
 		objpos $0010,$0430,MarbleBrick,type_brick_still
 		objpos $0010,$0450,MarbleBrick,type_brick_still

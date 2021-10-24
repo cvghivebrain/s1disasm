@@ -37,8 +37,6 @@ Revision:	equ 1
 	endc
 
 ZoneCount:	equ 6					; discrete zones are: GHZ, MZ, SYZ, LZ, SLZ, and SBZ
-
-OptimiseSound:	equ 0					; change to 1 to optimise sound queuing
 ; ===========================================================================
 
 StartOfRom:
@@ -5814,7 +5812,7 @@ CFlo_Data1:	dc.b $1C, $18, $14, $10, $1A, $16, $12,	$E, $A,	6, $18,	$14, $10, $C
 CFlo_Data2:	dc.b $1E, $16, $E, 6, $1A, $12,	$A, 2
 CFlo_Data3:	dc.b $16, $1E, $1A, $12, 6, $E,	$A, 2
 
-		include "Objects\_SlopeObject_NoChk.asm"
+		include_SlopeObject_NoChk ; Objects\_SlopeObject.asm
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
@@ -8115,74 +8113,28 @@ ObjPosSBZPlatform_Index:
 		endobj
 		
 		include "Object Subtypes.asm"
-ObjPos_GHZ1:	include	"Object Placement\GHZ1.asm"
-		even
-ObjPos_GHZ2:	include	"Object Placement\GHZ2.asm"
-		even
-ObjPos_GHZ3:	if Revision=0
+		include	"Object Placement\GHZ1.asm"
+		include	"Object Placement\GHZ2.asm"
 		include	"Object Placement\GHZ3.asm"
-		else
-		include	"Object Placement\GHZ3 (JP1).asm"
-		endc
-		even
-ObjPos_LZ1:	if Revision=0
 		include	"Object Placement\LZ1.asm"
-		else
-		include	"Object Placement\LZ1 (JP1).asm"
-		endc
-		even
-ObjPos_LZ2:	include	"Object Placement\LZ2.asm"
-		even
-ObjPos_LZ3:	if Revision=0
+		include	"Object Placement\LZ2.asm"
 		include	"Object Placement\LZ3.asm"
-		else
-		include	"Object Placement\LZ3 (JP1).asm"
-		endc
-		even
-ObjPos_SBZ3:	include	"Object Placement\SBZ3.asm"
-		even
+		include	"Object Placement\SBZ3.asm"
 		include	"Object Placement\LZ Platforms.asm"
-		even
-ObjPos_MZ1:	if Revision=0
 		include	"Object Placement\MZ1.asm"
-		else
-		include	"Object Placement\MZ1 (JP1).asm"
-		endc
-		even
-ObjPos_MZ2:	include	"Object Placement\MZ2.asm"
-		even
-ObjPos_MZ3:	include	"Object Placement\MZ3.asm"
-		even
-ObjPos_SLZ1:	include	"Object Placement\SLZ1.asm"
-		even
-ObjPos_SLZ2:	include	"Object Placement\SLZ2.asm"
-		even
-ObjPos_SLZ3:	include	"Object Placement\SLZ3.asm"
-		even
-ObjPos_SYZ1:	include	"Object Placement\SYZ1.asm"
-		even
-ObjPos_SYZ2:	include	"Object Placement\SYZ2.asm"
-		even
-ObjPos_SYZ3:	if Revision=0
+		include	"Object Placement\MZ2.asm"
+		include	"Object Placement\MZ3.asm"
+		include	"Object Placement\SLZ1.asm"
+		include	"Object Placement\SLZ2.asm"
+		include	"Object Placement\SLZ3.asm"
+		include	"Object Placement\SYZ1.asm"
+		include	"Object Placement\SYZ2.asm"
 		include	"Object Placement\SYZ3.asm"
-		else
-		include	"Object Placement\SYZ3 (JP1).asm"
-		endc
-		even
-ObjPos_SBZ1:	if Revision=0
 		include	"Object Placement\SBZ1.asm"
-		else
-		include	"Object Placement\SBZ1 (JP1).asm"
-		endc
-		even
-ObjPos_SBZ2:	include	"Object Placement\SBZ2.asm"
-		even
-ObjPos_FZ:	include	"Object Placement\FZ.asm"
-		even
+		include	"Object Placement\SBZ2.asm"
+		include	"Object Placement\FZ.asm"
 		include	"Object Placement\SBZ Platforms.asm"
-		even
-ObjPos_End:	include	"Object Placement\Ending.asm"
-		even
+		include	"Object Placement\Ending.asm"
 ObjPos_Null:	endobj
 
 		if Revision=0

@@ -1,6 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Labyrinth Zone 1 object placement
 ; ---------------------------------------------------------------------------
+ObjPos_LZ1:
 		objpos $0070,$0010,LabyrinthBlock,type_lblock_solid
 		objpos $0118,$00B4,Rings,$12,rem
 		objpos $02AC,$00B0,Burrobot,$00,rem
@@ -69,6 +70,10 @@
 		objpos $0DD0,$0488,Jaws,$0A,rem
 		objpos $0DE0,$04F8,Bubble,$81
 		objpos $0E60,$0440,SpikeBall,$B5
+		if Revision=0
+		else
+		objpos $0E90,$0054,Rings,$10,rem
+		endc
 		objpos $0EC8,$03F0,Rings,$12,rem
 		objpos $0F38,$056C,Lamppost,$01,rem
 		objpos $0F50,$0380,SpikeBall,$B5

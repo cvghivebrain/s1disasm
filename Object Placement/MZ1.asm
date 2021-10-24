@@ -1,6 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; MZ1 object placement
 ; ---------------------------------------------------------------------------
+ObjPos_MZ1:
 		objpos $0098,$0248,Rings,$12,rem
 		objpos $0250,$0238,Rings,$10,rem
 		objpos $0268,$0228,Rings,$12,rem
@@ -118,7 +119,11 @@
 		objpos $1070,$03F0,Invisibarrier,$11
 		objpos $1090,$0408,MovingBlock,type_mblock_3+type_mblock_leftright
 		objpos $10C0,$033C,ChainStomp,type_cstomp_wide+type_cstomp_2
+		if Revision=0
 		objpos $1110,$0440,Invisibarrier,$00
+		else
+		objpos $1110,$0440,Invisibarrier,$11
+		endc
 		objpos $1130,$0458,MovingBlock,type_mblock_3+type_mblock_leftright
 		objpos $1250,$0270,BuzzBomber,$00,rem
 		objpos $1294,$0268,Rings,$11,rem

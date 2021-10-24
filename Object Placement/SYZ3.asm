@@ -1,6 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; SYZ3 object placement
 ; ---------------------------------------------------------------------------
+ObjPos_SYZ3:
 		objpos $0280,$00D8,BuzzBomber,$00,rem
 		objpos $0300,$00F8,BuzzBomber,$00,rem
 		objpos $0380,$0118,BuzzBomber,$00,rem
@@ -169,6 +170,10 @@
 		objpos $1EC7,$04FD,Invisibarrier,$13
 		objpos $1EE0,$0339,BasicPlatform,type_plat_updown_slow_rev
 		objpos $1F30,$02F1,Crabmeat,$00,xflip,rem
+		if Revision=0
+		else
+		objpos $1F38,$0549,FloatingBlock,type_fblock_syzrect2x2+type_fblock_farrightbutton
+		endc
 		objpos $1FD0,$02F1,Crabmeat,$00,rem
 		objpos $2010,$0308,Rings,$41,rem
 		objpos $2011,$0593,Monitor,type_monitor_rings,rem

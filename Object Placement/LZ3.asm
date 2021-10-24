@@ -1,6 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Labyrinth Zone 3 object placement
 ; ---------------------------------------------------------------------------
+ObjPos_LZ3:
 		objpos $00B8,$02B4,Rings,$12,rem
 		objpos $0130,$0310,Burrobot,$00,rem
 		objpos $0170,$0310,Burrobot,$00,rem
@@ -139,7 +140,9 @@
 		objpos $12F0,$01F0,LabyrinthBlock,type_lblock_solid
 		objpos $1300,$0280,LabyrinthConvey,$85
 		objpos $1320,$02F0,Spikes,$30
+		if Revision=0
 		objpos $1320,$0410,SpikeBall,$26
+		endc
 		objpos $1330,$0580,Jaws,$0C,xflip,rem
 		objpos $1350,$0188,Spikes,$10,xflip
 		objpos $1350,$01B8,Spikes,$10,xflip
@@ -165,13 +168,17 @@
 		objpos $14E0,$0210,Burrobot,$00,rem
 		objpos $14F0,$05F1,Monitor,type_monitor_rings,rem
 		objpos $1510,$0680,Pole,$04
+		if Revision=0
 		objpos $1520,$04E0,Orbinaut,$00,rem
+		endc
 		objpos $1558,$0210,Waterfall,type_wfall_vertwide
 		objpos $1558,$0220,Waterfall,type_wfall_splash
 		objpos $1568,$0230,Waterfall,type_wfall_diagonal,xflip
 		objpos $1570,$05D1,Monitor,type_monitor_rings,rem
 		objpos $1570,$0668,Spikes,$10
+		if Revision=0
 		objpos $1580,$0550,Jaws,$0C,rem
+		endc
 		objpos $1588,$0240,Waterfall,type_wfall_diagonal,xflip
 		objpos $1590,$03B1,Monitor,type_monitor_rings,rem
 		objpos $15A0,$0510,FloatingBlock,type_fblock_lzhoriz+type_fblock_button+3,xflip,rem
@@ -194,8 +201,13 @@
 		objpos $16E0,$0290,Spikes,$30,yflip
 		objpos $16F0,$0471,Monitor,type_monitor_shield,rem
 		objpos $1708,$02F8,Waterfall,type_wfall_cornermedium,xflip
+		if Revision=0
 		objpos $1720,$07F8,Bubble,$80
 		objpos $1720,$0270,Spikes,$30,yflip
+		else
+		objpos $1720,$0270,Spikes,$30,yflip
+		objpos $1720,$07F8,Bubble,$80
+		endc
 		objpos $1798,$06A0,FloatingBlock,type_fblock_lzvert+type_fblock_button+7,rem
 		objpos $17C0,$06F8,Bubble,$80
 		objpos $1808,$03F8,Waterfall,type_wfall_cornernarrow,xflip
@@ -230,8 +242,10 @@
 		objpos $1B20,$0210,Burrobot,$00,rem
 		objpos $1B60,$0010,Burrobot,$00,rem
 		objpos $1BC0,$0810,FloatingBlock,type_fblock_lzhoriz+type_fblock_button+8,rem
+		if Revision=0
 		objpos $1BC0,$0030,LabyrinthBlock,type_lblock_solid
 		objpos $1BE0,$0030,LabyrinthBlock,type_lblock_solid
+		endc
 		objpos $1C00,$0010,Burrobot,$00,rem
 		objpos $1C10,$05F1,Monitor,type_monitor_shield,rem
 		

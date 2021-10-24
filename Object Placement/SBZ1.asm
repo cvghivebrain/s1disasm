@@ -1,6 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; SBZ1 object placement
 ; ---------------------------------------------------------------------------
+ObjPos_SBZ1:
 		objpos $00D0,$04B0,Rings,$14,rem
 		objpos $01F0,$04D0,Invisibarrier,$15
 		objpos $0228,$048C,Rings,$12,rem
@@ -22,9 +23,15 @@
 		objpos $0620,$03A7,SpinPlatform,type_spin_platform+0
 		objpos $0640,$03A7,SpinPlatform,type_spin_platform+0
 		objpos $0650,$0407,SpinPlatform,type_spin_platform+0
+		if Revision=0
 		objpos $0660,$05F0,Invisibarrier,$71
 		objpos $0660,$0670,Invisibarrier,$71
 		objpos $0660,$06F0,Invisibarrier,$71
+		else
+		objpos $0660,$05F8,Invisibarrier,$70
+		objpos $0660,$0678,Invisibarrier,$70
+		objpos $0660,$06F8,Invisibarrier,$70
+		endc
 		objpos $0670,$0407,SpinPlatform,type_spin_platform+0
 		objpos $0690,$0467,SpinPlatform,type_spin_platform+0
 		objpos $0698,$0387,SpinPlatform,type_spin_platform+0
@@ -42,9 +49,15 @@
 		objpos $07BA,$0787,Flamethrower,$43,yflip
 		objpos $0838,$07AC,Rings,$16,rem
 		objpos $0850,$034C,Caterkiller,$00,rem
+		if Revision=0
 		objpos $0860,$04F0,Invisibarrier,$71
 		objpos $0860,$0570,Invisibarrier,$71
 		objpos $0860,$05F0,Invisibarrier,$71
+		else
+		objpos $0860,$04F8,Invisibarrier,$70
+		objpos $0860,$0578,Invisibarrier,$70
+		objpos $0860,$05F8,Invisibarrier,$70
+		endc
 		objpos $08A0,$0518,Girder,$00
 		objpos $08A0,$0598,Girder,$00
 		objpos $08A0,$0618,Girder,$00
@@ -216,9 +229,15 @@
 		objpos $1730,$00A8,VanishPlatform,$00
 		objpos $1740,$05AC,SpinPlatform,type_spin_trapdoor+1
 		objpos $174B,$06A8,Flamethrower,$43,xflip
+		if Revision=0
 		objpos $1760,$02F0,Invisibarrier,$71
 		objpos $1760,$0370,Invisibarrier,$71
 		objpos $1760,$03F0,Invisibarrier,$71
+		else
+		objpos $1760,$02F8,Invisibarrier,$70
+		objpos $1760,$0378,Invisibarrier,$70
+		objpos $1760,$03F8,Invisibarrier,$70
+		endc
 		objpos $1770,$0108,VanishPlatform,$40
 		objpos $1770,$0168,VanishPlatform,$00
 		objpos $1770,$01C8,VanishPlatform,$C0
@@ -255,9 +274,15 @@
 		objpos $1A3B,$0646,Flamethrower,$43,xflip
 		objpos $1A40,$0618,Electro,$08,yflip
 		objpos $1A5C,$060D,Rings,$13,rem
+		if Revision=0
 		objpos $1A60,$01F0,Invisibarrier,$71
 		objpos $1A60,$0270,Invisibarrier,$71
 		objpos $1A60,$02F0,Invisibarrier,$71
+		else
+		objpos $1A60,$01F8,Invisibarrier,$70
+		objpos $1A60,$0278,Invisibarrier,$70
+		objpos $1A60,$02F8,Invisibarrier,$70
+		endc
 		objpos $1AA0,$0218,Girder,$00
 		objpos $1AA0,$0298,Girder,$00
 		objpos $1AA0,$0318,Girder,$00

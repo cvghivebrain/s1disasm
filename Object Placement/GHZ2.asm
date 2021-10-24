@@ -1,6 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Green Hill Zone 2 object placement
 ; ---------------------------------------------------------------------------
+ObjPos_GHZ2:
 		objpos $0040,$02B2,Spikes,$40
 		objpos $00E6,$00FF,PurpleRock,$00
 		objpos $00F0,$02B1,Monitor,type_monitor_shield,rem

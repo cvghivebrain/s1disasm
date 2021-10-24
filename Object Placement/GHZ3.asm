@@ -1,6 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Green Hill Zone 3 object placement
 ; ---------------------------------------------------------------------------
+ObjPos_GHZ3:
 		objpos $0084,$0340,Monitor,type_monitor_invincible,rem
 		objpos $0128,$03B8,Springs,type_spring_yellow+type_spring_up
 		objpos $0190,$03E0,Spikes,$40
@@ -158,7 +159,11 @@
 		objpos $1308,$04B0,EdgeWalls,type_edge_shadow
 		objpos $1330,$02B0,CollapseLedge,type_ledge_right,xflip,rem
 		objpos $1378,$0478,Spikes,$00
+		if Revision=0
 		objpos $1404,$036F,Springs,type_spring_red+type_spring_right,xflip
+		else
+		objpos $1404,$036E,Springs,type_spring_red+type_spring_right,xflip
+		endc
 		objpos $1408,$0470,EdgeWalls,type_edge_shadow
 		objpos $1420,$036F,PurpleRock,$00
 		objpos $1428,$0420,Crabmeat,$00,rem
