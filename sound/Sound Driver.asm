@@ -746,7 +746,7 @@ Sound_PlayBGM:
 		move.l	d0,TrackDataPointer(a1)	; Store track pointer
 		move.w	(a4)+,TrackTranspose(a1)	; load PSG modifier
 		move.b	(a4)+,d0			; load redundant byte
-		move.b	(a4)+,TrackVoiceIndex(a1)	; Initial PSG tone
+		move.b	(a4)+,TrackVoiceIndex(a1)	; Initial PSG envelope
 		adda.w	d6,a1
 		dbf	d7,@bgm_psgloadloop
 ; loc_72154:
@@ -1693,7 +1693,7 @@ PSGUpdateFreq:
 @notnoise:
 		move.w	d6,d1
 		andi.b	#$F,d1		; Low nibble of frequency
-		or.b	d1,d0		; Latch tone data to channel
+		or.b	d1,d0		; Latch frequency data to channel
 		lsr.w	#4,d6		; Get upper 6 bits of frequency
 		andi.b	#$3F,d6		; Send to latched channel
 		move.b	d0,(psg_input).l
@@ -1713,25 +1713,25 @@ PSGSetRest:
 
 ; sub_72926:
 PSGUpdateVolFX:
-		tst.b	TrackVoiceIndex(a5)	; Test PSG tone
+		tst.b	TrackVoiceIndex(a5)	; Test envelope
 		beq.w	locret_7298A		; Return if it is zero
 ; loc_7292E:
 PSGDoVolFX:	; This can actually be made a bit more efficient, see the comments for more
 		move.b	TrackVolume(a5),d6	; Get volume
 		moveq	#0,d0
-		move.b	TrackVoiceIndex(a5),d0	; Get PSG tone
+		move.b	TrackVoiceIndex(a5),d0	; Get envelope
 		beq.s	SetPSGVolume
 		movea.l	(Go_Envelopes).l,a0
 		subq.w	#1,d0
 		lsl.w	#2,d0
 		movea.l	(a0,d0.w),a0
-		move.b	TrackVolEnvIndex(a5),d0	; Get volume envelope index		; move.b	TrackVolEnvIndex(a5),d0
-		move.b	(a0,d0.w),d0			; Volume envelope value			; addq.b	#1,TrackVolEnvIndex(a5)
-		addq.b	#1,TrackVolEnvIndex(a5)	; Increment volume envelope index	; move.b	(a0,d0.w),d0
-		btst	#7,d0				; Is volume envelope value negative?	; <-- makes this line redundant
-		beq.s	@gotflutter			; Branch if not				; but you gotta make this one a bpl
-		cmpi.b	#$80,d0				; Is it the terminator?			; Since this is the only check, you can take the optimisation a step further:
-		beq.s	VolEnvHold			; If so, branch				; Change the previous beq (bpl) to a bmi and make it branch to VolEnvHold to make these last two lines redundant
+		move.b	TrackVolEnvIndex(a5),d0		; Get volume envelope index
+		move.b	(a0,d0.w),d0			; Volume envelope value
+		addq.b	#1,TrackVolEnvIndex(a5)		; Increment volume envelope index
+		btst	#7,d0				; Is volume envelope value negative?	; note, this line and the line below are redundant
+		beq.s	@gotflutter			; Branch if not				; especially because Sonic 1 only checks for 1 command
+		cmpi.b	#evc_Hold,d0			; Is it the terminator?
+		beq.s	VolEnvCmd_Hold			; If so, branch
 ; loc_72960:
 @gotflutter:
 		add.w	d0,d6		; Add volume envelope value to volume
@@ -1771,7 +1771,7 @@ PSGCheckNoteTimeout:
 
 ; ===========================================================================
 ; loc_7299A: FlutterDone:
-VolEnvHold:
+VolEnvCmd_Hold:
 		subq.b	#1,TrackVolEnvIndex(a5)	; Decrement volume envelope index
 		rts
 
@@ -1790,9 +1790,9 @@ SendPSGNoteOff:
 		; risk of music accidentally playing noise because it can't detect if
 		; the PSG4/noise channel needs muting on track initialisation.
 		; S&K's driver fixes it by doing this:
-		;cmpi.b	#$DF,d0				; Are stopping PSG3?
+		;cmpi.b	#tPSG3 | $1F,d0				; Are stopping PSG3?
 		;bne.s	locret_729B4
-		;move.b	#$FF,(psg_input).l		; If so, stop noise channel while we're at it
+		;move.b	#tPSG4 | $1F,(psg_input).l		; If so, stop noise channel while we're at it
 
 locret_729B4:
 		rts
@@ -1804,10 +1804,10 @@ locret_729B4:
 ; sub_729B6:
 PSGSilenceAll:
 		lea	(psg_input).l,a0
-		move.b	#$9F,(a0)	; Silence PSG 1
-		move.b	#$BF,(a0)	; Silence PSG 2
-		move.b	#$DF,(a0)	; Silence PSG 3
-		move.b	#$FF,(a0)	; Silence noise channel
+		move.b	#tPSG1 | $1F,(a0)	; Silence PSG 1
+		move.b	#tPSG2 | $1F,(a0)	; Silence PSG 2
+		move.b	#tPSG3 | $1F,(a0)	; Silence PSG 3
+		move.b	#tPSG4 | $1F,(a0)	; Silence noise channel
 		rts
 ; End of function PSGSilenceAll
 
@@ -1859,7 +1859,7 @@ locret_72AEA:
 		rts
 ; ===========================================================================
 ; loc_72AEC: cfAlterNotes:
-SongCom_Detune:
+SongCom_DetuneSet:
 		move.b	(a4)+,TrackDetune(a5)	; Set detune value
 		rts
 ; ===========================================================================
@@ -2256,7 +2256,7 @@ SongCom_End:
 		bset	#1,(a0)				; Set 'track at rest' bit (TrackPlaybackControl)
 		cmpi.b	#tPSG4,TrackVoiceControl(a0)	; Is this a noise pointer?
 		bne.s	@locexit			; Branch if not
-		move.b	TrackPSGNoise(a0),(psg_input).l ; Set noise tone
+		move.b	TrackPSGNoise(a0),(psg_input).l ; Set noise mode
 ; loc_72E02:
 @locexit:
 		addq.w	#8,sp		; Tamper with return value so we don't go back to caller
@@ -2265,10 +2265,10 @@ SongCom_End:
 ; loc_72E06:
 SongCom_NoiseSet:
 		move.b	#tPSG4,TrackVoiceControl(a5)	; Turn channel into noise channel
-		move.b	(a4)+,TrackPSGNoise(a5)	; Save noise tone
+		move.b	(a4)+,TrackPSGNoise(a5)		; Save noise mode
 		btst	#2,(a5)				; Is track being overridden? (TrackPlaybackControl)
 		bne.s	@locret				; Return if yes
-		move.b	-1(a4),(psg_input).l		; Set tone
+		move.b	-1(a4),(psg_input).l		; Set mode
 ; locret_72E1E:
 @locret:
 		rts
@@ -2280,7 +2280,7 @@ SongCom_VibOff:
 ; ===========================================================================
 ; loc_72E26:
 SongCom_Env:
-		move.b	(a4)+,TrackVoiceIndex(a5)	; Set current PSG tone
+		move.b	(a4)+,TrackVoiceIndex(a5)	; Set current envelope
 		rts
 ; ===========================================================================
 ; loc_72E2C:

@@ -53,7 +53,7 @@ tFM4			equ 4				; FM4 channel type
 tFM5			equ 5				; FM5 channel type
 tFM6			equ 6				; FM6 channel type
 
-tDAC			equ 0				; DAC channel type
+tDAC			equ 6				; DAC channel type
 
 tPSG1			equ $80				; PSG1 channel type
 tPSG2			equ $A0				; PSG2 channel type
@@ -134,76 +134,6 @@ v_spcsfx_psg3_track:	rs.b TrackSz
 v_spcsfx_track_ram_end:	rs.w 0
 
 v_1up_ram_copy:		rs.b v_music_track_ram_end-v_startofvariables
-
-; ===========================================================================
-; ---------------------------------------------------------------------------
-; Define track commands
-;
-; By default, range from $E0 to $FF, and $FF can have special flags.
-; The first entries have lower ID.
-; Constants for IDs are: com_(name)
-; This special macro is used to generate constants and jump tables
-;
-; line format: \func	name, alt1, alt2 [...]
-; ---------------------------------------------------------------------------
-
-TrackCommand	macro	func
-		\func	Pan				; Pan FM channel (left/right/centre)
-		\func	Detune				; Detune a channel (change frequency)
-		\func	Timing				; External song timing
-		\func	Ret				; Subroutine return
-		\func	RestoreSong			; Restore previous song
-		\func	ChannelTick			; Set tick multiplier for channel
-		\func	VolAddFM			; FM volume add
-		\func	Tie, Hold			; Do not key off. Can be used to tie two notes together (extend delay, run commands, set new note, etc)
-		\func	Gate				; Set note gate timer (frames)
-		\func	TransAdd			; Transposition add
-		\func	TempoSet			; Set tempo (affected by tick multiplier!)
-		\func	SongTick			; Set tick multiplier for song
-		\func	VolAddPSG			; PSG volume add
-		\func	ClearPush			; Clear special push sound effect flag
-		\func	EndBack				; End background sound effect channel
-		\func	Voice				; Load FM voice
-		\func	Vib				; Set automatic vibrate
-		\func	VibOn				; Enable automatic vibrate (without parameter set)
-		\func	End				; End a song channel
-		\func	NoiseSet			; Set PSG4 noise mode
-		\func	VibOff				; Disable automatic vibrate (parameters preserved)
-		\func	Env				; Set volume envelope (PSG only)
-		\func	Jump				; Jump to song routine
-		\func	Loop				; Loop song data
-		\func	Call				; Call song subroutine
-		\func	Release34			; Hacky command to immediately release ops 3 and 4. Used in SYZ music only
-	endm
-
-TrackExCommand	macro	func
-	; Sonic 1 has no extended commands
-	endm
-
-; ===========================================================================
-; ---------------------------------------------------------------------------
-; constants for tracker commands
-; ---------------------------------------------------------------------------
-
-GenComConst	macro	const
-	rept narg-1
-com_\const	rs.b 0					; generate alt constants
-		shift
-	endr
-
-com_\const	rs.b 1					; generate the main constant
-	endm
-; ---------------------------------------------------------------------------
-
-		rsset	_lastNote+1			; commands come after the last note
-_firstCom	rs.b 0					; the first valid command
-		TrackCommand	GenComConst		; generate constants for all main commands
-_lastCom	equ __rs-1				; the last valid command
-
-		rsset	__rs<<8				; assume the last command is the extended command (in Sonic 1, there is no extended commands!)
-_firstExCom	equ __rs&$FF				; the first valid extended command
-		TrackExCommand	GenComConst		; generate constants for all extended commands
-_lastExCom	equ (__rs-1)&$FF			; the last valid extended command
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
@@ -366,6 +296,203 @@ nR		rs.b 1					; rest note - stop sounds for current channel
 _firstNote	rs.b 0					; the first actual note
 		DefineNotes	GenNoteConst		; generate note constants
 _lastNote	equ __rs-1				; the last note
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Define samples
+;
+; By default, range from $81 to $8F
+; The first entries have lower ID.
+; Constants for IDs are: d(name)
+; This special macro is used to generate constants and jump tables
+;
+; line format: \func	name, alt1, alt2 [...]
+; ---------------------------------------------------------------------------
+
+DefineSamples	macro	func
+		\func	Kick				; Kick sample
+		\func	Snare				; Snare sample
+		\func	Timpani				; Timpani sample (DO NOT USE)
+		\func	Null84				; this sample is not defined
+		\func	Null85				; this sample is not defined
+		\func	Null86				; this sample is not defined
+		\func	Null87				; this sample is not defined
+		\func	TimpaniHi			; Timpani high pitch
+		\func	TimpaniMid			; Timpani middle pitch
+		\func	TimpaniLow			; Timpani low pitch
+		\func	TimpaniFloor			; Timpani very low pitch
+	endm
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; constants for envelopes
+; ---------------------------------------------------------------------------
+
+GenSampleConst	macro	const
+	rept narg-1
+d\const		rs.b 0					; generate alt constants
+		shift
+	endr
+
+d\const		rs.b 1					; generate the main constant
+	endm
+; ---------------------------------------------------------------------------
+
+		rsset	nR				; samples start at $81
+_firstSample	rs.b 0					; the first valid sample
+		DefineSamples	GenSampleConst		; generate constants for samples
+_lastSample	equ __rs-1				; the last valid sample
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Define track commands
+;
+; By default, range from $E0 to $FF, and $FF can have special flags.
+; The first entries have lower ID.
+; Constants for IDs are: com_(name)
+; This special macro is used to generate constants and jump tables
+;
+; line format: \func	name, alt1, alt2 [...]
+; ---------------------------------------------------------------------------
+
+TrackCommand	macro	func
+		\func	Pan				; Pan FM channel (left/right/centre)
+		\func	DetuneSet			; Detune a channel (change frequency)
+		\func	Timing				; External song timing
+		\func	Ret				; Subroutine return
+		\func	RestoreSong			; Restore previous song
+		\func	ChannelTick			; Set tick multiplier for channel
+		\func	VolAddFM			; FM volume add
+		\func	Tie, Hold			; Do not key off. Can be used to tie two notes together (extend delay, run commands, set new note, etc)
+		\func	Gate				; Set note gate timer (frames)
+		\func	TransAdd			; Transposition add
+		\func	TempoSet			; Set tempo (affected by tick multiplier!)
+		\func	SongTick			; Set tick multiplier for song
+		\func	VolAddPSG			; PSG volume add
+		\func	ClearPush			; Clear special push sound effect flag
+		\func	EndBack				; End background sound effect channel
+		\func	Voice				; Load FM voice
+		\func	Vib				; Set automatic vibrate
+		\func	VibOn				; Enable automatic vibrate (without parameter set)
+		\func	End				; End a song channel
+		\func	NoiseSet			; Set PSG4 noise mode
+		\func	VibOff				; Disable automatic vibrate (parameters preserved)
+		\func	Env				; Set volume envelope (PSG only)
+		\func	Jump				; Jump to song routine
+		\func	Loop				; Loop song data
+		\func	Call				; Call song subroutine
+		\func	Release34			; Hacky command to immediately release ops 3 and 4. Used in SYZ music only
+	endm
+
+TrackExCommand	macro	func
+	; Sonic 1 has no extended commands
+	endm
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; constants for tracker commands
+; ---------------------------------------------------------------------------
+
+GenComConst	macro	const
+	rept narg-1
+com_\const	rs.b 0					; generate alt constants
+		shift
+	endr
+
+com_\const	rs.b 1					; generate the main constant
+	endm
+; ---------------------------------------------------------------------------
+
+		rsset	_lastNote+1			; commands come after the last note
+_firstCom	rs.b 0					; the first valid command
+		TrackCommand	GenComConst		; generate constants for all main commands
+_lastCom	equ __rs-1				; the last valid command
+
+		rsset	__rs<<8				; assume the last command is the extended command (in Sonic 1, there is no extended commands!)
+_firstExCom	equ __rs&$FF				; the first valid extended command
+		TrackExCommand	GenComConst		; generate constants for all extended commands
+_lastExCom	equ (__rs-1)&$FF			; the last valid extended command
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Define envelopes
+;
+; By default, range from $01 to $FF
+; The first entries have lower ID.
+; Constants for IDs are: v(name)
+; This special macro is used to generate constants and jump tables
+;
+; line format: \func	name, alt1, alt2 [...]
+; ---------------------------------------------------------------------------
+
+VolumeEnv	macro	func
+		\func	01				; TODO: name
+		\func	02				; TODO: name
+		\func	03				; TODO: name
+		\func	04				; TODO: name
+		\func	05				; TODO: name
+		\func	06				; TODO: name
+		\func	07				; TODO: name
+		\func	08				; TODO: name
+		\func	09				; TODO: name
+	endm
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; constants for envelopes
+; ---------------------------------------------------------------------------
+
+GenEnvConst	macro	const
+	rept narg-1
+v\const		rs.b 0					; generate alt constants
+		shift
+	endr
+
+v\const		rs.b 1					; generate the main constant
+	endm
+; ---------------------------------------------------------------------------
+
+		rsset	0				; envelopes start at 1
+vNone		rs.b 1					; null envelope
+_firstVolEnv	rs.b 0					; the first valid envelope
+		VolumeEnv	GenEnvConst		; generate constants for envelopes
+_lastVolEnv	equ __rs-1				; the last valid envelope
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Define envelope commands
+;
+; By default, starts at $80
+; The first entries have lower ID.
+; Constants for IDs are: evc_(name)
+; This special macro is used to generate constants and jump tables
+;
+; line format: \func	name, alt1, alt2 [...]
+; ---------------------------------------------------------------------------
+
+EnvelopeCmd	macro	func
+		\func	Hold				; hold envelope at the last byte
+	endm
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; constants for envelope commands
+; ---------------------------------------------------------------------------
+
+GenEnvCmdConst	macro	const
+	rept narg-1
+evc_\const	rs.b 0					; generate alt constants
+		shift
+	endr
+
+evc_\const	rs.b 1					; generate the main constant
+	endm
+; ---------------------------------------------------------------------------
+
+		rsset	$80				; envelope commands start at $80
+_firstEnvCmd	rs.b 0					; the first valid envelope command
+		EnvelopeCmd	GenEnvCmdConst		; generate constants for envelope commands
+_lastEnvCmd	equ __rs-1				; the last valid envelope command
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------

@@ -44,8 +44,8 @@ sPan		macro value
 	endm
 ; ---------------------------------------------------------------------------
 
-sDetune		macro value
-		PutTrackCom	Detune			; add the command byte
+sDetuneSet	macro value
+		PutTrackCom	DetuneSet		; add the command byte
 		dc.b \value				; add the detune value
 	endm
 ; ---------------------------------------------------------------------------
@@ -120,7 +120,7 @@ sEndBack	macro value
 
 sVoice		macro value
 		PutTrackCom	Voice			; add the command byte
-		dc.b \value				; add the voice
+		dc.b pat\_songName\_\value		; add the voice
 	endm
 ; ---------------------------------------------------------------------------
 
@@ -195,10 +195,10 @@ sRelease34		macro
 ; Macros for music header
 ; ---------------------------------------------------------------------------
 
-sHeaderMusic		macro	*
+sHeaderMusic		macro
 _patchNum =		0				; initialize patch num
 _songAddr =		*				; song base address
-_songName =		"\*"				; initialize song name
+_songName		equs "\#_song"			; initialize song name
 _f\_songName =		0				; initialize fm count
 _p\_songName =		0				; initialize psg count
 	endm
@@ -210,7 +210,7 @@ sHeaderVoice		macro addr
 ; ---------------------------------------------------------------------------
 
 sHeaderTempo		macro tick, tempo
-		dc.b _f\_songName, _p\_songName		; initialize channel counts
+		dc.b _fx\_songName, _px\_songName	; initialize channel counts
 		dc.b \tick, \tempo			; initialize tick and tempo
 	endm
 ; ---------------------------------------------------------------------------
@@ -223,7 +223,7 @@ sHeaderDAC		macro addr
 sHeaderFM		macro addr, trans, volume
 		dc.w \addr-_songAddr			; initialize FM address
 		dc.b \trans, \volume			; initialize transposition and volume
-_f\_songName =		1 + _f\_songName		; increment channel count
+_f\_songName set		1 + _f\_songName		; increment channel count
 	endm
 ; ---------------------------------------------------------------------------
 
@@ -232,16 +232,22 @@ sHeaderPSG		macro addr, trans, volume, null, env
 		dc.b \trans, \volume, \null, \env	; initialize transposition, volume and envelope
 _p\_songName =		1 + _p\_songName		; increment channel count
 	endm
+; ---------------------------------------------------------------------------
+
+sHeaderFinish		macro
+_px\_songName =		_p\_songName			; finished counting channels
+_fx\_songName =		1 + _f\_songName		; +1 for DAC
+	endm
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Macros for sfx header
 ; ---------------------------------------------------------------------------
 
-sHeaderSfx		macro	*
+sHeaderSfx		macro
 _patchNum =		0				; initialize patch num
 _songAddr =		*				; song base address
-_songName =		"\*"				; initialize song name
+_songName		equs "\_song"			; initialize song name
 _c\_songName =		0				; initialize channel count
 	endm
 ; ---------------------------------------------------------------------------
@@ -263,19 +269,19 @@ _c\_songName =		1 + _c\_songName		; increment channel count
 ; Macros for voices
 ; ---------------------------------------------------------------------------
 
-sNewVoice		macro	*
-pat\* =			_patchNum			; generate equate for the macro
+sNewVoice		macro	name
+pat\_songName\_\name =	_patchNum			; generate equate for the macro
 _patchNum =		1 + _patchNum			; increment patch number
-	endm
-; ---------------------------------------------------------------------------
-
-sFeedback		macro	val
-_fb =			\val
 	endm
 ; ---------------------------------------------------------------------------
 
 sAlgorithm		macro	val
 _algo =			\val
+	endm
+; ---------------------------------------------------------------------------
+
+sFeedback		macro	val
+_fb =			\val
 	endm
 ; ---------------------------------------------------------------------------
 
@@ -311,14 +317,6 @@ _ar4 =			\op4
 	endm
 ; ---------------------------------------------------------------------------
 
-sDecay1Level		macro	op1, op2, op3, op4
-_d1l1 =			\op1
-_d1l2 =			\op2
-_d1l3 =			\op3
-_d1l4 =			\op4
-	endm
-; ---------------------------------------------------------------------------
-
 sAmpMod			macro	op1, op2, op3, op4
 _am1 =			\op1
 _am2 =			\op2
@@ -332,6 +330,14 @@ _d1r1 =			\op1
 _d1r2 =			\op2
 _d1r3 =			\op3
 _d1r4 =			\op4
+	endm
+; ---------------------------------------------------------------------------
+
+sDecay1Level		macro	op1, op2, op3, op4
+_d1l1 =			\op1
+_d1l2 =			\op2
+_d1l3 =			\op3
+_d1l4 =			\op4
 	endm
 ; ---------------------------------------------------------------------------
 

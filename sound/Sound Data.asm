@@ -25,23 +25,27 @@ Go_Envelopes:		dc.l Envelopes
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
-; Envelope table
+; Envelope pointer list
 ; ---------------------------------------------------------------------------
 
-Envelopes:
-		dc.l ve1, ve2, ve3, ve4
-		dc.l ve5, ve6, ve7, ve8
-		dc.l ve9
+GenSfxTable	macro	name
+		dc.l envdata_\name			; create a pointer for every envelope
+		endm
 
-ve1:		incbin	"sound/psg/psg1.bin"
-ve2:		incbin	"sound/psg/psg2.bin"
-ve3:		incbin	"sound/psg/psg3.bin"
-ve4:		incbin	"sound/psg/psg4.bin"
-ve6:		incbin	"sound/psg/psg6.bin"
-ve5:		incbin	"sound/psg/psg5.bin"
-ve7:		incbin	"sound/psg/psg7.bin"
-ve8:		incbin	"sound/psg/psg8.bin"
-ve9:		incbin	"sound/psg/psg9.bin"
+Envelopes:
+		VolumeEnv	GenSfxTable		; generate pointers for all the envelopes
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Envelope includes
+; ---------------------------------------------------------------------------
+
+IncludeEnv	macro	name
+envdata_\name	incbin "sound/envelopes/\name\.dat"	; include the envelope file itself
+		even					; next file must be aligned to word
+		endm
+
+		VolumeEnv	IncludeEnv		; generate includes for all the files
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
@@ -128,6 +132,11 @@ Kos_DacDriver:		; TODO: this is currently hardcoded to replace the dummy pointer
 ; ---------------------------------------------------------------------------
 ; music file includes
 ; ---------------------------------------------------------------------------
+
+_song =		0					; misc variable
+	opt m+
+	;	include "sound/test.s"
+	opt m-
 
 IncludeMusic	macro	name
 musfile_\name	incbin "sound/music/\name\.dat"		; include the music file itself
