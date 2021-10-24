@@ -43,6 +43,25 @@ TrackSz:		rs.w 0				; the size of a single track
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
+; channel types
+; ---------------------------------------------------------------------------
+
+tFM1			equ 0				; FM1 channel type
+tFM2			equ 1				; FM2 channel type
+tFM3			equ 2				; FM3 channel type
+tFM4			equ 4				; FM4 channel type
+tFM5			equ 5				; FM5 channel type
+tFM6			equ 6				; FM6 channel type
+
+tDAC			equ 0				; DAC channel type
+
+tPSG1			equ $80				; PSG1 channel type
+tPSG2			equ $A0				; PSG2 channel type
+tPSG3			equ $C0				; PSG3 channel type
+tPSG4			equ $E0				; PSG4 channel type
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
 ; constants for track variables
 ; ---------------------------------------------------------------------------
 
@@ -118,53 +137,73 @@ v_1up_ram_copy:		rs.b v_music_track_ram_end-v_startofvariables
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
-; constants for sound IDs
+; Define track commands
+;
+; By default, range from $E0 to $FF, and $FF can have special flags.
+; The first entries have lower ID.
+; Constants for IDs are: com_(name)
+; This special macro is used to generate constants and jump tables
+;
+; line format: \func	name, alt1, alt2 [...]
 ; ---------------------------------------------------------------------------
 
-; Background music
-		rsset $80				; ID of the first music file
-com_Null	rs.b 1					; empty sound
-_firstMusic	rs.b 0					; constant for the first music
+TrackCommand	macro	func
+		\func	Pan				; Pan FM channel (left/right/centre)
+		\func	Detune				; Detune a channel (change frequency)
+		\func	Timing				; External song timing
+		\func	Ret				; Subroutine return
+		\func	RestoreSong			; Restore previous song
+		\func	ChannelTick			; Set tick multiplier for channel
+		\func	VolAddFM			; FM volume add
+		\func	Tie, Hold			; Do not key off. Can be used to tie two notes together (extend delay, run commands, set new note, etc)
+		\func	Gate				; Set note gate timer (frames)
+		\func	TransAdd			; Transposition add
+		\func	TempoSet			; Set tempo (affected by tick multiplier!)
+		\func	SongTick			; Set tick multiplier for song
+		\func	VolAddPSG			; PSG volume add
+		\func	ClearPush			; Clear special push sound effect flag
+		\func	EndBack				; End background sound effect channel
+		\func	Voice				; Load FM voice
+		\func	Vib				; Set automatic vibrate
+		\func	VibOn				; Enable automatic vibrate (without parameter set)
+		\func	End				; End a song channel
+		\func	NoiseSet			; Set PSG4 noise mode
+		\func	VibOff				; Disable automatic vibrate (parameters preserved)
+		\func	Env				; Set volume envelope (PSG only)
+		\func	Jump				; Jump to song routine
+		\func	Loop				; Loop song data
+		\func	Call				; Call song subroutine
+		\func	Release34			; Hacky command to immediately release ops 3 and 4. Used in SYZ music only
+	endm
 
-GenMusicConst	macro	name
-mus_\name	rs.b 1					; use the next ID for music
-		endm
+TrackExCommand	macro	func
+	; Sonic 1 has no extended commands
+	endm
 
-		MusicFiles	GenMusicConst		; generate constants for each music file
-_lastMusic	equ __rs-1				; constant for the last music
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; constants for tracker commands
 ; ---------------------------------------------------------------------------
 
-; Sound effects
-		rsset $A0				; ID of the first sfx file
-_firstSfx	rs.b 0					; constant for the first sfx
+GenComConst	macro	const
+	rept narg-1
+com_\const	rs.b 0					; generate alt constants
+		shift
+	endr
 
-GenSfxConst	macro	name
-sfx_\name	rs.b 1					; use the next ID for sfx
-		endm
-
-		SfxFiles	GenSfxConst		; generate constants for each sfx file
-_lastSfx	equ __rs-1				; constant for the last sfx
-
+com_\const	rs.b 1					; generate the main constant
+	endm
 ; ---------------------------------------------------------------------------
 
-; Special sound effects
-		rsset $D0				; ID of the first special sfx file
-_firstSpecSfx	rs.b 0					; constant for the first special sfx
+		rsset	_lastNote+1			; commands come after the last note
+_firstCom	rs.b 0					; the first valid command
+		TrackCommand	GenComConst		; generate constants for all main commands
+_lastCom	equ __rs-1				; the last valid command
 
-		SpecSfxFiles	GenSfxConst		; generate constants for each special sfx file
-_lastSpecSfx	equ __rs-1				; constant for the last special sfx
-; ---------------------------------------------------------------------------
-
-; Sound commands
-		rsset $E0				; ID of the first command
-_firstCmd	rs.b 0					; constant for the first command
-
-GenCmdConst	macro	name
-cmd_\name	rs.b 1					; use the next ID for command
-		endm
-
-		DriverCmdFiles	GenCmdConst		; generate constants for each command
-_lastCmd	equ __rs-1				; constant for the last command
+		rsset	__rs<<8				; assume the last command is the extended command (in Sonic 1, there is no extended commands!)
+_firstExCom	equ __rs&$FF				; the first valid extended command
+		TrackExCommand	GenComConst		; generate constants for all extended commands
+_lastExCom	equ (__rs-1)&$FF			; the last valid extended command
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
@@ -330,73 +369,54 @@ _lastNote	equ __rs-1				; the last note
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
-; Define track commands
-;
-; By default, range from $E0 to $FF, and $FF can have special flags.
-; The first entries have lower ID.
-; Constants for IDs are: com_(name)
-; This special macro is used to generate constants and jump tables
-;
-; line format: \func	name, alt1, alt2 [...]
+; constants for sound IDs
 ; ---------------------------------------------------------------------------
 
-TrackCommand	macro	func
-		\func	Pan				; Pan FM channel (left/right/centre)
-		\func	Detune				; Detune a channel (change frequency)
-		\func	Timing				; External song timing
-		\func	Ret				; Subroutine return
-		\func	RestoreSong			; Restore previous song
-		\func	ChannelTick			; Set tick multiplier for channel
-		\func	VolAddFM			; FM volume add
-		\func	Tie, Hold			; Do not key off. Can be used to tie two notes together (extend delay, run commands, set new note, etc)
-		\func	Gate				; Set note gate timer (frames)
-		\func	TransAdd			; Transposition add
-		\func	TempoSet			; Set tempo (affected by tick multiplier!)
-		\func	SongTick			; Set tick multiplier for song
-		\func	VolAddPSG			; PSG volume add
-		\func	ClearPush			; Clear special push sound effect flag
-		\func	EndSpec				; End special sound effect channel
-		\func	Voice				; Load FM voice
-		\func	Vib				; Set automatic vibrate
-		\func	VibOn				; Enable automatic vibrate (without parameter set)
-		\func	End				; End a song channel
-		\func	NoiseSet			; Set PSG4 noise mode
-		\func	VibOff				; Disable automatic vibrate (parameters preserved)
-		\func	Env				; Set volume envelope (PSG only)
-		\func	Jump				; Jump to song routine
-		\func	Loop				; Loop song data
-		\func	Call				; Call song subroutine
-		\func	Release34			; Hacky command to immediately release ops 3 and 4. Used in SYZ music only
-	endm
+; Background music
+		rsset $80				; ID of the first music file
+com_Null	rs.b 1					; empty sound
+_firstMusic	rs.b 0					; constant for the first music
 
-TrackExCommand	macro	func
-	; Sonic 1 has no extended commands
-	endm
+GenMusicConst	macro	name
+mus_\name	rs.b 1					; use the next ID for music
+		endm
 
-; ===========================================================================
-; ---------------------------------------------------------------------------
-; constants for tracker commands
+		MusicFiles	GenMusicConst		; generate constants for each music file
+_lastMusic	equ __rs-1				; constant for the last music
 ; ---------------------------------------------------------------------------
 
-GenComConst	macro	const
-	rept narg-1
-com_\const	rs.b 0					; generate alt constants
-		shift
-	endr
+; Sound effects
+		rsset $A0				; ID of the first sfx file
+_firstSfx	rs.b 0					; constant for the first sfx
 
-com_\const	rs.b 1					; generate the main constant
-	endm
+GenSfxConst	macro	name
+sfx_\name	rs.b 1					; use the next ID for sfx
+		endm
+
+		SfxFiles	GenSfxConst		; generate constants for each sfx file
+_lastSfx	equ __rs-1				; constant for the last sfx
+
 ; ---------------------------------------------------------------------------
 
-		rsset	_lastNote+1			; commands come after the last note
-_firstCom	rs.b 0					; the first valid command
-		TrackCommand	GenComConst		; generate constants for all main commands
-_lastCom	equ __rs-1				; the last valid command
+; Special sound effects
+		rsset $D0				; ID of the first special sfx file
+_firstSpecSfx	rs.b 0					; constant for the first special sfx
 
-		rsset	__rs<<8				; assume the last command is the extended command (in Sonic 1, there is no extended commands!)
-_firstExCom	equ __rs&$FF				; the first valid extended command
-		TrackExCommand	GenComConst		; generate constants for all extended commands
-_lastExCom	equ (__rs-1)&$FF			; the last valid extended command
+		SpecSfxFiles	GenSfxConst		; generate constants for each special sfx file
+_lastSpecSfx	equ __rs-1				; constant for the last special sfx
+; ---------------------------------------------------------------------------
+
+; Sound commands
+		rsset $E0				; ID of the first command
+_firstCmd	rs.b 0					; constant for the first command
+
+GenCmdConst	macro	name
+cmd_\name	rs.b 1					; use the next ID for command
+		endm
+
+		DriverCmdFiles	GenCmdConst		; generate constants for each command
+_lastCmd	equ __rs-1				; constant for the last command
+
 ; ---------------------------------------------------------------------------
 
 		popo					; restore options
