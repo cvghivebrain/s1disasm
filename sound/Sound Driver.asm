@@ -676,7 +676,7 @@ Sound_PlayBGM:
 		move.b	2(a3),d7		; load number of FM+DAC tracks
 		beq.w	@bgm_fmdone		; branch if zero
 		subq.b	#1,d7
-		move.b	#$C0,d1			; Default AMS+FMS+Panning
+		move.b	#sPanCenter,d1		; Default AMS+FMS+Panning
 		move.b	4(a3),d4		; load tempo dividing timing
 		moveq	#TrackSz,d6
 		move.b	#1,d5			; Note duration for first "note"
@@ -723,7 +723,7 @@ Sound_PlayBGM:
 		moveq	#$7F,d1		; Total silence
 		jsr	WriteFMII(pc)
 		move.b	#$B6,d0		; AMS/FMS/panning of FM6
-		move.b	#$C0,d1		; Stereo
+		move.b	#sPanCenter,d1	; pan to center
 		jsr	WriteFMII(pc)
 ; loc_72114:
 @bgm_fmdone:
@@ -746,7 +746,7 @@ Sound_PlayBGM:
 		move.l	d0,TrackDataPointer(a1)	; Store track pointer
 		move.w	(a4)+,TrackTranspose(a1)	; load PSG modifier
 		move.b	(a4)+,d0			; load redundant byte
-		move.b	(a4)+,TrackVoiceIndex(a1)	; Initial PSG tone
+		move.b	(a4)+,TrackVoiceIndex(a1)	; Initial PSG envelope
 		adda.w	d6,a1
 		dbf	d7,@bgm_psgloadloop
 ; loc_72154:
@@ -806,10 +806,12 @@ Sound_PlayBGM:
 		rts
 ; ===========================================================================
 ; byte_721BA:
-FMDACInitBytes:	dc.b 6,	0, 1, 2, 4, 5, 6	; first byte is for DAC; then notice the 0, 1, 2 then 4, 5, 6; this is the gap between parts I and II for YM2612 port writes
+FMDACInitBytes:	dc.b tDAC
+		dc.b tFM1, tFM2, tFM3			; port 1
+		dc.b tFM4, tFM5, tFM6			; port 2
 		even
 ; byte_721C2:
-PSGInitBytes:	dc.b $80, $A0, $C0	; Specifically, these configure writes to the PSG port for each channel
+PSGInitBytes:	dc.b tPSG1, tPSG2, tPSG3		; Specifically, these configure writes to the PSG port for each channel
 		even
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
@@ -874,7 +876,7 @@ Sound_PlaySFX:
 		lea	SFX_BGMChannelRAM(pc),a5
 		movea.l	(a5,d3.w),a5
 		bset	#2,(a5)			; Mark music track as being overridden (TrackPlaybackControl)
-		cmpi.b	#$C0,d4			; Is this PSG 3?
+		cmpi.b	#tPSG3,d4		; Is this PSG 3?
 		bne.s	@sfxoverridedone	; Branch if not
 		move.b	d4,d0
 		ori.b	#$1F,d0			; Command to silence PSG 3
@@ -896,13 +898,13 @@ Sound_PlaySFX:
 		moveq	#0,d0
 		move.w	(a1)+,d0			; Track data pointer
 		add.l	a3,d0				; Relative pointer
-		move.l	d0,TrackDataPointer(a5)	; Store track pointer
+		move.l	d0,TrackDataPointer(a5)		; Store track pointer
 		move.w	(a1)+,TrackTranspose(a5)	; load FM/PSG channel modifier
 		move.b	#1,TrackDurationTimeout(a5)	; Set duration of first "note"
 		move.b	d6,TrackStackPointer(a5)	; set "gosub" (coord flag F8h) stack init value
 		tst.b	d4				; Is this a PSG channel?
 		bmi.s	@sfxpsginitdone			; Branch if yes
-		move.b	#$C0,TrackAMSFMSPan(a5)	; AMS/FMS/Panning
+		move.b	#sPanCenter,TrackAMSFMSPan(a5)	; AMS/FMS/Panning
 		move.l	d1,TrackVoicePtr(a5)		; Voice pointer
 ; loc_722A8:
 @sfxpsginitdone:
@@ -1001,13 +1003,13 @@ Sound_PlaySpecial:
 		moveq	#0,d0
 		move.w	(a1)+,d0			; Track data pointer
 		add.l	a3,d0				; Relative pointer
-		move.l	d0,TrackDataPointer(a5)	; Store track pointer
+		move.l	d0,TrackDataPointer(a5)		; Store track pointer
 		move.w	(a1)+,TrackTranspose(a5)	; load FM/PSG channel modifier
 		move.b	#1,TrackDurationTimeout(a5)	; Set duration of first "note"
 		move.b	d6,TrackStackPointer(a5)	; set "gosub" (coord flag F8h) stack init value
 		tst.b	d4				; Is this a PSG channel?
 		bmi.s	@sfxpsginitdone			; Branch if yes
-		move.b	#$C0,TrackAMSFMSPan(a5)	; AMS/FMS/Panning
+		move.b	#sPanCenter,TrackAMSFMSPan(a5)	; AMS/FMS/Panning
 ; loc_72396:
 @sfxpsginitdone:
 		dbf	d7,@sfxloadloop
@@ -1104,9 +1106,9 @@ StopSFX:
 @trackpsg:
 		jsr	PSGNoteOff(pc)
 		lea	v_spcsfx_psg3_track(a6),a0
-		cmpi.b	#$E0,d3			; Is this a noise channel:
+		cmpi.b	#tPSG4,d3		; Is this a noise channel:
 		beq.s	@gotpsgpointer		; Branch if yes
-		cmpi.b	#$C0,d3			; Is this PSG 3?
+		cmpi.b	#tPSG3,d3		; Is this PSG 3?
 		beq.s	@gotpsgpointer		; Branch if yes
 		lsr.b	#3,d3
 		lea	SFX_BGMChannelRAM(pc),a0
@@ -1115,7 +1117,7 @@ StopSFX:
 @gotpsgpointer:
 		bclr	#2,(a0)				; Clear 'SFX is overriding' bit (TrackPlaybackControl)
 		bset	#1,(a0)				; Set 'track at rest' bit (TrackPlaybackControl)
-		cmpi.b	#$E0,TrackVoiceControl(a0)	; Is this a noise channel?
+		cmpi.b	#tPSG4,TrackVoiceControl(a0)	; Is this a noise channel?
 		bne.s	@nexttrack			; Branch if not
 		move.b	TrackPSGNoise(a0),(psg_input).l ; Set noise type
 ; loc_72472:
@@ -1160,7 +1162,7 @@ StopSpecialSFX:
 		bset	#1,(a5)			; Set 'track at rest' bit (TrackPlaybackControl)
 		tst.b	(a5)			; Is track playing? (TrackPlaybackControl)
 		bpl.s	@fadedpsg		; Return if not
-		cmpi.b	#$E0,TrackVoiceControl(a5)	; Is this a noise channel?
+		cmpi.b	#tPSG4,TrackVoiceControl(a5)	; Is this a noise channel?
 		bne.s	@fadedpsg			; Return if not
 		move.b	TrackPSGNoise(a5),(psg_input).l ; Set noise type
 ; locret_724E4:
@@ -1293,7 +1295,7 @@ SoundCmd_Stop:
 		clr.l	(a0)+
 		dbf	d0,@clearramloop
 
-		move.b	#$80,v_sound_id(a6)	; set music to $80 (silence)
+		move.b	#com_Null,v_sound_id(a6)	; set music to $80 (silence)
 		jsr	FMSilenceAll(pc)
 		bra.w	PSGSilenceAll
 
@@ -1684,14 +1686,14 @@ PSGUpdateFreq:
 		btst	#1,(a5)		; Is track at rest? (TrackPlaybackControl)
 		bne.s	@locret		; Return if yes
 		move.b	TrackVoiceControl(a5),d0 ; Get channel bits
-		cmpi.b	#$E0,d0		; Is it a noise channel?
+		cmpi.b	#tPSG4,d0	; Is it a noise channel?
 		bne.s	@notnoise	; Branch if not
-		move.b	#$C0,d0		; Use PSG 3 channel bits
+		move.b	#tPSG3,d0	; Use PSG 3 channel bits
 ; loc_72904:
 @notnoise:
 		move.w	d6,d1
 		andi.b	#$F,d1		; Low nibble of frequency
-		or.b	d1,d0		; Latch tone data to channel
+		or.b	d1,d0		; Latch frequency data to channel
 		lsr.w	#4,d6		; Get upper 6 bits of frequency
 		andi.b	#$3F,d6		; Send to latched channel
 		move.b	d0,(psg_input).l
@@ -1711,25 +1713,25 @@ PSGSetRest:
 
 ; sub_72926:
 PSGUpdateVolFX:
-		tst.b	TrackVoiceIndex(a5)	; Test PSG tone
+		tst.b	TrackVoiceIndex(a5)	; Test envelope
 		beq.w	locret_7298A		; Return if it is zero
 ; loc_7292E:
 PSGDoVolFX:	; This can actually be made a bit more efficient, see the comments for more
 		move.b	TrackVolume(a5),d6	; Get volume
 		moveq	#0,d0
-		move.b	TrackVoiceIndex(a5),d0	; Get PSG tone
+		move.b	TrackVoiceIndex(a5),d0	; Get envelope
 		beq.s	SetPSGVolume
 		movea.l	(Go_Envelopes).l,a0
 		subq.w	#1,d0
 		lsl.w	#2,d0
 		movea.l	(a0,d0.w),a0
-		move.b	TrackVolEnvIndex(a5),d0	; Get volume envelope index		; move.b	TrackVolEnvIndex(a5),d0
-		move.b	(a0,d0.w),d0			; Volume envelope value			; addq.b	#1,TrackVolEnvIndex(a5)
-		addq.b	#1,TrackVolEnvIndex(a5)	; Increment volume envelope index	; move.b	(a0,d0.w),d0
-		btst	#7,d0				; Is volume envelope value negative?	; <-- makes this line redundant
-		beq.s	@gotflutter			; Branch if not				; but you gotta make this one a bpl
-		cmpi.b	#$80,d0				; Is it the terminator?			; Since this is the only check, you can take the optimisation a step further:
-		beq.s	VolEnvHold			; If so, branch				; Change the previous beq (bpl) to a bmi and make it branch to VolEnvHold to make these last two lines redundant
+		move.b	TrackVolEnvIndex(a5),d0		; Get volume envelope index
+		move.b	(a0,d0.w),d0			; Volume envelope value
+		addq.b	#1,TrackVolEnvIndex(a5)		; Increment volume envelope index
+		btst	#7,d0				; Is volume envelope value negative?	; note, this line and the line below are redundant
+		beq.s	@gotflutter			; Branch if not				; especially because Sonic 1 only checks for 1 command
+		cmpi.b	#evc_Hold,d0			; Is it the terminator?
+		beq.s	VolEnvCmd_Hold			; If so, branch
 ; loc_72960:
 @gotflutter:
 		add.w	d0,d6		; Add volume envelope value to volume
@@ -1769,7 +1771,7 @@ PSGCheckNoteTimeout:
 
 ; ===========================================================================
 ; loc_7299A: FlutterDone:
-VolEnvHold:
+VolEnvCmd_Hold:
 		subq.b	#1,TrackVolEnvIndex(a5)	; Decrement volume envelope index
 		rts
 
@@ -1788,9 +1790,9 @@ SendPSGNoteOff:
 		; risk of music accidentally playing noise because it can't detect if
 		; the PSG4/noise channel needs muting on track initialisation.
 		; S&K's driver fixes it by doing this:
-		;cmpi.b	#$DF,d0				; Are stopping PSG3?
+		;cmpi.b	#tPSG3 | $1F,d0				; Are stopping PSG3?
 		;bne.s	locret_729B4
-		;move.b	#$FF,(psg_input).l		; If so, stop noise channel while we're at it
+		;move.b	#tPSG4 | $1F,(psg_input).l		; If so, stop noise channel while we're at it
 
 locret_729B4:
 		rts
@@ -1802,10 +1804,10 @@ locret_729B4:
 ; sub_729B6:
 PSGSilenceAll:
 		lea	(psg_input).l,a0
-		move.b	#$9F,(a0)	; Silence PSG 1
-		move.b	#$BF,(a0)	; Silence PSG 2
-		move.b	#$DF,(a0)	; Silence PSG 3
-		move.b	#$FF,(a0)	; Silence noise channel
+		move.b	#tPSG1 | $1F,(a0)	; Silence PSG 1
+		move.b	#tPSG2 | $1F,(a0)	; Silence PSG 2
+		move.b	#tPSG3 | $1F,(a0)	; Silence PSG 3
+		move.b	#tPSG4 | $1F,(a0)	; Silence noise channel
 		rts
 ; End of function PSGSilenceAll
 
@@ -1857,7 +1859,7 @@ locret_72AEA:
 		rts
 ; ===========================================================================
 ; loc_72AEC: cfAlterNotes:
-SongCom_Detune:
+SongCom_DetuneSet:
 		move.b	(a4)+,TrackDetune(a5)	; Set detune value
 		rts
 ; ===========================================================================
@@ -1991,7 +1993,7 @@ SongCom_ClearPush:
 		rts
 ; ===========================================================================
 ; loc_72BF4:
-SongCom_EndSpec:
+SongCom_EndBack:
 		bclr	#7,(a5)		; Stop track (TrackPlaybackControl)
 		bclr	#4,(a5)		; Clear 'do not attack next note' bit (TrackPlaybackControl)
 		jsr	FMNoteOff(pc)
@@ -2239,9 +2241,9 @@ SongCom_End:
 		lea	v_spcsfx_psg3_track(a6),a0
 		tst.b	(a0)		; Is track playing? (TrackPlaybackControl)
 		bpl.s	@getchannelptr	; Branch if not
-		cmpi.b	#$E0,d0		; Is it the noise channel?
+		cmpi.b	#tPSG4,d0	; Is it the noise channel?
 		beq.s	@gotchannelptr	; Branch if yes
-		cmpi.b	#$C0,d0		; Is it PSG 3?
+		cmpi.b	#tPSG3,d0	; Is it PSG 3?
 		beq.s	@gotchannelptr	; Branch if yes
 ; loc_72DE0:
 @getchannelptr:
@@ -2252,9 +2254,9 @@ SongCom_End:
 @gotchannelptr:
 		bclr	#2,(a0)				; Clear 'SFX overriding' bit (TrackPlaybackControl)
 		bset	#1,(a0)				; Set 'track at rest' bit (TrackPlaybackControl)
-		cmpi.b	#$E0,TrackVoiceControl(a0)	; Is this a noise pointer?
+		cmpi.b	#tPSG4,TrackVoiceControl(a0)	; Is this a noise pointer?
 		bne.s	@locexit			; Branch if not
-		move.b	TrackPSGNoise(a0),(psg_input).l ; Set noise tone
+		move.b	TrackPSGNoise(a0),(psg_input).l ; Set noise mode
 ; loc_72E02:
 @locexit:
 		addq.w	#8,sp		; Tamper with return value so we don't go back to caller
@@ -2262,11 +2264,11 @@ SongCom_End:
 ; ===========================================================================
 ; loc_72E06:
 SongCom_NoiseSet:
-		move.b	#$E0,TrackVoiceControl(a5)	; Turn channel into noise channel
-		move.b	(a4)+,TrackPSGNoise(a5)	; Save noise tone
+		move.b	#tPSG4,TrackVoiceControl(a5)	; Turn channel into noise channel
+		move.b	(a4)+,TrackPSGNoise(a5)		; Save noise mode
 		btst	#2,(a5)				; Is track being overridden? (TrackPlaybackControl)
 		bne.s	@locret				; Return if yes
-		move.b	-1(a4),(psg_input).l		; Set tone
+		move.b	-1(a4),(psg_input).l		; Set mode
 ; locret_72E1E:
 @locret:
 		rts
@@ -2278,7 +2280,7 @@ SongCom_VibOff:
 ; ===========================================================================
 ; loc_72E26:
 SongCom_Env:
-		move.b	(a4)+,TrackVoiceIndex(a5)	; Set current PSG tone
+		move.b	(a4)+,TrackVoiceIndex(a5)	; Set current envelope
 		rts
 ; ===========================================================================
 ; loc_72E2C:

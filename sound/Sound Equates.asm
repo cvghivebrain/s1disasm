@@ -43,6 +43,25 @@ TrackSz:		rs.w 0				; the size of a single track
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
+; channel types
+; ---------------------------------------------------------------------------
+
+tFM1			equ 0				; FM1 channel type
+tFM2			equ 1				; FM2 channel type
+tFM3			equ 2				; FM3 channel type
+tFM4			equ 4				; FM4 channel type
+tFM5			equ 5				; FM5 channel type
+tFM6			equ 6				; FM6 channel type
+
+tDAC			equ 6				; DAC channel type
+
+tPSG1			equ $80				; PSG1 channel type
+tPSG2			equ $A0				; PSG2 channel type
+tPSG3			equ $C0				; PSG3 channel type
+tPSG4			equ $E0				; PSG4 channel type
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
 ; constants for track variables
 ; ---------------------------------------------------------------------------
 
@@ -115,56 +134,6 @@ v_spcsfx_psg3_track:	rs.b TrackSz
 v_spcsfx_track_ram_end:	rs.w 0
 
 v_1up_ram_copy:		rs.b v_music_track_ram_end-v_startofvariables
-
-; ===========================================================================
-; ---------------------------------------------------------------------------
-; constants for sound IDs
-; ---------------------------------------------------------------------------
-
-; Background music
-		rsset $80				; ID of the first music file
-com_Null	rs.b 1					; empty sound
-_firstMusic	rs.b 0					; constant for the first music
-
-GenMusicConst	macro	name
-mus_\name	rs.b 1					; use the next ID for music
-		endm
-
-		MusicFiles	GenMusicConst		; generate constants for each music file
-_lastMusic	equ __rs-1				; constant for the last music
-; ---------------------------------------------------------------------------
-
-; Sound effects
-		rsset $A0				; ID of the first sfx file
-_firstSfx	rs.b 0					; constant for the first sfx
-
-GenSfxConst	macro	name
-sfx_\name	rs.b 1					; use the next ID for sfx
-		endm
-
-		SfxFiles	GenSfxConst		; generate constants for each sfx file
-_lastSfx	equ __rs-1				; constant for the last sfx
-
-; ---------------------------------------------------------------------------
-
-; Special sound effects
-		rsset $D0				; ID of the first special sfx file
-_firstSpecSfx	rs.b 0					; constant for the first special sfx
-
-		SpecSfxFiles	GenSfxConst		; generate constants for each special sfx file
-_lastSpecSfx	equ __rs-1				; constant for the last special sfx
-; ---------------------------------------------------------------------------
-
-; Sound commands
-		rsset $E0				; ID of the first command
-_firstCmd	rs.b 0					; constant for the first command
-
-GenCmdConst	macro	name
-cmd_\name	rs.b 1					; use the next ID for command
-		endm
-
-		DriverCmdFiles	GenCmdConst		; generate constants for each command
-_lastCmd	equ __rs-1				; constant for the last command
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
@@ -330,6 +299,52 @@ _lastNote	equ __rs-1				; the last note
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
+; Define samples
+;
+; By default, range from $81 to $8F
+; The first entries have lower ID.
+; Constants for IDs are: d(name)
+; This special macro is used to generate constants and jump tables
+;
+; line format: \func	name, alt1, alt2 [...]
+; ---------------------------------------------------------------------------
+
+DefineSamples	macro	func
+		\func	Kick				; Kick sample
+		\func	Snare				; Snare sample
+		\func	Timpani				; Timpani sample (DO NOT USE)
+		\func	Null84				; this sample is not defined
+		\func	Null85				; this sample is not defined
+		\func	Null86				; this sample is not defined
+		\func	Null87				; this sample is not defined
+		\func	TimpaniHi			; Timpani high pitch
+		\func	TimpaniMid			; Timpani middle pitch
+		\func	TimpaniLow			; Timpani low pitch
+		\func	TimpaniFloor			; Timpani very low pitch
+	endm
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; constants for envelopes
+; ---------------------------------------------------------------------------
+
+GenSampleConst	macro	const
+	rept narg-1
+d\const		rs.b 0					; generate alt constants
+		shift
+	endr
+
+d\const		rs.b 1					; generate the main constant
+	endm
+; ---------------------------------------------------------------------------
+
+		rsset	nR				; samples start at $81
+_firstSample	rs.b 0					; the first valid sample
+		DefineSamples	GenSampleConst		; generate constants for samples
+_lastSample	equ __rs-1				; the last valid sample
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
 ; Define track commands
 ;
 ; By default, range from $E0 to $FF, and $FF can have special flags.
@@ -342,7 +357,7 @@ _lastNote	equ __rs-1				; the last note
 
 TrackCommand	macro	func
 		\func	Pan				; Pan FM channel (left/right/centre)
-		\func	Detune				; Detune a channel (change frequency)
+		\func	DetuneSet			; Detune a channel (change frequency)
 		\func	Timing				; External song timing
 		\func	Ret				; Subroutine return
 		\func	RestoreSong			; Restore previous song
@@ -355,7 +370,7 @@ TrackCommand	macro	func
 		\func	SongTick			; Set tick multiplier for song
 		\func	VolAddPSG			; PSG volume add
 		\func	ClearPush			; Clear special push sound effect flag
-		\func	EndSpec				; End special sound effect channel
+		\func	EndBack				; End background sound effect channel
 		\func	Voice				; Load FM voice
 		\func	Vib				; Set automatic vibrate
 		\func	VibOn				; Enable automatic vibrate (without parameter set)
@@ -397,6 +412,138 @@ _lastCom	equ __rs-1				; the last valid command
 _firstExCom	equ __rs&$FF				; the first valid extended command
 		TrackExCommand	GenComConst		; generate constants for all extended commands
 _lastExCom	equ (__rs-1)&$FF			; the last valid extended command
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Define envelopes
+;
+; By default, range from $01 to $FF
+; The first entries have lower ID.
+; Constants for IDs are: v(name)
+; This special macro is used to generate constants and jump tables
+;
+; line format: \func	name, alt1, alt2 [...]
+; ---------------------------------------------------------------------------
+
+VolumeEnv	macro	func
+		\func	01				; TODO: name
+		\func	02				; TODO: name
+		\func	03				; TODO: name
+		\func	04				; TODO: name
+		\func	05				; TODO: name
+		\func	06				; TODO: name
+		\func	07				; TODO: name
+		\func	08				; TODO: name
+		\func	09				; TODO: name
+	endm
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; constants for envelopes
+; ---------------------------------------------------------------------------
+
+GenEnvConst	macro	const
+	rept narg-1
+v\const		rs.b 0					; generate alt constants
+		shift
+	endr
+
+v\const		rs.b 1					; generate the main constant
+	endm
+; ---------------------------------------------------------------------------
+
+		rsset	0				; envelopes start at 1
+vNone		rs.b 1					; null envelope
+_firstVolEnv	rs.b 0					; the first valid envelope
+		VolumeEnv	GenEnvConst		; generate constants for envelopes
+_lastVolEnv	equ __rs-1				; the last valid envelope
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Define envelope commands
+;
+; By default, starts at $80
+; The first entries have lower ID.
+; Constants for IDs are: evc_(name)
+; This special macro is used to generate constants and jump tables
+;
+; line format: \func	name, alt1, alt2 [...]
+; ---------------------------------------------------------------------------
+
+EnvelopeCmd	macro	func
+		\func	Hold				; hold envelope at the last byte
+	endm
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; constants for envelope commands
+; ---------------------------------------------------------------------------
+
+GenEnvCmdConst	macro	const
+	rept narg-1
+evc_\const	rs.b 0					; generate alt constants
+		shift
+	endr
+
+evc_\const	rs.b 1					; generate the main constant
+	endm
+; ---------------------------------------------------------------------------
+
+		rsset	$80				; envelope commands start at $80
+_firstEnvCmd	rs.b 0					; the first valid envelope command
+		EnvelopeCmd	GenEnvCmdConst		; generate constants for envelope commands
+_lastEnvCmd	equ __rs-1				; the last valid envelope command
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; constants for sound IDs
+; ---------------------------------------------------------------------------
+
+; Background music
+		rsset $80				; ID of the first music file
+com_Null	rs.b 1					; empty sound
+_firstMusic	rs.b 0					; constant for the first music
+
+GenMusicConst	macro	name
+mus_\name	rs.b 1					; use the next ID for music
+		endm
+
+		MusicFiles	GenMusicConst		; generate constants for each music file
+_lastMusic	equ __rs-1				; constant for the last music
+; ---------------------------------------------------------------------------
+
+; Sound effects
+		rsset $A0				; ID of the first sfx file
+_firstSfx	rs.b 0					; constant for the first sfx
+
+GenSfxConst	macro	name
+sfx_\name	rs.b 1					; use the next ID for sfx
+		endm
+
+		SfxFiles	GenSfxConst		; generate constants for each sfx file
+_lastSfx	equ __rs-1				; constant for the last sfx
+
+; ---------------------------------------------------------------------------
+
+; Special sound effects
+		rsset $D0				; ID of the first special sfx file
+_firstSpecSfx	rs.b 0					; constant for the first special sfx
+
+		SpecSfxFiles	GenSfxConst		; generate constants for each special sfx file
+_lastSpecSfx	equ __rs-1				; constant for the last special sfx
+; ---------------------------------------------------------------------------
+
+; Sound commands
+		rsset $E0				; ID of the first command
+_firstCmd	rs.b 0					; constant for the first command
+
+GenCmdConst	macro	name
+cmd_\name	rs.b 1					; use the next ID for command
+		endm
+
+		DriverCmdFiles	GenCmdConst		; generate constants for each command
+_lastCmd	equ __rs-1				; constant for the last command
+
 ; ---------------------------------------------------------------------------
 
 		popo					; restore options
