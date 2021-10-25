@@ -1730,7 +1730,7 @@ PSGDoVolFX:	; This can actually be made a bit more efficient, see the comments f
 		addq.b	#1,TrackVolEnvIndex(a5)		; Increment volume envelope index
 		btst	#7,d0				; Is volume envelope value negative?	; note, this line and the line below are redundant
 		beq.s	@gotflutter			; Branch if not				; especially because Sonic 1 only checks for 1 command
-		cmpi.b	#evc_Hold,d0			; Is it the terminator?
+		cmpi.b	#evcHold,d0			; Is it the terminator?
 		beq.s	VolEnvCmd_Hold			; If so, branch
 ; loc_72960:
 @gotflutter:

@@ -28,24 +28,77 @@ Go_Envelopes:		dc.l Envelopes
 ; Envelope pointer list
 ; ---------------------------------------------------------------------------
 
-GenSfxTable	macro	name
+GenEnvTable	macro	name
 		dc.l envdata_\name			; create a pointer for every envelope
 		endm
 
 Envelopes:
-		VolumeEnv	GenSfxTable		; generate pointers for all the envelopes
+		VolumeEnv	GenEnvTable		; generate pointers for all the envelopes
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Envelope includes
 ; ---------------------------------------------------------------------------
 
-IncludeEnv	macro	name
-envdata_\name	incbin "sound/envelopes/\name\.dat"	; include the envelope file itself
-		even					; next file must be aligned to word
-		endm
+envdata_01:
+		dcb.b $03, $00
+		dcb.b $03, $01
+		dcb.b $03, $02
+		dcb.b $03, $03
+		dcb.b $03, $04
+		dcb.b $03, $05
+		dcb.b $03, $06
+		dc.b $07, evcHold
 
-		VolumeEnv	IncludeEnv		; generate includes for all the files
+envdata_02:
+		dc.b $00, $02, $04, $06, $08, $10, evcHold
+
+envdata_03:
+		dc.b $00, $00, $01, $01, $02, $02, $03, $03
+		dc.b $04, $04, $05, $05, $06, $06, $07, $07
+		dc.b evcHold
+
+envdata_04:
+		dc.b $00, $00, $02, $03, $04, $04, $05, $05
+		dc.b $05, $06, evcHold
+
+envdata_06:
+		dc.b $03, $03, $03, $02, $02, $02, $02, $01
+		dc.b $01, $01, $00, $00, $00, $00, evcHold
+
+envdata_05:
+		dcb.b $0A, $00
+		dcb.b $0E, $01
+		dcb.b $08, $02
+		dcb.b $08, $03
+		dc.b $04, evcHold
+
+envdata_07:
+		dcb.b $06, $00
+		dcb.b $05, $01
+		dcb.b $05, $02
+		dcb.b $03, $03
+		dcb.b $03, $04
+		dcb.b $03, $05
+		dc.b $06, $07, evcHold
+
+envdata_08:
+		dcb.b $05, $00
+		dcb.b $05, $01
+		dcb.b $06, $02
+		dcb.b $05, $03
+		dcb.b $05, $04
+		dcb.b $05, $05
+		dcb.b $05, $06
+		dcb.b $03, $07
+		dc.b evcHold
+
+envdata_09:
+		dc.b $00, $01, $02, $03, $04, $05, $06, $07
+		dc.b $08, $09, $0A, $0B, $0C, $0D, $0E, $0F
+		dc.b evcHold
+
+		even					; align to word
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
@@ -134,9 +187,6 @@ Kos_DacDriver:		; TODO: this is currently hardcoded to replace the dummy pointer
 ; ---------------------------------------------------------------------------
 
 _song =		0					; misc variable
-	opt m+
-	;	include "sound/test.s"
-	opt m-
 
 IncludeMusic	macro	name
 musfile_\name	incbin "sound/music/\name\.dat"		; include the music file itself
