@@ -114,7 +114,7 @@ sVolAddPSG	macro value
 ; ---------------------------------------------------------------------------
 
 sClearPush	macro value
-		PutTrackCom	TempoSet		; add the command byte
+		PutTrackCom	ClearPush		; add the command byte
 	endm
 ; ---------------------------------------------------------------------------
 
@@ -174,20 +174,20 @@ sEnv		macro name
 
 sJump		macro loc
 		PutTrackCom	Jump			; add the command byte
-		dc.w \loc-*-2				; add the target
+		dc.w (\loc)-*-1				; add the target
 	endm
 ; ---------------------------------------------------------------------------
 
 sLoop		macro index, loops, loc
 		PutTrackCom	Loop			; add the command byte
 		dc.b \index, \loops			; add the arguments
-		dc.w \loc-*-2				; add the target
+		dc.w (\loc)-*-1				; add the target
 	endm
 ; ---------------------------------------------------------------------------
 
 sCall		macro loc
 		PutTrackCom	Call			; add the command byte
-		dc.w \loc-*-2				; add the target
+		dc.w (\loc)-*-1				; add the target
 	endm
 ; ---------------------------------------------------------------------------
 
@@ -201,6 +201,7 @@ sRelease34		macro
 ; ---------------------------------------------------------------------------
 
 sHeaderMusic		macro
+_song =			_song+1				; increment song offset
 _patchNum =		0				; initialize patch num
 _songAddr =		*				; song base address
 _songName		equs "\#_song"			; initialize song name
@@ -240,8 +241,14 @@ _p\_songName =		1 + _p\_songName		; increment channel count
 ; ---------------------------------------------------------------------------
 
 sHeaderFinish		macro
+	if def(_p\_songName)
 _px\_songName =		_p\_songName			; finished counting channels
 _fx\_songName =		1 + _f\_songName		; +1 for DAC
+	endif
+
+	if def(_c\_songName)
+_cx\_songName =		_c\_songName			; finished counting channels
+	endif
 	endm
 
 ; ===========================================================================
@@ -249,24 +256,25 @@ _fx\_songName =		1 + _f\_songName		; +1 for DAC
 ; Macros for sfx header
 ; ---------------------------------------------------------------------------
 
-sHeaderSfx		macro
+sHeaderSFX		macro
+_song =			_song+1				; increment song offset
 _patchNum =		0				; initialize patch num
 _songAddr =		*				; song base address
-_songName		equs "\_song"			; initialize song name
+_songName		equs "\#_song"			; initialize song name
 _c\_songName =		0				; initialize channel count
 	endm
 ; ---------------------------------------------------------------------------
 
-sHeaderTick		macro tick
-		dc.b \tick, _c\_songName		; initialize channel count and tick count
-	endm
-; ---------------------------------------------------------------------------
-
-sHeaderSFX		macro flags, type, addr, trans, volume
+sHeaderCH		macro flags, type, addr, trans, volume
 		dc.b \flags, \type			; initialize flags and type
 		dc.w \addr-_songAddr			; initialize FM address
 		dc.b \trans, \volume			; initialize transposition and volume
 _c\_songName =		1 + _c\_songName		; increment channel count
+	endm
+; ---------------------------------------------------------------------------
+
+sHeaderTick		macro tick
+		dc.b \tick, _cx\_songName		; initialize channel count and tick count
 	endm
 
 ; ===========================================================================
@@ -370,20 +378,23 @@ _tl4 =			\op4
 	endm
 ; ---------------------------------------------------------------------------
 
-sFinishVoice		macro	notl
-	if narg > 0 & \notl<>0
+; NOTE: It is customary to set the bit7 of all TL operators that are slot operators
+; the formula below calculates masks for all TL operators. TL should also be &$7F
+; This makes no difference in Sonic 1, however, and the values are very inconsistent
+; This is provided here for convenience.
+
+;   0     1     2     3     4     5     6     7
+; %1000,%1000,%1000,%1000,%1010,%1110,%1110,%1111
+;_tlb4 =			$80
+;_tlb3 =			((_algo >= 4) << 7)
+;_tlb2 =			((_algo >= 5) << 7)
+;_tlb1 =			((_algo = 7) << 7)
+
+sFinishVoice		macro
 _tlb1 =			0
 _tlb2 =			0
 _tlb3 =			0
 _tlb4 =			0
-	else
-;   0     1     2     3     4     5     6     7
-; %1000,%1000,%1000,%1000,%1010,%1110,%1110,%1111
-_tlb4 =			$80
-_tlb3 =			((_algo >= 4) << 7)
-_tlb2 =			((_algo >= 5) << 7)
-_tlb1 =			((_algo = 7) << 7)
-	endif
 
 		dc.b (_fb<<3)|_algo
 		dc.b (_det1<<4)|_mul1, (_det3<<4)|_mul3, (_det2<<4)|_mul2, (_det4<<4)|_mul4

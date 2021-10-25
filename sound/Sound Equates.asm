@@ -338,7 +338,7 @@ d\const		rs.b 1					; generate the main constant
 	endm
 ; ---------------------------------------------------------------------------
 
-		rsset	nR				; samples start at $81
+		rsset	nR+1				; samples start at $81
 _firstSample	rs.b 0					; the first valid sample
 		DefineSamples	GenSampleConst		; generate constants for samples
 _lastSample	equ __rs-1				; the last valid sample

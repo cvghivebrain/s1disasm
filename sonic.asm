@@ -11,7 +11,7 @@
 		opt	ae-				; automatic even's are disabled by default
 		opt	ws+				; allow statements to contain white-spaces
 		opt	w+				; print warnings
-		opt	m-				; do not expand macros - if enabled, this can break assembling
+		opt	m+				; do not expand macros - if enabled, this can break assembling
 
 		include "Mega Drive.asm"
 		include "Macros - More CPUs.asm"

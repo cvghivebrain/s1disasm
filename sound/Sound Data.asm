@@ -186,10 +186,10 @@ Kos_DacDriver:		; TODO: this is currently hardcoded to replace the dummy pointer
 ; music file includes
 ; ---------------------------------------------------------------------------
 
-_song =		0					; misc variable
+_song =		-1					; used to track song stats
 
 IncludeMusic	macro	name
-musfile_\name	incbin "sound/music/\name\.dat"		; include the music file itself
+musfile_\name	include	"sound/music/\name\.s"		; include the music file itself
 		even					; next file must be aligned to word
 		endm
 
@@ -220,7 +220,7 @@ SpecSoundIndex:
 ; ---------------------------------------------------------------------------
 
 IncludeSfx	macro	name
-sfxfile_\name	incbin "sound/sfx/\name\.dat"		; include the sfx file itself
+sfxfile_\name	include	"sound/sfx/\name\.s"		; include the sfx file itself
 		even					; next file must be aligned to word
 		endm
 

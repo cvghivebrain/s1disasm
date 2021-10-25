@@ -18,6 +18,10 @@ align:	macro
 ; ---------------------------------------------------------------------------
 
 index:		macro
+		nolist
+		pusho
+		opt	m-
+
 		if strlen("\1")>0	; check if start is defined
 		index_start: = \1
 		else
@@ -51,6 +55,9 @@ index:		macro
 		endc
 		
 		tmp_array: equs "empty"	; clear tmp_array
+
+		popo
+		list
 		endm
 	
 ; ---------------------------------------------------------------------------
@@ -60,6 +67,10 @@ index:		macro
 ; ---------------------------------------------------------------------------
 
 mirror_index:	macro
+		nolist
+		pusho
+		opt	m-
+
 		index.\0 \1,\2,\3
 		ptr_prefix: equs "\4"
 		ptr_pos: = 1
@@ -72,6 +83,9 @@ mirror_index:	macro
 		endw
 		ptr_sub: substr ptr_pos,,"\5"
 		ptr \ptr_prefix\_\ptr_sub	; final pointer
+
+		popo
+		list
 		endm
 
 ; ---------------------------------------------------------------------------
@@ -80,6 +94,10 @@ mirror_index:	macro
 ; ---------------------------------------------------------------------------
 
 ptr:		macro
+		nolist
+		pusho
+		opt	m-
+
 		if index_start=-1
 		dc.\index_width \1-*
 		else
@@ -110,6 +128,9 @@ ptr:		macro
 		endc
 		
 		ptr_id: = ptr_id+ptr_id_inc ; increment id
+
+		popo
+		list
 		endm
 
 ; ---------------------------------------------------------------------------
