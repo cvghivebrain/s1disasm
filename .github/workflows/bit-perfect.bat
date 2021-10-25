@@ -9,7 +9,4 @@ fixheadr.exe %1.bin
 
 echo check file content
 fc /b %1.bin s1rev%1.bin > nul
-
-echo delete the built rom
-del %1.bin
-exit errorlevel
+exit %errorlevel%

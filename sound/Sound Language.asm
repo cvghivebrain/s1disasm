@@ -33,6 +33,11 @@ PutTrackCom	macro name
 ; Macros for song commands
 ; ---------------------------------------------------------------------------
 
+sNote		macro
+		dc.b \_					; add all notes
+	endm
+; ---------------------------------------------------------------------------
+
 sPanNone	equ $00					; set panning to no speaker
 sPanRight	equ $40					; set panning to the right speaker
 sPanLeft	equ $80					; set panning to the left speaker
@@ -161,9 +166,9 @@ sVibOff		macro
 	endm
 ; ---------------------------------------------------------------------------
 
-sEnv		macro num
+sEnv		macro name
 		PutTrackCom	Env			; add the command byte
-		dc.b \num				; add the envelope number
+		dc.b env_\name				; add the envelope id
 	endm
 ; ---------------------------------------------------------------------------
 
@@ -223,13 +228,13 @@ sHeaderDAC		macro addr
 sHeaderFM		macro addr, trans, volume
 		dc.w \addr-_songAddr			; initialize FM address
 		dc.b \trans, \volume			; initialize transposition and volume
-_f\_songName set		1 + _f\_songName		; increment channel count
+_f\_songName =		1 + _f\_songName		; increment channel count
 	endm
 ; ---------------------------------------------------------------------------
 
 sHeaderPSG		macro addr, trans, volume, null, env
 		dc.w \addr-_songAddr			; initialize FM address
-		dc.b \trans, \volume, \null, \env	; initialize transposition, volume and envelope
+		dc.b \trans, \volume, \null, env_\env	; initialize transposition, volume and envelope
 _p\_songName =		1 + _p\_songName		; increment channel count
 	endm
 ; ---------------------------------------------------------------------------

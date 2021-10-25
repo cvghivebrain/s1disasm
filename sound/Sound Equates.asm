@@ -444,16 +444,16 @@ VolumeEnv	macro	func
 
 GenEnvConst	macro	const
 	rept narg-1
-v\const		rs.b 0					; generate alt constants
+env_\const		rs.b 0				; generate alt constants
 		shift
 	endr
 
-v\const		rs.b 1					; generate the main constant
+env_\const		rs.b 1				; generate the main constant
 	endm
 ; ---------------------------------------------------------------------------
 
 		rsset	0				; envelopes start at 1
-vNone		rs.b 1					; null envelope
+env_None	rs.b 1					; null envelope
 _firstVolEnv	rs.b 0					; the first valid envelope
 		VolumeEnv	GenEnvConst		; generate constants for envelopes
 _lastVolEnv	equ __rs-1				; the last valid envelope
@@ -481,11 +481,11 @@ EnvelopeCmd	macro	func
 
 GenEnvCmdConst	macro	const
 	rept narg-1
-evc_\const	rs.b 0					; generate alt constants
+evc\const	rs.b 0					; generate alt constants
 		shift
 	endr
 
-evc_\const	rs.b 1					; generate the main constant
+evc\const	rs.b 1					; generate the main constant
 	endm
 ; ---------------------------------------------------------------------------
 
