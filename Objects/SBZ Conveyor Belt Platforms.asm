@@ -2,6 +2,7 @@
 ; Object 6F - spinning platforms that move around a conveyor belt (SBZ)
 ; ---------------------------------------------------------------------------
 
+SpinConvey:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	SpinC_Index(pc,d0.w),d1

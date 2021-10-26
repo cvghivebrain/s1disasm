@@ -4006,7 +4006,7 @@ TryAg_Exit:
 		include "Objects\Ending Eggman Try Again.asm" ; EndEggman
 		include "Animations\Ending Eggman Try Again.asm" ; Ani_EEgg
 
-TryChaos:	include "Objects\Ending Chaos Emeralds Try Again.asm"
+		include "Objects\Ending Chaos Emeralds Try Again.asm" ; TryChaos
 
 		include "Mappings\Ending Eggman Try Again.asm" ; Map_EEgg
 
@@ -5740,27 +5740,8 @@ LevLoad_Row:
 		include "Objects\_DetectPlatform.asm"
 		include "Objects\_SlopeObject.asm"
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Swing_Solid:
-		lea	(v_ost_player).w,a1
-		tst.w	ost_y_vel(a1)
-		bmi.w	Plat_Exit
-		move.w	ost_x_pos(a1),d0
-		sub.w	ost_x_pos(a0),d0
-		add.w	d1,d0
-		bmi.w	Plat_Exit
-		add.w	d1,d1
-		cmp.w	d1,d0
-		bhs.w	Plat_Exit
-		move.w	ost_y_pos(a0),d0
-		sub.w	d3,d0
-		bra.w	Plat_NoXCheck_AltY
-; End of function Obj15_Solid
-
-; ===========================================================================
-
+		include "Objects\GHZ, MZ & SLZ Swinging Platforms, SBZ Ball on Chain.asm" ; SwingingPlatform
+		
 		include_Bridge_2 ; Objects\GHZ Bridge.asm
 
 		include "Objects\_ExitPlatform.asm"
@@ -5768,8 +5749,8 @@ Swing_Solid:
 		include_Bridge_3 ; Objects\GHZ Bridge.asm
 		include "Mappings\GHZ Bridge.asm" ; Map_Bri
 
-		include "Objects\GHZ, MZ & SLZ Swinging Platforms, SBZ Ball on Chain.asm" ; SwingingPlatform
-		
+		include_SwingingPlatform_1 ; Objects\GHZ, MZ & SLZ Swinging Platforms, SBZ Ball on Chain.asm
+
 		include "Objects\_MoveWithPlatform.asm"
 
 		include_SwingingPlatform_2 ; Objects\GHZ, MZ & SLZ Swinging Platforms, SBZ Ball on Chain.asm
@@ -5851,9 +5832,7 @@ Ledge_SlopeData:
 
 		include "Objects\Animals.asm" ; Animals
 		include "Objects\Points.asm" ; Points
-Map_Animal1:	include "Mappings\Animals 1.asm"
-Map_Animal2:	include "Mappings\Animals 2.asm"
-Map_Animal3:	include "Mappings\Animals 3.asm"
+		include "Mappings\Animals.asm" ; Map_Animal1, Map_Animal2 & Map_Animal3
 		include "Mappings\Points.asm" ; Map_Points
 
 		include "Objects\Crabmeat.asm" ; Crabmeat
@@ -5908,8 +5887,8 @@ Map_Animal3:	include "Mappings\Animals 3.asm"
 		include "Mappings\Burrobot.asm" ; Map_Burro
 
 		include "Objects\MZ Grass Platforms.asm" ; LargeGrass
-GrassFire:	include "Objects\MZ Burning Grass.asm"
-Ani_GFire:	include "Animations\MZ Burning Grass.asm"
+		include "Objects\MZ Burning Grass.asm" ; GrassFire
+		include "Animations\MZ Burning Grass.asm" ; Ani_GFire
 		include "Mappings\MZ Grass Platforms.asm" ; Map_LGrass
 		include "Mappings\Fireballs.asm" ; Map_Fire
 
@@ -5943,7 +5922,7 @@ Ani_GFire:	include "Animations\MZ Burning Grass.asm"
 		include "Mappings\Spikes.asm" ; Map_Spike
 
 		include "Objects\GHZ Purple Rock.asm" ; PurpleRock
-WaterSound:	include "Objects\GHZ Waterfall Sound.asm"
+		include "Objects\GHZ Waterfall Sound.asm" ; WaterSound
 		include "Mappings\GHZ Purple Rock.asm" ; Map_PRock
 
 		include "Objects\GHZ & SLZ Smashable Walls & SmashObject.asm" ; SmashWall
@@ -6132,115 +6111,8 @@ Obj4F:
 
 		include "Objects\Sonic (2).asm"
 		include "Objects\_FindNearestTile, FindFloor & FindWall.asm"
-; ---------------------------------------------------------------------------
-; This subroutine takes 'raw' bitmap-like collision block data as input and
-; converts it into the proper collision arrays (ColArray and ColArray2).
-; Pointers to said raw data are dummied out.
-; Curiously, an example of the original 'raw' data that this was intended
-; to process can be found in the J2ME version, in a file called 'blkcol.bct'.
-; ---------------------------------------------------------------------------
 
-RawColBlocks		equ CollArray1
-ConvRowColBlocks	equ CollArray1
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-ConvertCollisionArray:
-		rts	
-; ---------------------------------------------------------------------------
-		; The raw format stores the collision data column by column for the normal collision array.
-		; This makes a copy of the data, but stored row by row, for the rotated collision array.
-		lea	(RawColBlocks).l,a1	; Source location of raw collision block data
-		lea	(ConvRowColBlocks).l,a2	; Destinatation location for row-converted collision block data
-
-		move.w	#$100-1,d3		; Number of blocks in collision data
-
-	@blockLoop:
-		moveq	#16,d5			; Start on the 16th bit (the leftmost pixel)
-
-		move.w	#16-1,d2		; Width of a block in pixels
-
-	@columnLoop:
-		moveq	#0,d4
-
-		move.w	#16-1,d1		; Height of a block in pixels
-
-	@rowLoop:
-		move.w	(a1)+,d0		; Get row of collision bits
-		lsr.l	d5,d0			; Push the selected bit of this row into the 'eXtend' flag
-		addx.w	d4,d4			; Shift d4 to the left, and insert the selected bit into bit 0
-		dbf	d1,@rowLoop		; Loop for each row of pixels in a block
-
-		move.w	d4,(a2)+		; Store column of collision bits
-		suba.w	#2*16,a1		; Back to the start of the block
-		subq.w	#1,d5			; Get next bit in the row
-		dbf	d2,@columnLoop		; Loop for each column of pixels in a block
-
-		adda.w	#2*16,a1		; Next block
-		dbf	d3,@blockLoop		; Loop for each block in the raw collision block data
-
-		; This then converts the collision data into the final collision arrays
-		lea	(ConvRowColBlocks).l,a1
-		lea	(CollArray2).l,a2	; Convert the row-converted collision block data into final rotated collision array
-		bsr.s	@convertArray
-		lea	(RawColBlocks).l,a1
-		lea	(CollArray1).l,a2	; Convert the raw collision block data into final normal collision array
-
-
-	@convertArray:
-		move.w	#$1000-1,d3		; Size of the collision array
-
-	@processLoop:
-		moveq	#0,d2
-		move.w	#$F,d1
-		move.w	(a1)+,d0		; Get current column of collision pixels
-		beq.s	@noCollision		; Branch if there's no collision in this column
-		bmi.s	@topPixelSolid		; Branch if top pixel of collision is solid
-
-	; Here we count, starting from the bottom, how many pixels tall
-	; the collision in this column is.
-	@processColumnLoop1:
-		lsr.w	#1,d0
-		bhs.s	@pixelNotSolid1
-		addq.b	#1,d2
-
-	@pixelNotSolid1:
-		dbf	d1,@processColumnLoop1
-
-		bra.s	@columnProcessed
-; ===========================================================================
-
-	@topPixelSolid:
-		cmpi.w	#$FFFF,d0		; Is entire column solid?
-		beq.s	@entireColumnSolid	; Branch if so
-
-	; Here we count, starting from the top, how many pixels tall
-	; the collision in this column is (the resulting number is negative).
-	@processColumnLoop2:
-		lsl.w	#1,d0
-		bhs.s	@pixelNotSolid2
-		subq.b	#1,d2
-
-	@pixelNotSolid2:
-		dbf	d1,@processColumnLoop2
-
-		bra.s	@columnProcessed
-; ===========================================================================
-
-	@entireColumnSolid:
-		move.w	#$10,d0
-
-	@noCollision:
-		move.w	d0,d2
-
-	@columnProcessed:
-		move.b	d2,(a2)+		; Store column collision height
-		dbf	d3,@processLoop
-
-		rts	
-
-; End of function ConvertCollisionArray
+		include	"Includes\ConvertCollisionArray.asm"
 
 		include "Objects\Sonic (3).asm"
 
@@ -6568,7 +6440,7 @@ locret_15098:
 		include "Objects\SBZ Running Disc.asm" ; RunningDisc
 		include "Mappings\SBZ Running Disc.asm" ; Map_Disc
 
-Conveyor:	include "Objects\SBZ Conveyor Belt.asm"
+		include "Objects\SBZ Conveyor Belt.asm" ; Conveyor
 		include "Objects\SBZ Trapdoor & Spinning Platforms.asm" ; SpinPlatform
 		include "Animations\SBZ Trapdoor & Spinning Platforms.asm" ; Ani_Spin
 		include "Mappings\SBZ Trapdoor.asm" ; Map_Trap
@@ -6588,8 +6460,8 @@ Conveyor:	include "Objects\SBZ Conveyor Belt.asm"
 		include "Animations\SBZ Electric Orb.asm" ; Ani_Elec
 		include "Mappings\SBZ Electric Orb.asm" ; Map_Elec
 
-SpinConvey:	include "Objects\SBZ Conveyor Belt Platforms.asm"
-Ani_SpinConvey:	include "Animations\SBZ Conveyor Belt Platforms.asm"
+		include "Objects\SBZ Conveyor Belt Platforms.asm" ; SpinConvey
+		include "Animations\SBZ Conveyor Belt Platforms.asm" ; Ani_SpinConvey
 
 SpinC_Data:	index *
 		ptr word_164B2
@@ -6633,7 +6505,7 @@ word_16516:	dc.w $10, $1C80
 		include "Objects\SBZ Girder Block.asm" ; Girder
 		include "Mappings\SBZ Girder Block.asm" ; Map_Gird
 
-Teleport:	include "Objects\SBZ Teleporter.asm"
+		include "Objects\SBZ Teleporter.asm" ; Teleport
 
 		include "Objects\Caterkiller.asm" ; Caterkiller
 		include "Animations\Caterkiller.asm" ; Ani_Cat
@@ -6648,29 +6520,27 @@ Teleport:	include "Objects\SBZ Teleporter.asm"
 		include "Objects\Credits & Sonic Team Presents.asm" ; CreditsText
 		include "Mappings\Credits & Sonic Team Presents.asm" ; Map_Cred
 
-BossGreenHill:	include "Objects\GHZ Boss, BossDefeated & BossMove.asm"
+		include "Objects\GHZ Boss, BossDefeated & BossMove.asm" ; BossGreenHill
 		include_BossBall_1	; Objects\GHZ Boss Ball.asm; BossBall
 		include "Animations\Bosses.asm" ; Ani_Eggman
 		include "Mappings\Bosses.asm" ; Map_Eggman
 		include "Mappings\Boss Extras.asm" ; Map_BossItems
 
-BossLabyrinth:	include "Objects\LZ Boss.asm"
-BossMarble:	include "Objects\MZ Boss.asm"
-BossFire:	include "Objects\MZ Boss Fire.asm"
-BossStarLight:	include "Objects\SLZ Boss.asm"
+		include "Objects\LZ Boss.asm" ; BossLabyrinth
+		include "Objects\MZ Boss.asm" ; BossMarble
+		include "Objects\MZ Boss Fire.asm" ; BossFire
+		include "Objects\SLZ Boss.asm" ; BossStarLight
 		include "Objects\SLZ Boss Spikeballs.asm" ; BossSpikeball
 		include "Mappings\SLZ Boss Spikeballs.asm" ; Map_BSBall
-BossSpringYard:	include "Objects\SYZ Boss.asm"
+		include "Objects\SYZ Boss.asm" ; BossSpringYard
 		include "Objects\SYZ Blocks at Boss.asm" ; BossBlock
 		include "Mappings\SYZ Blocks at Boss.asm" ; Map_BossBlock
 
-loc_1982C:
-		jmp	(DeleteObject).l
-
+		include "Objects\SBZ2 Blocks That Eggman Breaks.asm" ; FalseFloor
 		include "Objects\SBZ2 Eggman.asm" ; ScrapEggman
 		include "Animations\SBZ2 Eggman.asm" ; Ani_SEgg
 		include "Mappings\SBZ2 Eggman.asm" ; Map_SEgg
-		include "Objects\SBZ2 Blocks That Eggman Breaks.asm" ; FalseFloor
+		include_FalseFloor_1 ; Objects\SBZ2 Blocks That Eggman Breaks.asm
 		include "Mappings\SBZ2 Blocks That Eggman Breaks.asm" ; Map_FFloor
 
 		include "Objects\FZ Boss.asm" ; BossFinal

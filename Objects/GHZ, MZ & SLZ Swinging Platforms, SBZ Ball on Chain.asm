@@ -3,6 +3,27 @@
 ;	    - spiked ball on a chain (SBZ)
 ; ---------------------------------------------------------------------------
 
+; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+
+
+Swing_Solid:
+		lea	(v_ost_player).w,a1
+		tst.w	ost_y_vel(a1)
+		bmi.w	Plat_Exit
+		move.w	ost_x_pos(a1),d0
+		sub.w	ost_x_pos(a0),d0
+		add.w	d1,d0
+		bmi.w	Plat_Exit
+		add.w	d1,d1
+		cmp.w	d1,d0
+		bhs.w	Plat_Exit
+		move.w	ost_y_pos(a0),d0
+		sub.w	d3,d0
+		bra.w	Plat_NoXCheck_AltY
+; End of function Obj15_Solid
+
+include_SwingingPlatform_1:	macro
+
 SwingingPlatform:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
@@ -78,9 +99,9 @@ Swing_Main:	; Routine 0
 		move.w	a1,d5
 		subi.w	#v_ost_all&$FFFF,d5
 		lsr.w	#6,d5
-		andi.w	#$7F,d5
+		andi.w	#$7F,d5		; convert child OST address to index
 		move.b	d5,(a2)+	; save child OST index to byte list in parent OST
-		move.b	#$A,ost_routine(a1) ; goto Swing_Display next
+		move.b	#id_Swing_Display,ost_routine(a1) ; goto Swing_Display next
 		move.b	d4,0(a1)	; load swinging	object
 		move.l	ost_mappings(a0),ost_mappings(a1)
 		move.w	ost_tile(a0),ost_tile(a1)
@@ -108,15 +129,15 @@ Swing_Main:	; Routine 0
 		move.w	#$4080,ost_angle(a0)
 		move.w	#-$200,ost_ball_angle(a0)
 		move.w	(sp)+,d1
-		btst	#4,d1		; is object type $1X ?
-		beq.s	@not1X		; if not, branch
+		btst	#4,d1		; is object type $1x ?
+		beq.s	@not1x		; if not, branch
 		move.l	#Map_GBall,ost_mappings(a0) ; use GHZ ball mappings
 		move.w	#tile_Nem_Ball+tile_pal3,ost_tile(a0)
 		move.b	#id_frame_ball_check1,ost_frame(a0)
 		move.b	#2,ost_priority(a0)
 		move.b	#$81,ost_col_type(a0) ; make object hurt when touched
 
-	@not1X:
+	@not1x:
 		cmpi.b	#id_SBZ,(v_zone).w ; is zone SBZ?
 		beq.s	Swing_Action	; if yes, branch
 
@@ -148,6 +169,8 @@ Swing_Action2:	; Routine 4
 		bra.w	Swing_ChkDel
 
 		rts
+		
+		endm
 
 ; ---------------------------------------------------------------------------
 ; Object 15 - swinging platforms (GHZ, MZ, SLZ)
@@ -163,11 +186,11 @@ Swing_Move:
 		move.b	(v_oscillate+$1A).w,d0
 		move.w	#$80,d1
 		btst	#status_xflip_bit,ost_status(a0)
-		beq.s	loc_7B78
+		beq.s	@no_xflip
 		neg.w	d0
 		add.w	d1,d0
 
-loc_7B78:
+	@no_xflip:
 		bra.s	Swing_Move2
 ; End of function Swing_Move
 
@@ -191,7 +214,7 @@ Swing_Move2:
 		moveq	#0,d6
 		move.b	(a2)+,d6
 
-loc_7BCE:
+	@loop:
 		moveq	#0,d4
 		move.b	(a2)+,d4
 		lsl.w	#6,d4
@@ -208,7 +231,7 @@ loc_7BCE:
 		add.w	d3,d5
 		move.w	d4,ost_y_pos(a1)
 		move.w	d5,ost_x_pos(a1)
-		dbf	d6,loc_7BCE
+		dbf	d6,@loop
 		rts	
 ; End of function Swing_Move2
 
@@ -224,14 +247,14 @@ Swing_DelAll:
 		lea	ost_subtype(a0),a2
 		move.b	(a2)+,d2
 
-Swing_DelLoop:
+	@loop:
 		moveq	#0,d0
 		move.b	(a2)+,d0
 		lsl.w	#6,d0
 		addi.l	#v_ost_all&$FFFFFF,d0
 		movea.l	d0,a1
 		bsr.w	DeleteChild
-		dbf	d2,Swing_DelLoop ; repeat for length of	chain
+		dbf	d2,@loop	; repeat for length of chain
 		rts	
 ; ===========================================================================
 

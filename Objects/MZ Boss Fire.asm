@@ -2,6 +2,7 @@
 ; Object 74 - lava that	Eggman drops (MZ)
 ; ---------------------------------------------------------------------------
 
+BossFire:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Obj74_Index(pc,d0.w),d0

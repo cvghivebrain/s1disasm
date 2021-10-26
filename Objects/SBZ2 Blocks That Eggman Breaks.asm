@@ -2,6 +2,11 @@
 ; Object 83 - blocks that disintegrate when Eggman presses a switch (SBZ2)
 ; ---------------------------------------------------------------------------
 
+FFloor_Delete:
+		jmp	(DeleteObject).l
+
+include_FalseFloor_1:	macro
+
 FalseFloor:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
@@ -98,7 +103,7 @@ FFloor_Solid2:
 loc_19C62:	; Routine 6
 		bclr	#status_platform_bit,ost_status(a0)
 		bclr	#status_platform_bit,(v_ost_player+ost_status).w
-		bra.w	loc_1982C
+		bra.w	FFloor_Delete
 ; ===========================================================================
 
 loc_19C72:	; Routine 8
@@ -109,7 +114,7 @@ loc_19C72:	; Routine 8
 
 loc_19C80:	; Routine $A
 		tst.b	ost_render(a0)
-		bpl.w	loc_1982C
+		bpl.w	FFloor_Delete
 		jsr	(ObjectFall).l
 		jmp	(DisplaySprite).l
 ; ===========================================================================
@@ -162,3 +167,6 @@ FFloor_FragPos:	dc.w -8, -8
 		dc.w $10, 0
 		dc.w 0,	$10
 		dc.w $10, $10
+
+		endm
+		

@@ -2,6 +2,7 @@
 ; Object 8C - chaos emeralds on	the "TRY AGAIN"	screen
 ; ---------------------------------------------------------------------------
 
+TryChaos:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	TCha_Index(pc,d0.w),d1

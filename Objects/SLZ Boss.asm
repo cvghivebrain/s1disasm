@@ -2,6 +2,7 @@
 ; Object 7A - Eggman (SLZ)
 ; ---------------------------------------------------------------------------
 
+BossStarLight:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
 		move.w	Obj7A_Index(pc,d0.w),d1
