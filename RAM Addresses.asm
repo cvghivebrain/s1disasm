@@ -5,16 +5,14 @@
 		pusho		; save options
 		opt	ae+	; enable auto evens
 
-; ====================
-; Error trap variables
-; ====================
+; Error trap variables:
+
 v_reg_buffer:		equ $FFFFFC00 ; stores registers d0-a7 during an error event ($40 bytes) - v_objstate uses same space
 v_sp_buffer:		equ $FFFFFC40 ; stores most recent sp address (4 bytes) - v_objstate uses same space
 v_error_type:		equ $FFFFFC44 ; error type - v_objstate uses same space
 
-; ====================
-; Major data blocks
-; ====================
+; Major data blocks:
+
 v_256x256_tiles:	equ   $FF0000 ; 256x256 tile mappings ($A400 bytes)
 			rsset $FFFFA400
 v_level_layout:		rs.b $400 ; $FFFFA400 ; level and background layouts
@@ -79,76 +77,78 @@ v_ost_end:		equ $FFFFF000
 v_snddriver_ram:	equ $FFFFF000			; start of RAM for the sound driver data ($5C0 bytes)
 							; sound driver equates are now defined in "sound/Sound Equates.asm"
 
-			rsset $FFFFF600
-v_gamemode:		rs.b 1 ; $FFFFF600 ; game mode (00=Sega; 04=Title; 08=Demo; 0C=Level; 10=SS; 14=Cont; 18=End; 1C=Credit; 8C=PreLevel)
-unused_f601:		rs.b 1
-v_joypad_hold:		rs.b 1 ; $FFFFF602 ; joypad input - held, can be overridden by demos
-v_joypad_press:		rs.b 1 ; $FFFFF603 ; joypad input - pressed, can be overridden by demos
-v_joypad_hold_actual:	rs.b 1 ; $FFFFF604 ; joypad input - held, actual
-v_joypad_press_actual:	rs.b 1 ; $FFFFF605 ; joypad input - pressed, actual
-v_joypad2_hold_actual:	rs.b 1 ; $FFFFF606 ; joypad 2 input - held, actual - unused
-v_joypad2_press_actual:	rs.b 1 ; $FFFFF607 ; joypad 2 input - pressed, actual - unused
-unused_f608:		rs.b 4
-v_vdp_mode_buffer:	rs.w 1 ; $FFFFF60C ; VDP register $81 buffer - contains $8134 which is sent to vdp_control_port
-unused_f60e:		rs.b 6
-v_countdown:		rs.w 1 ; $FFFFF614 ; decrements every time VBlank runs, used as a general purpose timer
-v_fg_y_pos_vsram:	rs.w 1 ; $FFFFF616 ; foreground y position, sent to VSRAM during VBlank
-v_bg_y_pos_vsram:	rs.w 1 ; $FFFFF618 ; background y position, sent to VSRAM during VBlank
-v_fg_x_pos_hscroll:	rs.w 1 ; $FFFFF61A ; foreground x position - unused
-v_bg_x_pos_hscroll:	rs.w 1 ; $FFFFF61C ; background x position - unused
-v_bg3screenposy_dup_unused:	rs.w 1 ; $FFFFF61E ; 
-v_bg3screenposx_dup_unused:	rs.w 1 ; $FFFFF620 ; 
-unused_f622:		rs.b 2
-v_vdp_hint_counter:	rs.w 1 ; $FFFFF624 ; VDP register $8A buffer - horizontal interrupt counter ($8Axx)
-v_vdp_hint_line:	equ v_vdp_hint_counter+1 ; screen line where water starts and palette is changed by HBlank
-v_palfade_start:	rs.b 1 ; $FFFFF626 ; palette fading - start position in bytes
-v_palfade_size:		rs.b 1 ; $FFFFF627 ; palette fading - number of colours
-v_vblank_0e_counter:	rs.b 1 ; $FFFFF628 ; counter that increments when VBlank routine $E is run - unused
-unused_f629:		rs.b 1
-v_vblank_routine:	rs.b 1 ; $FFFFF62A ; VBlank routine counter
-unused_f62b:		rs.b 1
-v_spritecount:		rs.b 1 ; $FFFFF62C ; number of sprites on-screen
-unused_f62d:		rs.b 5
-v_palcycle_num:		rs.w 1 ; $FFFFF632 ; palette cycling - current index number
-v_palcycle_time:	rs.w 1 ; $FFFFF634 ; palette cycling - time until the next change
-v_random:		rs.l 1 ; $FFFFF636 ; pseudo random number generator result
-f_pause:		rs.w 1 ; $FFFFF63A ; flag set to pause the game
-unused_f63c:		rs.b 4
-v_vdp_dma_buffer:	rs.w 1 ; $FFFFF640 ; VDP DMA command buffer
-unused_f642:		rs.b 2
-f_hblank_pal_change:	rs.w 1 ; $FFFFF644 ; flag set to change palette during HBlank (0000 = no; 0001 = change)
-v_water_height_actual:	rs.w 1 ; $FFFFF646 ; water height, actual
-v_water_height_normal:	rs.w 1 ; $FFFFF648 ; water height, ignoring wobble
-v_water_height_next:	rs.w 1 ; $FFFFF64A ; water height, next target
-v_water_direction:	rs.b 1 ; $FFFFF64C ; water setting - 0 = no water; 1 = water moves down; -1 = water moves up
-v_water_routine:	rs.b 1 ; $FFFFF64D ; water event routine counter
-f_water_pal_full:	rs.b 1 ; $FFFFF64E ; flag set when water covers the entire screen (00 = partly/all dry; 01 = all underwater)
-f_hblank_run_snd:	rs.b 1 ; $FFFFF64F ; flag set when sound driver should be run from HBlank
-v_palcycle_buffer:	rs.b $30 ; $FFFFF650 ; palette data buffer (used for palette cycling)
-v_plc_buffer:		rs.b $60 ; $FFFFF680 ; pattern load cues buffer (maximum $10 PLCs)
-v_nemdec_ptr:		rs.l 1 ; $FFFFF6E0 ; pointer for nemesis decompression code ($1502 or $150C)
+				rsset $FFFFF600
+v_gamemode:			rs.b 1 ; $FFFFF600 ; game mode (00=Sega; 04=Title; 08=Demo; 0C=Level; 10=SS; 14=Cont; 18=End; 1C=Credit; 8C=PreLevel)
+unused_f601:			rs.b 1
+v_joypad_hold:			rs.b 1 ; $FFFFF602 ; joypad input - held, can be overridden by demos
+v_joypad_press:			rs.b 1 ; $FFFFF603 ; joypad input - pressed, can be overridden by demos
+v_joypad_hold_actual:		rs.b 1 ; $FFFFF604 ; joypad input - held, actual
+v_joypad_press_actual:		rs.b 1 ; $FFFFF605 ; joypad input - pressed, actual
+v_joypad2_hold_actual:		rs.b 1 ; $FFFFF606 ; joypad 2 input - held, actual - unused
+v_joypad2_press_actual:		rs.b 1 ; $FFFFF607 ; joypad 2 input - pressed, actual - unused
+unused_f608:			rs.b 4
+v_vdp_mode_buffer:		rs.w 1 ; $FFFFF60C ; VDP register $81 buffer - contains $8134 which is sent to vdp_control_port
+unused_f60e:			rs.b 6
+v_countdown:			rs.w 1 ; $FFFFF614 ; decrements every time VBlank runs, used as a general purpose timer
+v_fg_y_pos_vsram:		rs.w 1 ; $FFFFF616 ; foreground y position, sent to VSRAM during VBlank
+v_bg_y_pos_vsram:		rs.w 1 ; $FFFFF618 ; background y position, sent to VSRAM during VBlank
+v_fg_x_pos_hscroll:		rs.w 1 ; $FFFFF61A ; foreground x position - unused
+v_bg_x_pos_hscroll:		rs.w 1 ; $FFFFF61C ; background x position - unused
+v_bg3_y_pos_dup_unused:	rs.w 1 ; $FFFFF61E ; 
+v_bg3_x_pos_dup_unused:	rs.w 1 ; $FFFFF620 ; 
+unused_f622:			rs.b 2
+v_vdp_hint_counter:		rs.w 1 ; $FFFFF624 ; VDP register $8A buffer - horizontal interrupt counter ($8Axx)
+v_vdp_hint_line:		equ v_vdp_hint_counter+1 ; screen line where water starts and palette is changed by HBlank
+v_palfade_start:		rs.b 1 ; $FFFFF626 ; palette fading - start position in bytes
+v_palfade_size:			rs.b 1 ; $FFFFF627 ; palette fading - number of colours
+v_vblank_0e_counter:		rs.b 1 ; $FFFFF628 ; counter that increments when VBlank routine $E is run - unused
+unused_f629:			rs.b 1
+v_vblank_routine:		rs.b 1 ; $FFFFF62A ; VBlank routine counter
+unused_f62b:			rs.b 1
+v_spritecount:			rs.b 1 ; $FFFFF62C ; number of sprites on-screen
+unused_f62d:			rs.b 5
+v_palcycle_num:			rs.w 1 ; $FFFFF632 ; palette cycling - current index number
+v_palcycle_time:		rs.w 1 ; $FFFFF634 ; palette cycling - time until the next change
+v_random:			rs.l 1 ; $FFFFF636 ; pseudo random number generator result
+f_pause:			rs.w 1 ; $FFFFF63A ; flag set to pause the game
+unused_f63c:			rs.b 4
+v_vdp_dma_buffer:		rs.w 1 ; $FFFFF640 ; VDP DMA command buffer
+unused_f642:			rs.b 2
+f_hblank_pal_change:		rs.w 1 ; $FFFFF644 ; flag set to change palette during HBlank (0000 = no; 0001 = change)
+v_water_height_actual:		rs.w 1 ; $FFFFF646 ; water height, actual
+v_water_height_normal:		rs.w 1 ; $FFFFF648 ; water height, ignoring wobble
+v_water_height_next:		rs.w 1 ; $FFFFF64A ; water height, next target
+v_water_direction:		rs.b 1 ; $FFFFF64C ; water setting - 0 = no water; 1 = water moves down; -1 = water moves up
+v_water_routine:		rs.b 1 ; $FFFFF64D ; water event routine counter
+f_water_pal_full:		rs.b 1 ; $FFFFF64E ; flag set when water covers the entire screen (00 = partly/all dry; 01 = all underwater)
+f_hblank_run_snd:		rs.b 1 ; $FFFFF64F ; flag set when sound driver should be run from HBlank
+v_palcycle_buffer:		rs.b $30 ; $FFFFF650 ; palette data buffer (used for palette cycling)
+v_plc_buffer:			rs.b $60 ; $FFFFF680 ; pattern load cues buffer (maximum $10 PLCs)
+v_nemdec_ptr:			rs.l 1 ; $FFFFF6E0 ; pointer for nemesis decompression code ($1502 or $150C)
 
 f_plc_execute:	equ $FFFFF6F8	; flag set for pattern load cue execution (2 bytes)
 
-v_screenposx:	equ $FFFFF700	; screen position x (2 bytes)
-v_screenposy:	equ $FFFFF704	; screen position y (2 bytes)
-v_bgscreenposx:	equ $FFFFF708	; background screen position x (2 bytes)
-v_bgscreenposy:	equ $FFFFF70C	; background screen position y (2 bytes)
-v_bg2screenposx:	equ $FFFFF710	; 2 bytes
-v_bg2screenposy:	equ $FFFFF714	; 2 bytes
-v_bg3screenposx:	equ $FFFFF718	; 2 bytes
-v_bg3screenposy:	equ $FFFFF71C	; 2 bytes
+				rsset $FFFFF700
+v_camera_x_pos:			rs.l 1 ; $FFFFF700 ; foreground camera x position
+v_camera_y_pos:			rs.l 1 ; $FFFFF704 ; foreground camera y position
+v_bg1_x_pos:			rs.l 1 ; $FFFFF708 ; background x position
+v_bg1_y_pos:			rs.l 1 ; $FFFFF70C ; background y position
+v_bg2_x_pos:			rs.l 1 ; $FFFFF710 ; background 2 x position (e.g. GHZ treeline)
+v_bg2_y_pos:			rs.l 1 ; $FFFFF714 ; background 2 y position
+v_bg3_x_pos:			rs.l 1 ; $FFFFF718 ; background 3 x position (e.g. GHZ mountains)
+v_bg3_y_pos:			rs.l 1 ; $FFFFF71C ; background 3 y position
 
-v_limitleft1:	equ $FFFFF720	; left level boundary (2 bytes)
-v_limitright1:	equ $FFFFF722	; right level boundary (2 bytes)
-v_limittop1:	equ $FFFFF724	; top level boundary (2 bytes)
-v_limitbtm1:	equ $FFFFF726	; bottom level boundary (2 bytes)
-v_limitleft2:	equ $FFFFF728	; left level boundary (2 bytes)
-v_limitright2:	equ $FFFFF72A	; right level boundary (2 bytes)
-v_limittop2:	equ $FFFFF72C	; top level boundary (2 bytes)
-v_limitbtm2:	equ $FFFFF72E	; bottom level boundary (2 bytes)
-
-v_limitleft3:	equ $FFFFF732	; left level boundary, at the end of an act (2 bytes)
+v_boundary_left_next:		rs.w 1 ; $FFFFF720 ; left level boundary, next (actual boundary shifts to match this)
+v_boundary_right_next:		rs.w 1 ; $FFFFF722 ; right level boundary, next
+v_boundary_top_next:		rs.w 1 ; $FFFFF724 ; top level boundary, next
+v_boundary_bottom_next:		rs.w 1 ; $FFFFF726 ; bottom level boundary, next
+v_boundary_left:		rs.w 1 ; $FFFFF728 ; left level boundary
+v_boundary_right:		rs.w 1 ; $FFFFF72A ; right level boundary
+v_boundary_top:			rs.w 1 ; $FFFFF72C ; top level boundary
+v_boundary_bottom:		rs.w 1 ; $FFFFF72E ; bottom level boundary
+v_boundary_unused:		rs.w 1 ; $FFFFF730 ; unused value from LevelSizeArray, always 4
+v_boundary_left_unused:		rs.w 1 ; $FFFFF732 ; left level boundary plus $240 - unused
+unused_f734:			rs.b 6
 
 v_scrshiftx:	equ $FFFFF73A	; x-screen shift (new - last) * $100
 v_scrshifty:	equ $FFFFF73C	; y-screen shift (new - last) * $100
@@ -172,80 +172,80 @@ v_bg2_scroll_flags:	equ $FFFFF758	; screen redraw flags for background 2
 v_bg3_scroll_flags:	equ $FFFFF75A	; screen redraw flags for background 3
 f_bgscrollvert:	equ $FFFFF75C	; flag for vertical background scrolling
 
-			rsset $FFFFF760
-v_sonic_max_speed:	rs.w 1 ; $FFFFF760 ; Sonic's maximum speed
-v_sonic_acceleration:	rs.w 1 ; $FFFFF762 ; Sonic's acceleration
-v_sonic_deceleration:	rs.w 1 ; $FFFFF764 ; Sonic's deceleration
-v_sonic_last_frame_id:	rs.b 1 ; $FFFFF766 ; Sonic's last frame id, compared with current frame to determine if graphics need updating
-f_sonic_dma_gfx:	rs.b 1 ; $FFFFF767 ; flag set to DMA Sonic's graphics from RAM to VRAM
-v_angle_right:		rs.b 1 ; $FFFFF768 ; angle of floor on Sonic's right side
-unused_f769:		rs.b 1
-v_angle_left:		rs.b 1 ; $FFFFF76A ; angle of floor on Sonic's left side
-unused_f76b:		rs.b 1
-v_opl_routine:		rs.b 1 ; $FFFFF76C ; ObjPosLoad - routine counter
-unused_f76d:		rs.b 1
-v_opl_screen_x_pos:	rs.w 1 ; $FFFFF76E ; ObjPosLoad - screen x position, rounded down to nearest $80
-v_opl_ptr_right:	rs.l 1 ; $FFFFF770 ; ObjPosLoad - pointer to current objpos data
-v_opl_ptr_left:		rs.l 1 ; $FFFFF774 ; ObjPosLoad - pointer to leftmost objpos data
-v_opl_ptr_alt_right:	rs.l 1 ; $FFFFF778 ; ObjPosLoad - pointer to current secondary objpos data
-v_opl_ptr_alt_left:	rs.l 1 ; $FFFFF77C ; ObjPosLoad - pointer to leftmost secondary objpos data
-v_ss_angle:		rs.w 1 ; $FFFFF780 ; Special Stage angle
-v_ss_rotation_speed:	rs.w 1 ; $FFFFF782 ; Special Stage rotation speed
-unused_f784:		rs.b $C
-v_demo_input_counter:	rs.w 1 ; $FFFFF790 ; tracks progress in the demo input data, increases by 2 when input changes
-v_demo_input_time:	rs.b 1 ; $FFFFF792 ; time remaining for current demo "button press"
-unused_f793:		rs.b 1
-v_palfade_time:		rs.w 1 ; $FFFFF794 ; palette fading - time until next change
-v_collision_index_ptr:	rs.l 1 ; $FFFFF796 ; ROM address for collision index of current level
-v_palcycle_ss_num:	rs.w 1 ; $FFFFF79A ; palette cycling in Special Stage - current index number
-v_palcycle_ss_time:	rs.w 1 ; $FFFFF79C ; palette cycling in Special Stage - time until next change
-v_palcycle_ss_unused:	rs.w 1 ; $FFFFF79E ; palette cycling in Special Stage - unused offset value, always 0
-v_ss_bg_mode:		rs.w 1 ; $FFFFF7A0 ; Special Stage fish/bird background animation mode
-unused_f7a2:		rs.b 2
-v_cstomp_y_pos:		rs.w 1 ; $FFFFF7A4 ; y position of MZ chain stomper, used for interaction with pushable green block
-unused_f7a6:		rs.b 1
-v_boss_status:		rs.b 1 ; $FFFFF7A7 ; status of boss and prison capsule - 01 = boss defeated; 02 = prison opened
+				rsset $FFFFF760
+v_sonic_max_speed:		rs.w 1 ; $FFFFF760 ; Sonic's maximum speed
+v_sonic_acceleration:		rs.w 1 ; $FFFFF762 ; Sonic's acceleration
+v_sonic_deceleration:		rs.w 1 ; $FFFFF764 ; Sonic's deceleration
+v_sonic_last_frame_id:		rs.b 1 ; $FFFFF766 ; Sonic's last frame id, compared with current frame to determine if graphics need updating
+f_sonic_dma_gfx:		rs.b 1 ; $FFFFF767 ; flag set to DMA Sonic's graphics from RAM to VRAM
+v_angle_right:			rs.b 1 ; $FFFFF768 ; angle of floor on Sonic's right side
+unused_f769:			rs.b 1
+v_angle_left:			rs.b 1 ; $FFFFF76A ; angle of floor on Sonic's left side
+unused_f76b:			rs.b 1
+v_opl_routine:			rs.b 1 ; $FFFFF76C ; ObjPosLoad - routine counter
+unused_f76d:			rs.b 1
+v_opl_screen_x_pos:		rs.w 1 ; $FFFFF76E ; ObjPosLoad - screen x position, rounded down to nearest $80
+v_opl_ptr_right:		rs.l 1 ; $FFFFF770 ; ObjPosLoad - pointer to current objpos data
+v_opl_ptr_left:			rs.l 1 ; $FFFFF774 ; ObjPosLoad - pointer to leftmost objpos data
+v_opl_ptr_alt_right:		rs.l 1 ; $FFFFF778 ; ObjPosLoad - pointer to current secondary objpos data
+v_opl_ptr_alt_left:		rs.l 1 ; $FFFFF77C ; ObjPosLoad - pointer to leftmost secondary objpos data
+v_ss_angle:			rs.w 1 ; $FFFFF780 ; Special Stage angle
+v_ss_rotation_speed:		rs.w 1 ; $FFFFF782 ; Special Stage rotation speed
+unused_f784:			rs.b $C
+v_demo_input_counter:		rs.w 1 ; $FFFFF790 ; tracks progress in the demo input data, increases by 2 when input changes
+v_demo_input_time:		rs.b 1 ; $FFFFF792 ; time remaining for current demo "button press"
+unused_f793:			rs.b 1
+v_palfade_time:			rs.w 1 ; $FFFFF794 ; palette fading - time until next change
+v_collision_index_ptr:		rs.l 1 ; $FFFFF796 ; ROM address for collision index of current level
+v_palcycle_ss_num:		rs.w 1 ; $FFFFF79A ; palette cycling in Special Stage - current index number
+v_palcycle_ss_time:		rs.w 1 ; $FFFFF79C ; palette cycling in Special Stage - time until next change
+v_palcycle_ss_unused:		rs.w 1 ; $FFFFF79E ; palette cycling in Special Stage - unused offset value, always 0
+v_ss_bg_mode:			rs.w 1 ; $FFFFF7A0 ; Special Stage fish/bird background animation mode
+unused_f7a2:			rs.b 2
+v_cstomp_y_pos:			rs.w 1 ; $FFFFF7A4 ; y position of MZ chain stomper, used for interaction with pushable green block
+unused_f7a6:			rs.b 1
+v_boss_status:			rs.b 1 ; $FFFFF7A7 ; status of boss and prison capsule - 01 = boss defeated; 02 = prison opened
 v_sonic_pos_tracker_num:	rs.w 1 ; $FFFFF7A8 ; current location within position tracking data
 v_sonic_pos_tracker_num_low:	equ v_sonic_pos_tracker_num+1
-f_boss_boundary:	rs.b 1 ; $FFFFF7AA ; flag set to stop Sonic moving off the right side of the screen at a boss
-unused_f7ab:		rs.b 1
-v_256x256_with_loop_1:	rs.b 1 ; $FFFFF7AC ; 256x256 level tile which contains a loop (GHZ/SLZ)
-v_256x256_with_loop_2:	rs.b 1 ; $FFFFF7AD ; 256x256 level tile which contains a loop (GHZ/SLZ)
+f_boss_boundary:		rs.b 1 ; $FFFFF7AA ; flag set to stop Sonic moving off the right side of the screen at a boss
+unused_f7ab:			rs.b 1
+v_256x256_with_loop_1:		rs.b 1 ; $FFFFF7AC ; 256x256 level tile which contains a loop (GHZ/SLZ)
+v_256x256_with_loop_2:		rs.b 1 ; $FFFFF7AD ; 256x256 level tile which contains a loop (GHZ/SLZ)
 v_256x256_with_tunnel_1:	rs.b 1 ; $FFFFF7AE ; 256x256 level tile which contains a roll tunnel (GHZ)
 v_256x256_with_tunnel_2:	rs.b 1 ; $FFFFF7AF ; 256x256 level tile which contains a roll tunnel (GHZ)
-v_levelani_0_frame:	rs.b 1 ; $FFFFF7B0 ; level graphics animation 0 - current frame
-v_levelani_0_time:	rs.b 1 ; $FFFFF7B1 ; level graphics animation 0 - time until next frame
-v_levelani_1_frame:	rs.b 1 ; $FFFFF7B2 ; level graphics animation 1 - current frame
-v_levelani_1_time:	rs.b 1 ; $FFFFF7B3 ; level graphics animation 1 - time until next frame
-v_levelani_2_frame:	rs.b 1 ; $FFFFF7B4 ; level graphics animation 2 - current frame
-v_levelani_2_time:	rs.b 1 ; $FFFFF7B5 ; level graphics animation 2 - time until next frame
-v_levelani_3_frame:	rs.b 1 ; $FFFFF7B6 ; level graphics animation 3 - current frame
-v_levelani_3_time:	rs.b 1 ; $FFFFF7B7 ; level graphics animation 3 - time until next frame
-v_levelani_4_frame:	rs.b 1 ; $FFFFF7B8 ; level graphics animation 4 - current frame
-v_levelani_4_time:	rs.b 1 ; $FFFFF7B9 ; level graphics animation 4 - time until next frame
-v_levelani_5_frame:	rs.b 1 ; $FFFFF7BA ; level graphics animation 5 - current frame
-v_levelani_5_time:	rs.b 1 ; $FFFFF7BB ; level graphics animation 5 - time until next frame
-unused_f7bc:		rs.b 2
-v_giantring_gfx_offset:	rs.w 1 ; $FFFFF7BE ; address of art for next giant ring frame, relative to Art_BigRing (counts backwards from $C40; 0 means no more art)
-f_convey_reverse:	rs.b 1 ; $FFFFF7C0 ; flag set to reverse conveyor belts in LZ/SBZ
-v_convey_init_list:	rs.b 6 ; $FFFFF7C1 ; LZ/SBZ conveyor belt platform flags set when the parent object is loaded - 1 byte per conveyor set
-f_water_tunnel_now:	rs.b 1 ; $FFFFF7C7 ; flag set when Sonic is in a LZ water tunnel
-v_lock_multi:		rs.b 1 ; $FFFFF7C8 ; +1 = lock controls, lock Sonic's position & animation; +$80 = no collision with objects
-f_water_tunnel_disable:	rs.b 1 ; $FFFFF7C9 ; flag set to disable LZ water tunnels
-f_jump_only:		rs.b 1 ; $FFFFF7CA ; flag set to lock controls except jumping
-f_stomp_sbz3_init:	rs.b 1 ; $FFFFF7CB ; flag set when huge sliding platform in SBZ3 is loaded
-f_lock_controls:	rs.b 1 ; $FFFFF7CC ; flag set to lock player controls
-f_giantring_collected:	rs.b 1 ; $FFFFF7CD ; flag set when Sonic collects a giant ring
-f_fblock_finish:	rs.b 1 ; $FFFFF7CE ; flag set when FloatingBlock subtype $37 reaches its destination (REV01 only)
-unused_f7cf:		rs.b 1
-v_enemy_combo:		rs.w 1 ; $FFFFF7D0 ; number of enemies/blocks broken in a row, times 2
-v_time_bonus:		rs.w 1 ; $FFFFF7D2 ; time bonus at the end of an act
-v_ring_bonus:		rs.w 1 ; $FFFFF7D4 ; ring bonus at the end of an act
-f_pass_bonus_update:	rs.b 1 ; $FFFFF7D6 ; flag set to update time/ring bonus at the end of an act
-v_end_sonic_routine:	rs.b 1 ; $FFFFF7D7 ; routine counter for Sonic in the ending sequence
-v_water_ripple_y_pos:	rs.w 1 ; $FFFFF7D8 ; y position of bg/fg water ripple effects; $80 added every frame, meaning high byte increments every 2 frames
-unused_f7da:		rs.b 6
-v_button_state:		rs.b $10 ; $FFFFF7E0 ; flags set when Sonic stands on a button
+v_levelani_0_frame:		rs.b 1 ; $FFFFF7B0 ; level graphics animation 0 - current frame
+v_levelani_0_time:		rs.b 1 ; $FFFFF7B1 ; level graphics animation 0 - time until next frame
+v_levelani_1_frame:		rs.b 1 ; $FFFFF7B2 ; level graphics animation 1 - current frame
+v_levelani_1_time:		rs.b 1 ; $FFFFF7B3 ; level graphics animation 1 - time until next frame
+v_levelani_2_frame:		rs.b 1 ; $FFFFF7B4 ; level graphics animation 2 - current frame
+v_levelani_2_time:		rs.b 1 ; $FFFFF7B5 ; level graphics animation 2 - time until next frame
+v_levelani_3_frame:		rs.b 1 ; $FFFFF7B6 ; level graphics animation 3 - current frame
+v_levelani_3_time:		rs.b 1 ; $FFFFF7B7 ; level graphics animation 3 - time until next frame
+v_levelani_4_frame:		rs.b 1 ; $FFFFF7B8 ; level graphics animation 4 - current frame
+v_levelani_4_time:		rs.b 1 ; $FFFFF7B9 ; level graphics animation 4 - time until next frame
+v_levelani_5_frame:		rs.b 1 ; $FFFFF7BA ; level graphics animation 5 - current frame
+v_levelani_5_time:		rs.b 1 ; $FFFFF7BB ; level graphics animation 5 - time until next frame
+unused_f7bc:			rs.b 2
+v_giantring_gfx_offset:		rs.w 1 ; $FFFFF7BE ; address of art for next giant ring frame, relative to Art_BigRing (counts backwards from $C40; 0 means no more art)
+f_convey_reverse:		rs.b 1 ; $FFFFF7C0 ; flag set to reverse conveyor belts in LZ/SBZ
+v_convey_init_list:		rs.b 6 ; $FFFFF7C1 ; LZ/SBZ conveyor belt platform flags set when the parent object is loaded - 1 byte per conveyor set
+f_water_tunnel_now:		rs.b 1 ; $FFFFF7C7 ; flag set when Sonic is in a LZ water tunnel
+v_lock_multi:			rs.b 1 ; $FFFFF7C8 ; +1 = lock controls, lock Sonic's position & animation; +$80 = no collision with objects
+f_water_tunnel_disable:		rs.b 1 ; $FFFFF7C9 ; flag set to disable LZ water tunnels
+f_jump_only:			rs.b 1 ; $FFFFF7CA ; flag set to lock controls except jumping
+f_stomp_sbz3_init:		rs.b 1 ; $FFFFF7CB ; flag set when huge sliding platform in SBZ3 is loaded
+f_lock_controls:		rs.b 1 ; $FFFFF7CC ; flag set to lock player controls
+f_giantring_collected:		rs.b 1 ; $FFFFF7CD ; flag set when Sonic collects a giant ring
+f_fblock_finish:		rs.b 1 ; $FFFFF7CE ; flag set when FloatingBlock subtype $37 reaches its destination (REV01 only)
+unused_f7cf:			rs.b 1
+v_enemy_combo:			rs.w 1 ; $FFFFF7D0 ; number of enemies/blocks broken in a row, times 2
+v_time_bonus:			rs.w 1 ; $FFFFF7D2 ; time bonus at the end of an act
+v_ring_bonus:			rs.w 1 ; $FFFFF7D4 ; ring bonus at the end of an act
+f_pass_bonus_update:		rs.b 1 ; $FFFFF7D6 ; flag set to update time/ring bonus at the end of an act
+v_end_sonic_routine:		rs.b 1 ; $FFFFF7D7 ; routine counter for Sonic in the ending sequence
+v_water_ripple_y_pos:		rs.w 1 ; $FFFFF7D8 ; y position of bg/fg water ripple effects; $80 added every frame, meaning high byte increments every 2 frames
+unused_f7da:			rs.b 6
+v_button_state:			rs.b $10 ; $FFFFF7E0 ; flags set when Sonic stands on a button
 v_scroll_block_1_size:	equ $FFFFF7F0	; (2 bytes)
 v_scroll_block_2_size:	equ $FFFFF7F2	; unused (2 bytes)
 v_scroll_block_3_size:	equ $FFFFF7F4	; unused (2 bytes)
@@ -262,45 +262,45 @@ v_objstate:	equ $FFFFFC00	; object state list ($100 bytes)
 v_stack:		equ $FFFFFD00 ; stack ($100 bytes)
 v_stack_pointer:	equ $FFFFFE00 ; initial stack pointer - items are added to the stack backwards from this address
 
-			rsset $FFFFFE02
-f_restart:		rs.w 1 ; $FFFFFE02 ; flag set to end/restart level
-v_frame_counter:	rs.w 1 ; $FFFFFE04 ; frame counter, increments every frame
-v_frame_counter_low:	equ v_frame_counter+1 ; low byte for frame counter
-v_debug_item_index:	rs.b 1 ; $FFFFFE06 ; debug item currently selected (NOT the object id of the item)
-unused_fe07:		rs.b 1
-v_debug_active:		rs.w 1 ; $FFFFFE08 ; xx01 when debug mode is in use and Sonic is an item; 0 otherwise
-v_debug_active_hi:	equ v_debug_active ; high byte of v_debug_active, routine counter for DebugMode (00/02)
-v_debug_x_speed:	rs.b 1 ; $FFFFFE0A ; debug mode - horizontal speed
-v_debug_y_speed:	rs.b 1 ; $FFFFFE0B ; debug mode - vertical speed
-v_vblank_counter:	rs.l 1 ; $FFFFFE0C ; vertical interrupt counter, increments every VBlank
-v_vblank_counter_word:	equ v_vblank_counter+2 ; low word for v_vblank_counter
-v_vblank_counter_byte:	equ v_vblank_counter_word+1 ; low byte for v_vblank_counter
-v_zone:			rs.b 1 ; $FFFFFE10 ; current zone number
-v_act:			rs.b 1 ; $FFFFFE11 ; current act number
-v_lives:		rs.b 1 ; $FFFFFE12 ; number of lives
-unused_fe13:		rs.b 1
-v_air:			rs.w 1 ; $FFFFFE14 ; air remaining while underwater (2 bytes)
-v_last_ss_levelid:	rs.b 1 ; $FFFFFE16 ; level id of most recent special stage played
-unused_fe17:		rs.b 1
-v_continues:		rs.b 1 ; $FFFFFE18 ; number of continues
-unused_fe19:		rs.b 1
-f_time_over:		rs.b 1 ; $FFFFFE1A ; time over flag
-v_ring_reward:		rs.b 1 ; $FFFFFE1B ; tracks which rewards have been given for rings - bit 0 = 50 rings (Special Stage); bit 1 = 100 rings; bit 2 = 200 rings
-f_hud_lives_update:	rs.b 1 ; $FFFFFE1C ; lives counter update flag
-v_hud_rings_update:	rs.b 1 ; $FFFFFE1D ; ring counter update flag - 1 = general update; $80 = reset to 0
-f_hud_time_update:	rs.b 1 ; $FFFFFE1E ; time counter update flag
-f_hud_score_update:	rs.b 1 ; $FFFFFE1F ; score counter update flag
-v_rings:		rs.w 1 ; $FFFFFE20 ; rings
-v_time:			rs.l 1 ; $FFFFFE22 ; time
-v_time_min:		equ v_time+1 ; time - minutes
-v_time_sec:		equ v_time+2 ; time - seconds
-v_time_frames:		equ v_time+3 ; time - frames
-v_score:		rs.l 1 ; $FFFFFE26 ; score
-unused_fe2a:		rs.b 2
-v_shield:		rs.b 1 ; $FFFFFE2C ; shield status - 00 = no; 01 = yes
-v_invincibility:	rs.b 1 ; $FFFFFE2D ; invinciblity status - 00 = no; 01 = yes
-v_shoes:		rs.b 1 ; $FFFFFE2E ; speed shoes status - 00 = no; 01 = yes
-v_unused_powerup:	rs.b 1 ; $FFFFFE2F ; unused power up status
+				rsset $FFFFFE02
+f_restart:			rs.w 1 ; $FFFFFE02 ; flag set to end/restart level
+v_frame_counter:		rs.w 1 ; $FFFFFE04 ; frame counter, increments every frame
+v_frame_counter_low:		equ v_frame_counter+1 ; low byte for frame counter
+v_debug_item_index:		rs.b 1 ; $FFFFFE06 ; debug item currently selected (NOT the object id of the item)
+unused_fe07:			rs.b 1
+v_debug_active:			rs.w 1 ; $FFFFFE08 ; xx01 when debug mode is in use and Sonic is an item; 0 otherwise
+v_debug_active_hi:		equ v_debug_active ; high byte of v_debug_active, routine counter for DebugMode (00/02)
+v_debug_x_speed:		rs.b 1 ; $FFFFFE0A ; debug mode - horizontal speed
+v_debug_y_speed:		rs.b 1 ; $FFFFFE0B ; debug mode - vertical speed
+v_vblank_counter:		rs.l 1 ; $FFFFFE0C ; vertical interrupt counter, increments every VBlank
+v_vblank_counter_word:		equ v_vblank_counter+2 ; low word for v_vblank_counter
+v_vblank_counter_byte:		equ v_vblank_counter_word+1 ; low byte for v_vblank_counter
+v_zone:				rs.b 1 ; $FFFFFE10 ; current zone number
+v_act:				rs.b 1 ; $FFFFFE11 ; current act number
+v_lives:			rs.b 1 ; $FFFFFE12 ; number of lives
+unused_fe13:			rs.b 1
+v_air:				rs.w 1 ; $FFFFFE14 ; air remaining while underwater (2 bytes)
+v_last_ss_levelid:		rs.b 1 ; $FFFFFE16 ; level id of most recent special stage played
+unused_fe17:			rs.b 1
+v_continues:			rs.b 1 ; $FFFFFE18 ; number of continues
+unused_fe19:			rs.b 1
+f_time_over:			rs.b 1 ; $FFFFFE1A ; time over flag
+v_ring_reward:			rs.b 1 ; $FFFFFE1B ; tracks which rewards have been given for rings - bit 0 = 50 rings (Special Stage); bit 1 = 100 rings; bit 2 = 200 rings
+f_hud_lives_update:		rs.b 1 ; $FFFFFE1C ; lives counter update flag
+v_hud_rings_update:		rs.b 1 ; $FFFFFE1D ; ring counter update flag - 1 = general update; $80 = reset to 0
+f_hud_time_update:		rs.b 1 ; $FFFFFE1E ; time counter update flag
+f_hud_score_update:		rs.b 1 ; $FFFFFE1F ; score counter update flag
+v_rings:			rs.w 1 ; $FFFFFE20 ; rings
+v_time:				rs.l 1 ; $FFFFFE22 ; time
+v_time_min:			equ v_time+1 ; time - minutes
+v_time_sec:			equ v_time+2 ; time - seconds
+v_time_frames:			equ v_time+3 ; time - frames
+v_score:			rs.l 1 ; $FFFFFE26 ; score
+unused_fe2a:			rs.b 2
+v_shield:			rs.b 1 ; $FFFFFE2C ; shield status - 00 = no; 01 = yes
+v_invincibility:		rs.b 1 ; $FFFFFE2D ; invinciblity status - 00 = no; 01 = yes
+v_shoes:			rs.b 1 ; $FFFFFE2E ; speed shoes status - 00 = no; 01 = yes
+v_unused_powerup:		rs.b 1 ; $FFFFFE2F ; unused power up status
 v_lastlamp:	equ $FFFFFE30	; number of the last lamppost you hit
 v_lamp_xpos:	equ v_lastlamp+2	; x-axis for Sonic to respawn at lamppost (2 bytes)
 v_lamp_ypos:	equ v_lastlamp+4	; y-axis for Sonic to respawn at lamppost (2 bytes)
@@ -330,14 +330,14 @@ v_ani3_buf:	equ $FFFFFEC8	; synchronised sprite animation 3 - info buffer (2 byt
 v_limittopdb:	equ $FFFFFEF0	; level upper boundary, buffered for debug mode (2 bytes)
 v_limitbtmdb:	equ $FFFFFEF2	; level bottom boundary, buffered for debug mode (2 bytes)
 
-v_screenposx_dup:	equ $FFFFFF10	; screen position x (duplicate) (2 bytes)
-v_screenposy_dup:	equ $FFFFFF14	; screen position y (duplicate) (2 bytes)
-v_bgscreenposx_dup:	equ $FFFFFF18	; background screen position x (duplicate) (2 bytes)
-v_bgscreenposy_dup:	equ $FFFFFF1C	; background screen position y (duplicate) (2 bytes)
-v_bg2screenposx_dup:	equ $FFFFFF20	; 2 bytes
-v_bg2screenposy_dup:	equ $FFFFFF24	; 2 bytes
-v_bg3screenposx_dup:	equ $FFFFFF28	; 2 bytes
-v_bg3screenposy_dup:	equ $FFFFFF2C	; 2 bytes
+v_camera_x_pos_dup:	equ $FFFFFF10	; screen position x (duplicate) (2 bytes)
+v_camera_y_pos_dup:	equ $FFFFFF14	; screen position y (duplicate) (2 bytes)
+v_bg1_x_pos_dup:	equ $FFFFFF18	; background screen position x (duplicate) (2 bytes)
+v_bg1_y_pos_dup:	equ $FFFFFF1C	; background screen position y (duplicate) (2 bytes)
+v_bg2_x_pos_dup:	equ $FFFFFF20	; 2 bytes
+v_bg2_y_pos_dup:	equ $FFFFFF24	; 2 bytes
+v_bg3_x_pos_dup:	equ $FFFFFF28	; 2 bytes
+v_bg3_y_pos_dup:	equ $FFFFFF2C	; 2 bytes
 v_fg_scroll_flags_dup:	equ $FFFFFF30
 v_bg1_scroll_flags_dup:	equ $FFFFFF32
 v_bg2_scroll_flags_dup:	equ $FFFFFF34

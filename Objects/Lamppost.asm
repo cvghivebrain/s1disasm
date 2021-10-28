@@ -145,15 +145,15 @@ Lamp_StoreInfo:
 		move.b	(v_ring_reward).w,($FFFFFE54).w 	; lives
 		move.l	(v_time).w,($FFFFFE38).w 	; time
 		move.b	(v_dle_routine).w,($FFFFFE3C).w ; routine counter for dynamic level mod
-		move.w	(v_limitbtm2).w,($FFFFFE3E).w 	; lower y-boundary of level
-		move.w	(v_screenposx).w,($FFFFFE40).w 	; screen x-position
-		move.w	(v_screenposy).w,($FFFFFE42).w 	; screen y-position
-		move.w	(v_bgscreenposx).w,($FFFFFE44).w ; bg position
-		move.w	(v_bgscreenposy).w,($FFFFFE46).w ; bg position
-		move.w	(v_bg2screenposx).w,($FFFFFE48).w ; bg position
-		move.w	(v_bg2screenposy).w,($FFFFFE4A).w ; bg position
-		move.w	(v_bg3screenposx).w,($FFFFFE4C).w ; bg position
-		move.w	(v_bg3screenposy).w,($FFFFFE4E).w ; bg position
+		move.w	(v_boundary_bottom).w,($FFFFFE3E).w 	; lower y-boundary of level
+		move.w	(v_camera_x_pos).w,($FFFFFE40).w 	; screen x-position
+		move.w	(v_camera_y_pos).w,($FFFFFE42).w 	; screen y-position
+		move.w	(v_bg1_x_pos).w,($FFFFFE44).w ; bg position
+		move.w	(v_bg1_y_pos).w,($FFFFFE46).w ; bg position
+		move.w	(v_bg2_x_pos).w,($FFFFFE48).w ; bg position
+		move.w	(v_bg2_y_pos).w,($FFFFFE4A).w ; bg position
+		move.w	(v_bg3_x_pos).w,($FFFFFE4C).w ; bg position
+		move.w	(v_bg3_y_pos).w,($FFFFFE4E).w ; bg position
 		move.w	(v_water_height_normal).w,($FFFFFE50).w 	; water height
 		move.b	(v_water_routine).w,($FFFFFE52).w ; rountine counter for water
 		move.b	(f_water_pal_full).w,($FFFFFE53).w 	; water direction
@@ -179,16 +179,16 @@ Lamp_LoadInfo:
 		subq.b	#1,(v_time_sec).w
 		move.b	($FFFFFE3C).w,(v_dle_routine).w
 		move.b	($FFFFFE52).w,(v_water_routine).w
-		move.w	($FFFFFE3E).w,(v_limitbtm2).w
-		move.w	($FFFFFE3E).w,(v_limitbtm1).w
-		move.w	($FFFFFE40).w,(v_screenposx).w
-		move.w	($FFFFFE42).w,(v_screenposy).w
-		move.w	($FFFFFE44).w,(v_bgscreenposx).w
-		move.w	($FFFFFE46).w,(v_bgscreenposy).w
-		move.w	($FFFFFE48).w,(v_bg2screenposx).w
-		move.w	($FFFFFE4A).w,(v_bg2screenposy).w
-		move.w	($FFFFFE4C).w,(v_bg3screenposx).w
-		move.w	($FFFFFE4E).w,(v_bg3screenposy).w
+		move.w	($FFFFFE3E).w,(v_boundary_bottom).w
+		move.w	($FFFFFE3E).w,(v_boundary_bottom_next).w
+		move.w	($FFFFFE40).w,(v_camera_x_pos).w
+		move.w	($FFFFFE42).w,(v_camera_y_pos).w
+		move.w	($FFFFFE44).w,(v_bg1_x_pos).w
+		move.w	($FFFFFE46).w,(v_bg1_y_pos).w
+		move.w	($FFFFFE48).w,(v_bg2_x_pos).w
+		move.w	($FFFFFE4A).w,(v_bg2_y_pos).w
+		move.w	($FFFFFE4C).w,(v_bg3_x_pos).w
+		move.w	($FFFFFE4E).w,(v_bg3_y_pos).w
 		cmpi.b	#1,(v_zone).w	; is this Labyrinth Zone?
 		bne.s	@notlabyrinth	; if not, branch
 
@@ -201,7 +201,7 @@ Lamp_LoadInfo:
 		bpl.s	locret_170F6
 		move.w	($FFFFFE32).w,d0
 		subi.w	#$A0,d0
-		move.w	d0,(v_limitleft2).w
+		move.w	d0,(v_boundary_left).w
 
 locret_170F6:
 		rts	

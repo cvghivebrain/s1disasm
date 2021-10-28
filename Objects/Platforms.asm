@@ -257,7 +257,7 @@ Plat_Type_Falls_Now:
 		add.l	d0,d3
 		move.l	d3,ost_plat_y_pos(a0)
 		addi.w	#ost_plat_y_nudge,ost_y_vel(a0)
-		move.w	(v_limitbtm2).w,d0
+		move.w	(v_boundary_bottom).w,d0
 		addi.w	#$E0,d0
 		cmp.w	ost_plat_y_pos(a0),d0
 		bcc.s	@locret_8074

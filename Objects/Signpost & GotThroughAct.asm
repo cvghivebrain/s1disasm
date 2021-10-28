@@ -41,7 +41,7 @@ Sign_Touch:	; Routine 2
 		bcc.s	@notouch	; if not, branch
 		play.w	0, jsr, sfx_Signpost		; play signpost sound
 		clr.b	(f_hud_time_update).w	; stop time counter
-		move.w	(v_limitright2).w,(v_limitleft2).w ; lock screen position
+		move.w	(v_boundary_right).w,(v_boundary_left).w ; lock screen position
 		addq.b	#2,ost_routine(a0)
 
 	@notouch:
@@ -109,7 +109,7 @@ Sign_SonicRun:	; Routine 6
 		tst.b	(v_ost_player).w
 		beq.s	loc_EC86
 		move.w	(v_ost_player+ost_x_pos).w,d0
-		move.w	(v_limitright2).w,d1
+		move.w	(v_boundary_right).w,d1
 		addi.w	#$128,d1
 		cmp.w	d1,d0
 		bcs.s	locret_ECEE
@@ -128,7 +128,7 @@ Sign_SonicRun:	; Routine 6
 GotThroughAct:
 		tst.b	(v_ost_gotthrough1).w
 		bne.s	locret_ECEE
-		move.w	(v_limitright2).w,(v_limitleft2).w
+		move.w	(v_boundary_right).w,(v_boundary_left).w
 		clr.b	(v_invincibility).w	; disable invincibility
 		clr.b	(f_hud_time_update).w	; stop time counter
 		move.b	#id_GotThroughCard,(v_ost_gotthrough1).w

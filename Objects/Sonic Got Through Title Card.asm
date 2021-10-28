@@ -241,8 +241,8 @@ Got_SBZ2:
 ; ===========================================================================
 
 loc_C766:	; Routine $10
-		addq.w	#2,(v_limitright2).w
-		cmpi.w	#$2100,(v_limitright2).w
+		addq.w	#2,(v_boundary_right).w
+		cmpi.w	#$2100,(v_boundary_right).w
 		beq.w	DeleteObject
 		rts	
 ; ===========================================================================

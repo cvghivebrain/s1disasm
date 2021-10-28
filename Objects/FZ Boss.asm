@@ -129,7 +129,7 @@ off_19E80:	index *,,2
 loc_19E90:
 		tst.l	(v_plc_buffer).w
 		bne.s	loc_19EA2
-		cmpi.w	#$2450,(v_screenposx).w
+		cmpi.w	#$2450,(v_camera_x_pos).w
 		bcs.s	loc_19EA2
 		addq.b	#2,ost_fz_mode(a0)
 
@@ -384,9 +384,9 @@ loc_1A15C:
 		jsr	(AnimateSprite).l
 
 loc_1A166:
-		cmpi.w	#$2700,(v_limitright2).w
+		cmpi.w	#$2700,(v_boundary_right).w
 		bge.s	loc_1A172
-		addq.w	#2,(v_limitright2).w
+		addq.w	#2,(v_boundary_right).w
 
 loc_1A172:
 		cmpi.b	#$C,ost_fz_mode(a0)

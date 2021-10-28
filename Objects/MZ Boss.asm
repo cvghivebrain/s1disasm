@@ -323,9 +323,9 @@ loc_1857A:
 loc_18582:
 		move.w	#$500,ost_x_vel(a0)
 		move.w	#-$40,ost_y_vel(a0)
-		cmpi.w	#$1960,(v_limitright2).w
+		cmpi.w	#$1960,(v_boundary_right).w
 		bcc.s	loc_1859C
-		addq.w	#2,(v_limitright2).w
+		addq.w	#2,(v_boundary_right).w
 		bra.s	loc_185A2
 ; ===========================================================================
 

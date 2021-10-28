@@ -19,12 +19,12 @@ DeformLayers:
 		bsr.w	ScrollHorizontal
 		bsr.w	ScrollVertical
 		bsr.w	DynamicLevelEvents
-		move.w	(v_screenposx).w,(v_fg_x_pos_hscroll).w
-		move.w	(v_screenposy).w,(v_fg_y_pos_vsram).w
-		move.w	(v_bgscreenposx).w,(v_bg_x_pos_hscroll).w
-		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w
-		move.w	(v_bg3screenposx).w,(v_bg3screenposx_dup_unused).w
-		move.w	(v_bg3screenposy).w,(v_bg3screenposy_dup_unused).w
+		move.w	(v_camera_x_pos).w,(v_fg_x_pos_hscroll).w
+		move.w	(v_camera_y_pos).w,(v_fg_y_pos_vsram).w
+		move.w	(v_bg1_x_pos).w,(v_bg_x_pos_hscroll).w
+		move.w	(v_bg1_y_pos).w,(v_bg_y_pos_vsram).w
+		move.w	(v_bg3_x_pos).w,(v_bg3_x_pos_dup_unused).w
+		move.w	(v_bg3_y_pos).w,(v_bg3_y_pos_dup_unused).w
 		moveq	#0,d0
 		move.b	(v_zone).w,d0
 		add.w	d0,d0
@@ -59,18 +59,18 @@ Deform_GHZ:
 		bsr.w	BGScroll_XY
 		bsr.w	ScrollBlock4
 		lea	(v_hscroll_buffer).w,a1
-		move.w	(v_screenposy).w,d0
+		move.w	(v_camera_y_pos).w,d0
 		andi.w	#$7FF,d0
 		lsr.w	#5,d0
 		neg.w	d0
 		addi.w	#$26,d0
-		move.w	d0,(v_bg2screenposy).w
+		move.w	d0,(v_bg2_y_pos).w
 		move.w	d0,d4
 		bsr.w	BGScroll_YAbsolute
-		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w
+		move.w	(v_bg1_y_pos).w,(v_bg_y_pos_vsram).w
 		move.w	#$6F,d1
 		sub.w	d4,d1
-		move.w	(v_screenposx).w,d0
+		move.w	(v_camera_x_pos).w,d0
 		cmpi.b	#id_Title,(v_gamemode).w
 		bne.s	loc_633C
 		moveq	#0,d0
@@ -78,22 +78,22 @@ Deform_GHZ:
 loc_633C:
 		neg.w	d0
 		swap	d0
-		move.w	(v_bgscreenposx).w,d0
+		move.w	(v_bg1_x_pos).w,d0
 		neg.w	d0
 
 loc_6346:
 		move.l	d0,(a1)+
 		dbf	d1,loc_6346
 		move.w	#$27,d1
-		move.w	(v_bg2screenposx).w,d0
+		move.w	(v_bg2_x_pos).w,d0
 		neg.w	d0
 
 loc_6356:
 		move.l	d0,(a1)+
 		dbf	d1,loc_6356
-		move.w	(v_bg2screenposx).w,d0
+		move.w	(v_bg2_x_pos).w,d0
 		addi.w	#0,d0
-		move.w	(v_screenposx).w,d2
+		move.w	(v_camera_x_pos).w,d2
 		addi.w	#-$200,d2
 		sub.w	d0,d2
 		ext.l	d2
@@ -132,20 +132,20 @@ Deform_LZ:
 		ext.l	d5
 		asl.l	#7,d5
 		bsr.w	BGScroll_XY
-		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w
+		move.w	(v_bg1_y_pos).w,(v_bg_y_pos_vsram).w
 		lea	(v_hscroll_buffer).w,a1
 		move.w	#223,d1
-		move.w	(v_screenposx).w,d0
+		move.w	(v_camera_x_pos).w,d0
 		neg.w	d0
 		swap	d0
-		move.w	(v_bgscreenposx).w,d0
+		move.w	(v_bg1_x_pos).w,d0
 		neg.w	d0
 
 loc_63C6:
 		move.l	d0,(a1)+
 		dbf	d1,loc_63C6
 		move.w	(v_water_height_actual).w,d0
-		sub.w	(v_screenposy).w,d0
+		sub.w	(v_camera_y_pos).w,d0
 		rts	
 ; End of function Deform_LZ
 
@@ -166,7 +166,7 @@ Deform_MZ:
 		moveq	#0,d5
 		bsr.w	BGScroll_XY
 		move.w	#$200,d0
-		move.w	(v_screenposy).w,d1
+		move.w	(v_camera_y_pos).w,d1
 		subi.w	#$1C8,d1
 		bcs.s	loc_6402
 		move.w	d1,d2
@@ -176,15 +176,15 @@ Deform_MZ:
 		add.w	d1,d0
 
 loc_6402:
-		move.w	d0,(v_bg2screenposy).w
+		move.w	d0,(v_bg2_y_pos).w
 		bsr.w	BGScroll_YAbsolute
-		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w
+		move.w	(v_bg1_y_pos).w,(v_bg_y_pos_vsram).w
 		lea	(v_hscroll_buffer).w,a1
 		move.w	#223,d1
-		move.w	(v_screenposx).w,d0
+		move.w	(v_camera_x_pos).w,d0
 		neg.w	d0
 		swap	d0
-		move.w	(v_bgscreenposx).w,d0
+		move.w	(v_bg1_x_pos).w,d0
 		neg.w	d0
 
 loc_6426:
@@ -208,10 +208,10 @@ Deform_SLZ:
 		ext.l	d5
 		asl.l	#7,d5
 		bsr.w	Bg_Scroll_Y
-		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w
+		move.w	(v_bg1_y_pos).w,(v_bg_y_pos_vsram).w
 		bsr.w	Deform_SLZ_2
 		lea	(v_bgscroll_buffer).w,a2
-		move.w	(v_bgscreenposy).w,d0
+		move.w	(v_bg1_y_pos).w,d0
 		move.w	d0,d2
 		subi.w	#$C0,d0
 		andi.w	#$3F0,d0
@@ -219,7 +219,7 @@ Deform_SLZ:
 		lea	(a2,d0.w),a2
 		lea	(v_hscroll_buffer).w,a1
 		move.w	#$E,d1
-		move.w	(v_screenposx).w,d0
+		move.w	(v_camera_x_pos).w,d0
 		neg.w	d0
 		swap	d0
 		andi.w	#$F,d2
@@ -258,7 +258,7 @@ loc_6482:
 
 Deform_SLZ_2:
 		lea	(v_bgscroll_buffer).w,a1
-		move.w	(v_screenposx).w,d2
+		move.w	(v_camera_x_pos).w,d2
 		neg.w	d2
 		move.w	d2,d0
 		asr.w	#3,d0
@@ -321,13 +321,13 @@ Deform_SYZ:
 		asl.l	#1,d5
 		add.l	d1,d5
 		bsr.w	BGScroll_XY
-		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w
+		move.w	(v_bg1_y_pos).w,(v_bg_y_pos_vsram).w
 		lea	(v_hscroll_buffer).w,a1
 		move.w	#223,d1
-		move.w	(v_screenposx).w,d0
+		move.w	(v_camera_x_pos).w,d0
 		neg.w	d0
 		swap	d0
-		move.w	(v_bgscreenposx).w,d0
+		move.w	(v_bg1_x_pos).w,d0
 		neg.w	d0
 
 loc_653C:
@@ -352,13 +352,13 @@ Deform_SBZ:
 		asl.l	#4,d5
 		asl.l	#1,d5
 		bsr.w	BGScroll_XY
-		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w
+		move.w	(v_bg1_y_pos).w,(v_bg_y_pos_vsram).w
 		lea	(v_hscroll_buffer).w,a1
 		move.w	#223,d1
-		move.w	(v_screenposx).w,d0
+		move.w	(v_camera_x_pos).w,d0
 		neg.w	d0
 		swap	d0
-		move.w	(v_bgscreenposx).w,d0
+		move.w	(v_bg1_x_pos).w,d0
 		neg.w	d0
 
 loc_6576:

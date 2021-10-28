@@ -735,8 +735,8 @@ VBla_08:
 
 	@nochg:
 		startZ80
-		movem.l	(v_screenposx).w,d0-d7
-		movem.l	d0-d7,(v_screenposx_dup).w
+		movem.l	(v_camera_x_pos).w,d0-d7
+		movem.l	d0-d7,(v_camera_x_pos_dup).w
 		movem.l	(v_fg_scroll_flags).w,d0-d1
 		movem.l	d0-d1,(v_fg_scroll_flags_dup).w
 		cmpi.b	#96,(v_vdp_hint_line).w
@@ -815,8 +815,8 @@ VBla_0C:
 
 	@nochg:
 		startZ80
-		movem.l	(v_screenposx).w,d0-d7
-		movem.l	d0-d7,(v_screenposx_dup).w
+		movem.l	(v_camera_x_pos).w,d0-d7
+		movem.l	d0-d7,(v_camera_x_pos_dup).w
 		movem.l	(v_fg_scroll_flags).w,d0-d1
 		movem.l	d0-d1,(v_fg_scroll_flags_dup).w
 		bsr.w	LoadTilesAsYouMove
@@ -1831,7 +1831,7 @@ GM_Title:
 		bsr.w	ClearScreen
 		lea	(vdp_control_port).l,a5
 		lea	(vdp_data_port).l,a6
-		lea	(v_bgscreenposx).w,a3
+		lea	(v_bg1_x_pos).w,a3
 		lea	(v_level_layout+$40).w,a4
 		move.w	#$6000,d2
 		bsr.w	DrawChunks
@@ -2449,7 +2449,7 @@ Level_ClrRam:
 		move.l	d0,(a1)+
 		dbf	d1,Level_ClrVars1 ; clear misc variables
 
-		lea	(v_screenposx).w,a1
+		lea	(v_camera_x_pos).w,a1
 		moveq	#0,d0
 		move.w	#$3F,d1
 
@@ -2914,16 +2914,16 @@ SignpostArtLoad:
 		cmpi.b	#2,(v_act).w	; is act number 02 (act 3)?
 		beq.s	@exit		; if yes, branch
 
-		move.w	(v_screenposx).w,d0
-		move.w	(v_limitright2).w,d1
+		move.w	(v_camera_x_pos).w,d0
+		move.w	(v_boundary_right).w,d1
 		subi.w	#$100,d1
 		cmp.w	d1,d0		; has Sonic reached the	edge of	the level?
 		blt.s	@exit		; if not, branch
 		tst.b	(f_hud_time_update).w
 		beq.s	@exit
-		cmp.w	(v_limitleft2).w,d1
+		cmp.w	(v_boundary_left).w,d1
 		beq.s	@exit
-		move.w	d1,(v_limitleft2).w ; move left boundary to current screen position
+		move.w	d1,(v_boundary_left).w ; move left boundary to current screen position
 		moveq	#id_PLC_Signpost,d0
 		bra.w	NewPLC		; load signpost	patterns
 
@@ -2974,7 +2974,7 @@ GM_Special:
 		move.l	d0,(a1)+
 		dbf	d1,SS_ClrObjRam	; clear	the object RAM
 
-		lea	(v_screenposx).w,a1
+		lea	(v_camera_x_pos).w,a1
 		moveq	#0,d0
 		move.w	#$3F,d1
 	SS_ClrRam1:
@@ -3000,8 +3000,8 @@ GM_Special:
 		moveq	#id_Pal_Special,d0
 		bsr.w	PalLoad1	; load special stage palette
 		jsr	(SS_Load).l	; load SS layout data
-		move.l	#0,(v_screenposx).w
-		move.l	#0,(v_screenposy).w
+		move.l	#0,(v_camera_x_pos).w
+		move.l	#0,(v_camera_y_pos).w
 		move.b	#id_SonicSpecial,(v_ost_player).w ; load special stage Sonic object
 		bsr.w	PalCycle_SS
 		clr.w	(v_ss_angle).w	; set stage angle to "upright"
@@ -3370,21 +3370,21 @@ Pal_SSCyc2:	incbin	"Palettes\Cycle - Special Stage 2.bin"
 SS_BGAnimate:
 		move.w	(v_ss_bg_mode).w,d0 ; get frame for fish/bird animation
 		bne.s	@not_0		; branch if not 0
-		move.w	#0,(v_bgscreenposy).w
-		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w ; reset vertical scroll for bubble/cloud layer
+		move.w	#0,(v_bg1_y_pos).w
+		move.w	(v_bg1_y_pos).w,(v_bg_y_pos_vsram).w ; reset vertical scroll for bubble/cloud layer
 
 	@not_0:
 		cmpi.w	#8,d0
 		bhs.s	loc_4C4E	; branch if d0 is 8-$C
 		cmpi.w	#6,d0
 		bne.s	@not_6		; branch if d0 isn't 6
-		addq.w	#1,(v_bg3screenposx).w
-		addq.w	#1,(v_bgscreenposy).w
-		move.w	(v_bgscreenposy).w,(v_bg_y_pos_vsram).w ; scroll bubble layer
+		addq.w	#1,(v_bg3_x_pos).w
+		addq.w	#1,(v_bg1_y_pos).w
+		move.w	(v_bg1_y_pos).w,(v_bg_y_pos_vsram).w ; scroll bubble layer
 
 	@not_6:
 		moveq	#0,d0
-		move.w	(v_bgscreenposx).w,d0
+		move.w	(v_bg1_x_pos).w,d0
 		neg.w	d0
 		swap	d0
 		lea	(byte_4CCC).l,a1
@@ -3411,7 +3411,7 @@ loc_4C26:
 loc_4C4E:
 		cmpi.w	#$C,d0
 		bne.s	@not_C		; branch if d0 isn't $C
-		subq.w	#1,(v_bg3screenposx).w
+		subq.w	#1,(v_bg3_x_pos).w
 		lea	($FFFFAB00).w,a3
 		move.l	#$18000,d2
 		moveq	#6,d1
@@ -3429,12 +3429,12 @@ loc_4C4E:
 
 loc_4C7E:
 		lea	(v_hscroll_buffer).w,a1
-		move.w	(v_bg3screenposx).w,d0
+		move.w	(v_bg3_x_pos).w,d0
 		neg.w	d0
 		swap	d0
 		moveq	#0,d3
 		move.b	(a2)+,d3
-		move.w	(v_bgscreenposy).w,d2
+		move.w	(v_bg1_y_pos).w,d2
 		neg.w	d2
 		andi.w	#$FF,d2
 		lsl.w	#2,d2
@@ -3505,8 +3505,8 @@ GM_Continue:
 		bsr.w	PalLoad1	; load continue	screen palette
 		play.b	0, bsr.w, mus_Continue	; play continue	music
 		move.w	#659,(v_countdown).w ; set time delay to 11 seconds
-		clr.l	(v_screenposx).w
-		move.l	#$1000000,(v_screenposy).w
+		clr.l	(v_camera_x_pos).w
+		move.l	#$1000000,(v_camera_y_pos).w
 		move.b	#id_ContSonic,(v_ost_player).w ; load Sonic object
 		move.b	#id_ContScrItem,(v_ost_cont_text).w ; load continue screen objects
 		move.b	#id_ContScrItem,(v_ost_cont_oval).w
@@ -3590,7 +3590,7 @@ GM_Ending:
 		move.l	d0,(a1)+
 		dbf	d1,End_ClrRam1	; clear	variables
 
-		lea	(v_screenposx).w,a1
+		lea	(v_camera_x_pos).w,a1
 		moveq	#0,d0
 		move.w	#$3F,d1
 	End_ClrRam2:
@@ -3738,7 +3738,7 @@ End_ChkEmerald:
 		move.w	#$2E2F,(v_level_layout+$80).w ; modify level layout
 		lea	(vdp_control_port).l,a5
 		lea	(vdp_data_port).l,a6
-		lea	(v_screenposx).w,a3
+		lea	(v_camera_x_pos).w,a3
 		lea	(v_level_layout).w,a4
 		move.w	#$4000,d2
 		bsr.w	DrawChunks
@@ -4052,16 +4052,16 @@ LevelSizeLoad:
 		add.w	d1,d0
 		lea	LevelSizeArray(pc,d0.w),a0 ; load level	boundaries
 		move.w	(a0)+,d0
-		move.w	d0,($FFFFF730).w
+		move.w	d0,(v_boundary_unused).w
 		move.l	(a0)+,d0
-		move.l	d0,(v_limitleft2).w
-		move.l	d0,(v_limitleft1).w
+		move.l	d0,(v_boundary_left).w
+		move.l	d0,(v_boundary_left_next).w
 		move.l	(a0)+,d0
-		move.l	d0,(v_limittop2).w
-		move.l	d0,(v_limittop1).w
-		move.w	(v_limitleft2).w,d0
+		move.l	d0,(v_boundary_top).w
+		move.l	d0,(v_boundary_top_next).w
+		move.w	(v_boundary_left).w,d0
 		addi.w	#$240,d0
-		move.w	d0,(v_limitleft3).w
+		move.w	d0,(v_boundary_left_unused).w
 		move.w	#$1010,($FFFFF74A).w
 		move.w	(a0)+,d0
 		move.w	d0,(v_lookshift).w
@@ -4163,25 +4163,25 @@ SetScreen:
 		moveq	#0,d1
 
 	SetScr_WithinLeft:
-		move.w	(v_limitright2).w,d2
+		move.w	(v_boundary_right).w,d2
 		cmp.w	d2,d1		; is Sonic inside the right edge?
 		bcs.s	SetScr_WithinRight ; if yes, branch
 		move.w	d2,d1
 
 	SetScr_WithinRight:
-		move.w	d1,(v_screenposx).w ; set horizontal screen position
+		move.w	d1,(v_camera_x_pos).w ; set horizontal screen position
 
 		subi.w	#96,d0		; is Sonic within 96px of upper edge?
 		bcc.s	SetScr_WithinTop ; if yes, branch
 		moveq	#0,d0
 
 	SetScr_WithinTop:
-		cmp.w	(v_limitbtm2).w,d0 ; is Sonic above the bottom edge?
+		cmp.w	(v_boundary_bottom).w,d0 ; is Sonic above the bottom edge?
 		blt.s	SetScr_WithinBottom ; if yes, branch
-		move.w	(v_limitbtm2).w,d0
+		move.w	(v_boundary_bottom).w,d0
 
 	SetScr_WithinBottom:
-		move.w	d0,(v_screenposy).w ; set vertical screen position
+		move.w	d0,(v_camera_y_pos).w ; set vertical screen position
 		bsr.w	BgScrollSpeed
 		moveq	#0,d0
 		move.b	(v_zone).w,d0
@@ -4324,11 +4324,11 @@ BGScrollBlockSizes:
 BgScrollSpeed:
 		tst.b	(v_lastlamp).w
 		bne.s	loc_6206
-		move.w	d0,(v_bgscreenposy).w
-		move.w	d0,(v_bg2screenposy).w
-		move.w	d1,(v_bgscreenposx).w
-		move.w	d1,(v_bg2screenposx).w
-		move.w	d1,(v_bg3screenposx).w
+		move.w	d0,(v_bg1_y_pos).w
+		move.w	d0,(v_bg2_y_pos).w
+		move.w	d1,(v_bg1_x_pos).w
+		move.w	d1,(v_bg2_x_pos).w
+		move.w	d1,(v_bg3_x_pos).w
 
 loc_6206:
 		moveq	#0,d2
@@ -4354,10 +4354,10 @@ BgScroll_GHZ:
 		if revision=0
 		bra.w	Deform_GHZ
 		else
-		clr.l	(v_bgscreenposx).w
-		clr.l	(v_bgscreenposy).w
-		clr.l	(v_bg2screenposy).w
-		clr.l	(v_bg3screenposy).w
+		clr.l	(v_bg1_x_pos).w
+		clr.l	(v_bg1_y_pos).w
+		clr.l	(v_bg2_y_pos).w
+		clr.l	(v_bg3_y_pos).w
 		lea	($FFFFA800).w,a2
 		clr.l	(a2)+
 		clr.l	(a2)+
@@ -4368,7 +4368,7 @@ BgScroll_GHZ:
 
 BgScroll_LZ:
 		asr.l	#1,d0
-		move.w	d0,(v_bgscreenposy).w
+		move.w	d0,(v_bg1_y_pos).w
 		rts	
 ; ===========================================================================
 
@@ -4379,10 +4379,10 @@ BgScroll_MZ:
 BgScroll_SLZ:
 		asr.l	#1,d0
 		addi.w	#$C0,d0
-		move.w	d0,(v_bgscreenposy).w
+		move.w	d0,(v_bg1_y_pos).w
 		if revision=0
 		else
-		clr.l	(v_bgscreenposx).w
+		clr.l	(v_bg1_x_pos).w
 		endc
 		rts	
 ; ===========================================================================
@@ -4394,12 +4394,12 @@ BgScroll_SYZ:
 		add.l	d2,d0
 		asr.l	#8,d0
 		if revision=0
-		move.w	d0,(v_bgscreenposy).w
-		move.w	d0,(v_bg2screenposy).w
+		move.w	d0,(v_bg1_y_pos).w
+		move.w	d0,(v_bg2_y_pos).w
 		else
 		addq.w	#1,d0
-		move.w	d0,(v_bgscreenposy).w
-		clr.l	(v_bgscreenposx).w
+		move.w	d0,(v_bg1_y_pos).w
+		clr.l	(v_bg1_x_pos).w
 		endc
 		rts	
 ; ===========================================================================
@@ -4414,34 +4414,34 @@ BgScroll_SBZ:
 		asr.w	#3,d0
 		addq.w	#1,d0
 		endc
-		move.w	d0,(v_bgscreenposy).w
+		move.w	d0,(v_bg1_y_pos).w
 		rts	
 ; ===========================================================================
 
 BgScroll_End:
 		if revision=0
-		move.w	#$1E,(v_bgscreenposy).w
-		move.w	#$1E,(v_bg2screenposy).w
+		move.w	#$1E,(v_bg1_y_pos).w
+		move.w	#$1E,(v_bg2_y_pos).w
 		rts	
 ; ===========================================================================
-		move.w	#$A8,(v_bgscreenposx).w
-		move.w	#$1E,(v_bgscreenposy).w
-		move.w	#-$40,(v_bg2screenposx).w
-		move.w	#$1E,(v_bg2screenposy).w
+		move.w	#$A8,(v_bg1_x_pos).w
+		move.w	#$1E,(v_bg1_y_pos).w
+		move.w	#-$40,(v_bg2_x_pos).w
+		move.w	#$1E,(v_bg2_y_pos).w
 		rts
 		else
-		move.w	(v_screenposx).w,d0
+		move.w	(v_camera_x_pos).w,d0
 		asr.w	#1,d0
-		move.w	d0,(v_bgscreenposx).w
-		move.w	d0,(v_bg2screenposx).w
+		move.w	d0,(v_bg1_x_pos).w
+		move.w	d0,(v_bg2_x_pos).w
 		asr.w	#2,d0
 		move.w	d0,d1
 		add.w	d0,d0
 		add.w	d1,d0
-		move.w	d0,(v_bg3screenposx).w
-		clr.l	(v_bgscreenposy).w
-		clr.l	(v_bg2screenposy).w
-		clr.l	(v_bg3screenposy).w
+		move.w	d0,(v_bg3_x_pos).w
+		clr.l	(v_bg1_y_pos).w
+		clr.l	(v_bg2_y_pos).w
+		clr.l	(v_bg3_y_pos).w
 		lea	($FFFFA800).w,a2
 		clr.l	(a2)+
 		clr.l	(a2)+
@@ -4463,10 +4463,10 @@ BgScroll_End:
 ; d5 - background y offset * $10000
 
 BGScroll_XY:
-		move.l	(v_bgscreenposx).w,d2
+		move.l	(v_bg1_x_pos).w,d2
 		move.l	d2,d0
 		add.l	d4,d0
-		move.l	d0,(v_bgscreenposx).w
+		move.l	d0,(v_bg1_x_pos).w
 		move.l	d0,d1
 		swap	d1
 		andi.w	#$10,d1
@@ -4481,10 +4481,10 @@ BGScroll_XY:
 	@scrollRight:
 		bset	#3,(v_bg1_scroll_flags).w
 BGScroll_YRelative:
-		move.l	(v_bgscreenposy).w,d3
+		move.l	(v_bg1_y_pos).w,d3
 		move.l	d3,d0
 		add.l	d5,d0
-		move.l	d0,(v_bgscreenposy).w
+		move.l	d0,(v_bg1_y_pos).w
 		move.l	d0,d1
 		swap	d1
 		andi.w	#$10,d1
@@ -4504,15 +4504,15 @@ BGScroll_YRelative:
 
 Bg_Scroll_Y:
 		if revision=0
-		move.l	(v_bgscreenposx).w,d2
+		move.l	(v_bg1_x_pos).w,d2
 		move.l	d2,d0
 		add.l	d4,d0
-		move.l	d0,(v_bgscreenposx).w
+		move.l	d0,(v_bg1_x_pos).w
 		endc
-		move.l	(v_bgscreenposy).w,d3
+		move.l	(v_bg1_y_pos).w,d3
 		move.l	d3,d0
 		add.l	d5,d0
-		move.l	d0,(v_bgscreenposy).w
+		move.l	d0,(v_bg1_y_pos).w
 		move.l	d0,d1
 		swap	d1
 		andi.w	#$10,d1
@@ -4542,8 +4542,8 @@ Bg_Scroll_Y:
 
 
 BGScroll_YAbsolute:
-		move.w	(v_bgscreenposy).w,d3
-		move.w	d0,(v_bgscreenposy).w
+		move.w	(v_bg1_y_pos).w,d3
+		move.w	d0,(v_bg1_y_pos).w
 		move.w	d0,d1
 		andi.w	#$10,d1
 		move.b	(v_bg1_yblock).w,d2
@@ -4566,19 +4566,19 @@ BGScroll_YAbsolute:
 
 
 ScrollBlock4:
-		move.w	(v_bg2screenposx).w,d2
-		move.w	(v_bg2screenposy).w,d3
+		move.w	(v_bg2_x_pos).w,d2
+		move.w	(v_bg2_y_pos).w,d3
 		move.w	(v_scrshiftx).w,d0
 		ext.l	d0
 		asl.l	#7,d0
-		add.l	d0,(v_bg2screenposx).w
-		move.w	(v_bg2screenposx).w,d0
+		add.l	d0,(v_bg2_x_pos).w
+		move.w	(v_bg2_x_pos).w,d0
 		andi.w	#$10,d0
 		move.b	($FFFFF74E).w,d1
 		eor.b	d1,d0
 		bne.s	locret_6884
 		eori.b	#$10,($FFFFF74E).w
-		move.w	(v_bg2screenposx).w,d0
+		move.w	(v_bg2_x_pos).w,d0
 		sub.w	d2,d0
 		bpl.s	loc_687E
 		bset	#2,(v_bg2_scroll_flags).w
@@ -4598,10 +4598,10 @@ locret_6884:
 ; d6 - bit to set for redraw
 
 BGScroll_Block1:
-		move.l	(v_bgscreenposx).w,d2
+		move.l	(v_bg1_x_pos).w,d2
 		move.l	d2,d0
 		add.l	d4,d0
-		move.l	d0,(v_bgscreenposx).w
+		move.l	d0,(v_bg1_x_pos).w
 		move.l	d0,d1
 		swap	d1
 		andi.w	#$10,d1
@@ -4625,10 +4625,10 @@ BGScroll_Block1:
 
 
 BGScroll_Block2:
-		move.l	(v_bg2screenposx).w,d2
+		move.l	(v_bg2_x_pos).w,d2
 		move.l	d2,d0
 		add.l	d4,d0
-		move.l	d0,(v_bg2screenposx).w
+		move.l	d0,(v_bg2_x_pos).w
 		move.l	d0,d1
 		swap	d1
 		andi.w	#$10,d1
@@ -4647,10 +4647,10 @@ BGScroll_Block2:
 		rts
 ;-------------------------------------------------------------------------------
 BGScroll_Block3:
-		move.l	(v_bg3screenposx).w,d2
+		move.l	(v_bg3_x_pos).w,d2
 		move.l	d2,d0
 		add.l	d4,d0
-		move.l	d0,(v_bg3screenposx).w
+		move.l	d0,(v_bg3_x_pos).w
 		move.l	d0,d1
 		swap	d1
 		andi.w	#$10,d1
@@ -4677,12 +4677,12 @@ LoadTilesAsYouMove_BGOnly:
 		lea	(vdp_control_port).l,a5
 		lea	(vdp_data_port).l,a6
 		lea	(v_bg1_scroll_flags).w,a2
-		lea	(v_bgscreenposx).w,a3
+		lea	(v_bg1_x_pos).w,a3
 		lea	(v_level_layout+$40).w,a4
 		move.w	#$6000,d2
 		bsr.w	DrawBGScrollBlock1
 		lea	(v_bg2_scroll_flags).w,a2
-		lea	(v_bg2screenposx).w,a3
+		lea	(v_bg2_x_pos).w,a3
 		bra.w	DrawBGScrollBlock2
 ; End of function sub_6886
 
@@ -4698,23 +4698,23 @@ LoadTilesAsYouMove:
 		lea	(vdp_data_port).l,a6
 		; First, update the background
 		lea	(v_bg1_scroll_flags_dup).w,a2	; Scroll block 1 scroll flags
-		lea	(v_bgscreenposx_dup).w,a3	; Scroll block 1 X coordinate
+		lea	(v_bg1_x_pos_dup).w,a3	; Scroll block 1 X coordinate
 		lea	(v_level_layout+$40).w,a4
 		move.w	#$6000,d2			; VRAM thing for selecting Plane B
 		bsr.w	DrawBGScrollBlock1
 		lea	(v_bg2_scroll_flags_dup).w,a2	; Scroll block 2 scroll flags
-		lea	(v_bg2screenposx_dup).w,a3	; Scroll block 2 X coordinate
+		lea	(v_bg2_x_pos_dup).w,a3	; Scroll block 2 X coordinate
 		bsr.w	DrawBGScrollBlock2
 		if Revision>=1
 		; REV01 added a third scroll block, though, technically,
 		; the RAM for it was already there in REV00
 		lea	(v_bg3_scroll_flags_dup).w,a2	; Scroll block 3 scroll flags
-		lea	(v_bg3screenposx_dup).w,a3	; Scroll block 3 X coordinate
+		lea	(v_bg3_x_pos_dup).w,a3	; Scroll block 3 X coordinate
 		bsr.w	DrawBGScrollBlock3
 		endc
 		; Then, update the foreground
 		lea	(v_fg_scroll_flags_dup).w,a2	; Foreground scroll flags
-		lea	(v_screenposx_dup).w,a3		; Foreground X coordinate
+		lea	(v_camera_x_pos_dup).w,a3		; Foreground X coordinate
 		lea	(v_level_layout).w,a4
 		move.w	#$4000,d2			; VRAM thing for selecting Plane A
 		; The FG's update function is inlined here
@@ -5049,7 +5049,7 @@ locret_6AD6:
 			move.w	#224,d4
 	locj_6E28:
 			lea	(locj_6DF4+1).l,a0
-			move.w	(v_bgscreenposy).w,d0
+			move.w	(v_bg1_y_pos).w,d0
 			add.w	d4,d0
 			andi.w	#$1F0,d0
 			lsr.w	#4,d0
@@ -5087,7 +5087,7 @@ locret_6AD6:
 			move.w	#320,d5
 	locj_6E8C:
 			lea	(locj_6DF4).l,a0
-			move.w	(v_bgscreenposy).w,d0
+			move.w	(v_bg1_y_pos).w,d0
 			andi.w	#$1F0,d0
 			lsr.w	#4,d0
 			lea	(a0,d0.w),a0
@@ -5142,7 +5142,7 @@ locret_6AD6:
 			move.w	#224,d4
 	locj_6F66:
 			lea	(locj_6EF2+1).l,a0
-			move.w	(v_bgscreenposy).w,d0
+			move.w	(v_bg1_y_pos).w,d0
 			subi.w	#$200,d0
 			add.w	d4,d0
 			andi.w	#$7F0,d0
@@ -5180,7 +5180,7 @@ locret_6AD6:
 			move.w	#320,d5
 	locj_6FC8:
 			lea	(locj_6EF2).l,a0
-			move.w	(v_bgscreenposy).w,d0
+			move.w	(v_bg1_y_pos).w,d0
 			subi.w	#$200,d0
 			andi.w	#$7F0,d0
 			lsr.w	#4,d0
@@ -5188,7 +5188,7 @@ locret_6AD6:
 			bra.w	locj_6FEC
 ;===============================================================================			
 	locj_6FE4:
-			dc.w v_bgscreenposx_dup, v_bgscreenposx_dup, v_bg2screenposx_dup, v_bg3screenposx_dup
+			dc.w v_bg1_x_pos_dup, v_bg1_x_pos_dup, v_bg2_x_pos_dup, v_bg3_x_pos_dup
 	locj_6FEC:
 			moveq	#((224+16+16)/16)-1,d6
 			move.l	#$800000,d7
@@ -5509,11 +5509,11 @@ Calc_VRAM_Pos_Unknown:
 LoadTilesFromStart:
 		lea	(vdp_control_port).l,a5
 		lea	(vdp_data_port).l,a6
-		lea	(v_screenposx).w,a3
+		lea	(v_camera_x_pos).w,a3
 		lea	(v_level_layout).w,a4
 		move.w	#$4000,d2
 		bsr.s	DrawChunks
-		lea	(v_bgscreenposx).w,a3
+		lea	(v_bg1_x_pos).w,a3
 		lea	(v_level_layout+$40).w,a4
 		move.w	#$6000,d2
 		if Revision=0
@@ -5559,7 +5559,7 @@ DrawChunks:
 	locj_7224:			
 			movem.l	d4-d6,-(sp)
 			lea	(locj_724a),a0
-			move.w	(v_bgscreenposy).w,d0
+			move.w	(v_bg1_y_pos).w,d0
 			add.w	d4,d0
 			andi.w	#$F0,d0
 			bsr.w	locj_72Ba
@@ -5576,7 +5576,7 @@ DrawChunks:
 	locj_725E:			
 			movem.l	d4-d6,-(sp)
 			lea	(locj_6EF2+1),a0
-			move.w	(v_bgscreenposy).w,d0
+			move.w	(v_bg1_y_pos).w,d0
 			subi.w	#$200,d0
 			add.w	d4,d0
 			andi.w	#$7F0,d0
@@ -5592,7 +5592,7 @@ DrawChunks:
 	locj_728C:			
 			movem.l	d4-d6,-(sp)
 			lea	(locj_6DF4+1),a0
-			move.w	(v_bgscreenposy).w,d0
+			move.w	(v_bg1_y_pos).w,d0
 			add.w	d4,d0
 			andi.w	#$1F0,d0
 			bsr.w	locj_72Ba
@@ -5602,7 +5602,7 @@ DrawChunks:
 			rts
 ;-------------------------------------------------------------------------------
 	locj_72B2:
-			dc.w v_bgscreenposx, v_bgscreenposx, v_bg2screenposx, v_bg3screenposx
+			dc.w v_bg1_x_pos, v_bg1_x_pos, v_bg2_x_pos, v_bg3_x_pos
 	locj_72Ba:
 			lsr.w	#4,d0
 			move.b	(a0,d0.w),d0
@@ -6583,13 +6583,13 @@ SS_ShowLayout:
 		muls.w	#$18,d4
 		muls.w	#$18,d5
 		moveq	#0,d2
-		move.w	(v_screenposx).w,d2
+		move.w	(v_camera_x_pos).w,d2
 		divu.w	#$18,d2
 		swap	d2
 		neg.w	d2
 		addi.w	#-$B4,d2
 		moveq	#0,d3
-		move.w	(v_screenposy).w,d3
+		move.w	(v_camera_y_pos).w,d3
 		divu.w	#$18,d3
 		swap	d3
 		neg.w	d3
@@ -6629,12 +6629,12 @@ loc_1B1C0:
 		move.w	(sp)+,d5
 		lea	($FF0000).l,a0
 		moveq	#0,d0
-		move.w	(v_screenposy).w,d0
+		move.w	(v_camera_y_pos).w,d0
 		divu.w	#$18,d0
 		mulu.w	#$80,d0
 		adda.l	d0,a0
 		moveq	#0,d0
-		move.w	(v_screenposx).w,d0
+		move.w	(v_camera_x_pos).w,d0
 		divu.w	#$18,d0
 		adda.w	d0,a0
 		lea	($FFFF8000).w,a4
@@ -7120,166 +7120,94 @@ loc_1B730:
 
 ; ===========================================================================
 
-SS_MapIndex:
 ; ---------------------------------------------------------------------------
 ; Special stage	mappings and VRAM pointers
 ; ---------------------------------------------------------------------------
-	dc.l Map_SSWalls	; address of mappings
-	dc.w $142		; VRAM setting
-	dc.l Map_SSWalls
-	dc.w $142
-	dc.l Map_SSWalls
-	dc.w $142
-	dc.l Map_SSWalls
-	dc.w $142
-	dc.l Map_SSWalls
-	dc.w $142
-	dc.l Map_SSWalls
-	dc.w $142
-	dc.l Map_SSWalls
-	dc.w $142
-	dc.l Map_SSWalls
-	dc.w $142
-	dc.l Map_SSWalls
-	dc.w $142
-	dc.l Map_SSWalls
-	dc.w $2142
-	dc.l Map_SSWalls
-	dc.w $2142
-	dc.l Map_SSWalls
-	dc.w $2142
-	dc.l Map_SSWalls
-	dc.w $2142
-	dc.l Map_SSWalls
-	dc.w $2142
-	dc.l Map_SSWalls
-	dc.w $2142
-	dc.l Map_SSWalls
-	dc.w $2142
-	dc.l Map_SSWalls
-	dc.w $2142
-	dc.l Map_SSWalls
-	dc.w $2142
-	dc.l Map_SSWalls
-	dc.w $4142
-	dc.l Map_SSWalls
-	dc.w $4142
-	dc.l Map_SSWalls
-	dc.w $4142
-	dc.l Map_SSWalls
-	dc.w $4142
-	dc.l Map_SSWalls
-	dc.w $4142
-	dc.l Map_SSWalls
-	dc.w $4142
-	dc.l Map_SSWalls
-	dc.w $4142
-	dc.l Map_SSWalls
-	dc.w $4142
-	dc.l Map_SSWalls
-	dc.w $4142
-	dc.l Map_SSWalls
-	dc.w $6142
-	dc.l Map_SSWalls
-	dc.w $6142
-	dc.l Map_SSWalls
-	dc.w $6142
-	dc.l Map_SSWalls
-	dc.w $6142
-	dc.l Map_SSWalls
-	dc.w $6142
-	dc.l Map_SSWalls
-	dc.w $6142
-	dc.l Map_SSWalls
-	dc.w $6142
-	dc.l Map_SSWalls
-	dc.w $6142
-	dc.l Map_SSWalls
-	dc.w $6142
-	dc.l Map_Bump
-	dc.w $23B
-	dc.l Map_SS_R
-	dc.w $570
-	dc.l Map_SS_R
-	dc.w $251
-	dc.l Map_SS_R
-	dc.w $370
-	dc.l Map_SS_Up
-	dc.w $263
-	dc.l Map_SS_Down
-	dc.w $263
-	dc.l Map_SS_R
-	dc.w $22F0
-	dc.l Map_SS_Glass
-	dc.w $470
-	dc.l Map_SS_Glass
-	dc.w $5F0
-	dc.l Map_SS_Glass
-	dc.w $65F0
-	dc.l Map_SS_Glass
-	dc.w $25F0
-	dc.l Map_SS_Glass
-	dc.w $45F0
-	dc.l Map_SS_R
-	dc.w $2F0
-	dc.l Map_Bump+$1000000	; add frame no.	* $1000000
-	dc.w $23B
-	dc.l Map_Bump+$2000000
-	dc.w $23B
-	dc.l Map_SS_R
-	dc.w $797
-	dc.l Map_SS_R
-	dc.w $7A0
-	dc.l Map_SS_R
-	dc.w $7A9
-	dc.l Map_SS_R
-	dc.w $797
-	dc.l Map_SS_R
-	dc.w $7A0
-	dc.l Map_SS_R
-	dc.w $7A9
-	dc.l Map_Ring
-	dc.w $27B2
-	dc.l Map_SS_Chaos3
-	dc.w $770
-	dc.l Map_SS_Chaos3
-	dc.w $2770
-	dc.l Map_SS_Chaos3
-	dc.w $4770
-	dc.l Map_SS_Chaos3
-	dc.w $6770
-	dc.l Map_SS_Chaos1
-	dc.w $770
-	dc.l Map_SS_Chaos2
-	dc.w $770
-	dc.l Map_SS_R
-	dc.w $4F0
-	dc.l Map_Ring+$4000000
-	dc.w $27B2
-	dc.l Map_Ring+$5000000
-	dc.w $27B2
-	dc.l Map_Ring+$6000000
-	dc.w $27B2
-	dc.l Map_Ring+$7000000
-	dc.w $27B2
-	dc.l Map_SS_Glass
-	dc.w $23F0
-	dc.l Map_SS_Glass+$1000000
-	dc.w $23F0
-	dc.l Map_SS_Glass+$2000000
-	dc.w $23F0
-	dc.l Map_SS_Glass+$3000000
-	dc.w $23F0
-	dc.l Map_SS_R+$2000000
-	dc.w $4F0
-	dc.l Map_SS_Glass
-	dc.w $5F0
-	dc.l Map_SS_Glass
-	dc.w $65F0
-	dc.l Map_SS_Glass
-	dc.w $25F0
-	dc.l Map_SS_Glass
-	dc.w $45F0
+
+ss_sprite:	macro map,tile,frame
+		dc.l map+(frame*$1000000)
+		dc.w tile
+		endm
+		
+SS_MapIndex:
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal2,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal2,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal2,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal2,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal2,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal2,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal2,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal2,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal2,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal3,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal3,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal3,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal3,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal3,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal3,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal3,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal3,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal3,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal4,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal4,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal4,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal4,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal4,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal4,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal4,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal4,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal4,0
+		ss_sprite Map_Bump,tile_Nem_Bumper_SS,0
+		ss_sprite Map_SS_R,tile_Nem_SSWBlock,0
+		ss_sprite Map_SS_R,tile_Nem_SSGOAL,0
+		ss_sprite Map_SS_R,tile_Nem_SS1UpBlock,0
+		ss_sprite Map_SS_Up,tile_Nem_SSUpDown,0
+		ss_sprite Map_SS_Down,tile_Nem_SSUpDown,0
+		ss_sprite Map_SS_R,tile_Nem_SSRBlock+tile_pal2,0
+		ss_sprite Map_SS_Glass,tile_Nem_SSRedWhite,0
+		ss_sprite Map_SS_Glass,tile_Nem_SSGlass,0
+		ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal4,0
+		ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal2,0
+		ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal3,0
+		ss_sprite Map_SS_R,tile_Nem_SSRBlock,0
+		ss_sprite Map_Bump,tile_Nem_Bumper_SS,id_frame_bump_bumped1
+		ss_sprite Map_Bump,tile_Nem_Bumper_SS,id_frame_bump_bumped2
+		ss_sprite Map_SS_R,tile_Nem_SSZone1,0
+		ss_sprite Map_SS_R,tile_Nem_SSZone2,0
+		ss_sprite Map_SS_R,tile_Nem_SSZone3,0
+		ss_sprite Map_SS_R,tile_Nem_SSZone1,0
+		ss_sprite Map_SS_R,tile_Nem_SSZone2,0
+		ss_sprite Map_SS_R,tile_Nem_SSZone3,0
+		ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,0
+		ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald,0
+		ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald+tile_pal2,0
+		ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald+tile_pal3,0
+		ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald+tile_pal4,0
+		ss_sprite Map_SS_Chaos1,tile_Nem_SSEmerald,0
+		ss_sprite Map_SS_Chaos2,tile_Nem_SSEmerald,0
+		ss_sprite Map_SS_R,tile_Nem_SSGhost,0
+		ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,id_frame_ring_sparkle1
+		ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,id_frame_ring_sparkle2
+		ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,id_frame_ring_sparkle3
+		ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,id_frame_ring_sparkle4
+		ss_sprite Map_SS_Glass,tile_Nem_SSEmStars+tile_pal2,0
+		ss_sprite Map_SS_Glass,tile_Nem_SSEmStars+tile_pal2,1
+		ss_sprite Map_SS_Glass,tile_Nem_SSEmStars+tile_pal2,2
+		ss_sprite Map_SS_Glass,tile_Nem_SSEmStars+tile_pal2,3
+		ss_sprite Map_SS_R,tile_Nem_SSGhost,2
+		ss_sprite Map_SS_Glass,tile_Nem_SSGlass,0
+		ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal4,0
+		ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal2,0
+		ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal3,0
 
 		include "Mappings\Special Stage R.asm" ; Map_SS_R
 		include "Mappings\Special Stage Breakable & Red-White Blocks.asm" ; Map_SS_Glass

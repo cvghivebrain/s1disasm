@@ -39,23 +39,23 @@ PLC_Animals:
 			ptr PLC_EggmanSBZ2
 			ptr PLC_FZBoss
 
-plcm:	macro gfx,vram,suffix
-	dc.l gfx
-	if strlen("\vram")>0
-	plcm_vram: = \vram
-	else
-	plcm_vram: = last_vram
-	endc
-	last_vram: = plcm_vram+sizeof_\gfx
-	dc.w plcm_vram
-	if strlen("\suffix")>0
-	tile_\gfx\_\suffix: equ plcm_vram/$20
-	else
-		if ~def(tile_\gfx)
-		tile_\gfx: equ plcm_vram/$20
+plcm:		macro gfx,vram,suffix
+		dc.l gfx
+		if strlen("\vram")>0
+			plcm_vram: = \vram
+		else
+			plcm_vram: = last_vram
 		endc
-	endc
-	endm
+		last_vram: = plcm_vram+sizeof_\gfx
+		dc.w plcm_vram
+		if strlen("\suffix")>0
+			tile_\gfx\_\suffix: equ plcm_vram/$20
+		else
+			if ~def(tile_\gfx)
+			tile_\gfx: equ plcm_vram/$20
+			endc
+		endc
+		endm
 
 vram_crabmeat:	equ $8000
 vram_bomb:	equ $8000
@@ -296,7 +296,7 @@ PLC_SpecialStage:	dc.w ((PLC_SpeStageend-PLC_SpecialStage-2)/6)-1
 		plcm	Nem_SSBgCloud, 0	; bubble and cloud background
 		plcm	Nem_SSBgFish		; bird and fish	background ($A20)
 		plcm	Nem_SSWalls		; walls ($2840)
-		plcm	Nem_Bumper		; bumper ($4760)
+		plcm	Nem_Bumper,,SS		; bumper ($4760)
 		plcm	Nem_SSGOAL		; GOAL block ($4A20)
 		plcm	Nem_SSUpDown		; UP and DOWN blocks ($4C60)
 		plcm	Nem_SSRBlock, $5E00	; R block

@@ -806,11 +806,11 @@ Sonic_LevelBound:
 		asl.l	#8,d0
 		add.l	d0,d1
 		swap	d1
-		move.w	(v_limitleft2).w,d0
+		move.w	(v_boundary_left).w,d0
 		addi.w	#$10,d0
 		cmp.w	d1,d0		; has Sonic touched the	side boundary?
 		bhi.s	@sides		; if yes, branch
-		move.w	(v_limitright2).w,d0
+		move.w	(v_boundary_right).w,d0
 		addi.w	#$128,d0
 		tst.b	(f_boss_boundary).w
 		bne.s	@screenlocked
@@ -821,7 +821,7 @@ Sonic_LevelBound:
 		bls.s	@sides		; if yes, branch
 
 	@chkbottom:
-		move.w	(v_limitbtm2).w,d0
+		move.w	(v_boundary_bottom).w,d0
 		addi.w	#$E0,d0
 		cmp.w	ost_y_pos(a0),d0 ; has Sonic touched the bottom boundary?
 		blt.s	@bottom		; if yes, branch
@@ -1386,7 +1386,7 @@ Sonic_Hurt:	; Routine 4
 
 
 Sonic_HurtStop:
-		move.w	(v_limitbtm2).w,d0
+		move.w	(v_boundary_bottom).w,d0
 		addi.w	#$E0,d0
 		cmp.w	ost_y_pos(a0),d0
 		bcs.w	KillSonic
@@ -1421,7 +1421,7 @@ Sonic_Death:	; Routine 6
 
 
 GameOver:
-		move.w	(v_limitbtm2).w,d0
+		move.w	(v_boundary_bottom).w,d0
 		addi.w	#$100,d0
 		cmp.w	ost_y_pos(a0),d0
 		bcc.w	locret_13900

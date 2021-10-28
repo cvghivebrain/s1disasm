@@ -319,9 +319,9 @@ loc_18BC2:
 loc_18BC6:
 		move.w	#$400,ost_x_vel(a0)
 		move.w	#-$40,ost_y_vel(a0)
-		cmpi.w	#$2160,(v_limitright2).w
+		cmpi.w	#$2160,(v_boundary_right).w
 		bcc.s	loc_18BE0
-		addq.w	#2,(v_limitright2).w
+		addq.w	#2,(v_boundary_right).w
 		bra.s	loc_18BE8
 ; ===========================================================================
 

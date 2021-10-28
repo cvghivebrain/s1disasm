@@ -204,11 +204,11 @@ Hud_TilesZero:	dc.b $FF, $FF, 0, 0
 
 HudDb_XY:
 		locVRAM	$DC40		; set VRAM address
-		move.w	(v_screenposx).w,d1 ; load camera x-position
+		move.w	(v_camera_x_pos).w,d1 ; load camera x-position
 		swap	d1
 		move.w	(v_ost_player+ost_x_pos).w,d1 ; load Sonic's x-position
 		bsr.s	HudDb_XY2
-		move.w	(v_screenposy).w,d1 ; load camera y-position
+		move.w	(v_camera_y_pos).w,d1 ; load camera y-position
 		swap	d1
 		move.w	(v_ost_player+ost_y_pos).w,d1 ; load Sonic's y-position
 ; End of function HudDb_XY

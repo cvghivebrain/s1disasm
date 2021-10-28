@@ -12,20 +12,20 @@ DynamicLevelEvents:
 		move.w	DLE_Index(pc,d0.w),d0
 		jsr	DLE_Index(pc,d0.w) ; run level-specific events
 		moveq	#2,d1
-		move.w	(v_limitbtm1).w,d0
-		sub.w	(v_limitbtm2).w,d0 ; has lower level boundary changed recently?
+		move.w	(v_boundary_bottom_next).w,d0
+		sub.w	(v_boundary_bottom).w,d0 ; has lower level boundary changed recently?
 		beq.s	DLE_NoChg	; if not, branch
 		bcc.s	loc_6DAC
 
 		neg.w	d1
-		move.w	(v_screenposy).w,d0
-		cmp.w	(v_limitbtm1).w,d0
+		move.w	(v_camera_y_pos).w,d0
+		cmp.w	(v_boundary_bottom_next).w,d0
 		bls.s	loc_6DA0
-		move.w	d0,(v_limitbtm2).w
-		andi.w	#$FFFE,(v_limitbtm2).w
+		move.w	d0,(v_boundary_bottom).w
+		andi.w	#$FFFE,(v_boundary_bottom).w
 
 loc_6DA0:
-		add.w	d1,(v_limitbtm2).w
+		add.w	d1,(v_boundary_bottom).w
 		move.b	#1,(f_bgscrollvert).w
 
 DLE_NoChg:
@@ -33,9 +33,9 @@ DLE_NoChg:
 ; ===========================================================================
 
 loc_6DAC:
-		move.w	(v_screenposy).w,d0
+		move.w	(v_camera_y_pos).w,d0
 		addq.w	#8,d0
-		cmp.w	(v_limitbtm2).w,d0
+		cmp.w	(v_boundary_bottom).w,d0
 		bcs.s	loc_6DC4
 		btst	#status_air_bit,(v_ost_player+ost_status).w
 		beq.s	loc_6DC4
@@ -43,7 +43,7 @@ loc_6DAC:
 		add.w	d1,d1
 
 loc_6DC4:
-		add.w	d1,(v_limitbtm2).w
+		add.w	d1,(v_boundary_bottom).w
 		move.b	#1,(f_bgscrollvert).w
 		rts	
 ; End of function DynamicLevelEvents
@@ -80,26 +80,26 @@ DLE_GHZx:	index *
 ; ===========================================================================
 
 DLE_GHZ1:
-		move.w	#$300,(v_limitbtm1).w ; set lower y-boundary
-		cmpi.w	#$1780,(v_screenposx).w ; has the camera reached $1780 on x-axis?
+		move.w	#$300,(v_boundary_bottom_next).w ; set lower y-boundary
+		cmpi.w	#$1780,(v_camera_x_pos).w ; has the camera reached $1780 on x-axis?
 		bcs.s	locret_6E08	; if not, branch
-		move.w	#$400,(v_limitbtm1).w ; set lower y-boundary
+		move.w	#$400,(v_boundary_bottom_next).w ; set lower y-boundary
 
 locret_6E08:
 		rts	
 ; ===========================================================================
 
 DLE_GHZ2:
-		move.w	#$300,(v_limitbtm1).w
-		cmpi.w	#$ED0,(v_screenposx).w
+		move.w	#$300,(v_boundary_bottom_next).w
+		cmpi.w	#$ED0,(v_camera_x_pos).w
 		bcs.s	locret_6E3A
-		move.w	#$200,(v_limitbtm1).w
-		cmpi.w	#$1600,(v_screenposx).w
+		move.w	#$200,(v_boundary_bottom_next).w
+		cmpi.w	#$1600,(v_camera_x_pos).w
 		bcs.s	locret_6E3A
-		move.w	#$400,(v_limitbtm1).w
-		cmpi.w	#$1D60,(v_screenposx).w
+		move.w	#$400,(v_boundary_bottom_next).w
+		cmpi.w	#$1D60,(v_camera_x_pos).w
 		bcs.s	locret_6E3A
-		move.w	#$300,(v_limitbtm1).w
+		move.w	#$300,(v_boundary_bottom_next).w
 
 locret_6E3A:
 		rts	
@@ -118,22 +118,22 @@ off_6E4A:	index *
 ; ===========================================================================
 
 DLE_GHZ3main:
-		move.w	#$300,(v_limitbtm1).w
-		cmpi.w	#$380,(v_screenposx).w
+		move.w	#$300,(v_boundary_bottom_next).w
+		cmpi.w	#$380,(v_camera_x_pos).w
 		bcs.s	locret_6E96
-		move.w	#$310,(v_limitbtm1).w
-		cmpi.w	#$960,(v_screenposx).w
+		move.w	#$310,(v_boundary_bottom_next).w
+		cmpi.w	#$960,(v_camera_x_pos).w
 		bcs.s	locret_6E96
-		cmpi.w	#$280,(v_screenposy).w
+		cmpi.w	#$280,(v_camera_y_pos).w
 		bcs.s	loc_6E98
-		move.w	#$400,(v_limitbtm1).w
-		cmpi.w	#$1380,(v_screenposx).w
+		move.w	#$400,(v_boundary_bottom_next).w
+		cmpi.w	#$1380,(v_camera_x_pos).w
 		bcc.s	loc_6E8E
-		move.w	#$4C0,(v_limitbtm1).w
-		move.w	#$4C0,(v_limitbtm2).w
+		move.w	#$4C0,(v_boundary_bottom_next).w
+		move.w	#$4C0,(v_boundary_bottom).w
 
 loc_6E8E:
-		cmpi.w	#$1700,(v_screenposx).w
+		cmpi.w	#$1700,(v_camera_x_pos).w
 		bcc.s	loc_6E98
 
 locret_6E96:
@@ -141,18 +141,18 @@ locret_6E96:
 ; ===========================================================================
 
 loc_6E98:
-		move.w	#$300,(v_limitbtm1).w
+		move.w	#$300,(v_boundary_bottom_next).w
 		addq.b	#2,(v_dle_routine).w
 		rts	
 ; ===========================================================================
 
 DLE_GHZ3boss:
-		cmpi.w	#$960,(v_screenposx).w
+		cmpi.w	#$960,(v_camera_x_pos).w
 		bcc.s	loc_6EB0
 		subq.b	#2,(v_dle_routine).w
 
 loc_6EB0:
-		cmpi.w	#$2960,(v_screenposx).w
+		cmpi.w	#$2960,(v_camera_x_pos).w
 		bcs.s	locret_6EE8
 		bsr.w	FindFreeObj
 		bne.s	loc_6ED0
@@ -173,7 +173,7 @@ locret_6EE8:
 ; ===========================================================================
 
 DLE_GHZ3end:
-		move.w	(v_screenposx).w,(v_limitleft2).w
+		move.w	(v_camera_x_pos).w,(v_boundary_left).w
 		rts	
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
@@ -210,9 +210,9 @@ DLE_LZ3:
 loc_6F28:
 		tst.b	(v_dle_routine).w
 		bne.s	locret_6F64
-		cmpi.w	#$1CA0,(v_screenposx).w
+		cmpi.w	#$1CA0,(v_camera_x_pos).w
 		bcs.s	locret_6F62
-		cmpi.w	#$600,(v_screenposy).w
+		cmpi.w	#$600,(v_camera_y_pos).w
 		bcc.s	locret_6F62
 		bsr.w	FindFreeObj
 		bne.s	loc_6F4A
@@ -235,7 +235,7 @@ locret_6F64:
 ; ===========================================================================
 
 DLE_SBZ3:
-		cmpi.w	#$D00,(v_screenposx).w
+		cmpi.w	#$D00,(v_camera_x_pos).w
 		bcs.s	locret_6F8C
 		cmpi.w	#$18,(v_ost_player+ost_y_pos).w ; has Sonic reached the top of the level?
 		bcc.s	locret_6F8C	; if not, branch
@@ -278,14 +278,14 @@ off_6FB2:	index *
 ; ===========================================================================
 
 loc_6FBA:
-		move.w	#$1D0,(v_limitbtm1).w
-		cmpi.w	#$700,(v_screenposx).w
+		move.w	#$1D0,(v_boundary_bottom_next).w
+		cmpi.w	#$700,(v_camera_x_pos).w
 		bcs.s	locret_6FE8
-		move.w	#$220,(v_limitbtm1).w
-		cmpi.w	#$D00,(v_screenposx).w
+		move.w	#$220,(v_boundary_bottom_next).w
+		cmpi.w	#$D00,(v_camera_x_pos).w
 		bcs.s	locret_6FE8
-		move.w	#$340,(v_limitbtm1).w
-		cmpi.w	#$340,(v_screenposy).w
+		move.w	#$340,(v_boundary_bottom_next).w
+		cmpi.w	#$340,(v_camera_y_pos).w
 		bcs.s	locret_6FE8
 		addq.b	#2,(v_dle_routine).w
 
@@ -294,22 +294,22 @@ locret_6FE8:
 ; ===========================================================================
 
 loc_6FEA:
-		cmpi.w	#$340,(v_screenposy).w
+		cmpi.w	#$340,(v_camera_y_pos).w
 		bcc.s	loc_6FF8
 		subq.b	#2,(v_dle_routine).w
 		rts	
 ; ===========================================================================
 
 loc_6FF8:
-		move.w	#0,(v_limittop2).w
-		cmpi.w	#$E00,(v_screenposx).w
+		move.w	#0,(v_boundary_top).w
+		cmpi.w	#$E00,(v_camera_x_pos).w
 		bcc.s	locret_702C
-		move.w	#$340,(v_limittop2).w
-		move.w	#$340,(v_limitbtm1).w
-		cmpi.w	#$A90,(v_screenposx).w
+		move.w	#$340,(v_boundary_top).w
+		move.w	#$340,(v_boundary_bottom_next).w
+		cmpi.w	#$A90,(v_camera_x_pos).w
 		bcc.s	locret_702C
-		move.w	#$500,(v_limitbtm1).w
-		cmpi.w	#$370,(v_screenposy).w
+		move.w	#$500,(v_boundary_bottom_next).w
+		cmpi.w	#$370,(v_camera_y_pos).w
 		bcs.s	locret_702C
 		addq.b	#2,(v_dle_routine).w
 
@@ -318,21 +318,21 @@ locret_702C:
 ; ===========================================================================
 
 loc_702E:
-		cmpi.w	#$370,(v_screenposy).w
+		cmpi.w	#$370,(v_camera_y_pos).w
 		bcc.s	loc_703C
 		subq.b	#2,(v_dle_routine).w
 		rts	
 ; ===========================================================================
 
 loc_703C:
-		cmpi.w	#$500,(v_screenposy).w
+		cmpi.w	#$500,(v_camera_y_pos).w
 		bcs.s	locret_704E
 		if Revision=0
 		else
-			cmpi.w	#$B80,(v_screenposx).w
+			cmpi.w	#$B80,(v_camera_x_pos).w
 			bcs.s	locret_704E
 		endc
-		move.w	#$500,(v_limittop2).w
+		move.w	#$500,(v_boundary_top).w
 		addq.b	#2,(v_dle_routine).w
 
 locret_704E:
@@ -342,38 +342,38 @@ locret_704E:
 loc_7050:
 		if Revision=0
 		else
-			cmpi.w	#$B80,(v_screenposx).w
+			cmpi.w	#$B80,(v_camera_x_pos).w
 			bcc.s	locj_76B8
-			cmpi.w	#$340,(v_limittop2).w
+			cmpi.w	#$340,(v_boundary_top).w
 			beq.s	locret_7072
-			subq.w	#2,(v_limittop2).w
+			subq.w	#2,(v_boundary_top).w
 			rts
 	locj_76B8:
-			cmpi.w	#$500,(v_limittop2).w
+			cmpi.w	#$500,(v_boundary_top).w
 			beq.s	locj_76CE
-			cmpi.w	#$500,(v_screenposy).w
+			cmpi.w	#$500,(v_camera_y_pos).w
 			bcs.s	locret_7072
-			move.w	#$500,(v_limittop2).w
+			move.w	#$500,(v_boundary_top).w
 	locj_76CE:
 		endc
 
-		cmpi.w	#$E70,(v_screenposx).w
+		cmpi.w	#$E70,(v_camera_x_pos).w
 		bcs.s	locret_7072
-		move.w	#0,(v_limittop2).w
-		move.w	#$500,(v_limitbtm1).w
-		cmpi.w	#$1430,(v_screenposx).w
+		move.w	#0,(v_boundary_top).w
+		move.w	#$500,(v_boundary_bottom_next).w
+		cmpi.w	#$1430,(v_camera_x_pos).w
 		bcs.s	locret_7072
-		move.w	#$210,(v_limitbtm1).w
+		move.w	#$210,(v_boundary_bottom_next).w
 
 locret_7072:
 		rts	
 ; ===========================================================================
 
 DLE_MZ2:
-		move.w	#$520,(v_limitbtm1).w
-		cmpi.w	#$1700,(v_screenposx).w
+		move.w	#$520,(v_boundary_bottom_next).w
+		cmpi.w	#$1700,(v_camera_x_pos).w
 		bcs.s	locret_7088
-		move.w	#$200,(v_limitbtm1).w
+		move.w	#$200,(v_boundary_bottom_next).w
 
 locret_7088:
 		rts	
@@ -391,11 +391,11 @@ off_7098:	index *
 ; ===========================================================================
 
 DLE_MZ3boss:
-		move.w	#$720,(v_limitbtm1).w
-		cmpi.w	#$1560,(v_screenposx).w
+		move.w	#$720,(v_boundary_bottom_next).w
+		cmpi.w	#$1560,(v_camera_x_pos).w
 		bcs.s	locret_70E8
-		move.w	#$210,(v_limitbtm1).w
-		cmpi.w	#$17F0,(v_screenposx).w
+		move.w	#$210,(v_boundary_bottom_next).w
+		cmpi.w	#$17F0,(v_camera_x_pos).w
 		bcs.s	locret_70E8
 		bsr.w	FindFreeObj
 		bne.s	loc_70D0
@@ -416,7 +416,7 @@ locret_70E8:
 ; ===========================================================================
 
 DLE_MZ3end:
-		move.w	(v_screenposx).w,(v_limitleft2).w
+		move.w	(v_camera_x_pos).w,(v_boundary_left).w
 		rts	
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
@@ -453,9 +453,9 @@ off_7118:	index *
 ; ===========================================================================
 
 DLE_SLZ3main:
-		cmpi.w	#$1E70,(v_screenposx).w
+		cmpi.w	#$1E70,(v_camera_x_pos).w
 		bcs.s	locret_7130
-		move.w	#$210,(v_limitbtm1).w
+		move.w	#$210,(v_boundary_bottom_next).w
 		addq.b	#2,(v_dle_routine).w
 
 locret_7130:
@@ -463,7 +463,7 @@ locret_7130:
 ; ===========================================================================
 
 DLE_SLZ3boss:
-		cmpi.w	#$2000,(v_screenposx).w
+		cmpi.w	#$2000,(v_camera_x_pos).w
 		bcs.s	locret_715C
 		bsr.w	FindFreeObj
 		bne.s	loc_7144
@@ -482,7 +482,7 @@ locret_715C:
 ; ===========================================================================
 
 DLE_SLZ3end:
-		move.w	(v_screenposx).w,(v_limitleft2).w
+		move.w	(v_camera_x_pos).w,(v_boundary_left).w
 		rts
 		rts
 ; ===========================================================================
@@ -508,13 +508,13 @@ DLE_SYZ1:
 ; ===========================================================================
 
 DLE_SYZ2:
-		move.w	#$520,(v_limitbtm1).w
-		cmpi.w	#$25A0,(v_screenposx).w
+		move.w	#$520,(v_boundary_bottom_next).w
+		cmpi.w	#$25A0,(v_camera_x_pos).w
 		bcs.s	locret_71A2
-		move.w	#$420,(v_limitbtm1).w
+		move.w	#$420,(v_boundary_bottom_next).w
 		cmpi.w	#$4D0,(v_ost_player+ost_y_pos).w
 		bcs.s	locret_71A2
-		move.w	#$520,(v_limitbtm1).w
+		move.w	#$520,(v_boundary_bottom_next).w
 
 locret_71A2:
 		rts	
@@ -533,7 +533,7 @@ off_71B2:	index *
 ; ===========================================================================
 
 DLE_SYZ3main:
-		cmpi.w	#$2AC0,(v_screenposx).w
+		cmpi.w	#$2AC0,(v_camera_x_pos).w
 		bcs.s	locret_71CE
 		bsr.w	FindFreeObj
 		bne.s	locret_71CE
@@ -545,9 +545,9 @@ locret_71CE:
 ; ===========================================================================
 
 DLE_SYZ3boss:
-		cmpi.w	#$2C00,(v_screenposx).w
+		cmpi.w	#$2C00,(v_camera_x_pos).w
 		bcs.s	locret_7200
-		move.w	#$4CC,(v_limitbtm1).w
+		move.w	#$4CC,(v_boundary_bottom_next).w
 		bsr.w	FindFreeObj
 		bne.s	loc_71EC
 		move.b	#id_BossSpringYard,(a1) ; load SYZ boss	object
@@ -565,7 +565,7 @@ locret_7200:
 ; ===========================================================================
 
 DLE_SYZ3end:
-		move.w	(v_screenposx).w,(v_limitleft2).w
+		move.w	(v_camera_x_pos).w,(v_boundary_left).w
 		rts	
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
@@ -586,13 +586,13 @@ DLE_SBZx:	index *
 ; ===========================================================================
 
 DLE_SBZ1:
-		move.w	#$720,(v_limitbtm1).w
-		cmpi.w	#$1880,(v_screenposx).w
+		move.w	#$720,(v_boundary_bottom_next).w
+		cmpi.w	#$1880,(v_camera_x_pos).w
 		bcs.s	locret_7242
-		move.w	#$620,(v_limitbtm1).w
-		cmpi.w	#$2000,(v_screenposx).w
+		move.w	#$620,(v_boundary_bottom_next).w
+		cmpi.w	#$2000,(v_camera_x_pos).w
 		bcs.s	locret_7242
-		move.w	#$2A0,(v_limitbtm1).w
+		move.w	#$2A0,(v_boundary_bottom_next).w
 
 locret_7242:
 		rts	
@@ -612,11 +612,11 @@ off_7252:	index *
 ; ===========================================================================
 
 DLE_SBZ2main:
-		move.w	#$800,(v_limitbtm1).w
-		cmpi.w	#$1800,(v_screenposx).w
+		move.w	#$800,(v_boundary_bottom_next).w
+		cmpi.w	#$1800,(v_camera_x_pos).w
 		bcs.s	locret_727A
-		move.w	#$510,(v_limitbtm1).w
-		cmpi.w	#$1E00,(v_screenposx).w
+		move.w	#$510,(v_boundary_bottom_next).w
+		cmpi.w	#$1E00,(v_camera_x_pos).w
 		bcs.s	locret_727A
 		addq.b	#2,(v_dle_routine).w
 
@@ -625,7 +625,7 @@ locret_727A:
 ; ===========================================================================
 
 DLE_SBZ2boss:
-		cmpi.w	#$1EB0,(v_screenposx).w
+		cmpi.w	#$1EB0,(v_camera_x_pos).w
 		bcs.s	locret_7298
 		bsr.w	FindFreeObj
 		bne.s	locret_7298
@@ -640,7 +640,7 @@ locret_7298:
 ; ===========================================================================
 
 DLE_SBZ2boss2:
-		cmpi.w	#$1F60,(v_screenposx).w
+		cmpi.w	#$1F60,(v_camera_x_pos).w
 		bcs.s	loc_72B6
 		bsr.w	FindFreeObj
 		bne.s	loc_72B0
@@ -655,13 +655,13 @@ loc_72B6:
 ; ===========================================================================
 
 DLE_SBZ2end:
-		cmpi.w	#$2050,(v_screenposx).w
+		cmpi.w	#$2050,(v_camera_x_pos).w
 		bcs.s	loc_72C2
 		rts	
 ; ===========================================================================
 
 loc_72C2:
-		move.w	(v_screenposx).w,(v_limitleft2).w
+		move.w	(v_camera_x_pos).w,(v_boundary_left).w
 		rts	
 ; ===========================================================================
 
@@ -680,7 +680,7 @@ off_72D8:	index *
 ; ===========================================================================
 
 DLE_FZmain:
-		cmpi.w	#$2148,(v_screenposx).w
+		cmpi.w	#$2148,(v_camera_x_pos).w
 		bcs.s	loc_72F4
 		addq.b	#2,(v_dle_routine).w
 		moveq	#id_PLC_FZBoss,d0
@@ -691,7 +691,7 @@ loc_72F4:
 ; ===========================================================================
 
 DLE_FZboss:
-		cmpi.w	#$2300,(v_screenposx).w
+		cmpi.w	#$2300,(v_camera_x_pos).w
 		bcs.s	loc_7312
 		bsr.w	FindFreeObj
 		bne.s	loc_7312
@@ -704,7 +704,7 @@ loc_7312:
 ; ===========================================================================
 
 DLE_FZend:
-		cmpi.w	#$2450,(v_screenposx).w
+		cmpi.w	#$2450,(v_camera_x_pos).w
 		bcs.s	loc_7320
 		addq.b	#2,(v_dle_routine).w
 

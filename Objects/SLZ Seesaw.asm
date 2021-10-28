@@ -9,7 +9,7 @@ Seesaw:
 		jsr	See_Index(pc,d1.w)
 		move.w	ost_seesaw_x_start(a0),d0
 		andi.w	#$FF80,d0
-		move.w	(v_screenposx).w,d1
+		move.w	(v_camera_x_pos).w,d1
 		subi.w	#$80,d1
 		andi.w	#$FF80,d1
 		sub.w	d1,d0

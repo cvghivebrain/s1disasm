@@ -99,7 +99,7 @@ RLoss_Bounce:	; Routine 2
 	@chkdel:
 		tst.b	(v_ani3_time).w
 		beq.s	RLoss_Delete
-		move.w	(v_limitbtm2).w,d0
+		move.w	(v_boundary_bottom).w,d0
 		addi.w	#$E0,d0
 		cmp.w	ost_y_pos(a0),d0 ; has object moved below level boundary?
 		bcs.s	RLoss_Delete	; if yes, branch

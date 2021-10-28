@@ -45,7 +45,7 @@ Roll_Action:	; Routine 2
 		bsr.w	AnimateSprite
 		move.w	ost_x_pos(a0),d0
 		andi.w	#$FF80,d0
-		move.w	(v_screenposx).w,d1
+		move.w	(v_camera_x_pos).w,d1
 		subi.w	#$80,d1
 		andi.w	#$FF80,d1
 		sub.w	d1,d0

@@ -438,9 +438,9 @@ loc_194EE:
 loc_194F2:
 		move.w	#$400,ost_x_vel(a0)
 		move.w	#-$40,ost_y_vel(a0)
-		cmpi.w	#$2D40,(v_limitright2).w
+		cmpi.w	#$2D40,(v_boundary_right).w
 		bcc.s	loc_1950C
-		addq.w	#2,(v_limitright2).w
+		addq.w	#2,(v_boundary_right).w
 		bra.s	loc_19512
 ; ===========================================================================
 

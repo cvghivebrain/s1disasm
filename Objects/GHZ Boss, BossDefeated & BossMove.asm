@@ -308,9 +308,9 @@ loc_179EE:
 loc_179F6:
 		move.w	#$400,ost_x_vel(a0)
 		move.w	#-$40,ost_y_vel(a0)
-		cmpi.w	#$2AC0,(v_limitright2).w
+		cmpi.w	#$2AC0,(v_boundary_right).w
 		beq.s	loc_17A10
-		addq.w	#2,(v_limitright2).w
+		addq.w	#2,(v_boundary_right).w
 		bra.s	loc_17A16
 ; ===========================================================================
 

@@ -20,12 +20,12 @@ Pyl_Main:	; Routine 0
 		move.b	#$10,ost_actwidth(a0)
 
 Pyl_Display:	; Routine 2
-		move.l	(v_screenposx).w,d1
+		move.l	(v_camera_x_pos).w,d1
 		add.l	d1,d1
 		swap	d1
 		neg.w	d1
 		move.w	d1,ost_x_pos(a0)
-		move.l	(v_screenposy).w,d1
+		move.l	(v_camera_y_pos).w,d1
 		add.l	d1,d1
 		swap	d1
 		andi.w	#$3F,d1

@@ -25,7 +25,7 @@ LZWaterFeatures:
 		add.w	(v_water_height_normal).w,d0
 		move.w	d0,(v_water_height_actual).w
 		move.w	(v_water_height_actual).w,d0
-		sub.w	(v_screenposy).w,d0
+		sub.w	(v_camera_y_pos).w,d0
 		bcc.s	@isbelow
 		tst.w	d0
 		bpl.s	@isbelow	; if water is below top of screen, branch
@@ -86,7 +86,7 @@ DynWater_Index:	index *
 ; ===========================================================================
 
 DynWater_LZ1:
-		move.w	(v_screenposx).w,d0
+		move.w	(v_camera_x_pos).w,d0
 		move.b	(v_water_routine).w,d2
 		bne.s	@routine2
 		move.w	#$B8,d1		; water height
@@ -143,7 +143,7 @@ DynWater_LZ1:
 ; ===========================================================================
 
 DynWater_LZ2:
-		move.w	(v_screenposx).w,d0
+		move.w	(v_camera_x_pos).w,d0
 		move.w	#$328,d1
 		cmpi.w	#$500,d0
 		bcs.s	@setwater
@@ -158,7 +158,7 @@ DynWater_LZ2:
 ; ===========================================================================
 
 DynWater_LZ3:
-		move.w	(v_screenposx).w,d0
+		move.w	(v_camera_x_pos).w,d0
 		move.b	(v_water_routine).w,d2
 		bne.s	@routine2
 
@@ -262,7 +262,7 @@ DynWater_LZ3:
 
 DynWater_SBZ3:
 		move.w	#$228,d1
-		cmpi.w	#$F00,(v_screenposx).w
+		cmpi.w	#$F00,(v_camera_x_pos).w
 		bcs.s	@setwater
 		move.w	#$4C8,d1
 

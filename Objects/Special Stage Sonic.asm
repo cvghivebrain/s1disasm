@@ -269,18 +269,18 @@ locret_1BBB4:
 SS_FixCamera:
 		move.w	ost_y_pos(a0),d2
 		move.w	ost_x_pos(a0),d3
-		move.w	(v_screenposx).w,d0
+		move.w	(v_camera_x_pos).w,d0
 		subi.w	#$A0,d3
 		bcs.s	loc_1BBCE
 		sub.w	d3,d0
-		sub.w	d0,(v_screenposx).w
+		sub.w	d0,(v_camera_x_pos).w
 
 loc_1BBCE:
-		move.w	(v_screenposy).w,d0
+		move.w	(v_camera_y_pos).w,d0
 		subi.w	#$70,d2
 		bcs.s	locret_1BBDE
 		sub.w	d2,d0
-		sub.w	d0,(v_screenposy).w
+		sub.w	d0,(v_camera_y_pos).w
 
 locret_1BBDE:
 		rts	

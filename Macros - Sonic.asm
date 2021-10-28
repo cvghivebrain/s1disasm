@@ -36,7 +36,7 @@ out_of_range:	macro exit,pos
 		move.w	ost_x_pos(a0),d0 ; get object position
 		endc
 		andi.w	#$FF80,d0	; round down to nearest $80
-		move.w	(v_screenposx).w,d1 ; get screen position
+		move.w	(v_camera_x_pos).w,d1 ; get screen position
 		subi.w	#128,d1
 		andi.w	#$FF80,d1
 		sub.w	d1,d0		; d0 = approx distance between object and screen (negative if object is left of screen)

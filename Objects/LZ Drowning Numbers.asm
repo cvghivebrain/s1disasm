@@ -137,11 +137,11 @@ Drown_ShowNumber:
 		clr.w	ost_y_vel(a0)
 		move.b	#render_onscreen+render_abs,ost_render(a0)
 		move.w	ost_x_pos(a0),d0
-		sub.w	(v_screenposx).w,d0
+		sub.w	(v_camera_x_pos).w,d0
 		addi.w	#$80,d0
 		move.w	d0,ost_x_pos(a0)
 		move.w	ost_y_pos(a0),d0
-		sub.w	(v_screenposy).w,d0
+		sub.w	(v_camera_y_pos).w,d0
 		addi.w	#$80,d0
 		move.w	d0,ost_y_screen(a0)
 		move.b	#id_Drown_AirLeft,ost_routine(a0) ; goto Drown_AirLeft next

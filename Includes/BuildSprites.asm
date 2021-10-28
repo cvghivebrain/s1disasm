@@ -1,8 +1,8 @@
 
 BldSpr_ScrPos:	dc.l 0				; blank
-		dc.l v_screenposx&$FFFFFF	; main screen x position
-		dc.l v_bgscreenposx&$FFFFFF	; background x position	1
-		dc.l v_bg3screenposx&$FFFFFF	; background x position	2
+		dc.l v_camera_x_pos&$FFFFFF	; main screen x position
+		dc.l v_bg1_x_pos&$FFFFFF	; background x position	1
+		dc.l v_bg3_x_pos&$FFFFFF	; background x position	2
 		
 ; ---------------------------------------------------------------------------
 ; Subroutine to	convert	objects to proper Mega Drive sprites

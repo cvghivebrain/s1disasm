@@ -6,15 +6,15 @@
 
 
 ScrollHorizontal:
-		move.w	(v_screenposx).w,d4 ; save old screen position
+		move.w	(v_camera_x_pos).w,d4 ; save old screen position
 		bsr.s	MoveScreenHoriz
-		move.w	(v_screenposx).w,d0
+		move.w	(v_camera_x_pos).w,d0
 		andi.w	#$10,d0
 		move.b	(v_fg_xblock).w,d1
 		eor.b	d1,d0
 		bne.s	@return
 		eori.b	#$10,(v_fg_xblock).w
-		move.w	(v_screenposx).w,d0
+		move.w	(v_camera_x_pos).w,d0
 		sub.w	d4,d0		; compare new with old screen position
 		bpl.s	@scrollRight
 
@@ -34,7 +34,7 @@ ScrollHorizontal:
 
 MoveScreenHoriz:
 		move.w	(v_ost_player+ost_x_pos).w,d0
-		sub.w	(v_screenposx).w,d0 ; Sonic's distance from left edge of screen
+		sub.w	(v_camera_x_pos).w,d0 ; Sonic's distance from left edge of screen
 		subi.w	#144,d0		; is distance less than 144px?
 		bcs.s	SH_BehindMid	; if yes, branch
 		subi.w	#16,d0		; is distance more than 160px?
@@ -49,25 +49,25 @@ SH_AheadOfMid:
 		move.w	#16,d0		; set to 16 if greater
 
 	SH_Ahead16:
-		add.w	(v_screenposx).w,d0
-		cmp.w	(v_limitright2).w,d0
+		add.w	(v_camera_x_pos).w,d0
+		cmp.w	(v_boundary_right).w,d0
 		blt.s	SH_SetScreen
-		move.w	(v_limitright2).w,d0
+		move.w	(v_boundary_right).w,d0
 
 SH_SetScreen:
 		move.w	d0,d1
-		sub.w	(v_screenposx).w,d1
+		sub.w	(v_camera_x_pos).w,d1
 		asl.w	#8,d1
-		move.w	d0,(v_screenposx).w ; set new screen position
+		move.w	d0,(v_camera_x_pos).w ; set new screen position
 		move.w	d1,(v_scrshiftx).w ; set distance for screen movement
 		rts	
 ; ===========================================================================
 
 SH_BehindMid:
-		add.w	(v_screenposx).w,d0
-		cmp.w	(v_limitleft2).w,d0
+		add.w	(v_camera_x_pos).w,d0
+		cmp.w	(v_boundary_left).w,d0
 		bgt.s	SH_SetScreen
-		move.w	(v_limitleft2).w,d0
+		move.w	(v_boundary_left).w,d0
 		bra.s	SH_SetScreen
 ; End of function MoveScreenHoriz
 
@@ -91,7 +91,7 @@ loc_6610:
 ScrollVertical:
 		moveq	#0,d1
 		move.w	(v_ost_player+ost_y_pos).w,d0
-		sub.w	(v_screenposy).w,d0 ; Sonic's distance from top of screen
+		sub.w	(v_camera_y_pos).w,d0 ; Sonic's distance from top of screen
 		btst	#status_jump_bit,(v_ost_player+ost_status).w ; is Sonic jumping/rolling?
 		beq.s	SV_NotRolling	; if not, branch
 		subq.w	#5,d0
@@ -164,7 +164,7 @@ loc_66A8:
 loc_66AE:
 		moveq	#0,d1
 		move.w	d0,d1
-		add.w	(v_screenposy).w,d1
+		add.w	(v_camera_y_pos).w,d1
 		tst.w	d0
 		bpl.w	loc_6700
 		bra.w	loc_66CC
@@ -174,61 +174,61 @@ loc_66C0:
 		neg.w	d1
 		ext.l	d1
 		asl.l	#8,d1
-		add.l	(v_screenposy).w,d1
+		add.l	(v_camera_y_pos).w,d1
 		swap	d1
 
 loc_66CC:
-		cmp.w	(v_limittop2).w,d1
+		cmp.w	(v_boundary_top).w,d1
 		bgt.s	loc_6724
 		cmpi.w	#-$100,d1
 		bgt.s	loc_66F0
 		andi.w	#$7FF,d1
 		andi.w	#$7FF,(v_ost_player+ost_y_pos).w
-		andi.w	#$7FF,(v_screenposy).w
-		andi.w	#$3FF,(v_bgscreenposy).w
+		andi.w	#$7FF,(v_camera_y_pos).w
+		andi.w	#$3FF,(v_bg1_y_pos).w
 		bra.s	loc_6724
 ; ===========================================================================
 
 loc_66F0:
-		move.w	(v_limittop2).w,d1
+		move.w	(v_boundary_top).w,d1
 		bra.s	loc_6724
 ; ===========================================================================
 
 loc_66F6:
 		ext.l	d1
 		asl.l	#8,d1
-		add.l	(v_screenposy).w,d1
+		add.l	(v_camera_y_pos).w,d1
 		swap	d1
 
 loc_6700:
-		cmp.w	(v_limitbtm2).w,d1
+		cmp.w	(v_boundary_bottom).w,d1
 		blt.s	loc_6724
 		subi.w	#$800,d1
 		bcs.s	loc_6720
 		andi.w	#$7FF,(v_ost_player+ost_y_pos).w
-		subi.w	#$800,(v_screenposy).w
-		andi.w	#$3FF,(v_bgscreenposy).w
+		subi.w	#$800,(v_camera_y_pos).w
+		andi.w	#$3FF,(v_bg1_y_pos).w
 		bra.s	loc_6724
 ; ===========================================================================
 
 loc_6720:
-		move.w	(v_limitbtm2).w,d1
+		move.w	(v_boundary_bottom).w,d1
 
 loc_6724:
-		move.w	(v_screenposy).w,d4
+		move.w	(v_camera_y_pos).w,d4
 		swap	d1
 		move.l	d1,d3
-		sub.l	(v_screenposy).w,d3
+		sub.l	(v_camera_y_pos).w,d3
 		ror.l	#8,d3
 		move.w	d3,(v_scrshifty).w
-		move.l	d1,(v_screenposy).w
-		move.w	(v_screenposy).w,d0
+		move.l	d1,(v_camera_y_pos).w
+		move.w	(v_camera_y_pos).w,d0
 		andi.w	#$10,d0
 		move.b	(v_fg_yblock).w,d1
 		eor.b	d1,d0
 		bne.s	@return
 		eori.b	#$10,(v_fg_yblock).w
-		move.w	(v_screenposy).w,d0
+		move.w	(v_camera_y_pos).w,d0
 		sub.w	d4,d0
 		bpl.s	@scrollBottom
 		bset	#0,(v_fg_scroll_flags).w

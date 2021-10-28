@@ -73,7 +73,7 @@ Cbal_Animate:
 
 Cbal_Display:
 		bsr.w	DisplaySprite
-		move.w	(v_limitbtm2).w,d0
+		move.w	(v_boundary_bottom).w,d0
 		addi.w	#$E0,d0
 		cmp.w	ost_y_pos(a0),d0 ; has object fallen off the level?
 		bcs.w	DeleteObject	; if yes, branch

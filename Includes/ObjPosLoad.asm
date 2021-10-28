@@ -41,7 +41,7 @@ OPL_Main:
 
 		lea	(v_objstate).w,a2
 		moveq	#0,d2
-		move.w	(v_screenposx).w,d6
+		move.w	(v_camera_x_pos).w,d6
 		subi.w	#$80,d6		; d6 = screen x position minus $80
 		bhs.s	@use_screen_x
 		moveq	#0,d6		; assume 0 if screen is within $80 pixels of left boundary
@@ -88,7 +88,7 @@ loc_D976:
 OPL_Next:
 		lea	(v_objstate).w,a2
 		moveq	#0,d2
-		move.w	(v_screenposx).w,d6 ; get screen position
+		move.w	(v_camera_x_pos).w,d6 ; get screen position
 		andi.w	#$FF80,d6	; round down to nearest $80
 		cmp.w	(v_opl_screen_x_pos).w,d6 ; compare to previous screen position
 		beq.w	OPL_NoMove	; branch if screen hasn't moved
