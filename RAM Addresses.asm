@@ -137,7 +137,6 @@ v_bg2_x_pos:			rs.l 1 ; $FFFFF710 ; background 2 x position (e.g. GHZ treeline)
 v_bg2_y_pos:			rs.l 1 ; $FFFFF714 ; background 2 y position
 v_bg3_x_pos:			rs.l 1 ; $FFFFF718 ; background 3 x position (e.g. GHZ mountains)
 v_bg3_y_pos:			rs.l 1 ; $FFFFF71C ; background 3 y position
-
 v_boundary_left_next:		rs.w 1 ; $FFFFF720 ; left level boundary, next (actual boundary shifts to match this)
 v_boundary_right_next:		rs.w 1 ; $FFFFF722 ; right level boundary, next
 v_boundary_top_next:		rs.w 1 ; $FFFFF724 ; top level boundary, next
@@ -149,30 +148,38 @@ v_boundary_bottom:		rs.w 1 ; $FFFFF72E ; bottom level boundary
 v_boundary_unused:		rs.w 1 ; $FFFFF730 ; unused value from LevelSizeArray, always 4
 v_boundary_left_unused:		rs.w 1 ; $FFFFF732 ; left level boundary plus $240 - unused
 unused_f734:			rs.b 6
-
-v_scrshiftx:	equ $FFFFF73A	; x-screen shift (new - last) * $100
-v_scrshifty:	equ $FFFFF73C	; y-screen shift (new - last) * $100
-
-v_lookshift:	equ $FFFFF73E	; screen shift when Sonic looks up/down (2 bytes)
-v_dle_routine:	equ $FFFFF742	; dynamic level event - routine counter
-f_nobgscroll:	equ $FFFFF744	; flag set to cancel background scrolling
-
-v_fg_xblock:	equ	$FFFFF74A	; foreground x-block parity (for redraw)
-v_fg_yblock:	equ	$FFFFF74B	; foreground y-block parity (for redraw)
-v_bg1_xblock:	equ	$FFFFF74C	; background x-block parity (for redraw)
-v_bg1_yblock:	equ	$FFFFF74D	; background y-block parity (for redraw)
-v_bg2_xblock:	equ	$FFFFF74E	; secondary background x-block parity (for redraw)
-v_bg2_yblock:	equ	$FFFFF74F	; secondary background y-block parity (unused)
-v_bg3_xblock:	equ	$FFFFF750	; teritary background x-block parity (for redraw)
-v_bg3_yblock:	equ	$FFFFF751	; teritary background y-block parity (unused)
-
-v_fg_scroll_flags:	equ $FFFFF754	; screen redraw flags for foreground
-v_bg1_scroll_flags:	equ $FFFFF756	; screen redraw flags for background 1
-v_bg2_scroll_flags:	equ $FFFFF758	; screen redraw flags for background 2
-v_bg3_scroll_flags:	equ $FFFFF75A	; screen redraw flags for background 3
-f_bgscrollvert:	equ $FFFFF75C	; flag for vertical background scrolling
-
-				rsset $FFFFF760
+v_camera_x_diff:		rs.w 1 ; $FFFFF73A ; camera x position change since last frame * $100
+v_camera_y_diff:		rs.w 1 ; $FFFFF73C ; camera y position change since last frame * $100
+v_camera_y_shift:		rs.w 1 ; $FFFFF73E ; camera y position shift when Sonic looks up/down - $60 = default; $C8 = look up; 8 = look down
+v_levelsizeload_unused_1:	rs.b 1 ; $FFFFF740
+v_levelsizeload_unused_2:	rs.b 1 ; $FFFFF741
+v_dle_routine:			rs.b 1 ; $FFFFF742 ; dynamic level event - routine counter
+unused_f743:			rs.b 1
+f_disable_scrolling:		rs.b 1 ; $FFFFF744 ; flag set to disable all scrolling and LZ water features
+unused_f745:			rs.b 1
+v_levelsizeload_unused_3:	rs.b 1 ; $FFFFF746
+unused_f747:			rs.b 1
+v_levelsizeload_unused_4:	rs.b 1 ; $FFFFF748
+unused_f749:			rs.b 1
+v_fg_x_redraw_flag:		rs.w 1 ; $FFFFF74A ; $10 when foreground camera x has moved 16 pixels and needs redrawing
+v_fg_y_redraw_flag:		equ v_fg_x_redraw_flag+1 ; $10 when foreground camera y has moved 16 pixels and needs redrawing
+v_bg1_x_redraw_flag:		rs.b 1 ; $FFFFF74C ; $10 when background x has moved 16 pixels and needs redrawing
+v_bg1_y_redraw_flag:		rs.b 1 ; $FFFFF74D ; $10 when background y has moved 16 pixels and needs redrawing
+v_bg2_x_redraw_flag:		rs.b 1 ; $FFFFF74E ; $10 when background 2 x has moved 16 pixels and needs redrawing
+v_bg2_y_redraw_flag:		rs.b 1 ; $FFFFF74F ; $10 when background 2 y has moved 16 pixels and needs redrawing - unused
+v_bg3_x_redraw_flag:		rs.b 1 ; $FFFFF750 ; $10 when background 3 x has moved 16 pixels and needs redrawing
+v_bg3_y_redraw_flag:		rs.b 1 ; $FFFFF751 ; $10 when background 3 y has moved 16 pixels and needs redrawing - unused
+unused_f752:			rs.b 2
+v_fg_redraw_direction:		rs.b 1 ; $FFFFF754 ; 16x16 row redraw flag bitfield for foreground - 0 = top; 1 = bottom; 2 = left; 3 = right; 4 = top (all); 5 = bottom (all)
+unused_f755:			rs.b 1
+v_bg1_redraw_direction:		rs.b 1 ; $FFFFF756 ; 16x16 row redraw flag bitfield for background 1
+unused_f757:			rs.b 1
+v_bg2_redraw_direction:		rs.b 1 ; $FFFFF758 ; 16x16 row redraw flag bitfield for background 2
+unused_f759:			rs.b 1
+v_bg3_redraw_direction:		rs.b 1 ; $FFFFF75A ; 16x16 row redraw flag bitfield for background 3
+unused_f75b:			rs.b 1
+f_boundary_bottom_change:	rs.b 1 ; $FFFFF75C ; flag set when bottom level boundary is changing
+unused_f75d:			rs.b 3
 v_sonic_max_speed:		rs.w 1 ; $FFFFF760 ; Sonic's maximum speed
 v_sonic_acceleration:		rs.w 1 ; $FFFFF762 ; Sonic's acceleration
 v_sonic_deceleration:		rs.w 1 ; $FFFFF764 ; Sonic's deceleration
@@ -246,10 +253,10 @@ v_end_sonic_routine:		rs.b 1 ; $FFFFF7D7 ; routine counter for Sonic in the endi
 v_water_ripple_y_pos:		rs.w 1 ; $FFFFF7D8 ; y position of bg/fg water ripple effects; $80 added every frame, meaning high byte increments every 2 frames
 unused_f7da:			rs.b 6
 v_button_state:			rs.b $10 ; $FFFFF7E0 ; flags set when Sonic stands on a button
-v_scroll_block_1_size:	equ $FFFFF7F0	; (2 bytes)
-v_scroll_block_2_size:	equ $FFFFF7F2	; unused (2 bytes)
-v_scroll_block_3_size:	equ $FFFFF7F4	; unused (2 bytes)
-v_scroll_block_4_size:	equ $FFFFF7F6	; unused (2 bytes)
+v_scroll_block_1_height:	rs.w 1 ; $FFFFF7F0 ; scroll block height - $70 for GHZ; $800 for all others
+v_scroll_block_2_height:	rs.w 1 ; $FFFFF7F2 ; scroll block height - always $100, unused
+v_scroll_block_3_height:	rs.w 1 ; $FFFFF7F4 ; scroll block height - always $100, unused
+v_scroll_block_4_height:	rs.w 1 ; $FFFFF7F6 ; scroll block height - $100 for GHZ; 0 for all others, unused
 
 v_spritetablebuffer:	equ $FFFFF800 ; sprite table ($280 bytes, last $80 bytes are overwritten by v_pal_water_dup)
 v_pal_water_dup:	equ $FFFFFA00 ; duplicate underwater palette, used for transitions ($80 bytes)
@@ -338,10 +345,10 @@ v_bg2_x_pos_dup:	equ $FFFFFF20	; 2 bytes
 v_bg2_y_pos_dup:	equ $FFFFFF24	; 2 bytes
 v_bg3_x_pos_dup:	equ $FFFFFF28	; 2 bytes
 v_bg3_y_pos_dup:	equ $FFFFFF2C	; 2 bytes
-v_fg_scroll_flags_dup:	equ $FFFFFF30
-v_bg1_scroll_flags_dup:	equ $FFFFFF32
-v_bg2_scroll_flags_dup:	equ $FFFFFF34
-v_bg3_scroll_flags_dup:	equ $FFFFFF36
+v_fg_redraw_direction_dup:	equ $FFFFFF30
+v_bg1_redraw_direction_dup:	equ $FFFFFF32
+v_bg2_redraw_direction_dup:	equ $FFFFFF34
+v_bg3_redraw_direction_dup:	equ $FFFFFF36
 
 v_levseldelay:	equ $FFFFFF80	; level select - time until change when up/down is held (2 bytes)
 v_levselitem:	equ $FFFFFF82	; level select - item selected (2 bytes)

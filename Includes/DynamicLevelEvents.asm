@@ -26,7 +26,7 @@ DynamicLevelEvents:
 
 loc_6DA0:
 		add.w	d1,(v_boundary_bottom).w
-		move.b	#1,(f_bgscrollvert).w
+		move.b	#1,(f_boundary_bottom_change).w
 
 DLE_NoChg:
 		rts	
@@ -44,7 +44,7 @@ loc_6DAC:
 
 loc_6DC4:
 		add.w	d1,(v_boundary_bottom).w
-		move.b	#1,(f_bgscrollvert).w
+		move.b	#1,(f_boundary_bottom_change).w
 		rts	
 ; End of function DynamicLevelEvents
 

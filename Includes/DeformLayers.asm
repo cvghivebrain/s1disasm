@@ -6,16 +6,16 @@
 
 
 DeformLayers:
-		tst.b	(f_nobgscroll).w
+		tst.b	(f_disable_scrolling).w
 		beq.s	@bgscroll
 		rts	
 ; ===========================================================================
 
 	@bgscroll:
-		clr.w	(v_fg_scroll_flags).w
-		clr.w	(v_bg1_scroll_flags).w
-		clr.w	(v_bg2_scroll_flags).w
-		clr.w	(v_bg3_scroll_flags).w
+		clr.w	(v_fg_redraw_direction).w
+		clr.w	(v_bg1_redraw_direction).w
+		clr.w	(v_bg2_redraw_direction).w
+		clr.w	(v_bg3_redraw_direction).w
 		bsr.w	ScrollHorizontal
 		bsr.w	ScrollVertical
 		bsr.w	DynamicLevelEvents
@@ -49,7 +49,7 @@ Deform_Index:	dc.w Deform_GHZ-Deform_Index, Deform_LZ-Deform_Index
 
 
 Deform_GHZ:
-		move.w	(v_scrshiftx).w,d4
+		move.w	(v_camera_x_diff).w,d4
 		ext.l	d4
 		asl.l	#5,d4
 		move.l	d4,d1
@@ -125,10 +125,10 @@ loc_6384:
 
 
 Deform_LZ:
-		move.w	(v_scrshiftx).w,d4
+		move.w	(v_camera_x_diff).w,d4
 		ext.l	d4
 		asl.l	#7,d4
-		move.w	(v_scrshifty).w,d5
+		move.w	(v_camera_y_diff).w,d5
 		ext.l	d5
 		asl.l	#7,d5
 		bsr.w	BGScroll_XY
@@ -157,7 +157,7 @@ loc_63C6:
 
 
 Deform_MZ:
-		move.w	(v_scrshiftx).w,d4
+		move.w	(v_camera_x_diff).w,d4
 		ext.l	d4
 		asl.l	#6,d4
 		move.l	d4,d1
@@ -201,10 +201,10 @@ loc_6426:
 
 
 Deform_SLZ:
-		move.w	(v_scrshiftx).w,d4
+		move.w	(v_camera_x_diff).w,d4
 		ext.l	d4
 		asl.l	#7,d4
-		move.w	(v_scrshifty).w,d5
+		move.w	(v_camera_y_diff).w,d5
 		ext.l	d5
 		asl.l	#7,d5
 		bsr.w	Bg_Scroll_Y
@@ -311,10 +311,10 @@ loc_64FE:
 
 
 Deform_SYZ:
-		move.w	(v_scrshiftx).w,d4
+		move.w	(v_camera_x_diff).w,d4
 		ext.l	d4
 		asl.l	#6,d4
-		move.w	(v_scrshifty).w,d5
+		move.w	(v_camera_y_diff).w,d5
 		ext.l	d5
 		asl.l	#4,d5
 		move.l	d5,d1
@@ -344,10 +344,10 @@ loc_653C:
 
 
 Deform_SBZ:
-		move.w	(v_scrshiftx).w,d4
+		move.w	(v_camera_x_diff).w,d4
 		ext.l	d4
 		asl.l	#6,d4
-		move.w	(v_scrshifty).w,d5
+		move.w	(v_camera_y_diff).w,d5
 		ext.l	d5
 		asl.l	#4,d5
 		asl.l	#1,d5

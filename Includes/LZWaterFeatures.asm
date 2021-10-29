@@ -7,7 +7,7 @@ LZWaterFeatures:
 		bne.s	@notlabyrinth	; if not, branch
 		if Revision=0
 		else
-			tst.b   (f_nobgscroll).w
+			tst.b   (f_disable_scrolling).w
 			bne.s	@setheight
 		endc
 		cmpi.b	#id_Sonic_Death,(v_ost_player+ost_routine).w ; has Sonic just died?

@@ -154,3 +154,17 @@ afReset:	equ $FB	; reset animation and 2nd object routine counter
 af2ndRoutine:	equ $FA	; increment 2nd routine counter
 afxflip:	equ $20
 afyflip:	equ $40
+
+; 16x16 row/column redraw flags (v_fg_redraw_direction)
+redraw_top:		equ 1
+redraw_bottom:		equ 2
+redraw_left:		equ 4
+redraw_right:		equ 8
+redraw_topall:		equ $10
+redraw_bottomall:	equ $20
+redraw_top_bit:		equ 0
+redraw_bottom_bit:	equ 1
+redraw_left_bit:	equ 2
+redraw_right_bit:	equ 3
+redraw_topall_bit:	equ 4
+redraw_bottomall_bit:	equ 5

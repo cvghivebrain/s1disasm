@@ -10,19 +10,19 @@ ScrollHorizontal:
 		bsr.s	MoveScreenHoriz
 		move.w	(v_camera_x_pos).w,d0
 		andi.w	#$10,d0
-		move.b	(v_fg_xblock).w,d1
+		move.b	(v_fg_x_redraw_flag).w,d1
 		eor.b	d1,d0
 		bne.s	@return
-		eori.b	#$10,(v_fg_xblock).w
+		eori.b	#$10,(v_fg_x_redraw_flag).w
 		move.w	(v_camera_x_pos).w,d0
 		sub.w	d4,d0		; compare new with old screen position
 		bpl.s	@scrollRight
 
-		bset	#2,(v_fg_scroll_flags).w ; screen moves backward
+		bset	#redraw_left_bit,(v_fg_redraw_direction).w ; screen moves backward
 		rts	
 
 	@scrollRight:
-		bset	#3,(v_fg_scroll_flags).w ; screen moves forward
+		bset	#redraw_right_bit,(v_fg_redraw_direction).w ; screen moves forward
 
 	@return:
 		rts	
@@ -39,7 +39,7 @@ MoveScreenHoriz:
 		bcs.s	SH_BehindMid	; if yes, branch
 		subi.w	#16,d0		; is distance more than 160px?
 		bcc.s	SH_AheadOfMid	; if yes, branch
-		clr.w	(v_scrshiftx).w
+		clr.w	(v_camera_x_diff).w
 		rts	
 ; ===========================================================================
 
@@ -59,7 +59,7 @@ SH_SetScreen:
 		sub.w	(v_camera_x_pos).w,d1
 		asl.w	#8,d1
 		move.w	d0,(v_camera_x_pos).w ; set new screen position
-		move.w	d1,(v_scrshiftx).w ; set distance for screen movement
+		move.w	d1,(v_camera_x_diff).w ; set distance for screen movement
 		rts	
 ; ===========================================================================
 
@@ -101,28 +101,28 @@ ScrollVertical:
 		beq.s	loc_664A	; if not, branch
 
 		addi.w	#32,d0
-		sub.w	(v_lookshift).w,d0
+		sub.w	(v_camera_y_shift).w,d0
 		bcs.s	loc_6696
 		subi.w	#64,d0
 		bcc.s	loc_6696
-		tst.b	(f_bgscrollvert).w
+		tst.b	(f_boundary_bottom_change).w
 		bne.s	loc_66A8
 		bra.s	loc_6656
 ; ===========================================================================
 
 loc_664A:
-		sub.w	(v_lookshift).w,d0
+		sub.w	(v_camera_y_shift).w,d0
 		bne.s	loc_665C
-		tst.b	(f_bgscrollvert).w
+		tst.b	(f_boundary_bottom_change).w
 		bne.s	loc_66A8
 
 loc_6656:
-		clr.w	(v_scrshifty).w
+		clr.w	(v_camera_y_diff).w
 		rts	
 ; ===========================================================================
 
 loc_665C:
-		cmpi.w	#$60,(v_lookshift).w
+		cmpi.w	#$60,(v_camera_y_shift).w
 		bne.s	loc_6684
 		move.w	(v_ost_player+ost_inertia).w,d1
 		bpl.s	loc_666C
@@ -159,7 +159,7 @@ loc_6696:
 
 loc_66A8:
 		moveq	#0,d0
-		move.b	d0,(f_bgscrollvert).w
+		move.b	d0,(f_boundary_bottom_change).w
 
 loc_66AE:
 		moveq	#0,d1
@@ -220,23 +220,23 @@ loc_6724:
 		move.l	d1,d3
 		sub.l	(v_camera_y_pos).w,d3
 		ror.l	#8,d3
-		move.w	d3,(v_scrshifty).w
+		move.w	d3,(v_camera_y_diff).w
 		move.l	d1,(v_camera_y_pos).w
 		move.w	(v_camera_y_pos).w,d0
 		andi.w	#$10,d0
-		move.b	(v_fg_yblock).w,d1
+		move.b	(v_fg_y_redraw_flag).w,d1
 		eor.b	d1,d0
 		bne.s	@return
-		eori.b	#$10,(v_fg_yblock).w
+		eori.b	#$10,(v_fg_y_redraw_flag).w
 		move.w	(v_camera_y_pos).w,d0
 		sub.w	d4,d0
 		bpl.s	@scrollBottom
-		bset	#0,(v_fg_scroll_flags).w
+		bset	#redraw_top_bit,(v_fg_redraw_direction).w
 		rts	
 ; ===========================================================================
 
 	@scrollBottom:
-		bset	#1,(v_fg_scroll_flags).w
+		bset	#redraw_bottom_bit,(v_fg_redraw_direction).w
 
 	@return:
 		rts	

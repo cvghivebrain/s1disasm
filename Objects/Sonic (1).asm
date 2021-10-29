@@ -367,9 +367,9 @@ Sonic_LookUp:
 		btst	#bitUp,(v_joypad_hold).w ; is up being pressed?
 		beq.s	Sonic_Duck	; if not, branch
 		move.b	#id_LookUp,ost_anim(a0) ; use "looking up" animation
-		cmpi.w	#$C8,(v_lookshift).w
+		cmpi.w	#$C8,(v_camera_y_shift).w
 		beq.s	Sonic_ScrOk
-		addq.w	#2,(v_lookshift).w
+		addq.w	#2,(v_camera_y_shift).w
 		bra.s	Sonic_ScrOk
 ; ===========================================================================
 
@@ -377,20 +377,20 @@ Sonic_Duck:
 		btst	#bitDn,(v_joypad_hold).w ; is down being pressed?
 		beq.s	Sonic_ResetScr	; if not, branch
 		move.b	#id_Duck,ost_anim(a0) ; use "ducking" animation
-		cmpi.w	#8,(v_lookshift).w
+		cmpi.w	#8,(v_camera_y_shift).w
 		beq.s	Sonic_ScrOk
-		subq.w	#2,(v_lookshift).w
+		subq.w	#2,(v_camera_y_shift).w
 		bra.s	Sonic_ScrOk
 ; ===========================================================================
 
 Sonic_ResetScr:
-		cmpi.w	#$60,(v_lookshift).w ; is screen in its default position?
+		cmpi.w	#$60,(v_camera_y_shift).w ; is screen in its default position?
 		beq.s	Sonic_ScrOk	; if yes, branch
 		bcc.s	Sonic_HighScr	; branch if screen is higher
-		addq.w	#4,(v_lookshift).w ; move screen back to default
+		addq.w	#4,(v_camera_y_shift).w ; move screen back to default
 
 	Sonic_HighScr:
-		subq.w	#2,(v_lookshift).w ; move screen back to default
+		subq.w	#2,(v_camera_y_shift).w ; move screen back to default
 
 	Sonic_ScrOk:
 
@@ -736,13 +736,13 @@ Obj01_JumpMove:
 		move.w	d0,ost_x_vel(a0) ; change Sonic's horizontal speed
 
 Obj01_ResetScr2:
-		cmpi.w	#$60,(v_lookshift).w ; is the screen in its default position?
+		cmpi.w	#$60,(v_camera_y_shift).w ; is the screen in its default position?
 		beq.s	loc_132A4	; if yes, branch
 		bcc.s	loc_132A0
-		addq.w	#4,(v_lookshift).w
+		addq.w	#4,(v_camera_y_shift).w
 
 loc_132A0:
-		subq.w	#2,(v_lookshift).w
+		subq.w	#2,(v_camera_y_shift).w
 
 loc_132A4:
 		cmpi.w	#-$400,ost_y_vel(a0) ; is Sonic moving faster than -$400 upwards?

@@ -238,7 +238,7 @@ Drown_Countdown:; Routine $A
 		move.w	#0,ost_y_vel(a0)
 		move.w	#0,ost_x_vel(a0)
 		move.w	#0,ost_inertia(a0)
-		move.b	#1,(f_nobgscroll).w
+		move.b	#1,(f_disable_scrolling).w
 		movea.l	(sp)+,a0
 		rts	
 ; ===========================================================================

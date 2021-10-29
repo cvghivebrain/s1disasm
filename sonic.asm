@@ -737,8 +737,8 @@ VBla_08:
 		startZ80
 		movem.l	(v_camera_x_pos).w,d0-d7
 		movem.l	d0-d7,(v_camera_x_pos_dup).w
-		movem.l	(v_fg_scroll_flags).w,d0-d1
-		movem.l	d0-d1,(v_fg_scroll_flags_dup).w
+		movem.l	(v_fg_redraw_direction).w,d0-d1
+		movem.l	d0-d1,(v_fg_redraw_direction_dup).w
 		cmpi.b	#96,(v_vdp_hint_line).w
 		bhs.s	Demo_Time
 		move.b	#1,(f_hblank_run_snd).w
@@ -817,8 +817,8 @@ VBla_0C:
 		startZ80
 		movem.l	(v_camera_x_pos).w,d0-d7
 		movem.l	d0-d7,(v_camera_x_pos_dup).w
-		movem.l	(v_fg_scroll_flags).w,d0-d1
-		movem.l	d0-d1,(v_fg_scroll_flags_dup).w
+		movem.l	(v_fg_redraw_direction).w,d0-d1
+		movem.l	d0-d1,(v_fg_redraw_direction_dup).w
 		bsr.w	LoadTilesAsYouMove
 		jsr	(AnimateLevelGfx).l
 		jsr	(HUD_Update).l
@@ -2550,7 +2550,7 @@ Level_TtlCardLoop:
 		bsr.w	PalLoad1	; load Sonic's palette
 		bsr.w	LevelSizeLoad
 		bsr.w	DeformLayers
-		bset	#2,(v_fg_scroll_flags).w
+		bset	#redraw_left_bit,(v_fg_redraw_direction).w
 		bsr.w	LevelDataLoad ; load block mappings and palettes
 		bsr.w	LoadTilesFromStart
 		jsr	(ConvertCollisionArray).l
@@ -3631,7 +3631,7 @@ End_LoadData:
 		jsr	(Hud_Base).l
 		bsr.w	LevelSizeLoad
 		bsr.w	DeformLayers
-		bset	#2,(v_fg_scroll_flags).w
+		bset	#redraw_left_bit,(v_fg_redraw_direction).w
 		bsr.w	LevelDataLoad
 		bsr.w	LoadTilesFromStart
 		move.l	#Col_GHZ,(v_collision_index_ptr).w ; load collision index
@@ -4039,10 +4039,10 @@ Demo_EndGHZ2:	incbin	"demodata\Ending - GHZ2.bin"
 
 LevelSizeLoad:
 		moveq	#0,d0
-		move.b	d0,($FFFFF740).w
-		move.b	d0,($FFFFF741).w
-		move.b	d0,($FFFFF746).w
-		move.b	d0,($FFFFF748).w
+		move.b	d0,(v_levelsizeload_unused_1).w
+		move.b	d0,(v_levelsizeload_unused_2).w
+		move.b	d0,(v_levelsizeload_unused_3).w
+		move.b	d0,(v_levelsizeload_unused_4).w
 		move.b	d0,(v_dle_routine).w
 		move.w	(v_zone).w,d0
 		lsl.b	#6,d0
@@ -4062,9 +4062,9 @@ LevelSizeLoad:
 		move.w	(v_boundary_left).w,d0
 		addi.w	#$240,d0
 		move.w	d0,(v_boundary_left_unused).w
-		move.w	#$1010,($FFFFF74A).w
+		move.w	#$1010,(v_fg_x_redraw_flag).w
 		move.w	(a0)+,d0
-		move.w	d0,(v_lookshift).w
+		move.w	d0,(v_camera_y_shift).w
 		bra.w	LevSz_ChkLamp
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
@@ -4266,7 +4266,7 @@ LevSz_LoadScrollBlockSize:
 		move.b	(v_zone).w,d0
 		lsl.w	#3,d0
 		lea	BGScrollBlockSizes(pc,d0.w),a1
-		lea	(v_scroll_block_1_size).w,a2
+		lea	(v_scroll_block_1_height).w,a2
 		move.l	(a1)+,(a2)+
 		move.l	(a1)+,(a2)+
 		rts	
@@ -4470,16 +4470,16 @@ BGScroll_XY:
 		move.l	d0,d1
 		swap	d1
 		andi.w	#$10,d1
-		move.b	(v_bg1_xblock).w,d3
+		move.b	(v_bg1_x_redraw_flag).w,d3
 		eor.b	d3,d1
 		bne.s	BGScroll_YRelative	; no change in Y
-		eori.b	#$10,(v_bg1_xblock).w
+		eori.b	#$10,(v_bg1_x_redraw_flag).w
 		sub.l	d2,d0	; new - old
 		bpl.s	@scrollRight
-		bset	#2,(v_bg1_scroll_flags).w
+		bset	#redraw_left_bit,(v_bg1_redraw_direction).w
 		bra.s	BGScroll_YRelative
 	@scrollRight:
-		bset	#3,(v_bg1_scroll_flags).w
+		bset	#redraw_right_bit,(v_bg1_redraw_direction).w
 BGScroll_YRelative:
 		move.l	(v_bg1_y_pos).w,d3
 		move.l	d3,d0
@@ -4488,16 +4488,16 @@ BGScroll_YRelative:
 		move.l	d0,d1
 		swap	d1
 		andi.w	#$10,d1
-		move.b	(v_bg1_yblock).w,d2
+		move.b	(v_bg1_y_redraw_flag).w,d2
 		eor.b	d2,d1
 		bne.s	@return
-		eori.b	#$10,(v_bg1_yblock).w
+		eori.b	#$10,(v_bg1_y_redraw_flag).w
 		sub.l	d3,d0
 		bpl.s	@scrollBottom
-		bset	#0,(v_bg1_scroll_flags).w
+		bset	#redraw_top_bit,(v_bg1_redraw_direction).w
 		rts
 	@scrollBottom:
-		bset	#1,(v_bg1_scroll_flags).w
+		bset	#redraw_bottom_bit,(v_bg1_redraw_direction).w
 	@return:
 		rts
 ; End of function BGScroll_XY
@@ -4516,23 +4516,23 @@ Bg_Scroll_Y:
 		move.l	d0,d1
 		swap	d1
 		andi.w	#$10,d1
-		move.b	(v_bg1_yblock).w,d2
+		move.b	(v_bg1_y_redraw_flag).w,d2
 		eor.b	d2,d1
 		bne.s	@return
-		eori.b	#$10,(v_bg1_yblock).w
+		eori.b	#$10,(v_bg1_y_redraw_flag).w
 		sub.l	d3,d0
 		bpl.s	@scrollBottom
 		if revision=0
-		bset	#0,(v_bg1_scroll_flags).w
+		bset	#redraw_top_bit,(v_bg1_redraw_direction).w
 		else
-		bset	#4,(v_bg1_scroll_flags).w
+		bset	#redraw_topall_bit,(v_bg1_redraw_direction).w
 		endc
 		rts
 	@scrollBottom:
 		if revision=0
-		bset	#1,(v_bg1_scroll_flags).w
+		bset	#redraw_bottom_bit,(v_bg1_redraw_direction).w
 		else
-		bset	#5,(v_bg1_scroll_flags).w
+		bset	#redraw_bottomall_bit,(v_bg1_redraw_direction).w
 		endc
 	@return:
 		rts
@@ -4546,16 +4546,16 @@ BGScroll_YAbsolute:
 		move.w	d0,(v_bg1_y_pos).w
 		move.w	d0,d1
 		andi.w	#$10,d1
-		move.b	(v_bg1_yblock).w,d2
+		move.b	(v_bg1_y_redraw_flag).w,d2
 		eor.b	d2,d1
 		bne.s	@return
-		eori.b	#$10,(v_bg1_yblock).w
+		eori.b	#$10,(v_bg1_y_redraw_flag).w
 		sub.w	d3,d0
 		bpl.s	@scrollBottom
-		bset	#0,(v_bg1_scroll_flags).w
+		bset	#redraw_top_bit,(v_bg1_redraw_direction).w
 		rts
 	@scrollBottom:
-		bset	#1,(v_bg1_scroll_flags).w
+		bset	#redraw_bottom_bit,(v_bg1_redraw_direction).w
 	@return:
 		rts
 ; End of function BGScroll_YAbsolute
@@ -4568,7 +4568,7 @@ BGScroll_YAbsolute:
 ScrollBlock4:
 		move.w	(v_bg2_x_pos).w,d2
 		move.w	(v_bg2_y_pos).w,d3
-		move.w	(v_scrshiftx).w,d0
+		move.w	(v_camera_x_diff).w,d0
 		ext.l	d0
 		asl.l	#7,d0
 		add.l	d0,(v_bg2_x_pos).w
@@ -4581,12 +4581,12 @@ ScrollBlock4:
 		move.w	(v_bg2_x_pos).w,d0
 		sub.w	d2,d0
 		bpl.s	loc_687E
-		bset	#2,(v_bg2_scroll_flags).w
+		bset	#redraw_left_bit,(v_bg2_redraw_direction).w
 		bra.s	locret_6884
 ; ===========================================================================
 
 loc_687E:
-		bset	#3,(v_bg2_scroll_flags).w
+		bset	#redraw_right_bit,(v_bg2_redraw_direction).w
 
 locret_6884:
 		rts	
@@ -4605,17 +4605,17 @@ BGScroll_Block1:
 		move.l	d0,d1
 		swap	d1
 		andi.w	#$10,d1
-		move.b	(v_bg1_xblock).w,d3
+		move.b	(v_bg1_x_redraw_flag).w,d3
 		eor.b	d3,d1
 		bne.s	@return
-		eori.b	#$10,(v_bg1_xblock).w
+		eori.b	#$10,(v_bg1_x_redraw_flag).w
 		sub.l	d2,d0
 		bpl.s	@scrollRight
-		bset	d6,(v_bg1_scroll_flags).w
+		bset	d6,(v_bg1_redraw_direction).w
 		bra.s	@return
 	@scrollRight:
 		addq.b	#1,d6
-		bset	d6,(v_bg1_scroll_flags).w
+		bset	d6,(v_bg1_redraw_direction).w
 	@return:
 		rts
 ; End of function BGScroll_Block1
@@ -4632,17 +4632,17 @@ BGScroll_Block2:
 		move.l	d0,d1
 		swap	d1
 		andi.w	#$10,d1
-		move.b	(v_bg2_xblock).w,d3
+		move.b	(v_bg2_x_redraw_flag).w,d3
 		eor.b	d3,d1
 		bne.s	@return
-		eori.b	#$10,(v_bg2_xblock).w
+		eori.b	#$10,(v_bg2_x_redraw_flag).w
 		sub.l	d2,d0
 		bpl.s	@scrollRight
-		bset	d6,(v_bg2_scroll_flags).w
+		bset	d6,(v_bg2_redraw_direction).w
 		bra.s	@return
 	@scrollRight:
 		addq.b	#1,d6
-		bset	d6,(v_bg2_scroll_flags).w
+		bset	d6,(v_bg2_redraw_direction).w
 	@return:
 		rts
 ;-------------------------------------------------------------------------------
@@ -4654,17 +4654,17 @@ BGScroll_Block3:
 		move.l	d0,d1
 		swap	d1
 		andi.w	#$10,d1
-		move.b	(v_bg3_xblock).w,d3
+		move.b	(v_bg3_x_redraw_flag).w,d3
 		eor.b	d3,d1
 		bne.s	@return
-		eori.b	#$10,(v_bg3_xblock).w
+		eori.b	#$10,(v_bg3_x_redraw_flag).w
 		sub.l	d2,d0
 		bpl.s	@scrollRight
-		bset	d6,(v_bg3_scroll_flags).w
+		bset	d6,(v_bg3_redraw_direction).w
 		bra.s	@return
 	@scrollRight:
 		addq.b	#1,d6
-		bset	d6,(v_bg3_scroll_flags).w
+		bset	d6,(v_bg3_redraw_direction).w
 	@return:
 		rts
 		endc
@@ -4676,12 +4676,12 @@ BGScroll_Block3:
 LoadTilesAsYouMove_BGOnly:
 		lea	(vdp_control_port).l,a5
 		lea	(vdp_data_port).l,a6
-		lea	(v_bg1_scroll_flags).w,a2
+		lea	(v_bg1_redraw_direction).w,a2
 		lea	(v_bg1_x_pos).w,a3
 		lea	(v_level_layout+$40).w,a4
 		move.w	#$6000,d2
 		bsr.w	DrawBGScrollBlock1
-		lea	(v_bg2_scroll_flags).w,a2
+		lea	(v_bg2_redraw_direction).w,a2
 		lea	(v_bg2_x_pos).w,a3
 		bra.w	DrawBGScrollBlock2
 ; End of function sub_6886
@@ -4697,23 +4697,23 @@ LoadTilesAsYouMove:
 		lea	(vdp_control_port).l,a5
 		lea	(vdp_data_port).l,a6
 		; First, update the background
-		lea	(v_bg1_scroll_flags_dup).w,a2	; Scroll block 1 scroll flags
+		lea	(v_bg1_redraw_direction_dup).w,a2	; Scroll block 1 scroll flags
 		lea	(v_bg1_x_pos_dup).w,a3	; Scroll block 1 X coordinate
 		lea	(v_level_layout+$40).w,a4
 		move.w	#$6000,d2			; VRAM thing for selecting Plane B
 		bsr.w	DrawBGScrollBlock1
-		lea	(v_bg2_scroll_flags_dup).w,a2	; Scroll block 2 scroll flags
+		lea	(v_bg2_redraw_direction_dup).w,a2	; Scroll block 2 scroll flags
 		lea	(v_bg2_x_pos_dup).w,a3	; Scroll block 2 X coordinate
 		bsr.w	DrawBGScrollBlock2
 		if Revision>=1
 		; REV01 added a third scroll block, though, technically,
 		; the RAM for it was already there in REV00
-		lea	(v_bg3_scroll_flags_dup).w,a2	; Scroll block 3 scroll flags
+		lea	(v_bg3_redraw_direction_dup).w,a2	; Scroll block 3 scroll flags
 		lea	(v_bg3_x_pos_dup).w,a3	; Scroll block 3 X coordinate
 		bsr.w	DrawBGScrollBlock3
 		endc
 		; Then, update the foreground
-		lea	(v_fg_scroll_flags_dup).w,a2	; Foreground scroll flags
+		lea	(v_fg_redraw_direction_dup).w,a2	; Foreground scroll flags
 		lea	(v_camera_x_pos_dup).w,a3		; Foreground X coordinate
 		lea	(v_level_layout).w,a4
 		move.w	#$4000,d2			; VRAM thing for selecting Plane A
@@ -4774,7 +4774,7 @@ locret_6952:
 DrawBGScrollBlock1:
 		tst.b	(a2)
 		beq.w	locret_69F2
-		bclr	#0,(a2)
+		bclr	#redraw_top_bit,(a2)
 		beq.s	loc_6972
 		; Draw new tiles at the top
 		moveq	#-16,d4
@@ -4783,14 +4783,14 @@ DrawBGScrollBlock1:
 		moveq	#-16,d4
 		moveq	#-16,d5
 		if Revision=0
-		moveq	#(512/16)-1,d6	 ; Draw entire row of plane
-		bsr.w	DrawBlocks_LR_2
+			moveq	#(512/16)-1,d6	 ; Draw entire row of plane
+			bsr.w	DrawBlocks_LR_2
 		else
 			bsr.w	DrawBlocks_LR
 		endc
 
 loc_6972:
-		bclr	#1,(a2)
+		bclr	#redraw_bottom_bit,(a2)
 		beq.s	loc_698E
 		; Draw new tiles at the top
 		move.w	#224,d4
@@ -4799,57 +4799,57 @@ loc_6972:
 		move.w	#224,d4
 		moveq	#-16,d5
 		if Revision=0
-		moveq	#(512/16)-1,d6
-		bsr.w	DrawBlocks_LR_2
+			moveq	#(512/16)-1,d6
+			bsr.w	DrawBlocks_LR_2
 		else
 			bsr.w	DrawBlocks_LR
 		endc
 
 loc_698E:
-		bclr	#2,(a2)
+		bclr	#redraw_left_bit,(a2)
 
 		if Revision=0
-		beq.s	loc_69BE
-		; Draw new tiles on the left
-		moveq	#-16,d4
-		moveq	#-16,d5
-		bsr.w	Calc_VRAM_Pos
-		moveq	#-16,d4
-		moveq	#-16,d5
-		move.w	(v_scroll_block_1_size).w,d6
-		move.w	4(a3),d1
-		andi.w	#-16,d1		; Floor camera Y coordinate to the nearest block
-		sub.w	d1,d6
-		blt.s	loc_69BE	; If scroll block 1 is offscreen, skip loading its tiles
-		lsr.w	#4,d6		; Get number of rows not above the screen
-		cmpi.w	#((224+16+16)/16)-1,d6
-		blo.s	loc_69BA
-		moveq	#((224+16+16)/16)-1,d6	; Cap at height of screen
+			beq.s	loc_69BE
+			; Draw new tiles on the left
+			moveq	#-16,d4
+			moveq	#-16,d5
+			bsr.w	Calc_VRAM_Pos
+			moveq	#-16,d4
+			moveq	#-16,d5
+			move.w	(v_scroll_block_1_height).w,d6
+			move.w	4(a3),d1
+			andi.w	#-16,d1		; Floor camera Y coordinate to the nearest block
+			sub.w	d1,d6
+			blt.s	loc_69BE	; If scroll block 1 is offscreen, skip loading its tiles
+			lsr.w	#4,d6		; Get number of rows not above the screen
+			cmpi.w	#((224+16+16)/16)-1,d6
+			blo.s	loc_69BA
+			moveq	#((224+16+16)/16)-1,d6	; Cap at height of screen
 
-loc_69BA:
-		bsr.w	DrawBlocks_TB_2
+	loc_69BA:
+			bsr.w	DrawBlocks_TB_2
 
-loc_69BE:
-		bclr	#3,(a2)
-		beq.s	locret_69F2
-		; Draw new tiles on the right
-		moveq	#-16,d4
-		move.w	#320,d5
-		bsr.w	Calc_VRAM_Pos
-		moveq	#-16,d4
-		move.w	#320,d5
-		move.w	(v_scroll_block_1_size).w,d6
-		move.w	4(a3),d1
-		andi.w	#-16,d1
-		sub.w	d1,d6
-		blt.s	locret_69F2
-		lsr.w	#4,d6
-		cmpi.w	#((224+16+16)/16)-1,d6
-		blo.s	loc_69EE
-		moveq	#((224+16+16)/16)-1,d6
+	loc_69BE:
+			bclr	#redraw_right_bit,(a2)
+			beq.s	locret_69F2
+			; Draw new tiles on the right
+			moveq	#-16,d4
+			move.w	#320,d5
+			bsr.w	Calc_VRAM_Pos
+			moveq	#-16,d4
+			move.w	#320,d5
+			move.w	(v_scroll_block_1_height).w,d6
+			move.w	4(a3),d1
+			andi.w	#-16,d1
+			sub.w	d1,d6
+			blt.s	locret_69F2
+			lsr.w	#4,d6
+			cmpi.w	#((224+16+16)/16)-1,d6
+			blo.s	loc_69EE
+			moveq	#((224+16+16)/16)-1,d6
 
-loc_69EE:
-		bsr.w	DrawBlocks_TB_2
+	loc_69EE:
+			bsr.w	DrawBlocks_TB_2
 
 		else
 
@@ -4863,7 +4863,7 @@ loc_69EE:
 			bsr.w	DrawBlocks_TB
 	locj_6D56:
 
-			bclr	#3,(a2)
+			bclr	#redraw_right_bit,(a2)
 			beq.s	locj_6D70
 			; Draw new tiles on the right
 			moveq	#-16,d4
@@ -4874,7 +4874,7 @@ loc_69EE:
 			bsr.w	DrawBlocks_TB
 	locj_6D70:
 
-			bclr	#4,(a2)
+			bclr	#redraw_topall_bit,(a2)
 			beq.s	locj_6D88
 			; Draw entire row at the top
 			moveq	#-16,d4
@@ -4886,7 +4886,7 @@ loc_69EE:
 			bsr.w	DrawBlocks_LR_3
 	locj_6D88:
 
-			bclr	#5,(a2)
+			bclr	#redraw_bottomall_bit,(a2)
 			beq.s	locret_69F2
 			; Draw entire row at the bottom
 			move.w	#224,d4
@@ -4912,12 +4912,12 @@ DrawBGScrollBlock2:
 
 		tst.b	(a2)
 		beq.w	locret_6A80
-		bclr	#2,(a2)
+		bclr	#redraw_left_bit,(a2)
 		beq.s	loc_6A3E
 		; Draw new tiles on the left
 		cmpi.w	#16,(a3)
 		blo.s	loc_6A3E
-		move.w	(v_scroll_block_1_size).w,d4
+		move.w	(v_scroll_block_1_height).w,d4
 		move.w	4(a3),d1
 		andi.w	#-16,d1
 		sub.w	d1,d4	; Get remaining coverage of screen that isn't scroll block 1
@@ -4926,7 +4926,7 @@ DrawBGScrollBlock2:
 		bsr.w	Calc_VRAM_Pos
 		move.w	(sp)+,d4
 		moveq	#-16,d5
-		move.w	(v_scroll_block_1_size).w,d6
+		move.w	(v_scroll_block_1_height).w,d6
 		move.w	4(a3),d1
 		andi.w	#-16,d1
 		sub.w	d1,d6
@@ -4938,10 +4938,10 @@ DrawBGScrollBlock2:
 		bsr.w	DrawBlocks_TB_2
 
 loc_6A3E:
-		bclr	#3,(a2)
+		bclr	#redraw_right_bit,(a2)
 		beq.s	locret_6A80
 		; Draw new tiles on the right
-		move.w	(v_scroll_block_1_size).w,d4
+		move.w	(v_scroll_block_1_height).w,d4
 		move.w	4(a3),d1
 		andi.w	#-16,d1
 		sub.w	d1,d4
@@ -4950,7 +4950,7 @@ loc_6A3E:
 		bsr.w	Calc_VRAM_Pos
 		move.w	(sp)+,d4
 		move.w	#320,d5
-		move.w	(v_scroll_block_1_size).w,d6
+		move.w	(v_scroll_block_1_height).w,d6
 		move.w	4(a3),d1
 		andi.w	#-16,d1
 		sub.w	d1,d6
@@ -4971,7 +4971,7 @@ locret_6A80:
 ; This would have drawn a scroll block that started at 208 pixels down, and was 48 pixels long.
 		tst.b	(a2)
 		beq.s	locret_6AD6
-		bclr	#2,(a2)
+		bclr	#redraw_left_bit,(a2)
 		beq.s	loc_6AAC
 		; Draw new tiles on the left
 		move.w	#224-16,d4	; Note that full screen coverage is normally 224+16+16. This is exactly three blocks less.
@@ -4987,7 +4987,7 @@ locret_6A80:
 		bsr.w	DrawBlocks_TB_2
 
 loc_6AAC:
-		bclr	#3,(a2)
+		bclr	#redraw_right_bit,(a2)
 		beq.s	locret_6AD6
 		; Draw new tiles on the right
 		move.w	#224-16,d4
@@ -5011,7 +5011,7 @@ locret_6AD6:
 			beq.w	locj_6DF2
 			cmpi.b	#id_SBZ,(v_zone).w
 			beq.w	Draw_SBz
-			bclr	#0,(a2)
+			bclr	#redraw_top_bit,(a2)
 			beq.s	locj_6DD2
 			; Draw new tiles on the left
 			move.w	#224/2,d4	; Draw the bottom half of the screen
@@ -5022,7 +5022,7 @@ locret_6AD6:
 			moveq	#3-1,d6		; Draw three rows... could this be a repurposed version of the above unused code?
 			bsr.w	DrawBlocks_TB_2
 	locj_6DD2:
-			bclr	#1,(a2)
+			bclr	#redraw_bottom_bit,(a2)
 			beq.s	locj_6DF2
 			; Draw new tiles on the right
 			move.w	#224/2,d4
@@ -5042,9 +5042,9 @@ locret_6AD6:
 ;===============================================================================
 	Draw_SBz:
 			moveq	#-16,d4
-			bclr	#0,(a2)
+			bclr	#redraw_top_bit,(a2)
 			bne.s	locj_6E28
-			bclr	#1,(a2)
+			bclr	#redraw_bottom_bit,(a2)
 			beq.s	locj_6E72
 			move.w	#224,d4
 	locj_6E28:
@@ -5101,7 +5101,7 @@ locret_6AD6:
 			beq.w	locj_6EF0
 			cmpi.b	#id_MZ,(v_zone).w
 			beq.w	Draw_Mz
-			bclr	#0,(a2)
+			bclr	#redraw_top_bit,(a2)
 			beq.s	locj_6ED0
 			; Draw new tiles on the left
 			move.w	#$40,d4
@@ -5112,7 +5112,7 @@ locret_6AD6:
 			moveq	#3-1,d6
 			bsr.w	DrawBlocks_TB_2
 	locj_6ED0:
-			bclr	#1,(a2)
+			bclr	#redraw_bottom_bit,(a2)
 			beq.s	locj_6EF0
 			; Draw new tiles on the right
 			move.w	#$40,d4
@@ -5135,9 +5135,9 @@ locret_6AD6:
 ;===============================================================================
 	Draw_Mz:
 			moveq	#-16,d4
-			bclr	#0,(a2)
+			bclr	#redraw_top_bit,(a2)
 			bne.s	locj_6F66
-			bclr	#1,(a2)
+			bclr	#redraw_bottom_bit,(a2)
 			beq.s	locj_6FAE
 			move.w	#224,d4
 	locj_6F66:
