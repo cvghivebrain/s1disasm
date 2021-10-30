@@ -833,7 +833,7 @@ Sonic_LevelBound:
 		bne.w	KillSonic	; if not, kill Sonic
 		cmpi.w	#$2000,(v_ost_player+ost_x_pos).w ; has Sonic reached $2000 on x-axis?
 		bcs.w	KillSonic	; if not, kill Sonic
-		clr.b	(v_lastlamp).w	; clear	lamppost counter
+		clr.b	(v_last_lamppost).w	; clear	lamppost counter
 		move.w	#1,(f_restart).w ; restart the level
 		move.w	#(id_LZ<<8)+3,(v_zone).w ; set level to SBZ3 (LZ4)
 		rts	

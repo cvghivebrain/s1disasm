@@ -45,7 +45,7 @@ Bump_Hit:	; Routine 2
 		clr.b	ost_sonic_jump(a1)
 		move.b	#id_ani_bump_bumped,ost_anim(a0) ; use "hit" animation
 		play.w	1, jsr, sfx_Bumper		; play bumper sound
-		lea	(v_objstate).w,a2
+		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
 		beq.s	@addscore
@@ -71,7 +71,7 @@ Bump_Hit:	; Routine 2
 ; ===========================================================================
 
 @resetcount:
-		lea	(v_objstate).w,a2
+		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
 		beq.s	@delete

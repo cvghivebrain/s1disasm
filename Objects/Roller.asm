@@ -55,7 +55,7 @@ Roll_Action:	; Routine 2
 ; ===========================================================================
 
 Roll_ChkGone:
-		lea	(v_objstate).w,a2
+		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
 		beq.s	Roll_Delete

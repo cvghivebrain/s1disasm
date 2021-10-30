@@ -97,7 +97,7 @@ FBlock_Main:	; Routine 0
 		move.w	#$80,ost_fblock_height(a0)
 
 @chkstate:
-		lea	(v_objstate).w,a2
+		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
 		beq.s	FBlock_Action
@@ -276,7 +276,7 @@ FBlock_UpButton:
 @loc_104C8:
 		addq.b	#1,ost_subtype(a0)
 		clr.b	ost_fblock_move_flag(a0)
-		lea	(v_objstate).w,a2
+		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
 		beq.s	@loc_104AE
@@ -320,7 +320,7 @@ FBlock_DownButton:
 @loc_1052C:
 		subq.b	#1,ost_subtype(a0)
 		clr.b	ost_fblock_move_flag(a0)
-		lea	(v_objstate).w,a2
+		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
 		beq.s	@loc_10512
@@ -389,7 +389,7 @@ FBlock_LeftButton:
 @loc_105C0:
 		addq.b	#1,ost_subtype(a0)
 		clr.b	ost_fblock_move_flag(a0)
-		lea	(v_objstate).w,a2
+		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
 		beq.s	@loc_105A2
@@ -432,7 +432,7 @@ FBlock_RightButton:
 @loc_10624:
 		subq.b	#1,ost_subtype(a0)
 		clr.b	ost_fblock_move_flag(a0)
-		lea	(v_objstate).w,a2
+		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
 		beq.s	@wtf

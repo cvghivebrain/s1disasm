@@ -155,7 +155,7 @@ Got_NextLevel:	; Routine $A
 ; ===========================================================================
 
 Got_ChkSS:
-		clr.b	(v_lastlamp).w	; clear	lamppost counter
+		clr.b	(v_last_lamppost).w	; clear	lamppost counter
 		tst.b	(f_giantring_collected).w	; has Sonic jumped into	a giant	ring?
 		beq.s	VBla_08A	; if not, branch
 		move.b	#id_Special,(v_gamemode).w ; set game mode to Special Stage (10)

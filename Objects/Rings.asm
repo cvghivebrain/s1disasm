@@ -39,7 +39,7 @@ ost_ring_num:		equ $34	; which ring in the group of 1-7 rings it is
 ; ===========================================================================
 
 Ring_Main:	; Routine 0
-		lea	(v_objstate).w,a2
+		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
 		lea	2(a2,d0.w),a2
@@ -115,7 +115,7 @@ Ring_Collect:	; Routine 4
 		move.b	#0,ost_col_type(a0)
 		move.b	#1,ost_priority(a0)
 		bsr.w	CollectRing
-		lea	(v_objstate).w,a2
+		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
 		move.b	ost_ring_num(a0),d1 ; which ring is collected

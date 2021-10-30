@@ -726,7 +726,7 @@ VBla_08:
 		move.w	(v_vdp_hint_counter).w,(a5)
 
 		dma	v_hscroll_buffer,$380,vram_hscroll
-		dma	v_spritetablebuffer,$280,vram_sprites
+		dma	v_sprite_buffer,$280,vram_sprites
 		tst.b	(f_sonic_dma_gfx).w ; has Sonic's sprite changed?
 		beq.s	@nochg		; if not, branch
 
@@ -772,7 +772,7 @@ VBla_0A:
 		waitZ80
 		bsr.w	ReadJoypads
 		dma	v_pal_dry,$80,cram
-		dma	v_spritetablebuffer,$280,vram_sprites
+		dma	v_sprite_buffer,$280,vram_sprites
 		dma	v_hscroll_buffer,$380,vram_hscroll
 		startZ80
 		bsr.w	PalCycle_SS
@@ -807,7 +807,7 @@ VBla_0C:
 	@waterbelow:
 		move.w	(v_vdp_hint_counter).w,(a5)
 		dma	v_hscroll_buffer,$380,vram_hscroll
-		dma	v_spritetablebuffer,$280,vram_sprites
+		dma	v_sprite_buffer,$280,vram_sprites
 		tst.b	(f_sonic_dma_gfx).w
 		beq.s	@nochg
 		dma	v_sonic_gfx_buffer,$2E0,vram_sonic
@@ -844,7 +844,7 @@ VBla_16:
 		waitZ80
 		bsr.w	ReadJoypads
 		dma	v_pal_dry,$80,cram
-		dma	v_spritetablebuffer,$280,vram_sprites
+		dma	v_sprite_buffer,$280,vram_sprites
 		dma	v_hscroll_buffer,$380,vram_hscroll
 		startZ80
 		tst.b	(f_sonic_dma_gfx).w
@@ -876,7 +876,7 @@ ReadPad_WaterPal_Sprites_HScroll:
 		dma	v_pal_water,$80,cram
 
 	@waterbelow:
-		dma	v_spritetablebuffer,$280,vram_sprites
+		dma	v_sprite_buffer,$280,vram_sprites
 		dma	v_hscroll_buffer,$380,vram_hscroll
 		startZ80
 		rts	
@@ -1093,7 +1093,7 @@ ClearScreen:
 		clr.l	(v_fg_x_pos_hscroll).w
 		endc
 
-		lea	(v_spritetablebuffer).w,a1
+		lea	(v_sprite_buffer).w,a1
 		moveq	#0,d0
 		move.w	#($280/4),d1	; This should be ($280/4)-1, leading to a slight bug (first bit of v_pal_water is cleared)
 
@@ -1810,7 +1810,7 @@ GM_Title:
 		move.w	(a5)+,(a6)
 		dbf	d1,Tit_LoadText	; load level select font
 
-		move.b	#0,(v_lastlamp).w ; clear lamppost counter
+		move.b	#0,(v_last_lamppost).w ; clear lamppost counter
 		move.w	#0,(v_debug_active).w ; disable debug item placement mode
 		move.w	#0,(f_demo).w	; disable debug mode
 		move.w	#0,($FFFFFFEA).w ; unused variable
@@ -2508,7 +2508,7 @@ Level_LoadPal:
 
 	Level_WaterPal:
 		bsr.w	PalLoad3_Water	; load underwater palette
-		tst.b	(v_lastlamp).w
+		tst.b	(v_last_lamppost).w
 		beq.s	Level_GetBgm
 		move.b	($FFFFFE53).w,(f_water_pal_full).w
 
@@ -2583,7 +2583,7 @@ Level_LoadObj:
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
 		moveq	#0,d0
-		tst.b	(v_lastlamp).w	; are you starting from	a lamppost?
+		tst.b	(v_last_lamppost).w	; are you starting from	a lamppost?
 		bne.s	Level_SkipClr	; if yes, branch
 		move.w	d0,(v_rings).w	; clear rings
 		move.l	d0,(v_time).w	; clear time
@@ -3557,7 +3557,7 @@ Cont_GotoLevel:
 		move.w	d0,(v_rings).w	; clear rings
 		move.l	d0,(v_time).w	; clear time
 		move.l	d0,(v_score).w	; clear score
-		move.b	d0,(v_lastlamp).w ; clear lamppost count
+		move.b	d0,(v_last_lamppost).w ; clear lamppost count
 		subq.b	#1,(v_continues).w ; subtract 1 from continues
 		rts	
 ; ===========================================================================
@@ -3901,11 +3901,11 @@ EndingDemoLoad:
 		move.w	d0,(v_rings).w	; clear rings
 		move.l	d0,(v_time).w	; clear time
 		move.l	d0,(v_score).w	; clear score
-		move.b	d0,(v_lastlamp).w ; clear lamppost counter
+		move.b	d0,(v_last_lamppost).w ; clear lamppost counter
 		cmpi.w	#4,(v_creditsnum).w ; is SLZ demo running?
 		bne.s	EndDemo_Exit	; if not, branch
 		lea	(EndDemo_LampVar).l,a1 ; load lamppost variables
-		lea	(v_lastlamp).w,a2
+		lea	(v_last_lamppost).w,a2
 		move.w	#8,d0
 
 	EndDemo_LampLoad:
@@ -4126,7 +4126,7 @@ EndingStLocArray:
 ; ===========================================================================
 
 LevSz_ChkLamp:
-		tst.b	(v_lastlamp).w	; have any lampposts been hit?
+		tst.b	(v_last_lamppost).w	; have any lampposts been hit?
 		beq.s	LevSz_StartLoc	; if not, branch
 
 		jsr	(Lamp_LoadInfo).l
@@ -4322,7 +4322,7 @@ BGScrollBlockSizes:
 
 
 BgScrollSpeed:
-		tst.b	(v_lastlamp).w
+		tst.b	(v_last_lamppost).w
 		bne.s	loc_6206
 		move.w	d0,(v_bg1_y_pos).w
 		move.w	d0,(v_bg2_y_pos).w

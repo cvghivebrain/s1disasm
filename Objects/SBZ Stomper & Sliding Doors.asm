@@ -49,7 +49,7 @@ Sto_Main:	; Routine 0
 		beq.s	@SBZ3_init	; branch if not previously loaded
 
 @chkdel:
-		lea	(v_objstate).w,a2
+		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
 		beq.s	@delete
@@ -63,7 +63,7 @@ Sto_Main:	; Routine 0
 		move.w	#tile_Nem_LzBlock2+tile_pal3,ost_tile(a0)
 		cmpi.w	#$A80,ost_x_pos(a0)
 		bne.s	@isSBZ12
-		lea	(v_objstate).w,a2
+		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
 		beq.s	@isSBZ12
@@ -93,7 +93,7 @@ Sto_Main:	; Routine 0
 		bset	#render_useheight_bit,ost_render(a0)
 
 	@chkgone:
-		lea	(v_objstate).w,a2
+		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
 		beq.s	Sto_Action
@@ -127,7 +127,7 @@ Sto_Action:	; Routine 2
 		cmpi.b	#id_LZ,(v_zone).w
 		bne.s	@delete
 		clr.b	(f_stomp_sbz3_init).w
-		lea	(v_objstate).w,a2
+		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
 		beq.s	@delete
@@ -187,7 +187,7 @@ Sto_SlideOpen:
 		addq.b	#1,ost_subtype(a0) ;  change type to 2
 		move.w	#180,ost_stomp_wait_time(a0) ; set timer to 3 seconds
 		clr.b	ost_stomp_flag(a0)
-		lea	(v_objstate).w,a2
+		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
 		beq.s	@loc_15DC2
@@ -226,7 +226,7 @@ Sto_SlideClose:
 @finished02:
 		subq.b	#1,ost_subtype(a0) ; change back to type 1
 		clr.b	ost_stomp_flag(a0)
-		lea	(v_objstate).w,a2
+		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
 		beq.s	@loc_15E1E
@@ -328,7 +328,7 @@ Sto_SlideDiagonal:
 		btst	#0,(a2,d0.w)
 		beq.s	@locret_15F5C
 		move.b	#1,ost_stomp_flag(a0)
-		lea	(v_objstate).w,a2
+		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
 		beq.s	@loc_15F3E

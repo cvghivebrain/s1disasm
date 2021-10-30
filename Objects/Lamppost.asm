@@ -27,13 +27,13 @@ Lamp_Main:	; Routine 0
 		move.b	#render_rel,ost_render(a0)
 		move.b	#8,ost_actwidth(a0)
 		move.b	#5,ost_priority(a0)
-		lea	(v_objstate).w,a2
+		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
 		bclr	#7,2(a2,d0.w)
 		btst	#0,2(a2,d0.w)
 		bne.s	@red
-		move.b	(v_lastlamp).w,d1
+		move.b	(v_last_lamppost).w,d1
 		andi.b	#$7F,d1
 		move.b	ost_subtype(a0),d2 ; get lamppost number
 		andi.b	#$7F,d2
@@ -52,13 +52,13 @@ Lamp_Blue:	; Routine 2
 		bne.w	@donothing	; if yes, branch
 		tst.b	(v_lock_multi).w
 		bmi.w	@donothing
-		move.b	(v_lastlamp).w,d1
+		move.b	(v_last_lamppost).w,d1
 		andi.b	#$7F,d1
 		move.b	ost_subtype(a0),d2
 		andi.b	#$7F,d2
 		cmp.b	d2,d1		; is this a "new" lamppost?
 		bcs.s	@chkhit		; if yes, branch
-		lea	(v_objstate).w,a2
+		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
 		bset	#0,2(a2,d0.w)
@@ -99,7 +99,7 @@ Lamp_Blue:	; Routine 2
 	@fail:
 		move.b	#id_frame_lamp_poleonly,ost_frame(a0) ; use "post only" frame
 		bsr.w	Lamp_StoreInfo
-		lea	(v_objstate).w,a2
+		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
 		bset	#0,2(a2,d0.w)
@@ -137,26 +137,26 @@ Lamp_Twirl:	; Routine 6
 ; ---------------------------------------------------------------------------
 
 Lamp_StoreInfo:
-		move.b	ost_subtype(a0),(v_lastlamp).w 	; lamppost number
-		move.b	(v_lastlamp).w,($FFFFFE31).w
-		move.w	ost_x_pos(a0),($FFFFFE32).w	; x-position
-		move.w	ost_y_pos(a0),($FFFFFE34).w	; y-position
-		move.w	(v_rings).w,($FFFFFE36).w 	; rings
-		move.b	(v_ring_reward).w,($FFFFFE54).w 	; lives
-		move.l	(v_time).w,($FFFFFE38).w 	; time
-		move.b	(v_dle_routine).w,($FFFFFE3C).w ; routine counter for dynamic level mod
-		move.w	(v_boundary_bottom).w,($FFFFFE3E).w 	; lower y-boundary of level
-		move.w	(v_camera_x_pos).w,($FFFFFE40).w 	; screen x-position
-		move.w	(v_camera_y_pos).w,($FFFFFE42).w 	; screen y-position
-		move.w	(v_bg1_x_pos).w,($FFFFFE44).w ; bg position
-		move.w	(v_bg1_y_pos).w,($FFFFFE46).w ; bg position
-		move.w	(v_bg2_x_pos).w,($FFFFFE48).w ; bg position
-		move.w	(v_bg2_y_pos).w,($FFFFFE4A).w ; bg position
-		move.w	(v_bg3_x_pos).w,($FFFFFE4C).w ; bg position
-		move.w	(v_bg3_y_pos).w,($FFFFFE4E).w ; bg position
-		move.w	(v_water_height_normal).w,($FFFFFE50).w 	; water height
-		move.b	(v_water_routine).w,($FFFFFE52).w ; rountine counter for water
-		move.b	(f_water_pal_full).w,($FFFFFE53).w 	; water direction
+		move.b	ost_subtype(a0),(v_last_lamppost).w 	; lamppost number
+		move.b	(v_last_lamppost).w,(v_last_lamppost_lampcopy).w
+		move.w	ost_x_pos(a0),(v_sonic_x_pos_lampcopy).w	; x-position
+		move.w	ost_y_pos(a0),(v_sonic_y_pos_lampcopy).w	; y-position
+		move.w	(v_rings).w,(v_rings_lampcopy).w 	; rings
+		move.b	(v_ring_reward).w,(v_ring_reward_lampcopy).w 	; lives
+		move.l	(v_time).w,(v_time_lampcopy).w 	; time
+		move.b	(v_dle_routine).w,(v_dle_routine_lampcopy).w ; routine counter for dynamic level mod
+		move.w	(v_boundary_bottom).w,(v_boundary_bottom_lampcopy).w 	; lower y-boundary of level
+		move.w	(v_camera_x_pos).w,(v_camera_x_pos_lampcopy).w 	; screen x-position
+		move.w	(v_camera_y_pos).w,(v_camera_y_pos_lampcopy).w 	; screen y-position
+		move.w	(v_bg1_x_pos).w,(v_bg1_x_pos_lampcopy).w ; bg position
+		move.w	(v_bg1_y_pos).w,(v_bg1_y_pos_lampcopy).w ; bg position
+		move.w	(v_bg2_x_pos).w,(v_bg2_x_pos_lampcopy).w ; bg position
+		move.w	(v_bg2_y_pos).w,(v_bg2_y_pos_lampcopy).w ; bg position
+		move.w	(v_bg3_x_pos).w,(v_bg3_x_pos_lampcopy).w ; bg position
+		move.w	(v_bg3_y_pos).w,(v_bg3_y_pos_lampcopy).w ; bg position
+		move.w	(v_water_height_normal).w,(v_water_height_normal_lampcopy).w 	; water height
+		move.b	(v_water_routine).w,(v_water_routine_lampcopy).w ; rountine counter for water
+		move.b	(f_water_pal_full).w,(f_water_pal_full_lampcopy).w 	; water direction
 		rts	
 
 ; ---------------------------------------------------------------------------
@@ -167,39 +167,39 @@ Lamp_StoreInfo:
 
 
 Lamp_LoadInfo:
-		move.b	($FFFFFE31).w,(v_lastlamp).w
-		move.w	($FFFFFE32).w,(v_ost_player+ost_x_pos).w
-		move.w	($FFFFFE34).w,(v_ost_player+ost_y_pos).w
-		move.w	($FFFFFE36).w,(v_rings).w
-		move.b	($FFFFFE54).w,(v_ring_reward).w
+		move.b	(v_last_lamppost_lampcopy).w,(v_last_lamppost).w
+		move.w	(v_sonic_x_pos_lampcopy).w,(v_ost_player+ost_x_pos).w
+		move.w	(v_sonic_y_pos_lampcopy).w,(v_ost_player+ost_y_pos).w
+		move.w	(v_rings_lampcopy).w,(v_rings).w
+		move.b	(v_ring_reward_lampcopy).w,(v_ring_reward).w
 		clr.w	(v_rings).w
 		clr.b	(v_ring_reward).w
-		move.l	($FFFFFE38).w,(v_time).w
+		move.l	(v_time_lampcopy).w,(v_time).w
 		move.b	#59,(v_time_frames).w
 		subq.b	#1,(v_time_sec).w
-		move.b	($FFFFFE3C).w,(v_dle_routine).w
-		move.b	($FFFFFE52).w,(v_water_routine).w
-		move.w	($FFFFFE3E).w,(v_boundary_bottom).w
-		move.w	($FFFFFE3E).w,(v_boundary_bottom_next).w
-		move.w	($FFFFFE40).w,(v_camera_x_pos).w
-		move.w	($FFFFFE42).w,(v_camera_y_pos).w
-		move.w	($FFFFFE44).w,(v_bg1_x_pos).w
-		move.w	($FFFFFE46).w,(v_bg1_y_pos).w
-		move.w	($FFFFFE48).w,(v_bg2_x_pos).w
-		move.w	($FFFFFE4A).w,(v_bg2_y_pos).w
-		move.w	($FFFFFE4C).w,(v_bg3_x_pos).w
-		move.w	($FFFFFE4E).w,(v_bg3_y_pos).w
-		cmpi.b	#1,(v_zone).w	; is this Labyrinth Zone?
+		move.b	(v_dle_routine_lampcopy).w,(v_dle_routine).w
+		move.b	(v_water_routine_lampcopy).w,(v_water_routine).w
+		move.w	(v_boundary_bottom_lampcopy).w,(v_boundary_bottom).w
+		move.w	(v_boundary_bottom_lampcopy).w,(v_boundary_bottom_next).w
+		move.w	(v_camera_x_pos_lampcopy).w,(v_camera_x_pos).w
+		move.w	(v_camera_y_pos_lampcopy).w,(v_camera_y_pos).w
+		move.w	(v_bg1_x_pos_lampcopy).w,(v_bg1_x_pos).w
+		move.w	(v_bg1_y_pos_lampcopy).w,(v_bg1_y_pos).w
+		move.w	(v_bg2_x_pos_lampcopy).w,(v_bg2_x_pos).w
+		move.w	(v_bg2_y_pos_lampcopy).w,(v_bg2_y_pos).w
+		move.w	(v_bg3_x_pos_lampcopy).w,(v_bg3_x_pos).w
+		move.w	(v_bg3_y_pos_lampcopy).w,(v_bg3_y_pos).w
+		cmpi.b	#id_LZ,(v_zone).w	; is this Labyrinth Zone?
 		bne.s	@notlabyrinth	; if not, branch
 
-		move.w	($FFFFFE50).w,(v_water_height_normal).w
-		move.b	($FFFFFE52).w,(v_water_routine).w
-		move.b	($FFFFFE53).w,(f_water_pal_full).w
+		move.w	(v_water_height_normal_lampcopy).w,(v_water_height_normal).w
+		move.b	(v_water_routine_lampcopy).w,(v_water_routine).w
+		move.b	(f_water_pal_full_lampcopy).w,(f_water_pal_full).w
 
 	@notlabyrinth:
-		tst.b	(v_lastlamp).w
+		tst.b	(v_last_lamppost).w
 		bpl.s	locret_170F6
-		move.w	($FFFFFE32).w,d0
+		move.w	(v_sonic_x_pos_lampcopy).w,d0
 		subi.w	#$A0,d0
 		move.w	d0,(v_boundary_left).w
 

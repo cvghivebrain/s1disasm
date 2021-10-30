@@ -124,7 +124,7 @@ Cat_Head:	; Routine 2
 		jmp	(DisplaySprite).l
 
 	Cat_ChkGone:
-		lea	(v_objstate).w,a2
+		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
 		beq.s	@delete

@@ -52,7 +52,7 @@ PushB_Main:	; Routine 0
 		move.w	#tile_Nem_MzBlock+tile_pal3+tile_hi,ost_tile(a0) ; make sprite appear in foreground
 
 	@chkgone:
-		lea	(v_objstate).w,a2
+		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
 		beq.s	PushB_Action
@@ -99,7 +99,7 @@ PushB_ChkDel:
 ; ===========================================================================
 
 PushB_ChkDel2:
-		lea	(v_objstate).w,a2
+		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
 		beq.s	@del

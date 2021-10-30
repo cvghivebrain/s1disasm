@@ -31,7 +31,7 @@ OPL_Main:
 		adda.w	2(a1,d0.w),a1	; jump to secondary objpos data (this is always blank)
 		move.l	a1,(v_opl_ptr_alt_right).w ; copy objpos data address
 		move.l	a1,(v_opl_ptr_alt_left).w
-		lea	(v_objstate).w,a2
+		lea	(v_respawn_list).w,a2
 		move.w	#$101,(a2)+
 		move.w	#$5E,d0
 
@@ -39,7 +39,7 @@ OPL_Main:
 		clr.l	(a2)+
 		dbf	d0,@clear_respawn_list ; clear object respawn list
 
-		lea	(v_objstate).w,a2
+		lea	(v_respawn_list).w,a2
 		moveq	#0,d2
 		move.w	(v_camera_x_pos).w,d6
 		subi.w	#$80,d6		; d6 = screen x position minus $80
@@ -86,7 +86,7 @@ loc_D976:
 		move.w	#-1,(v_opl_screen_x_pos).w ; initial screen position
 
 OPL_Next:
-		lea	(v_objstate).w,a2
+		lea	(v_respawn_list).w,a2
 		moveq	#0,d2
 		move.w	(v_camera_x_pos).w,d6 ; get screen position
 		andi.w	#$FF80,d6	; round down to nearest $80

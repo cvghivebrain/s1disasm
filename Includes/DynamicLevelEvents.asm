@@ -239,7 +239,7 @@ DLE_SBZ3:
 		bcs.s	locret_6F8C
 		cmpi.w	#$18,(v_ost_player+ost_y_pos).w ; has Sonic reached the top of the level?
 		bcc.s	locret_6F8C	; if not, branch
-		clr.b	(v_lastlamp).w
+		clr.b	(v_last_lamppost).w
 		move.w	#1,(f_restart).w ; restart level
 		move.w	#(id_SBZ<<8)+2,(v_zone).w ; set level number to 0502 (FZ)
 		move.b	#1,(v_lock_multi).w ; freeze Sonic

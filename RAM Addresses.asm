@@ -7,23 +7,23 @@
 
 ; Error trap variables:
 
-v_reg_buffer:		equ $FFFFFC00 ; stores registers d0-a7 during an error event ($40 bytes) - v_objstate uses same space
-v_sp_buffer:		equ $FFFFFC40 ; stores most recent sp address (4 bytes) - v_objstate uses same space
-v_error_type:		equ $FFFFFC44 ; error type - v_objstate uses same space
+v_reg_buffer:			equ $FFFFFC00 ; stores registers d0-a7 during an error event ($40 bytes) - v_respawn_list uses same space
+v_sp_buffer:			equ $FFFFFC40 ; stores most recent sp address (4 bytes) - v_respawn_list uses same space
+v_error_type:			equ $FFFFFC44 ; error type - v_respawn_list uses same space
 
 ; Major data blocks:
 
-v_256x256_tiles:	equ   $FF0000 ; 256x256 tile mappings ($A400 bytes)
-			rsset $FFFFA400
-v_level_layout:		rs.b $400 ; $FFFFA400 ; level and background layouts
-v_bgscroll_buffer:	rs.b $200 ; $FFFFA800 ; background scroll buffer
-v_nem_gfx_buffer:	rs.b $200 ; $FFFFAA00 ; Nemesis graphics decompression buffer
-v_sprite_queue:		rs.b $400 ; $FFFFAC00 ; sprite display queue, in order of priority
-v_16x16_tiles:		equ $FFFFB000 ; 16x16 tile mappings
-v_sonic_gfx_buffer:	equ $FFFFC800 ; buffered Sonic graphics ($17 cells) ($2E0 bytes)
-v_sonic_pos_tracker:	equ $FFFFCB00 ; earlier position tracking list for Sonic, used by invinciblity stars ($100 bytes)
-v_hscroll_buffer:	equ $FFFFCC00 ; scrolling table data (actually $380 bytes, but $400 is reserved for it)
-v_ost_all:		equ $FFFFD000 ; object variable space ($40 bytes per object) ($2000 bytes)
+v_256x256_tiles:		equ   $FF0000 ; 256x256 tile mappings ($A400 bytes)
+				rsset $FFFFA400
+v_level_layout:			rs.b $400 ; $FFFFA400 ; level and background layouts
+v_bgscroll_buffer:		rs.b $200 ; $FFFFA800 ; background scroll buffer
+v_nem_gfx_buffer:		rs.b $200 ; $FFFFAA00 ; Nemesis graphics decompression buffer
+v_sprite_queue:			rs.b $400 ; $FFFFAC00 ; sprite display queue, in order of priority
+v_16x16_tiles:			equ $FFFFB000 ; 16x16 tile mappings
+v_sonic_gfx_buffer:		equ $FFFFC800 ; buffered Sonic graphics ($17 cells) ($2E0 bytes)
+v_sonic_pos_tracker:		equ $FFFFCB00 ; earlier position tracking list for Sonic, used by invinciblity stars ($100 bytes)
+v_hscroll_buffer:		equ $FFFFCC00 ; scrolling table data (actually $380 bytes, but $400 is reserved for it)
+v_ost_all:			equ $FFFFD000 ; object variable space ($40 bytes per object) ($2000 bytes)
 	v_ost_player:		equ v_ost_all ; object variable space for Sonic ($40 bytes)
 	; Title screen and intro
 	v_ost_titlesonic:	equ v_ost_all+(sizeof_ost*1) ; title screen Sonic
@@ -72,10 +72,10 @@ v_ost_all:		equ $FFFFD000 ; object variable space ($40 bytes per object) ($2000 
 	v_ost_ssres_emeralds:	equ v_ost_all+(sizeof_ost*$20) ; special stage results screen chaos emeralds
 	; Level - can interact with Sonic
 	v_ost_level_obj:	equ v_ost_all+(sizeof_ost*$20) ; level object variable space ($1800 bytes)
-v_ost_end:		equ $FFFFF000
+v_ost_end:			equ $FFFFF000
 
-v_snddriver_ram:	equ $FFFFF000			; start of RAM for the sound driver data ($5C0 bytes)
-							; sound driver equates are now defined in "sound/Sound Equates.asm"
+v_snddriver_ram:		equ $FFFFF000			; start of RAM for the sound driver data ($5C0 bytes)
+								; sound driver equates are now defined in "sound/Sound Equates.asm"
 
 				rsset $FFFFF600
 v_gamemode:			rs.b 1 ; $FFFFF600 ; game mode (00=Sega; 04=Title; 08=Demo; 0C=Level; 10=SS; 14=Cont; 18=End; 1C=Credit; 8C=PreLevel)
@@ -258,16 +258,16 @@ v_scroll_block_2_height:	rs.w 1 ; $FFFFF7F2 ; scroll block height - always $100,
 v_scroll_block_3_height:	rs.w 1 ; $FFFFF7F4 ; scroll block height - always $100, unused
 v_scroll_block_4_height:	rs.w 1 ; $FFFFF7F6 ; scroll block height - $100 for GHZ; 0 for all others, unused
 
-v_spritetablebuffer:	equ $FFFFF800 ; sprite table ($280 bytes, last $80 bytes are overwritten by v_pal_water_dup)
-v_pal_water_dup:	equ $FFFFFA00 ; duplicate underwater palette, used for transitions ($80 bytes)
-v_pal_water:	equ $FFFFFA80	; main underwater palette ($80 bytes)
-v_pal_dry:	equ $FFFFFB00	; main palette ($80 bytes)
-v_pal_dry_dup:	equ $FFFFFB80	; duplicate palette, used for transitions ($80 bytes)
-v_objstate:	equ $FFFFFC00	; object state list ($100 bytes)
+v_sprite_buffer:		equ $FFFFF800 ; sprite table ($280 bytes, last $80 bytes are overwritten by v_pal_water_dup)
+				rsset $FFFFFA00
+v_pal_water_dup:		rs.w $10*4 ; $FFFFFA00 ; duplicate underwater palette, used for transitions
+v_pal_water:			rs.w $10*4 ; $FFFFFA80 ; main underwater palette
+v_pal_dry:			rs.w $10*4 ; $FFFFFB00 ; main palette
+v_pal_dry_dup:			rs.w $10*4 ; $FFFFFB80 ; duplicate palette, used for transitions
+v_respawn_list:			rs.w $100 ; $FFFFFC00 ; object state list
 
-
-v_stack:		equ $FFFFFD00 ; stack ($100 bytes)
-v_stack_pointer:	equ $FFFFFE00 ; initial stack pointer - items are added to the stack backwards from this address
+v_stack:			equ $FFFFFD00 ; stack
+v_stack_pointer:		equ $FFFFFE00 ; initial stack pointer - items are added to the stack backwards from this address
 
 				rsset $FFFFFE02
 f_restart:			rs.w 1 ; $FFFFFE02 ; flag set to end/restart level
@@ -308,21 +308,33 @@ v_shield:			rs.b 1 ; $FFFFFE2C ; shield status - 00 = no; 01 = yes
 v_invincibility:		rs.b 1 ; $FFFFFE2D ; invinciblity status - 00 = no; 01 = yes
 v_shoes:			rs.b 1 ; $FFFFFE2E ; speed shoes status - 00 = no; 01 = yes
 v_unused_powerup:		rs.b 1 ; $FFFFFE2F ; unused power up status
-v_lastlamp:	equ $FFFFFE30	; number of the last lamppost you hit
-v_lamp_xpos:	equ v_lastlamp+2	; x-axis for Sonic to respawn at lamppost (2 bytes)
-v_lamp_ypos:	equ v_lastlamp+4	; y-axis for Sonic to respawn at lamppost (2 bytes)
-v_lamp_rings:	equ v_lastlamp+6	; rings stored at lamppost (2 bytes)
-v_lamp_time:	equ v_lastlamp+8	; time stored at lamppost (2 bytes)
-v_lamp_dle:	equ v_lastlamp+$C	; dynamic level event routine counter at lamppost
-v_lamp_limitbtm:	equ v_lastlamp+$E	; level bottom boundary at lamppost (2 bytes)
-v_lamp_scrx:	equ v_lastlamp+$10 ; x-axis screen at lamppost (2 bytes)
-v_lamp_scry:	equ v_lastlamp+$12 ; y-axis screen at lamppost (2 bytes)
+v_last_lamppost:		rs.b 1 ; $FFFFFE30 ; id of the last lamppost you hit
 
-v_lamp_wtrpos:	equ v_lastlamp+$20 ; water position at lamppost (2 bytes)
-v_lamp_wtrrout:	equ v_lastlamp+$22 ; water routine at lamppost
-v_lamp_wtrstat:	equ v_lastlamp+$23 ; water state at lamppost
-v_lamp_lives:	equ v_lastlamp+$24 ; lives counter at lamppost
-v_emeralds:	equ $FFFFFE57	; number of chaos emeralds
+; Lamppost copied variables:
+
+v_last_lamppost_lampcopy:	rs.b 1 ; $FFFFFE31 ; lamppost copy of v_last_lamppost
+v_sonic_x_pos_lampcopy:		rs.w 1 ; $FFFFFE32 ; lamppost copy of Sonic's x position
+v_sonic_y_pos_lampcopy:		rs.w 1 ; $FFFFFE34 ; lamppost copy of Sonic's y position
+v_rings_lampcopy:		rs.w 1 ; $FFFFFE36 ; lamppost copy of v_rings
+v_time_lampcopy:		rs.l 1 ; $FFFFFE38 ; lamppost copy of v_time
+v_dle_routine_lampcopy:		rs.b 1 ; $FFFFFE3C ; lamppost copy of v_dle_routine
+unused_fe3d:			rs.b 1
+v_boundary_bottom_lampcopy:	rs.w 1 ; $FFFFFE3E ; lamppost copy of v_boundary_bottom
+v_camera_x_pos_lampcopy:	rs.w 1 ; $FFFFFE40 ; lamppost copy of v_camera_x_pos
+v_camera_y_pos_lampcopy:	rs.w 1 ; $FFFFFE42 ; lamppost copy of v_camera_y_pos
+v_bg1_x_pos_lampcopy:		rs.w 1 ; $FFFFFE44 ; lamppost copy of v_bg1_x_pos
+v_bg1_y_pos_lampcopy:		rs.w 1 ; $FFFFFE46 ; lamppost copy of v_bg1_y_pos
+v_bg2_x_pos_lampcopy:		rs.w 1 ; $FFFFFE48 ; lamppost copy of v_bg2_x_pos
+v_bg2_y_pos_lampcopy:		rs.w 1 ; $FFFFFE4A ; lamppost copy of v_bg2_y_pos
+v_bg3_x_pos_lampcopy:		rs.w 1 ; $FFFFFE4C ; lamppost copy of v_bg3_x_pos
+v_bg3_y_pos_lampcopy:		rs.w 1 ; $FFFFFE4E ; lamppost copy of v_bg3_y_pos
+v_water_height_normal_lampcopy:	rs.w 1 ; $FFFFFE50 ; lamppost copy of v_water_height_normal
+v_water_routine_lampcopy:	rs.b 1 ; $FFFFFE52 ; lamppost copy of v_water_routine
+f_water_pal_full_lampcopy:	rs.b 1 ; $FFFFFE53 ; lamppost copy of f_water_pal_full
+v_ring_reward_lampcopy:		rs.b 1 ; $FFFFFE54 ; lamppost copy of v_ring_reward
+unused_fe55:			rs.b 2
+
+v_emeralds:			rs.b 1 ; $FFFFFE57 ; number of chaos emeralds
 v_emldlist:	equ $FFFFFE58	; which individual emeralds you have (00 = no; 01 = yes) (6 bytes)
 v_oscillate:	equ $FFFFFE5E	; values which oscillate - for swinging platforms, et al ($42 bytes)
 v_ani0_time:	equ $FFFFFEC0	; synchronised sprite animation 0 - time until next frame (used for synchronised animations)
