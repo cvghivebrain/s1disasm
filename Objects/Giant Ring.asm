@@ -36,7 +36,7 @@ GRing_Okay:
 		move.w	#$C40,(v_giantring_gfx_offset).w ; Signal that Art_BigRing should be loaded ($C40 is the size of Art_BigRing)
 
 GRing_Animate:	; Routine 2
-		move.b	(v_ani1_frame).w,ost_frame(a0)
+		move.b	(v_syncani_1_frame).w,ost_frame(a0)
 		out_of_range	DeleteObject
 		bra.w	DisplaySprite
 ; ===========================================================================

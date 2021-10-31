@@ -15,8 +15,8 @@ Debug_Index:	index *
 
 Debug_Main:	; Routine 0
 		addq.b	#2,(v_debug_active_hi).w
-		move.w	(v_boundary_top).w,(v_limittopdb).w ; buffer level x-boundary
-		move.w	(v_boundary_bottom_next).w,(v_limitbtmdb).w ; buffer level y-boundary
+		move.w	(v_boundary_top).w,(v_boundary_top_debugcopy).w ; buffer level x-boundary
+		move.w	(v_boundary_bottom_next).w,(v_boundary_bottom_debugcopy).w ; buffer level y-boundary
 		move.w	#0,(v_boundary_top).w
 		move.w	#$720,(v_boundary_bottom_next).w
 		andi.w	#$7FF,(v_ost_player+ost_y_pos).w
@@ -186,8 +186,8 @@ Debug_ChgItem:
 		move.b	d0,(v_ost_player+ost_anim).w
 		move.w	d0,ost_x_sub(a0)
 		move.w	d0,ost_y_sub(a0)
-		move.w	(v_limittopdb).w,(v_boundary_top).w ; restore level boundaries
-		move.w	(v_limitbtmdb).w,(v_boundary_bottom_next).w
+		move.w	(v_boundary_top_debugcopy).w,(v_boundary_top).w ; restore level boundaries
+		move.w	(v_boundary_bottom_debugcopy).w,(v_boundary_bottom_next).w
 		cmpi.b	#id_Special,(v_gamemode).w ; are you in the special stage?
 		bne.s	@stayindebug	; if not, branch
 

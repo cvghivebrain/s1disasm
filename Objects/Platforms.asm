@@ -176,7 +176,7 @@ Plat_Type_Sideways:
 ; Type $C
 Plat_Type_UpDown_Slow_Rev:
 		move.w	ost_plat_y_start(a0),d0
-		move.b	(v_oscillate+$E).w,d1 ; load platform-motion variable
+		move.b	(v_oscillating_table+$C).w,d1 ; load platform-motion variable
 		neg.b	d1		; reverse platform-motion
 		addi.b	#$30,d1
 		bra.s	Plat_Type_UpDown_Move
@@ -185,7 +185,7 @@ Plat_Type_UpDown_Slow_Rev:
 ; Type $B
 Plat_Type_UpDown_Slow:
 		move.w	ost_plat_y_start(a0),d0
-		move.b	(v_oscillate+$E).w,d1 ; load platform-motion variable
+		move.b	(v_oscillating_table+$C).w,d1 ; load platform-motion variable
 		subi.b	#$30,d1
 		bra.s	Plat_Type_UpDown_Move
 ; ===========================================================================
@@ -313,7 +313,7 @@ Plat_Type_UpDown_Large:
 		move.w	d0,ost_plat_y_pos(a0) ; change position on y-axis
 
 Plat_Type_Update_Angle:
-		move.b	(v_oscillate+$1A).w,ost_angle(a0) ; update platform-movement variable
+		move.b	(v_oscillating_table+$18).w,ost_angle(a0) ; update platform-movement variable
 		rts	
 ; ===========================================================================
 

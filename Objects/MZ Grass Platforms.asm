@@ -121,25 +121,25 @@ LGrass_Type00:
 ; ===========================================================================
 
 LGrass_Type01:
-		move.b	(v_oscillate+2).w,d0
+		move.b	(v_oscillating_table).w,d0
 		move.w	#$20,d1
 		bra.s	LGrass_Move
 ; ===========================================================================
 
 LGrass_Type02:
-		move.b	(v_oscillate+6).w,d0
+		move.b	(v_oscillating_table+4).w,d0
 		move.w	#$30,d1
 		bra.s	LGrass_Move
 ; ===========================================================================
 
 LGrass_Type03:
-		move.b	(v_oscillate+$A).w,d0
+		move.b	(v_oscillating_table+8).w,d0
 		move.w	#$40,d1
 		bra.s	LGrass_Move
 ; ===========================================================================
 
 LGrass_Type04:
-		move.b	(v_oscillate+$E).w,d0
+		move.b	(v_oscillating_table+$C).w,d0
 		move.w	#$60,d1
 
 LGrass_Move:

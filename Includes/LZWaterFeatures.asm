@@ -20,7 +20,7 @@ LZWaterFeatures:
 @setheight:
 		clr.b	(f_water_pal_full).w
 		moveq	#0,d0
-		move.b	(v_oscillate+2).w,d0
+		move.b	(v_oscillating_table).w,d0
 		lsr.w	#1,d0
 		add.w	(v_water_height_normal).w,d0
 		move.w	d0,(v_water_height_actual).w

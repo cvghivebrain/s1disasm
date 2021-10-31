@@ -335,19 +335,23 @@ v_ring_reward_lampcopy:		rs.b 1 ; $FFFFFE54 ; lamppost copy of v_ring_reward
 unused_fe55:			rs.b 2
 
 v_emeralds:			rs.b 1 ; $FFFFFE57 ; number of chaos emeralds
-v_emldlist:	equ $FFFFFE58	; which individual emeralds you have (00 = no; 01 = yes) (6 bytes)
-v_oscillate:	equ $FFFFFE5E	; values which oscillate - for swinging platforms, et al ($42 bytes)
-v_ani0_time:	equ $FFFFFEC0	; synchronised sprite animation 0 - time until next frame (used for synchronised animations)
-v_ani0_frame:	equ $FFFFFEC1	; synchronised sprite animation 0 - current frame
-v_ani1_time:	equ $FFFFFEC2	; synchronised sprite animation 1 - time until next frame
-v_ani1_frame:	equ $FFFFFEC3	; synchronised sprite animation 1 - current frame
-v_ani2_time:	equ $FFFFFEC4	; synchronised sprite animation 2 - time until next frame
-v_ani2_frame:	equ $FFFFFEC5	; synchronised sprite animation 2 - current frame
-v_ani3_time:	equ $FFFFFEC6	; synchronised sprite animation 3 - time until next frame
-v_ani3_frame:	equ $FFFFFEC7	; synchronised sprite animation 3 - current frame
-v_ani3_buf:	equ $FFFFFEC8	; synchronised sprite animation 3 - info buffer (2 bytes)
-v_limittopdb:	equ $FFFFFEF0	; level upper boundary, buffered for debug mode (2 bytes)
-v_limitbtmdb:	equ $FFFFFEF2	; level bottom boundary, buffered for debug mode (2 bytes)
+v_emerald_list:			rs.b 6 ; $FFFFFE58 ; which individual emeralds you have, 1 byte per emerald - 00 = no; 01 = yes
+v_oscillating_direction:	rs.w 1 ; $FFFFFE5E ; bitfield for the direction values in the table below are moving - 0 = up; 1 = down
+v_oscillating_table:		rs.l $10 ; $FFFFFE60 ; table of 16 oscillating values, for platform movement - 1 word for rate, 1 word for current value
+unused_fea0:			rs.b $20
+v_syncani_0_time:		rs.b 1 ; $FFFFFEC0 ; synchronised sprite animation 0 - time until next frame
+v_syncani_0_frame:		rs.b 1 ; $FFFFFEC1 ; synchronised sprite animation 0 - current frame
+v_syncani_1_time:		rs.b 1 ; $FFFFFEC2 ; synchronised sprite animation 1 - time until next frame
+v_syncani_1_frame:		rs.b 1 ; $FFFFFEC3 ; synchronised sprite animation 1 - current frame
+v_syncani_2_time:		rs.b 1 ; $FFFFFEC4 ; synchronised sprite animation 2 - time until next frame
+v_syncani_2_frame:		rs.b 1 ; $FFFFFEC5 ; synchronised sprite animation 2 - current frame
+v_syncani_3_time:		rs.b 1 ; $FFFFFEC6 ; synchronised sprite animation 3 - time until next frame
+v_syncani_3_frame:		rs.b 1 ; $FFFFFEC7 ; synchronised sprite animation 3 - current frame
+v_syncani_3_accumulator:	rs.w 1 ; $FFFFFEC8 ; synchronised sprite animation 3 - v_syncani_3_time added to this value every frame
+unused_feca:			rs.b $26
+v_boundary_top_debugcopy:	rs.w 1 ; $FFFFFEF0 ; top level boundary, buffered while debug mode is in use
+v_boundary_bottom_debugcopy:	rs.w 1 ; $FFFFFEF2 ; bottom level boundary, buffered while debug mode is in use
+unused_fef4:			rs.b $C
 
 v_camera_x_pos_dup:	equ $FFFFFF10	; screen position x (duplicate) (2 bytes)
 v_camera_y_pos_dup:	equ $FFFFFF14	; screen position y (duplicate) (2 bytes)

@@ -65,7 +65,7 @@ BBall_Still:
 BBall_Sideways:
 		move.w	#$60,d1
 		moveq	#0,d0
-		move.b	(v_oscillate+$E).w,d0
+		move.b	(v_oscillating_table+$C).w,d0
 		btst	#status_xflip_bit,ost_status(a0)
 		beq.s	@noflip1
 		neg.w	d0
@@ -82,7 +82,7 @@ BBall_Sideways:
 BBall_UpDown:
 		move.w	#$60,d1
 		moveq	#0,d0
-		move.b	(v_oscillate+$E).w,d0
+		move.b	(v_oscillating_table+$C).w,d0
 		btst	#status_xflip_bit,ost_status(a0)
 		beq.s	@noflip2
 		neg.w	d0

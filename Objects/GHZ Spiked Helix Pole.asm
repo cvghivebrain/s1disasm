@@ -85,7 +85,7 @@ Hel_Action:	; Routine 2, 4
 
 
 Hel_RotateSpikes:
-		move.b	(v_ani0_frame).w,d0
+		move.b	(v_syncani_0_frame).w,d0
 		move.b	#0,ost_col_type(a0) ; make object harmless
 		add.b	ost_helix_frame(a0),d0
 		andi.b	#7,d0

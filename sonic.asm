@@ -2070,8 +2070,8 @@ PlayLevel:
 		move.l	d0,(v_score).w	; clear score
 		move.b	d0,(v_last_ss_levelid).w ; clear special stage number
 		move.b	d0,(v_emeralds).w ; clear emeralds
-		move.l	d0,(v_emldlist).w ; clear emeralds
-		move.l	d0,(v_emldlist+4).w ; clear emeralds
+		move.l	d0,(v_emerald_list).w ; clear emeralds
+		move.l	d0,(v_emerald_list+4).w ; clear emeralds
 		move.b	d0,(v_continues).w ; clear continues
 		if Revision=0
 		else
@@ -2457,7 +2457,7 @@ Level_ClrRam:
 		move.l	d0,(a1)+
 		dbf	d1,Level_ClrVars2 ; clear misc variables
 
-		lea	(v_oscillate+2).w,a1
+		lea	(v_oscillating_table).w,a1
 		moveq	#0,d0
 		move.w	#$47,d1
 
@@ -2981,7 +2981,7 @@ GM_Special:
 		move.l	d0,(a1)+
 		dbf	d1,SS_ClrRam1	; clear	variables
 
-		lea	(v_oscillate+2).w,a1
+		lea	(v_oscillating_table).w,a1
 		moveq	#0,d0
 		move.w	#$27,d1
 	SS_ClrRam2:
@@ -3597,7 +3597,7 @@ GM_Ending:
 		move.l	d0,(a1)+
 		dbf	d1,End_ClrRam2	; clear	variables
 
-		lea	(v_oscillate+2).w,a1
+		lea	(v_oscillating_table).w,a1
 		moveq	#0,d0
 		move.w	#$47,d1
 	End_ClrRam3:
@@ -6715,22 +6715,22 @@ loc_1B2A4:
 		dbf	d1,loc_1B2A4
 
 		lea	($FF4005).l,a1
-		subq.b	#1,(v_ani1_time).w
+		subq.b	#1,(v_syncani_1_time).w
 		bpl.s	loc_1B2C8
-		move.b	#7,(v_ani1_time).w
-		addq.b	#1,(v_ani1_frame).w
-		andi.b	#3,(v_ani1_frame).w
+		move.b	#7,(v_syncani_1_time).w
+		addq.b	#1,(v_syncani_1_frame).w
+		andi.b	#3,(v_syncani_1_frame).w
 
 loc_1B2C8:
-		move.b	(v_ani1_frame).w,$1D0(a1)
-		subq.b	#1,(v_ani2_time).w
+		move.b	(v_syncani_1_frame).w,$1D0(a1)
+		subq.b	#1,(v_syncani_2_time).w
 		bpl.s	loc_1B2E4
-		move.b	#7,(v_ani2_time).w
-		addq.b	#1,(v_ani2_frame).w
-		andi.b	#1,(v_ani2_frame).w
+		move.b	#7,(v_syncani_2_time).w
+		addq.b	#1,(v_syncani_2_frame).w
+		andi.b	#1,(v_syncani_2_frame).w
 
 loc_1B2E4:
-		move.b	(v_ani2_frame).w,d0
+		move.b	(v_syncani_2_frame).w,d0
 		move.b	d0,$138(a1)
 		move.b	d0,$160(a1)
 		move.b	d0,$148(a1)
@@ -6741,29 +6741,29 @@ loc_1B2E4:
 		move.b	d0,$1F0(a1)
 		move.b	d0,$1F8(a1)
 		move.b	d0,$200(a1)
-		subq.b	#1,(v_ani3_time).w
+		subq.b	#1,(v_syncani_3_time).w
 		bpl.s	loc_1B326
-		move.b	#4,(v_ani3_time).w
-		addq.b	#1,(v_ani3_frame).w
-		andi.b	#3,(v_ani3_frame).w
+		move.b	#4,(v_syncani_3_time).w
+		addq.b	#1,(v_syncani_3_frame).w
+		andi.b	#3,(v_syncani_3_frame).w
 
 loc_1B326:
-		move.b	(v_ani3_frame).w,d0
+		move.b	(v_syncani_3_frame).w,d0
 		move.b	d0,$168(a1)
 		move.b	d0,$170(a1)
 		move.b	d0,$178(a1)
 		move.b	d0,$180(a1)
-		subq.b	#1,(v_ani0_time).w
+		subq.b	#1,(v_syncani_0_time).w
 		bpl.s	loc_1B350
-		move.b	#7,(v_ani0_time).w
-		subq.b	#1,(v_ani0_frame).w
-		andi.b	#7,(v_ani0_frame).w
+		move.b	#7,(v_syncani_0_time).w
+		subq.b	#1,(v_syncani_0_frame).w
+		andi.b	#7,(v_syncani_0_frame).w
 
 loc_1B350:
 		lea	($FF4016).l,a1
 		lea	(SS_WaRiVramSet).l,a0
 		moveq	#0,d0
-		move.b	(v_ani0_frame).w,d0
+		move.b	(v_syncani_0_frame).w,d0
 		add.w	d0,d0
 		lea	(a0,d0.w),a0
 		move.w	(a0),(a1)
@@ -7055,7 +7055,7 @@ SS_ChkEmldNum:
 		move.b	(v_emeralds).w,d1
 		subq.b	#1,d1
 		blo.s	SS_LoadData
-		lea	(v_emldlist).w,a3 ; check which emeralds you have
+		lea	(v_emerald_list).w,a3 ; check which emeralds you have
 
 SS_ChkEmldLoop:	
 		cmp.b	(a3,d1.w),d0

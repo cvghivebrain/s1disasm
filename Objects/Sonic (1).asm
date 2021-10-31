@@ -841,7 +841,7 @@ Sonic_LevelBound:
 
 @sides:
 		move.w	d0,ost_x_pos(a0)
-		move.w	#0,ost_x_pos+2(a0)
+		move.w	#0,ost_x_sub(a0)
 		move.w	#0,ost_x_vel(a0)	; stop Sonic moving
 		move.w	#0,ost_inertia(a0)
 		bra.s	@chkbottom

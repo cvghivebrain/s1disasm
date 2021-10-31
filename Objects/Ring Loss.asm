@@ -48,7 +48,7 @@ RLoss_Count:	; Routine 0
 		move.b	#3,ost_priority(a1)
 		move.b	#$47,ost_col_type(a1)
 		move.b	#8,ost_actwidth(a1)
-		move.b	#-1,(v_ani3_time).w
+		move.b	#-1,(v_syncani_3_time).w
 		tst.w	d4
 		bmi.s	@loc_9D62
 		move.w	d4,d0
@@ -79,7 +79,7 @@ RLoss_Count:	; Routine 0
 		play.w	1, jsr, sfx_RingLoss		; play ring loss sound
 
 RLoss_Bounce:	; Routine 2
-		move.b	(v_ani3_frame).w,ost_frame(a0)
+		move.b	(v_syncani_3_frame).w,ost_frame(a0)
 		bsr.w	SpeedToPos
 		addi.w	#$18,ost_y_vel(a0)
 		bmi.s	@chkdel
@@ -97,7 +97,7 @@ RLoss_Bounce:	; Routine 2
 		neg.w	ost_y_vel(a0)
 
 	@chkdel:
-		tst.b	(v_ani3_time).w
+		tst.b	(v_syncani_3_time).w
 		beq.s	RLoss_Delete
 		move.w	(v_boundary_bottom).w,d0
 		addi.w	#$E0,d0

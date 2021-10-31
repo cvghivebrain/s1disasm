@@ -240,7 +240,7 @@ Cat_Floor:
 			moveq	#0,d0
 			move.b	ost_cat_segment_pos(a0),d0
 			move.b	#$80,ost_cat_floormap(a0,d0)
-			neg.w	ost_x_pos+2(a0)
+			neg.w	ost_x_sub(a0)
 			beq.s	@loc_1730A
 			btst	#status_xflip_bit,ost_status(a0)
 			beq.s	@loc_1730A
@@ -316,7 +316,7 @@ loc_16C0C:
 			move.b	d1,ost_cat_floormap(a0,d0.w)
 		else
 			move.b	d1,ost_cat_floormap(a0,d0)
-			neg.w	ost_x_pos+2(a0)
+			neg.w	ost_x_sub(a0)
 			beq.s	locj_173E4
 			btst	#status_xflip_bit,ost_status(a0)
 			beq.s	locj_173E4

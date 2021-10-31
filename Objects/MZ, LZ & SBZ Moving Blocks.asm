@@ -112,7 +112,7 @@ MBlock_Still:
 
 ; Type 1
 MBlock_LeftRight:
-		move.b	(v_oscillate+$E).w,d0
+		move.b	(v_oscillating_table+$C).w,d0
 		move.w	#$60,d1
 		btst	#status_xflip_bit,ost_status(a0)
 		beq.s	@no_xflip
@@ -201,7 +201,7 @@ MBlock_RightDrop_Button:
 
 ; Type 8
 MBlock_UpDown:
-		move.b	(v_oscillate+$1E).w,d0
+		move.b	(v_oscillating_table+$1C).w,d0
 		move.w	#$80,d1
 		btst	#status_xflip_bit,ost_status(a0)
 		beq.s	@no_xflip

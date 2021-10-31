@@ -79,7 +79,7 @@ FBlock_Main:	; Routine 0
 		subq.w	#8,d0		; subtract 8
 		bcs.s	@stillnotLZ
 		lsl.w	#2,d0
-		lea	(v_oscillate+$2C).w,a2
+		lea	(v_oscillating_table+$2A).w,a2
 		lea	(a2,d0.w),a2
 		tst.w	(a2)
 		bpl.s	@stillnotLZ
@@ -172,7 +172,7 @@ FBlock_Still:
 FBlock_LeftRight:
 		move.w	#$40,d1		; set move distance
 		moveq	#0,d0
-		move.b	(v_oscillate+$A).w,d0
+		move.b	(v_oscillating_table+8).w,d0
 		bra.s	FBlock_LeftRight_Move
 ; ===========================================================================
 
@@ -181,7 +181,7 @@ FBlock_LeftRight:
 FBlock_LeftRightWide:
 		move.w	#$80,d1		; set move distance
 		moveq	#0,d0
-		move.b	(v_oscillate+$1E).w,d0
+		move.b	(v_oscillating_table+$1C).w,d0
 
 FBlock_LeftRight_Move:
 		btst	#status_xflip_bit,ost_status(a0)
@@ -201,7 +201,7 @@ FBlock_LeftRight_Move:
 FBlock_UpDown:
 		move.w	#$40,d1		; set move distance
 		moveq	#0,d0
-		move.b	(v_oscillate+$A).w,d0
+		move.b	(v_oscillating_table+8).w,d0
 		bra.s	FBlock_UpDown_Move
 ; ===========================================================================
 
@@ -210,7 +210,7 @@ FBlock_UpDown:
 FBlock_UpDownWide:
 		move.w	#$80,d1		; set move distance
 		moveq	#0,d0
-		move.b	(v_oscillate+$1E).w,d0
+		move.b	(v_oscillating_table+$1C).w,d0
 
 FBlock_UpDown_Move:
 		btst	#status_xflip_bit,ost_status(a0)
@@ -445,9 +445,9 @@ FBlock_RightButton:
 FBlock_SquareSmall:
 		move.w	#$10,d1
 		moveq	#0,d0
-		move.b	(v_oscillate+$2A).w,d0
+		move.b	(v_oscillating_table+$28).w,d0
 		lsr.w	#1,d0
-		move.w	(v_oscillate+$2C).w,d3
+		move.w	(v_oscillating_table+$2A).w,d3
 		bra.s	FBlock_Square_Move
 ; ===========================================================================
 
@@ -455,8 +455,8 @@ FBlock_SquareSmall:
 FBlock_SquareMedium:
 		move.w	#$30,d1
 		moveq	#0,d0
-		move.b	(v_oscillate+$2E).w,d0
-		move.w	(v_oscillate+$30).w,d3
+		move.b	(v_oscillating_table+$2C).w,d0
+		move.w	(v_oscillating_table+$2E).w,d3
 		bra.s	FBlock_Square_Move
 ; ===========================================================================
 
@@ -464,8 +464,8 @@ FBlock_SquareMedium:
 FBlock_SquareBig:
 		move.w	#$50,d1
 		moveq	#0,d0
-		move.b	(v_oscillate+$32).w,d0
-		move.w	(v_oscillate+$34).w,d3
+		move.b	(v_oscillating_table+$30).w,d0
+		move.w	(v_oscillating_table+$32).w,d3
 		bra.s	FBlock_Square_Move
 ; ===========================================================================
 
@@ -473,8 +473,8 @@ FBlock_SquareBig:
 FBlock_SquareBiggest:
 		move.w	#$70,d1
 		moveq	#0,d0
-		move.b	(v_oscillate+$36).w,d0
-		move.w	(v_oscillate+$38).w,d3
+		move.b	(v_oscillating_table+$34).w,d0
+		move.w	(v_oscillating_table+$36).w,d3
 
 FBlock_Square_Move:
 		tst.w	d3

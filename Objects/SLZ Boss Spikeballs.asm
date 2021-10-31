@@ -141,8 +141,8 @@ loc_18E48:
 		move.w	d1,ost_y_pos(a0)
 		add.w	ost_bspike_x_start(a0),d2
 		move.w	d2,ost_x_pos(a0)
-		clr.w	ost_y_pos+2(a0)
-		clr.w	ost_x_pos+2(a0)
+		clr.w	ost_y_sub(a0)
+		clr.w	ost_x_sub(a0)
 		subq.w	#1,ost_subtype(a0)
 		bne.s	loc_18E7A
 		move.w	#$20,ost_subtype(a0)

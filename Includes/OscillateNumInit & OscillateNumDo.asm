@@ -7,7 +7,7 @@
 ; Initialise the values
 
 OscillateNumInit:
-		lea	(v_oscillate).w,a1
+		lea	(v_oscillating_direction).w,a1
 		lea	(@baselines).l,a2
 		moveq	#$20,d1
 
@@ -44,7 +44,7 @@ OscillateNumInit:
 OscillateNumDo:
 		cmpi.b	#id_Sonic_Death,(v_ost_player+ost_routine).w ; has Sonic just died?
 		bcc.s	@end		; if yes, branch
-		lea	(v_oscillate).w,a1
+		lea	(v_oscillating_direction).w,a1
 		lea	(@settings).l,a2
 		move.w	(a1)+,d3	; get oscillation direction bitfield
 		moveq	#$F,d1
@@ -77,27 +77,28 @@ OscillateNumDo:
 	@next:
 		addq.w	#4,a1
 		dbf	d1,@loop
-		move.w	d3,(v_oscillate).w
+		move.w	d3,(v_oscillating_direction).w
 
 @end:
 		rts	
 ; End of function OscillateNumDo
 
 ; ===========================================================================
-@settings:	dc.w 2,	$10	; frequency, amplitude
-		dc.w 2,	$18
-		dc.w 2,	$20
-		dc.w 2,	$30
-		dc.w 4,	$20
-		dc.w 8,	8
-		dc.w 8,	$40
-		dc.w 4,	$40
-		dc.w 2,	$50
-		dc.w 2,	$50
-		dc.w 2,	$20
-		dc.w 3,	$30
-		dc.w 5,	$50
-		dc.w 7,	$70
-		dc.w 2,	$10
-		dc.w 2,	$10
+@settings:	; frequency, amplitude
+		dc.w 2,	$10	; 0 - LZ water height, MZ grass platforms
+		dc.w 2,	$18	; 4 - MZ grass platforms, SBZ saws
+		dc.w 2,	$20	; 8 - MZ magma animation, MZ grass platforms, SYZ/SLZ floating blocks
+		dc.w 2,	$30	; $C - MZ grass platforms, MZ/LZ moving blocks, GHZ/SYZ/SLZ platforms, SBZ saws, SYZ large spikeball
+		dc.w 4,	$20	; $10 - MZ glass block, MZ purple block
+		dc.w 8,	8	; $14 - MZ purple block
+		dc.w 8,	$40	; $18 - GHZ/MZ/SLZ/SBZ swinging platforms, GHZ/SYZ/SLZ platforms
+		dc.w 4,	$40	; $1C - MZ/LZ moving blocks, SYZ/SLZ floating blocks
+		dc.w 2,	$50	; $20 - SLZ circling platforms
+		dc.w 2,	$50	; $24 - SLZ circling platforms
+		dc.w 2,	$20	; $28 - SYZ/SLZ floating blocks
+		dc.w 3,	$30	; $2C - SYZ/SLZ floating blocks
+		dc.w 5,	$50	; $30 - SYZ/SLZ floating blocks
+		dc.w 7,	$70	; $34 - SYZ/SLZ floating blocks
+		dc.w 2,	$10	; $38 - unused
+		dc.w 2,	$10	; $3C - unused
 		even

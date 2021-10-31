@@ -529,7 +529,7 @@ Obj09_GetEmer:
 		subi.b	#$3B,d4
 		moveq	#0,d0
 		move.b	(v_emeralds).w,d0
-		lea	(v_emldlist).w,a2
+		lea	(v_emerald_list).w,a2
 		move.b	d4,(a2,d0.w)
 		addq.b	#1,(v_emeralds).w ; add 1 to number of emeralds
 
@@ -651,7 +651,7 @@ Obj09_UPblock:
 		tst.b	ost_ss_updown_time(a0)
 		bne.w	Obj09_NoGlass
 		move.b	#$1E,ost_ss_updown_time(a0)
-		btst	#6,($FFFFF783).w
+		btst	#6,(v_ss_rotation_speed+1).w
 		beq.s	Obj09_UPsnd
 		asl	(v_ss_rotation_speed).w	; increase stage rotation speed
 		movea.l	ost_ss_item_address(a0),a1

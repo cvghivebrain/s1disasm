@@ -183,7 +183,7 @@ include_SwingingPlatform_2:	macro
 
 
 Swing_Move:
-		move.b	(v_oscillate+$1A).w,d0
+		move.b	(v_oscillating_table+$18).w,d0
 		move.w	#$80,d1
 		btst	#status_xflip_bit,ost_status(a0)
 		beq.s	@no_xflip

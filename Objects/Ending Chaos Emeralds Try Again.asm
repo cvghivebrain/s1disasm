@@ -38,7 +38,7 @@ TCha_Main:	; Routine 0
 		move.w	#$EC,ost_y_screen(a1)
 		move.w	ost_y_screen(a1),ost_ectry_y_start(a1)
 		move.b	#$1C,ost_ectry_radius(a1)
-		lea	(v_emldlist).w,a3
+		lea	(v_emerald_list).w,a3
 
 	@chkemerald:
 		moveq	#0,d0
