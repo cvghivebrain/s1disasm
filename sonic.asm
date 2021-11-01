@@ -17,11 +17,11 @@
 		include "Macros - More CPUs.asm"
 		include "Macros - 68k Extended.asm"
 		include "Constants.asm"
+		include "sound/Sounds.asm"
+		include "sound/Sound Equates.asm"
 		include "RAM Addresses.asm"
 		include "Macros - General.asm"
 		include "Macros - Sonic.asm"
-		include "sound/Sounds.asm"
-		include "sound/Sound Equates.asm"
 
 		cpu	68000
 
@@ -1136,7 +1136,7 @@ PauseGame:
 
 Pause_StopGame:
 		move.w	#1,(f_pause).w	; freeze time
-		move.b	#1,(v_snddriver_ram+f_pausemusic).w ; pause music
+		move.b	#1,(v_snddriver_ram+f_pause_sound).w ; pause music
 
 Pause_Loop:
 		move.b	#$10,(v_vblank_routine).w
@@ -1161,7 +1161,7 @@ Pause_ChkStart:
 		beq.s	Pause_Loop	; if not, branch
 
 Pause_EndMusic:
-		move.b	#$80,(v_snddriver_ram+f_pausemusic).w	; unpause the music
+		move.b	#$80,(v_snddriver_ram+f_pause_sound).w	; unpause the music
 
 Unpause:
 		move.w	#0,(f_pause).w	; unpause the game
@@ -1172,7 +1172,7 @@ Pause_DoNothing:
 
 Pause_SlowMo:
 		move.w	#1,(f_pause).w
-		move.b	#$80,(v_snddriver_ram+f_pausemusic).w	; Unpause the music
+		move.b	#$80,(v_snddriver_ram+f_pause_sound).w	; Unpause the music
 		rts	
 ; End of function PauseGame
 
