@@ -8,42 +8,57 @@ SegaPCM_File:	equs	"sound/dac/sega.pcm"		; the actual file location of the Sega 
 ; ---------------------------------------------------------------------------
 
 		rsset 0
-TrackPlaybackControl:	rs.b 1				; All tracks
-TrackVoiceControl:	rs.b 1				; All tracks
-TrackTempoDivider:	rs.b 1				; All tracks
+ch_Flags:		rs.b 1				; All tracks
+ch_Type:		rs.b 1				; All tracks
+ch_Tick:		rs.b 1				; All tracks
 			rs.b 1				; unused
-TrackDataPointer:	rs.l 1				; All tracks (4 bytes)
+ch_Data:		rs.l 1				; All tracks (4 bytes)
 			rs.w 0				; transpose and volume must come sequentially
-TrackTranspose:		rs.b 1				; FM/PSG only (sometimes written to as a word, to include TrackVolume)
-TrackVolume:		rs.b 1				; FM/PSG only
-TrackAMSFMSPan:		rs.b 1				; FM/DAC only
-TrackVoiceIndex:	rs.b 1				; FM/PSG only
-TrackVolEnvIndex:	rs.b 1				; PSG only
-TrackStackPointer:	rs.b 1				; All tracks
-TrackDurationTimeout:	rs.b 1				; All tracks
-TrackSavedDuration:	rs.b 1				; All tracks
-TrackSavedDAC:		rs.b 0				; DAC only
-TrackFreq:		rs.w 1				; FM/PSG only (2 bytes)
-TrackNoteTimeout:	rs.b 1				; FM/PSG only
-TrackNoteTimeoutMaster:	rs.b 1				; FM/PSG only
-TrackModulationPtr:	rs.l 1				; FM/PSG only (4 bytes)
-TrackModulationWait:	rs.b 1				; FM/PSG only
-TrackModulationSpeed:	rs.b 1				; FM/PSG only
-TrackModulationDelta:	rs.b 1				; FM/PSG only
-TrackModulationSteps:	rs.b 1				; FM/PSG only
-TrackModulationVal:	rs.w 1				; FM/PSG only (2 bytes)
-TrackDetune:		rs.b 1				; FM/PSG only
-TrackPSGNoise:		rs.b 0				; PSG only
-TrackFeedbackAlgo:	rs.b 1				; FM only
-TrackVoicePtr:		rs.l 1				; FM SFX only (4 bytes)
-TrackLoopCounters:	rs.b 4				; All tracks (multiple bytes)
+ch_Transpose:		rs.b 1				; FM/PSG only (sometimes written to as a word, to include ch_Volume)
+ch_Volume:		rs.b 1				; FM/PSG only
+ch_Pan:			rs.b 1				; FM/DAC only
+ch_Voice:		rs.b 0				; FM only
+ch_VolEnvId:		rs.b 1				; PSG only
+ch_VolEnvPos:		rs.b 1				; PSG only
+ch_StackPtr:		rs.b 1				; All tracks
+ch_Delay:		rs.b 1				; All tracks
+ch_SavedDelay:		rs.b 1				; All tracks
+ch_Sample:		rs.b 0				; DAC only
+ch_Freq:		rs.w 1				; FM/PSG only (2 bytes)
+ch_Gate:		rs.b 1				; FM/PSG only
+ch_SavedGate:		rs.b 1				; FM/PSG only
+ch_VibPtr:		rs.l 1				; FM/PSG only (4 bytes)
+ch_VibDelay:		rs.b 1				; FM/PSG only
+ch_VibSpeed:		rs.b 1				; FM/PSG only
+ch_VibOff:		rs.b 1				; FM/PSG only
+ch_VibSteps:		rs.b 1				; FM/PSG only
+ch_VibFreq:		rs.w 1				; FM/PSG only (2 bytes)
+ch_Detune:		rs.b 1				; FM/PSG only
+ch_NoiseMode:		rs.b 0				; PSG only
+ch_FeedbackAlgo:	rs.b 1				; FM only
+ch_VoiceTable:		rs.l 1				; FM SFX only (4 bytes)
+ch_LoopCounter:		rs.b 4				; All tracks (multiple bytes)
 			rs.l 2				; stack data
-TrackGoSubStack:	rs.w 0				; All tracks (multiple bytes. This constant won't get to be used because of an optimisation that just uses TrackSz)
-TrackSz:		rs.w 0				; the size of a single track
+ch_StackData:		rs.w 0				; All tracks (multiple bytes. This constant won't get to be used because of an optimisation that just uses ch_Size)
+ch_Size:		rs.w 0				; the size of a single track
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
-; channel types
+; Constants for channel flags (ch_Flags)
+; ---------------------------------------------------------------------------
+
+		rsset 0
+chf_Pause		rs.b 1				; if track is paused. Unused
+chf_Rest		rs.b 1				; if track is resting
+chf_Mask		rs.b 1				; if sfx is overriding channel
+chf_Vib			rs.b 1				; if vibrato is enabled
+chf_Tie			rs.b 1				; if tie flag is enabled
+			rs.b 2				; unused
+chf_Enable		rs.b 1				; if channel is enabled. Must be bit 7!
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Constants for channel types (ch_Type)
 ; ---------------------------------------------------------------------------
 
 tFM1			equ 0				; FM1 channel type
@@ -66,74 +81,75 @@ tPSG4			equ $E0				; PSG4 channel type
 ; ---------------------------------------------------------------------------
 
 		rsset 0
-v_startofvariables:	rs.w 0
-v_sndprio:		rs.b 1				; sound priority (priority of new music/SFX must be higher or equal to this value or it won't play; bit 7 of priority being set prevents this value from changing)
-v_main_tempo_timeout:	rs.b 1				; Counts down to zero; when zero, resets to next value and delays song by 1 frame
-v_main_tempo:		rs.b 1				; Used for music only
-f_pausemusic:		rs.b 1				; flag set to stop music when paused
+v_backup_start:		rs.w 0
+v_priority:		rs.b 1				; sound priority (priority of new music/SFX must be higher or equal to this value or it won't play; bit 7 of priority being set prevents this value from changing)
+f_tempo_counter:	rs.b 1				; Counts down to zero; when zero, resets to next value and delays song by 1 frame
+f_current_tempo:	rs.b 1				; Used for music only
+f_pause_sound:		rs.b 1				; flag set to stop music when paused
 v_fadeout_counter:	rs.b 1
 			rs.b 1				; unused
 v_fadeout_delay:	rs.b 1
-v_communication_byte:	rs.b 1				; used in Ristar to sync with a boss' attacks; unused here
+v_timing:		rs.b 1				; used in Ristar to sync with a boss' attacks; unused here
 f_updating_dac:		rs.b 1				; $80 if updating DAC, $00 otherwise
 v_sound_id:		rs.b 1				; sound or music copied from below
 v_soundqueue_size:	equ 3				; number of sound queue slots. Slots beyond 0 and 1 are broken!
 v_soundqueue:		rs.b v_soundqueue_size		; sound queue entries
 			rs.b 1				; unused
-f_voice_selector:	rs.b 1				; $00 = use music voice pointer; $40 = use special voice pointer; $80 = use track voice pointer
+v_channel_mode:		rs.b 1				; $00 = use music voice pointer; $40 = use special voice pointer; $80 = use track voice pointer
 			rs.b 9				; unused
-v_voice_ptr:		rs.l 1				; voice data pointer (4 bytes)
+v_music_voice_table:	rs.l 1				; voice data pointer (4 bytes)
 			rs.b 4				; unused
-v_special_voice_ptr:	rs.l 1				; voice data pointer for special SFX ($D0-$DF) (4 bytes)
+v_back_voice_table:	rs.l 1				; voice data pointer for special SFX ($D0-$DF) (4 bytes)
 f_fadein_flag:		rs.b 1				; Flag for fade in
 v_fadein_delay:		rs.b 1
 v_fadein_counter:	rs.b 1				; Timer for fade in/out
-f_1up_playing:		rs.b 1				; flag indicating 1-up song is playing
-v_tempo_mod:		rs.b 1				; music - tempo modifier
-v_speeduptempo:		rs.b 1				; music - tempo modifier with speed shoes
+f_has_backup:		rs.b 1				; flag indicating 1-up song is playing
+v_tempo_main:		rs.b 1				; music - tempo modifier
+v_tempo_speed:		rs.b 1				; music - tempo modifier with speed shoes
 f_speedup:		rs.b 1				; flag indicating whether speed shoes tempo is on ($80) or off ($00)
 v_ring_speaker:		rs.b 1				; which speaker the "ring" sound is played in (00 = right; 01 = left)
 f_push_playing:		rs.b 1				; if set, prevents further push sounds from playing
 			rs.b $12			; unused
 
-v_music_track_ram:	rs.w 0				; Start of music RAM
-v_music_fmdac_tracks:	rs.w 0
-v_music_dac_track:	rs.b TrackSz
-v_music_fm_tracks:	rs.w 0
-v_music_fm1_track:	rs.b TrackSz
-v_music_fm2_track:	rs.b TrackSz
-v_music_fm3_track:	rs.b TrackSz
-v_music_fm4_track:	rs.b TrackSz
-v_music_fm5_track:	rs.b TrackSz
-v_music_fm6_track:	rs.b TrackSz
-v_music_fm_tracks_end:	rs.w 0
-v_music_fmdac_tracks_end: rs.w 0
-v_music_psg_tracks:	rs.w 0
-v_music_psg1_track:	rs.b TrackSz
-v_music_psg2_track:	rs.b TrackSz
-v_music_psg3_track:	rs.b TrackSz
-v_music_psg_tracks_end:	rs.w 0
-v_music_track_ram_end:	rs.w 0
+v_music_ram:		rs.w 0				; Start of music RAM
+v_music_FMDAC_RAM:	rs.w 0
+v_music_DAC:		rs.b ch_Size
+v_music_FM_RAM:		rs.w 0
+v_music_FM1:		rs.b ch_Size
+v_music_FM2:		rs.b ch_Size
+v_music_FM3:		rs.b ch_Size
+v_music_FM4:		rs.b ch_Size
+v_music_FM5:		rs.b ch_Size
+v_music_FM6:		rs.b ch_Size
+v_music_FM_RAM_end:	rs.w 0
+v_music_FMDAC_RAM_end:	rs.w 0
+v_music_PSG_RAM:	rs.w 0
+v_music_PSG1:		rs.b ch_Size
+v_music_PSG2:		rs.b ch_Size
+v_music_PSG3:		rs.b ch_Size
+v_music_PSG_RAM_end:	rs.w 0
+v_music_ram_end:	rs.w 0
 
-v_sfx_track_ram:	rs.w 0				; Start of SFX RAM, straight after the end of music RAM
-v_sfx_fm_tracks:	rs.w 0
-v_sfx_fm3_track:	rs.b TrackSz
-v_sfx_fm4_track:	rs.b TrackSz
-v_sfx_fm5_track:	rs.b TrackSz
-v_sfx_fm_tracks_end:	rs.w 0
-v_sfx_psg_tracks:	rs.w 0
-v_sfx_psg1_track:	rs.b TrackSz
-v_sfx_psg2_track:	rs.b TrackSz
-v_sfx_psg3_track:	rs.b TrackSz
-v_sfx_psg_tracks_end:	rs.w 0
-v_sfx_track_ram_end:	rs.w 0
+v_sfx_ram:		rs.w 0				; Start of SFX RAM, straight after the end of music RAM
+v_SFX_FM_RAM:		rs.w 0
+v_SFX_FM3:		rs.b ch_Size
+v_SFX_FM4:		rs.b ch_Size
+v_SFX_FM5:		rs.b ch_Size
+v_SFX_FM_RAM_end:	rs.w 0
+v_SFX_PSG_RAM:		rs.w 0
+v_SFX_PSG1:		rs.b ch_Size
+v_SFX_PSG2:		rs.b ch_Size
+v_SFX_PSG3:		rs.b ch_Size
+v_SFX_PSG_RAM_end:	rs.w 0
+v_sfx_ram_end:		rs.w 0
 
-v_spcsfx_track_ram:	rs.w 0				; Start of special SFX RAM, straight after the end of SFX RAM
-v_spcsfx_fm4_track:	rs.b TrackSz
-v_spcsfx_psg3_track:	rs.b TrackSz
-v_spcsfx_track_ram_end:	rs.w 0
+v_back_ram:		rs.w 0				; Start of background SFX RAM, straight after the end of SFX RAM
+v_Back_FM4:		rs.b ch_Size
+v_Back_PSG3:		rs.b ch_Size
+v_back_ram_end:		rs.w 0
 
-v_1up_ram_copy:		rs.b v_music_track_ram_end-v_startofvariables
+v_backup_ram:		rs.b v_music_ram_end-v_backup_start
+v_snddriver_size:	rs.w 0				; size of the entire sound driver RAM
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
@@ -525,7 +541,7 @@ _lastSfx	equ __rs-1				; constant for the last sfx
 
 ; ---------------------------------------------------------------------------
 
-; Special sound effects
+; Background sound effects
 		rsset $D0				; ID of the first special sfx file
 _firstSpecSfx	rs.b 0					; constant for the first special sfx
 

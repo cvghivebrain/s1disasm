@@ -74,10 +74,12 @@ v_ost_all:			equ $FFFFD000 ; object variable space ($40 bytes per object) ($2000
 	v_ost_level_obj:	equ v_ost_all+(sizeof_ost*$20) ; level object variable space ($1800 bytes)
 v_ost_end:			equ $FFFFF000
 
-v_snddriver_ram:		equ $FFFFF000			; start of RAM for the sound driver data ($5C0 bytes)
+				rsset $FFFFF000
+v_snddriver_ram:		rs.b v_snddriver_size		; start of RAM for the sound driver data ($5C0 bytes)
 								; sound driver equates are now defined in "sound/Sound Equates.asm"
 
-				rsset $FFFFF600
+				rs.b $40 ; $FFFFF5C0 ; unused space (reserved for sound driver?)
+
 v_gamemode:			rs.b 1 ; $FFFFF600 ; game mode (00=Sega; 04=Title; 08=Demo; 0C=Level; 10=SS; 14=Cont; 18=End; 1C=Credit; 8C=PreLevel)
 unused_f601:			rs.b 1
 v_joypad_hold:			rs.b 1 ; $FFFFF602 ; joypad input - held, can be overridden by demos
@@ -94,8 +96,8 @@ v_fg_y_pos_vsram:		rs.w 1 ; $FFFFF616 ; foreground y position, sent to VSRAM dur
 v_bg_y_pos_vsram:		rs.w 1 ; $FFFFF618 ; background y position, sent to VSRAM during VBlank
 v_fg_x_pos_hscroll:		rs.w 1 ; $FFFFF61A ; foreground x position - unused
 v_bg_x_pos_hscroll:		rs.w 1 ; $FFFFF61C ; background x position - unused
-v_bg3_y_pos_dup_unused:	rs.w 1 ; $FFFFF61E ; 
-v_bg3_x_pos_dup_unused:	rs.w 1 ; $FFFFF620 ; 
+v_bg3_y_pos_dup_unused:		rs.w 1 ; $FFFFF61E ;
+v_bg3_x_pos_dup_unused:		rs.w 1 ; $FFFFF620 ;
 unused_f622:			rs.b 2
 v_vdp_hint_counter:		rs.w 1 ; $FFFFF624 ; VDP register $8A buffer - horizontal interrupt counter ($8Axx)
 v_vdp_hint_line:		equ v_vdp_hint_counter+1 ; screen line where water starts and palette is changed by HBlank
@@ -126,7 +128,7 @@ v_palcycle_buffer:		rs.b $30 ; $FFFFF650 ; palette data buffer (used for palette
 v_plc_buffer:			rs.b $60 ; $FFFFF680 ; pattern load cues buffer (maximum $10 PLCs)
 v_nemdec_ptr:			rs.l 1 ; $FFFFF6E0 ; pointer for nemesis decompression code ($1502 or $150C)
 
-f_plc_execute:	equ $FFFFF6F8	; flag set for pattern load cue execution (2 bytes)
+f_plc_execute:			equ $FFFFF6F8	; flag set for pattern load cue execution (2 bytes)
 
 				rsset $FFFFF700
 v_camera_x_pos:			rs.l 1 ; $FFFFF700 ; foreground camera x position
