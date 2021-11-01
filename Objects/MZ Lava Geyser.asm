@@ -67,7 +67,7 @@ Geyser_Main:	; Routine 0
 		addi.w	#$60,ost_y_pos(a1)
 		move.w	ost_geyser_y_start(a0),ost_geyser_y_start(a1)
 		addi.w	#$60,ost_geyser_y_start(a1)
-		move.b	#$93,ost_col_type(a1)
+		move.b	#id_col_32x112+id_col_hurt,ost_col_type(a1)
 		move.b	#$80,ost_height(a1)
 		bset	#render_useheight_bit,ost_render(a1)
 		addq.b	#4,ost_routine(a1)

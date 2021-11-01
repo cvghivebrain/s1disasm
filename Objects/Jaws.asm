@@ -21,7 +21,7 @@ Jaws_Main:	; Routine 0
 		move.l	#Map_Jaws,ost_mappings(a0)
 		move.w	#tile_Nem_Jaws+tile_pal2,ost_tile(a0)
 		ori.b	#render_rel,ost_render(a0)
-		move.b	#$A,ost_col_type(a0)
+		move.b	#id_col_16x12,ost_col_type(a0)
 		move.b	#4,ost_priority(a0)
 		move.b	#$10,ost_actwidth(a0)
 		moveq	#0,d0

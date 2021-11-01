@@ -35,7 +35,7 @@ Harp_Move:	; Routine 2
 		bra.w	RememberState
 
 	@types:
-		dc.b $9B, $9C, $9D, $9E, $9F, $A0
+		dc.b id_col_8x4+id_col_hurt, id_col_24x4+id_col_hurt, id_col_40x4+id_col_hurt, id_col_4x8+id_col_hurt, id_col_4x24+id_col_hurt, id_col_4x40+id_col_hurt
 		even
 
 Harp_Wait:	; Routine 4

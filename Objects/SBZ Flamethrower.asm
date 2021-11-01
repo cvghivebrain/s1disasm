@@ -57,7 +57,7 @@ loc_E57A:
 		move.b	ost_flame_last_frame(a0),d0
 		cmp.b	ost_frame(a0),d0
 		bne.s	Flame_ChkDel
-		move.b	#$A3,ost_col_type(a0)
+		move.b	#id_col_12x24+id_col_hurt,ost_col_type(a0)
 
 Flame_ChkDel:
 		out_of_range	DeleteObject

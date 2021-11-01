@@ -23,7 +23,7 @@ Buzz_Main:	; Routine 0
 		move.w	#tile_Nem_Buzz,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#3,ost_priority(a0)
-		move.b	#8,ost_col_type(a0)
+		move.b	#id_col_24x12,ost_col_type(a0)
 		move.b	#$18,ost_actwidth(a0)
 
 Buzz_Action:	; Routine 2

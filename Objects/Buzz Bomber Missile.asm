@@ -33,7 +33,7 @@ Msl_Main:	; Routine 0
 		beq.s	Msl_Animate	; if not, branch
 
 		move.b	#id_Msl_FromNewt,ost_routine(a0) ; run "Msl_FromNewt" routine
-		move.b	#$87,ost_col_type(a0)
+		move.b	#id_col_6x6+id_col_hurt,ost_col_type(a0)
 		move.b	#id_ani_buzz_missile,ost_anim(a0)
 		bra.s	Msl_Animate2
 ; ===========================================================================
@@ -63,7 +63,7 @@ Msl_ChkCancel:
 Msl_FromBuzz:	; Routine 4
 		btst	#status_onscreen_bit,ost_status(a0)
 		bne.s	@explode
-		move.b	#$87,ost_col_type(a0)
+		move.b	#id_col_6x6+id_col_hurt,ost_col_type(a0)
 		move.b	#id_ani_buzz_missile,ost_anim(a0)
 		bsr.w	SpeedToPos
 		lea	(Ani_Missile).l,a1

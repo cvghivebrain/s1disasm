@@ -30,7 +30,7 @@ SBall_Main:	; Routine 0
 		move.b	#8,ost_actwidth(a0)
 		move.w	ost_x_pos(a0),ost_sball_x_start(a0)
 		move.w	ost_y_pos(a0),ost_sball_y_start(a0)
-		move.b	#$98,ost_col_type(a0) ; SYZ specific code (chain hurts Sonic)
+		move.b	#id_col_4x4+id_col_hurt,ost_col_type(a0) ; SYZ specific code (chain hurts Sonic)
 		cmpi.b	#id_LZ,(v_zone).w ; check if level is LZ
 		bne.s	@notlz
 
@@ -100,7 +100,7 @@ SBall_Main:	; Routine 0
 		cmpi.b	#id_LZ,(v_zone).w ; check if level is LZ
 		bne.s	SBall_Move
 
-		move.b	#$8B,ost_col_type(a0) ; if yes, make last spikeball larger
+		move.b	#id_col_8x8+id_col_hurt,ost_col_type(a0) ; if yes, make last spikeball larger
 		move.b	#id_frame_sball_spikeball,ost_frame(a0) ; use different frame
 
 SBall_Move:	; Routine 2

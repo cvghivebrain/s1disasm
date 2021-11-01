@@ -33,7 +33,7 @@ Obj74_Main:	; Routine 0
 		addq.b	#2,ost_routine(a0) ; goto Obj74_Action next
 		tst.b	ost_subtype(a0)	; is subtype 0?
 		bne.s	Obj74_First	; if not, branch
-		move.b	#$8B,ost_col_type(a0)
+		move.b	#id_col_8x8+id_col_hurt,ost_col_type(a0)
 		addq.b	#2,ost_routine(a0) ; goto loc_18886 next
 		bra.w	loc_18886
 ; ===========================================================================
@@ -70,7 +70,7 @@ Obj74_Drop:
 		bset	#status_yflip_bit,ost_status(a0) ; invert fireball so only tail is visible
 		subq.b	#1,ost_bfire_wait_time(a0) ; decrement timer
 		bpl.s	locret_18780	; branch if time remains
-		move.b	#$8B,ost_col_type(a0)
+		move.b	#id_col_8x8+id_col_hurt,ost_col_type(a0)
 		clr.b	ost_subtype(a0)
 		addi.w	#$18,ost_y_vel(a0)
 		bclr	#status_yflip_bit,ost_status(a0) ; yflip fireball so it's poining down

@@ -22,7 +22,7 @@ Cbal_Main:	; Routine 0
 		move.w	#tile_Nem_BallHog+tile_pal2,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#3,ost_priority(a0)
-		move.b	#$87,ost_col_type(a0)
+		move.b	#id_col_6x6+id_col_hurt,ost_col_type(a0)
 		move.b	#8,ost_actwidth(a0)
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0 ; move subtype to d0

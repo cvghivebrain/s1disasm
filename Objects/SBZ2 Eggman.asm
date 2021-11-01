@@ -24,7 +24,7 @@ SEgg_Main:	; Routine 0
 		lea	SEgg_ObjData(pc),a2
 		move.w	#$2160,ost_x_pos(a0)
 		move.w	#$5A4,ost_y_pos(a0)
-		move.b	#$F,ost_col_type(a0)
+		move.b	#id_col_24x24,ost_col_type(a0)
 		move.b	#$10,ost_col_property(a0)
 		bclr	#status_xflip_bit,ost_status(a0)
 		clr.b	ost_routine2(a0)

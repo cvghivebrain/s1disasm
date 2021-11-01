@@ -87,7 +87,7 @@ loc_9BBA:
 		move.w	#tile_Nem_Ring+tile_pal2,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)
 		move.b	#2,ost_priority(a1)
-		move.b	#$47,ost_col_type(a1)
+		move.b	#id_col_6x6+id_col_item,ost_col_type(a1)
 		move.b	#8,ost_actwidth(a1)
 		move.b	ost_respawn(a0),ost_respawn(a1)
 		move.b	d1,ost_ring_num(a1)

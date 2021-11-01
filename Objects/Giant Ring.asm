@@ -32,7 +32,7 @@ GRing_Main:	; Routine 0
 GRing_Okay:
 		addq.b	#2,ost_routine(a0)
 		move.b	#2,ost_priority(a0)
-		move.b	#$52,ost_col_type(a0)
+		move.b	#id_col_8x16+id_col_item,ost_col_type(a0)
 		move.w	#$C40,(v_giantring_gfx_offset).w ; Signal that Art_BigRing should be loaded ($C40 is the size of Art_BigRing)
 
 GRing_Animate:	; Routine 2

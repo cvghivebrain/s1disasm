@@ -61,7 +61,7 @@ Swing_Main:	; Routine 0
 		move.w	#tile_Nem_SlzSwing+tile_pal3,ost_tile(a0)
 		move.b	#$20,ost_actwidth(a0)
 		move.b	#$10,ost_height(a0)
-		move.b	#$99,ost_col_type(a0)
+		move.b	#id_col_32x8+id_col_hurt,ost_col_type(a0)
 
 	@notSLZ:
 		cmpi.b	#id_SBZ,(v_zone).w ; check if level is SBZ
@@ -71,7 +71,7 @@ Swing_Main:	; Routine 0
 		move.w	#tile_Nem_BigSpike_SBZ,ost_tile(a0)
 		move.b	#$18,ost_actwidth(a0)
 		move.b	#$18,ost_height(a0)
-		move.b	#$86,ost_col_type(a0)
+		move.b	#id_col_16x16+id_col_hurt,ost_col_type(a0)
 		move.b	#id_Swing_Action,ost_routine(a0) ; goto Swing_Action next
 
 @length:
@@ -135,7 +135,7 @@ Swing_Main:	; Routine 0
 		move.w	#tile_Nem_Ball+tile_pal3,ost_tile(a0)
 		move.b	#id_frame_ball_check1,ost_frame(a0)
 		move.b	#2,ost_priority(a0)
-		move.b	#$81,ost_col_type(a0) ; make object hurt when touched
+		move.b	#id_col_20x20+id_col_hurt,ost_col_type(a0) ; make object hurt when touched
 
 	@not1x:
 		cmpi.b	#id_SBZ,(v_zone).w ; is zone SBZ?

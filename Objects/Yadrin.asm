@@ -56,7 +56,7 @@ Yad_Main:	; Routine 0
 		move.b	#$14,ost_actwidth(a0)
 		move.b	#$11,ost_height(a0)
 		move.b	#8,ost_width(a0)
-		move.b	#$CC,ost_col_type(a0)
+		move.b	#id_col_20x16+id_col_custom,ost_col_type(a0)
 		bsr.w	ObjectFall
 		bsr.w	FindFloorObj
 		tst.w	d1

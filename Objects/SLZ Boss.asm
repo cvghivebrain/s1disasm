@@ -34,7 +34,7 @@ Obj7A_Main:
 		move.w	#$228,ost_y_pos(a0)
 		move.w	ost_x_pos(a0),ost_bslz_parent_x_pos(a0)
 		move.w	ost_y_pos(a0),ost_bslz_parent_y_pos(a0)
-		move.b	#$F,ost_col_type(a0)
+		move.b	#id_col_24x24,ost_col_type(a0)
 		move.b	#8,ost_col_property(a0) ; set number of hits to 8
 		lea	Obj7A_ObjData(pc),a2
 		movea.l	a0,a1
@@ -147,7 +147,7 @@ loc_18A36:
 		move.w	d0,(a1)
 		subq.b	#1,ost_bslz_flash_num(a0)
 		bne.s	locret_18A44
-		move.b	#$F,ost_col_type(a0)
+		move.b	#id_col_24x24,ost_col_type(a0)
 
 locret_18A44:
 		rts	

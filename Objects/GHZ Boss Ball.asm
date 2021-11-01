@@ -69,7 +69,7 @@ GBall_MakeBall:
 		move.w	#tile_Nem_Ball+tile_pal3,ost_tile(a1) ; use different graphics
 		move.b	#id_frame_ball_check1,ost_frame(a1)
 		move.b	#5,ost_priority(a1)
-		move.b	#$81,ost_col_type(a1) ; make object hurt Sonic
+		move.b	#id_col_20x20+id_col_hurt,ost_col_type(a1) ; make object hurt Sonic
 		rts	
 ; ===========================================================================
 

@@ -37,7 +37,7 @@ Mon_Main:	; Routine 0
 ; ===========================================================================
 
 	@notbroken:
-		move.b	#$46,ost_col_type(a0)
+		move.b	#id_col_16x16+id_col_item,ost_col_type(a0)
 		move.b	ost_subtype(a0),ost_anim(a0)
 
 Mon_Solid:	; Routine 2

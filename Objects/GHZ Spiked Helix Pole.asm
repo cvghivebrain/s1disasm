@@ -91,7 +91,7 @@ Hel_RotateSpikes:
 		andi.b	#7,d0
 		move.b	d0,ost_frame(a0) ; change current frame
 		bne.s	locret_7DA6
-		move.b	#$84,ost_col_type(a0) ; make object harmful
+		move.b	#id_col_4x16+id_col_hurt,ost_col_type(a0) ; make object harmful
 
 locret_7DA6:
 		rts	

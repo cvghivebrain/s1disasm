@@ -22,65 +22,75 @@ ReactToItem:
 	@notducking:
 		move.w	#$10,d4
 		add.w	d5,d5
-		lea	(v_ost_all+$800).w,a1 ; first OST address for interactable objects
+		lea	(v_ost_level_obj).w,a1 ; first OST address for interactable objects
 		move.w	#$5F,d6
 
-@loop:
+React_Loop:
 		tst.b	ost_render(a1)
-		bpl.s	@next
+		bpl.s	React_Next
 		move.b	ost_col_type(a1),d0 ; load collision type
-		bne.s	@proximity	; if nonzero, branch
+		bne.s	React_ChkDist	; if nonzero, branch
 
-	@next:
-		lea	$40(a1),a1	; next object RAM
-		dbf	d6,@loop	; repeat $5F more times
+	React_Next:
+		lea	sizeof_ost(a1),a1 ; next object RAM
+		dbf	d6,React_Loop	; repeat $5F more times
 
 		moveq	#0,d0
 		rts	
 ; ===========================================================================
-@sizes:		;   width, height
-		dc.b  $14, $14	; $01 - GHZ ball
-		dc.b   $C, $14	; $02
-		dc.b  $14,  $C	; $03
-		dc.b	4, $10	; $04 - GHZ spike pole, SYZ boss spike
-		dc.b   $C, $12	; $05 - Ball Hog, Burrobot
-		dc.b  $10, $10	; $06 - SBZ spikeball, Crabmeat, Monitor, SYZ spikeball, Prison
-		dc.b	6,   6	; $07 - Cannonball, Crab/Buzz missile, Ring
-		dc.b  $18,  $C	; $08 - Buzz Bomber
-		dc.b   $C, $10	; $09 - Chopper
-		dc.b  $10,  $C	; $0A - Jaws
-		dc.b	8,   8	; $0B - MZ fire, Fireball, Batbrain, LZ spikeball, SLZ seesaw spike, Orbinaut, Caterkiller
-		dc.b  $14, $10	; $0C - Newtron, Motobug, Yadrin
-		dc.b  $14,   8	; $0D - Newtron
-		dc.b   $E,  $E	; $0E - Roller
-		dc.b  $18, $18	; $0F - Bosses
-		dc.b  $28, $10	; $10 - MZ stomper
-		dc.b  $10, $18	; $11 - MZ stomper
-		dc.b	8, $10	; $12 - Giant ring
-		dc.b  $20, $70	; $13 - MZ geyser
-		dc.b  $40, $20	; $14 - MZ lava wall, MZ lava tag
-		dc.b  $80, $20	; $15 - MZ lava tag
-		dc.b  $20, $20	; $16 - MZ lava tag
-		dc.b	8,   8	; $17 - SYZ bumper
-		dc.b	4,   4	; $18 - SYZ spike chain, Bomb shrapnel, Orbinaut spike, LZ gargoyle fire
-		dc.b  $20,   8	; $19 - SLZ swing
-		dc.b   $C,  $C	; $1A - Bomb enemy, FZ plasma
-		dc.b	8,   4	; $1B - LZ harpoon
-		dc.b  $18,   4	; $1C - LZ harpoon
-		dc.b  $28,   4	; $1D - LZ harpoon
-		dc.b	4,   8	; $1E - LZ harpoon
-		dc.b	4, $18	; $1F - LZ harpoon
-		dc.b	4, $28	; $20 - LZ harpoon
-		dc.b	4, $20	; $21 - LZ pole
-		dc.b  $18, $18	; $22 - SBZ saw
-		dc.b   $C, $18	; $23 - SBZ flamethrower
-		dc.b  $48,   8	; $24 - SBZ electric
+colid:		macro *
+		id_\*: equ ((*-React_Sizes)/2)+1
+		dc.b \1,\2
+		endm
+
+id_col_enemy:	equ 0		; enemies
+id_col_item:	equ $40		; monitors, rings, giant rings
+id_col_hurt:	equ $80		; hurts Sonic when touched
+id_col_custom:	equ $C0		; enemies with spikes (yadrin, caterkiller), SYZ bumper
+
+React_Sizes:	;   width, height
+col_20x20:	colid  $14, $14	; $01 - GHZ ball
+col_12x20:	colid   $C, $14	; $02
+col_20x12:	colid  $14,  $C	; $03
+col_4x16:	colid	4,  $10	; $04 - GHZ spike pole, SYZ boss spike
+col_12x18:	colid   $C, $12	; $05 - Ball Hog, Burrobot
+col_16x16:	colid  $10, $10	; $06 - SBZ spikeball, Crabmeat, Monitor, SYZ spikeball, Prison
+col_6x6:	colid	6,    6	; $07 - Cannonball, Crab/Buzz missile, Ring
+col_24x12:	colid  $18,  $C	; $08 - Buzz Bomber
+col_12x16:	colid   $C, $10	; $09 - Chopper
+col_16x12:	colid  $10,  $C	; $0A - Jaws
+col_8x8:	colid	8,    8	; $0B - MZ fire, Fireball, Batbrain, LZ spikeball, SLZ seesaw spike, Orbinaut, Caterkiller
+col_20x16:	colid  $14, $10	; $0C - Newtron, Motobug, Yadrin
+col_20x8:	colid  $14,   8	; $0D - Newtron
+col_14x14:	colid   $E,  $E	; $0E - Roller
+col_24x24:	colid  $18, $18	; $0F - Bosses
+col_40x16:	colid  $28, $10	; $10 - MZ stomper
+col_16x24:	colid  $10, $18	; $11 - MZ stomper
+col_8x16:	colid	8,  $10	; $12 - Giant ring
+col_32x112:	colid  $20, $70	; $13 - MZ geyser
+col_64x32:	colid  $40, $20	; $14 - MZ lava wall, MZ lava tag
+col_128x32:	colid  $80, $20	; $15 - MZ lava tag
+col_32x32:	colid  $20, $20	; $16 - MZ lava tag
+col_8x8_2:	colid	8,    8	; $17 - SYZ bumper
+col_4x4:	colid	4,    4	; $18 - SYZ spike chain, Bomb shrapnel, Orbinaut spike, LZ gargoyle fire
+col_32x8:	colid  $20,   8	; $19 - SLZ swing
+col_12x12:	colid   $C,  $C	; $1A - Bomb enemy, FZ plasma
+col_8x4:	colid	8,    4	; $1B - LZ harpoon
+col_24x4:	colid  $18,   4	; $1C - LZ harpoon
+col_40x4:	colid  $28,   4	; $1D - LZ harpoon
+col_4x8:	colid	4,    8	; $1E - LZ harpoon
+col_4x24:	colid	4,  $18	; $1F - LZ harpoon
+col_4x40:	colid	4,  $28	; $20 - LZ harpoon
+col_4x32:	colid	4,  $20	; $21 - LZ pole
+col_24x24_2:	colid  $18, $18	; $22 - SBZ saw
+col_12x24:	colid   $C, $18	; $23 - SBZ flamethrower
+col_72x8:	colid  $48,   8	; $24 - SBZ electric
 ; ===========================================================================
 
-@proximity:
+React_ChkDist:
 		andi.w	#$3F,d0		; read only bits 0-5, ignore 6-7
 		add.w	d0,d0
-		lea	@sizes-2(pc,d0.w),a2
+		lea	React_Sizes-2(pc,d0.w),a2
 		moveq	#0,d1
 		move.b	(a2)+,d1
 		move.w	ost_x_pos(a1),d0
@@ -90,12 +100,12 @@ ReactToItem:
 		add.w	d1,d1
 		add.w	d1,d0
 		bcs.s	@withinx	; branch if touching
-		bra.w	@next
+		bra.w	React_Next
 ; ===========================================================================
 
 @outsidex:
 		cmp.w	d4,d0
-		bhi.w	@next
+		bhi.w	React_Next
 
 @withinx:
 		moveq	#0,d1
@@ -107,12 +117,12 @@ ReactToItem:
 		add.w	d1,d1
 		add.w	d0,d1
 		bcs.s	@withiny	; branch if touching
-		bra.w	@next
+		bra.w	React_Next
 ; ===========================================================================
 
 @outsidey:
 		cmp.w	d5,d0
-		bhi.w	@next
+		bhi.w	React_Next
 
 @withiny:
 	@chktype:
@@ -128,7 +138,7 @@ ReactToItem:
 
 		move.b	ost_col_type(a1),d0
 		andi.b	#$3F,d0
-		cmpi.b	#6,d0		; is collision type $46	?
+		cmpi.b	#id_col_16x16,d0 ; is collision type $46 (monitor)?
 		beq.s	React_Monitor	; if yes, branch
 		cmpi.w	#90,ost_sonic_flash_time(a0) ; is Sonic invincible?
 		bcc.w	@invincible	; if yes, branch
@@ -349,13 +359,13 @@ KillSonic:
 React_Special:
 		move.b	ost_col_type(a1),d1
 		andi.b	#$3F,d1
-		cmpi.b	#$B,d1		; is collision type $CB	?
+		cmpi.b	#id_col_8x8,d1	; is collision type $CB	?
 		beq.s	@caterkiller	; if yes, branch
-		cmpi.b	#$C,d1		; is collision type $CC	?
+		cmpi.b	#id_col_20x16,d1 ; is collision type $CC ?
 		beq.s	@yadrin		; if yes, branch
-		cmpi.b	#$17,d1		; is collision type $D7	?
+		cmpi.b	#id_col_8x8_2,d1 ; is collision type $D7 ?
 		beq.s	@D7orE1		; if yes, branch
-		cmpi.b	#$21,d1		; is collision type $E1	?
+		cmpi.b	#id_col_4x32,d1	; is collision type $E1	?
 		beq.s	@D7orE1		; if yes, branch
 		rts	
 ; ===========================================================================

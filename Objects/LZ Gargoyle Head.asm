@@ -59,7 +59,7 @@ Gar_FireBall:	; Routine 4
 		move.w	#tile_Nem_Gargoyle,ost_tile(a0)
 		ori.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)
-		move.b	#$98,ost_col_type(a0)
+		move.b	#id_col_4x4+id_col_hurt,ost_col_type(a0)
 		move.b	#8,ost_actwidth(a0)
 		move.b	#id_frame_gargoyle_fireball1,ost_frame(a0)
 		addq.w	#8,ost_y_pos(a0)

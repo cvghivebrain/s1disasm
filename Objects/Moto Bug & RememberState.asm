@@ -28,7 +28,7 @@ Moto_Main:	; Routine 0
 		bne.s	@smoke		; if yes, branch
 		move.b	#$E,ost_height(a0)
 		move.b	#8,ost_width(a0)
-		move.b	#$C,ost_col_type(a0)
+		move.b	#id_col_20x16,ost_col_type(a0)
 		bsr.w	ObjectFall
 		jsr	(FindFloorObj).l
 		tst.w	d1

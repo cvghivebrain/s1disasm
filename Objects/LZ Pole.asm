@@ -24,7 +24,7 @@ Pole_Main:	; Routine 0
 		move.b	#render_rel,ost_render(a0)
 		move.b	#8,ost_actwidth(a0)
 		move.b	#4,ost_priority(a0)
-		move.b	#$E1,ost_col_type(a0)
+		move.b	#id_col_4x32+id_col_custom,ost_col_type(a0)
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0 ; get object type
 		mulu.w	#60,d0		; multiply by 60 (1 second)

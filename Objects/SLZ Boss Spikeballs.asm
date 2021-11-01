@@ -38,7 +38,7 @@ Obj7B_Main:	; Routine 0
 		move.b	#id_frame_seesaw_silver,ost_frame(a0)
 		ori.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)
-		move.b	#$8B,ost_col_type(a0)
+		move.b	#id_col_8x8+id_col_hurt,ost_col_type(a0)
 		move.b	#$C,ost_actwidth(a0)
 		movea.l	ost_bspike_seesaw(a0),a1
 		move.w	ost_x_pos(a1),ost_bspike_x_start(a0)
@@ -339,7 +339,7 @@ Obj7B_Loop:
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.w	(a2)+,ost_x_vel(a1)
 		move.w	(a2)+,ost_y_vel(a1)
-		move.b	#$98,ost_col_type(a1)
+		move.b	#id_col_4x4+id_col_hurt,ost_col_type(a1)
 		ori.b	#render_rel,ost_render(a1)
 		bset	#render_onscreen_bit,ost_render(a1)
 		move.b	#$C,ost_actwidth(a1)

@@ -26,7 +26,7 @@ Crab_Main:	; Routine 0
 		move.w	#tile_Nem_Crabmeat,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#3,ost_priority(a0)
-		move.b	#6,ost_col_type(a0)
+		move.b	#id_col_16x16,ost_col_type(a0)
 		move.b	#$15,ost_actwidth(a0)
 		bsr.w	ObjectFall
 		jsr	(FindFloorObj).l ; find floor
@@ -193,7 +193,7 @@ Crab_BallMain:	; Routine 6
 		move.w	#tile_Nem_Crabmeat,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#3,ost_priority(a0)
-		move.b	#$87,ost_col_type(a0)
+		move.b	#id_col_6x6+id_col_hurt,ost_col_type(a0)
 		move.b	#8,ost_actwidth(a0)
 		move.w	#-$400,ost_y_vel(a0)
 		move.b	#id_ani_crab_ball,ost_anim(a0)

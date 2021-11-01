@@ -103,7 +103,7 @@ ost_anim:		equ $1C	; current animation
 ost_anim_restart:	equ $1D	; restart animation flag / next animation number (Sonic)
 ost_anim_time:		equ $1E	; time to next frame
 ost_anim_delay:		equ $1F	; time to delay animation
-ost_col_type:		equ $20	; collision response type
+ost_col_type:		equ $20	; collision response type - 0 = none; 1-$3F = enemy; $41-$7F = items; $81-BF = hurts; $C1-$FF = custom
 ost_col_property:	equ $21	; collision extra property
 ost_status:		equ $22	; orientation or mode
 	status_xflip:		equ 1	; xflip

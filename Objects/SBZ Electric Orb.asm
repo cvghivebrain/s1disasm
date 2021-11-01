@@ -43,7 +43,7 @@ Elec_Shock:	; Routine 2
 		move.b	#0,ost_col_type(a0)
 		cmpi.b	#id_frame_electro_zap4,ost_frame(a0) ; is 4th frame displayed?
 		bne.s	@display	; if not, branch
-		move.b	#$A4,ost_col_type(a0) ; if yes, make object hurt Sonic
+		move.b	#id_col_72x8+id_col_hurt,ost_col_type(a0) ; if yes, make object hurt Sonic
 
 	@display:
 		bra.w	RememberState

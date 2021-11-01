@@ -20,7 +20,7 @@ Bump_Main:	; Routine 0
 		move.b	#render_rel,ost_render(a0)
 		move.b	#$10,ost_actwidth(a0)
 		move.b	#1,ost_priority(a0)
-		move.b	#$D7,ost_col_type(a0)
+		move.b	#id_col_8x8_2+id_col_custom,ost_col_type(a0)
 
 Bump_Hit:	; Routine 2
 		tst.b	ost_col_property(a0) ; has Sonic touched the bumper?

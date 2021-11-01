@@ -40,7 +40,7 @@ LWall_Main:	; Routine 0
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	#1,ost_priority(a1)
 		move.b	#id_ani_lavawall_0,ost_anim(a1)
-		move.b	#$94,ost_col_type(a1)
+		move.b	#id_col_64x32+id_col_hurt,ost_col_type(a1)
 		move.l	a0,ost_lwall_parent(a1)
 
 	@fail:

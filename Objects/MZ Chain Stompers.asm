@@ -96,7 +96,7 @@ CStom_MakeStomper:
 		cmpi.w	#$20,d0		; is subtype $2x (no spikes)?
 		beq.s	CStom_MakeStomper ; if yes, branch
 		move.b	#$38,ost_actwidth(a1)
-		move.b	#$90,ost_col_type(a1) ; make spikes harmful
+		move.b	#id_col_40x16+id_col_hurt,ost_col_type(a1) ; make spikes harmful
 		addq.w	#1,d1
 
 	@not_spikes:

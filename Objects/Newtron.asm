@@ -84,7 +84,7 @@ Newt_Action:	; Routine 2
 	@fall:
 		cmpi.b	#id_frame_newt_norm,ost_frame(a0)
 		bne.s	@loc_DE42
-		move.b	#$C,ost_col_type(a0)
+		move.b	#id_col_20x16,ost_col_type(a0)
 
 	@loc_DE42:
 		bsr.w	ObjectFall
@@ -96,12 +96,12 @@ Newt_Action:	; Routine 2
 		move.w	#0,ost_y_vel(a0) ; stop newtron falling
 		addq.b	#2,ost_routine2(a0)
 		move.b	#id_ani_newt_fly1,ost_anim(a0)
-		btst	#5,ost_tile(a0)
+		btst	#tile_pal12_bit,ost_tile(a0)
 		beq.s	@pppppppp
 		addq.b	#1,ost_anim(a0)
 
 	@pppppppp:
-		move.b	#$D,ost_col_type(a0)
+		move.b	#id_col_20x8,ost_col_type(a0)
 		move.w	#$200,ost_x_vel(a0) ; move newtron horizontally
 		btst	#status_xflip_bit,ost_status(a0)
 		bne.s	@keepfalling
@@ -135,7 +135,7 @@ Newt_Action:	; Routine 2
 @type01:
 		cmpi.b	#id_frame_newt_norm,ost_frame(a0)
 		bne.s	@firemissile
-		move.b	#$C,ost_col_type(a0)
+		move.b	#id_col_20x16,ost_col_type(a0)
 
 	@firemissile:
 		cmpi.b	#id_frame_newt_firing,ost_frame(a0)

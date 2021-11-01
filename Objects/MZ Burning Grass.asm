@@ -28,7 +28,7 @@ GFire_Main:	; Routine 0
 		move.w	ost_x_pos(a0),ost_burn_x_start(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#1,ost_priority(a0)
-		move.b	#$8B,ost_col_type(a0)
+		move.b	#id_col_8x8+id_col_hurt,ost_col_type(a0)
 		move.b	#8,ost_actwidth(a0)
 		play.w	1, jsr, sfx_Burning		; play burning sound
 		tst.b	ost_subtype(a0)

@@ -176,7 +176,7 @@ loc_1A9E6:
 		bne.s	locret_1AA1C
 		addq.b	#2,ost_routine2(a0)
 		move.b	#id_ani_plasma_short,ost_anim(a0)
-		move.b	#$9A,ost_col_type(a0)
+		move.b	#id_col_12x12+id_col_hurt,ost_col_type(a0)
 		move.w	#$B4,ost_subtype(a0)
 		moveq	#0,d0
 		move.w	(v_ost_player+ost_x_pos).w,d0

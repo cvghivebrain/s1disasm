@@ -22,7 +22,7 @@ Chop_Main:	; Routine 0
 		move.w	#tile_Nem_Chopper,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)
-		move.b	#9,ost_col_type(a0)
+		move.b	#id_col_12x16,ost_col_type(a0)
 		move.b	#$10,ost_actwidth(a0)
 		move.w	#-$700,ost_y_vel(a0) ; set vertical speed
 		move.w	ost_y_pos(a0),ost_chopper_y_start(a0) ; save original position

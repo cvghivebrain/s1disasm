@@ -412,7 +412,7 @@ loc_1A192:
 		bcc.s	loc_1A1D0
 		move.w	#$180,ost_x_vel(a0)
 		move.w	#-$18,ost_y_vel(a0)
-		move.b	#$F,ost_col_type(a0)
+		move.b	#id_col_24x24,ost_col_type(a0)
 		addq.b	#2,ost_fz_mode(a0)
 
 loc_1A1D0:
@@ -439,7 +439,7 @@ loc_1A1FC:
 ; ===========================================================================
 
 loc_1A210:
-		move.b	#$F,ost_col_type(a0)
+		move.b	#id_col_24x24,ost_col_type(a0)
 
 loc_1A216:
 		cmpi.w	#$2790,(v_ost_player+ost_x_pos).w

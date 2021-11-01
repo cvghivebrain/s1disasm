@@ -33,7 +33,7 @@ Bom_Main:	; Routine 0
 ; ===========================================================================
 
 loc_11A3C:
-		move.b	#$9A,ost_col_type(a0)
+		move.b	#id_col_12x12+id_col_hurt,ost_col_type(a0)
 		bchg	#status_xflip_bit,ost_status(a0)
 
 Bom_Action:	; Routine 2
@@ -175,7 +175,7 @@ loc_11B7C:
 		move.b	#id_ani_bomb_shrapnel,ost_anim(a1)
 		move.w	(a2)+,ost_x_vel(a1)
 		move.w	(a2)+,ost_y_vel(a1)
-		move.b	#$98,ost_col_type(a1)
+		move.b	#id_col_4x4+id_col_hurt,ost_col_type(a1)
 		bset	#render_onscreen_bit,ost_render(a1)
 
 	@fail:

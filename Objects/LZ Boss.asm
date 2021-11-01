@@ -31,7 +31,7 @@ Obj77_Main:	; Routine 0
 		move.w	#$5C0,ost_y_pos(a0)
 		move.w	ost_x_pos(a0),ost_blz_parent_x_pos(a0)
 		move.w	ost_y_pos(a0),ost_blz_parent_y_pos(a0)
-		move.b	#$F,ost_col_type(a0)
+		move.b	#id_col_24x24,ost_col_type(a0)
 		move.b	#8,ost_col_property(a0) ; set number of hits to 8
 		move.b	#4,ost_priority(a0)
 		lea	Obj77_ObjData(pc),a2
@@ -121,7 +121,7 @@ loc_17F7E:
 		move.w	d0,(a1)
 		subq.b	#1,ost_blz_flash_num(a0)
 		bne.s	locret_17F8C
-		move.b	#$F,ost_col_type(a0)
+		move.b	#id_col_24x24,ost_col_type(a0)
 
 locret_17F8C:
 		rts	

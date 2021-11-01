@@ -22,7 +22,7 @@ Hog_Main:	; Routine 0
 		move.w	#tile_Nem_BallHog+tile_pal2,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)
-		move.b	#5,ost_col_type(a0)
+		move.b	#id_col_12x18,ost_col_type(a0)
 		move.b	#$C,ost_actwidth(a0)
 		bsr.w	ObjectFall
 		jsr	(FindFloorObj).l ; find floor

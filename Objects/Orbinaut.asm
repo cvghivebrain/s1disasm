@@ -35,7 +35,7 @@ Orb_Main:	; Routine 0
 	@notlabyrinth:
 		ori.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)
-		move.b	#$B,ost_col_type(a0)
+		move.b	#id_col_8x8,ost_col_type(a0)
 		move.b	#$C,ost_actwidth(a0)
 		moveq	#0,d2
 		lea	ost_orb_child_list(a0),a2
@@ -60,7 +60,7 @@ Orb_Main:	; Routine 0
 		move.b	#4,ost_priority(a1)
 		move.b	#8,ost_actwidth(a1)
 		move.b	#id_frame_orb_spikeball,ost_frame(a1)
-		move.b	#$98,ost_col_type(a1)
+		move.b	#id_col_4x4+id_col_hurt,ost_col_type(a1)
 		move.b	d2,ost_angle(a1)
 		addi.b	#$40,d2
 		move.l	a0,ost_orb_parent(a1)

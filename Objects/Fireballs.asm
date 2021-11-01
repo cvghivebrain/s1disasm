@@ -33,7 +33,7 @@ LBall_Main:	; Routine 0
 	@notSLZ:
 		move.b	#render_rel,ost_render(a0)
 		move.b	#3,ost_priority(a0)
-		move.b	#$8B,ost_col_type(a0)
+		move.b	#id_col_8x8+id_col_hurt,ost_col_type(a0)
 		move.w	ost_y_pos(a0),ost_fireball_y_start(a0)
 		tst.b	$29(a0)
 		beq.s	@speed

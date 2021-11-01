@@ -80,7 +80,7 @@ Roll_RollChk:
 		addq.b	#4,ost_routine2(a0)
 		move.b	#id_ani_roll_roll,ost_anim(a0)
 		move.w	#$700,ost_x_vel(a0) ; move Roller horizontally
-		move.b	#$8E,ost_col_type(a0) ; make Roller invincible
+		move.b	#id_col_14x14+id_col_hurt,ost_col_type(a0) ; make Roller invincible
 
 loc_E0D2:
 		addq.l	#4,sp
@@ -94,7 +94,7 @@ Roll_RollNoChk:
 		bpl.s	locret_E0F6
 		move.b	#id_ani_roll_fold,ost_anim(a0)
 		move.w	#$700,ost_x_vel(a0)
-		move.b	#$8E,ost_col_type(a0)
+		move.b	#id_col_14x14+id_col_hurt,ost_col_type(a0)
 
 locret_E0F6:
 		rts	
@@ -152,7 +152,7 @@ Roll_Stop:
 		sub.w	ost_x_pos(a0),d0
 		bcc.s	locret_E188
 		move.b	#id_ani_roll_unfold,ost_anim(a0)
-		move.b	#$E,ost_col_type(a0)
+		move.b	#id_col_14x14,ost_col_type(a0)
 		clr.w	ost_x_vel(a0)
 		move.w	#120,ost_roller_open_time(a0) ; set waiting time to 2 seconds
 		move.b	#2,ost_routine2(a0)

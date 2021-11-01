@@ -12,7 +12,7 @@ LTag_Index:	index *,,2
 		ptr LTag_Main
 		ptr LTag_ChkDel
 
-LTag_ColTypes:	dc.b $96, $94, $95
+LTag_ColTypes:	dc.b id_col_32x32+id_col_hurt, id_col_64x32+id_col_hurt, id_col_128x32+id_col_hurt
 		even
 ; ===========================================================================
 
