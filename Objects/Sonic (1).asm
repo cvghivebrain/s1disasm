@@ -36,7 +36,7 @@ Sonic_Main:	; Routine 0
 		move.w	#$80,(v_sonic_deceleration).w ; Sonic's deceleration
 
 Sonic_Control:	; Routine 2
-		tst.w	(f_debugmode).w	; is debug cheat enabled?
+		tst.w	(f_debug_enable).w	; is debug cheat enabled?
 		beq.s	loc_12C58	; if not, branch
 		btst	#bitB,(v_joypad_press_actual).w ; is button B pressed?
 		beq.s	loc_12C58	; if not, branch

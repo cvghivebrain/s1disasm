@@ -23,8 +23,8 @@ DeformLayers:
 		move.w	(v_camera_y_pos).w,(v_fg_y_pos_vsram).w
 		move.w	(v_bg1_x_pos).w,(v_bg_x_pos_hscroll).w
 		move.w	(v_bg1_y_pos).w,(v_bg_y_pos_vsram).w
-		move.w	(v_bg3_x_pos).w,(v_bg3_x_pos_dup_unused).w
-		move.w	(v_bg3_y_pos).w,(v_bg3_y_pos_dup_unused).w
+		move.w	(v_bg3_x_pos).w,(v_bg3_x_pos_copy_unused).w
+		move.w	(v_bg3_y_pos).w,(v_bg3_y_pos_copy_unused).w
 		moveq	#0,d0
 		move.b	(v_zone).w,d0
 		add.w	d0,d0

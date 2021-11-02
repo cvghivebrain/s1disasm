@@ -78,7 +78,7 @@ v_ost_end:			equ $FFFFF000
 v_snddriver_ram:		rs.b v_snddriver_size		; start of RAM for the sound driver data ($5C0 bytes)
 								; sound driver equates are now defined in "sound/Sound Equates.asm"
 
-				rs.b $40 ; $FFFFF5C0 ; unused space (reserved for sound driver?)
+unused_f5c0:			rs.b $40 ; $FFFFF5C0 ; unused space (reserved for sound driver?)
 
 v_gamemode:			rs.b 1 ; $FFFFF600 ; game mode (00=Sega; 04=Title; 08=Demo; 0C=Level; 10=SS; 14=Cont; 18=End; 1C=Credit; 8C=PreLevel)
 unused_f601:			rs.b 1
@@ -96,8 +96,8 @@ v_fg_y_pos_vsram:		rs.w 1 ; $FFFFF616 ; foreground y position, sent to VSRAM dur
 v_bg_y_pos_vsram:		rs.w 1 ; $FFFFF618 ; background y position, sent to VSRAM during VBlank
 v_fg_x_pos_hscroll:		rs.w 1 ; $FFFFF61A ; foreground x position - unused
 v_bg_x_pos_hscroll:		rs.w 1 ; $FFFFF61C ; background x position - unused
-v_bg3_y_pos_dup_unused:		rs.w 1 ; $FFFFF61E ;
-v_bg3_x_pos_dup_unused:		rs.w 1 ; $FFFFF620 ;
+v_bg3_y_pos_copy_unused:	rs.w 1 ; $FFFFF61E ; copy of v_bg3_y_pos - unused
+v_bg3_x_pos_copy_unused:	rs.w 1 ; $FFFFF620 ; copy of v_bg3_x_pos - unused
 unused_f622:			rs.b 2
 v_vdp_hint_counter:		rs.w 1 ; $FFFFF624 ; VDP register $8A buffer - horizontal interrupt counter ($8Axx)
 v_vdp_hint_line:		equ v_vdp_hint_counter+1 ; screen line where water starts and palette is changed by HBlank
@@ -353,38 +353,47 @@ v_syncani_3_accumulator:	rs.w 1 ; $FFFFFEC8 ; synchronised sprite animation 3 - 
 unused_feca:			rs.b $26
 v_boundary_top_debugcopy:	rs.w 1 ; $FFFFFEF0 ; top level boundary, buffered while debug mode is in use
 v_boundary_bottom_debugcopy:	rs.w 1 ; $FFFFFEF2 ; bottom level boundary, buffered while debug mode is in use
-unused_fef4:			rs.b $C
+unused_fef4:			rs.b $1C
 
-v_camera_x_pos_dup:	equ $FFFFFF10	; screen position x (duplicate) (2 bytes)
-v_camera_y_pos_dup:	equ $FFFFFF14	; screen position y (duplicate) (2 bytes)
-v_bg1_x_pos_dup:	equ $FFFFFF18	; background screen position x (duplicate) (2 bytes)
-v_bg1_y_pos_dup:	equ $FFFFFF1C	; background screen position y (duplicate) (2 bytes)
-v_bg2_x_pos_dup:	equ $FFFFFF20	; 2 bytes
-v_bg2_y_pos_dup:	equ $FFFFFF24	; 2 bytes
-v_bg3_x_pos_dup:	equ $FFFFFF28	; 2 bytes
-v_bg3_y_pos_dup:	equ $FFFFFF2C	; 2 bytes
-v_fg_redraw_direction_dup:	equ $FFFFFF30
-v_bg1_redraw_direction_dup:	equ $FFFFFF32
-v_bg2_redraw_direction_dup:	equ $FFFFFF34
-v_bg3_redraw_direction_dup:	equ $FFFFFF36
+; Variables copied during VBlank and used by LoadTilesAsYouMove:
 
-v_levseldelay:	equ $FFFFFF80	; level select - time until change when up/down is held (2 bytes)
-v_levselitem:	equ $FFFFFF82	; level select - item selected (2 bytes)
-v_levselsound:	equ $FFFFFF84	; level select - sound selected (2 bytes)
-v_scorecopy:	equ $FFFFFFC0	; score, duplicate (4 bytes)
-v_scorelife:	equ $FFFFFFC0	; points required for an extra life (4 bytes) (JP1 only)
-f_levselcheat:	equ $FFFFFFE0	; level select cheat flag
-f_slomocheat:	equ $FFFFFFE1	; slow motion & frame advance cheat flag
-f_debugcheat:	equ $FFFFFFE2	; debug mode cheat flag
-f_creditscheat:	equ $FFFFFFE3	; hidden credits & press start cheat flag
-v_title_dcount:	equ $FFFFFFE4	; number of times the d-pad is pressed on title screen (2 bytes)
-v_title_ccount:	equ $FFFFFFE6	; number of times C is pressed on title screen (2 bytes)
+v_camera_x_pos_copy:		rs.l 1 ; $FFFFFF10 ; copy of v_camera_x_pos
+v_camera_y_pos_copy:		rs.l 1 ; $FFFFFF14 ; copy of v_camera_y_pos
+v_bg1_x_pos_copy:		rs.l 1 ; $FFFFFF18 ; copy of v_bg1_x_pos
+v_bg1_y_pos_copy:		rs.l 1 ; $FFFFFF1C ; copy of v_bg1_y_pos
+v_bg2_x_pos_copy:		rs.l 1 ; $FFFFFF20 ; copy of v_bg2_x_pos
+v_bg2_y_pos_copy:		rs.l 1 ; $FFFFFF24 ; copy of v_bg2_y_pos
+v_bg3_x_pos_copy:		rs.l 1 ; $FFFFFF28 ; copy of v_bg3_x_pos
+v_bg3_y_pos_copy:		rs.l 1 ; $FFFFFF2C ; copy of v_bg3_y_pos
+v_fg_redraw_direction_copy:	rs.w 1 ; $FFFFFF30 ; copy of v_fg_redraw_direction
+v_bg1_redraw_direction_copy:	rs.w 1 ; $FFFFFF32 ; copy of v_bg1_redraw_direction
+v_bg2_redraw_direction_copy:	rs.w 1 ; $FFFFFF34 ; copy of v_bg2_redraw_direction
+v_bg3_redraw_direction_copy:	rs.w 1 ; $FFFFFF36 ; copy of v_bg3_redraw_direction
+unused_ff38:			rs.b $48
 
-f_demo:		equ $FFFFFFF0	; demo mode flag (0 = no; 1 = yes; $8001 = ending) (2 bytes)
-v_demonum:	equ $FFFFFFF2	; demo level number (not the same as the level number) (2 bytes)
-v_creditsnum:	equ $FFFFFFF4	; credits index number (2 bytes)
-v_megadrive:	equ $FFFFFFF8	; Megadrive machine type
-f_debugmode:	equ $FFFFFFFA	; debug mode flag (sometimes 2 bytes)
-v_init:		equ $FFFFFFFC	; 'init' text string (4 bytes)
+v_levelselect_hold_delay:	rs.w 1 ; $FFFFFF80 ; level select - time until change when up/down is held
+v_levelselect_item:		rs.w 1 ; $FFFFFF82 ; level select - item selected
+v_levelselect_sound:		rs.w 1 ; $FFFFFF84 ; level select - sound selected
+unused_ff86:			rs.b $3A
+v_highscore:			rs.l 1 ; $FFFFFFC0 ; highest score so far (REV00 only)
+v_score_next_life:		equ v_highscore	; points required for next extra life (REV01 only)
+unused_ffc4:			rs.b $1C
+f_levelselect_cheat:		rs.b 1 ; $FFFFFFE0 ; flag set when level select cheat has been entered
+f_slowmotion_cheat:		rs.b 1 ; $FFFFFFE1 ; flag set when slow motion & frame advance cheat has been entered
+f_debug_cheat:			rs.b 1 ; $FFFFFFE2 ; flag set when debug mode cheat has been entered
+f_credits_cheat:		rs.b 1 ; $FFFFFFE3 ; flag set when hidden credits & press start cheat has been entered
+v_title_d_count:		rs.w 1 ; $FFFFFFE4 ; number of times the d-pad is pressed on title screen, but only in the order UDLR
+v_title_c_count:		rs.w 1 ; $FFFFFFE6 ; number of times C is pressed on title screen
+unused_ffe8:			rs.b 2
+v_title_unused:			rs.w 1 ; $FFFFFFEA
+unused_ffec:			rs.b 4
+v_demo_mode:			rs.w 1 ; $FFFFFFF0 ; demo mode flag - 0 = no; 1 = yes; $8001 = ending
+v_demo_num:			rs.w 1 ; $FFFFFFF2 ; demo level number (not the same as the level number)
+v_credits_num:			rs.w 1 ; $FFFFFFF4 ; credits index number
+unused_fff6:			rs.b 2
+v_console_region:		rs.b 1 ; $FFFFFFF8 ; Mega Drive console type - 0 = JP; $80 = US/EU; +0 = NTSC; +$40 = PAL
+unused_fff9:			rs.b 1
+f_debug_enable:			rs.w 1 ; $FFFFFFFA ; flag set when debug mode is enabled (high byte is set to 1, but it's read as a word)
+v_checksum_pass:		rs.l 1 ; $FFFFFFFC ; set to the text string "init" when checksum is passed
 
 		popo		; restore options

@@ -19,7 +19,7 @@ Cred_Main:	; Routine 0
 		move.w	#$F0,ost_y_screen(a0)
 		move.l	#Map_Cred,ost_mappings(a0)
 		move.w	#tile_Nem_CreditText,ost_tile(a0)
-		move.w	(v_creditsnum).w,d0 ; load credits index number
+		move.w	(v_credits_num).w,d0 ; load credits index number
 		move.b	d0,ost_frame(a0) ; display appropriate sprite
 		move.b	#render_abs,ost_render(a0)
 		move.b	#0,ost_priority(a0)
@@ -29,7 +29,7 @@ Cred_Main:	; Routine 0
 
 		move.w	#$A6,ost_tile(a0)
 		move.b	#id_frame_cred_sonicteam,ost_frame(a0) ; display "SONIC TEAM PRESENTS"
-		tst.b	(f_creditscheat).w ; is hidden credits cheat on?
+		tst.b	(f_credits_cheat).w ; is hidden credits cheat on?
 		beq.s	Cred_Display	; if not, branch
 		cmpi.b	#btnABC+btnDn,(v_joypad_hold_actual).w ; is A+B+C+Down being pressed? ($72)
 		bne.s	Cred_Display	; if not, branch

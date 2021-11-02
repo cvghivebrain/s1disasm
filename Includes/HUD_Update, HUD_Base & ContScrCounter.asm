@@ -10,7 +10,7 @@ hudVRAM:	macro loc
 
 
 HUD_Update:
-		tst.w	(f_debugmode).w	; is debug mode	on?
+		tst.w	(f_debug_enable).w	; is debug mode	on?
 		bne.w	HudDebug	; if yes, branch
 		tst.b	(f_hud_score_update).w ; does the score need updating?
 		beq.s	@chkrings	; if not, branch

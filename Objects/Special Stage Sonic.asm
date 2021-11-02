@@ -42,7 +42,7 @@ Obj09_Main:	; Routine 0
 		bset	#status_air_bit,ost_status(a0)
 
 Obj09_ChkDebug:	; Routine 2
-		tst.w	(f_debugmode).w	; is debug mode	cheat enabled?
+		tst.w	(f_debug_enable).w	; is debug mode	cheat enabled?
 		beq.s	Obj09_NoDebug	; if not, branch
 		btst	#bitB,(v_joypad_press_actual).w ; is button B pressed?
 		beq.s	Obj09_NoDebug	; if not, branch

@@ -12,7 +12,7 @@ AddPoints:
 		move.b	#1,(f_hud_score_update).w ; set score counter to update
 
 		if Revision=0
-			lea	(v_scorecopy).w,a2
+			lea	(v_highscore).w,a2
 			lea	(v_score).w,a3
 			add.l	d0,(a3)		; add d0*10 to the score
 			move.l	#999999,d1
@@ -23,9 +23,9 @@ AddPoints:
 
 		@belowmax:
 			move.l	(a3),d0
-			cmp.l	(a2),d0
-			blo.w	@locret_1C6B6
-			move.l	d0,(a2)
+			cmp.l	(a2),d0		; is score smaller than high score?
+			blo.w	@locret_1C6B6	; if yes, branch
+			move.l	d0,(a2)		; copy score to high score
 
 		else
 
@@ -37,11 +37,11 @@ AddPoints:
 			move.l  d1,(a3) ; reset score to 999999
 		@belowmax:
 			move.l  (a3),d0
-			cmp.l   (v_scorelife).w,d0 ; has Sonic got 50000+ points?
+			cmp.l   (v_score_next_life).w,d0 ; has Sonic got 50000+ points?
 			blo.s   @noextralife ; if not, branch
 
-			addi.l  #5000,(v_scorelife).w ; increase requirement by 50000
-			tst.b   (v_megadrive).w
+			addi.l  #5000,(v_score_next_life).w ; increase requirement by 50000
+			tst.b   (v_console_region).w
 			bmi.s   @noextralife ; branch if Mega Drive is Japanese
 			addq.b  #1,(v_lives).w ; give extra life
 			addq.b  #1,(f_hud_lives_update).w
