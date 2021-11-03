@@ -3,6 +3,7 @@
 ; ---------------------------------------------------------------------------
 
 sizeof_ost:		equ $40
+countof_ost:		equ $80
 
 ; VRAM data
 vram_window:	equ $A000	; window namespace - unused
@@ -51,6 +52,17 @@ bitR:		equ 3
 bitL:		equ 2
 bitDn:		equ 1
 bitUp:		equ 0
+
+; Sonic physics
+sonic_max_speed:		equ $600
+sonic_acceleration:		equ $C
+sonic_deceleration:		equ $80
+sonic_max_speed_water:		equ sonic_max_speed/2		; underwater
+sonic_acceleration_water:	equ sonic_acceleration/2
+sonic_deceleration_water:	equ sonic_deceleration/2
+sonic_max_speed_shoes:		equ sonic_max_speed*2		; with speed shoes
+sonic_acceleration_shoes:	equ sonic_acceleration*2
+sonic_deceleration_shoes:	equ sonic_deceleration
 
 ; Object variables
 ost_render:		equ 1	; bitfield for x/y flip, display mode

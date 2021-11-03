@@ -5928,7 +5928,7 @@ Ledge_SlopeData:
 		include "Objects\GHZ & SLZ Smashable Walls & SmashObject.asm" ; SmashWall
 		include "Mappings\GHZ & SLZ Smashable Walls.asm" ; Map_Smash
 
-ExecuteObjects:	include "Includes\ExecuteObjects & Object Pointers.asm"
+		include "Includes\ExecuteObjects & Object Pointers.asm"
 
 NullObject:
 		;jmp	(DeleteObject).l ; It would be safer to have this instruction here, but instead it just falls through to ObjectFall
@@ -6091,7 +6091,7 @@ Obj4F:
 		include "Animations\LZ Waterfall.asm" ; Ani_WFall
 		include "Mappings\LZ Waterfall.asm" ; Map_WFall
 
-		include "Objects\Sonic (1).asm" ; SonicPlayer
+		include "Objects\Sonic.asm" ; SonicPlayer
 
 		include "Objects\LZ Drowning Numbers.asm" ; DrownCount
 		include "Objects\_ResumeMusic.asm"
@@ -6109,12 +6109,12 @@ Obj4F:
 		include "Animations\LZ Water Splash.asm" ; Ani_Splash
 		include "Mappings\LZ Water Splash.asm" ; Map_Splash
 
-		include "Objects\Sonic (2).asm"
+		include_Sonic_2 ; Objects\Sonic.asm
 		include "Objects\_FindNearestTile, FindFloor & FindWall.asm"
 
 		include	"Includes\ConvertCollisionArray.asm"
 
-		include "Objects\Sonic (3).asm"
+		include_Sonic_3 ; Objects\Sonic.asm
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to find the distance of an object to the floor

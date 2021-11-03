@@ -23,7 +23,7 @@ Sonic_Index:	index *,,2
 ; ===========================================================================
 
 Sonic_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0) ; goto Sonic_Control next
 		move.b	#$13,ost_height(a0)
 		move.b	#9,ost_width(a0)
 		move.l	#Map_Sonic,ost_mappings(a0)
@@ -31,53 +31,53 @@ Sonic_Main:	; Routine 0
 		move.b	#2,ost_priority(a0)
 		move.b	#$18,ost_actwidth(a0)
 		move.b	#render_rel,ost_render(a0)
-		move.w	#$600,(v_sonic_max_speed).w ; Sonic's top speed
-		move.w	#$C,(v_sonic_acceleration).w ; Sonic's acceleration
-		move.w	#$80,(v_sonic_deceleration).w ; Sonic's deceleration
+		move.w	#sonic_max_speed,(v_sonic_max_speed).w ; Sonic's top speed
+		move.w	#sonic_acceleration,(v_sonic_acceleration).w ; Sonic's acceleration
+		move.w	#sonic_deceleration,(v_sonic_deceleration).w ; Sonic's deceleration
 
 Sonic_Control:	; Routine 2
 		tst.w	(f_debug_enable).w	; is debug cheat enabled?
-		beq.s	loc_12C58	; if not, branch
+		beq.s	@no_debug	; if not, branch
 		btst	#bitB,(v_joypad_press_actual).w ; is button B pressed?
-		beq.s	loc_12C58	; if not, branch
+		beq.s	@no_debug	; if not, branch
 		move.w	#1,(v_debug_active).w ; change Sonic into a ring/item
 		clr.b	(f_lock_controls).w
 		rts	
 ; ===========================================================================
 
-loc_12C58:
+@no_debug:
 		tst.b	(f_lock_controls).w	; are controls locked?
-		bne.s	loc_12C64	; if yes, branch
+		bne.s	@lock		; if yes, branch
 		move.w	(v_joypad_hold_actual).w,(v_joypad_hold).w ; enable joypad control
 
-loc_12C64:
-		btst	#0,(v_lock_multi).w ; are controls locked?
-		bne.s	loc_12C7E	; if yes, branch
+	@lock:
+		btst	#0,(v_lock_multi).w ; are controls and position locked?
+		bne.s	@lock2		; if yes, branch
 		moveq	#0,d0
 		move.b	ost_status(a0),d0
 		andi.w	#6,d0
 		move.w	Sonic_Modes(pc,d0.w),d1
 		jsr	Sonic_Modes(pc,d1.w)
 
-loc_12C7E:
+	@lock2:
 		bsr.s	Sonic_Display
 		bsr.w	Sonic_RecordPosition
 		bsr.w	Sonic_Water
 		move.b	(v_angle_right).w,ost_sonic_angle_right(a0)
 		move.b	(v_angle_left).w,ost_sonic_angle_left(a0)
-		tst.b	(f_water_tunnel_now).w
-		beq.s	loc_12CA6
-		tst.b	ost_anim(a0)
-		bne.s	loc_12CA6
-		move.b	ost_anim_restart(a0),ost_anim(a0)
+		tst.b	(f_water_tunnel_now).w ; is Sonic in a LZ water tunnel?
+		beq.s	@no_tunnel	; if not, branch
+		tst.b	ost_anim(a0)	; is Sonic using walking animation?
+		bne.s	@no_tunnel	; if not, branch
+		move.b	ost_anim_restart(a0),ost_anim(a0) ; update animation
 
-loc_12CA6:
+	@no_tunnel:
 		bsr.w	Sonic_Animate
-		tst.b	(v_lock_multi).w	; are controls locked?
-		bmi.s	loc_12CB6	; if yes, branch
+		tst.b	(v_lock_multi).w	; is object collision disabled?
+		bmi.s	@no_collision	; if yes, branch
 		jsr	(ReactToItem).l	; run collisions with enemies or anything that uses ost_col_type
 
-loc_12CB6:
+	@no_collision:
 		bsr.w	Sonic_Loops
 		bsr.w	Sonic_LoadGfx
 		rts	
@@ -148,9 +148,9 @@ Sonic_Display:
 		beq.s	@exit		; if 0, branch
 		subq.w	#1,ost_sonic_shoe_time(a0) ; decrement timer
 		bne.s	@exit
-		move.w	#$600,(v_sonic_max_speed).w ; restore Sonic's speed
-		move.w	#$C,(v_sonic_acceleration).w ; restore Sonic's acceleration
-		move.w	#$80,(v_sonic_deceleration).w ; restore Sonic's deceleration
+		move.w	#sonic_max_speed,(v_sonic_max_speed).w ; restore Sonic's speed
+		move.w	#sonic_acceleration,(v_sonic_acceleration).w ; restore Sonic's acceleration
+		move.w	#sonic_deceleration,(v_sonic_deceleration).w ; restore Sonic's deceleration
 		move.b	#0,(v_shoes).w	; cancel speed shoes
 		play.w	0, jmp, cmd_Slowdown		; run music at normal speed
 
@@ -180,7 +180,7 @@ Sonic_RecordPosition:
 
 
 Sonic_Water:
-		cmpi.b	#1,(v_zone).w	; is level LZ?
+		cmpi.b	#id_LZ,(v_zone).w ; is level LZ?
 		beq.s	@islabyrinth	; if yes, branch
 
 	@exit:
@@ -194,16 +194,16 @@ Sonic_Water:
 		bset	#status_underwater_bit,ost_status(a0)
 		bne.s	@exit
 		bsr.w	ResumeMusic
-		move.b	#id_DrownCount,(v_ost_all+$340).w ; load bubbles object from Sonic's mouth
-		move.b	#$81,(v_ost_all+$340+ost_subtype).w
-		move.w	#$300,(v_sonic_max_speed).w ; change Sonic's top speed
-		move.w	#6,(v_sonic_acceleration).w ; change Sonic's acceleration
-		move.w	#$40,(v_sonic_deceleration).w ; change Sonic's deceleration
+		move.b	#id_DrownCount,(v_ost_bubble).w ; load bubbles object from Sonic's mouth
+		move.b	#$81,(v_ost_bubble+ost_subtype).w
+		move.w	#sonic_max_speed_water,(v_sonic_max_speed).w ; change Sonic's top speed
+		move.w	#sonic_acceleration_water,(v_sonic_acceleration).w ; change Sonic's acceleration
+		move.w	#sonic_deceleration_water,(v_sonic_deceleration).w ; change Sonic's deceleration
 		asr	ost_x_vel(a0)
 		asr	ost_y_vel(a0)
 		asr	ost_y_vel(a0)	; slow Sonic
 		beq.s	@exit		; branch if Sonic stops moving
-		move.b	#id_Splash,(v_ost_all+$300).w ; load splash object
+		move.b	#id_Splash,(v_ost_splash).w ; load splash object
 		play.w	1, jmp, sfx_Splash		; play splash sound
 ; ===========================================================================
 
@@ -211,12 +211,12 @@ Sonic_Water:
 		bclr	#status_underwater_bit,ost_status(a0)
 		beq.s	@exit
 		bsr.w	ResumeMusic
-		move.w	#$600,(v_sonic_max_speed).w ; restore Sonic's speed
-		move.w	#$C,(v_sonic_acceleration).w ; restore Sonic's acceleration
-		move.w	#$80,(v_sonic_deceleration).w ; restore Sonic's deceleration
+		move.w	#sonic_max_speed,(v_sonic_max_speed).w ; restore Sonic's speed
+		move.w	#sonic_acceleration,(v_sonic_acceleration).w ; restore Sonic's acceleration
+		move.w	#sonic_deceleration,(v_sonic_deceleration).w ; restore Sonic's deceleration
 		asl	ost_y_vel(a0)
 		beq.w	@exit
-		move.b	#id_Splash,(v_ost_all+$300).w ; load splash object
+		move.b	#id_Splash,(v_ost_splash).w ; load splash object
 		cmpi.w	#-$1000,ost_y_vel(a0)
 		bgt.s	@belowmaxspeed
 		move.w	#-$1000,ost_y_vel(a0) ; set maximum speed on leaving water
@@ -247,11 +247,11 @@ Sonic_Mode_Jump:
 		bsr.w	Sonic_JumpDirection
 		bsr.w	Sonic_LevelBound
 		jsr	(ObjectFall).l
-		btst	#status_underwater_bit,ost_status(a0)
-		beq.s	loc_12E5C
-		subi.w	#$28,ost_y_vel(a0)
+		btst	#status_underwater_bit,ost_status(a0) ; is Sonic underwater?
+		beq.s	@notwater	; if not, branch
+		subi.w	#$28,ost_y_vel(a0) ; reduce jump speed
 
-loc_12E5C:
+	@notwater:
 		bsr.w	Sonic_JumpAngle
 		bsr.w	Sonic_Floor
 		rts	
@@ -1782,3 +1782,565 @@ Sonic_LoadGfx:
 		rts	
 
 ; End of function Sonic_LoadGfx
+
+; ---------------------------------------------------------------------------
+; Object 01 - Sonic, part 2
+; ---------------------------------------------------------------------------
+
+include_Sonic_2:	macro
+
+; ---------------------------------------------------------------------------
+; Subroutine to	change Sonic's angle & position as he walks along the floor
+; ---------------------------------------------------------------------------
+
+; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+
+
+Sonic_AnglePos:
+		btst	#status_platform_bit,ost_status(a0)
+		beq.s	loc_14602
+		moveq	#0,d0
+		move.b	d0,(v_angle_right).w
+		move.b	d0,(v_angle_left).w
+		rts	
+; ===========================================================================
+
+loc_14602:
+		moveq	#3,d0
+		move.b	d0,(v_angle_right).w
+		move.b	d0,(v_angle_left).w
+		move.b	ost_angle(a0),d0
+		addi.b	#$20,d0
+		bpl.s	loc_14624
+		move.b	ost_angle(a0),d0
+		bpl.s	loc_1461E
+		subq.b	#1,d0
+
+loc_1461E:
+		addi.b	#$20,d0
+		bra.s	loc_14630
+; ===========================================================================
+
+loc_14624:
+		move.b	ost_angle(a0),d0
+		bpl.s	loc_1462C
+		addq.b	#1,d0
+
+loc_1462C:
+		addi.b	#$1F,d0
+
+loc_14630:
+		andi.b	#$C0,d0
+		cmpi.b	#$40,d0
+		beq.w	Sonic_WalkVertL
+		cmpi.b	#$80,d0
+		beq.w	Sonic_WalkCeiling
+		cmpi.b	#$C0,d0
+		beq.w	Sonic_WalkVertR
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
+		moveq	#0,d0
+		move.b	ost_height(a0),d0
+		ext.w	d0
+		add.w	d0,d2
+		move.b	ost_width(a0),d0
+		ext.w	d0
+		add.w	d0,d3
+		lea	(v_angle_right).w,a4
+		movea.w	#$10,a3
+		move.w	#0,d6
+		moveq	#$D,d5
+		bsr.w	FindFloor
+		move.w	d1,-(sp)
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
+		moveq	#0,d0
+		move.b	ost_height(a0),d0
+		ext.w	d0
+		add.w	d0,d2
+		move.b	ost_width(a0),d0
+		ext.w	d0
+		neg.w	d0
+		add.w	d0,d3
+		lea	(v_angle_left).w,a4
+		movea.w	#$10,a3
+		move.w	#0,d6
+		moveq	#$D,d5
+		bsr.w	FindFloor
+		move.w	(sp)+,d0
+		bsr.w	Sonic_Angle
+		tst.w	d1
+		beq.s	locret_146BE
+		bpl.s	loc_146C0
+		cmpi.w	#-$E,d1
+		blt.s	locret_146E6
+		add.w	d1,ost_y_pos(a0)
+
+locret_146BE:
+		rts	
+; ===========================================================================
+
+loc_146C0:
+		cmpi.w	#$E,d1
+		bgt.s	loc_146CC
+
+loc_146C6:
+		add.w	d1,ost_y_pos(a0)
+		rts	
+; ===========================================================================
+
+loc_146CC:
+		tst.b	ost_sonic_sbz_disc(a0)
+		bne.s	loc_146C6
+		bset	#status_air_bit,ost_status(a0)
+		bclr	#status_pushing_bit,ost_status(a0)
+		move.b	#1,ost_anim_restart(a0)
+		rts	
+; ===========================================================================
+
+locret_146E6:
+		rts	
+; End of function Sonic_AnglePos
+
+; ===========================================================================
+		move.l	ost_x_pos(a0),d2
+		move.w	ost_x_vel(a0),d0
+		ext.l	d0
+		asl.l	#8,d0
+		sub.l	d0,d2
+		move.l	d2,ost_x_pos(a0)
+		move.w	#$38,d0
+		ext.l	d0
+		asl.l	#8,d0
+		sub.l	d0,d3
+		move.l	d3,ost_y_pos(a0)
+		rts	
+; ===========================================================================
+
+locret_1470A:
+		rts	
+; ===========================================================================
+		move.l	ost_y_pos(a0),d3
+		move.w	ost_y_vel(a0),d0
+		subi.w	#$38,d0
+		move.w	d0,ost_y_vel(a0)
+		ext.l	d0
+		asl.l	#8,d0
+		sub.l	d0,d3
+		move.l	d3,ost_y_pos(a0)
+		rts	
+		rts	
+; ===========================================================================
+		move.l	ost_x_pos(a0),d2
+		move.l	ost_y_pos(a0),d3
+		move.w	ost_x_vel(a0),d0
+		ext.l	d0
+		asl.l	#8,d0
+		sub.l	d0,d2
+		move.w	ost_y_vel(a0),d0
+		ext.l	d0
+		asl.l	#8,d0
+		sub.l	d0,d3
+		move.l	d2,ost_x_pos(a0)
+		move.l	d3,ost_y_pos(a0)
+		rts	
+
+; ---------------------------------------------------------------------------
+; Subroutine to	change Sonic's angle as he walks along the floor
+; ---------------------------------------------------------------------------
+
+; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+
+
+Sonic_Angle:
+		move.b	(v_angle_left).w,d2
+		cmp.w	d0,d1
+		ble.s	loc_1475E
+		move.b	(v_angle_right).w,d2
+		move.w	d0,d1
+
+loc_1475E:
+		btst	#0,d2
+		bne.s	loc_1476A
+		move.b	d2,ost_angle(a0)
+		rts	
+; ===========================================================================
+
+loc_1476A:
+		move.b	ost_angle(a0),d2
+		addi.b	#$20,d2
+		andi.b	#$C0,d2
+		move.b	d2,ost_angle(a0)
+		rts	
+; End of function Sonic_Angle
+
+; ---------------------------------------------------------------------------
+; Subroutine allowing Sonic to walk up a vertical slope/wall to	his right
+; ---------------------------------------------------------------------------
+
+; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+
+
+Sonic_WalkVertR:
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
+		moveq	#0,d0
+		move.b	ost_width(a0),d0
+		ext.w	d0
+		neg.w	d0
+		add.w	d0,d2
+		move.b	ost_height(a0),d0
+		ext.w	d0
+		add.w	d0,d3
+		lea	(v_angle_right).w,a4
+		movea.w	#$10,a3
+		move.w	#0,d6
+		moveq	#$D,d5
+		bsr.w	FindWall
+		move.w	d1,-(sp)
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
+		moveq	#0,d0
+		move.b	ost_width(a0),d0
+		ext.w	d0
+		add.w	d0,d2
+		move.b	ost_height(a0),d0
+		ext.w	d0
+		add.w	d0,d3
+		lea	(v_angle_left).w,a4
+		movea.w	#$10,a3
+		move.w	#0,d6
+		moveq	#$D,d5
+		bsr.w	FindWall
+		move.w	(sp)+,d0
+		bsr.w	Sonic_Angle
+		tst.w	d1
+		beq.s	locret_147F0
+		bpl.s	loc_147F2
+		cmpi.w	#-$E,d1
+		blt.w	locret_1470A
+		add.w	d1,ost_x_pos(a0)
+
+locret_147F0:
+		rts	
+; ===========================================================================
+
+loc_147F2:
+		cmpi.w	#$E,d1
+		bgt.s	loc_147FE
+
+loc_147F8:
+		add.w	d1,ost_x_pos(a0)
+		rts	
+; ===========================================================================
+
+loc_147FE:
+		tst.b	ost_sonic_sbz_disc(a0)
+		bne.s	loc_147F8
+		bset	#status_air_bit,ost_status(a0)
+		bclr	#status_pushing_bit,ost_status(a0)
+		move.b	#1,ost_anim_restart(a0)
+		rts	
+; End of function Sonic_WalkVertR
+
+; ---------------------------------------------------------------------------
+; Subroutine allowing Sonic to walk upside-down
+; ---------------------------------------------------------------------------
+
+; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+
+
+Sonic_WalkCeiling:
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
+		moveq	#0,d0
+		move.b	ost_height(a0),d0
+		ext.w	d0
+		sub.w	d0,d2
+		eori.w	#$F,d2
+		move.b	ost_width(a0),d0
+		ext.w	d0
+		add.w	d0,d3
+		lea	(v_angle_right).w,a4
+		movea.w	#-$10,a3
+		move.w	#$1000,d6
+		moveq	#$D,d5
+		bsr.w	FindFloor
+		move.w	d1,-(sp)
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
+		moveq	#0,d0
+		move.b	ost_height(a0),d0
+		ext.w	d0
+		sub.w	d0,d2
+		eori.w	#$F,d2
+		move.b	ost_width(a0),d0
+		ext.w	d0
+		sub.w	d0,d3
+		lea	(v_angle_left).w,a4
+		movea.w	#-$10,a3
+		move.w	#$1000,d6
+		moveq	#$D,d5
+		bsr.w	FindFloor
+		move.w	(sp)+,d0
+		bsr.w	Sonic_Angle
+		tst.w	d1
+		beq.s	locret_14892
+		bpl.s	loc_14894
+		cmpi.w	#-$E,d1
+		blt.w	locret_146E6
+		sub.w	d1,ost_y_pos(a0)
+
+locret_14892:
+		rts	
+; ===========================================================================
+
+loc_14894:
+		cmpi.w	#$E,d1
+		bgt.s	loc_148A0
+
+loc_1489A:
+		sub.w	d1,ost_y_pos(a0)
+		rts	
+; ===========================================================================
+
+loc_148A0:
+		tst.b	ost_sonic_sbz_disc(a0)
+		bne.s	loc_1489A
+		bset	#status_air_bit,ost_status(a0)
+		bclr	#status_pushing_bit,ost_status(a0)
+		move.b	#1,ost_anim_restart(a0)
+		rts	
+; End of function Sonic_WalkCeiling
+
+; ---------------------------------------------------------------------------
+; Subroutine allowing Sonic to walk up a vertical slope/wall to	his left
+; ---------------------------------------------------------------------------
+
+; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+
+
+Sonic_WalkVertL:
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
+		moveq	#0,d0
+		move.b	ost_width(a0),d0
+		ext.w	d0
+		sub.w	d0,d2
+		move.b	ost_height(a0),d0
+		ext.w	d0
+		sub.w	d0,d3
+		eori.w	#$F,d3
+		lea	(v_angle_right).w,a4
+		movea.w	#-$10,a3
+		move.w	#$800,d6
+		moveq	#$D,d5
+		bsr.w	FindWall
+		move.w	d1,-(sp)
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
+		moveq	#0,d0
+		move.b	ost_width(a0),d0
+		ext.w	d0
+		add.w	d0,d2
+		move.b	ost_height(a0),d0
+		ext.w	d0
+		sub.w	d0,d3
+		eori.w	#$F,d3
+		lea	(v_angle_left).w,a4
+		movea.w	#-$10,a3
+		move.w	#$800,d6
+		moveq	#$D,d5
+		bsr.w	FindWall
+		move.w	(sp)+,d0
+		bsr.w	Sonic_Angle
+		tst.w	d1
+		beq.s	locret_14934
+		bpl.s	loc_14936
+		cmpi.w	#-$E,d1
+		blt.w	locret_1470A
+		sub.w	d1,ost_x_pos(a0)
+
+locret_14934:
+		rts	
+; ===========================================================================
+
+loc_14936:
+		cmpi.w	#$E,d1
+		bgt.s	loc_14942
+
+loc_1493C:
+		sub.w	d1,ost_x_pos(a0)
+		rts	
+; ===========================================================================
+
+loc_14942:
+		tst.b	ost_sonic_sbz_disc(a0)
+		bne.s	loc_1493C
+		bset	#status_air_bit,ost_status(a0)
+		bclr	#status_pushing_bit,ost_status(a0)
+		move.b	#1,ost_anim_restart(a0)
+		rts	
+; End of function Sonic_WalkVertL
+
+		endm
+
+; ---------------------------------------------------------------------------
+; Object 01 - Sonic, part 3
+; ---------------------------------------------------------------------------
+
+include_Sonic_3:	macro
+
+; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+
+
+Sonic_WalkSpeed:
+		move.l	ost_x_pos(a0),d3
+		move.l	ost_y_pos(a0),d2
+		move.w	ost_x_vel(a0),d1
+		ext.l	d1
+		asl.l	#8,d1
+		add.l	d1,d3
+		move.w	ost_y_vel(a0),d1
+		ext.l	d1
+		asl.l	#8,d1
+		add.l	d1,d2
+		swap	d2
+		swap	d3
+		move.b	d0,(v_angle_right).w
+		move.b	d0,(v_angle_left).w
+		move.b	d0,d1
+		addi.b	#$20,d0
+		bpl.s	loc_14D1A
+		move.b	d1,d0
+		bpl.s	loc_14D14
+		subq.b	#1,d0
+
+loc_14D14:
+		addi.b	#$20,d0
+		bra.s	loc_14D24
+; ===========================================================================
+
+loc_14D1A:
+		move.b	d1,d0
+		bpl.s	loc_14D20
+		addq.b	#1,d0
+
+loc_14D20:
+		addi.b	#$1F,d0
+
+loc_14D24:
+		andi.b	#$C0,d0
+		beq.w	loc_14DF0
+		cmpi.b	#$80,d0
+		beq.w	loc_14F7C
+		andi.b	#$38,d1
+		bne.s	loc_14D3C
+		addq.w	#8,d2
+
+loc_14D3C:
+		cmpi.b	#$40,d0
+		beq.w	loc_1504A
+		bra.w	loc_14EBC
+
+; End of function Sonic_WalkSpeed
+
+
+; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+
+
+sub_14D48:
+		move.b	d0,(v_angle_right).w
+		move.b	d0,(v_angle_left).w
+		addi.b	#$20,d0
+		andi.b	#$C0,d0
+		cmpi.b	#$40,d0
+		beq.w	loc_14FD6
+		cmpi.b	#$80,d0
+		beq.w	Sonic_DontRunOnWalls
+		cmpi.b	#$C0,d0
+		beq.w	sub_14E50
+
+; End of function sub_14D48
+
+; ---------------------------------------------------------------------------
+; Subroutine to	make Sonic land	on the floor after jumping
+; ---------------------------------------------------------------------------
+
+; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+
+
+Sonic_HitFloor:
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
+		moveq	#0,d0
+		move.b	ost_height(a0),d0
+		ext.w	d0
+		add.w	d0,d2
+		move.b	ost_width(a0),d0
+		ext.w	d0
+		add.w	d0,d3
+		lea	(v_angle_right).w,a4
+		movea.w	#$10,a3
+		move.w	#0,d6
+		moveq	#$D,d5
+		bsr.w	FindFloor
+		move.w	d1,-(sp)
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
+		moveq	#0,d0
+		move.b	ost_height(a0),d0
+		ext.w	d0
+		add.w	d0,d2
+		move.b	ost_width(a0),d0
+		ext.w	d0
+		sub.w	d0,d3
+		lea	(v_angle_left).w,a4
+		movea.w	#$10,a3
+		move.w	#0,d6
+		moveq	#$D,d5
+		bsr.w	FindFloor
+		move.w	(sp)+,d0
+		move.b	#0,d2
+
+loc_14DD0:
+		move.b	(v_angle_left).w,d3
+		cmp.w	d0,d1
+		ble.s	loc_14DDE
+		move.b	(v_angle_right).w,d3
+		exg	d0,d1
+
+loc_14DDE:
+		btst	#0,d3
+		beq.s	locret_14DE6
+		move.b	d2,d3
+
+locret_14DE6:
+		rts	
+
+; End of function Sonic_HitFloor
+
+; ===========================================================================
+		move.w	ost_y_pos(a0),d2
+		move.w	ost_x_pos(a0),d3
+
+loc_14DF0:
+		addi.w	#$A,d2
+		lea	(v_angle_right).w,a4
+		movea.w	#$10,a3
+		move.w	#0,d6
+		moveq	#$E,d5
+		bsr.w	FindFloor
+		move.b	#0,d2
+
+loc_14E0A:
+		move.b	(v_angle_right).w,d3
+		btst	#0,d3
+		beq.s	locret_14E16
+		move.b	d2,d3
+
+locret_14E16:
+		rts	
+
+		endm
+		

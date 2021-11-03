@@ -23,7 +23,8 @@ v_16x16_tiles:			equ $FFFFB000 ; 16x16 tile mappings
 v_sonic_gfx_buffer:		equ $FFFFC800 ; buffered Sonic graphics ($17 cells) ($2E0 bytes)
 v_sonic_pos_tracker:		equ $FFFFCB00 ; earlier position tracking list for Sonic, used by invinciblity stars ($100 bytes)
 v_hscroll_buffer:		equ $FFFFCC00 ; scrolling table data (actually $380 bytes, but $400 is reserved for it)
-v_ost_all:			equ $FFFFD000 ; object variable space ($40 bytes per object) ($2000 bytes)
+				rsset $FFFFD000
+v_ost_all:			rs.b sizeof_ost*countof_ost ; $FFFFD000 ; object variable space ($40 bytes per object; $80 objects) ($2000 bytes)
 	v_ost_player:		equ v_ost_all ; object variable space for Sonic ($40 bytes)
 	; Title screen and intro
 	v_ost_titlesonic:	equ v_ost_all+(sizeof_ost*1) ; title screen Sonic
@@ -53,6 +54,8 @@ v_ost_all:			equ $FFFFD000 ; object variable space ($40 bytes per object) ($2000
 	v_ost_stars2:		equ v_ost_all+(sizeof_ost*9) ; invincibility stars
 	v_ost_stars3:		equ v_ost_all+(sizeof_ost*$A) ; invincibility stars
 	v_ost_stars4:		equ v_ost_all+(sizeof_ost*$B) ; invincibility stars
+	v_ost_splash:		equ v_ost_all+(sizeof_ost*$C) ; splash
+	v_ost_bubble:		equ v_ost_all+(sizeof_ost*$D) ; bubble from Sonic's mouth
 	v_ost_end_emeralds:	equ v_ost_all+(sizeof_ost*$10) ; ending chaos emeralds
 	v_ost_gotthrough1:	equ v_ost_all+(sizeof_ost*$17) ; got through act - "Sonic has"
 	v_ost_gotthrough2:	equ v_ost_all+(sizeof_ost*$18) ; got through act - "passed"
@@ -72,13 +75,14 @@ v_ost_all:			equ $FFFFD000 ; object variable space ($40 bytes per object) ($2000
 	v_ost_ssres_emeralds:	equ v_ost_all+(sizeof_ost*$20) ; special stage results screen chaos emeralds
 	; Level - can interact with Sonic
 	v_ost_level_obj:	equ v_ost_all+(sizeof_ost*$20) ; level object variable space ($1800 bytes)
-v_ost_end:			equ $FFFFF000
+v_ost_end:			equ v_ost_all+(sizeof_ost*countof_ost) ; $FFFFF000
 
-				rsset $FFFFF000
-v_snddriver_ram:		rs.b v_snddriver_size		; start of RAM for the sound driver data ($5C0 bytes)
+v_snddriver_ram:		rs.b v_snddriver_size ; $FFFFF000 ; start of RAM for the sound driver data ($5C0 bytes)
 								; sound driver equates are now defined in "sound/Sound Equates.asm"
 
 unused_f5c0:			rs.b $40 ; $FFFFF5C0 ; unused space (reserved for sound driver?)
+
+; General variables:
 
 v_gamemode:			rs.b 1 ; $FFFFF600 ; game mode (00=Sega; 04=Title; 08=Demo; 0C=Level; 10=SS; 14=Cont; 18=End; 1C=Credit; 8C=PreLevel)
 unused_f601:			rs.b 1

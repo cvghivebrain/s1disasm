@@ -4,46 +4,44 @@
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-
+ExecuteObjects:
 		lea	(v_ost_all).w,a0 ; set address for object RAM
-		moveq	#$7F,d7
+		moveq	#countof_ost-1,d7 ; $80 objects -1
 		moveq	#0,d0
-		cmpi.b	#6,(v_ost_player+ost_routine).w
-		bhs.s	loc_D362
+		cmpi.b	#id_Sonic_Death,(v_ost_player+ost_routine).w ; is Sonic dead?
+		bhs.s	@dead		; if yes, branch
 
-loc_D348:
+@run_object:
 		move.b	(a0),d0		; load object number from RAM
-		beq.s	loc_D358
+		beq.s	@no_object	; branch if 0
 		add.w	d0,d0
 		add.w	d0,d0
 		movea.l	Obj_Index-4(pc,d0.w),a1
 		jsr	(a1)		; run the object's code
 		moveq	#0,d0
 
-loc_D358:
-		lea	$40(a0),a0	; next object
-		dbf	d7,loc_D348
+	@no_object:
+		lea	sizeof_ost(a0),a0 ; next object
+		dbf	d7,@run_object
 		rts	
 ; ===========================================================================
 
-loc_D362:
-		moveq	#$1F,d7
-		bsr.s	loc_D348
-		moveq	#$5F,d7
+@dead:
+		moveq	#$20-1,d7	; run first $20 objects normally
+		bsr.s	@run_object
+		moveq	#countof_ost-$20-1,d7 ; remaining $60 objects are display only
 
-loc_D368:
+@display_object:
 		moveq	#0,d0
-		move.b	(a0),d0
-		beq.s	loc_D378
+		move.b	(a0),d0		; load object number
+		beq.s	@no_object2	; branch if 0
 		tst.b	ost_render(a0)
-		bpl.s	loc_D378
-		bsr.w	DisplaySprite
+		bpl.s	@no_object2	; branch if off-screen
+		bsr.w	DisplaySprite	; display only
 
-loc_D378:
-		lea	$40(a0),a0
-
-loc_D37C:
-		dbf	d7,loc_D368
+	@no_object2:
+		lea	sizeof_ost(a0),a0 ; next object
+		dbf	d7,@display_object
 		rts	
 ; End of function ExecuteObjects
 
