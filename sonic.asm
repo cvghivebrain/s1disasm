@@ -6161,75 +6161,7 @@ FindFloorObj2:
 
 ; End of function FindFloorObj2
 
-; ---------------------------------------------------------------------------
-; Subroutine to	find walls either side of Sonic
-
-; output:
-;	d0 = distance to left wall
-;	d1 = distance to right wall
-;	a1 = address within 256x256 mappings where Sonic is standing
-;	(a1) = 16x16 tile number
-;	(a4) = floor angle
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-sub_14E50:
-		move.w	ost_y_pos(a0),d2
-		move.w	ost_x_pos(a0),d3
-		moveq	#0,d0
-		move.b	ost_width(a0),d0
-		ext.w	d0
-		sub.w	d0,d2		; d2 = x pos. of Sonic's left edge
-		move.b	ost_height(a0),d0
-		ext.w	d0
-		add.w	d0,d3		; d3 = y pos. of Sonic's bottom edge
-		lea	(v_angle_right).w,a4
-		movea.w	#$10,a3
-		move.w	#0,d6
-		moveq	#$E,d5
-		bsr.w	FindWall
-		move.w	d1,-(sp)	; save distance to left wall in stack
-		move.w	ost_y_pos(a0),d2
-		move.w	ost_x_pos(a0),d3
-		moveq	#0,d0
-		move.b	ost_width(a0),d0
-		ext.w	d0
-		add.w	d0,d2		; d2 = x pos. of Sonic's right edge
-		move.b	ost_height(a0),d0
-		ext.w	d0
-		add.w	d0,d3		; d3 = y pos. of Sonic's bottom edge
-		lea	(v_angle_left).w,a4
-		movea.w	#$10,a3
-		move.w	#0,d6
-		moveq	#$E,d5
-		bsr.w	FindWall
-		move.w	(sp)+,d0	; retrieve distance to left wall from stack
-		move.b	#-$40,d2
-		bra.w	loc_14DD0
-
-; End of function sub_14E50
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-sub_14EB4:
-		move.w	ost_y_pos(a0),d2
-		move.w	ost_x_pos(a0),d3
-
-loc_14EBC:
-		addi.w	#$A,d3
-		lea	(v_angle_right).w,a4
-		movea.w	#$10,a3
-		move.w	#0,d6
-		moveq	#$E,d5
-		bsr.w	FindWall
-		move.b	#-$40,d2
-		bra.w	loc_14E0A
-
-; End of function sub_14EB4
+		include_Sonic_4 ; Objects\Sonic.asm
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	detect when an object hits a wall to its right
@@ -6257,65 +6189,7 @@ locret_14F06:
 
 ; End of function ObjHitWallRight
 
-; ---------------------------------------------------------------------------
-; Subroutine preventing	Sonic from running on walls and	ceilings when he
-; touches them
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Sonic_DontRunOnWalls:
-		move.w	ost_y_pos(a0),d2
-		move.w	ost_x_pos(a0),d3
-		moveq	#0,d0
-		move.b	ost_height(a0),d0
-		ext.w	d0
-		sub.w	d0,d2
-		eori.w	#$F,d2
-		move.b	ost_width(a0),d0
-		ext.w	d0
-		add.w	d0,d3
-		lea	(v_angle_right).w,a4
-		movea.w	#-$10,a3
-		move.w	#$1000,d6
-		moveq	#$E,d5
-		bsr.w	FindFloor
-		move.w	d1,-(sp)
-		move.w	ost_y_pos(a0),d2
-		move.w	ost_x_pos(a0),d3
-		moveq	#0,d0
-		move.b	ost_height(a0),d0
-		ext.w	d0
-		sub.w	d0,d2
-		eori.w	#$F,d2
-		move.b	ost_width(a0),d0
-		ext.w	d0
-		sub.w	d0,d3
-		lea	(v_angle_left).w,a4
-		movea.w	#-$10,a3
-		move.w	#$1000,d6
-		moveq	#$E,d5
-		bsr.w	FindFloor
-		move.w	(sp)+,d0
-		move.b	#-$80,d2
-		bra.w	loc_14DD0
-; End of function Sonic_DontRunOnWalls
-
-; ===========================================================================
-		move.w	ost_y_pos(a0),d2
-		move.w	ost_x_pos(a0),d3
-
-loc_14F7C:
-		subi.w	#$A,d2
-		eori.w	#$F,d2
-		lea	(v_angle_right).w,a4
-		movea.w	#-$10,a3
-		move.w	#$1000,d6
-		moveq	#$E,d5
-		bsr.w	FindFloor
-		move.b	#-$80,d2
-		bra.w	loc_14E0A
+		include_Sonic_5 ; Objects\Sonic.asm
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
@@ -6344,64 +6218,7 @@ locret_14FD4:
 
 ; ===========================================================================
 
-loc_14FD6:
-		move.w	ost_y_pos(a0),d2
-		move.w	ost_x_pos(a0),d3
-		moveq	#0,d0
-		move.b	ost_width(a0),d0
-		ext.w	d0
-		sub.w	d0,d2
-		move.b	ost_height(a0),d0
-		ext.w	d0
-		sub.w	d0,d3
-		eori.w	#$F,d3
-		lea	(v_angle_right).w,a4
-		movea.w	#-$10,a3
-		move.w	#$800,d6
-		moveq	#$E,d5
-		bsr.w	FindWall
-		move.w	d1,-(sp)
-		move.w	ost_y_pos(a0),d2
-		move.w	ost_x_pos(a0),d3
-		moveq	#0,d0
-		move.b	ost_width(a0),d0
-		ext.w	d0
-		add.w	d0,d2
-		move.b	ost_height(a0),d0
-		ext.w	d0
-		sub.w	d0,d3
-		eori.w	#$F,d3
-		lea	(v_angle_left).w,a4
-		movea.w	#-$10,a3
-		move.w	#$800,d6
-		moveq	#$E,d5
-		bsr.w	FindWall
-		move.w	(sp)+,d0
-		move.b	#$40,d2
-		bra.w	loc_14DD0
-
-; ---------------------------------------------------------------------------
-; Subroutine to	stop Sonic when	he jumps at a wall
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Sonic_HitWall:
-		move.w	ost_y_pos(a0),d2
-		move.w	ost_x_pos(a0),d3
-
-loc_1504A:
-		subi.w	#$A,d3
-		eori.w	#$F,d3
-		lea	(v_angle_right).w,a4
-		movea.w	#-$10,a3
-		move.w	#$800,d6
-		moveq	#$E,d5
-		bsr.w	FindWall
-		move.b	#$40,d2
-		bra.w	loc_14E0A
-; End of function Sonic_HitWall
+		include_Sonic_6 ; Objects\Sonic.asm
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	detect when an object hits a wall to its left

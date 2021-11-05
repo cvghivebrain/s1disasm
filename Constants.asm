@@ -140,7 +140,7 @@ ost_respawn:		equ $23	; respawn list index number
 ost_routine:		equ $24	; routine number
 ost_routine2:		equ $25	; secondary routine number
 ost_solid:		equ $25 ; solid status flag
-ost_angle:		equ $26	; angle
+ost_angle:		equ $26	; angle of floor or rotation - 0 = flat; $40 = vertical left; $80 = ceiling; $C0 = vertical right
 ost_subtype:		equ $28	; object subtype
 ost_enemy_combo:	equ $3E	; number of enemies broken in a row (0-$A) (2 bytes)
 
