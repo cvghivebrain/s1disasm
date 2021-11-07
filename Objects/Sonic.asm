@@ -55,7 +55,7 @@ Sonic_Control:	; Routine 2
 		bne.s	@lock2		; if yes, branch
 		moveq	#0,d0
 		move.b	ost_status(a0),d0
-		andi.w	#6,d0
+		andi.w	#status_air+status_jump,d0 ; read status bits 1 and 2
 		move.w	Sonic_Modes(pc,d0.w),d1
 		jsr	Sonic_Modes(pc,d1.w)
 
@@ -83,10 +83,10 @@ Sonic_Control:	; Routine 2
 		rts	
 ; ===========================================================================
 Sonic_Modes:	index *,,2
-		ptr Sonic_Mode_Normal
-		ptr Sonic_Mode_Jump
-		ptr Sonic_Mode_Roll
-		ptr Sonic_Mode_Jump2
+		ptr Sonic_Mode_Normal	; status_jump_bit = 0; status_air_bit = 0
+		ptr Sonic_Mode_Air	; status_jump_bit = 0; status_air_bit = 1
+		ptr Sonic_Mode_Roll	; status_jump_bit = 1; status_air_bit = 0
+		ptr Sonic_Mode_Jump	; status_jump_bit = 1; status_air_bit = 1
 		
 ; ---------------------------------------------------------------------------
 ; Music	to play	after invincibility wears off
@@ -242,7 +242,7 @@ Sonic_Mode_Normal:
 		rts	
 ; ===========================================================================
 
-Sonic_Mode_Jump:
+Sonic_Mode_Air:
 		bsr.w	Sonic_JumpHeight
 		bsr.w	Sonic_JumpDirection
 		bsr.w	Sonic_LevelBound
@@ -268,7 +268,7 @@ Sonic_Mode_Roll:
 		rts	
 ; ===========================================================================
 
-Sonic_Mode_Jump2:
+Sonic_Mode_Jump:
 		bsr.w	Sonic_JumpHeight
 		bsr.w	Sonic_JumpDirection
 		bsr.w	Sonic_LevelBound
@@ -428,54 +428,56 @@ Sonic_InertiaLR:
 		asr.l	#8,d0
 		move.w	d0,ost_y_vel(a0)
 
-loc_1300C:
+Sonic_FindCorner:
 		move.b	ost_angle(a0),d0
 		addi.b	#$40,d0
-		bmi.s	locret_1307C
-		move.b	#$40,d1
-		tst.w	ost_inertia(a0)
-		beq.s	locret_1307C
-		bmi.s	loc_13024
-		neg.w	d1
+		bmi.s	@exit		; branch if angle is $40-$BF
+		move.b	#$40,d1		; d1 = 90-degree clockwise rotation
+		tst.w	ost_inertia(a0)	; get inertia
+		beq.s	@exit		; branch if 0
+		bmi.s	@neginertia	; branch if negative
+		neg.w	d1		; d1 = 90-degree anticlockwise rotation
 
-loc_13024:
+	@neginertia:
 		move.b	ost_angle(a0),d0
-		add.b	d1,d0
-		move.w	d0,-(sp)
-		bsr.w	Sonic_WalkSpeed
-		move.w	(sp)+,d0
-		tst.w	d1
-		bpl.s	locret_1307C
+		add.b	d1,d0		; d0 = angle with 90-degree rotation
+		move.w	d0,-(sp)	; store in stack
+		bsr.w	Sonic_CalcRoomAhead
+		move.w	(sp)+,d0	; restore from stack
+		tst.w	d1		; has Sonic hit a wall?
+		bpl.s	@exit		; if not, branch
 		asl.w	#8,d1
 		addi.b	#$20,d0
 		andi.b	#$C0,d0
-		beq.s	loc_13078
+		beq.s	@wall_below	; branch if wall is below
 		cmpi.b	#$40,d0
-		beq.s	loc_13066
+		beq.s	@wall_left	; branch if wall is left
 		cmpi.b	#$80,d0
-		beq.s	loc_13060
+		beq.s	@wall_above	; branch if wall is above
+		
+	@wall_right:
 		add.w	d1,ost_x_vel(a0)
-		bset	#5,ost_status(a0)
-		move.w	#0,ost_inertia(a0)
+		bset	#status_pushing_bit,ost_status(a0) ; start pushing when Sonic hits a wall
+		move.w	#0,ost_inertia(a0) ; stop Sonic moving
 		rts	
 ; ===========================================================================
 
-loc_13060:
+	@wall_above:
 		sub.w	d1,ost_y_vel(a0)
 		rts	
 ; ===========================================================================
 
-loc_13066:
+	@wall_left:
 		sub.w	d1,ost_x_vel(a0)
-		bset	#5,ost_status(a0)
+		bset	#status_pushing_bit,ost_status(a0)
 		move.w	#0,ost_inertia(a0)
 		rts	
 ; ===========================================================================
 
-loc_13078:
+	@wall_below:
 		add.w	d1,ost_y_vel(a0)
 
-locret_1307C:
+@exit:
 		rts	
 ; End of function Sonic_Move
 
@@ -649,7 +651,7 @@ loc_131F0:
 
 loc_131FA:
 		move.w	d1,ost_x_vel(a0)
-		bra.w	loc_1300C
+		bra.w	Sonic_FindCorner
 ; End of function Sonic_RollSpeed
 
 
@@ -903,13 +905,13 @@ Sonic_ChkRoll:
 Sonic_Jump:
 		move.b	(v_joypad_press).w,d0
 		andi.b	#btnABC,d0	; is A, B or C pressed?
-		beq.w	locret_1348E	; if not, branch
+		beq.w	@no_jump	; if not, branch
 		moveq	#0,d0
 		move.b	ost_angle(a0),d0 ; get floor angle
 		addi.b	#$80,d0		; invert it
 		bsr.w	Sonic_CalcHeadroom
 		cmpi.w	#6,d1		; is there room to jump?
-		blt.w	locret_1348E	; if not, branch
+		blt.w	@no_jump	; if not, branch
 		move.w	#$680,d2	; jump strength
 		btst	#status_underwater_bit,ost_status(a0) ; is Sonic underwater?
 		beq.s	@not_underwater	; if not, branch
@@ -935,18 +937,18 @@ Sonic_Jump:
 		move.b	#$13,ost_height(a0)
 		move.b	#9,ost_width(a0)
 		btst	#status_jump_bit,ost_status(a0) ; is Sonic rolling?
-		bne.s	loc_13490	; if yes, branch
+		bne.s	@is_rolling	; if yes, branch
 		move.b	#$E,ost_height(a0)
 		move.b	#7,ost_width(a0)
 		move.b	#id_Roll,ost_anim(a0) ; use "jumping" animation
 		bset	#status_jump_bit,ost_status(a0)
 		addq.w	#5,ost_y_pos(a0)
 
-locret_1348E:
+	@no_jump:
 		rts	
 ; ===========================================================================
 
-loc_13490:
+@is_rolling:
 		bset	#status_rolljump_bit,ost_status(a0)
 		rts	
 ; End of function Sonic_Jump
@@ -985,6 +987,7 @@ loc_134C4:
 locret_134D2:
 		rts	
 ; End of function Sonic_JumpHeight
+
 ; ---------------------------------------------------------------------------
 ; Subroutine to	slow Sonic walking up a	slope
 ; ---------------------------------------------------------------------------
@@ -1145,14 +1148,14 @@ Sonic_Floor:
 		beq.w	loc_136E2
 		cmpi.b	#$C0,d0
 		beq.w	loc_1373E
-		bsr.w	Sonic_HitWall
+		bsr.w	Sonic_FindCeilingLeft_Basic
 		tst.w	d1
 		bpl.s	loc_135F0
 		sub.w	d1,ost_x_pos(a0)
 		move.w	#0,ost_x_vel(a0)
 
 loc_135F0:
-		bsr.w	sub_14EB4
+		bsr.w	Sonic_FindCeilingRight_Basic
 		tst.w	d1
 		bpl.s	loc_13602
 		add.w	d1,ost_x_pos(a0)
@@ -1211,7 +1214,7 @@ locret_1367E:
 ; ===========================================================================
 
 loc_13680:
-		bsr.w	Sonic_HitWall
+		bsr.w	Sonic_FindCeilingLeft_Basic
 		tst.w	d1
 		bpl.s	loc_1369A
 		sub.w	d1,ost_x_pos(a0)
@@ -1251,14 +1254,14 @@ locret_136E0:
 ; ===========================================================================
 
 loc_136E2:
-		bsr.w	Sonic_HitWall
+		bsr.w	Sonic_FindCeilingLeft_Basic
 		tst.w	d1
 		bpl.s	loc_136F4
 		sub.w	d1,ost_x_pos(a0)
 		move.w	#0,ost_x_vel(a0)
 
 loc_136F4:
-		bsr.w	sub_14EB4
+		bsr.w	Sonic_FindCeilingRight_Basic
 		tst.w	d1
 		bpl.s	loc_13706
 		add.w	d1,ost_x_pos(a0)
@@ -1290,7 +1293,7 @@ locret_1373C:
 ; ===========================================================================
 
 loc_1373E:
-		bsr.w	sub_14EB4
+		bsr.w	Sonic_FindCeilingRight_Basic
 		tst.w	d1
 		bpl.s	loc_13758
 		add.w	d1,ost_x_pos(a0)
@@ -2191,20 +2194,29 @@ loc_14942:
 
 include_Sonic_3:	macro
 
+; ---------------------------------------------------------------------------
+; Subroutine to	calculate distance from Sonic to the wall in front of him
+
+; input:
+;	d0 = Sonic's floor angle rotated 90 degrees
+; output:
+;	d1 = distance to wall
+; ---------------------------------------------------------------------------
+
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 
-Sonic_WalkSpeed:
+Sonic_CalcRoomAhead:
 		move.l	ost_x_pos(a0),d3
 		move.l	ost_y_pos(a0),d2
 		move.w	ost_x_vel(a0),d1
 		ext.l	d1
 		asl.l	#8,d1
-		add.l	d1,d3
+		add.l	d1,d3		; d3 = predicted x pos. at next frame
 		move.w	ost_y_vel(a0),d1
 		ext.l	d1
 		asl.l	#8,d1
-		add.l	d1,d2
+		add.l	d1,d2		; d2 = predicted y pos. at next frame
 		swap	d2
 		swap	d3
 		move.b	d0,(v_angle_right).w
@@ -2231,19 +2243,19 @@ loc_14D20:
 
 loc_14D24:
 		andi.b	#$C0,d0
-		beq.w	loc_14DF0
+		beq.w	Sonic_FindFloor_Basic_2
 		cmpi.b	#$80,d0
-		beq.w	loc_14F7C
+		beq.w	Sonic_FindCeiling_Basic_2
 		andi.b	#$38,d1
 		bne.s	loc_14D3C
 		addq.w	#8,d2
 
 loc_14D3C:
 		cmpi.b	#$40,d0
-		beq.w	loc_1504A
-		bra.w	loc_14EBC
+		beq.w	Sonic_FindCeilingLeft_Basic_2
+		bra.w	Sonic_FindCeilingRight_Basic_2
 
-; End of function Sonic_WalkSpeed
+; End of function Sonic_CalcRoomAhead
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	calculate distance from Sonic's head to the ceiling
@@ -2251,8 +2263,7 @@ loc_14D3C:
 ; input:
 ;	d0 = Sonic's floor angle inverted
 ; output:
-;	d0 = distance from head to ceiling
-;	d1 = distance from feet to ceiling
+;	d1 = distance to ceiling
 ; ---------------------------------------------------------------------------
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
@@ -2263,11 +2274,11 @@ Sonic_CalcHeadroom:
 		move.b	d0,(v_angle_left).w
 		addi.b	#$20,d0
 		andi.b	#$C0,d0		; read only bits 6 and 7 of angle
-		cmpi.b	#$40,d0
+		cmpi.b	#$40,d0		; is Sonic on a left-facing wall?
 		beq.w	Sonic_FindCeilingLeft ; ceiling is to the left
-		cmpi.b	#$80,d0
+		cmpi.b	#$80,d0		; is Sonic on the ground?
 		beq.w	Sonic_FindCeiling ; ceiling is directly above
-		cmpi.b	#$C0,d0
+		cmpi.b	#$C0,d0		; is Sonic on a right-facing wall?
 		beq.w	Sonic_FindCeilingRight ; ceiling is to the right
 
 ; End of function Sonic_CalcHeadroom
@@ -2276,8 +2287,8 @@ Sonic_CalcHeadroom:
 ; Subroutine to	find distance to floor
 
 ; output:
-;	d0 = distance from bottom right to floor
-;	d1 = distance from bottom left to floor
+;	d0 = distance to floor (larger if on a slope)
+;	d1 = distance to floor (smaller if on a slope)
 ;	a1 = address within 256x256 mappings where Sonic is standing
 ;	(a1) = 16x16 tile number
 ;	(a4) = floor angle
@@ -2320,28 +2331,30 @@ Sonic_FindFloor:
 		move.w	(sp)+,d0	; retrieve distance from bottom right to floor from stack
 		move.b	#0,d2
 
-Sonic_FindLarger:
+Sonic_FindSmaller:
 		move.b	(v_angle_left).w,d3
 		cmp.w	d0,d1		; compare the output distances
 		ble.s	@no_swap	; branch if d0 > d1
 		move.b	(v_angle_right).w,d3
-		exg	d0,d1		; d1 is always the larger distance
+		exg	d0,d1		; d1 is always the smaller distance
 
 	@no_swap:
-		btst	#0,d3
-		beq.s	locret_14DE6
-		move.b	d2,d3
+		btst	#0,d3		; is bit 0 of angle set?
+		beq.s	@bit0_clear	; if not, branch
+		move.b	d2,d3		; clear d3 (this is copied to ost_angle)
 
-locret_14DE6:
+	@bit0_clear:
 		rts	
 
 ; End of function Sonic_FindFloor
 
 ; ===========================================================================
-		move.w	ost_y_pos(a0),d2
-		move.w	ost_x_pos(a0),d3
 
-loc_14DF0:
+Sonic_FindFloor_Basic:
+		move.w	ost_y_pos(a0),d2 ; unused
+		move.w	ost_x_pos(a0),d3 ; unused
+
+Sonic_FindFloor_Basic_2:
 		addi.w	#$A,d2
 		lea	(v_angle_right).w,a4
 		movea.w	#$10,a3
@@ -2372,8 +2385,7 @@ include_Sonic_4:	macro
 ; and the ceiling is to his right
 
 ; output:
-;	d0 = distance from head to ceiling
-;	d1 = distance from feet to ceiling
+;	d1 = distance to ceiling
 ;	a1 = address within 256x256 mappings where Sonic is standing
 ;	(a1) = 16x16 tile number
 ;	(a4) = floor angle
@@ -2416,7 +2428,7 @@ Sonic_FindCeilingRight:
 		move.w	(sp)+,d0	; retrieve distance from head to wall from stack
 		
 		move.b	#$C0,d2
-		bra.w	Sonic_FindLarger
+		bra.w	Sonic_FindSmaller
 
 ; End of function Sonic_FindCeilingRight
 
@@ -2424,11 +2436,11 @@ Sonic_FindCeilingRight:
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 
-sub_14EB4:
+Sonic_FindCeilingRight_Basic:
 		move.w	ost_y_pos(a0),d2
 		move.w	ost_x_pos(a0),d3
 
-loc_14EBC:
+Sonic_FindCeilingRight_Basic_2:
 		addi.w	#$A,d3
 		lea	(v_angle_right).w,a4
 		movea.w	#$10,a3
@@ -2438,7 +2450,7 @@ loc_14EBC:
 		move.b	#-$40,d2
 		bra.w	loc_14E0A
 
-; End of function sub_14EB4
+; End of function Sonic_FindCeilingRight_Basic
 
 		endm
 
@@ -2452,8 +2464,7 @@ include_Sonic_5:	macro
 ; Subroutine to	find distance to ceiling
 
 ; output:
-;	d0 = distance from top right to ceiling
-;	d1 = distance from top left to ceiling
+;	d1 = distance to ceiling
 ;	a1 = address within 256x256 mappings where Sonic is standing
 ;	(a1) = 16x16 tile number
 ;	(a4) = floor angle
@@ -2498,14 +2509,16 @@ Sonic_FindCeiling:
 		move.w	(sp)+,d0	; retrieve distance from top right to ceiling from stack
 		
 		move.b	#$80,d2
-		bra.w	Sonic_FindLarger
+		bra.w	Sonic_FindSmaller
 ; End of function Sonic_FindCeiling
 
 ; ===========================================================================
-		move.w	ost_y_pos(a0),d2
-		move.w	ost_x_pos(a0),d3
 
-loc_14F7C:
+Sonic_FindCeiling_Basic:
+		move.w	ost_y_pos(a0),d2 ; unused
+		move.w	ost_x_pos(a0),d3 ; unused
+
+Sonic_FindCeiling_Basic_2:
 		subi.w	#$A,d2
 		eori.w	#$F,d2
 		lea	(v_angle_right).w,a4
@@ -2529,8 +2542,7 @@ include_Sonic_6:	macro
 ; and the ceiling is to his left
 
 ; output:
-;	d0 = distance from head to ceiling
-;	d1 = distance from feet to ceiling
+;	d1 = distance to ceiling
 ;	a1 = address within 256x256 mappings where Sonic is standing
 ;	(a1) = 16x16 tile number
 ;	(a4) = floor angle
@@ -2572,7 +2584,7 @@ Sonic_FindCeilingLeft:
 		move.w	(sp)+,d0	; retrieve distance from head to wall from stack
 		
 		move.b	#$40,d2
-		bra.w	Sonic_FindLarger
+		bra.w	Sonic_FindSmaller
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	stop Sonic when	he jumps at a wall
@@ -2581,11 +2593,11 @@ Sonic_FindCeilingLeft:
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 
-Sonic_HitWall:
+Sonic_FindCeilingLeft_Basic:
 		move.w	ost_y_pos(a0),d2
 		move.w	ost_x_pos(a0),d3
 
-loc_1504A:
+Sonic_FindCeilingLeft_Basic_2:
 		subi.w	#$A,d3
 		eori.w	#$F,d3
 		lea	(v_angle_right).w,a4
@@ -2595,6 +2607,6 @@ loc_1504A:
 		bsr.w	FindWall
 		move.b	#$40,d2
 		bra.w	loc_14E0A
-; End of function Sonic_HitWall
+; End of function Sonic_FindCeilingLeft_Basic
 
 		endm
