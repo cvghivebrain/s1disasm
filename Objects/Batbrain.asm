@@ -118,7 +118,7 @@ Bat_Action:	; Routine 2
 @flyup:
 		bsr.w	SpeedToPos
 		subi.w	#$18,ost_y_vel(a0) ; make basaran fly upwards
-		bsr.w	ObjHitCeiling
+		bsr.w	FindCeilingObj
 		tst.w	d1		; has basaran hit the ceiling?
 		bpl.s	@noceiling	; if not, branch
 		sub.w	d1,ost_y_pos(a0)

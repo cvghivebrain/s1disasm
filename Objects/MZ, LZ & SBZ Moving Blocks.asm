@@ -144,7 +144,7 @@ MBlock_Slide:
 MBlock_Right_Now:
 		moveq	#0,d3
 		move.b	ost_actwidth(a0),d3
-		bsr.w	ObjHitWallRight
+		bsr.w	FindWallRightObj
 		tst.w	d1		; has the platform hit a wall?
 		bmi.s	@hit_wall	; if yes, branch
 		addq.w	#1,ost_x_pos(a0) ; move platform to the right
@@ -160,7 +160,7 @@ MBlock_Right_Now:
 MBlock_RightDrop_Now:
 		moveq	#0,d3
 		move.b	ost_actwidth(a0),d3
-		bsr.w	ObjHitWallRight
+		bsr.w	FindWallRightObj
 		tst.w	d1		; has the platform hit a wall?
 		bmi.s	@hit_wall	; if yes, branch
 		addq.w	#1,ost_x_pos(a0) ; move platform to the right

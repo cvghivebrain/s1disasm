@@ -10,7 +10,7 @@ Yad_ChkWall:
 		move.b	ost_actwidth(a0),d3
 		tst.w	ost_x_vel(a0)
 		bmi.s	loc_F82C
-		bsr.w	ObjHitWallRight
+		bsr.w	FindWallRightObj
 		tst.w	d1
 		bpl.s	loc_F836
 
@@ -21,7 +21,7 @@ loc_F828:
 
 loc_F82C:
 		not.w	d3
-		bsr.w	ObjHitWallLeft
+		bsr.w	FindWallLeftObj
 		tst.w	d1
 		bmi.s	loc_F828
 

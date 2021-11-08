@@ -82,14 +82,14 @@ Gar_AniFire:	; Routine 6
 		btst	#status_xflip_bit,ost_status(a0) ; is fireball moving left?
 		bne.s	@isright	; if not, branch
 		moveq	#-8,d3
-		bsr.w	ObjHitWallLeft
+		bsr.w	FindWallLeftObj
 		tst.w	d1
 		bmi.w	DeleteObject	; delete if the	fireball hits a	wall
 		rts	
 
 	@isright:
 		moveq	#8,d3
-		bsr.w	ObjHitWallRight
+		bsr.w	FindWallRightObj
 		tst.w	d1
 		bmi.w	DeleteObject
 		rts	

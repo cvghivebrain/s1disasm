@@ -103,7 +103,7 @@ locret_E430:
 
 LBall_Type04:
 		bset	#status_yflip_bit,ost_status(a0)
-		bsr.w	ObjHitCeiling
+		bsr.w	FindCeilingObj
 		tst.w	d1
 		bpl.s	locret_E452
 		move.b	#8,ost_subtype(a0)
@@ -132,7 +132,7 @@ locret_E474:
 LBall_Type06:
 		bset	#status_xflip_bit,ost_status(a0)
 		moveq	#-8,d3
-		bsr.w	ObjHitWallLeft
+		bsr.w	FindWallLeftObj
 		tst.w	d1
 		bpl.s	locret_E498
 		move.b	#8,ost_subtype(a0)
@@ -146,7 +146,7 @@ locret_E498:
 LBall_Type07:
 		bclr	#status_xflip_bit,ost_status(a0)
 		moveq	#8,d3
-		bsr.w	ObjHitWallRight
+		bsr.w	FindWallRightObj
 		tst.w	d1
 		bpl.s	locret_E4BC
 		move.b	#8,ost_subtype(a0)

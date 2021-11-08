@@ -159,7 +159,7 @@ PushB_OnLava2:
 	@wall_right:
 		moveq	#0,d3
 		move.b	ost_actwidth(a0),d3
-		jsr	(ObjHitWallRight).l
+		jsr	(FindWallRightObj).l
 		tst.w	d1		; has block touched a wall?
 		bmi.s	PushB_Stop	; if yes, branch
 		bra.s	loc_C0E6
@@ -169,7 +169,7 @@ PushB_OnLava2:
 		moveq	#0,d3
 		move.b	ost_actwidth(a0),d3
 		not.w	d3
-		jsr	(ObjHitWallLeft).l
+		jsr	(FindWallLeftObj).l
 		tst.w	d1		; has block touched a wall?
 		bmi.s	PushB_Stop	; if yes, branch
 		bra.s	loc_C0E6
@@ -318,7 +318,7 @@ loc_C230:
 		move.w	d0,-(sp)
 		moveq	#0,d3
 		move.b	ost_actwidth(a0),d3
-		jsr	(ObjHitWallRight).l
+		jsr	(FindWallRightObj).l
 		move.w	(sp)+,d0
 		tst.w	d1
 		bmi.w	locret_C2E4
@@ -335,7 +335,7 @@ loc_C268:
 		moveq	#0,d3
 		move.b	ost_actwidth(a0),d3
 		not.w	d3
-		jsr	(ObjHitWallLeft).l
+		jsr	(FindWallLeftObj).l
 		move.w	(sp)+,d0
 		tst.w	d1
 		bmi.s	locret_C2E4
