@@ -183,7 +183,7 @@ SkipSecurity:
 		movea.l	d0,a6							; clear a6
 		move.l	a6,usp							; set usp to $0
 
-		moveq	#$17,d1
+		moveq	#SetupVDP_end-SetupVDP-1,d1
 VDPInitLoop:
 		move.b	(a5)+,d5						; add $8000 to value
 		move.w	d5,(a4)							; move value to	VDP register
@@ -247,7 +247,7 @@ SetupValues:	dc.w $8000		; VDP register start number
 		dc.l vdp_data_port	; VDP data
 		dc.l vdp_control_port	; VDP control
 
-		dc.b 4			; VDP $80 - 8-colour mode
+SetupVDP:	dc.b 4			; VDP $80 - 8-colour mode
 		dc.b $14		; VDP $81 - Megadrive mode, DMA enable
 		dc.b ($C000>>10)	; VDP $82 - foreground nametable address
 		dc.b ($F000>>10)	; VDP $83 - window nametable address
@@ -269,6 +269,7 @@ SetupValues:	dc.w $8000		; VDP register start number
 		dc.w $FFFF		; VDP $93/94 - DMA length
 		dc.w 0			; VDP $95/96 - DMA source
 		dc.b $80		; VDP $97 - DMA fill VRAM
+SetupVDP_end:
 		dc.l $40000080		; VRAM address 0
 
 Z80_Startup:
@@ -344,9 +345,9 @@ CheckSumCheck:
 		bne.w	CheckSumError	; if they don't match, branch
 
 	CheckSumOk:
-		lea	($FFFFFE00).w,a6
+		lea	(v_keep_after_reset).w,a6 ; $FFFFFE00
 		moveq	#0,d7
-		move.w	#$7F,d6
+		move.w	#(($FFFFFFFF-v_keep_after_reset+1)/4)-1,d6
 	@clearRAM:
 		move.l	d7,(a6)+
 		dbf	d6,@clearRAM	; clear RAM ($FE00-$FFFF)
@@ -359,7 +360,7 @@ CheckSumCheck:
 GameInit:
 		lea	($FF0000).l,a6
 		moveq	#0,d7
-		move.w	#$3F7F,d6
+		move.w	#((v_keep_after_reset&$FFFF)/4)-1,d6
 	@clearRAM:
 		move.l	d7,(a6)+
 		dbf	d6,@clearRAM	; clear RAM ($0000-$FDFF)
@@ -5908,13 +5909,13 @@ Ledge_SlopeData:
 
 		include "Objects\Title Cards.asm" ; TitleCard
 		include "Objects\Game Over & Time Over.asm" ; GameOverCard
-		include "Objects\Sonic Got Through Title Card.asm" ; GotThroughCard
+		include "Objects\Sonic Has Passed Title Card.asm" ; HasPassedCard
 
 		include "Objects\Special Stage Results.asm" ; SSResult
 		include "Objects\Special Stage Results Chaos Emeralds.asm" ; SSRChaos
 		include "Mappings\Title Cards.asm" ; Map_Card
 		include "Mappings\Game Over & Time Over.asm" ; Map_Over
-		include "Mappings\Title Cards Sonic Has Passed.asm" ; Map_Got
+		include "Mappings\Title Cards Sonic Has Passed.asm" ; Map_Has
 		include "Mappings\Special Stage Results.asm" ; Map_SSR
 		include "Mappings\Special Stage Results Chaos Emeralds.asm" ; Map_SSRC
 

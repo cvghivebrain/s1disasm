@@ -109,7 +109,7 @@ Obj_Index:
 		ptr RingLoss
 		ptr ShieldItem		; $38
 		ptr GameOverCard
-		ptr GotThroughCard
+		ptr HasPassedCard
 		ptr PurpleRock
 		ptr SmashWall		; $3C
 		ptr BossGreenHill

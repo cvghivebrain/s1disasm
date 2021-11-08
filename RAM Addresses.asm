@@ -57,13 +57,13 @@ v_ost_all:			rs.b sizeof_ost*countof_ost ; $FFFFD000 ; object variable space ($4
 	v_ost_splash:		equ v_ost_all+(sizeof_ost*$C) ; splash
 	v_ost_bubble:		equ v_ost_all+(sizeof_ost*$D) ; bubble from Sonic's mouth
 	v_ost_end_emeralds:	equ v_ost_all+(sizeof_ost*$10) ; ending chaos emeralds
-	v_ost_gotthrough1:	equ v_ost_all+(sizeof_ost*$17) ; got through act - "Sonic has"
-	v_ost_gotthrough2:	equ v_ost_all+(sizeof_ost*$18) ; got through act - "passed"
-	v_ost_gotthrough3:	equ v_ost_all+(sizeof_ost*$19) ; got through act - "act" 1/2/3
-	v_ost_gotthrough4:	equ v_ost_all+(sizeof_ost*$1A) ; got through act - score
-	v_ost_gotthrough5:	equ v_ost_all+(sizeof_ost*$1B) ; got through act - time bonus
-	v_ost_gotthrough6:	equ v_ost_all+(sizeof_ost*$1C) ; got through act - ring bonus
-	v_ost_gotthrough7:	equ v_ost_all+(sizeof_ost*$1D) ; got through act - oval
+	v_ost_haspassed1:	equ v_ost_all+(sizeof_ost*$17) ; has passed act - "Sonic has"
+	v_ost_haspassed2:	equ v_ost_all+(sizeof_ost*$18) ; has passed act - "passed"
+	v_ost_haspassed3:	equ v_ost_all+(sizeof_ost*$19) ; has passed act - "act" 1/2/3
+	v_ost_haspassed4:	equ v_ost_all+(sizeof_ost*$1A) ; has passed act - score
+	v_ost_haspassed5:	equ v_ost_all+(sizeof_ost*$1B) ; has passed act - time bonus
+	v_ost_haspassed6:	equ v_ost_all+(sizeof_ost*$1C) ; has passed act - ring bonus
+	v_ost_haspassed7:	equ v_ost_all+(sizeof_ost*$1D) ; has passed act - oval
 	v_ost_watersurface1:	equ v_ost_all+(sizeof_ost*$1E) ; LZ water surface
 	v_ost_watersurface2:	equ v_ost_all+(sizeof_ost*$1F) ; LZ water surface
 	; Special stage results
@@ -274,6 +274,8 @@ v_respawn_list:			rs.w $100 ; $FFFFFC00 ; object state list
 
 v_stack:			equ $FFFFFD00 ; stack
 v_stack_pointer:		equ $FFFFFE00 ; initial stack pointer - items are added to the stack backwards from this address
+
+v_keep_after_reset:		equ $FFFFFE00 ; everything after this address is kept in RAM after a soft reset
 
 				rsset $FFFFFE02
 f_restart:			rs.w 1 ; $FFFFFE02 ; flag set to end/restart level

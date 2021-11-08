@@ -1,18 +1,18 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - "SONIC HAS PASSED" title card
 ; ---------------------------------------------------------------------------
-Map_Got:	index *
-		ptr frame_got_sonichas
-		ptr frame_got_passed
-		ptr frame_got_score
-		ptr frame_got_timebonus
-		ptr frame_got_ringbonus
+Map_Has:	index *
+		ptr frame_has_sonichas
+		ptr frame_has_passed
+		ptr frame_has_score
+		ptr frame_has_timebonus
+		ptr frame_has_ringbonus
 		ptr frame_card_oval
 		ptr frame_card_act1
 		ptr frame_card_act2
 		ptr frame_card_act3
 		
-frame_got_sonichas:
+frame_has_sonichas:
 		spritemap			; SONIC HAS
 		piece -$48, -8, 2x2, $3E
 		piece -$38, -8, 2x2, $32
@@ -24,7 +24,7 @@ frame_got_sonichas:
 		piece $30, -8, 2x2, $3E
 		endsprite
 		
-frame_got_passed:
+frame_has_passed:
 		spritemap			; PASSED
 		piece -$30, -8, 2x2, $36
 		piece -$20, -8, 2x2, 0
@@ -34,7 +34,7 @@ frame_got_passed:
 		piece $20, -8, 2x2, $C
 		endsprite
 		
-frame_got_score:
+frame_has_score:
 		spritemap			; SCORE
 		piece -$50, -8, 4x2, $14A
 		piece -$30, -8, 1x2, $162
@@ -44,7 +44,7 @@ frame_got_score:
 		piece -$33, -1, 2x1, $6E, xflip, yflip
 		endsprite
 		
-frame_got_timebonus:
+frame_has_timebonus:
 		spritemap			; TIME BONUS
 		piece -$50, -8, 4x2, $15A
 		piece -$27, -8, 4x2, $66
@@ -55,7 +55,7 @@ frame_got_timebonus:
 		piece $48, -8, 1x2, $170
 		endsprite
 		
-frame_got_ringbonus:
+frame_has_ringbonus:
 		spritemap			; RING BONUS
 		piece -$50, -8, 4x2, $152
 		piece -$27, -8, 4x2, $66
