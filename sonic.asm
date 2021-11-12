@@ -2941,7 +2941,14 @@ Demo_SYZ:	incbin	"demodata\Intro - SYZ.bin"
 Demo_SS:	incbin	"demodata\Intro - Special Stage.bin"
 ; ===========================================================================
 
-		include "Includes\Special Stage.asm"
+		include "Includes\GM_Special.asm"
+
+Pal_SSCyc1:	incbin	"Palettes\Cycle - Special Stage 1.bin"
+		even
+Pal_SSCyc2:	incbin	"Palettes\Cycle - Special Stage 2.bin"
+		even
+
+		include_Special_2				; Includes\GM_Special.asm
 
 ; ---------------------------------------------------------------------------
 ; Continue screen
@@ -5727,7 +5734,7 @@ word_16516:	dc.w $10, $1C80
 
 		include "Objects\_ReactToItem, HurtSonic & KillSonic.asm"
 
-		include_Special_2				; Includes\Special Stage.asm
+		include_Special_3				; Includes\Special Stage.asm
 
 ; ---------------------------------------------------------------------------
 ; Special stage start locations
@@ -5742,7 +5749,7 @@ SS_StartLoc:
 		incbin	"startpos\ss6.bin"
 		even
 
-		include_Special_3				; Includes\Special Stage.asm
+		include_Special_4				; Includes\Special Stage.asm
 
 ; ---------------------------------------------------------------------------
 ; Special stage	mappings and VRAM pointers
@@ -5899,9 +5906,9 @@ ArtLoadCues:	include "Pattern Load Cues.asm"
 
 		align	$200,$FF
 		if Revision=0
-		nemfile	Nem_SegaLogo
-Eni_SegaLogo:	incbin	"tilemaps\Sega Logo.bin"		; large Sega logo (mappings)
-		even
+			nemfile	Nem_SegaLogo
+	Eni_SegaLogo:	incbin	"tilemaps\Sega Logo.bin"		; large Sega logo (mappings)
+			even
 		else
 			dcb.b	$300,$FF
 			nemfile	Nem_SegaLogo
@@ -5929,16 +5936,16 @@ Art_Sonic:	incbin	"Graphics\Sonic.bin"			; Sonic
 ; Compressed graphics - various
 ; ---------------------------------------------------------------------------
 		if Revision=0
-		nemfile	Nem_Smoke
-		nemfile	Nem_SyzSparkle
+			nemfile	Nem_Smoke
+			nemfile	Nem_SyzSparkle
 		endc
 		nemfile	Nem_Shield
 		nemfile	Nem_Stars
 		if Revision=0
-		nemfile	Nem_LzSonic
-		nemfile	Nem_UnkFire
-		nemfile	Nem_Warp
-		nemfile	Nem_Goggle
+			nemfile	Nem_LzSonic
+			nemfile	Nem_UnkFire
+			nemfile	Nem_Warp
+			nemfile	Nem_Goggle
 		endc
 
 		include "Mappings\Special Stage Walls.asm"	; Map_SSWalls
@@ -6165,9 +6172,9 @@ Kos_EndFlowers:	incbin	"Graphics - Compressed\Ending Flowers.kos" ; ending seque
 		nemfile	Nem_EndStH
 
 		if Revision=0
-		dcb.b $104,$FF					; why?
+			dcb.b $104,$FF				; why?
 		else
-		dcb.b $40,$FF
+			dcb.b $40,$FF
 		endc
 ; ---------------------------------------------------------------------------
 ; Collision data
@@ -6410,9 +6417,9 @@ byte_69B84:	dc.b 0,	0, 0, 0
 Level_SYZ1:	incbin	"levels\syz1.bin"
 		even
 Level_SYZbg:	if Revision=0
-		incbin	"levels\syzbg.bin"
+			incbin	"levels\syzbg.bin"
 		else
-		incbin	"levels\syzbg (JP1).bin"
+			incbin	"levels\syzbg (JP1).bin"
 		endc
 		even
 byte_69C7E:	dc.b 0,	0, 0, 0
@@ -6559,9 +6566,9 @@ ObjPosSBZPlatform_Index:
 ObjPos_Null:	endobj
 
 		if Revision=0
-		dcb.b $62A,$FF
+			dcb.b $62A,$FF
 		else
-		dcb.b $63C,$FF
+			dcb.b $63C,$FF
 		endc
 		;dcb.b ($10000-(*%$10000))-(EndOfRom-SoundDriver),$FF
 

@@ -208,18 +208,18 @@ SS_ToSegaScreen:
 		endc
 
 ; ---------------------------------------------------------------------------
-; Special stage	background loading subroutine
+; Special stage	background mappings loading subroutine
 ; ---------------------------------------------------------------------------
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 
 SS_BGLoad:
-		lea	($FF0000).l,a1
+		lea	($FF0000).l,a1	; buffer
 		lea	(Eni_SSBg1).l,a0 ; load	mappings for the birds and fish
 		move.w	#tile_Nem_SSBgFish+tile_pal3,d0
 		bsr.w	EniDec
-		move.l	#$50000001,d3
+		locVRAM	$5000,d3
 		lea	($FF0080).l,a2
 		moveq	#6,d7
 
@@ -270,12 +270,12 @@ loc_491C:
 		move.w	#0+tile_pal3,d0
 		bsr.w	EniDec
 		lea	($FF0000).l,a1
-		move.l	#$40000003,d0
+		locVRAM	$C000,d0
 		moveq	#$3F,d1
 		moveq	#$1F,d2
 		bsr.w	TilemapToVRAM
 		lea	($FF0000).l,a1
-		move.l	#$50000003,d0
+		locVRAM	$D000,d0
 		moveq	#$3F,d1
 		moveq	#$3F,d2
 		bsr.w	TilemapToVRAM
@@ -416,10 +416,11 @@ SS_BG_Modes:				; fg namespace address in VRAM, VScroll value
 		dc.b $A000>>10, 1	; $C - bird
 		even
 
-Pal_SSCyc1:	incbin	"Palettes\Cycle - Special Stage 1.bin"
-		even
-Pal_SSCyc2:	incbin	"Palettes\Cycle - Special Stage 2.bin"
-		even
+; ---------------------------------------------------------------------------
+; Special Stage, part 2
+; ---------------------------------------------------------------------------
+
+include_Special_2:	macro
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	make the special stage background animated
@@ -540,12 +541,14 @@ SS_Bubble_WobbleData:
 		dc.b 2, 3
 		dc.b 2, -1
 		even
+		
+		endm
 
 ; ---------------------------------------------------------------------------
-; Special Stage, part 2
+; Special Stage, part 3
 ; ---------------------------------------------------------------------------
 
-include_Special_2:	macro
+include_Special_3:	macro
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	show the special stage layout
@@ -645,7 +648,7 @@ loc_1B210:
 		blo.s	loc_1B268
 		cmpi.w	#$170,d2
 		bhs.s	loc_1B268
-		lea	($FF4000).l,a5
+		lea	(v_ss_layout).l,a5
 		lsl.w	#3,d0
 		lea	(a5,d0.w),a5
 		movea.l	(a5)+,a1
@@ -963,7 +966,7 @@ SS_AniEmeraldSparks:
 		bne.s	locret_1B60C
 		clr.l	(a0)
 		clr.l	4(a0)
-		move.b	#4,($FFFFD024).w
+		move.b	#id_Obj09_ExitStage,(v_ost_player+ost_routine).w
 		play.w	1, jsr, sfx_Goal		; play special stage GOAL sound
 
 locret_1B60C:
@@ -1008,10 +1011,10 @@ SS_LayoutIndex:
 
 
 ; ---------------------------------------------------------------------------
-; Special Stage, part 2
+; Special Stage, part 4
 ; ---------------------------------------------------------------------------
 
-include_Special_3:	macro
+include_Special_4:	macro
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	load special stage layout
@@ -1025,10 +1028,10 @@ SS_Load:
 		move.b	(v_last_ss_levelid).w,d0 ; load number of last special stage entered
 		addq.b	#1,(v_last_ss_levelid).w
 		cmpi.b	#6,(v_last_ss_levelid).w
-		blo.s	SS_ChkEmldNum
+		blo.s	@ss_valid
 		move.b	#0,(v_last_ss_levelid).w ; reset if higher than 6
 
-SS_ChkEmldNum:
+	@ss_valid:
 		cmpi.b	#6,(v_emeralds).w ; do you have all emeralds?
 		beq.s	SS_LoadData	; if yes, branch
 		moveq	#0,d1
@@ -1049,51 +1052,51 @@ SS_ChkEmldRepeat:
 SS_LoadData:
 		lsl.w	#2,d0
 		lea	SS_StartLoc(pc,d0.w),a1
-		move.w	(a1)+,(v_ost_player+ost_x_pos).w
+		move.w	(a1)+,(v_ost_player+ost_x_pos).w	; set Sonic's start position
 		move.w	(a1)+,(v_ost_player+ost_y_pos).w
 		movea.l	SS_LayoutIndex(pc,d0.w),a0
-		lea	($FF4000).l,a1
+		lea	(v_ss_layout).l,a1			; load level layout ($FF4000)
 		move.w	#0,d0
 		jsr	(EniDec).l
 		lea	($FF0000).l,a1
-		move.w	#$FFF,d0
+		move.w	#($4000/4)-1,d0
 
 SS_ClrRAM3:
 		clr.l	(a1)+
-		dbf	d0,SS_ClrRAM3
+		dbf	d0,SS_ClrRAM3				; clear RAM (0-$3FFF)
 
 		lea	($FF1020).l,a1
-		lea	($FF4000).l,a0
-		moveq	#$3F,d1
+		lea	(v_ss_layout).l,a0
+		moveq	#$40-1,d1
 
-loc_1B6F6:
-		moveq	#$3F,d2
+	@loop_row:
+		moveq	#$40-1,d2
 
-loc_1B6F8:
+	@loop_bytes:
 		move.b	(a0)+,(a1)+
-		dbf	d2,loc_1B6F8
+		dbf	d2,@loop_bytes
 
 		lea	$40(a1),a1
-		dbf	d1,loc_1B6F6
+		dbf	d1,@loop_row				; copy layout to RAM in blocks of $40 bytes with $40 blank between
 
 		lea	($FF4008).l,a1
 		lea	(SS_MapIndex).l,a0
 		moveq	#$4D,d1
 
-loc_1B714:
+	@loop_map_ptrs:
 		move.l	(a0)+,(a1)+
 		move.w	#0,(a1)+
 		move.b	-4(a0),-1(a1)
 		move.w	(a0)+,(a1)+
-		dbf	d1,loc_1B714
+		dbf	d1,@loop_map_ptrs			; copy mappings pointers & VRAM settings to RAM
 
 		lea	($FF4400).l,a1
-		move.w	#$3F,d1
+		move.w	#($100/4)-1,d1
 
 loc_1B730:
 
 		clr.l	(a1)+
-		dbf	d1,loc_1B730
+		dbf	d1,loc_1B730				; clear RAM ($4400-$44FF)
 
 		rts	
 ; End of function SS_Load

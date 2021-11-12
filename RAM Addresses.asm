@@ -402,4 +402,8 @@ unused_fff9:			rs.b 1
 f_debug_enable:			rs.w 1 ; $FFFFFFFA ; flag set when debug mode is enabled (high byte is set to 1, but it's read as a word)
 v_checksum_pass:		rs.l 1 ; $FFFFFFFC ; set to the text string "init" when checksum is passed
 
+; Special Stages
+
+v_ss_layout:			equ $FF4000 ; special stage layout ($1000 bytes)
+
 		popo		; restore options

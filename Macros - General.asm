@@ -142,7 +142,7 @@ locVRAM:	macro loc,controlport
 		if narg=1
 		move.l	#($40000000+((loc&$3FFF)<<16)+((loc&$C000)>>14)),(vdp_control_port).l
 		else
-		move.l	#($40000000+((loc&$3FFF)<<16)+((loc&$C000)>>14)),controlport
+		move.l	#($40000000+((loc&$3FFF)<<16)+((loc&$C000)>>14)),\controlport
 		endc
 		endm
 
