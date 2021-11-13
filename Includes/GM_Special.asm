@@ -10,7 +10,7 @@ GM_Special:
 		move.w	#$8B03,(a6)	; line scroll mode
 		move.w	#$8004,(a6)	; 8-colour mode
 		move.w	#$8A00+175,(v_vdp_hint_counter).w
-		move.w	#$9011,(a6)	; 128-cell hscroll size
+		move.w	#$9011,(a6)	; 64x64 cell plane size
 		move.w	(v_vdp_mode_buffer).w,d0
 		andi.b	#$BF,d0
 		move.w	d0,(vdp_control_port).l
@@ -151,7 +151,7 @@ loc_47D4:
 		lea	(vdp_control_port).l,a6
 		move.w	#$8200+(vram_fg>>10),(a6) ; set foreground nametable address
 		move.w	#$8400+(vram_bg>>13),(a6) ; set background nametable address
-		move.w	#$9001,(a6)		; 64-cell hscroll size
+		move.w	#$9001,(a6)		; 64x32 cell plane size
 		bsr.w	ClearScreen
 		locVRAM	$B000
 		lea	(Nem_TitleCard).l,a0 ; load title card patterns
@@ -213,14 +213,18 @@ SS_ToSegaScreen:
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
+; Fish/bird dimensions in cells
+fish_width:	equ 8
+fish_height:	equ 8
+sizeof_fish:	equ fish_width*fish_height*2
 
 SS_BGLoad:
-		lea	($FF0000).l,a1	; buffer
+		lea	(v_ss_enidec_buffer).l,a1	; buffer
 		lea	(Eni_SSBg1).l,a0 ; load	mappings for the birds and fish
 		move.w	#tile_Nem_SSBgFish+tile_pal3,d0
 		bsr.w	EniDec
 		locVRAM	$5000,d3
-		lea	($FF0080).l,a2
+		lea	(v_ss_enidec_buffer+sizeof_fish).l,a2
 		moveq	#6,d7
 
 loc_48BE:
@@ -240,41 +244,41 @@ loc_48CE:
 		bne.s	loc_48E2
 		cmpi.w	#6,d7
 		bne.s	loc_48F2
-		lea	($FF0000).l,a1
+		lea	(v_ss_enidec_buffer).l,a1
 
 loc_48E2:
 		movem.l	d0-d4,-(sp)
-		moveq	#7,d1
-		moveq	#7,d2
+		moveq	#fish_width-1,d1
+		moveq	#fish_height-1,d2
 		bsr.w	TilemapToVRAM
 		movem.l	(sp)+,d0-d4
 
 loc_48F2:
-		addi.l	#$100000,d0
+		addi.l	#(fish_width*2)<<16,d0			; skip 8 cells ($10 bytes)
 		dbf	d5,loc_48CE
-		addi.l	#$3800000,d0
+		addi.l	#((fish_height-1)*$80)<<16,d0		; skip 7 rows ($380 byes)
 		eori.b	#1,d4
 		dbf	d6,loc_48CC
-		addi.l	#$10000000,d3
+		addi.l	#$1000<<16,d3
 		bpl.s	loc_491C
 		swap	d3
 		addi.l	#$C000,d3
 		swap	d3
 
 loc_491C:
-		adda.w	#$80,a2
+		adda.w	#sizeof_fish,a2
 		dbf	d7,loc_48BE
 		
-		lea	($FF0000).l,a1
+		lea	(v_ss_enidec_buffer).l,a1
 		lea	(Eni_SSBg2).l,a0 ; load	mappings for the clouds
 		move.w	#0+tile_pal3,d0
 		bsr.w	EniDec
-		lea	($FF0000).l,a1
+		lea	(v_ss_enidec_buffer).l,a1
 		locVRAM	$C000,d0
 		moveq	#$3F,d1
 		moveq	#$1F,d2
 		bsr.w	TilemapToVRAM
-		lea	($FF0000).l,a1
+		lea	(v_ss_enidec_buffer).l,a1
 		locVRAM	$D000,d0
 		moveq	#$3F,d1
 		moveq	#$3F,d2
@@ -648,7 +652,7 @@ loc_1B210:
 		blo.s	loc_1B268
 		cmpi.w	#$170,d2
 		bhs.s	loc_1B268
-		lea	(v_ss_layout).l,a5
+		lea	(v_ss_sprite_info).l,a5
 		lsl.w	#3,d0
 		lea	(a5,d0.w),a5
 		movea.l	(a5)+,a1
@@ -689,64 +693,67 @@ loc_1B288:
 
 
 SS_AniWallsRings:
-		lea	($FF400C).l,a1
+		lea	(v_ss_sprite_info+$C).l,a1		; frame id of first wall
 		moveq	#0,d0
-		move.b	(v_ss_angle).w,d0
-		lsr.b	#2,d0
-		andi.w	#$F,d0
-		moveq	#$23,d1
+		move.b	(v_ss_angle).w,d0			; get angle
+		lsr.b	#2,d0					; divide by 4
+		andi.w	#$F,d0					; read only low nybble
+		moveq	#((SS_MapIndex_wall_end-SS_MapIndex)/6)-1,d1 ; $23
 
-loc_1B2A4:
-		move.w	d0,(a1)
+	@wall_loop:
+		move.w	d0,(a1)					; change frame id to appropriately rotated wall
 		addq.w	#8,a1
-		dbf	d1,loc_1B2A4
+		dbf	d1,@wall_loop
 
-		lea	($FF4005).l,a1
-		subq.b	#1,(v_syncani_1_time).w
-		bpl.s	loc_1B2C8
-		move.b	#7,(v_syncani_1_time).w
-		addq.b	#1,(v_syncani_1_frame).w
-		andi.b	#3,(v_syncani_1_frame).w
+		lea	(v_ss_sprite_info+5).l,a1		; frame id of first sprite (it's blank, but that doesn't matter)
+		subq.b	#1,(v_syncani_1_time).w			; decrement animation timer
+		bpl.s	@not0_1					; branch if time remains
+		move.b	#7,(v_syncani_1_time).w			; reset to 7
+		addq.b	#1,(v_syncani_1_frame).w		; increment frame
+		andi.b	#3,(v_syncani_1_frame).w		; there are 4 frames max
 
-loc_1B2C8:
-		move.b	(v_syncani_1_frame).w,$1D0(a1)
+	@not0_1:
+		move.b	(v_syncani_1_frame).w,((((SS_Map_Ring-SS_MapIndex)/6)+1)*8)(a1) ; $1D0(a1) ; update ring frame
+		
 		subq.b	#1,(v_syncani_2_time).w
-		bpl.s	loc_1B2E4
+		bpl.s	@not0_2
 		move.b	#7,(v_syncani_2_time).w
 		addq.b	#1,(v_syncani_2_frame).w
 		andi.b	#1,(v_syncani_2_frame).w
 
-loc_1B2E4:
+	@not0_2:
 		move.b	(v_syncani_2_frame).w,d0
-		move.b	d0,$138(a1)
-		move.b	d0,$160(a1)
-		move.b	d0,$148(a1)
-		move.b	d0,$150(a1)
-		move.b	d0,$1D8(a1)
-		move.b	d0,$1E0(a1)
-		move.b	d0,$1E8(a1)
-		move.b	d0,$1F0(a1)
-		move.b	d0,$1F8(a1)
-		move.b	d0,$200(a1)
+		move.b	d0,((((SS_Map_GOAL-SS_MapIndex)/6)+1)*8)(a1) ; $138(a1)
+		move.b	d0,((((SS_Map_RedWhite-SS_MapIndex)/6)+1)*8)(a1) ; $160(a1)
+		move.b	d0,((((SS_Map_Up-SS_MapIndex)/6)+1)*8)(a1) ; $148(a1)
+		move.b	d0,((((SS_Map_Down-SS_MapIndex)/6)+1)*8)(a1) ; $150(a1)
+		move.b	d0,((((SS_Map_Em1-SS_MapIndex)/6)+1)*8)(a1) ; $1D8(a1)
+		move.b	d0,((((SS_Map_Em2-SS_MapIndex)/6)+1)*8)(a1) ; $1E0(a1)
+		move.b	d0,((((SS_Map_Em3-SS_MapIndex)/6)+1)*8)(a1) ; $1E8(a1)
+		move.b	d0,((((SS_Map_Em4-SS_MapIndex)/6)+1)*8)(a1) ; $1F0(a1)
+		move.b	d0,((((SS_Map_Em5-SS_MapIndex)/6)+1)*8)(a1) ; $1F8(a1)
+		move.b	d0,((((SS_Map_Em6-SS_MapIndex)/6)+1)*8)(a1) ; $200(a1)
+		
 		subq.b	#1,(v_syncani_3_time).w
-		bpl.s	loc_1B326
+		bpl.s	@not0_3
 		move.b	#4,(v_syncani_3_time).w
 		addq.b	#1,(v_syncani_3_frame).w
 		andi.b	#3,(v_syncani_3_frame).w
 
-loc_1B326:
+	@not0_3:
 		move.b	(v_syncani_3_frame).w,d0
-		move.b	d0,$168(a1)
-		move.b	d0,$170(a1)
-		move.b	d0,$178(a1)
-		move.b	d0,$180(a1)
+		move.b	d0,((((SS_Map_Glass1-SS_MapIndex)/6)+1)*8)(a1) ; $168(a1)
+		move.b	d0,((((SS_Map_Glass2-SS_MapIndex)/6)+1)*8)(a1) ; $170(a1)
+		move.b	d0,((((SS_Map_Glass3-SS_MapIndex)/6)+1)*8)(a1) ; $178(a1)
+		move.b	d0,((((SS_Map_Glass4-SS_MapIndex)/6)+1)*8)(a1) ; $180(a1)
+		
 		subq.b	#1,(v_syncani_0_time).w
-		bpl.s	loc_1B350
+		bpl.s	@not0_0
 		move.b	#7,(v_syncani_0_time).w
 		subq.b	#1,(v_syncani_0_frame).w
 		andi.b	#7,(v_syncani_0_frame).w
 
-loc_1B350:
+	@not0_0:
 		lea	($FF4016).l,a1
 		lea	(SS_WaRiVramSet).l,a0
 		moveq	#0,d0
@@ -1055,7 +1062,7 @@ SS_LoadData:
 		move.w	(a1)+,(v_ost_player+ost_x_pos).w	; set Sonic's start position
 		move.w	(a1)+,(v_ost_player+ost_y_pos).w
 		movea.l	SS_LayoutIndex(pc,d0.w),a0
-		lea	(v_ss_layout).l,a1			; load level layout ($FF4000)
+		lea	(v_ss_layout_buffer).l,a1		; load level layout ($FF4000)
 		move.w	#0,d0
 		jsr	(EniDec).l
 		lea	($FF0000).l,a1
@@ -1066,7 +1073,7 @@ SS_ClrRAM3:
 		dbf	d0,SS_ClrRAM3				; clear RAM (0-$3FFF)
 
 		lea	($FF1020).l,a1
-		lea	(v_ss_layout).l,a0
+		lea	(v_ss_layout_buffer).l,a0
 		moveq	#$40-1,d1
 
 	@loop_row:
@@ -1077,17 +1084,17 @@ SS_ClrRAM3:
 		dbf	d2,@loop_bytes
 
 		lea	$40(a1),a1
-		dbf	d1,@loop_row				; copy layout to RAM in blocks of $40 bytes with $40 blank between
+		dbf	d1,@loop_row				; copy layout to RAM in blocks of $40 bytes, with $40 blank between each block
 
-		lea	($FF4008).l,a1
+		lea	(v_ss_sprite_info+8).l,a1
 		lea	(SS_MapIndex).l,a0
-		moveq	#$4D,d1
+		moveq	#((SS_MapIndex_end-SS_MapIndex)/6)-1,d1
 
 	@loop_map_ptrs:
-		move.l	(a0)+,(a1)+
-		move.w	#0,(a1)+
-		move.b	-4(a0),-1(a1)
-		move.w	(a0)+,(a1)+
+		move.l	(a0)+,(a1)+				; copy mappings pointer
+		move.w	#0,(a1)+				; create blank word
+		move.b	-4(a0),-1(a1)				; copy frame id to low byte of blank word
+		move.w	(a0)+,(a1)+				; copy tile id
 		dbf	d1,@loop_map_ptrs			; copy mappings pointers & VRAM settings to RAM
 
 		lea	($FF4400).l,a1

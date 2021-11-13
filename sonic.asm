@@ -265,7 +265,7 @@ SetupVDP:	dc.b 4						; VDP $80 - 8-colour mode
 		dc.b ($DC00>>10)				; VDP $8D - hscroll table address
 		dc.b 0						; VDP $8E - unused
 		dc.b 1						; VDP $8F - VDP increment
-		dc.b 1						; VDP $90 - 64 cell hscroll size
+		dc.b 1						; VDP $90 - 64x32 cell plane size
 		dc.b 0						; VDP $91 - window h position
 		dc.b 0						; VDP $92 - window v position
 		dc.w $FFFF					; VDP $93/94 - DMA length
@@ -1060,7 +1060,7 @@ VDPSetupArray:	dc.w $8004					; 8-colour mode
 		dc.w $8D00+(vram_hscroll>>10)			; set background hscroll address
 		dc.w $8E00					; unused
 		dc.w $8F02					; set VDP increment size
-		dc.w $9001					; 64-cell hscroll size
+		dc.w $9001					; 64x32 cell plane size
 		dc.w $9100					; window horizontal position
 		dc.w $9200					; window vertical position
 
@@ -1194,7 +1194,7 @@ Pause_SlowMo:
 
 TilemapToVRAM:
 		lea	(vdp_data_port).l,a6
-		move.l	#$800000,d4
+		move.l	#$80<<16,d4
 
 	Tilemap_Line:
 		move.l	d0,4(a6)				; move d0 to VDP_control_port
@@ -1752,7 +1752,7 @@ GM_Title:
 		move.w	#$8004,(a6)				; 8-colour mode
 		move.w	#$8200+(vram_fg>>10),(a6)		; set foreground nametable address
 		move.w	#$8400+(vram_bg>>13),(a6)		; set background nametable address
-		move.w	#$9001,(a6)				; 64-cell hscroll size
+		move.w	#$9001,(a6)				; 64x32 cell plane size
 		move.w	#$9200,(a6)				; window vertical position
 		move.w	#$8B03,(a6)
 		move.w	#$8720,(a6)				; set background colour (palette line 2, entry 0)
@@ -2475,7 +2475,7 @@ Level_ClrRam:
 		move.w	#$8200+(vram_fg>>10),(a6)		; set foreground nametable address
 		move.w	#$8400+(vram_bg>>13),(a6)		; set background nametable address
 		move.w	#$8500+(vram_sprites>>9),(a6)		; set sprite table address
-		move.w	#$9001,(a6)				; 64-cell hscroll size
+		move.w	#$9001,(a6)				; 64x32 cell plane size
 		move.w	#$8004,(a6)				; 8-colour mode
 		move.w	#$8720,(a6)				; set background colour (line 3; colour 0)
 		move.w	#$8A00+223,(v_vdp_hint_counter).w	; set palette change position (for water)
@@ -3096,7 +3096,7 @@ GM_Ending:
 		move.w	#$8200+(vram_fg>>10),(a6)		; set foreground nametable address
 		move.w	#$8400+(vram_bg>>13),(a6)		; set background nametable address
 		move.w	#$8500+(vram_sprites>>9),(a6)		; set sprite table address
-		move.w	#$9001,(a6)				; 64-cell hscroll size
+		move.w	#$9001,(a6)				; 64x32 cell plane size
 		move.w	#$8004,(a6)				; 8-colour mode
 		move.w	#$8720,(a6)				; set background colour (line 3; colour 0)
 		move.w	#$8A00+223,(v_vdp_hint_counter).w	; set palette change position (for water)
@@ -3301,7 +3301,7 @@ GM_Credits:
 		move.w	#$8004,(a6)				; 8-colour mode
 		move.w	#$8200+(vram_fg>>10),(a6)		; set foreground nametable address
 		move.w	#$8400+(vram_bg>>13),(a6)		; set background nametable address
-		move.w	#$9001,(a6)				; 64-cell hscroll size
+		move.w	#$9001,(a6)				; 64x32 cell plane size
 		move.w	#$9200,(a6)				; window vertical position
 		move.w	#$8B03,(a6)				; line scroll mode
 		move.w	#$8720,(a6)				; set background colour (line 3; colour 0)
@@ -3430,7 +3430,7 @@ TryAgainEnd:
 		move.w	#$8004,(a6)				; use 8-colour mode
 		move.w	#$8200+(vram_fg>>10),(a6)		; set foreground nametable address
 		move.w	#$8400+(vram_bg>>13),(a6)		; set background nametable address
-		move.w	#$9001,(a6)				; 64-cell hscroll size
+		move.w	#$9001,(a6)				; 64x32 cell plane size
 		move.w	#$9200,(a6)				; window vertical position
 		move.w	#$8B03,(a6)				; line scroll mode
 		move.w	#$8720,(a6)				; set background colour (line 3; colour 0)
@@ -5761,7 +5761,7 @@ ss_sprite:	macro map,tile,frame
 		endm
 		
 SS_MapIndex:
-		ss_sprite Map_SSWalls,tile_Nem_SSWalls,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls,0	; 1
 		ss_sprite Map_SSWalls,tile_Nem_SSWalls,0
 		ss_sprite Map_SSWalls,tile_Nem_SSWalls,0
 		ss_sprite Map_SSWalls,tile_Nem_SSWalls,0
@@ -5797,39 +5797,41 @@ SS_MapIndex:
 		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal4,0
 		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal4,0
 		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal4,0
-		ss_sprite Map_Bump,tile_Nem_Bumper_SS,0
-		ss_sprite Map_SS_R,tile_Nem_SSWBlock,0
-		ss_sprite Map_SS_R,tile_Nem_SSGOAL,0
-		ss_sprite Map_SS_R,tile_Nem_SS1UpBlock,0
-		ss_sprite Map_SS_Up,tile_Nem_SSUpDown,0
-		ss_sprite Map_SS_Down,tile_Nem_SSUpDown,0
-		ss_sprite Map_SS_R,tile_Nem_SSRBlock+tile_pal2,0
-		ss_sprite Map_SS_Glass,tile_Nem_SSRedWhite,0
-		ss_sprite Map_SS_Glass,tile_Nem_SSGlass,0
-		ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal4,0
-		ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal2,0
-		ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal3,0
-		ss_sprite Map_SS_R,tile_Nem_SSRBlock,0
+	SS_MapIndex_wall_end:
+		ss_sprite Map_Bump,tile_Nem_Bumper_SS,0		; $25 - bumper
+		ss_sprite Map_SS_R,tile_Nem_SSWBlock,0		; $26 - W
+SS_Map_GOAL:	ss_sprite Map_SS_R,tile_Nem_SSGOAL,0		; $27 - GOAL
+		ss_sprite Map_SS_R,tile_Nem_SS1UpBlock,0	; $28 - 1UP
+SS_Map_Up:	ss_sprite Map_SS_Up,tile_Nem_SSUpDown,0		; $29 - Up
+SS_Map_Down:	ss_sprite Map_SS_Down,tile_Nem_SSUpDown,0	; $2A - Down
+		ss_sprite Map_SS_R,tile_Nem_SSRBlock+tile_pal2,0 ; $2B - R
+SS_Map_RedWhite:
+		ss_sprite Map_SS_Glass,tile_Nem_SSRedWhite,0	; $2C - red/white
+SS_Map_Glass1:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass,0	; $2D - breakable glass gem
+SS_Map_Glass2:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal4,0
+SS_Map_Glass3:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal2,0
+SS_Map_Glass4:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal3,0
+		ss_sprite Map_SS_R,tile_Nem_SSRBlock,0		; $31 - R
 		ss_sprite Map_Bump,tile_Nem_Bumper_SS,id_frame_bump_bumped1
 		ss_sprite Map_Bump,tile_Nem_Bumper_SS,id_frame_bump_bumped2
-		ss_sprite Map_SS_R,tile_Nem_SSZone1,0
-		ss_sprite Map_SS_R,tile_Nem_SSZone2,0
-		ss_sprite Map_SS_R,tile_Nem_SSZone3,0
-		ss_sprite Map_SS_R,tile_Nem_SSZone1,0
-		ss_sprite Map_SS_R,tile_Nem_SSZone2,0
-		ss_sprite Map_SS_R,tile_Nem_SSZone3,0
-		ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,0
-		ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald,0
-		ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald+tile_pal2,0
-		ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald+tile_pal3,0
-		ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald+tile_pal4,0
-		ss_sprite Map_SS_Chaos1,tile_Nem_SSEmerald,0
-		ss_sprite Map_SS_Chaos2,tile_Nem_SSEmerald,0
-		ss_sprite Map_SS_R,tile_Nem_SSGhost,0
-		ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,id_frame_ring_sparkle1
-		ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,id_frame_ring_sparkle2
-		ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,id_frame_ring_sparkle3
-		ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,id_frame_ring_sparkle4
+		ss_sprite Map_SS_R,tile_Nem_SSZone1,0		; £34 - Zone 1
+		ss_sprite Map_SS_R,tile_Nem_SSZone2,0		; £35 - Zone 2
+		ss_sprite Map_SS_R,tile_Nem_SSZone3,0		; £36 - Zone 3
+		ss_sprite Map_SS_R,tile_Nem_SSZone1,0		; £37 - Zone 4
+		ss_sprite Map_SS_R,tile_Nem_SSZone2,0		; £38 - Zone 5
+		ss_sprite Map_SS_R,tile_Nem_SSZone3,0		; £39 - Zone 6
+SS_Map_Ring:	ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,0	; $3A - ring
+SS_Map_Em1:	ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald,0	; $3B - emerald
+SS_Map_Em2:	ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald+tile_pal2,0 ; $3C - emerald
+SS_Map_Em3:	ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald+tile_pal3,0 ; $3D - emerald
+SS_Map_Em4:	ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald+tile_pal4,0 ; $3E - emerald
+SS_Map_Em5:	ss_sprite Map_SS_Chaos1,tile_Nem_SSEmerald,0	; $3F - emerald
+SS_Map_Em6:	ss_sprite Map_SS_Chaos2,tile_Nem_SSEmerald,0	; $40 - emerald
+		ss_sprite Map_SS_R,tile_Nem_SSGhost,0		; $41 - ghost block
+		ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,id_frame_ring_sparkle1 ; $42 - sparkle
+		ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,id_frame_ring_sparkle2 ; $43 - sparkle
+		ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,id_frame_ring_sparkle3 ; $44 - sparkle
+		ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,id_frame_ring_sparkle4 ; $45 - sparkle
 		ss_sprite Map_SS_Glass,tile_Nem_SSEmStars+tile_pal2,0
 		ss_sprite Map_SS_Glass,tile_Nem_SSEmStars+tile_pal2,1
 		ss_sprite Map_SS_Glass,tile_Nem_SSEmStars+tile_pal2,2
@@ -5839,6 +5841,7 @@ SS_MapIndex:
 		ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal4,0
 		ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal2,0
 		ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal3,0
+	SS_MapIndex_end:
 
 		include "Mappings\Special Stage R.asm"		; Map_SS_R
 		include "Mappings\Special Stage Breakable & Red-White Blocks.asm" ; Map_SS_Glass

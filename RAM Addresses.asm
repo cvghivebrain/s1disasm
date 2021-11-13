@@ -404,6 +404,8 @@ v_checksum_pass:		rs.l 1 ; $FFFFFFFC ; set to the text string "init" when checks
 
 ; Special Stages
 
-v_ss_layout:			equ $FF4000 ; special stage layout ($1000 bytes)
+v_ss_enidec_buffer:		equ $FF0000 ; special stage background mappings are stored here before being moved to VRAM
+v_ss_layout_buffer:		equ $FF4000 ; unprocessed special stage layout - overwritten later ($1000 bytes)
+v_ss_sprite_info:		equ $FF4000 ; sprite info for each item type - mappings pointer (4 bytes); frame id (2 bytes); tile id (2 bytes) (total $278 bytes)
 
 		popo		; restore options
