@@ -5840,7 +5840,7 @@ SS_Map_Em6:	ss_sprite Map_SS_Chaos2,tile_Nem_SSEmerald,0	; $40 - emerald
 		ss_sprite Map_SS_Glass,tile_Nem_SSGlass,0
 		ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal4,0
 		ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal2,0
-		ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal3,0
+		ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal3,0 ; $4E
 	SS_MapIndex_end:
 
 		include "Mappings\Special Stage R.asm"		; Map_SS_R

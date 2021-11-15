@@ -18,10 +18,10 @@ GM_Special:
 		enable_ints
 		dma_fill	0,$6FFF,$5000
 
-	SS_WaitForDMA:
+	@wait_for_dma:
 		move.w	(a5),d1					; read control port ($C00004)
 		btst	#1,d1					; is DMA running?
-		bne.s	SS_WaitForDMA				; if yes, branch
+		bne.s	@wait_for_dma				; if yes, branch
 		move.w	#$8F02,(a5)				; set VDP increment to 2 bytes
 		bsr.w	SS_BGLoad
 		moveq	#id_PLC_SpecialStage,d0
@@ -30,30 +30,30 @@ GM_Special:
 		lea	(v_ost_all).w,a1
 		moveq	#0,d0
 		move.w	#((sizeof_ost*countof_ost)/4)-1,d1
-	SS_ClrObjRam:
+	@clear_ost:
 		move.l	d0,(a1)+
-		dbf	d1,SS_ClrObjRam				; clear	the object RAM
+		dbf	d1,@clear_ost				; clear	the object RAM
 
 		lea	(v_camera_x_pos).w,a1
 		moveq	#0,d0
 		move.w	#($100/4)-1,d1
-	SS_ClrRam1:
+	@clear_ram1:
 		move.l	d0,(a1)+
-		dbf	d1,SS_ClrRam1				; clear	variables $FFFFF700-$FFFFF800
+		dbf	d1,@clear_ram1				; clear	variables $FFFFF700-$FFFFF800
 
 		lea	(v_oscillating_table).w,a1
 		moveq	#0,d0
 		move.w	#($A0/4)-1,d1
-	SS_ClrRam2:
+	@clear_ram2:
 		move.l	d0,(a1)+
-		dbf	d1,SS_ClrRam2				; clear	variables $FFFFFE60-$FFFFFF00
+		dbf	d1,@clear_ram2				; clear	variables $FFFFFE60-$FFFFFF00
 
-		lea	(v_nem_gfx_buffer).w,a1
+		lea	(v_ss_bubble_x_pos).w,a1
 		moveq	#0,d0
 		move.w	#($200/4)-1,d1
-	SS_ClrNemRam:
+	@clear_bubblecloud_bg:
 		move.l	d0,(a1)+
-		dbf	d1,SS_ClrNemRam				; clear	Nemesis	buffer
+		dbf	d1,@clear_bubblecloud_bg		; clear	bg x position data
 
 		clr.b	(f_water_pal_full).w
 		clr.w	(f_restart).w
@@ -105,11 +105,11 @@ SS_MainLoop:
 		jsr	(SS_ShowLayout).l
 		bsr.w	SS_BGAnimate
 		tst.w	(v_demo_mode).w				; is demo mode on?
-		beq.s	SS_ChkEnd				; if not, branch
+		beq.s	@not_demo				; if not, branch
 		tst.w	(v_countdown).w				; is there time left on the demo?
 		beq.w	SS_ToSegaScreen				; if not, branch
 
-	SS_ChkEnd:
+	@not_demo:
 		cmpi.b	#id_Special,(v_gamemode).w		; is game mode $10 (special stage)?
 		beq.w	SS_MainLoop				; if yes, branch
 
@@ -121,15 +121,15 @@ SS_MainLoop:
 		endc
 		move.b	#id_Level,(v_gamemode).w		; set screen mode to $0C (level)
 		cmpi.w	#(id_SBZ<<8)+3,(v_zone).w		; is level number higher than FZ?
-		blo.s	SS_Finish				; if not, branch
+		blo.s	@level_ok				; if not, branch
 		clr.w	(v_zone).w				; set to GHZ1
 
-SS_Finish:
+	@level_ok:
 		move.w	#60,(v_countdown).w			; set delay time to 1 second
 		move.w	#$3F,(v_palfade_start).w
 		clr.w	(v_palfade_time).w
 
-	SS_FinLoop:
+SS_FinishLoop:
 		move.b	#$16,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		bsr.w	MoveSonicInDemo
@@ -139,13 +139,13 @@ SS_Finish:
 		jsr	(SS_ShowLayout).l
 		bsr.w	SS_BGAnimate
 		subq.w	#1,(v_palfade_time).w
-		bpl.s	loc_47D4
-		move.w	#2,(v_palfade_time).w
-		bsr.w	WhiteOut_ToWhite
+		bpl.s	@leave_palette				; branch if palette timer is 0 or higher
+		move.w	#2,(v_palfade_time).w			; set palette update delay to 2 frames
+		bsr.w	WhiteOut_ToWhite			; fade to white in increments
 
-loc_47D4:
-		tst.w	(v_countdown).w
-		bne.s	SS_FinLoop
+	@leave_palette:
+		tst.w	(v_countdown).w				; has timer hit 0?
+		bne.s	SS_FinishLoop				; if not, branch
 
 		disable_ints
 		lea	(vdp_control_port).l,a6
@@ -153,7 +153,7 @@ loc_47D4:
 		move.w	#$8400+(vram_bg>>13),(a6)		; set background nametable address
 		move.w	#$9001,(a6)				; 64x32 cell plane size
 		bsr.w	ClearScreen
-		locVRAM	$B000
+		locVRAM	vram_Nem_TitleCard			; $B000 - Pattern Load Cues.asm
 		lea	(Nem_TitleCard).l,a0			; load title card patterns
 		bsr.w	NemDec
 		jsr	(Hud_Base).l
@@ -174,9 +174,9 @@ loc_47D4:
 		lea	(v_ost_all).w,a1
 		moveq	#0,d0
 		move.w	#((sizeof_ost*countof_ost)/4)-1,d1
-	SS_EndClrObjRam:
+	@clear_ost:
 		move.l	d0,(a1)+
-		dbf	d1,SS_EndClrObjRam			; clear object RAM
+		dbf	d1,@clear_ost				; clear object RAM
 
 		move.b	#id_SSResult,(v_ost_ssresult1).w	; load results screen object
 
@@ -441,7 +441,7 @@ SS_BGAnimate:
 
 	@not_0:
 		cmpi.w	#8,d0
-		bhs.s	loc_4C4E				; branch if d0 is 8-$C
+		bhs.s	SS_BGBirdCloud				; branch if d0 is 8-$C (birds and clouds)
 		cmpi.w	#6,d0
 		bne.s	@not_6					; branch if d0 isn't 6
 		addq.w	#1,(v_bg3_x_pos).w
@@ -454,10 +454,10 @@ SS_BGAnimate:
 		neg.w	d0
 		swap	d0
 		lea	(SS_Bubble_WobbleData).l,a1
-		lea	(v_nem_gfx_buffer).w,a3
+		lea	(v_ss_bubble_x_pos).w,a3
 		moveq	#9,d3
 
-loc_4C26:
+SS_BGWobbleLoop:
 		move.w	2(a3),d0				; get next value from buffer
 		bsr.w	CalcSine				; convert to sine
 		moveq	#0,d2
@@ -468,18 +468,18 @@ loc_4C26:
 		move.b	(a1)+,d2				; read 2nd byte
 		ext.w	d2
 		add.w	d2,(a3)+				; add to 2nd word of buffer
-		dbf	d3,loc_4C26
+		dbf	d3,SS_BGWobbleLoop
 		
-		lea	(v_nem_gfx_buffer).w,a3
+		lea	(v_ss_bubble_x_pos).w,a3
 		lea	(SS_Bubble_ScrollBlocks).l,a2
 		bra.s	SS_Scroll_CloudsBubbles
 ; ===========================================================================
 
-loc_4C4E:
+SS_BGBirdCloud:
 		cmpi.w	#$C,d0
 		bne.s	@not_C					; branch if d0 isn't $C
 		subq.w	#1,(v_bg3_x_pos).w
-		lea	($FFFFAB00).w,a3
+		lea	(v_ss_cloud_x_pos).w,a3
 		move.l	#$18000,d2
 		moveq	#6,d1
 
@@ -491,7 +491,7 @@ loc_4C4E:
 		dbf	d1,@loop
 
 	@not_C:
-		lea	($FFFFAB00).w,a3
+		lea	(v_ss_cloud_x_pos).w,a3
 		lea	(SS_Cloud_ScrollBlocks).l,a2
 
 SS_Scroll_CloudsBubbles:
@@ -565,7 +565,7 @@ SS_ShowLayout:
 		bsr.w	SS_AniWallsRings
 		bsr.w	SS_AniItems
 		move.w	d5,-(sp)
-		lea	($FFFF8000).w,a1
+		lea	(v_ss_sprite_grid_plot).w,a1
 		move.b	(v_ss_angle).w,d0
 		andi.b	#$FC,d0
 		jsr	(CalcSine).l
@@ -587,7 +587,7 @@ SS_ShowLayout:
 		addi.w	#-$B4,d3
 		move.w	#$F,d7
 
-loc_1B19E:
+	@loop_gridrow:
 		movem.w	d0-d2,-(sp)
 		movem.w	d0-d1,-(sp)
 		neg.w	d0
@@ -602,7 +602,7 @@ loc_1B19E:
 		move.l	d6,d2
 		move.w	#$F,d6
 
-loc_1B1C0:
+	@loop_gridcell:
 		move.l	d2,d0
 		asr.l	#8,d0
 		move.w	d0,(a1)+
@@ -611,77 +611,77 @@ loc_1B1C0:
 		move.w	d0,(a1)+
 		add.l	d5,d2
 		add.l	d4,d1
-		dbf	d6,loc_1B1C0
+		dbf	d6,@loop_gridcell
 
 		movem.w	(sp)+,d0-d2
 		addi.w	#$18,d3
-		dbf	d7,loc_1B19E
+		dbf	d7,@loop_gridrow
 
 		move.w	(sp)+,d5
-		lea	($FF0000).l,a0
+		lea	(v_ss_layout).l,a0
 		moveq	#0,d0
-		move.w	(v_camera_y_pos).w,d0
-		divu.w	#$18,d0
-		mulu.w	#$80,d0
-		adda.l	d0,a0
+		move.w	(v_camera_y_pos).w,d0			; get camera y pos
+		divu.w	#$18,d0					; divide by size of wall sprite (24 pixels)
+		mulu.w	#$80,d0					; muliply by width of level
+		adda.l	d0,a0					; jump to correct row in level
 		moveq	#0,d0
-		move.w	(v_camera_x_pos).w,d0
-		divu.w	#$18,d0
-		adda.w	d0,a0
-		lea	($FFFF8000).w,a4
+		move.w	(v_camera_x_pos).w,d0			; get camera x pos
+		divu.w	#$18,d0					; divide by size of wall sprite (24 pixels)
+		adda.w	d0,a0					; jump to correct block in level
+		lea	(v_ss_sprite_grid_plot).w,a4		; transformation grid
 		move.w	#$F,d7
 
-loc_1B20C:
+	@loop_spriterow:
 		move.w	#$F,d6
 
-loc_1B210:
+	@loop_sprite:
 		moveq	#0,d0
-		move.b	(a0)+,d0
-		beq.s	loc_1B268
-		cmpi.b	#$4E,d0
-		bhi.s	loc_1B268
-		move.w	(a4),d3
-		addi.w	#$120,d3
+		move.b	(a0)+,d0				; get level block
+		beq.s	@skip					; branch if 0 (blank)
+		cmpi.b	#(SS_MapIndex_end-SS_MapIndex)/6,d0
+		bhi.s	@skip					; branch if above $4E (invalid)
+		move.w	(a4),d3					; get grid x pos
+		addi.w	#$120,d3				
 		cmpi.w	#$70,d3
-		blo.s	loc_1B268
+		blo.s	@skip					; branch if off screen
 		cmpi.w	#$1D0,d3
-		bhs.s	loc_1B268
-		move.w	2(a4),d2
+		bhs.s	@skip
+		move.w	2(a4),d2				; get grid y pos
 		addi.w	#$F0,d2
 		cmpi.w	#$70,d2
-		blo.s	loc_1B268
+		blo.s	@skip
 		cmpi.w	#$170,d2
-		bhs.s	loc_1B268
+		bhs.s	@skip
 		lea	(v_ss_sprite_info).l,a5
 		lsl.w	#3,d0
 		lea	(a5,d0.w),a5
-		movea.l	(a5)+,a1
-		move.w	(a5)+,d1
+		movea.l	(a5)+,a1				; get mappings pointer
+		move.w	(a5)+,d1				; get frame id
 		add.w	d1,d1
-		adda.w	(a1,d1.w),a1
-		movea.w	(a5)+,a3
+		adda.w	(a1,d1.w),a1				; apply frame id to mappings pointer
+		movea.w	(a5)+,a3				; get tile id
 		moveq	#0,d1
-		move.b	(a1)+,d1
+		move.b	(a1)+,d1				; get number of sprite pieces from mappings
 		subq.b	#1,d1
-		bmi.s	loc_1B268
-		jsr	(BuildSpr_Normal).l
+		bmi.s	@skip					; branch if 0
+		jsr	(BuildSpr_Normal).l			; build sprites from mappings
 
-loc_1B268:
-		addq.w	#4,a4
-		dbf	d6,loc_1B210
+	@skip:
+		addq.w	#4,a4					; next sprite
+		dbf	d6,@loop_sprite
 
-		lea	$70(a0),a0
-		dbf	d7,loc_1B20C
+		lea	$70(a0),a0				; next row
+		dbf	d7,@loop_spriterow
 
 		move.b	d5,(v_spritecount).w
 		cmpi.b	#$50,d5
-		beq.s	loc_1B288
+		beq.s	@spritelimit
 		move.l	#0,(a2)
 		rts	
 ; ===========================================================================
 
-loc_1B288:
-		move.b	#0,-5(a2)
+@spritelimit:
+		move.b	#0,-5(a2)				; set last sprite link
 		rts	
 ; End of function SS_ShowLayout
 
@@ -754,8 +754,8 @@ SS_AniWallsRings:
 		andi.b	#7,(v_syncani_0_frame).w
 
 	@not0_0:
-		lea	($FF4016).l,a1
-		lea	(SS_WaRiVramSet).l,a0
+		lea	(v_ss_sprite_info+$16).l,a1
+		lea	(SS_Wall_Vram_Settings).l,a0
 		moveq	#0,d0
 		move.b	(v_syncani_0_frame).w,d0
 		add.w	d0,d0
@@ -804,14 +804,72 @@ SS_AniWallsRings:
 ; End of function SS_AniWallsRings
 
 ; ===========================================================================
-SS_WaRiVramSet:	dc.w $142, $6142, $142,	$142, $142, $142, $142,	$6142
-		dc.w $142, $6142, $142,	$142, $142, $142, $142,	$6142
-		dc.w $2142, $142, $2142, $2142,	$2142, $2142, $2142, $142
-		dc.w $2142, $142, $2142, $2142,	$2142, $2142, $2142, $142
-		dc.w $4142, $2142, $4142, $4142, $4142,	$4142, $4142, $2142
-		dc.w $4142, $2142, $4142, $4142, $4142,	$4142, $4142, $2142
-		dc.w $6142, $4142, $6142, $6142, $6142,	$6142, $6142, $4142
-		dc.w $6142, $4142, $6142, $6142, $6142,	$6142, $6142, $4142
+SS_Wall_Vram_Settings:
+		dc.w tile_Nem_SSWalls
+		dc.w tile_Nem_SSWalls+tile_pal4
+		dc.w tile_Nem_SSWalls
+		dc.w tile_Nem_SSWalls
+		dc.w tile_Nem_SSWalls
+		dc.w tile_Nem_SSWalls
+		dc.w tile_Nem_SSWalls
+		dc.w tile_Nem_SSWalls+tile_pal4
+		dc.w tile_Nem_SSWalls
+		dc.w tile_Nem_SSWalls+tile_pal4
+		dc.w tile_Nem_SSWalls
+		dc.w tile_Nem_SSWalls
+		dc.w tile_Nem_SSWalls
+		dc.w tile_Nem_SSWalls
+		dc.w tile_Nem_SSWalls
+		dc.w tile_Nem_SSWalls+tile_pal4
+		dc.w tile_Nem_SSWalls+tile_pal2
+		dc.w tile_Nem_SSWalls
+		dc.w tile_Nem_SSWalls+tile_pal2
+		dc.w tile_Nem_SSWalls+tile_pal2
+		dc.w tile_Nem_SSWalls+tile_pal2
+		dc.w tile_Nem_SSWalls+tile_pal2
+		dc.w tile_Nem_SSWalls+tile_pal2
+		dc.w tile_Nem_SSWalls
+		dc.w tile_Nem_SSWalls+tile_pal2
+		dc.w tile_Nem_SSWalls
+		dc.w tile_Nem_SSWalls+tile_pal2
+		dc.w tile_Nem_SSWalls+tile_pal2
+		dc.w tile_Nem_SSWalls+tile_pal2
+		dc.w tile_Nem_SSWalls+tile_pal2
+		dc.w tile_Nem_SSWalls+tile_pal2
+		dc.w tile_Nem_SSWalls
+		dc.w tile_Nem_SSWalls+tile_pal3
+		dc.w tile_Nem_SSWalls+tile_pal2
+		dc.w tile_Nem_SSWalls+tile_pal3
+		dc.w tile_Nem_SSWalls+tile_pal3
+		dc.w tile_Nem_SSWalls+tile_pal3
+		dc.w tile_Nem_SSWalls+tile_pal3
+		dc.w tile_Nem_SSWalls+tile_pal3
+		dc.w tile_Nem_SSWalls+tile_pal2
+		dc.w tile_Nem_SSWalls+tile_pal3
+		dc.w tile_Nem_SSWalls+tile_pal2
+		dc.w tile_Nem_SSWalls+tile_pal3
+		dc.w tile_Nem_SSWalls+tile_pal3
+		dc.w tile_Nem_SSWalls+tile_pal3
+		dc.w tile_Nem_SSWalls+tile_pal3
+		dc.w tile_Nem_SSWalls+tile_pal3
+		dc.w tile_Nem_SSWalls+tile_pal2
+		dc.w tile_Nem_SSWalls+tile_pal4
+		dc.w tile_Nem_SSWalls+tile_pal3
+		dc.w tile_Nem_SSWalls+tile_pal4
+		dc.w tile_Nem_SSWalls+tile_pal4
+		dc.w tile_Nem_SSWalls+tile_pal4
+		dc.w tile_Nem_SSWalls+tile_pal4
+		dc.w tile_Nem_SSWalls+tile_pal4
+		dc.w tile_Nem_SSWalls+tile_pal3
+		dc.w tile_Nem_SSWalls+tile_pal4
+		dc.w tile_Nem_SSWalls+tile_pal3
+		dc.w tile_Nem_SSWalls+tile_pal4
+		dc.w tile_Nem_SSWalls+tile_pal4
+		dc.w tile_Nem_SSWalls+tile_pal4
+		dc.w tile_Nem_SSWalls+tile_pal4
+		dc.w tile_Nem_SSWalls+tile_pal4
+		dc.w tile_Nem_SSWalls+tile_pal3
+
 ; ---------------------------------------------------------------------------
 ; Subroutine to	remove items when you collect them in the special stage
 ; ---------------------------------------------------------------------------
@@ -1065,14 +1123,14 @@ SS_LoadData:
 		lea	(v_ss_layout_buffer).l,a1		; load level layout ($FF4000)
 		move.w	#0,d0
 		jsr	(EniDec).l
-		lea	($FF0000).l,a1
+		lea	(v_ss_layout).l,a1
 		move.w	#($4000/4)-1,d0
 
 SS_ClrRAM3:
 		clr.l	(a1)+
 		dbf	d0,SS_ClrRAM3				; clear RAM (0-$3FFF)
 
-		lea	($FF1020).l,a1
+		lea	(v_ss_layout+$1020).l,a1
 		lea	(v_ss_layout_buffer).l,a0
 		moveq	#$40-1,d1
 

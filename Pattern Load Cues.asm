@@ -50,9 +50,11 @@ plcm:		macro gfx,vram,suffix
 		dc.w plcm_vram
 		if strlen("\suffix")>0
 			tile_\gfx\_\suffix: equ plcm_vram/$20
+			vram_\gfx\_\suffix: equ plcm_vram
 		else
 			if ~def(tile_\gfx)
 			tile_\gfx: equ plcm_vram/$20
+			vram_\gfx: equ plcm_vram
 			endc
 		endc
 		endm
