@@ -21,32 +21,32 @@ Sto_Var_4:	dc.b  $80, $40,	  0,   id_Sto_SlideDiagonal	; huge sliding door in SB
 
 sizeof_Sto_Var:	equ Sto_Var_1-Sto_Var
 
-ost_stomp_y_start:	equ $30	; original y-axis position (2 bytes)
-ost_stomp_x_start:	equ $34	; original x-axis position (2 bytes)
-ost_stomp_wait_time:	equ $36	; time until next action (2 bytes)
-ost_stomp_flag:		equ $38	; flag set when associated switch is pressed
-ost_stomp_moved:	equ $3A	; distance moved (2 bytes)
-ost_stomp_distance:	equ $3C	; distance to move (2 bytes)
-ost_stomp_switch_num:	equ $3E	; switch number associated with door
+ost_stomp_y_start:	equ $30					; original y-axis position (2 bytes)
+ost_stomp_x_start:	equ $34					; original x-axis position (2 bytes)
+ost_stomp_wait_time:	equ $36					; time until next action (2 bytes)
+ost_stomp_flag:		equ $38					; flag set when associated switch is pressed
+ost_stomp_moved:	equ $3A					; distance moved (2 bytes)
+ost_stomp_distance:	equ $3C					; distance to move (2 bytes)
+ost_stomp_switch_num:	equ $3E					; switch number associated with door
 ; ===========================================================================
 
 Sto_Main:	; Routine 0
 		addq.b	#2,ost_routine(a0)
 		moveq	#0,d0
-		move.b	ost_subtype(a0),d0 ; get subtype
+		move.b	ost_subtype(a0),d0			; get subtype
 		lsr.w	#2,d0
-		andi.w	#$1C,d0		; read only high nybble without bit 7
-		lea	Sto_Var(pc,d0.w),a3 ; get variables from list
+		andi.w	#$1C,d0					; read only high nybble without bit 7
+		lea	Sto_Var(pc,d0.w),a3			; get variables from list
 		move.b	(a3)+,ost_actwidth(a0)
 		move.b	(a3)+,ost_height(a0)
 		lsr.w	#2,d0
-		move.b	d0,ost_frame(a0) ; high nybble = frame
+		move.b	d0,ost_frame(a0)			; high nybble = frame
 		move.l	#Map_Stomp,ost_mappings(a0)
 		move.w	#tile_Nem_Stomper+tile_pal2,ost_tile(a0)
-		cmpi.b	#id_LZ,(v_zone).w ; check if level is LZ/SBZ3
-		bne.s	@isSBZ12	; if not, branch
-		bset	#0,(f_stomp_sbz3_init).w ; flag object as loaded
-		beq.s	@SBZ3_init	; branch if not previously loaded
+		cmpi.b	#id_LZ,(v_zone).w			; check if level is LZ/SBZ3
+		bne.s	@isSBZ12				; if not, branch
+		bset	#0,(f_stomp_sbz3_init).w		; flag object as loaded
+		beq.s	@SBZ3_init				; branch if not previously loaded
 
 @chkdel:
 		lea	(v_respawn_list).w,a2
@@ -82,14 +82,14 @@ Sto_Main:	; Routine 0
 		move.b	(a3)+,d0
 		move.w	d0,ost_stomp_distance(a0)
 		moveq	#0,d0
-		move.b	ost_subtype(a0),d0 ; get subtype
-		bpl.s	Sto_Action	; branch if 0-$7F
+		move.b	ost_subtype(a0),d0			; get subtype
+		bpl.s	Sto_Action				; branch if 0-$7F
 		
-		andi.b	#$F,d0		; read only low nybble
-		move.b	d0,ost_stomp_switch_num(a0) ; copy to ost_stomp_switch_num
-		move.b	(a3),ost_subtype(a0) ; update subtype with value from list
-		cmpi.b	#5,(a3)		; is object the huge sliding door from SBZ3?
-		bne.s	@chkgone	; if not, branch
+		andi.b	#$F,d0					; read only low nybble
+		move.b	d0,ost_stomp_switch_num(a0)		; copy to ost_stomp_switch_num
+		move.b	(a3),ost_subtype(a0)			; update subtype with value from list
+		cmpi.b	#5,(a3)					; is object the huge sliding door from SBZ3?
+		bne.s	@chkgone				; if not, branch
 		bset	#render_useheight_bit,ost_render(a0)
 
 	@chkgone:
@@ -159,8 +159,8 @@ Sto_SlideOpen:
 		lea	(v_button_state).w,a2
 		moveq	#0,d0
 		move.b	ost_stomp_switch_num(a0),d0
-		btst	#0,(a2,d0.w)	; has switch been pressed?
-		beq.s	@loc_15DC2	; if not, branch
+		btst	#0,(a2,d0.w)				; has switch been pressed?
+		beq.s	@loc_15DC2				; if not, branch
 		move.b	#1,ost_stomp_flag(a0)
 
 	@isactive01:
@@ -184,8 +184,8 @@ Sto_SlideOpen:
 ; ===========================================================================
 
 @finished01:
-		addq.b	#1,ost_subtype(a0) ;  change type to 2
-		move.w	#180,ost_stomp_wait_time(a0) ; set timer to 3 seconds
+		addq.b	#1,ost_subtype(a0)			;  change type to 2
+		move.w	#180,ost_stomp_wait_time(a0)		; set timer to 3 seconds
 		clr.b	ost_stomp_flag(a0)
 		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
@@ -205,9 +205,9 @@ Sto_SlideClose:
 		move.b	#1,ost_stomp_flag(a0)
 
 	@isactive02:
-		tst.w	ost_stomp_moved(a0) ; has door reached its original position?
-		beq.s	@finished02	; if yes, branch
-		subq.w	#2,ost_stomp_moved(a0) ; move back 2 pixels
+		tst.w	ost_stomp_moved(a0)			; has door reached its original position?
+		beq.s	@finished02				; if yes, branch
+		subq.w	#2,ost_stomp_moved(a0)			; move back 2 pixels
 
 	@loc_15E1E:
 		move.w	ost_stomp_moved(a0),d0
@@ -224,7 +224,7 @@ Sto_SlideClose:
 ; ===========================================================================
 
 @finished02:
-		subq.b	#1,ost_subtype(a0) ; change back to type 1
+		subq.b	#1,ost_subtype(a0)			; change back to type 1
 		clr.b	ost_stomp_flag(a0)
 		lea	(v_respawn_list).w,a2
 		moveq	#0,d0

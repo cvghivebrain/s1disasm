@@ -13,8 +13,8 @@ Obj76_Index:	index *,,2
 		ptr Obj76_Action
 		ptr loc_19762
 
-ost_bblock_mode:	equ $29	; same as subtype = solid; $FF = lifted; $A = breaking
-ost_bblock_boss:	equ $34	; address of OST of main boss object (4 bytes)
+ost_bblock_mode:	equ $29					; same as subtype = solid; $FF = lifted; $A = breaking
+ost_bblock_boss:	equ $34					; address of OST of main boss object (4 bytes)
 ; ===========================================================================
 
 Obj76_Main:	; Routine 0
@@ -37,24 +37,24 @@ Obj76_MakeBlock:
 		move.b	#$10,ost_actwidth(a1)
 		move.b	#$10,ost_height(a1)
 		move.b	#3,ost_priority(a1)
-		move.w	d5,ost_x_pos(a1) ; set x position
+		move.w	d5,ost_x_pos(a1)			; set x position
 		move.w	#$582,ost_y_pos(a1)
-		move.w	d4,ost_subtype(a1) ; blocks have subtypes 0-9
+		move.w	d4,ost_subtype(a1)			; blocks have subtypes 0-9
 		addi.w	#$101,d4
-		addi.w	#$20,d5		; add $20 to next x-position
+		addi.w	#$20,d5					; add $20 to next x-position
 		addq.b	#2,ost_routine(a1)
-		dbf	d6,Obj76_Loop	; repeat sequence 9 more times
+		dbf	d6,Obj76_Loop				; repeat sequence 9 more times
 
 Obj76_ExitLoop:
 		rts	
 ; ===========================================================================
 
 Obj76_Action:	; Routine 2
-		move.b	ost_bblock_mode(a0),d0 ; check mode
+		move.b	ost_bblock_mode(a0),d0			; check mode
 		cmp.b	ost_subtype(a0),d0
-		beq.s	Obj76_Solid	; branch if same as subtype
+		beq.s	Obj76_Solid				; branch if same as subtype
 		tst.b	d0
-		bmi.s	loc_19718	; branch if $FF
+		bmi.s	loc_19718				; branch if $FF
 
 loc_19712:
 		bsr.w	Obj76_Break
@@ -138,10 +138,10 @@ loc_197AA:
 		add.w	d3,ost_y_pos(a1)
 		move.b	d4,ost_frame(a1)
 		addq.w	#1,d4
-		dbf	d1,Obj76_LoopFrag ; repeat sequence 3 more times
+		dbf	d1,Obj76_LoopFrag			; repeat sequence 3 more times
 
 loc_197D4:
-		play.w	1, jmp, sfx_Smash		; play smashing sound
+		play.w	1, jmp, sfx_Smash			; play smashing sound
 ; End of function Obj76_Break
 
 ; ===========================================================================

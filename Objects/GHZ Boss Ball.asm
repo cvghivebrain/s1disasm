@@ -17,13 +17,13 @@ GBall_Index:	index *,,2
 		ptr GBall_Link
 		ptr GBall_ChkVanish
 
-ost_ball_boss_dist:	equ $32	; distance of base from boss (2 bytes)
-ost_ball_parent:	equ $34	; address of OST of parent object (4 bytes)
-ost_ball_base_y_pos:	equ $38	; y position of base (2 bytes)
-ost_ball_base_x_pos:	equ $3A	; x position of base (2 bytes)
-ost_ball_base_dist:	equ $3C	; distance of ball/link from base
-ost_ball_direction:	equ $3D	; swing direction - 0 = left; 1 = right
-ost_ball_angle:		equ $3E ; swing angle (2 bytes)
+ost_ball_boss_dist:	equ $32					; distance of base from boss (2 bytes)
+ost_ball_parent:	equ $34					; address of OST of parent object (4 bytes)
+ost_ball_base_y_pos:	equ $38					; y position of base (2 bytes)
+ost_ball_base_x_pos:	equ $3A					; x position of base (2 bytes)
+ost_ball_base_dist:	equ $3C					; distance of ball/link from base
+ost_ball_direction:	equ $3D					; swing direction - 0 = left; 1 = right
+ost_ball_angle:		equ $3E					; swing angle (2 bytes)
 ; ===========================================================================
 
 GBall_Main:	; Routine 0
@@ -44,7 +44,7 @@ GBall_MakeLinks:
 		bne.s	GBall_MakeBall
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
-		move.b	#id_BossBall,0(a1) ; load chain link object
+		move.b	#id_BossBall,0(a1)			; load chain link object
 		move.b	#id_GBall_Link,ost_routine(a1)
 		move.l	#Map_Swing_GHZ,ost_mappings(a1)
 		move.w	#tile_Nem_Swing,ost_tile(a1)
@@ -61,19 +61,19 @@ loc_17B60:
 		move.b	#8,ost_actwidth(a1)
 		move.b	#6,ost_priority(a1)
 		move.l	ost_ball_parent(a0),ost_ball_parent(a1)
-		dbf	d1,GBall_MakeLinks ; repeat sequence 5 more times
+		dbf	d1,GBall_MakeLinks			; repeat sequence 5 more times
 
 GBall_MakeBall:
 		move.b	#id_GBall_ChkVanish,ost_routine(a1)
-		move.l	#Map_GBall,ost_mappings(a1) ; load different mappings for final link
-		move.w	#tile_Nem_Ball+tile_pal3,ost_tile(a1) ; use different graphics
+		move.l	#Map_GBall,ost_mappings(a1)		; load different mappings for final link
+		move.w	#tile_Nem_Ball+tile_pal3,ost_tile(a1)	; use different graphics
 		move.b	#id_frame_ball_check1,ost_frame(a1)
 		move.b	#5,ost_priority(a1)
 		move.b	#id_col_20x20+id_col_hurt,ost_col_type(a1) ; make object hurt Sonic
 		rts	
 ; ===========================================================================
 
-GBall_PosData:	dc.b 0,	$10, $20, $30, $40, $60	; y-position data for links and	giant ball
+GBall_PosData:	dc.b 0,	$10, $20, $30, $40, $60			; y-position data for links and	giant ball
 
 ; ===========================================================================
 
@@ -192,8 +192,8 @@ include_BossBall_2:	macro
 
 
 GBall_Move:
-		tst.b	ost_ball_direction(a0) ; is ball swinging right?
-		bne.s	@right			; if yes, branch
+		tst.b	ost_ball_direction(a0)			; is ball swinging right?
+		bne.s	@right					; if yes, branch
 		move.w	ost_ball_angle(a0),d0
 		addq.w	#8,d0
 		move.w	d0,ost_ball_angle(a0)

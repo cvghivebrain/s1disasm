@@ -15,8 +15,8 @@ Circ_Index:	index *,,2
 		ptr Circ_Platform
 		ptr Circ_Action
 
-ost_circ_y_start:	equ $30	; original y-axis position (2 bytes)
-ost_circ_x_start:	equ $32	; original x-axis position (2 bytes)
+ost_circ_y_start:	equ $30					; original y-axis position (2 bytes)
+ost_circ_x_start:	equ $32					; original x-axis position (2 bytes)
 ; ===========================================================================
 
 Circ_Main:	; Routine 0
@@ -60,8 +60,8 @@ Circ_Types:
 ; ===========================================================================
 
 @type00:
-		move.b	(v_oscillating_table+$20).w,d1 ; get rotating value
-		subi.b	#$50,d1		; set radius of circle
+		move.b	(v_oscillating_table+$20).w,d1		; get rotating value
+		subi.b	#$50,d1					; set radius of circle
 		ext.w	d1
 		move.b	(v_oscillating_table+$24).w,d2
 		subi.b	#$50,d2

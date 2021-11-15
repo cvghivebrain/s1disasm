@@ -13,18 +13,18 @@
 
 
 CalcSine:
-		andi.w	#$FF,d0		; read low byte of angle only
+		andi.w	#$FF,d0					; read low byte of angle only
 		add.w	d0,d0
-		addi.w	#$80,d0		; start 90 degrees later for cosine
-		move.w	Sine_Data(pc,d0.w),d1 ; get cosine
-		subi.w	#$80,d0		; start at 0 for sine
-		move.w	Sine_Data(pc,d0.w),d0 ; get sine
+		addi.w	#$80,d0					; start 90 degrees later for cosine
+		move.w	Sine_Data(pc,d0.w),d1			; get cosine
+		subi.w	#$80,d0					; start at 0 for sine
+		move.w	Sine_Data(pc,d0.w),d0			; get sine
 		rts	
 ; End of function CalcSine
 
 Sine_Data:
 		incbin	"Misc Data\Sine & Cosine Waves.bin"	; values for a 256 degree sine wave
-		incbin	"Misc Data\Sine & Cosine Waves.bin",, $80; contains duplicate data at the end!
+		incbin	"Misc Data\Sine & Cosine Waves.bin",, $80 ; contains duplicate data at the end!
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to calculate the square root of a number (0 to $FFFF)
@@ -89,25 +89,25 @@ CalcAngle:
 		movem.l	d3-d4,-(sp)
 		moveq	#0,d3
 		moveq	#0,d4
-		move.w	d1,d3		; d3 = x distance
-		move.w	d2,d4		; d4 = y distance
+		move.w	d1,d3					; d3 = x distance
+		move.w	d2,d4					; d4 = y distance
 		or.w	d3,d4
-		beq.s	CalcAngle_Both0	; branch if both are 0
+		beq.s	CalcAngle_Both0				; branch if both are 0
 		move.w	d2,d4
 		tst.w	d3
-		bpl.w	@x_positive	; branch if x is positive
-		neg.w	d3		; force x positive
+		bpl.w	@x_positive				; branch if x is positive
+		neg.w	d3					; force x positive
 
 	@x_positive:
 		tst.w	d4
-		bpl.w	@y_positive	; branch if y is positive
-		neg.w	d4		; force y positive
+		bpl.w	@y_positive				; branch if y is positive
+		neg.w	d4					; force y positive
 
 	@y_positive:
 		cmp.w	d3,d4
-		bcc.w	@y_larger	; branch if y is larger or same
+		bcc.w	@y_larger				; branch if y is larger or same
 		lsl.l	#8,d4
-		divu.w	d3,d4		; d4 = (y*$100)/x
+		divu.w	d3,d4					; d4 = (y*$100)/x
 		moveq	#0,d0
 		move.b	Angle_Data(pc,d4.w),d0
 		bra.s	CalcAngle_ChkRotation
@@ -115,19 +115,19 @@ CalcAngle:
 
 @y_larger:
 		lsl.l	#8,d3
-		divu.w	d4,d3		; d3 = (x*$100)/y
+		divu.w	d4,d3					; d3 = (x*$100)/y
 		moveq	#$40,d0
 		sub.b	Angle_Data(pc,d3.w),d0
 
 CalcAngle_ChkRotation:
 		tst.w	d1
-		bpl.w	@x_positive	; branch if x is positive
+		bpl.w	@x_positive				; branch if x is positive
 		neg.w	d0
 		addi.w	#$80,d0
 
 	@x_positive:
 		tst.w	d2
-		bpl.w	@y_positive	; branch if y is positive
+		bpl.w	@y_positive				; branch if y is positive
 		neg.w	d0
 		addi.w	#$100,d0
 

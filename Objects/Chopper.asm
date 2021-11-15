@@ -13,7 +13,7 @@ Chop_Index:	index *,,2
 		ptr Chop_Main
 		ptr Chop_ChgSpeed
 
-ost_chopper_y_start:	equ $30	; original y position (2 bytes)
+ost_chopper_y_start:	equ $30					; original y position (2 bytes)
 ; ===========================================================================
 
 Chop_Main:	; Routine 0
@@ -24,29 +24,29 @@ Chop_Main:	; Routine 0
 		move.b	#4,ost_priority(a0)
 		move.b	#id_col_12x16,ost_col_type(a0)
 		move.b	#$10,ost_actwidth(a0)
-		move.w	#-$700,ost_y_vel(a0) ; set vertical speed
-		move.w	ost_y_pos(a0),ost_chopper_y_start(a0) ; save original position
+		move.w	#-$700,ost_y_vel(a0)			; set vertical speed
+		move.w	ost_y_pos(a0),ost_chopper_y_start(a0)	; save original position
 
 Chop_ChgSpeed:	; Routine 2
 		lea	(Ani_Chop).l,a1
 		bsr.w	AnimateSprite
 		bsr.w	SpeedToPos
-		addi.w	#$18,ost_y_vel(a0) ; reduce speed
+		addi.w	#$18,ost_y_vel(a0)			; reduce speed
 		move.w	ost_chopper_y_start(a0),d0
-		cmp.w	ost_y_pos(a0),d0 ; has Chopper returned to its original position?
-		bcc.s	@chganimation	; if not, branch
+		cmp.w	ost_y_pos(a0),d0			; has Chopper returned to its original position?
+		bcc.s	@chganimation				; if not, branch
 		move.w	d0,ost_y_pos(a0)
-		move.w	#-$700,ost_y_vel(a0) ; set vertical speed
+		move.w	#-$700,ost_y_vel(a0)			; set vertical speed
 
 	@chganimation:
-		move.b	#id_ani_chopper_fast,ost_anim(a0) ; use fast animation
+		move.b	#id_ani_chopper_fast,ost_anim(a0)	; use fast animation
 		subi.w	#$C0,d0
 		cmp.w	ost_y_pos(a0),d0
 		bcc.s	@nochg
-		move.b	#id_ani_chopper_slow,ost_anim(a0) ; use slow animation
-		tst.w	ost_y_vel(a0)	; is Chopper at	its highest point?
-		bmi.s	@nochg		; if not, branch
-		move.b	#id_ani_chopper_still,ost_anim(a0) ; use stationary animation
+		move.b	#id_ani_chopper_slow,ost_anim(a0)	; use slow animation
+		tst.w	ost_y_vel(a0)				; is Chopper at	its highest point?
+		bmi.s	@nochg					; if not, branch
+		move.b	#id_ani_chopper_still,ost_anim(a0)	; use stationary animation
 
 	@nochg:
 		rts	

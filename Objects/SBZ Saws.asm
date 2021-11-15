@@ -12,9 +12,9 @@ Saw_Index:	index *,,2
 		ptr Saw_Main
 		ptr Saw_Action
 
-ost_saw_x_start:	equ $3A	; original x-axis position (2 bytes)
-ost_saw_y_start:	equ $38	; original y-axis position (2 bytes)
-ost_saw_flag:		equ $3D	; flag set when the ground saw appears
+ost_saw_x_start:	equ $3A					; original x-axis position (2 bytes)
+ost_saw_y_start:	equ $38					; original y-axis position (2 bytes)
+ost_saw_flag:		equ $3D					; flag set when the ground saw appears
 ; ===========================================================================
 
 Saw_Main:	; Routine 0
@@ -26,8 +26,8 @@ Saw_Main:	; Routine 0
 		move.b	#$20,ost_actwidth(a0)
 		move.w	ost_x_pos(a0),ost_saw_x_start(a0)
 		move.w	ost_y_pos(a0),ost_saw_y_start(a0)
-		cmpi.b	#3,ost_subtype(a0) ; is object a ground saw?
-		bcc.s	Saw_Action	; if yes, branch
+		cmpi.b	#3,ost_subtype(a0)			; is object a ground saw?
+		bcc.s	Saw_Action				; if yes, branch
 		move.b	#id_col_24x24_2+id_col_hurt,ost_col_type(a0)
 
 Saw_Action:	; Routine 2
@@ -45,16 +45,16 @@ Saw_Action:	; Routine 2
 ; ===========================================================================
 Saw_Type_Index:
 		index *
-		ptr Saw_Pizza_Still 	; pizza cutter, doesn't move - unused
-		ptr Saw_Pizza_Sideways	; pizza cutter, moves side-to-side
-		ptr Saw_Pizza_UpDown	; pizza cutter, moves up and down
-		ptr Saw_Ground_Left 	; ground saw, moves left
-		ptr Saw_Ground_Right 	; ground saw, moves right - unused
+		ptr Saw_Pizza_Still				; pizza cutter, doesn't move - unused
+		ptr Saw_Pizza_Sideways				; pizza cutter, moves side-to-side
+		ptr Saw_Pizza_UpDown				; pizza cutter, moves up and down
+		ptr Saw_Ground_Left				; ground saw, moves left
+		ptr Saw_Ground_Right				; ground saw, moves right - unused
 ; ===========================================================================
 
 ; Type 0
 Saw_Pizza_Still:
-		rts			; doesn't move
+		rts						; doesn't move
 ; ===========================================================================
 
 ; Type 1
@@ -70,12 +70,12 @@ Saw_Pizza_Sideways:
 	@noflip01:
 		move.w	ost_saw_x_start(a0),d1
 		sub.w	d0,d1
-		move.w	d1,ost_x_pos(a0) ; move saw sideways
+		move.w	d1,ost_x_pos(a0)			; move saw sideways
 
 		subq.b	#1,ost_anim_time(a0)
 		bpl.s	@sameframe01
-		move.b	#2,ost_anim_time(a0) ; time between frame changes
-		bchg	#0,ost_frame(a0) ; change frame
+		move.b	#2,ost_anim_time(a0)			; time between frame changes
+		bchg	#0,ost_frame(a0)			; change frame
 
 	@sameframe01:
 		tst.b	ost_render(a0)
@@ -83,7 +83,7 @@ Saw_Pizza_Sideways:
 		move.w	(v_frame_counter).w,d0
 		andi.w	#$F,d0
 		bne.s	@nosound01
-		play.w	1, jsr, sfx_Saw			; play saw sound
+		play.w	1, jsr, sfx_Saw				; play saw sound
 
 	@nosound01:
 		rts	
@@ -102,7 +102,7 @@ Saw_Pizza_UpDown:
 	@noflip02:
 		move.w	ost_saw_y_start(a0),d1
 		sub.w	d0,d1
-		move.w	d1,ost_y_pos(a0) ; move saw vertically
+		move.w	d1,ost_y_pos(a0)			; move saw vertically
 		subq.b	#1,ost_anim_time(a0)
 		bpl.s	@sameframe02
 		move.b	#2,ost_anim_time(a0)
@@ -114,7 +114,7 @@ Saw_Pizza_UpDown:
 		move.b	(v_oscillating_table+4).w,d0
 		cmpi.b	#$18,d0
 		bne.s	@nosound02
-		play.w	1, jsr, sfx_Saw			; play saw sound
+		play.w	1, jsr, sfx_Saw				; play saw sound
 
 	@nosound02:
 		rts	
@@ -122,8 +122,8 @@ Saw_Pizza_UpDown:
 
 ; Type 3
 Saw_Ground_Left:
-		tst.b	ost_saw_flag(a0) ; has the saw appeared already?
-		bne.s	@here03		; if yes, branch
+		tst.b	ost_saw_flag(a0)			; has the saw appeared already?
+		bne.s	@here03					; if yes, branch
 
 		move.w	(v_ost_player+ost_x_pos).w,d0
 		subi.w	#$C0,d0
@@ -138,10 +138,10 @@ Saw_Ground_Left:
 		cmp.w	ost_y_pos(a0),d0
 		bcs.s	@nosaw03y
 		move.b	#1,ost_saw_flag(a0)
-		move.w	#$600,ost_x_vel(a0) ; move object to the right
+		move.w	#$600,ost_x_vel(a0)			; move object to the right
 		move.b	#id_col_24x24_2+id_col_hurt,ost_col_type(a0)
 		move.b	#id_frame_saw_groundsaw1,ost_frame(a0)
-		play.w	1, jsr, sfx_Saw			; play saw sound
+		play.w	1, jsr, sfx_Saw				; play saw sound
 
 	@nosaw03x:
 		addq.l	#4,sp
@@ -178,10 +178,10 @@ Saw_Ground_Right:
 		cmp.w	ost_y_pos(a0),d0
 		bcs.s	@nosaw04y
 		move.b	#1,ost_saw_flag(a0)
-		move.w	#-$600,ost_x_vel(a0) ; move object to the left
+		move.w	#-$600,ost_x_vel(a0)			; move object to the left
 		move.b	#id_col_24x24_2+id_col_hurt,ost_col_type(a0)
 		move.b	#id_frame_saw_groundsaw1,ost_frame(a0)
-		play.w	1, jsr, sfx_Saw			; play saw sound
+		play.w	1, jsr, sfx_Saw				; play saw sound
 
 	@nosaw04x:
 		addq.l	#4,sp

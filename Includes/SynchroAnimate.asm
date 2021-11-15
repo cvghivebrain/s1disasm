@@ -9,11 +9,11 @@ SynchroAnimate:
 
 ; Used for GHZ spiked log
 Sync1:
-		subq.b	#1,(v_syncani_0_time).w ; has timer reached 0?
-		bpl.s	Sync2		; if not, branch
-		move.b	#$B,(v_syncani_0_time).w ; reset timer
-		subq.b	#1,(v_syncani_0_frame).w ; next frame
-		andi.b	#7,(v_syncani_0_frame).w ; max frame is 7
+		subq.b	#1,(v_syncani_0_time).w			; has timer reached 0?
+		bpl.s	Sync2					; if not, branch
+		move.b	#$B,(v_syncani_0_time).w		; reset timer
+		subq.b	#1,(v_syncani_0_frame).w		; next frame
+		andi.b	#7,(v_syncani_0_frame).w		; max frame is 7
 
 ; Used for rings and giant rings
 Sync2:
@@ -35,8 +35,8 @@ Sync3:
 
 ; Used for bouncing rings
 Sync4:
-		tst.b	(v_syncani_3_time).w ; has timer reached 0? (starts at -1)
-		beq.s	SyncEnd		; if yes, branch
+		tst.b	(v_syncani_3_time).w			; has timer reached 0? (starts at -1)
+		beq.s	SyncEnd					; if yes, branch
 		moveq	#0,d0
 		move.b	(v_syncani_3_time).w,d0
 		add.w	(v_syncani_3_accumulator).w,d0

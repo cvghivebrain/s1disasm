@@ -14,16 +14,16 @@ Obj77_Index:	index *,,2
 		ptr Obj77_FaceMain
 		ptr Obj77_FlameMain
 
-Obj77_ObjData:	dc.b id_Obj77_ShipMain,	id_ani_boss_ship ; routine number, animation
+Obj77_ObjData:	dc.b id_Obj77_ShipMain,	id_ani_boss_ship	; routine number, animation
 		dc.b id_Obj77_FaceMain,	id_ani_boss_face1
 		dc.b id_Obj77_FlameMain, id_ani_boss_blank
 
-ost_blz_parent_x_pos:	equ $30	; parent x position (2 bytes)
-ost_blz_parent:		equ $34	; address of OST of parent object (4 bytes)
-ost_blz_parent_y_pos:	equ $38	; parent y position (2 bytes)
-ost_blz_wait_time:	equ $3C	; time to wait between each action (2 bytes)
-ost_blz_flash_num:	equ $3E	; number of times to make boss flash when hit
-ost_blz_wobble:		equ $3F	; wobble state as Eggman moves back & forth (1 byte incremented every frame & interpreted by CalcSine)
+ost_blz_parent_x_pos:	equ $30					; parent x position (2 bytes)
+ost_blz_parent:		equ $34					; address of OST of parent object (4 bytes)
+ost_blz_parent_y_pos:	equ $38					; parent y position (2 bytes)
+ost_blz_wait_time:	equ $3C					; time to wait between each action (2 bytes)
+ost_blz_flash_num:	equ $3E					; number of times to make boss flash when hit
+ost_blz_wobble:		equ $3F					; wobble state as Eggman moves back & forth (1 byte incremented every frame & interpreted by CalcSine)
 ; ===========================================================================
 
 Obj77_Main:	; Routine 0
@@ -32,7 +32,7 @@ Obj77_Main:	; Routine 0
 		move.w	ost_x_pos(a0),ost_blz_parent_x_pos(a0)
 		move.w	ost_y_pos(a0),ost_blz_parent_y_pos(a0)
 		move.b	#id_col_24x24,ost_col_type(a0)
-		move.b	#8,ost_col_property(a0) ; set number of hits to 8
+		move.b	#8,ost_col_property(a0)			; set number of hits to 8
 		move.b	#4,ost_priority(a0)
 		lea	Obj77_ObjData(pc),a2
 		movea.l	a0,a1
@@ -71,7 +71,7 @@ Obj77_ShipMain:	; Routine 2
 		moveq	#status_xflip+status_yflip,d0
 		and.b	ost_status(a0),d0
 		andi.b	#$FF-render_xflip-render_yflip,ost_render(a0) ; ignore x/yflip bits
-		or.b	d0,ost_render(a0) ; combine x/yflip bits from status instead
+		or.b	d0,ost_render(a0)			; combine x/yflip bits from status instead
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 Obj77_ShipIndex:index *
@@ -108,7 +108,7 @@ loc_17F48:
 		tst.b	ost_blz_flash_num(a0)
 		bne.s	loc_17F70
 		move.b	#$20,ost_blz_flash_num(a0)
-		play.w	1, jsr, sfx_BossHit		; play boss damage sound
+		play.w	1, jsr, sfx_BossHit			; play boss damage sound
 
 loc_17F70:
 		lea	(v_pal_dry+$22).w,a1
@@ -281,7 +281,7 @@ loc_180F6:
 		move.b	#$32,ost_blz_wait_time(a0)
 
 loc_18112:
-		play.w	0, jsr, mus_LZ		; play LZ music
+		play.w	0, jsr, mus_LZ				; play LZ music
 		if Revision<>0
 			clr.b	(f_boss_boundary).w
 		endc

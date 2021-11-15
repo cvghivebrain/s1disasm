@@ -17,11 +17,11 @@ Cat_Index:	index *,,2
 		ptr Cat_Delete
 		ptr loc_16CC0
 
-ost_cat_wait_time:	equ $2A	; time to wait between actions
-ost_cat_mode:		equ $2B	; bit 4 (+$10) = segment is moving; bit 7 (+$80) = update animation
-ost_cat_floormap:	equ $2C	; height map of floor beneath caterkiller (16 bytes)
-ost_cat_parent:		equ $3C	; address of OST of parent object (4 bytes - high byte is ost_cat_segment_pos)
-ost_cat_segment_pos:	equ $3C	; segment position - starts as 0/4/8/$A, increments as it moves
+ost_cat_wait_time:	equ $2A					; time to wait between actions
+ost_cat_mode:		equ $2B					; bit 4 (+$10) = segment is moving; bit 7 (+$80) = update animation
+ost_cat_floormap:	equ $2C					; height map of floor beneath caterkiller (16 bytes)
+ost_cat_parent:		equ $3C					; address of OST of parent object (4 bytes - high byte is ost_cat_segment_pos)
+ost_cat_segment_pos:	equ $3C					; segment position - starts as 0/4/8/$A, increments as it moves
 ; ===========================================================================
 
 locret_16950:
@@ -40,9 +40,9 @@ Cat_Main:	; Routine 0
 		addq.b	#2,ost_routine(a0)
 		move.l	#Map_Cat,ost_mappings(a0)
 		move.w	#tile_Nem_Cater_SBZ+tile_pal2,ost_tile(a0)
-		cmpi.b	#id_SBZ,(v_zone).w ; if level is SBZ, branch
+		cmpi.b	#id_SBZ,(v_zone).w			; if level is SBZ, branch
 		beq.s	@isscrapbrain
-		move.w	#tile_Nem_Cater+tile_pal2,ost_tile(a0) ; MZ specific code
+		move.w	#tile_Nem_Cater+tile_pal2,ost_tile(a0)	; MZ specific code
 
 	@isscrapbrain:
 		andi.b	#render_xflip+render_yflip,ost_render(a0)
@@ -52,7 +52,7 @@ Cat_Main:	; Routine 0
 		move.b	#8,ost_actwidth(a0)
 		move.b	#id_col_8x8,ost_col_type(a0)
 		move.w	ost_x_pos(a0),d2
-		moveq	#$C,d5		; distance between segments
+		moveq	#$C,d5					; distance between segments
 		btst	#status_xflip_bit,ost_status(a0)
 		beq.s	@noflip
 		neg.w	d5
@@ -71,9 +71,9 @@ Cat_Loop:
 		else
 			bne.w	Cat_ChkGone
 		endc
-		move.b	#id_Caterkiller,0(a1) ; load body segment object
-		move.b	d6,ost_routine(a1) ; goto Cat_BodySeg1 or Cat_BodySeg2 next
-		addq.b	#2,d6		; alternate between the two
+		move.b	#id_Caterkiller,0(a1)			; load body segment object
+		move.b	d6,ost_routine(a1)			; goto Cat_BodySeg1 or Cat_BodySeg2 next
+		addq.b	#2,d6					; alternate between the two
 		move.l	ost_mappings(a0),ost_mappings(a1)
 		move.w	ost_tile(a0),ost_tile(a1)
 		move.b	#5,ost_priority(a1)
@@ -88,17 +88,17 @@ Cat_Loop:
 		move.l	a2,ost_cat_parent(a1)
 		move.b	d4,ost_cat_segment_pos(a1)
 		addq.b	#4,d4
-		movea.l	a1,a2		; make parent object the adjacent segment instead of head
+		movea.l	a1,a2					; make parent object the adjacent segment instead of head
 
 	@fail:
-		dbf	d1,Cat_Loop	; repeat sequence 2 more times
+		dbf	d1,Cat_Loop				; repeat sequence 2 more times
 
 		move.b	#7,ost_cat_wait_time(a0)
 		clr.b	ost_cat_segment_pos(a0)
 
 Cat_Head:	; Routine 2
-		tst.b	ost_status(a0)	; is caterkiller onscreen?
-		bmi.w	loc_16C96	; if not, branch
+		tst.b	ost_status(a0)				; is caterkiller onscreen?
+		bmi.w	loc_16C96				; if not, branch
 		moveq	#0,d0
 		move.b	ost_routine2(a0),d0
 		move.w	Cat_Index2(pc,d0.w),d1
@@ -131,7 +131,7 @@ Cat_Head:	; Routine 2
 		bclr	#7,2(a2,d0.w)
 
 	@delete:
-		move.b	#id_Cat_Delete,ost_routine(a0) ; goto Cat_Delete next
+		move.b	#id_Cat_Delete,ost_routine(a0)		; goto Cat_Delete next
 		rts	
 ; ===========================================================================
 
@@ -150,17 +150,17 @@ Cat_Undulate:
 ; ===========================================================================
 
 	@move:
-		addq.b	#2,ost_routine2(a0) ; goto Cat_Floor next
+		addq.b	#2,ost_routine2(a0)			; goto Cat_Floor next
 		move.b	#$10,ost_cat_wait_time(a0)
 		move.w	#-$C0,ost_x_vel(a0)
 		move.w	#$40,ost_inertia(a0)
-		bchg	#4,ost_cat_mode(a0) ; is segment moving?
-		bne.s	@is_moving	 ; if yes, branch
+		bchg	#4,ost_cat_mode(a0)			; is segment moving?
+		bne.s	@is_moving				; if yes, branch
 		clr.w	ost_x_vel(a0)
 		neg.w	ost_inertia(a0)
 
 	@is_moving:
-		bset	#7,ost_cat_mode(a0) ; update animation
+		bset	#7,ost_cat_mode(a0)			; update animation
 
 Cat_Floor:
 		subq.b	#1,ost_cat_wait_time(a0)

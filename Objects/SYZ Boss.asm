@@ -15,20 +15,20 @@ Obj75_Index:	index *,,2
 		ptr Obj75_FlameMain
 		ptr Obj75_SpikeMain
 
-Obj75_ObjData:	dc.b id_Obj75_ShipMain,	id_ani_boss_ship, 5		; routine number, animation, priority
+Obj75_ObjData:	dc.b id_Obj75_ShipMain,	id_ani_boss_ship, 5	; routine number, animation, priority
 		dc.b id_Obj75_FaceMain,	id_ani_boss_face1, 5
 		dc.b id_Obj75_FlameMain, id_ani_boss_blank, 5
 		dc.b id_Obj75_SpikeMain, 0, 5
 
-ost_bsyz_mode:		equ $29	; $FF = lifting block
-ost_bsyz_parent_x_pos:	equ $30	; parent x position (2 bytes)
-ost_bsyz_block_num:	equ $34	; number of block Eggman is above (0-9) - parent only
-ost_bsyz_parent:	equ $34	; address of OST of parent object - children only (4 bytes)
-ost_bsyz_block:		equ $36	; address of OST of block Eggman is above - parent only (2 bytes)
-ost_bsyz_parent_y_pos:	equ $38	; parent y position (2 bytes)
-ost_bsyz_wait_time:	equ $3C	; time to wait between each action (2 bytes)
-ost_bsyz_flash_num:	equ $3E	; number of times to make boss flash when hit
-ost_bsyz_wobble:	equ $3F	; wobble state as Eggman moves back & forth (1 byte incremented every frame & interpreted by CalcSine)
+ost_bsyz_mode:		equ $29					; $FF = lifting block
+ost_bsyz_parent_x_pos:	equ $30					; parent x position (2 bytes)
+ost_bsyz_block_num:	equ $34					; number of block Eggman is above (0-9) - parent only
+ost_bsyz_parent:	equ $34					; address of OST of parent object - children only (4 bytes)
+ost_bsyz_block:		equ $36					; address of OST of block Eggman is above - parent only (2 bytes)
+ost_bsyz_parent_y_pos:	equ $38					; parent y position (2 bytes)
+ost_bsyz_wait_time:	equ $3C					; time to wait between each action (2 bytes)
+ost_bsyz_flash_num:	equ $3E					; number of times to make boss flash when hit
+ost_bsyz_wobble:	equ $3F					; wobble state as Eggman moves back & forth (1 byte incremented every frame & interpreted by CalcSine)
 ; ===========================================================================
 
 Obj75_Main:	; Routine 0
@@ -37,7 +37,7 @@ Obj75_Main:	; Routine 0
 		move.w	ost_x_pos(a0),ost_bsyz_parent_x_pos(a0)
 		move.w	ost_y_pos(a0),ost_bsyz_parent_y_pos(a0)
 		move.b	#id_col_24x24,ost_col_type(a0)
-		move.b	#8,ost_col_property(a0) ; set number of hits to 8
+		move.b	#8,ost_col_property(a0)			; set number of hits to 8
 		lea	Obj75_ObjData(pc),a2
 		movea.l	a0,a1
 		moveq	#3,d1
@@ -62,7 +62,7 @@ Obj75_LoadBoss:
 		move.b	#render_rel,ost_render(a1)
 		move.b	#$20,ost_actwidth(a1)
 		move.l	a0,ost_bsyz_parent(a1)
-		dbf	d1,Obj75_Loop	; repeat sequence 3 more times
+		dbf	d1,Obj75_Loop				; repeat sequence 3 more times
 
 Obj75_ShipMain:	; Routine 2
 		moveq	#0,d0
@@ -74,7 +74,7 @@ Obj75_ShipMain:	; Routine 2
 		moveq	#status_xflip+status_yflip,d0
 		and.b	ost_status(a0),d0
 		andi.b	#$FF-render_xflip-render_yflip,ost_render(a0) ; ignore x/yflip bits
-		or.b	d0,ost_render(a0) ; combine x/yflip bits from status instead
+		or.b	d0,ost_render(a0)			; combine x/yflip bits from status instead
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 Obj75_ShipIndex:index *,,2
@@ -118,7 +118,7 @@ loc_19202:
 		tst.b	ost_bsyz_flash_num(a0)
 		bne.s	loc_1923A
 		move.b	#$20,ost_bsyz_flash_num(a0)
-		play.w	1, jsr, sfx_BossHit		; play boss damage sound
+		play.w	1, jsr, sfx_BossHit			; play boss damage sound
 
 loc_1923A:
 		lea	(v_pal_dry+$22).w,a1
@@ -360,16 +360,16 @@ Obj75_FindBlocks:
 		move.b	ost_bsyz_block_num(a0),d2
 
 Obj75_FindLoop:
-		cmp.b	(a1),d1		; is object a SYZ boss block?
-		bne.s	loc_1946A	; if not, branch
-		cmp.b	ost_subtype(a1),d2 ; is Eggman above the block?
-		bne.s	loc_1946A	; if not, branch
+		cmp.b	(a1),d1					; is object a SYZ boss block?
+		bne.s	loc_1946A				; if not, branch
+		cmp.b	ost_subtype(a1),d2			; is Eggman above the block?
+		bne.s	loc_1946A				; if not, branch
 		move.w	a1,ost_bsyz_block(a0)
 		bra.s	locret_19472
 ; ===========================================================================
 
 loc_1946A:
-		lea	$40(a1),a1	; next object RAM entry
+		lea	$40(a1),a1				; next object RAM entry
 		dbf	d0,Obj75_FindLoop
 
 locret_19472:
@@ -429,7 +429,7 @@ loc_194DA:
 
 loc_194E0:
 		clr.w	ost_y_vel(a0)
-		play.w	0, jsr, mus_SYZ		; play SYZ music
+		play.w	0, jsr, mus_SYZ				; play SYZ music
 
 loc_194EE:
 		bra.w	loc_191F2

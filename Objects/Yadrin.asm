@@ -45,7 +45,7 @@ Yad_Index:	index *,,2
 		ptr Yad_Main
 		ptr Yad_Action
 
-ost_yadrin_wait_time:	equ $30	; time to wait before changing direction (2 bytes)
+ost_yadrin_wait_time:	equ $30					; time to wait before changing direction (2 bytes)
 ; ===========================================================================
 
 Yad_Main:	; Routine 0
@@ -61,7 +61,7 @@ Yad_Main:	; Routine 0
 		bsr.w	FindFloorObj
 		tst.w	d1
 		bpl.s	locret_F89E
-		add.w	d1,ost_y_pos(a0) ; match object's position with the floor
+		add.w	d1,ost_y_pos(a0)			; match object's position with the floor
 		move.w	#0,ost_y_vel(a0)
 		addq.b	#2,ost_routine(a0)
 		bchg	#status_xflip_bit,ost_status(a0)
@@ -85,14 +85,14 @@ Yad_Index2:	index *
 ; ===========================================================================
 
 Yad_Move:
-		subq.w	#1,ost_yadrin_wait_time(a0) ; subtract 1 from pause time
-		bpl.s	locret_F8E2	; if time remains, branch
+		subq.w	#1,ost_yadrin_wait_time(a0)		; subtract 1 from pause time
+		bpl.s	locret_F8E2				; if time remains, branch
 		addq.b	#2,ost_routine2(a0)
-		move.w	#-$100,ost_x_vel(a0) ; move object
+		move.w	#-$100,ost_x_vel(a0)			; move object
 		move.b	#id_ani_yadrin_walk,ost_anim(a0)
 		bchg	#status_xflip_bit,ost_status(a0)
 		bne.s	locret_F8E2
-		neg.w	ost_x_vel(a0)	; change direction
+		neg.w	ost_x_vel(a0)				; change direction
 
 	locret_F8E2:
 		rts	
@@ -105,7 +105,7 @@ Yad_FixToFloor:
 		blt.s	Yad_Pause
 		cmpi.w	#$C,d1
 		bge.s	Yad_Pause
-		add.w	d1,ost_y_pos(a0) ; match object's position to the floor
+		add.w	d1,ost_y_pos(a0)			; match object's position to the floor
 		bsr.w	Yad_ChkWall
 		bne.s	Yad_Pause
 		rts	
@@ -113,7 +113,7 @@ Yad_FixToFloor:
 
 Yad_Pause:
 		subq.b	#2,ost_routine2(a0)
-		move.w	#59,ost_yadrin_wait_time(a0) ; set pause time to 1 second
+		move.w	#59,ost_yadrin_wait_time(a0)		; set pause time to 1 second
 		move.w	#0,ost_x_vel(a0)
 		move.b	#id_ani_yadrin_stand,ost_anim(a0)
 		rts	

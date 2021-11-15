@@ -15,10 +15,10 @@ Obj74_Index:	index *,,2
 		ptr loc_18886
 		ptr Obj74_Delete3
 
-ost_bfire_wait_time:	equ $29	; time to wait between events
-ost_bfire_x_start:	equ $30	; original x position (2 bytes)
-ost_bfire_x_prev:	equ $32 ; x position where most recent fire spread object was spawned (2 bytes)
-ost_bfire_y_start:	equ $38	; original y position (2 bytes)
+ost_bfire_wait_time:	equ $29					; time to wait between events
+ost_bfire_x_start:	equ $30					; original x position (2 bytes)
+ost_bfire_x_prev:	equ $32					; x position where most recent fire spread object was spawned (2 bytes)
+ost_bfire_y_start:	equ $38					; original y position (2 bytes)
 ; ===========================================================================
 
 Obj74_Main:	; Routine 0
@@ -30,18 +30,18 @@ Obj74_Main:	; Routine 0
 		move.b	#5,ost_priority(a0)
 		move.w	ost_y_pos(a0),ost_bfire_y_start(a0)
 		move.b	#8,ost_actwidth(a0)
-		addq.b	#2,ost_routine(a0) ; goto Obj74_Action next
-		tst.b	ost_subtype(a0)	; is subtype 0?
-		bne.s	Obj74_First	; if not, branch
+		addq.b	#2,ost_routine(a0)			; goto Obj74_Action next
+		tst.b	ost_subtype(a0)				; is subtype 0?
+		bne.s	Obj74_First				; if not, branch
 		move.b	#id_col_8x8+id_col_hurt,ost_col_type(a0)
-		addq.b	#2,ost_routine(a0) ; goto loc_18886 next
+		addq.b	#2,ost_routine(a0)			; goto loc_18886 next
 		bra.w	loc_18886
 ; ===========================================================================
 
 ; Original fireball launched from Eggman's ship
 Obj74_First:
-		move.b	#30,ost_bfire_wait_time(a0) ; wait half a second before dropping
-		play.w	1, jsr, sfx_LavaBall		; play lava sound
+		move.b	#30,ost_bfire_wait_time(a0)		; wait half a second before dropping
+		play.w	1, jsr, sfx_LavaBall			; play lava sound
 
 Obj74_Action:	; Routine 2
 		moveq	#0,d0
@@ -67,17 +67,17 @@ Obj74_Index2:	index *,,2
 ; ===========================================================================
 
 Obj74_Drop:
-		bset	#status_yflip_bit,ost_status(a0) ; invert fireball so only tail is visible
-		subq.b	#1,ost_bfire_wait_time(a0) ; decrement timer
-		bpl.s	locret_18780	; branch if time remains
+		bset	#status_yflip_bit,ost_status(a0)	; invert fireball so only tail is visible
+		subq.b	#1,ost_bfire_wait_time(a0)		; decrement timer
+		bpl.s	locret_18780				; branch if time remains
 		move.b	#id_col_8x8+id_col_hurt,ost_col_type(a0)
 		clr.b	ost_subtype(a0)
 		addi.w	#$18,ost_y_vel(a0)
-		bclr	#status_yflip_bit,ost_status(a0) ; yflip fireball so it's poining down
+		bclr	#status_yflip_bit,ost_status(a0)	; yflip fireball so it's poining down
 		bsr.w	FindFloorObj
 		tst.w	d1
 		bpl.s	locret_18780
-		addq.b	#2,ost_routine2(a0) ; goto Obj74_MakeFlame when it hits the floor
+		addq.b	#2,ost_routine2(a0)			; goto Obj74_MakeFlame when it hits the floor
 
 locret_18780:
 		rts	
@@ -86,8 +86,8 @@ locret_18780:
 Obj74_MakeFlame:
 		subq.w	#2,ost_y_pos(a0)
 		bset	#tile_hi_bit,ost_tile(a0)
-		move.w	#$A0,ost_x_vel(a0) ; move right
-		clr.w	ost_y_vel(a0)	; stop falling
+		move.w	#$A0,ost_x_vel(a0)			; move right
+		clr.w	ost_y_vel(a0)				; stop falling
 		move.w	ost_x_pos(a0),ost_bfire_x_start(a0)
 		move.w	ost_y_pos(a0),ost_bfire_y_start(a0)
 		move.b	#3,ost_bfire_wait_time(a0)
@@ -98,14 +98,14 @@ Obj74_MakeFlame:
 		moveq	#3,d0
 
 Obj74_Loop:
-		move.l	(a2)+,(a3)+	; duplicate object
+		move.l	(a2)+,(a3)+				; duplicate object
 		move.l	(a2)+,(a3)+
 		move.l	(a2)+,(a3)+
 		move.l	(a2)+,(a3)+
 		dbf	d0,Obj74_Loop
 
-		neg.w	ost_x_vel(a1)	; make duplicate move left
-		addq.b	#2,ost_routine2(a1) ; goto Obj74_FireSpread next
+		neg.w	ost_x_vel(a1)				; make duplicate move left
+		addq.b	#2,ost_routine2(a1)			; goto Obj74_FireSpread next
 
 loc_187CA:
 		addq.b	#2,ost_routine2(a0)
@@ -162,7 +162,7 @@ loc_1882C:
 
 Obj74_FallEdge:
 		bclr	#status_yflip_bit,ost_status(a0)
-		addi.w	#$24,ost_y_vel(a0) ; make flame fall
+		addi.w	#$24,ost_y_vel(a0)			; make flame fall
 		move.w	ost_x_pos(a0),d0
 		sub.w	ost_bfire_x_prev(a0),d0
 		bpl.s	loc_1884A

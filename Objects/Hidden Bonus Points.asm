@@ -12,7 +12,7 @@ Bonus_Index:	index *,,2
 		ptr Bonus_Main
 		ptr Bonus_Display
 
-ost_bonus_wait_time:	equ $30	; length of time to display bonus sprites (2 bytes)
+ost_bonus_wait_time:	equ $30					; length of time to display bonus sprites (2 bytes)
 ; ===========================================================================
 
 Bonus_Main:	; Routine 0
@@ -41,12 +41,12 @@ Bonus_Main:	; Routine 0
 		move.b	#0,ost_priority(a0)
 		move.b	#$10,ost_actwidth(a0)
 		move.b	ost_subtype(a0),ost_frame(a0)
-		move.w	#119,ost_bonus_wait_time(a0) ; set display time to 2 seconds
-		play.w	1, jsr, sfx_Bonus		; play bonus sound
+		move.w	#119,ost_bonus_wait_time(a0)		; set display time to 2 seconds
+		play.w	1, jsr, sfx_Bonus			; play bonus sound
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0
 		add.w	d0,d0
-		move.w	@points(pc,d0.w),d0 ; load bonus points array
+		move.w	@points(pc,d0.w),d0			; load bonus points array
 		jsr	(AddPoints).l
 
 	@chkdel:
@@ -57,15 +57,15 @@ Bonus_Main:	; Routine 0
 		jmp	(DeleteObject).l
 
 ; ===========================================================================
-@points:	dc.w 0			; Bonus	points array
+@points:	dc.w 0						; Bonus	points array
 		dc.w 1000
 		dc.w 100
 		dc.w 1
 ; ===========================================================================
 
 Bonus_Display:	; Routine 2
-		subq.w	#1,ost_bonus_wait_time(a0) ; decrement display time
-		bmi.s	Bonus_Display_Delete ; if time is zero, branch
+		subq.w	#1,ost_bonus_wait_time(a0)		; decrement display time
+		bmi.s	Bonus_Display_Delete			; if time is zero, branch
 		out_of_range.s	Bonus_Display_Delete
 		jmp	(DisplaySprite).l
 

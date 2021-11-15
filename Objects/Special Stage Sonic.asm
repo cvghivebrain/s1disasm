@@ -3,8 +3,8 @@
 ; ---------------------------------------------------------------------------
 
 SonicSpecial:
-		tst.w	(v_debug_active).w	; is debug mode	being used?
-		beq.s	Obj09_Normal	; if not, branch
+		tst.w	(v_debug_active).w			; is debug mode	being used?
+		beq.s	Obj09_Normal				; if not, branch
 		bsr.w	SS_FixCamera
 		bra.w	DebugMode
 ; ===========================================================================
@@ -21,12 +21,12 @@ Obj09_Index:	index *,,2
 		ptr Obj09_ExitStage
 		ptr Obj09_Exit2
 
-ost_ss_item:		equ $30	; item id Sonic is touching
-ost_ss_item_address:	equ $32	; RAM address of item in layout Sonic is touching (4 bytes)
-ost_ss_updown_time:	equ $36	; time until UP/DOWN can be triggered again
-ost_ss_r_time:		equ $37	; time until R can be triggered again
-ost_ss_restart_time:	equ $38	; time until game mode changes after exiting SS (2 bytes; nonfunctional)
-ost_ss_ghost:		equ $3A	; status of ghost blocks - 0 = ghost; 1 = passed; 2 = solid
+ost_ss_item:		equ $30					; item id Sonic is touching
+ost_ss_item_address:	equ $32					; RAM address of item in layout Sonic is touching (4 bytes)
+ost_ss_updown_time:	equ $36					; time until UP/DOWN can be triggered again
+ost_ss_r_time:		equ $37					; time until R can be triggered again
+ost_ss_restart_time:	equ $38					; time until game mode changes after exiting SS (2 bytes; nonfunctional)
+ost_ss_ghost:		equ $3A					; status of ghost blocks - 0 = ghost; 1 = passed; 2 = solid
 ; ===========================================================================
 
 Obj09_Main:	; Routine 0
@@ -42,11 +42,11 @@ Obj09_Main:	; Routine 0
 		bset	#status_air_bit,ost_status(a0)
 
 Obj09_ChkDebug:	; Routine 2
-		tst.w	(f_debug_enable).w	; is debug mode	cheat enabled?
-		beq.s	Obj09_NoDebug	; if not, branch
-		btst	#bitB,(v_joypad_press_actual).w ; is button B pressed?
-		beq.s	Obj09_NoDebug	; if not, branch
-		move.w	#1,(v_debug_active).w ; change Sonic into a ring
+		tst.w	(f_debug_enable).w			; is debug mode	cheat enabled?
+		beq.s	Obj09_NoDebug				; if not, branch
+		btst	#bitB,(v_joypad_press_actual).w		; is button B pressed?
+		beq.s	Obj09_NoDebug				; if not, branch
+		move.w	#1,(v_debug_active).w			; change Sonic into a ring
 
 Obj09_NoDebug:
 		move.b	#0,ost_ss_item(a0)
@@ -90,13 +90,13 @@ Obj09_Display:
 
 
 Obj09_Move:
-		btst	#bitL,(v_joypad_hold).w ; is left being pressed?
-		beq.s	Obj09_ChkRight	; if not, branch
+		btst	#bitL,(v_joypad_hold).w			; is left being pressed?
+		beq.s	Obj09_ChkRight				; if not, branch
 		bsr.w	Obj09_MoveLeft
 
 Obj09_ChkRight:
-		btst	#bitR,(v_joypad_hold).w ; is right being pressed?
-		beq.s	loc_1BA78	; if not, branch
+		btst	#bitR,(v_joypad_hold).w			; is right being pressed?
+		beq.s	loc_1BA78				; if not, branch
 		bsr.w	Obj09_MoveRight
 
 loc_1BA78:
@@ -217,8 +217,8 @@ locret_1BB54:
 
 Obj09_Jump:
 		move.b	(v_joypad_press).w,d0
-		andi.b	#btnABC,d0	; is A,	B or C pressed?
-		beq.s	Obj09_NoJump	; if not, branch
+		andi.b	#btnABC,d0				; is A,	B or C pressed?
+		beq.s	Obj09_NoJump				; if not, branch
 		move.b	(v_ss_angle).w,d0
 		andi.b	#$FC,d0
 		neg.b	d0
@@ -231,7 +231,7 @@ Obj09_Jump:
 		asr.l	#8,d0
 		move.w	d0,ost_y_vel(a0)
 		bset	#status_air_bit,ost_status(a0)
-		play.w	1, jsr, sfx_Jump		; play jumping sound
+		play.w	1, jsr, sfx_Jump			; play jumping sound
 
 Obj09_NoJump:
 		rts	
@@ -289,17 +289,17 @@ locret_1BBDE:
 ; ===========================================================================
 
 Obj09_ExitStage:
-		addi.w	#$40,(v_ss_rotation_speed).w ; increase stage rotation
-		cmpi.w	#$1800,(v_ss_rotation_speed).w ; check if it's up to $1800
-		bne.s	@not1800	; if not, branch
-		move.b	#id_Level,(v_gamemode).w ; set game mode to normal level
+		addi.w	#$40,(v_ss_rotation_speed).w		; increase stage rotation
+		cmpi.w	#$1800,(v_ss_rotation_speed).w		; check if it's up to $1800
+		bne.s	@not1800				; if not, branch
+		move.b	#id_Level,(v_gamemode).w		; set game mode to normal level
 
 	@not1800:
-		cmpi.w	#$3000,(v_ss_rotation_speed).w ; check if it's up to $3000
-		blt.s	@not3000	; if not, branch
-		move.w	#0,(v_ss_rotation_speed).w ; stop rotation
+		cmpi.w	#$3000,(v_ss_rotation_speed).w		; check if it's up to $3000
+		blt.s	@not3000				; if not, branch
+		move.w	#0,(v_ss_rotation_speed).w		; stop rotation
 		move.w	#$4000,(v_ss_angle).w
-		addq.b	#2,ost_routine(a0) ; goto Obj09_Exit2 next
+		addq.b	#2,ost_routine(a0)			; goto Obj09_Exit2 next
 		move.w	#$3C,ost_ss_restart_time(a0)
 
 	@not3000:
@@ -432,9 +432,9 @@ sub_1BCE8:
 
 sub_1BD30:
 		beq.s	locret_1BD44
-		cmpi.b	#$28,d4		; is the item an extra life?
+		cmpi.b	#$28,d4					; is the item an extra life?
 		beq.s	locret_1BD44
-		cmpi.b	#$3A,d4		; is the item an emerald or ghost block ($3B-$4A)?
+		cmpi.b	#$3A,d4					; is the item an emerald or ghost block ($3B-$4A)?
 		bcs.s	loc_1BD46
 		cmpi.b	#$4B,d4
 		bcc.s	loc_1BD46
@@ -476,7 +476,7 @@ Obj09_ChkItems:
 ; ===========================================================================
 
 Obj09_ChkCont:
-		cmpi.b	#$3A,d4		; is the item a	ring?
+		cmpi.b	#$3A,d4					; is the item a	ring?
 		bne.s	Obj09_Chk1Up
 		bsr.w	SS_RemoveCollectedItem
 		bne.s	Obj09_GetCont
@@ -485,12 +485,12 @@ Obj09_ChkCont:
 
 Obj09_GetCont:
 		jsr	(CollectRing).l
-		cmpi.w	#50,(v_rings).w	; check if you have 50 rings
+		cmpi.w	#50,(v_rings).w				; check if you have 50 rings
 		bcs.s	Obj09_NoCont
 		bset	#0,(v_ring_reward).w
 		bne.s	Obj09_NoCont
-		addq.b	#1,(v_continues).w ; add 1 to number of continues
-		play.w	0, jsr, sfx_Continue		; play extra continue sound
+		addq.b	#1,(v_continues).w			; add 1 to number of continues
+		play.w	0, jsr, sfx_Continue			; play extra continue sound
 
 Obj09_NoCont:
 		moveq	#0,d4
@@ -498,7 +498,7 @@ Obj09_NoCont:
 ; ===========================================================================
 
 Obj09_Chk1Up:
-		cmpi.b	#$28,d4		; is the item an extra life?
+		cmpi.b	#$28,d4					; is the item an extra life?
 		bne.s	Obj09_ChkEmer
 		bsr.w	SS_RemoveCollectedItem
 		bne.s	Obj09_Get1Up
@@ -506,15 +506,15 @@ Obj09_Chk1Up:
 		move.l	a1,4(a2)
 
 Obj09_Get1Up:
-		addq.b	#1,(v_lives).w	; add 1 to number of lives
-		addq.b	#1,(f_hud_lives_update).w ; update the lives counter
-		play.w	0, jsr, mus_ExtraLife		; play extra life music
+		addq.b	#1,(v_lives).w				; add 1 to number of lives
+		addq.b	#1,(f_hud_lives_update).w		; update the lives counter
+		play.w	0, jsr, mus_ExtraLife			; play extra life music
 		moveq	#0,d4
 		rts	
 ; ===========================================================================
 
 Obj09_ChkEmer:
-		cmpi.b	#$3B,d4		; is the item an emerald?
+		cmpi.b	#$3B,d4					; is the item an emerald?
 		bcs.s	Obj09_ChkGhost
 		cmpi.b	#$40,d4
 		bhi.s	Obj09_ChkGhost
@@ -524,32 +524,32 @@ Obj09_ChkEmer:
 		move.l	a1,4(a2)
 
 Obj09_GetEmer:
-		cmpi.b	#6,(v_emeralds).w ; do you have all the emeralds?
-		beq.s	Obj09_NoEmer	; if yes, branch
+		cmpi.b	#6,(v_emeralds).w			; do you have all the emeralds?
+		beq.s	Obj09_NoEmer				; if yes, branch
 		subi.b	#$3B,d4
 		moveq	#0,d0
 		move.b	(v_emeralds).w,d0
 		lea	(v_emerald_list).w,a2
 		move.b	d4,(a2,d0.w)
-		addq.b	#1,(v_emeralds).w ; add 1 to number of emeralds
+		addq.b	#1,(v_emeralds).w			; add 1 to number of emeralds
 
 Obj09_NoEmer:
-		play.w	1, jsr, mus_Emerald		; play emerald music
+		play.w	1, jsr, mus_Emerald			; play emerald music
 		moveq	#0,d4
 		rts	
 ; ===========================================================================
 
 Obj09_ChkGhost:
-		cmpi.b	#$41,d4		; is the item a	ghost block?
+		cmpi.b	#$41,d4					; is the item a	ghost block?
 		bne.s	Obj09_ChkGhostTag
-		move.b	#1,ost_ss_ghost(a0) ; mark the ghost block as "passed"
+		move.b	#1,ost_ss_ghost(a0)			; mark the ghost block as "passed"
 
 Obj09_ChkGhostTag:
-		cmpi.b	#$4A,d4		; is the item a	switch for ghost blocks?
+		cmpi.b	#$4A,d4					; is the item a	switch for ghost blocks?
 		bne.s	Obj09_NoGhost
-		cmpi.b	#1,ost_ss_ghost(a0) ; have the ghost blocks been passed?
-		bne.s	Obj09_NoGhost	; if not, branch
-		move.b	#2,ost_ss_ghost(a0) ; mark the ghost blocks as "solid"
+		cmpi.b	#1,ost_ss_ghost(a0)			; have the ghost blocks been passed?
+		bne.s	Obj09_NoGhost				; if not, branch
+		move.b	#2,ost_ss_ghost(a0)			; mark the ghost blocks as "solid"
 
 Obj09_NoGhost:
 		moveq	#-1,d4
@@ -557,8 +557,8 @@ Obj09_NoGhost:
 ; ===========================================================================
 
 Obj09_MakeGhostSolid:
-		cmpi.b	#2,ost_ss_ghost(a0) ; is the ghost marked as "solid"?
-		bne.s	Obj09_GhostNotSolid ; if not, branch
+		cmpi.b	#2,ost_ss_ghost(a0)			; is the ghost marked as "solid"?
+		bne.s	Obj09_GhostNotSolid			; if not, branch
 		lea	($FF1020).l,a1
 		moveq	#$3F,d1
 
@@ -566,9 +566,9 @@ Obj09_GhostLoop2:
 		moveq	#$3F,d2
 
 Obj09_GhostLoop:
-		cmpi.b	#$41,(a1)	; is the item a	ghost block?
-		bne.s	Obj09_NoReplace	; if not, branch
-		move.b	#$2C,(a1)	; replace ghost	block with a solid block
+		cmpi.b	#$41,(a1)				; is the item a	ghost block?
+		bne.s	Obj09_NoReplace				; if not, branch
+		move.b	#$2C,(a1)				; replace ghost	block with a solid block
 
 Obj09_NoReplace:
 		addq.w	#1,a1
@@ -603,7 +603,7 @@ locret_1BEAC:
 ; ===========================================================================
 
 Obj09_ChkBumper:
-		cmpi.b	#$25,d0		; is the item a	bumper?
+		cmpi.b	#$25,d0					; is the item a	bumper?
 		bne.s	Obj09_GOAL
 		move.l	ost_ss_item_address(a0),d1
 		subi.l	#$FF0001,d1
@@ -634,53 +634,53 @@ Obj09_ChkBumper:
 		move.l	d0,4(a2)
 
 Obj09_BumpSnd:
-		play.w	1, jmp, sfx_Bumper		; play bumper sound
+		play.w	1, jmp, sfx_Bumper			; play bumper sound
 ; ===========================================================================
 
 Obj09_GOAL:
-		cmpi.b	#$27,d0		; is the item a	"GOAL"?
+		cmpi.b	#$27,d0					; is the item a	"GOAL"?
 		bne.s	Obj09_UPblock
-		addq.b	#2,ost_routine(a0) ; run routine "Obj09_ExitStage"
-		play.w	1, jsr, sfx_Goal		; play "GOAL" sound
+		addq.b	#2,ost_routine(a0)			; run routine "Obj09_ExitStage"
+		play.w	1, jsr, sfx_Goal			; play "GOAL" sound
 		rts	
 ; ===========================================================================
 
 Obj09_UPblock:
-		cmpi.b	#$29,d0		; is the item an "UP" block?
+		cmpi.b	#$29,d0					; is the item an "UP" block?
 		bne.s	Obj09_DOWNblock
 		tst.b	ost_ss_updown_time(a0)
 		bne.w	Obj09_NoGlass
 		move.b	#$1E,ost_ss_updown_time(a0)
 		btst	#6,(v_ss_rotation_speed+1).w
 		beq.s	Obj09_UPsnd
-		asl	(v_ss_rotation_speed).w	; increase stage rotation speed
+		asl	(v_ss_rotation_speed).w			; increase stage rotation speed
 		movea.l	ost_ss_item_address(a0),a1
 		subq.l	#1,a1
-		move.b	#$2A,(a1)	; change item to a "DOWN" block
+		move.b	#$2A,(a1)				; change item to a "DOWN" block
 
 Obj09_UPsnd:
-		play.w	1, jmp, sfx_ActionBlock		; play up/down sound
+		play.w	1, jmp, sfx_ActionBlock			; play up/down sound
 ; ===========================================================================
 
 Obj09_DOWNblock:
-		cmpi.b	#$2A,d0		; is the item a	"DOWN" block?
+		cmpi.b	#$2A,d0					; is the item a	"DOWN" block?
 		bne.s	Obj09_Rblock
 		tst.b	ost_ss_updown_time(a0)
 		bne.w	Obj09_NoGlass
 		move.b	#$1E,ost_ss_updown_time(a0)
 		btst	#6,(v_ss_rotation_speed+1).w
 		bne.s	Obj09_DOWNsnd
-		asr	(v_ss_rotation_speed).w	; reduce stage rotation speed
+		asr	(v_ss_rotation_speed).w			; reduce stage rotation speed
 		movea.l	ost_ss_item_address(a0),a1
 		subq.l	#1,a1
-		move.b	#$29,(a1)	; change item to an "UP" block
+		move.b	#$29,(a1)				; change item to an "UP" block
 
 Obj09_DOWNsnd:
-		play.w	1, jmp, sfx_ActionBlock		; play up/down sound
+		play.w	1, jmp, sfx_ActionBlock			; play up/down sound
 ; ===========================================================================
 
 Obj09_Rblock:
-		cmpi.b	#$2B,d0		; is the item an "R" block?
+		cmpi.b	#$2B,d0					; is the item an "R" block?
 		bne.s	Obj09_ChkGlass
 		tst.b	ost_ss_r_time(a0)
 		bne.w	Obj09_NoGlass
@@ -693,19 +693,19 @@ Obj09_Rblock:
 		move.l	d0,4(a2)
 
 Obj09_RevStage:
-		neg.w	(v_ss_rotation_speed).w	; reverse stage rotation
-		play.w	1, jmp, sfx_ActionBlock		; play R-block sound
+		neg.w	(v_ss_rotation_speed).w			; reverse stage rotation
+		play.w	1, jmp, sfx_ActionBlock			; play R-block sound
 ; ===========================================================================
 
 Obj09_ChkGlass:
-		cmpi.b	#$2D,d0		; is the item a	glass block?
-		beq.s	Obj09_Glass	; if yes, branch
+		cmpi.b	#$2D,d0					; is the item a	glass block?
+		beq.s	Obj09_Glass				; if yes, branch
 		cmpi.b	#$2E,d0
 		beq.s	Obj09_Glass
 		cmpi.b	#$2F,d0
 		beq.s	Obj09_Glass
 		cmpi.b	#$30,d0
-		bne.s	Obj09_NoGlass	; if not, branch
+		bne.s	Obj09_NoGlass				; if not, branch
 
 Obj09_Glass:
 		bsr.w	SS_RemoveCollectedItem
@@ -715,16 +715,16 @@ Obj09_Glass:
 		subq.l	#1,a1
 		move.l	a1,4(a2)
 		move.b	(a1),d0
-		addq.b	#1,d0		; change glass type when touched
+		addq.b	#1,d0					; change glass type when touched
 		cmpi.b	#$30,d0
-		bls.s	Obj09_GlassUpdate ; if glass is	still there, branch
-		clr.b	d0		; remove the glass block when it's destroyed
+		bls.s	Obj09_GlassUpdate			; if glass is	still there, branch
+		clr.b	d0					; remove the glass block when it's destroyed
 
 Obj09_GlassUpdate:
-		move.b	d0,4(a2)	; update the stage layout
+		move.b	d0,4(a2)				; update the stage layout
 
 Obj09_GlassSnd:
-		play.w	1, jmp, sfx_Diamonds		; play diamond block sound
+		play.w	1, jmp, sfx_Diamonds			; play diamond block sound
 ; ===========================================================================
 
 Obj09_NoGlass:

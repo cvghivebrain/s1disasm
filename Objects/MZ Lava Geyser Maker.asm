@@ -17,9 +17,9 @@ GMake_Index:	index *,,2
 		ptr GMake_Display
 		ptr GMake_Delete
 
-ost_gmake_wait_time:	equ $32	; current time remaining (2 bytes)
-ost_gmake_wait_total:	equ $34	; time delay (2 bytes)
-ost_gmake_parent:	equ $3C	; address of OST of parent object (4 bytes)
+ost_gmake_wait_time:	equ $32					; current time remaining (2 bytes)
+ost_gmake_wait_total:	equ $34					; time delay (2 bytes)
+ost_gmake_parent:	equ $3C					; address of OST of parent object (4 bytes)
 ; ===========================================================================
 
 GMake_Main:	; Routine 0
@@ -29,11 +29,11 @@ GMake_Main:	; Routine 0
 		move.b	#render_rel,ost_render(a0)
 		move.b	#1,ost_priority(a0)
 		move.b	#$38,ost_actwidth(a0)
-		move.w	#120,ost_gmake_wait_total(a0) ; set time delay to 2 seconds
+		move.w	#120,ost_gmake_wait_total(a0)		; set time delay to 2 seconds
 
 GMake_Wait:	; Routine 2
-		subq.w	#1,ost_gmake_wait_time(a0) ; decrement timer
-		bpl.s	@cancel		; if time remains, branch
+		subq.w	#1,ost_gmake_wait_time(a0)		; decrement timer
+		bpl.s	@cancel					; if time remains, branch
 
 		move.w	ost_gmake_wait_total(a0),ost_gmake_wait_time(a0) ; reset timer
 		move.w	(v_ost_player+ost_y_pos).w,d0
@@ -43,7 +43,7 @@ GMake_Wait:	; Routine 2
 		subi.w	#$170,d1
 		cmp.w	d1,d0
 		bcs.s	@cancel
-		addq.b	#2,ost_routine(a0) ; if Sonic is within range, goto GMake_ChkType
+		addq.b	#2,ost_routine(a0)			; if Sonic is within range, goto GMake_ChkType
 
 	@cancel:
 		rts	
@@ -53,7 +53,7 @@ GMake_MakeLava:	; Routine 6
 		addq.b	#2,ost_routine(a0)
 		bsr.w	FindNextFreeObj
 		bne.s	@fail
-		move.b	#id_LavaGeyser,0(a1) ; load lavafall object
+		move.b	#id_LavaGeyser,0(a1)			; load lavafall object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	ost_subtype(a0),ost_subtype(a1)
@@ -61,22 +61,22 @@ GMake_MakeLava:	; Routine 6
 
 	@fail:
 		move.b	#id_ani_geyser_bubble2,ost_anim(a0)
-		tst.b	ost_subtype(a0)	; is object type 0 (geyser) ?
-		beq.s	@isgeyser	; if yes, branch
+		tst.b	ost_subtype(a0)				; is object type 0 (geyser) ?
+		beq.s	@isgeyser				; if yes, branch
 		move.b	#id_ani_geyser_blank,ost_anim(a0)
 		bra.s	GMake_Display
 ; ===========================================================================
 
 	@isgeyser:
-		movea.l	ost_gmake_parent(a0),a1 ; get parent object address
+		movea.l	ost_gmake_parent(a0),a1			; get parent object address
 		bset	#status_yflip_bit,ost_status(a1)
 		move.w	#-$580,ost_y_vel(a1)
 		bra.s	GMake_Display
 ; ===========================================================================
 
 GMake_ChkType:	; Routine 4
-		tst.b	ost_subtype(a0)	; is object type 00 (geyser) ?
-		beq.s	GMake_Display	; if yes, branch
+		tst.b	ost_subtype(a0)				; is object type 00 (geyser) ?
+		beq.s	GMake_Display				; if yes, branch
 		addq.b	#2,ost_routine(a0)
 		rts	
 ; ===========================================================================

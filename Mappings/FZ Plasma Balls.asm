@@ -2,17 +2,17 @@
 ; Sprite mappings - energy balls (FZ)
 ; ---------------------------------------------------------------------------
 Map_Plasma:	index *
-		ptr frame_plasma_fuzzy1	; 0
-		ptr frame_plasma_fuzzy2	; 1
-		ptr frame_plasma_white1	; 2
-		ptr frame_plasma_white2	; 3
-		ptr frame_plasma_white3	; 4
-		ptr frame_plasma_white4	; 5
-		ptr frame_plasma_fuzzy3	; 6
-		ptr frame_plasma_fuzzy4	; 7
-		ptr frame_plasma_fuzzy5	; 8
-		ptr frame_plasma_fuzzy6	; 9
-		ptr frame_plasma_blank	; $A
+		ptr frame_plasma_fuzzy1				; 0
+		ptr frame_plasma_fuzzy2				; 1
+		ptr frame_plasma_white1				; 2
+		ptr frame_plasma_white2				; 3
+		ptr frame_plasma_white3				; 4
+		ptr frame_plasma_white4				; 5
+		ptr frame_plasma_fuzzy3				; 6
+		ptr frame_plasma_fuzzy4				; 7
+		ptr frame_plasma_fuzzy5				; 8
+		ptr frame_plasma_fuzzy6				; 9
+		ptr frame_plasma_blank				; $A
 		
 frame_plasma_fuzzy1:
 		spritemap

@@ -15,9 +15,9 @@ Lamp_Index:	index *,,2
 		ptr Lamp_Finish
 		ptr Lamp_Twirl
 
-ost_lamp_x_start:	equ $30	; original x-axis position (2 bytes)
-ost_lamp_y_start:	equ $32	; original y-axis position (2 bytes)
-ost_lamp_twirl_time:	equ $36	; length of time to twirl the lamp (2 bytes)
+ost_lamp_x_start:	equ $30					; original x-axis position (2 bytes)
+ost_lamp_y_start:	equ $32					; original y-axis position (2 bytes)
+ost_lamp_twirl_time:	equ $36					; length of time to twirl the lamp (2 bytes)
 ; ===========================================================================
 
 Lamp_Main:	; Routine 0
@@ -35,29 +35,29 @@ Lamp_Main:	; Routine 0
 		bne.s	@red
 		move.b	(v_last_lamppost).w,d1
 		andi.b	#$7F,d1
-		move.b	ost_subtype(a0),d2 ; get lamppost number
+		move.b	ost_subtype(a0),d2			; get lamppost number
 		andi.b	#$7F,d2
-		cmp.b	d2,d1		; is this a "new" lamppost?
-		bcs.s	Lamp_Blue	; if yes, branch
+		cmp.b	d2,d1					; is this a "new" lamppost?
+		bcs.s	Lamp_Blue				; if yes, branch
 
 	@red:
 		bset	#0,2(a2,d0.w)
-		move.b	#id_Lamp_Finish,ost_routine(a0) ; goto Lamp_Finish next
-		move.b	#id_frame_lamp_red,ost_frame(a0) ; use red lamppost frame
+		move.b	#id_Lamp_Finish,ost_routine(a0)		; goto Lamp_Finish next
+		move.b	#id_frame_lamp_red,ost_frame(a0)	; use red lamppost frame
 		rts	
 ; ===========================================================================
 
 Lamp_Blue:	; Routine 2
-		tst.w	(v_debug_active).w	; is debug mode	being used?
-		bne.w	@donothing	; if yes, branch
+		tst.w	(v_debug_active).w			; is debug mode	being used?
+		bne.w	@donothing				; if yes, branch
 		tst.b	(v_lock_multi).w
 		bmi.w	@donothing
 		move.b	(v_last_lamppost).w,d1
 		andi.b	#$7F,d1
 		move.b	ost_subtype(a0),d2
 		andi.b	#$7F,d2
-		cmp.b	d2,d1		; is this a "new" lamppost?
-		bcs.s	@chkhit		; if yes, branch
+		cmp.b	d2,d1					; is this a "new" lamppost?
+		bcs.s	@chkhit					; if yes, branch
 		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
@@ -79,12 +79,12 @@ Lamp_Blue:	; Routine 2
 		cmpi.w	#$68,d0
 		bcc.s	@donothing
 
-		play.w	1, jsr, sfx_Lamppost		; play lamppost sound
+		play.w	1, jsr, sfx_Lamppost			; play lamppost sound
 		addq.b	#2,ost_routine(a0)
 		jsr	(FindFreeObj).l
 		bne.s	@fail
-		move.b	#id_Lamppost,0(a1) ; load twirling lamp object
-		move.b	#id_Lamp_Twirl,ost_routine(a1) ; goto Lamp_Twirl next
+		move.b	#id_Lamppost,0(a1)			; load twirling lamp object
+		move.b	#id_Lamp_Twirl,ost_routine(a1)		; goto Lamp_Twirl next
 		move.w	ost_x_pos(a0),ost_lamp_x_start(a1)
 		move.w	ost_y_pos(a0),ost_lamp_y_start(a1)
 		subi.w	#$18,ost_lamp_y_start(a1)
@@ -97,7 +97,7 @@ Lamp_Blue:	; Routine 2
 		move.w	#32,ost_lamp_twirl_time(a1)
 
 	@fail:
-		move.b	#id_frame_lamp_poleonly,ost_frame(a0) ; use "post only" frame
+		move.b	#id_frame_lamp_poleonly,ost_frame(a0)	; use "post only" frame
 		bsr.w	Lamp_StoreInfo
 		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
@@ -113,9 +113,9 @@ Lamp_Finish:	; Routine 4
 ; ===========================================================================
 
 Lamp_Twirl:	; Routine 6
-		subq.w	#1,ost_lamp_twirl_time(a0) ; decrement timer
-		bpl.s	@continue	; if time remains, keep twirling
-		move.b	#id_Lamp_Finish,ost_routine(a0) ; goto Lamp_Finish next
+		subq.w	#1,ost_lamp_twirl_time(a0)		; decrement timer
+		bpl.s	@continue				; if time remains, keep twirling
+		move.b	#id_Lamp_Finish,ost_routine(a0)		; goto Lamp_Finish next
 
 	@continue:
 		move.b	ost_angle(a0),d0
@@ -137,26 +137,26 @@ Lamp_Twirl:	; Routine 6
 ; ---------------------------------------------------------------------------
 
 Lamp_StoreInfo:
-		move.b	ost_subtype(a0),(v_last_lamppost).w 	; lamppost number
+		move.b	ost_subtype(a0),(v_last_lamppost).w	; lamppost number
 		move.b	(v_last_lamppost).w,(v_last_lamppost_lampcopy).w
-		move.w	ost_x_pos(a0),(v_sonic_x_pos_lampcopy).w	; x-position
-		move.w	ost_y_pos(a0),(v_sonic_y_pos_lampcopy).w	; y-position
-		move.w	(v_rings).w,(v_rings_lampcopy).w 	; rings
-		move.b	(v_ring_reward).w,(v_ring_reward_lampcopy).w 	; lives
-		move.l	(v_time).w,(v_time_lampcopy).w 	; time
+		move.w	ost_x_pos(a0),(v_sonic_x_pos_lampcopy).w ; x-position
+		move.w	ost_y_pos(a0),(v_sonic_y_pos_lampcopy).w ; y-position
+		move.w	(v_rings).w,(v_rings_lampcopy).w	; rings
+		move.b	(v_ring_reward).w,(v_ring_reward_lampcopy).w ; lives
+		move.l	(v_time).w,(v_time_lampcopy).w		; time
 		move.b	(v_dle_routine).w,(v_dle_routine_lampcopy).w ; routine counter for dynamic level mod
-		move.w	(v_boundary_bottom).w,(v_boundary_bottom_lampcopy).w 	; lower y-boundary of level
-		move.w	(v_camera_x_pos).w,(v_camera_x_pos_lampcopy).w 	; screen x-position
-		move.w	(v_camera_y_pos).w,(v_camera_y_pos_lampcopy).w 	; screen y-position
+		move.w	(v_boundary_bottom).w,(v_boundary_bottom_lampcopy).w ; lower y-boundary of level
+		move.w	(v_camera_x_pos).w,(v_camera_x_pos_lampcopy).w ; screen x-position
+		move.w	(v_camera_y_pos).w,(v_camera_y_pos_lampcopy).w ; screen y-position
 		move.w	(v_bg1_x_pos).w,(v_bg1_x_pos_lampcopy).w ; bg position
 		move.w	(v_bg1_y_pos).w,(v_bg1_y_pos_lampcopy).w ; bg position
 		move.w	(v_bg2_x_pos).w,(v_bg2_x_pos_lampcopy).w ; bg position
 		move.w	(v_bg2_y_pos).w,(v_bg2_y_pos_lampcopy).w ; bg position
 		move.w	(v_bg3_x_pos).w,(v_bg3_x_pos_lampcopy).w ; bg position
 		move.w	(v_bg3_y_pos).w,(v_bg3_y_pos_lampcopy).w ; bg position
-		move.w	(v_water_height_normal).w,(v_water_height_normal_lampcopy).w 	; water height
+		move.w	(v_water_height_normal).w,(v_water_height_normal_lampcopy).w ; water height
 		move.b	(v_water_routine).w,(v_water_routine_lampcopy).w ; rountine counter for water
-		move.b	(f_water_pal_full).w,(f_water_pal_full_lampcopy).w 	; water direction
+		move.b	(f_water_pal_full).w,(f_water_pal_full_lampcopy).w ; water direction
 		rts	
 
 ; ---------------------------------------------------------------------------
@@ -189,8 +189,8 @@ Lamp_LoadInfo:
 		move.w	(v_bg2_y_pos_lampcopy).w,(v_bg2_y_pos).w
 		move.w	(v_bg3_x_pos_lampcopy).w,(v_bg3_x_pos).w
 		move.w	(v_bg3_y_pos_lampcopy).w,(v_bg3_y_pos).w
-		cmpi.b	#id_LZ,(v_zone).w	; is this Labyrinth Zone?
-		bne.s	@notlabyrinth	; if not, branch
+		cmpi.b	#id_LZ,(v_zone).w			; is this Labyrinth Zone?
+		bne.s	@notlabyrinth				; if not, branch
 
 		move.w	(v_water_height_normal_lampcopy).w,(v_water_height_normal).w
 		move.b	(v_water_routine_lampcopy).w,(v_water_routine).w

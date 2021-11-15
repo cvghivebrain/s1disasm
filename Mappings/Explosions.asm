@@ -41,11 +41,11 @@ frame_ex_4:	spritemap
 ; ---------------------------------------------------------------------------
 Map_ExplodeBomb:
 		index *
-		ptr frame_ex_0	; backwards reference
+		ptr frame_ex_0					; backwards reference
 		ptr frame_exbomb_1
 		ptr frame_exbomb_2
-		ptr frame_ex_3	; backwards reference
-		ptr frame_ex_4	; backwards reference
+		ptr frame_ex_3					; backwards reference
+		ptr frame_ex_4					; backwards reference
 		
 frame_exbomb_1:	spritemap
 		piece	-$10, -$10, 4x4, $40

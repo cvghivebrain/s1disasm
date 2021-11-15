@@ -18,18 +18,18 @@ TSon_Index:	index *,,2
 TSon_Main:	; Routine 0
 		addq.b	#2,ost_routine(a0)
 		move.w	#$F0,ost_x_pos(a0)
-		move.w	#$DE,ost_y_screen(a0) ; position is fixed to screen
+		move.w	#$DE,ost_y_screen(a0)			; position is fixed to screen
 		move.l	#Map_TSon,ost_mappings(a0)
 		move.w	#$300+tile_pal2,ost_tile(a0)
 		move.b	#1,ost_priority(a0)
-		move.b	#29,ost_anim_delay(a0) ; set time delay to 0.5 seconds
+		move.b	#29,ost_anim_delay(a0)			; set time delay to 0.5 seconds
 		lea	(Ani_TSon).l,a1
 		bsr.w	AnimateSprite
 
 TSon_Delay:	;Routine 2
-		subq.b	#1,ost_anim_delay(a0) ; subtract 1 from time delay
-		bpl.s	@wait		; if time remains, branch
-		addq.b	#2,ost_routine(a0) ; go to next routine
+		subq.b	#1,ost_anim_delay(a0)			; subtract 1 from time delay
+		bpl.s	@wait					; if time remains, branch
+		addq.b	#2,ost_routine(a0)			; go to next routine
 		bra.w	DisplaySprite
 
 	@wait:
@@ -37,9 +37,9 @@ TSon_Delay:	;Routine 2
 ; ===========================================================================
 
 TSon_Move:	; Routine 4
-		subq.w	#8,ost_y_screen(a0) ; move Sonic up
-		cmpi.w	#$96,ost_y_screen(a0) ; has Sonic reached final position?
-		bne.s	@display	; if not, branch
+		subq.w	#8,ost_y_screen(a0)			; move Sonic up
+		cmpi.w	#$96,ost_y_screen(a0)			; has Sonic reached final position?
+		bne.s	@display				; if not, branch
 		addq.b	#2,ost_routine(a0)
 
 	@display:

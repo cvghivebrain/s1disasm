@@ -14,15 +14,15 @@ PushB_Index:	index *,,2
 		ptr PushB_ChkVisible
 
 PushB_Var:
-PushB_Var_0:	dc.b $10, id_frame_pblock_single	; object width,	frame number
+PushB_Var_0:	dc.b $10, id_frame_pblock_single		; object width,	frame number
 PushB_Var_1:	dc.b $40, id_frame_pblock_four
 
 sizeof_PushB_Var:	equ PushB_Var_1-PushB_Var
 
-ost_pblock_lava_speed:	equ $30	; x axis speed when block is on lava (2 bytes)
-ost_pblock_lava_flag:	equ $32	; 1 = block is on lava
-ost_pblock_x_start:	equ $34	; original x position (2 bytes)
-ost_pblock_y_start:	equ $36	; original y position (2 bytes)
+ost_pblock_lava_speed:	equ $30					; x axis speed when block is on lava (2 bytes)
+ost_pblock_lava_flag:	equ $32					; 1 = block is on lava
+ost_pblock_x_start:	equ $34					; original x position (2 bytes)
+ost_pblock_y_start:	equ $36					; original y position (2 bytes)
 ; ===========================================================================
 
 PushB_Main:	; Routine 0
@@ -33,7 +33,7 @@ PushB_Main:	; Routine 0
 		move.w	#tile_Nem_MzBlock+tile_pal3,ost_tile(a0) ; MZ specific code
 		cmpi.b	#1,(v_zone).w
 		bne.s	@notLZ
-		move.w	#$3DE+tile_pal3,ost_tile(a0) ; LZ specific code
+		move.w	#$3DE+tile_pal3,ost_tile(a0)		; LZ specific code
 
 	@notLZ:
 		move.b	#render_rel,ost_render(a0)
@@ -41,14 +41,14 @@ PushB_Main:	; Routine 0
 		move.w	ost_x_pos(a0),ost_pblock_x_start(a0)
 		move.w	ost_y_pos(a0),ost_pblock_y_start(a0)
 		moveq	#0,d0
-		move.b	ost_subtype(a0),d0 ; get subtype
+		move.b	ost_subtype(a0),d0			; get subtype
 		add.w	d0,d0
-		andi.w	#$E,d0		; read low nybble
-		lea	PushB_Var(pc,d0.w),a2 ; get width & frame values from array
+		andi.w	#$E,d0					; read low nybble
+		lea	PushB_Var(pc,d0.w),a2			; get width & frame values from array
 		move.b	(a2)+,ost_actwidth(a0)
 		move.b	(a2)+,ost_frame(a0)
-		tst.b	ost_subtype(a0)	; is subtype 0?
-		beq.s	@chkgone	; if yes, branch
+		tst.b	ost_subtype(a0)				; is subtype 0?
+		beq.s	@chkgone				; if yes, branch
 		move.w	#tile_Nem_MzBlock+tile_pal3+tile_hi,ost_tile(a0) ; make sprite appear in foreground
 
 	@chkgone:
@@ -61,8 +61,8 @@ PushB_Main:	; Routine 0
 		bne.w	DeleteObject
 
 PushB_Action:	; Routine 2
-		tst.b	ost_pblock_lava_flag(a0) ; is block on lava?
-		bne.w	PushB_OnLava	; if yes, branch
+		tst.b	ost_pblock_lava_flag(a0)		; is block on lava?
+		bne.w	PushB_OnLava				; if yes, branch
 		moveq	#0,d1
 		move.b	ost_actwidth(a0),d1
 		addi.w	#$B,d1
@@ -70,14 +70,14 @@ PushB_Action:	; Routine 2
 		move.w	#$11,d3
 		move.w	ost_x_pos(a0),d4
 		bsr.w	PushB_Solid
-		cmpi.w	#(id_MZ<<8)+0,(v_zone).w ; is the level MZ act 1?
-		bne.s	PushB_Display	; if not, branch
+		cmpi.w	#(id_MZ<<8)+0,(v_zone).w		; is the level MZ act 1?
+		bne.s	PushB_Display				; if not, branch
 		bclr	#7,ost_subtype(a0)
 		move.w	ost_x_pos(a0),d0
 		cmpi.w	#$A20,d0
 		bcs.s	PushB_Display
-		cmpi.w	#$AA1,d0	; is block between $A20 and $AA1 on x axis?
-		bcc.s	PushB_Display	; if not, branch
+		cmpi.w	#$AA1,d0				; is block between $A20 and $AA1 on x axis?
+		bcc.s	PushB_Display				; if not, branch
 		
 		move.w	(v_cstomp_y_pos).w,d0
 		subi.w	#$1C,d0
@@ -109,9 +109,9 @@ PushB_ChkDel2:
 		bra.w	DeleteObject
 ; ===========================================================================
 
-PushB_ChkVisible:	; Routine 4
-		bsr.w	CheckOffScreen_Wide ; is block still on screen?
-		beq.s	@visible	; if yes, branch
+PushB_ChkVisible:						; Routine 4
+		bsr.w	CheckOffScreen_Wide			; is block still on screen?
+		beq.s	@visible				; if yes, branch
 		move.b	#id_PushB_Action,ost_routine(a0)
 		clr.b	ost_pblock_lava_flag(a0)
 		clr.w	ost_x_vel(a0)
@@ -128,22 +128,22 @@ PushB_OnLava:
 		bsr.w	SpeedToPos
 
 loc_C056:
-		btst	#status_air_bit,ost_status(a0) ; has block been thrown into the air?
-		beq.s	PushB_OnLava2	; if not, branch
+		btst	#status_air_bit,ost_status(a0)		; has block been thrown into the air?
+		beq.s	PushB_OnLava2				; if not, branch
 		addi.w	#$18,ost_y_vel(a0)
 		jsr	(FindFloorObj).l
 		tst.w	d1
 		bpl.w	loc_C09E
 		add.w	d1,ost_y_pos(a0)
-		clr.w	ost_y_vel(a0)	; stop block falling when it reaches the ground
+		clr.w	ost_y_vel(a0)				; stop block falling when it reaches the ground
 		bclr	#status_air_bit,ost_status(a0)
-		move.w	(a1),d0		; get 16x16 tile the block is on
+		move.w	(a1),d0					; get 16x16 tile the block is on
 		andi.w	#$3FF,d0
-		cmpi.w	#$16A,d0	; is it block $16A+ (lava)?
-		bcs.s	loc_C09E	; if not, branch
+		cmpi.w	#$16A,d0				; is it block $16A+ (lava)?
+		bcs.s	loc_C09E				; if not, branch
 		move.w	ost_pblock_lava_speed(a0),d0
 		asr.w	#3,d0
-		move.w	d0,ost_x_vel(a0) ; make block float horizontally
+		move.w	d0,ost_x_vel(a0)			; make block float horizontally
 		move.b	#1,ost_pblock_lava_flag(a0)
 		clr.w	ost_y_sub(a0)
 
@@ -160,8 +160,8 @@ PushB_OnLava2:
 		moveq	#0,d3
 		move.b	ost_actwidth(a0),d3
 		jsr	(FindWallRightObj).l
-		tst.w	d1		; has block touched a wall?
-		bmi.s	PushB_Stop	; if yes, branch
+		tst.w	d1					; has block touched a wall?
+		bmi.s	PushB_Stop				; if yes, branch
 		bra.s	loc_C0E6
 ; ===========================================================================
 
@@ -170,13 +170,13 @@ PushB_OnLava2:
 		move.b	ost_actwidth(a0),d3
 		not.w	d3
 		jsr	(FindWallLeftObj).l
-		tst.w	d1		; has block touched a wall?
-		bmi.s	PushB_Stop	; if yes, branch
+		tst.w	d1					; has block touched a wall?
+		bmi.s	PushB_Stop				; if yes, branch
 		bra.s	loc_C0E6
 ; ===========================================================================
 
 PushB_Stop:
-		clr.w	ost_x_vel(a0)	; stop block moving
+		clr.w	ost_x_vel(a0)				; stop block moving
 		bra.s	loc_C0E6
 ; ===========================================================================
 
@@ -206,8 +206,8 @@ loc_C104:
 ; ===========================================================================
 
 PushB_ChkLava:
-		cmpi.w	#(id_MZ<<8)+1,(v_zone).w ; is the level MZ act 2?
-		bne.s	PushB_ChkLava2	; if not, branch
+		cmpi.w	#(id_MZ<<8)+1,(v_zone).w		; is the level MZ act 2?
+		bne.s	PushB_ChkLava2				; if not, branch
 		move.w	#-$20,d2
 		cmpi.w	#$DD0,ost_x_pos(a0)
 		beq.s	PushB_LoadLava
@@ -219,8 +219,8 @@ PushB_ChkLava:
 ; ===========================================================================
 
 PushB_ChkLava2:
-		cmpi.w	#(id_MZ<<8)+2,(v_zone).w ; is the level MZ act 3?
-		bne.s	PushB_NoLava	; if not, branch
+		cmpi.w	#(id_MZ<<8)+2,(v_zone).w		; is the level MZ act 3?
+		bne.s	PushB_NoLava				; if not, branch
 		move.w	#$20,d2
 		cmpi.w	#$560,ost_x_pos(a0)
 		beq.s	PushB_LoadLava
@@ -234,7 +234,7 @@ PushB_NoLava:
 PushB_LoadLava:
 		bsr.w	FindFreeObj
 		bne.s	locret_C184
-		move.b	#id_GeyserMaker,0(a1) ; load lava geyser object
+		move.b	#id_GeyserMaker,0(a1)			; load lava geyser object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		add.w	d2,ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
@@ -273,13 +273,13 @@ loc_C1AA:
 		add.w	d1,ost_y_pos(a0)
 		clr.w	ost_y_vel(a0)
 		clr.b	ost_routine2(a0)
-		move.w	(a1),d0		; get 16x16 tile the block is on
+		move.w	(a1),d0					; get 16x16 tile the block is on
 		andi.w	#$3FF,d0
-		cmpi.w	#$16A,d0	; is it block $16A+ (lava)?
-		bcs.s	locret_C1F0	; if not, branch
+		cmpi.w	#$16A,d0				; is it block $16A+ (lava)?
+		bcs.s	locret_C1F0				; if not, branch
 		move.w	ost_pblock_lava_speed(a0),d0
 		asr.w	#3,d0
-		move.w	d0,ost_x_vel(a0) ; make block float horizontally
+		move.w	d0,ost_x_vel(a0)			; make block float horizontally
 		move.b	#1,ost_pblock_lava_flag(a0)
 		clr.w	ost_y_sub(a0)
 
@@ -349,10 +349,10 @@ loc_C294:
 		move.w	d1,ost_inertia(a1)
 		move.w	#0,ost_x_vel(a1)
 		move.w	d0,-(sp)
-		play.w	1, jsr, sfx_Push		; play pushing sound
+		play.w	1, jsr, sfx_Push			; play pushing sound
 		move.w	(sp)+,d0
-		tst.b	ost_subtype(a0)	; is bit 7 of subtype set?
-		bmi.s	locret_C2E4	; if yes, branch
+		tst.b	ost_subtype(a0)				; is bit 7 of subtype set?
+		bmi.s	locret_C2E4				; if yes, branch
 		move.w	d0,-(sp)
 		jsr	(FindFloorObj).l
 		move.w	(sp)+,d0

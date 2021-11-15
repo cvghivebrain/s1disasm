@@ -15,8 +15,8 @@ LWall_Index:	index *,,2
 		ptr LWall_Move
 		ptr LWall_Delete
 
-ost_lwall_flag:		equ $36	; flag to start wall moving
-ost_lwall_parent:	equ $3C	; address of OST of parent object (4 bytes)
+ost_lwall_flag:		equ $36					; flag to start wall moving
+ost_lwall_parent:	equ $3C					; address of OST of parent object (4 bytes)
 ; ===========================================================================
 
 LWall_Main:	; Routine 0
@@ -31,7 +31,7 @@ LWall_Main:	; Routine 0
 		bne.s	@fail
 
 @make:
-		move.b	#id_LavaWall,0(a1) ; load object
+		move.b	#id_LavaWall,0(a1)			; load object
 		move.l	#Map_LWall,ost_mappings(a1)
 		move.w	#tile_Nem_Lava+tile_pal4,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)
@@ -44,7 +44,7 @@ LWall_Main:	; Routine 0
 		move.l	a0,ost_lwall_parent(a1)
 
 	@fail:
-		dbf	d1,@loop	; repeat sequence once
+		dbf	d1,@loop				; repeat sequence once
 
 		addq.b	#6,ost_routine(a1)
 		move.b	#id_frame_lavawall_4,ost_frame(a1)
@@ -56,24 +56,24 @@ LWall_Action:	; Routine 4
 		neg.w	d0
 
 	@rangechk:
-		cmpi.w	#$C0,d0		; is Sonic within $C0 pixels (x-axis)?
-		bcc.s	@movewall	; if not, branch
+		cmpi.w	#$C0,d0					; is Sonic within $C0 pixels (x-axis)?
+		bcc.s	@movewall				; if not, branch
 		move.w	(v_ost_player+ost_y_pos).w,d0
 		sub.w	ost_y_pos(a0),d0
 		bcc.s	@rangechk2
 		neg.w	d0
 
 	@rangechk2:
-		cmpi.w	#$60,d0		; is Sonic within $60 pixels (y-axis)?
-		bcc.s	@movewall	; if not, branch
-		move.b	#1,ost_lwall_flag(a0) ; set object to move
+		cmpi.w	#$60,d0					; is Sonic within $60 pixels (y-axis)?
+		bcc.s	@movewall				; if not, branch
+		move.b	#1,ost_lwall_flag(a0)			; set object to move
 		bra.s	LWall_Solid
 ; ===========================================================================
 
 @movewall:
-		tst.b	ost_lwall_flag(a0) ; is object set to move?
-		beq.s	LWall_Solid	; if not, branch
-		move.w	#$180,ost_x_vel(a0) ; set object speed
+		tst.b	ost_lwall_flag(a0)			; is object set to move?
+		beq.s	LWall_Solid				; if not, branch
+		move.w	#$180,ost_x_vel(a0)			; set object speed
 		subq.b	#2,ost_routine(a0)
 
 LWall_Solid:	; Routine 2
@@ -87,9 +87,9 @@ LWall_Solid:	; Routine 2
 		bsr.w	SolidObject
 		move.w	(sp)+,d0
 		move.b	d0,ost_routine(a0)
-		cmpi.w	#$6A0,ost_x_pos(a0) ; has object reached $6A0 on the x-axis?
-		bne.s	@animate	; if not, branch
-		clr.w	ost_x_vel(a0)	; stop object moving
+		cmpi.w	#$6A0,ost_x_pos(a0)			; has object reached $6A0 on the x-axis?
+		bne.s	@animate				; if not, branch
+		clr.w	ost_x_vel(a0)				; stop object moving
 		clr.b	ost_lwall_flag(a0)
 
 	@animate:
@@ -101,8 +101,8 @@ LWall_Solid:	; Routine 2
 
 	@rangechk:
 		bsr.w	DisplaySprite
-		tst.b	ost_lwall_flag(a0) ; is wall already moving?
-		bne.s	@moving		; if yes, branch
+		tst.b	ost_lwall_flag(a0)			; is wall already moving?
+		bne.s	@moving					; if yes, branch
 		out_of_range.s	@chkgone
 
 	@moving:
@@ -122,7 +122,7 @@ LWall_Move:	; Routine 6
 		movea.l	ost_lwall_parent(a0),a1
 		cmpi.b	#id_LWall_Delete,ost_routine(a1)
 		beq.s	LWall_Delete
-		move.w	ost_x_pos(a1),ost_x_pos(a0) ; move rest of lava wall
+		move.w	ost_x_pos(a1),ost_x_pos(a0)		; move rest of lava wall
 		subi.w	#$80,ost_x_pos(a0)
 		bra.w	DisplaySprite
 ; ===========================================================================

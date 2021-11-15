@@ -12,24 +12,24 @@ Conv_Index:	index *,,2
 		ptr Conv_Main
 		ptr Conv_Action
 
-ost_convey_speed:	equ $36	; speed - can also be negative (2 bytes)
-ost_convey_width:	equ $38	; width
+ost_convey_speed:	equ $36					; speed - can also be negative (2 bytes)
+ost_convey_width:	equ $38					; width
 ; ===========================================================================
 
 Conv_Main:	; Routine 0
 		addq.b	#2,ost_routine(a0)
-		move.b	#128,ost_convey_width(a0) ; set width to 128 pixels
-		move.b	ost_subtype(a0),d1 ; get object type
-		andi.b	#$F,d1		; read only the	2nd digit
-		beq.s	@typeis0	; if zero, branch
-		move.b	#56,ost_convey_width(a0) ; set width to 56 pixels
+		move.b	#128,ost_convey_width(a0)		; set width to 128 pixels
+		move.b	ost_subtype(a0),d1			; get object type
+		andi.b	#$F,d1					; read only the	2nd digit
+		beq.s	@typeis0				; if zero, branch
+		move.b	#56,ost_convey_width(a0)		; set width to 56 pixels
 
 	@typeis0:
-		move.b	ost_subtype(a0),d1 ; get object type
-		andi.b	#$F0,d1		; read only the	1st digit
+		move.b	ost_subtype(a0),d1			; get object type
+		andi.b	#$F0,d1					; read only the	1st digit
 		ext.w	d1
 		asr.w	#4,d1
-		move.w	d1,ost_convey_speed(a0) ; set belt speed
+		move.w	d1,ost_convey_speed(a0)			; set belt speed
 
 Conv_Action:	; Routine 2
 		bsr.s	@movesonic

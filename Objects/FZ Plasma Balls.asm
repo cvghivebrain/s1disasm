@@ -15,10 +15,10 @@ Obj86_Index:	index *,,2
 		ptr loc_1A962
 		ptr loc_1A982
 
-ost_plasma_flag:	equ $29	; flag set when firing
+ost_plasma_flag:	equ $29					; flag set when firing
 ;			equ $30	; ?  (2 bytes)
 ;			equ $32	; ?  (2 bytes)
-ost_plasma_parent:	equ $34	; address of OST of parent object (4 bytes)
+ost_plasma_parent:	equ $34					; address of OST of parent object (4 bytes)
 ;			equ $38	; ?  (2 bytes)
 ; ===========================================================================
 
@@ -110,7 +110,7 @@ Obj86_Loop:
 		move.w	d0,$30(a1)
 		addq.w	#1,$32(a0)
 		move.w	$32(a0),$38(a0)
-		dbf	d2,Obj86_Loop	; repeat sequence 3 more times
+		dbf	d2,Obj86_Loop				; repeat sequence 3 more times
 
 loc_1A954:
 		tst.w	$32(a0)

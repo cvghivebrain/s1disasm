@@ -14,16 +14,16 @@ BGHZ_Index:	index *,,2
 		ptr BGHZ_FaceMain
 		ptr BGHZ_FlameMain
 
-BGHZ_ObjData:	dc.b id_BGHZ_ShipMain, id_ani_boss_ship	; routine number, animation
+BGHZ_ObjData:	dc.b id_BGHZ_ShipMain, id_ani_boss_ship		; routine number, animation
 		dc.b id_BGHZ_FaceMain, id_ani_boss_face1
 		dc.b id_BGHZ_FlameMain,	id_ani_boss_blank
 
-ost_bghz_parent_x_pos:	equ $30	; parent x position (2 bytes)
-ost_bghz_parent:	equ $34	; address of OST of parent object (4 bytes)
-ost_bghz_parent_y_pos:	equ $38	; parent y position (2 bytes)
-ost_bghz_wait_time:	equ $3C	; time to wait between each action (2 bytes)
-ost_bghz_flash_num:	equ $3E	; number of times to make boss flash when hit
-ost_bghz_wobble:	equ $3F	; wobble state as Eggman moves back & forth (1 byte incremented every frame & interpreted by CalcSine)
+ost_bghz_parent_x_pos:	equ $30					; parent x position (2 bytes)
+ost_bghz_parent:	equ $34					; address of OST of parent object (4 bytes)
+ost_bghz_parent_y_pos:	equ $38					; parent y position (2 bytes)
+ost_bghz_wait_time:	equ $3C					; time to wait between each action (2 bytes)
+ost_bghz_flash_num:	equ $3E					; number of times to make boss flash when hit
+ost_bghz_wobble:	equ $3F					; wobble state as Eggman moves back & forth (1 byte incremented every frame & interpreted by CalcSine)
 ; ===========================================================================
 
 BGHZ_Main:	; Routine 0
@@ -49,13 +49,13 @@ BGHZ_LoadBoss:
 		move.b	#3,ost_priority(a1)
 		move.b	(a2)+,ost_anim(a1)
 		move.l	a0,ost_bghz_parent(a1)
-		dbf	d1,BGHZ_Loop	; repeat sequence 2 more times
+		dbf	d1,BGHZ_Loop				; repeat sequence 2 more times
 
 loc_17772:
 		move.w	ost_x_pos(a0),ost_bghz_parent_x_pos(a0)
 		move.w	ost_y_pos(a0),ost_bghz_parent_y_pos(a0)
 		move.b	#id_col_24x24,ost_col_type(a0)
-		move.b	#8,ost_col_property(a0) ; set number of hits to 8
+		move.b	#8,ost_col_property(a0)			; set number of hits to 8
 
 BGHZ_ShipMain:	; Routine 2
 		moveq	#0,d0
@@ -67,7 +67,7 @@ BGHZ_ShipMain:	; Routine 2
 		move.b	ost_status(a0),d0
 		andi.b	#status_xflip+status_yflip,d0
 		andi.b	#$FF-render_xflip-render_yflip,ost_render(a0) ; ignore x/yflip bits
-		or.b	d0,ost_render(a0) ; combine x/yflip bits from status instead
+		or.b	d0,ost_render(a0)			; combine x/yflip bits from status instead
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 BGHZ_ShipIndex:	index *,,2
@@ -81,12 +81,12 @@ BGHZ_ShipIndex:	index *,,2
 ; ===========================================================================
 
 BGHZ_ShipStart:
-		move.w	#$100,ost_y_vel(a0) ; move ship down
+		move.w	#$100,ost_y_vel(a0)			; move ship down
 		bsr.w	BossMove
 		cmpi.w	#$338,ost_bghz_parent_y_pos(a0)
 		bne.s	loc_177E6
-		move.w	#0,ost_y_vel(a0) ; stop ship
-		addq.b	#2,ost_routine2(a0) ; goto next routine
+		move.w	#0,ost_y_vel(a0)			; stop ship
+		addq.b	#2,ost_routine2(a0)			; goto next routine
 
 loc_177E6:
 		move.b	ost_bghz_wobble(a0),d0
@@ -104,18 +104,18 @@ loc_177E6:
 		bne.s	locret_1784A
 		tst.b	ost_bghz_flash_num(a0)
 		bne.s	BGHZ_ShipFlash
-		move.b	#$20,ost_bghz_flash_num(a0) ; set number of times for ship to flash
-		play.w	1, jsr, sfx_BossHit		; play boss damage sound
+		move.b	#$20,ost_bghz_flash_num(a0)		; set number of times for ship to flash
+		play.w	1, jsr, sfx_BossHit			; play boss damage sound
 
 BGHZ_ShipFlash:
-		lea	(v_pal_dry+$22).w,a1 ; load 2nd palette, 2nd entry
-		moveq	#0,d0		; move 0 (black) to d0
+		lea	(v_pal_dry+$22).w,a1			; load 2nd palette, 2nd entry
+		moveq	#0,d0					; move 0 (black) to d0
 		tst.w	(a1)
 		bne.s	loc_1783C
-		move.w	#cWhite,d0	; move 0EEE (white) to d0
+		move.w	#cWhite,d0				; move 0EEE (white) to d0
 
 loc_1783C:
-		move.w	d0,(a1)		; load colour stored in	d0
+		move.w	d0,(a1)					; load colour stored in	d0
 		subq.b	#1,ost_bghz_flash_num(a0)
 		bne.s	locret_1784A
 		move.b	#id_col_24x24,ost_col_type(a0)
@@ -144,7 +144,7 @@ BossDefeated:
 		bne.s	locret_178A2
 		jsr	(FindFreeObj).l
 		bne.s	locret_178A2
-		move.b	#id_ExplosionBomb,0(a1)	; load explosion object
+		move.b	#id_ExplosionBomb,0(a1)			; load explosion object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		jsr	(RandomNumber).l
@@ -199,7 +199,7 @@ BGHZ_MakeBall:
 		addq.b	#2,ost_routine2(a0)
 		jsr	(FindNextFreeObj).l
 		bne.s	loc_17910
-		move.b	#id_BossBall,0(a1) ; load swinging ball object
+		move.b	#id_BossBall,0(a1)			; load swinging ball object
 		move.w	ost_bghz_parent_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_bghz_parent_y_pos(a0),ost_y_pos(a1)
 		move.l	a0,ost_ball_parent(a1)
@@ -216,7 +216,7 @@ BGHZ_ShipMove:
 		bpl.s	BGHZ_Reverse
 		addq.b	#2,ost_routine2(a0)
 		move.w	#$3F,ost_bghz_wait_time(a0)
-		move.w	#$100,ost_x_vel(a0) ; move the ship sideways
+		move.w	#$100,ost_x_vel(a0)			; move the ship sideways
 		cmpi.w	#$2A00,ost_bghz_parent_x_pos(a0)
 		bne.s	BGHZ_Reverse
 		move.w	#$7F,ost_bghz_wait_time(a0)
@@ -225,7 +225,7 @@ BGHZ_ShipMove:
 BGHZ_Reverse:
 		btst	#status_xflip_bit,ost_status(a0)
 		bne.s	loc_17950
-		neg.w	ost_x_vel(a0)	; reverse direction of the ship
+		neg.w	ost_x_vel(a0)				; reverse direction of the ship
 
 loc_17950:
 		bra.w	loc_177E6
@@ -298,7 +298,7 @@ loc_179DA:
 
 loc_179E0:
 		clr.w	ost_y_vel(a0)
-		play.w	0, jsr, mus_GHZ		; play GHZ music
+		play.w	0, jsr, mus_GHZ				; play GHZ music
 
 loc_179EE:
 		bsr.w	BossMove

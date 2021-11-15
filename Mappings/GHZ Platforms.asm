@@ -6,7 +6,7 @@ Map_Plat_GHZ:	index *
 		ptr frame_plat_large
 		
 frame_plat_small:
-		spritemap		; small platform
+		spritemap					; small platform
 		piece	-$20, -$C, 3x4, $3B
 		piece	-8, -$C, 2x4, $3F
 		piece	8, -$C, 2x4, $3F
@@ -14,7 +14,7 @@ frame_plat_small:
 		endsprite
 		
 frame_plat_large:
-		spritemap		; large column platform
+		spritemap					; large column platform
 		piece	-$20, -$C, 4x4, $C5
 		piece	-$20, 4, 4x4, $D5
 		piece	-$20, $24, 4x4, $D5

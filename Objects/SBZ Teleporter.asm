@@ -19,13 +19,13 @@ Tele_Index:	index *,,2
 		ptr Tele_Bump
 		ptr Tele_Bend
 
-ost_tele_camera:	equ $2E	; something to do with the camera following the pipe (2 bytes)
-ost_tele_bump:		equ $32	; counter for initial "bump" when Sonic enters teleport, 0-$80
-ost_tele_x_target:	equ $36	; next x position to teleport to (2 bytes)
-ost_tele_y_target:	equ $38	; next y position to teleport to (2 bytes)
-ost_tele_bends:		equ $3A	; number of bends Sonic has passed in pipe, increments by 4
-ost_tele_data_size:	equ $3B	; size of coordinate data in bytes
-ost_tele_data_ptr:	equ $3C	; address of coordinate data (4 bytes)
+ost_tele_camera:	equ $2E					; something to do with the camera following the pipe (2 bytes)
+ost_tele_bump:		equ $32					; counter for initial "bump" when Sonic enters teleport, 0-$80
+ost_tele_x_target:	equ $36					; next x position to teleport to (2 bytes)
+ost_tele_y_target:	equ $38					; next y position to teleport to (2 bytes)
+ost_tele_bends:		equ $3A					; number of bends Sonic has passed in pipe, increments by 4
+ost_tele_data_size:	equ $3B					; size of coordinate data in bytes
+ost_tele_data_ptr:	equ $3C					; address of coordinate data (4 bytes)
 ; ===========================================================================
 
 Tele_Main:	; Routine 0
@@ -34,10 +34,10 @@ Tele_Main:	; Routine 0
 		add.w	d0,d0
 		andi.w	#$1E,d0
 		lea	Tele_Data(pc),a2
-		adda.w	(a2,d0.w),a2	; address of coordinate data
-		move.w	(a2)+,ost_tele_data_size-1(a0) ; get size of data
+		adda.w	(a2,d0.w),a2				; address of coordinate data
+		move.w	(a2)+,ost_tele_data_size-1(a0)		; get size of data
 		move.l	a2,ost_tele_data_ptr(a0)
-		move.w	(a2)+,ost_tele_x_target(a0) ; get 1st target
+		move.w	(a2)+,ost_tele_x_target(a0)		; get 1st target
 		move.w	(a2)+,ost_tele_y_target(a0)
 
 Tele_Action:	; Routine 2
@@ -49,24 +49,24 @@ Tele_Action:	; Routine 2
 		addi.w	#$F,d0
 
 	@noflip:
-		cmpi.w	#$10,d0		; is Sonic within $10 pixels on x-axis?
-		bcc.s	@do_nothing	; if not, branch
+		cmpi.w	#$10,d0					; is Sonic within $10 pixels on x-axis?
+		bcc.s	@do_nothing				; if not, branch
 		move.w	ost_y_pos(a1),d1
 		sub.w	ost_y_pos(a0),d1
 		addi.w	#$20,d1
-		cmpi.w	#$40,d1		; is Sonic within $20 pixels on y-axis?
-		bcc.s	@do_nothing	; if not, branch
+		cmpi.w	#$40,d1					; is Sonic within $20 pixels on y-axis?
+		bcc.s	@do_nothing				; if not, branch
 		tst.b	(v_lock_multi).w
 		bne.s	@do_nothing
-		cmpi.b	#7,ost_subtype(a0) ; is this teleport #7?
-		bne.s	@not7		; if not, branch
-		cmpi.w	#50,(v_rings).w	; teleport #7 requires 50 rings to work
-		bcs.s	@do_nothing	; does nothing without 50 rings
+		cmpi.b	#7,ost_subtype(a0)			; is this teleport #7?
+		bne.s	@not7					; if not, branch
+		cmpi.w	#50,(v_rings).w				; teleport #7 requires 50 rings to work
+		bcs.s	@do_nothing				; does nothing without 50 rings
 
 	@not7:
 		addq.b	#2,ost_routine(a0)
-		move.b	#$81,(v_lock_multi).w ; lock controls
-		move.b	#id_Roll,ost_anim(a1) ; use Sonic's rolling animation
+		move.b	#$81,(v_lock_multi).w			; lock controls
+		move.b	#id_Roll,ost_anim(a1)			; use Sonic's rolling animation
 		move.w	#$800,ost_inertia(a1)
 		move.w	#0,ost_x_vel(a1)
 		move.w	#0,ost_y_vel(a1)
@@ -76,7 +76,7 @@ Tele_Action:	; Routine 2
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		clr.b	ost_tele_bump(a0)
-		play.w	1, jsr, sfx_Roll		; play Sonic rolling sound
+		play.w	1, jsr, sfx_Roll			; play Sonic rolling sound
 
 @do_nothing:
 		rts	
@@ -90,12 +90,12 @@ Tele_Bump:	; Routine 4
 		asr.w	#5,d0
 		move.w	ost_y_pos(a0),d2
 		sub.w	d0,d2
-		move.w	d2,ost_y_pos(a1) ; make Sonic "bump" vertically
-		cmpi.b	#$80,ost_tele_bump(a0) ; has bump completed?
-		bne.s	locret_16796	; if not, branch
+		move.w	d2,ost_y_pos(a1)			; make Sonic "bump" vertically
+		cmpi.b	#$80,ost_tele_bump(a0)			; has bump completed?
+		bne.s	locret_16796				; if not, branch
 		bsr.w	Tele_Move
 		addq.b	#2,ost_routine(a0)
-		play.w	1, jsr, sfx_Dash		; play Sonic dashing sound
+		play.w	1, jsr, sfx_Dash			; play Sonic dashing sound
 
 locret_16796:
 		rts	

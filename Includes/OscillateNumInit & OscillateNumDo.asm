@@ -12,13 +12,13 @@ OscillateNumInit:
 		moveq	#$20,d1
 
 	@loop:
-		move.w	(a2)+,(a1)+	; copy baseline values to RAM
+		move.w	(a2)+,(a1)+				; copy baseline values to RAM
 		dbf	d1,@loop
 		rts	
 
 
 ; ===========================================================================
-@baselines:	dc.w %0000000001111100	; oscillation direction bitfield
+@baselines:	dc.w %0000000001111100				; oscillation direction bitfield
 		dc.w $80, 0
 		dc.w $80, 0
 		dc.w $80, 0
@@ -43,23 +43,23 @@ OscillateNumInit:
 
 OscillateNumDo:
 		cmpi.b	#id_Sonic_Death,(v_ost_player+ost_routine).w ; has Sonic just died?
-		bcc.s	@end		; if yes, branch
+		bcc.s	@end					; if yes, branch
 		lea	(v_oscillating_direction).w,a1
 		lea	(@settings).l,a2
-		move.w	(a1)+,d3	; get oscillation direction bitfield
+		move.w	(a1)+,d3				; get oscillation direction bitfield
 		moveq	#$F,d1
 
 @loop:
-		move.w	(a2)+,d2	; get frequency
-		move.w	(a2)+,d4	; get amplitude
-		btst	d1,d3		; check oscillation direction
-		bne.s	@down		; branch if 1
+		move.w	(a2)+,d2				; get frequency
+		move.w	(a2)+,d4				; get amplitude
+		btst	d1,d3					; check oscillation direction
+		bne.s	@down					; branch if 1
 
 	@up:
-		move.w	2(a1),d0	; get current rate
-		add.w	d2,d0		; add frequency
+		move.w	2(a1),d0				; get current rate
+		add.w	d2,d0					; add frequency
 		move.w	d0,2(a1)
-		add.w	d0,0(a1)	; add rate to value
+		add.w	d0,0(a1)				; add rate to value
 		cmp.b	0(a1),d4
 		bhi.s	@next
 		bset	d1,d3
@@ -85,20 +85,20 @@ OscillateNumDo:
 
 ; ===========================================================================
 @settings:	; frequency, amplitude
-		dc.w 2,	$10	; 0 - LZ water height, MZ grass platforms
-		dc.w 2,	$18	; 4 - MZ grass platforms, SBZ saws
-		dc.w 2,	$20	; 8 - MZ magma animation, MZ grass platforms, SYZ/SLZ floating blocks
-		dc.w 2,	$30	; $C - MZ grass platforms, MZ/LZ moving blocks, GHZ/SYZ/SLZ platforms, SBZ saws, SYZ large spikeball
-		dc.w 4,	$20	; $10 - MZ glass block, MZ purple block
-		dc.w 8,	8	; $14 - MZ purple block
-		dc.w 8,	$40	; $18 - GHZ/MZ/SLZ/SBZ swinging platforms, GHZ/SYZ/SLZ platforms
-		dc.w 4,	$40	; $1C - MZ/LZ moving blocks, SYZ/SLZ floating blocks
-		dc.w 2,	$50	; $20 - SLZ circling platforms
-		dc.w 2,	$50	; $24 - SLZ circling platforms
-		dc.w 2,	$20	; $28 - SYZ/SLZ floating blocks
-		dc.w 3,	$30	; $2C - SYZ/SLZ floating blocks
-		dc.w 5,	$50	; $30 - SYZ/SLZ floating blocks
-		dc.w 7,	$70	; $34 - SYZ/SLZ floating blocks
-		dc.w 2,	$10	; $38 - unused
-		dc.w 2,	$10	; $3C - unused
+		dc.w 2,	$10					; 0 - LZ water height, MZ grass platforms
+		dc.w 2,	$18					; 4 - MZ grass platforms, SBZ saws
+		dc.w 2,	$20					; 8 - MZ magma animation, MZ grass platforms, SYZ/SLZ floating blocks
+		dc.w 2,	$30					; $C - MZ grass platforms, MZ/LZ moving blocks, GHZ/SYZ/SLZ platforms, SBZ saws, SYZ large spikeball
+		dc.w 4,	$20					; $10 - MZ glass block, MZ purple block
+		dc.w 8,	8					; $14 - MZ purple block
+		dc.w 8,	$40					; $18 - GHZ/MZ/SLZ/SBZ swinging platforms, GHZ/SYZ/SLZ platforms
+		dc.w 4,	$40					; $1C - MZ/LZ moving blocks, SYZ/SLZ floating blocks
+		dc.w 2,	$50					; $20 - SLZ circling platforms
+		dc.w 2,	$50					; $24 - SLZ circling platforms
+		dc.w 2,	$20					; $28 - SYZ/SLZ floating blocks
+		dc.w 3,	$30					; $2C - SYZ/SLZ floating blocks
+		dc.w 5,	$50					; $30 - SYZ/SLZ floating blocks
+		dc.w 7,	$70					; $34 - SYZ/SLZ floating blocks
+		dc.w 2,	$10					; $38 - unused
+		dc.w 2,	$10					; $3C - unused
 		even

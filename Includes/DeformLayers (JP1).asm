@@ -79,7 +79,7 @@ Deform_GHZ:
 		move.w	(v_camera_x_pos).w,d0
 		cmpi.b	#id_Title,(v_gamemode).w
 		bne.s	@notTitle
-		moveq	#0,d0	; reset foreground position in title screen
+		moveq	#0,d0					; reset foreground position in title screen
 	@notTitle:
 		neg.w	d0
 		swap	d0
@@ -95,7 +95,7 @@ Deform_GHZ:
 		move.w	#$1F,d1
 		sub.w	d4,d1
 		bcs.s	@gotoCloud2
-	@cloudLoop1:		; upper cloud (32px)
+	@cloudLoop1:						; upper cloud (32px)
 		move.l	d0,(a1)+
 		dbf	d1,@cloudLoop1
 
@@ -104,7 +104,7 @@ Deform_GHZ:
 		add.w	(v_bg3_x_pos).w,d0
 		neg.w	d0
 		move.w	#$F,d1
-	@cloudLoop2:		; middle cloud (16px)
+	@cloudLoop2:						; middle cloud (16px)
 		move.l	d0,(a1)+
 		dbf	d1,@cloudLoop2
 
@@ -112,21 +112,21 @@ Deform_GHZ:
 		add.w	(v_bg3_x_pos).w,d0
 		neg.w	d0
 		move.w	#$F,d1
-	@cloudLoop3:		; lower cloud (16px)
+	@cloudLoop3:						; lower cloud (16px)
 		move.l	d0,(a1)+
 		dbf	d1,@cloudLoop3
 
 		move.w	#$2F,d1
 		move.w	(v_bg3_x_pos).w,d0
 		neg.w	d0
-	@mountainLoop:		; distant mountains (48px)
+	@mountainLoop:						; distant mountains (48px)
 		move.l	d0,(a1)+
 		dbf	d1,@mountainLoop
 
 		move.w	#$27,d1
 		move.w	(v_bg2_x_pos).w,d0
 		neg.w	d0
-	@hillLoop:			; hills & waterfalls (40px)
+	@hillLoop:						; hills & waterfalls (40px)
 		move.l	d0,(a1)+
 		dbf	d1,@hillLoop
 
@@ -142,7 +142,7 @@ Deform_GHZ:
 		move.w	d0,d3
 		move.w	#$47,d1
 		add.w	d4,d1
-	@waterLoop:			; water deformation
+	@waterLoop:						; water deformation
 		move.w	d3,d0
 		neg.w	d0
 		move.l	d0,(a1)+
@@ -171,11 +171,11 @@ Deform_LZ:
 		bsr.w	BGScroll_XY
 
 		move.w	(v_bg1_y_pos).w,(v_bg_y_pos_vsram).w
-		lea	(Lz_Scroll_Data).l,a3 ; get foreground wobble data
-		lea	(Drown_WobbleData).l,a2 ; get background wobble data
-		move.b	(v_water_ripple_y_pos).w,d2 ; get high byte of y pos. of wobble effect
+		lea	(Lz_Scroll_Data).l,a3			; get foreground wobble data
+		lea	(Drown_WobbleData).l,a2			; get background wobble data
+		move.b	(v_water_ripple_y_pos).w,d2		; get high byte of y pos. of wobble effect
 		move.b	d2,d3
-		addi.w	#$80,(v_water_ripple_y_pos).w ; high byte increments every other frame
+		addi.w	#$80,(v_water_ripple_y_pos).w		; high byte increments every other frame
 
 		add.w	(v_bg1_y_pos).w,d2
 		andi.w	#$FF,d2
@@ -193,8 +193,8 @@ Deform_LZ:
 		move.w	(v_camera_y_pos).w,d5
 	; write normal scroll before meeting water position
 	@normalLoop:		
-		cmp.w	d4,d5	; is current y >= water y?
-		bge.s	@underwaterLoop	; if yes, branch
+		cmp.w	d4,d5					; is current y >= water y?
+		bge.s	@underwaterLoop				; if yes, branch
 		move.l	d0,(a1)+
 		addq.w	#1,d5
 		addq.b	#1,d2
@@ -265,9 +265,9 @@ Deform_MZ:
 		moveq	#redraw_left,d6
 		bsr.w	BGScroll_Block2
 	; calculate y-position of background
-		move.w	#$200,d0	; start with 512px, ignoring 2 chunks
+		move.w	#$200,d0				; start with 512px, ignoring 2 chunks
 		move.w	(v_camera_y_pos).w,d1
-		subi.w	#$1C8,d1	; 0% scrolling when y <= 56px 
+		subi.w	#$1C8,d1				; 0% scrolling when y <= 56px 
 		bcs.s	@noYscroll
 		move.w	d1,d2
 		add.w	d1,d1
@@ -332,7 +332,7 @@ Deform_MZ:
 
 		lea	(v_bgscroll_buffer).w,a2
 		move.w	(v_bg1_y_pos).w,d0
-		subi.w	#$200,d0	; subtract 512px (unused 2 chunks)
+		subi.w	#$200,d0				; subtract 512px (unused 2 chunks)
 		move.w	d0,d2
 		cmpi.w	#$100,d0
 		bcs.s	@limitY
@@ -387,21 +387,21 @@ Deform_SLZ:
 		asr.w	#1,d1
 		add.w	d1,d0
 		move.w	#4,d1
-	@buildingLoop1:		; distant black buildings
+	@buildingLoop1:						; distant black buildings
 		move.w	d0,(a1)+
 		dbf	d1,@buildingLoop1
 
 		move.w	d2,d0
 		asr.w	#2,d0
 		move.w	#4,d1
-	@buildingLoop2:		; closer buildings
+	@buildingLoop2:						; closer buildings
 		move.w	d0,(a1)+
 		dbf	d1,@buildingLoop2
 
 		move.w	d2,d0
 		asr.w	#1,d0
 		move.w	#$1D,d1
-	@bottomLoop:		; bottom part of background
+	@bottomLoop:						; bottom part of background
 		move.w	d0,(a1)+
 		dbf	d1,@bottomLoop
 
@@ -423,7 +423,7 @@ Bg_Scroll_X:
 		andi.w	#$F,d2
 		add.w	d2,d2
 		move.w	(a2)+,d0
-		jmp	@pixelJump(pc,d2.w)		; skip pixels for first row
+		jmp	@pixelJump(pc,d2.w)			; skip pixels for first row
 	@blockLoop:
 		move.w	(a2)+,d0
 	@pixelJump:		
@@ -605,21 +605,21 @@ Deform_SBZ:
 		move.w	(v_bg3_x_pos).w,d0
 		neg.w	d0
 		move.w	#9,d1
-	@buildingLoop1:		; distant brown buildings
+	@buildingLoop1:						; distant brown buildings
 		move.w	d0,(a1)+
 		dbf	d1,@buildingLoop1
 
 		move.w	(v_bg2_x_pos).w,d0
 		neg.w	d0
 		move.w	#6,d1
-	@buildingLoop2:		; upper black buildings
+	@buildingLoop2:						; upper black buildings
 		move.w	d0,(a1)+
 		dbf	d1,@buildingLoop2
 
 		move.w	(v_bg1_x_pos).w,d0
 		neg.w	d0
 		move.w	#$A,d1
-	@buildingLoop3:		; lower black buildings
+	@buildingLoop3:						; lower black buildings
 		move.w	d0,(a1)+
 		dbf	d1,@buildingLoop3
 		lea	(v_bgscroll_buffer).w,a2

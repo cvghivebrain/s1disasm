@@ -19,11 +19,11 @@ RLoss_Index:	index *,,2
 RLoss_Count:	; Routine 0
 		movea.l	a0,a1
 		moveq	#0,d5
-		move.w	(v_rings).w,d5	; check number of rings you have
+		move.w	(v_rings).w,d5				; check number of rings you have
 		moveq	#32,d0
-		cmp.w	d0,d5		; do you have 32 or more?
-		bcs.s	@belowmax	; if not, branch
-		move.w	d0,d5		; if yes, set d5 to 32
+		cmp.w	d0,d5					; do you have 32 or more?
+		bcs.s	@belowmax				; if not, branch
+		move.w	d0,d5					; if yes, set d5 to 32
 
 	@belowmax:
 		subq.w	#1,d5
@@ -36,7 +36,7 @@ RLoss_Count:	; Routine 0
 		bne.w	@resetcounter
 
 @makerings:
-		move.b	#id_RingLoss,0(a1) ; load bouncing ring object
+		move.b	#id_RingLoss,0(a1)			; load bouncing ring object
 		addq.b	#2,ost_routine(a1)
 		move.b	#8,ost_height(a1)
 		move.b	#8,ost_width(a1)
@@ -70,13 +70,13 @@ RLoss_Count:	; Routine 0
 		move.w	d3,ost_y_vel(a1)
 		neg.w	d2
 		neg.w	d4
-		dbf	d5,@loop	; repeat for number of rings (max 31)
+		dbf	d5,@loop				; repeat for number of rings (max 31)
 
 @resetcounter:
-		move.w	#0,(v_rings).w	; reset number of rings to zero
-		move.b	#$80,(v_hud_rings_update).w ; update ring counter
+		move.w	#0,(v_rings).w				; reset number of rings to zero
+		move.b	#$80,(v_hud_rings_update).w		; update ring counter
 		move.b	#0,(v_ring_reward).w
-		play.w	1, jsr, sfx_RingLoss		; play ring loss sound
+		play.w	1, jsr, sfx_RingLoss			; play ring loss sound
 
 RLoss_Bounce:	; Routine 2
 		move.b	(v_syncani_3_frame).w,ost_frame(a0)
@@ -101,8 +101,8 @@ RLoss_Bounce:	; Routine 2
 		beq.s	RLoss_Delete
 		move.w	(v_boundary_bottom).w,d0
 		addi.w	#$E0,d0
-		cmp.w	ost_y_pos(a0),d0 ; has object moved below level boundary?
-		bcs.s	RLoss_Delete	; if yes, branch
+		cmp.w	ost_y_pos(a0),d0			; has object moved below level boundary?
+		bcs.s	RLoss_Delete				; if yes, branch
 		bra.w	DisplaySprite
 ; ===========================================================================
 

@@ -15,8 +15,8 @@ Msl_Index:	index *,,2
 		ptr Msl_Delete
 		ptr Msl_FromNewt
 
-ost_missile_wait_time:	equ $32	; time delay (2 bytes)
-ost_missile_parent:	equ $3C	; address of OST of parent object (4 bytes)
+ost_missile_wait_time:	equ $32					; time delay (2 bytes)
+ost_missile_parent:	equ $3C					; address of OST of parent object (4 bytes)
 ; ===========================================================================
 
 Msl_Main:	; Routine 0
@@ -29,10 +29,10 @@ Msl_Main:	; Routine 0
 		move.b	#3,ost_priority(a0)
 		move.b	#8,ost_actwidth(a0)
 		andi.b	#status_xflip+status_yflip,ost_status(a0)
-		tst.b	ost_subtype(a0)	; was object created by	a Newtron?
-		beq.s	Msl_Animate	; if not, branch
+		tst.b	ost_subtype(a0)				; was object created by	a Newtron?
+		beq.s	Msl_Animate				; if not, branch
 
-		move.b	#id_Msl_FromNewt,ost_routine(a0) ; run "Msl_FromNewt" routine
+		move.b	#id_Msl_FromNewt,ost_routine(a0)	; run "Msl_FromNewt" routine
 		move.b	#id_col_6x6+id_col_hurt,ost_col_type(a0)
 		move.b	#id_ani_buzz_missile,ost_anim(a0)
 		bra.s	Msl_Animate2
@@ -53,8 +53,8 @@ Msl_Animate:	; Routine 2
 
 Msl_ChkCancel:
 		movea.l	ost_missile_parent(a0),a1
-		cmpi.b	#id_ExplosionItem,0(a1) ; has Buzz Bomber been destroyed?
-		beq.s	Msl_Delete	; if yes, branch
+		cmpi.b	#id_ExplosionItem,0(a1)			; has Buzz Bomber been destroyed?
+		beq.s	Msl_Delete				; if yes, branch
 		rts	
 ; End of function Msl_ChkCancel
 
@@ -71,13 +71,13 @@ Msl_FromBuzz:	; Routine 4
 		bsr.w	DisplaySprite
 		move.w	(v_boundary_bottom).w,d0
 		addi.w	#$E0,d0
-		cmp.w	ost_y_pos(a0),d0 ; has object moved below the level boundary?
-		bcs.s	Msl_Delete	; if yes, branch
+		cmp.w	ost_y_pos(a0),d0			; has object moved below the level boundary?
+		bcs.s	Msl_Delete				; if yes, branch
 		rts	
 ; ===========================================================================
 
 	@explode:
-		move.b	#id_MissileDissolve,0(a0) ; change object to an explosion (Obj24)
+		move.b	#id_MissileDissolve,0(a0)		; change object to an explosion (Obj24)
 		move.b	#0,ost_routine(a0)
 		bra.w	MissileDissolve
 ; ===========================================================================

@@ -21,8 +21,8 @@ Obj85_Index:	index *,,2
 		ptr loc_1A3AC
 		ptr loc_1A264
 
-Obj85_ObjData:	dc.w $100, $100, tile_Nem_Sbz2Eggman_FZ	; x pos, y pos,	VRAM setting
-		dc.l Map_SEgg				; mappings pointer
+Obj85_ObjData:	dc.w $100, $100, tile_Nem_Sbz2Eggman_FZ		; x pos, y pos,	VRAM setting
+		dc.l Map_SEgg					; mappings pointer
 		dc.w $25B0, $590, tile_Nem_FzBoss
 		dc.l Map_EggCyl
 		dc.w $26E0, $596, tile_Nem_FzEggman
@@ -34,7 +34,7 @@ Obj85_ObjData:	dc.w $100, $100, tile_Nem_Sbz2Eggman_FZ	; x pos, y pos,	VRAM sett
 		dc.w $26E0, $596, tile_Nem_Eggman
 		dc.l Map_Eggman
 
-Obj85_ObjData2:	dc.b 2,	0, 4, $20, $19	; routine num, animation, sprite priority, width, height
+Obj85_ObjData2:	dc.b 2,	0, 4, $20, $19				; routine num, animation, sprite priority, width, height
 		dc.b 4,	0, 1, $12, 8
 		dc.b 6,	0, 3, 0, 0
 		dc.b 8,	0, 3, 0, 0
@@ -43,11 +43,11 @@ Obj85_ObjData2:	dc.b 2,	0, 4, $20, $19	; routine num, animation, sprite priority
 
 ;			equ $30	; ?  (2 bytes)
 ;			equ $32	; ?  (2 bytes)
-ost_fz_parent:		equ $34	; address of OST of parent object - children only (4 bytes)
-ost_fz_mode:		equ $34	; action being performed, increments of 2 - parent only
-ost_fz_flash_num:	equ $35	; number of times to make boss flash when hit - parent only
-ost_fz_plasma_child:	equ $36	; address of OST of plasma object - parent only (2 bytes)
-ost_fz_cylinder_child:	equ $38	; address of OST of cylinder object - parent only (2 bytes * 4)
+ost_fz_parent:		equ $34					; address of OST of parent object - children only (4 bytes)
+ost_fz_mode:		equ $34					; action being performed, increments of 2 - parent only
+ost_fz_flash_num:	equ $35					; number of times to make boss flash when hit - parent only
+ost_fz_plasma_child:	equ $36					; address of OST of plasma object - parent only (2 bytes)
+ost_fz_cylinder_child:	equ $38					; address of OST of cylinder object - parent only (2 bytes * 4)
 ; ===========================================================================
 
 Obj85_Main:	; Routine 0
@@ -80,13 +80,13 @@ Obj85_LoadBoss:
 		move.b	#render_rel,ost_render(a1)
 		bset	#render_onscreen_bit,ost_render(a0)
 		move.l	a0,ost_fz_parent(a1)
-		dbf	d1,Obj85_Loop	; repeat 5 more times
+		dbf	d1,Obj85_Loop				; repeat 5 more times
 
 loc_19E20:
 		lea	ost_fz_plasma_child(a0),a2
 		jsr	(FindFreeObj).l
 		bne.s	loc_19E5A
-		move.b	#id_BossPlasma,(a1) ; load energy ball object
+		move.b	#id_BossPlasma,(a1)			; load energy ball object
 		move.w	a1,(a2)
 		move.l	a0,ost_plasma_parent(a1)
 		lea	ost_fz_cylinder_child(a0),a2
@@ -97,7 +97,7 @@ loc_19E3E:
 		jsr	(FindNextFreeObj).l
 		bne.s	loc_19E5A
 		move.w	a1,(a2)+
-		move.b	#id_EggmanCylinder,(a1) ; load crushing	cylinder object
+		move.b	#id_EggmanCylinder,(a1)			; load crushing	cylinder object
 		move.l	a0,ost_cylinder_parent(a1)
 		move.b	d2,ost_subtype(a1)
 		addq.w	#2,d2
@@ -105,7 +105,7 @@ loc_19E3E:
 
 loc_19E5A:
 		move.w	#0,ost_fz_mode(a0)
-		move.b	#8,ost_col_property(a0) ; set number of hits to 8
+		move.b	#8,ost_col_property(a0)			; set number of hits to 8
 		move.w	#-1,$30(a0)
 
 Obj85_Eggman:	; Routine 2
@@ -166,7 +166,7 @@ loc_19EC6:
 		move.w	#0,$30(a1)
 		move.w	#1,$32(a0)
 		clr.b	ost_fz_flash_num(a0)
-		play.w	1, jsr, sfx_Rumbling		; play rumbling sound
+		play.w	1, jsr, sfx_Rumbling			; play rumbling sound
 
 loc_19F10:
 		tst.w	$32(a0)
@@ -207,7 +207,7 @@ loc_19F6A:
 		bne.s	loc_19F88
 		subq.b	#1,ost_col_property(a0)
 		move.b	#$64,ost_fz_flash_num(a0)
-		play.w	1, jsr, sfx_BossHit		; play boss damage sound
+		play.w	1, jsr, sfx_BossHit			; play boss damage sound
 
 loc_19F88:
 		subq.b	#1,ost_fz_flash_num(a0)
@@ -276,7 +276,7 @@ locret_1A01E:
 ; ===========================================================================
 
 loc_1A020:
-		play.w	1, jmp, sfx_Electricity		; play electricity sound
+		play.w	1, jmp, sfx_Electricity			; play electricity sound
 ; ===========================================================================
 
 loc_1A02A:
@@ -427,7 +427,7 @@ loc_1A1D4:
 		tst.b	ost_col_type(a0)
 		bne.s	loc_1A216
 		move.w	#$1E,$30(a0)
-		play.w	1, jsr, sfx_BossHit		; play boss damage sound
+		play.w	1, jsr, sfx_BossHit			; play boss damage sound
 
 loc_1A1FC:
 		subq.w	#1,$30(a0)
@@ -500,7 +500,7 @@ loc_1A2A6:
 		moveq	#status_xflip+status_yflip,d0
 		and.b	ost_status(a0),d0
 		andi.b	#$FF-render_xflip-render_yflip,ost_render(a0) ; ignore x/yflip bits
-		or.b	d0,ost_render(a0) ; combine x/yflip bits from status instead
+		or.b	d0,ost_render(a0)			; combine x/yflip bits from status instead
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 

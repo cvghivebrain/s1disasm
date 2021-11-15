@@ -10,15 +10,15 @@
 
 DisplaySprite:
 		lea	(v_sprite_queue).w,a1
-		move.w	ost_priority(a0),d0 ; get sprite priority
-		lsr.w	#1,d0		; d0 = priority * $80
+		move.w	ost_priority(a0),d0			; get sprite priority
+		lsr.w	#1,d0					; d0 = priority * $80
 		andi.w	#$380,d0
-		adda.w	d0,a1		; jump to position in queue
-		cmpi.w	#$7E,(a1)	; is this part of the queue full?
-		bcc.s	DSpr_Full	; if yes, branch
-		addq.w	#2,(a1)		; increment sprite count
-		adda.w	(a1),a1		; jump to empty position
-		move.w	a0,(a1)		; insert RAM address for object
+		adda.w	d0,a1					; jump to position in queue
+		cmpi.w	#$7E,(a1)				; is this part of the queue full?
+		bcc.s	DSpr_Full				; if yes, branch
+		addq.w	#2,(a1)					; increment sprite count
+		adda.w	(a1),a1					; jump to empty position
+		move.w	a0,(a1)					; insert RAM address for object
 
 	DSpr_Full:
 		rts	

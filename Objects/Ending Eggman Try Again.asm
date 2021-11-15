@@ -15,7 +15,7 @@ EEgg_Index:	index *,,2
 		ptr EEgg_Juggle
 		ptr EEgg_Wait
 
-ost_eeggman_wait_time:	equ $30	; time between juggle motions (2 bytes)
+ost_eeggman_wait_time:	equ $30					; time between juggle motions (2 bytes)
 ; ===========================================================================
 
 EEgg_Main:	; Routine 0
@@ -26,14 +26,14 @@ EEgg_Main:	; Routine 0
 		move.w	#tile_Nem_TryAgain,ost_tile(a0)
 		move.b	#render_abs,ost_render(a0)
 		move.b	#2,ost_priority(a0)
-		move.b	#id_ani_eegg_end,ost_anim(a0) ; use "END" animation
-		cmpi.b	#6,(v_emeralds).w ; do you have all 6 emeralds?
-		beq.s	EEgg_Animate	; if yes, branch
+		move.b	#id_ani_eegg_end,ost_anim(a0)		; use "END" animation
+		cmpi.b	#6,(v_emeralds).w			; do you have all 6 emeralds?
+		beq.s	EEgg_Animate				; if yes, branch
 
-		move.b	#id_CreditsText,(v_ost_tryagain).w ; load credits object
+		move.b	#id_CreditsText,(v_ost_tryagain).w	; load credits object
 		move.w	#id_frame_cred_tryagain,(v_credits_num).w ; use "TRY AGAIN" text
-		move.b	#id_TryChaos,(v_ost_tryag_emeralds).w ; load emeralds object on "TRY AGAIN" screen
-		move.b	#id_ani_eegg_juggle1,ost_anim(a0) ; use "TRY AGAIN" animation
+		move.b	#id_TryChaos,(v_ost_tryag_emeralds).w	; load emeralds object on "TRY AGAIN" screen
+		move.b	#id_ani_eegg_juggle1,ost_anim(a0)	; use "TRY AGAIN" animation
 
 EEgg_Animate:	; Routine 2
 		lea	(Ani_EEgg).l,a1
@@ -48,7 +48,7 @@ EEgg_Juggle:	; Routine 4
 		neg.w	d0
 
 	@noflip:
-		lea	(v_ost_tryag_emeralds).w,a1 ; get RAM address for emeralds
+		lea	(v_ost_tryag_emeralds).w,a1		; get RAM address for emeralds
 		moveq	#5,d1
 
 @emeraldloop:
@@ -62,10 +62,10 @@ EEgg_Juggle:	; Routine 4
 		move.w	#112,ost_eeggman_wait_time(a0)
 
 EEgg_Wait:	; Routine 6
-		subq.w	#1,ost_eeggman_wait_time(a0) ; decrement timer
-		bpl.s	@nochg		; branch if time remains
+		subq.w	#1,ost_eeggman_wait_time(a0)		; decrement timer
+		bpl.s	@nochg					; branch if time remains
 		bchg	#0,ost_anim(a0)
-		move.b	#id_EEgg_Animate,ost_routine(a0) ; goto EEgg_Animate next
+		move.b	#id_EEgg_Animate,ost_routine(a0)	; goto EEgg_Animate next
 
 	@nochg:
 		rts	

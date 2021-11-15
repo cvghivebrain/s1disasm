@@ -22,10 +22,10 @@ GRing_Main:	; Routine 0
 		move.b	#$40,ost_actwidth(a0)
 		tst.b	ost_render(a0)
 		bpl.s	GRing_Animate
-		cmpi.b	#6,(v_emeralds).w ; do you have 6 emeralds?
-		beq.w	GRing_Delete	; if yes, branch
-		cmpi.w	#50,(v_rings).w	; do you have at least 50 rings?
-		bcc.s	GRing_Okay	; if yes, branch
+		cmpi.b	#6,(v_emeralds).w			; do you have 6 emeralds?
+		beq.w	GRing_Delete				; if yes, branch
+		cmpi.w	#50,(v_rings).w				; do you have at least 50 rings?
+		bcc.s	GRing_Okay				; if yes, branch
 		rts	
 ; ===========================================================================
 
@@ -33,7 +33,7 @@ GRing_Okay:
 		addq.b	#2,ost_routine(a0)
 		move.b	#2,ost_priority(a0)
 		move.b	#id_col_8x16+id_col_item,ost_col_type(a0)
-		move.w	#$C40,(v_giantring_gfx_offset).w ; Signal that Art_BigRing should be loaded ($C40 is the size of Art_BigRing)
+		move.w	#$C40,(v_giantring_gfx_offset).w	; Signal that Art_BigRing should be loaded ($C40 is the size of Art_BigRing)
 
 GRing_Animate:	; Routine 2
 		move.b	(v_syncani_1_frame).w,ost_frame(a0)
@@ -46,17 +46,17 @@ GRing_Collect:	; Routine 4
 		move.b	#0,ost_col_type(a0)
 		bsr.w	FindFreeObj
 		bne.w	GRing_PlaySnd
-		move.b	#id_RingFlash,0(a1) ; load giant ring flash object
+		move.b	#id_RingFlash,0(a1)			; load giant ring flash object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.l	a0,ost_flash_parent(a1)
 		move.w	(v_ost_player+ost_x_pos).w,d0
-		cmp.w	ost_x_pos(a0),d0 ; has Sonic come from the left?
-		bcs.s	GRing_PlaySnd	; if yes, branch
-		bset	#render_xflip_bit,ost_render(a1) ; reverse flash object
+		cmp.w	ost_x_pos(a0),d0			; has Sonic come from the left?
+		bcs.s	GRing_PlaySnd				; if yes, branch
+		bset	#render_xflip_bit,ost_render(a1)	; reverse flash object
 
 GRing_PlaySnd:
-		play.w	1, jsr, sfx_GiantRing		; play giant ring sound
+		play.w	1, jsr, sfx_GiantRing			; play giant ring sound
 		bra.s	GRing_Animate
 ; ===========================================================================
 

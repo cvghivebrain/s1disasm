@@ -2,7 +2,7 @@
 ; Sprite mappings - Caterkiller	enemy (MZ, SBZ)
 ; ---------------------------------------------------------------------------
 Map_Cat:	index *
-		ptr frame_cat_head1	; 0
+		ptr frame_cat_head1				; 0
 		ptr frame_cat_head2
 		ptr frame_cat_head3
 		ptr frame_cat_head4
@@ -10,7 +10,7 @@ Map_Cat:	index *
 		ptr frame_cat_head6
 		ptr frame_cat_head7
 		ptr frame_cat_head8
-		ptr frame_cat_body1	; 8
+		ptr frame_cat_body1				; 8
 		ptr frame_cat_body2
 		ptr frame_cat_body3
 		ptr frame_cat_body4
@@ -18,7 +18,7 @@ Map_Cat:	index *
 		ptr frame_cat_body6
 		ptr frame_cat_body7
 		ptr frame_cat_body8
-		ptr frame_cat_mouth1	; $10
+		ptr frame_cat_mouth1				; $10
 		ptr frame_cat_mouth2
 		ptr frame_cat_mouth3
 		ptr frame_cat_mouth4
@@ -27,7 +27,7 @@ Map_Cat:	index *
 		ptr frame_cat_mouth7
 		ptr frame_cat_mouth8
 		
-frame_cat_head1:			; caterkiller head, mouth closed
+frame_cat_head1:						; caterkiller head, mouth closed
 		spritemap
 		piece	-8, -$E, 2x3, 0
 		endsprite
@@ -67,7 +67,7 @@ frame_cat_head8:
 		piece	-8, -$15, 2x3, 0
 		endsprite
 		
-frame_cat_body1:			; caterkiller body
+frame_cat_body1:						; caterkiller body
 		spritemap
 		piece	-8, -8, 2x2, $C
 		endsprite
@@ -107,7 +107,7 @@ frame_cat_body8:
 		piece	-8, -$F, 2x2, $C
 		endsprite
 		
-frame_cat_mouth1:			; caterkiller head, mouth open
+frame_cat_mouth1:						; caterkiller head, mouth open
 		spritemap
 		piece	-8, -$E, 2x3, 6
 		endsprite

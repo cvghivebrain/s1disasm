@@ -8,7 +8,7 @@ Map_GRing:	index *
 		ptr frame_bigring_45_2
 		
 frame_bigring_front:
-		spritemap		; ring front
+		spritemap					; ring front
 		piece	-$18, -$20, 3x1, 0
 		piece	0, -$20, 3x1, 3
 		piece	-$20, -$18, 4x1, 6
@@ -22,7 +22,7 @@ frame_bigring_front:
 		endsprite
 		
 frame_bigring_45_1:
-		spritemap		; ring angle
+		spritemap					; ring angle
 		piece	-$10, -$20, 4x1, $2C
 		piece	-$18, -$18, 3x1, $30
 		piece	0, -$18, 3x2, $33
@@ -34,7 +34,7 @@ frame_bigring_45_1:
 		endsprite
 		
 frame_bigring_side:
-		spritemap		; ring perpendicular
+		spritemap					; ring perpendicular
 		piece	-$C, -$20, 2x4, $52
 		piece	4, -$20, 1x4, $52, xflip
 		piece	-$C, 0, 2x4, $5A
@@ -42,7 +42,7 @@ frame_bigring_side:
 		endsprite
 		
 frame_bigring_45_2:
-		spritemap		; ring angle
+		spritemap					; ring angle
 		piece	-$10, -$20, 4x1, $2C, xflip
 		piece	0, -$18, 3x1, $30, xflip
 		piece	-$18, -$18, 3x2, $33, xflip

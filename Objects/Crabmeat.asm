@@ -15,8 +15,8 @@ Crab_Index:	index *,,2
 		ptr Crab_BallMain
 		ptr Crab_BallMove
 
-ost_crab_wait_time:	equ $30	; time until crabmeat fires (2 bytes)
-ost_crab_mode:		equ $32	; current action - 0/1 = not firing; 2/3 = firing
+ost_crab_wait_time:	equ $30					; time until crabmeat fires (2 bytes)
+ost_crab_mode:		equ $32					; current action - 0/1 = not firing; 2/3 = firing
 ; ===========================================================================
 
 Crab_Main:	; Routine 0
@@ -29,7 +29,7 @@ Crab_Main:	; Routine 0
 		move.b	#id_col_16x16,ost_col_type(a0)
 		move.b	#$15,ost_actwidth(a0)
 		bsr.w	ObjectFall
-		jsr	(FindFloorObj).l ; find floor
+		jsr	(FindFloorObj).l			; find floor
 		tst.w	d1
 		bpl.s	@floornotfound
 		add.w	d1,ost_y_pos(a0)
@@ -56,7 +56,7 @@ Crab_Action:	; Routine 2
 ; ===========================================================================
 
 @waittofire:
-		subq.w	#1,ost_crab_wait_time(a0) ; subtract 1 from time delay
+		subq.w	#1,ost_crab_wait_time(a0)		; subtract 1 from time delay
 		bpl.s	@dontmove
 		tst.b	ost_render(a0)
 		bpl.s	@movecrab
@@ -65,14 +65,14 @@ Crab_Action:	; Routine 2
 
 	@movecrab:
 		addq.b	#2,ost_routine2(a0)
-		move.w	#127,ost_crab_wait_time(a0) ; set time delay to approx 2 seconds
-		move.w	#$80,ost_x_vel(a0) ; move Crabmeat to the right
+		move.w	#127,ost_crab_wait_time(a0)		; set time delay to approx 2 seconds
+		move.w	#$80,ost_x_vel(a0)			; move Crabmeat to the right
 		bsr.w	Crab_SetAni
-		addq.b	#3,d0		; use walking animation
+		addq.b	#3,d0					; use walking animation
 		move.b	d0,ost_anim(a0)
 		bchg	#status_xflip_bit,ost_status(a0)
 		bne.s	@noflip
-		neg.w	ost_x_vel(a0)	; change direction
+		neg.w	ost_x_vel(a0)				; change direction
 
 	@dontmove:
 	@noflip:
@@ -81,10 +81,10 @@ Crab_Action:	; Routine 2
 
 @fire:
 		move.w	#59,ost_crab_wait_time(a0)
-		move.b	#id_ani_crab_firing,ost_anim(a0) ; use firing animation
+		move.b	#id_ani_crab_firing,ost_anim(a0)	; use firing animation
 		bsr.w	FindFreeObj
 		bne.s	@failleft
-		move.b	#id_Crabmeat,0(a1) ; load left fireball
+		move.b	#id_Crabmeat,0(a1)			; load left fireball
 		move.b	#id_Crab_BallMain,ost_routine(a1)
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		subi.w	#$10,ost_x_pos(a1)
@@ -94,7 +94,7 @@ Crab_Action:	; Routine 2
 	@failleft:
 		bsr.w	FindFreeObj
 		bne.s	@failright
-		move.b	#id_Crabmeat,0(a1) ; load right fireball
+		move.b	#id_Crabmeat,0(a1)			; load right fireball
 		move.b	#id_Crab_BallMain,ost_routine(a1)
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		addi.w	#$10,ost_x_pos(a1)
@@ -205,8 +205,8 @@ Crab_BallMove:	; Routine 8
 		bsr.w	DisplaySprite
 		move.w	(v_boundary_bottom).w,d0
 		addi.w	#$E0,d0
-		cmp.w	ost_y_pos(a0),d0 ; has object moved below the level boundary?
-		bcs.s	@delete		; if yes, branch
+		cmp.w	ost_y_pos(a0),d0			; has object moved below the level boundary?
+		bcs.s	@delete					; if yes, branch
 		rts	
 
 	@delete:

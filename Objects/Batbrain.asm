@@ -12,7 +12,7 @@ Bat_Index:	index *,,2
 		ptr Bat_Main
 		ptr Bat_Action
 
-ost_bat_sonic_y_pos:	equ $36	; Sonic's y position (2 bytes)
+ost_bat_sonic_y_pos:	equ $36					; Sonic's y position (2 bytes)
 ; ===========================================================================
 
 Bat_Main:	; Routine 0
@@ -43,16 +43,16 @@ Bat_Action:	; Routine 2
 
 @dropcheck:
 		move.w	#$80,d2
-		bsr.w	@chkdistance	; is Sonic < $80 pixels from basaran?
-		bcc.s	@nodrop		; if not, branch
+		bsr.w	@chkdistance				; is Sonic < $80 pixels from basaran?
+		bcc.s	@nodrop					; if not, branch
 		move.w	(v_ost_player+ost_y_pos).w,d0
 		move.w	d0,ost_bat_sonic_y_pos(a0)
 		sub.w	ost_y_pos(a0),d0
 		bcs.s	@nodrop
-		cmpi.w	#$80,d0		; is Sonic < $80 pixels from basaran?
-		bcc.s	@nodrop		; if not, branch
-		tst.w	(v_debug_active).w	; is debug mode	on?
-		bne.s	@nodrop		; if yes, branch
+		cmpi.w	#$80,d0					; is Sonic < $80 pixels from basaran?
+		bcc.s	@nodrop					; if not, branch
+		tst.w	(v_debug_active).w			; is debug mode	on?
+		bne.s	@nodrop					; if yes, branch
 
 		move.b	(v_vblank_counter_byte).w,d0
 		add.b	d7,d0
@@ -67,16 +67,16 @@ Bat_Action:	; Routine 2
 
 @dropfly:
 		bsr.w	SpeedToPos
-		addi.w	#$18,ost_y_vel(a0) ; make basaran fall
+		addi.w	#$18,ost_y_vel(a0)			; make basaran fall
 		move.w	#$80,d2
 		bsr.w	@chkdistance
 		move.w	ost_bat_sonic_y_pos(a0),d0
 		sub.w	ost_y_pos(a0),d0
 		bcs.s	@chkdel
-		cmpi.w	#$10,d0		; is basaran close to Sonic vertically?
-		bcc.s	@dropmore	; if not, branch
-		move.w	d1,ost_x_vel(a0) ; make basaran fly horizontally
-		move.w	#0,ost_y_vel(a0) ; stop basaran falling
+		cmpi.w	#$10,d0					; is basaran close to Sonic vertically?
+		bcc.s	@dropmore				; if not, branch
+		move.w	d1,ost_x_vel(a0)			; make basaran fly horizontally
+		move.w	#0,ost_y_vel(a0)			; stop basaran falling
 		move.b	#id_ani_bat_fly,ost_anim(a0)
 		addq.b	#2,ost_routine2(a0)
 
@@ -93,18 +93,18 @@ Bat_Action:	; Routine 2
 		move.b	(v_vblank_counter_byte).w,d0
 		andi.b	#$F,d0
 		bne.s	@nosound
-		play.w	1, jsr, sfx_Basaran		; play flapping sound every 16th frame
+		play.w	1, jsr, sfx_Basaran			; play flapping sound every 16th frame
 
 	@nosound:
 		bsr.w	SpeedToPos
 		move.w	(v_ost_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0
-		bcc.s	@isright	; if Sonic is right of basaran, branch
+		bcc.s	@isright				; if Sonic is right of basaran, branch
 		neg.w	d0
 
 	@isright:
-		cmpi.w	#$80,d0		; is Sonic within $80 pixels of basaran?
-		bcs.s	@dontflyup	; if yes, branch
+		cmpi.w	#$80,d0					; is Sonic within $80 pixels of basaran?
+		bcs.s	@dontflyup				; if yes, branch
 		move.b	(v_vblank_counter_byte).w,d0
 		add.b	d7,d0
 		andi.b	#7,d0
@@ -117,13 +117,13 @@ Bat_Action:	; Routine 2
 
 @flyup:
 		bsr.w	SpeedToPos
-		subi.w	#$18,ost_y_vel(a0) ; make basaran fly upwards
+		subi.w	#$18,ost_y_vel(a0)			; make basaran fly upwards
 		bsr.w	FindCeilingObj
-		tst.w	d1		; has basaran hit the ceiling?
-		bpl.s	@noceiling	; if not, branch
+		tst.w	d1					; has basaran hit the ceiling?
+		bpl.s	@noceiling				; if not, branch
 		sub.w	d1,ost_y_pos(a0)
-		andi.w	#$FFF8,ost_x_pos(a0) ; snap to tile
-		clr.w	ost_x_vel(a0)	; stop basaran moving
+		andi.w	#$FFF8,ost_x_pos(a0)			; snap to tile
+		clr.w	ost_x_vel(a0)				; stop basaran moving
 		clr.w	ost_y_vel(a0)
 		clr.b	ost_anim(a0)
 		clr.b	ost_routine2(a0)
@@ -146,7 +146,7 @@ Bat_Action:	; Routine 2
 		bset	#status_xflip_bit,ost_status(a0)
 		move.w	(v_ost_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0
-		bcc.s	@right		; if Sonic is right of basaran, branch
+		bcc.s	@right					; if Sonic is right of basaran, branch
 		neg.w	d0
 		neg.w	d1
 		bclr	#status_xflip_bit,ost_status(a0)

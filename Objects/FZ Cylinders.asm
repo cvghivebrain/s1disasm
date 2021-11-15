@@ -17,22 +17,22 @@ Obj84_Index:	index *,,2
 		ptr loc_1A4CE
 		ptr loc_1A57E
 
-Obj84_PosData:	dc.w $24D0, $620 ; bottom left
-		dc.w $2550, $620 ; bottom right
-		dc.w $2490, $4C0 ; top left
-		dc.w $2510, $4C0 ; top right
+Obj84_PosData:	dc.w $24D0, $620				; bottom left
+		dc.w $2550, $620				; bottom right
+		dc.w $2490, $4C0				; top left
+		dc.w $2510, $4C0				; top right
 
-ost_cylinder_flag:	equ $29	; flag set when moving
+ost_cylinder_flag:	equ $29					; flag set when moving
 ;			equ $30	; ?  (2 bytes)
-ost_cylinder_parent:	equ $34	; address of OST of parent object (4 bytes)
-ost_cylinder_y_start:	equ $38	; original y position (2 bytes)
-ost_cylinder_y_move:	equ $3C	; amount the cylinder has moved (4 bytes)
+ost_cylinder_parent:	equ $34					; address of OST of parent object (4 bytes)
+ost_cylinder_y_start:	equ $38					; original y position (2 bytes)
+ost_cylinder_y_move:	equ $3C					; amount the cylinder has moved (4 bytes)
 ; ===========================================================================
 
 Obj84_Main:	; Routine
 		lea	Obj84_PosData(pc),a1
 		moveq	#0,d0
-		move.b	ost_subtype(a0),d0 ; get subtype (0/2/4/6)
+		move.b	ost_subtype(a0),d0			; get subtype (0/2/4/6)
 		add.w	d0,d0
 		adda.w	d0,a1
 		move.b	#render_rel,ost_render(a0)
@@ -51,9 +51,9 @@ Obj84_Main:	; Routine
 		addq.b	#2,ost_routine(a0)
 
 loc_1A4CE:	; Routine 2
-		cmpi.b	#2,ost_subtype(a0) ; is cylinder on ceiling?
-		ble.s	loc_1A4DC	; if not, branch
-		bset	#status_yflip_bit,ost_render(a0) ; yflip
+		cmpi.b	#2,ost_subtype(a0)			; is cylinder on ceiling?
+		ble.s	loc_1A4DC				; if not, branch
+		bset	#status_yflip_bit,ost_render(a0)	; yflip
 
 loc_1A4DC:
 		clr.l	ost_cylinder_y_move(a0)

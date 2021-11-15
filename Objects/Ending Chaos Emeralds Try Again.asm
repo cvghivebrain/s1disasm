@@ -13,10 +13,10 @@ TCha_Index:	index *,,2
 		ptr TCha_Main
 		ptr TCha_Move
 
-ost_ectry_x_start:	equ $38	; x-axis centre of emerald circle (2 bytes)
-ost_ectry_y_start:	equ $3A	; y-axis centre of emerald circle (2 bytes)
-ost_ectry_radius:	equ $3C	; radius
-ost_ectry_speed:	equ $3E	; speed at which emeralds rotate around central point (2 bytes)
+ost_ectry_x_start:	equ $38					; x-axis centre of emerald circle (2 bytes)
+ost_ectry_y_start:	equ $3A					; y-axis centre of emerald circle (2 bytes)
+ost_ectry_radius:	equ $3C					; radius
+ost_ectry_speed:	equ $3E					; speed at which emeralds rotate around central point (2 bytes)
 ; ===========================================================================
 
 TCha_Main:	; Routine 0
@@ -27,7 +27,7 @@ TCha_Main:	; Routine 0
 		sub.b	(v_emeralds).w,d1
 
 @makeemerald:
-		move.b	#id_TryChaos,(a1) ; load emerald object
+		move.b	#id_TryChaos,(a1)			; load emerald object
 		addq.b	#2,ost_routine(a1)
 		move.l	#Map_ECha,ost_mappings(a1)
 		move.w	#tile_Nem_EndEm_TryAgain,ost_tile(a1)
@@ -65,7 +65,7 @@ TCha_Main:	; Routine 0
 		move.b	d3,ost_anim_delay(a1)
 		addi.w	#10,d3
 		lea	$40(a1),a1
-		dbf	d1,@makeemerald	; repeat 5 times
+		dbf	d1,@makeemerald				; repeat 5 times
 
 TCha_Move:	; Routine 2
 		tst.w	ost_ectry_speed(a0)

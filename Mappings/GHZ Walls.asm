@@ -7,7 +7,7 @@ Map_Edge:	index *
 		ptr frame_edge_dark
 		
 frame_edge_shadow:
-		spritemap			; light with shadow
+		spritemap					; light with shadow
 		piece	-8, -$20, 2x2, 4
 		piece	-8, -$10, 2x2, 8
 		piece	-8, 0, 2x2, 8
@@ -15,7 +15,7 @@ frame_edge_shadow:
 		endsprite
 		
 frame_edge_light:
-		spritemap			; light with no shadow
+		spritemap					; light with no shadow
 		piece	-8, -$20, 2x2, 8
 		piece	-8, -$10, 2x2, 8
 		piece	-8, 0, 2x2, 8
@@ -23,7 +23,7 @@ frame_edge_light:
 		endsprite
 		
 frame_edge_dark:
-		spritemap			; all shadow
+		spritemap					; all shadow
 		piece	-8, -$20, 2x2, 0
 		piece	-8, -$10, 2x2, 0
 		piece	-8, 0, 2x2, 0

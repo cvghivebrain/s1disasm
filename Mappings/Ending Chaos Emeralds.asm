@@ -10,7 +10,7 @@ Map_ECha:	index *
 		ptr frame_echaos_red
 		ptr frame_echaos_grey
 		
-frame_echaos_flash:			; unused
+frame_echaos_flash:						; unused
 		spritemap
 		piece	-8, -8, 2x2, 0
 		endsprite

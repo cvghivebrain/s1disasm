@@ -26,20 +26,20 @@ Glass_Vars012:	dc.b id_Glass_Block012,	0, id_frame_glass_tall	; routine num, y-a
 Glass_Vars34:	dc.b id_Glass_Block34, 0, id_frame_glass_short
 		dc.b id_Glass_Reflect34, 0, id_frame_glass_shine
 
-ost_glass_y_start:	equ $30	; original y position (2 bytes)
-ost_glass_y_dist:	equ $32	; distance block moves when switch is pressed (2 bytes)
-ost_glass_move_mode:	equ $34	; 1 when block moves after switch is pressed
-ost_glass_sink_dist:	equ $36	; distance to make block sink when jumped on; unused type 3 block (2 bytes)
-ost_glass_sink_delay:	equ $38	; time to delay block sinking
-ost_glass_parent:	equ $3C	; address of OST of parent object (4 bytes)
+ost_glass_y_start:	equ $30					; original y position (2 bytes)
+ost_glass_y_dist:	equ $32					; distance block moves when switch is pressed (2 bytes)
+ost_glass_move_mode:	equ $34					; 1 when block moves after switch is pressed
+ost_glass_sink_dist:	equ $36					; distance to make block sink when jumped on; unused type 3 block (2 bytes)
+ost_glass_sink_delay:	equ $38					; time to delay block sinking
+ost_glass_parent:	equ $3C					; address of OST of parent object (4 bytes)
 ; ===========================================================================
 
 Glass_Main:	; Routine 0
 		lea	(Glass_Vars012).l,a2
 		moveq	#1,d1
 		move.b	#$48,ost_height(a0)
-		cmpi.b	#3,ost_subtype(a0) ; is object type 0/1/2 ?
-		bcs.s	@IsType012	; if yes, branch
+		cmpi.b	#3,ost_subtype(a0)			; is object type 0/1/2 ?
+		bcs.s	@IsType012				; if yes, branch
 
 		lea	(Glass_Vars34).l,a2
 		moveq	#1,d1
@@ -47,7 +47,7 @@ Glass_Main:	; Routine 0
 
 	@IsType012:
 		movea.l	a0,a1
-		bra.s	@Load		; load main object
+		bra.s	@Load					; load main object
 ; ===========================================================================
 
 	@Repeat:
@@ -71,7 +71,7 @@ Glass_Main:	; Routine 0
 		move.b	#4,ost_priority(a1)
 		move.b	(a2)+,ost_frame(a1)
 		move.l	a0,ost_glass_parent(a1)
-		dbf	d1,@Repeat	; repeat once to load "reflection object"
+		dbf	d1,@Repeat				; repeat once to load "reflection object"
 
 		move.b	#$10,ost_actwidth(a1)
 		move.b	#3,ost_priority(a1)
@@ -128,11 +128,11 @@ Glass_Types:
 
 ; ===========================================================================
 Glass_TypeIndex:index *
-		ptr Glass_Still		; 0 - doesn't move
-		ptr Glass_UpDown	; 1 - moves up and down
-		ptr Glass_UpDown_Rev	; 2 - moves up and down, reversed
-		ptr Glass_Drop_Jump	; 3 - drops each time it's jumped on
-		ptr Glass_Drop_Button	; 4 - drops when button is pressed
+		ptr Glass_Still					; 0 - doesn't move
+		ptr Glass_UpDown				; 1 - moves up and down
+		ptr Glass_UpDown_Rev				; 2 - moves up and down, reversed
+		ptr Glass_Drop_Jump				; 3 - drops each time it's jumped on
+		ptr Glass_Drop_Button				; 4 - drops when button is pressed
 ; ===========================================================================
 
 ; Type 0
@@ -151,13 +151,13 @@ Glass_UpDown:
 Glass_UpDown_Rev:
 		move.b	(v_oscillating_table+$10).w,d0
 		move.w	#$40,d1
-		neg.w	d0		; reverse direction of movement
+		neg.w	d0					; reverse direction of movement
 		add.w	d1,d0
 
 loc_B514:
-		btst	#3,ost_subtype(a0) ; is object a reflection?
-		beq.s	@not_reflection	; if not, branch
-		neg.w	d0		; reverse for reflection
+		btst	#3,ost_subtype(a0)			; is object a reflection?
+		beq.s	@not_reflection				; if not, branch
+		neg.w	d0					; reverse for reflection
 		add.w	d1,d0
 		lsr.b	#1,d0
 		addi.w	#$20,d0
@@ -168,31 +168,31 @@ loc_B514:
 
 ; Type 3
 Glass_Drop_Jump:
-		btst	#3,ost_subtype(a0) ; is object a reflection?
-		beq.s	@not_reflection	; if not, branch
+		btst	#3,ost_subtype(a0)			; is object a reflection?
+		beq.s	@not_reflection				; if not, branch
 		move.b	(v_oscillating_table+$10).w,d0
 		subi.w	#$10,d0
 		bra.w	Glass_Move
 
 @not_reflection:
-		btst	#status_platform_bit,ost_status(a0) ; is Sonic on the block?
-		bne.s	loc_B54E	; if yes, branch
+		btst	#status_platform_bit,ost_status(a0)	; is Sonic on the block?
+		bne.s	loc_B54E				; if yes, branch
 		bclr	#0,ost_glass_move_mode(a0)
 		bra.s	loc_B582
 ; ===========================================================================
 
 loc_B54E:
-		tst.b	ost_glass_move_mode(a0) ; is block already moving?
-		bne.s	loc_B582	; if yes, branch
+		tst.b	ost_glass_move_mode(a0)			; is block already moving?
+		bne.s	loc_B582				; if yes, branch
 		move.b	#1,ost_glass_move_mode(a0)
 		bset	#0,$35(a0)
 		beq.s	loc_B582
 		bset	#7,ost_glass_move_mode(a0)
-		move.w	#$10,ost_glass_sink_dist(a0) ; sink $10 pixels after it's jumped on
+		move.w	#$10,ost_glass_sink_dist(a0)		; sink $10 pixels after it's jumped on
 		move.b	#$A,ost_glass_sink_delay(a0)
-		cmpi.w	#$40,ost_glass_y_dist(a0) ; is block within $40 of its final position?
-		bne.s	loc_B582	; if not, branch
-		move.w	#$40,ost_glass_sink_dist(a0) ; sink rest of the way
+		cmpi.w	#$40,ost_glass_y_dist(a0)		; is block within $40 of its final position?
+		bne.s	loc_B582				; if not, branch
+		move.w	#$40,ost_glass_sink_dist(a0)		; sink rest of the way
 
 loc_B582:
 		tst.b	ost_glass_move_mode(a0)
@@ -219,22 +219,22 @@ loc_B5AA:
 
 ; Type 4
 Glass_Drop_Button:
-		btst	#3,ost_subtype(a0) ; is object a reflection?
-		beq.s	Glass_ChkSwitch	; if not, branch
+		btst	#3,ost_subtype(a0)			; is object a reflection?
+		beq.s	Glass_ChkSwitch				; if not, branch
 		move.b	(v_oscillating_table+$10).w,d0
 		subi.w	#$10,d0
 		bra.s	Glass_Move
 ; ===========================================================================
 
 Glass_ChkSwitch:
-		tst.b	ost_glass_move_mode(a0) ; is block already moving?
-		bne.s	loc_B5E0	; if yes, branch
+		tst.b	ost_glass_move_mode(a0)			; is block already moving?
+		bne.s	loc_B5E0				; if yes, branch
 		lea	(v_button_state).w,a2
 		moveq	#0,d0
-		move.b	ost_subtype(a0),d0 ; load object type number
-		lsr.w	#4,d0		; read only the	first nybble
-		tst.b	(a2,d0.w)	; has switch number d0 been pressed?
-		beq.s	loc_B5EA	; if not, branch
+		move.b	ost_subtype(a0),d0			; load object type number
+		lsr.w	#4,d0					; read only the	first nybble
+		tst.b	(a2,d0.w)				; has switch number d0 been pressed?
+		beq.s	loc_B5EA				; if not, branch
 		move.b	#1,ost_glass_move_mode(a0)
 
 loc_B5E0:
@@ -248,5 +248,5 @@ loc_B5EA:
 Glass_Move:
 		move.w	ost_glass_y_start(a0),d1
 		sub.w	d0,d1
-		move.w	d1,ost_y_pos(a0) ; update its y position
+		move.w	d1,ost_y_pos(a0)			; update its y position
 		rts	

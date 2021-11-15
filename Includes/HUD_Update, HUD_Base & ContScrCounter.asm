@@ -10,77 +10,77 @@ hudVRAM:	macro loc
 
 
 HUD_Update:
-		tst.w	(f_debug_enable).w	; is debug mode	on?
-		bne.w	HudDebug	; if yes, branch
-		tst.b	(f_hud_score_update).w ; does the score need updating?
-		beq.s	@chkrings	; if not, branch
+		tst.w	(f_debug_enable).w			; is debug mode	on?
+		bne.w	HudDebug				; if yes, branch
+		tst.b	(f_hud_score_update).w			; does the score need updating?
+		beq.s	@chkrings				; if not, branch
 
 		clr.b	(f_hud_score_update).w
-		hudVRAM	$DC80		; set VRAM address
-		move.l	(v_score).w,d1	; load score
+		hudVRAM	$DC80					; set VRAM address
+		move.l	(v_score).w,d1				; load score
 		bsr.w	Hud_Score
 
 	@chkrings:
-		tst.b	(v_hud_rings_update).w	; does the ring	counter	need updating?
-		beq.s	@chktime	; if not, branch
+		tst.b	(v_hud_rings_update).w			; does the ring	counter	need updating?
+		beq.s	@chktime				; if not, branch
 		bpl.s	@notzero
-		bsr.w	Hud_LoadZero	; reset rings to 0 if Sonic is hit
+		bsr.w	Hud_LoadZero				; reset rings to 0 if Sonic is hit
 
 	@notzero:
 		clr.b	(v_hud_rings_update).w
-		hudVRAM	$DF40		; set VRAM address
+		hudVRAM	$DF40					; set VRAM address
 		moveq	#0,d1
-		move.w	(v_rings).w,d1	; load number of rings
+		move.w	(v_rings).w,d1				; load number of rings
 		bsr.w	Hud_Rings
 
 	@chktime:
-		tst.b	(f_hud_time_update).w	; does the time	need updating?
-		beq.s	@chklives	; if not, branch
-		tst.w	(f_pause).w	; is the game paused?
-		bne.s	@chklives	; if yes, branch
+		tst.b	(f_hud_time_update).w			; does the time	need updating?
+		beq.s	@chklives				; if not, branch
+		tst.w	(f_pause).w				; is the game paused?
+		bne.s	@chklives				; if yes, branch
 		lea	(v_time).w,a1
-		cmpi.l	#(9*$10000)+(59*$100)+59,(a1)+ ; is the time 9:59:59?
-		beq.s	TimeOver	; if yes, branch
+		cmpi.l	#(9*$10000)+(59*$100)+59,(a1)+		; is the time 9:59:59?
+		beq.s	TimeOver				; if yes, branch
 
-		addq.b	#1,-(a1)	; increment 1/60s counter
-		cmpi.b	#60,(a1)	; check if passed 60
+		addq.b	#1,-(a1)				; increment 1/60s counter
+		cmpi.b	#60,(a1)				; check if passed 60
 		bcs.s	@chklives
 		move.b	#0,(a1)
-		addq.b	#1,-(a1)	; increment second counter
-		cmpi.b	#60,(a1)	; check if passed 60
+		addq.b	#1,-(a1)				; increment second counter
+		cmpi.b	#60,(a1)				; check if passed 60
 		bcs.s	@updatetime
 		move.b	#0,(a1)
-		addq.b	#1,-(a1)	; increment minute counter
-		cmpi.b	#9,(a1)		; check if passed 9
+		addq.b	#1,-(a1)				; increment minute counter
+		cmpi.b	#9,(a1)					; check if passed 9
 		bcs.s	@updatetime
-		move.b	#9,(a1)		; keep as 9
+		move.b	#9,(a1)					; keep as 9
 
 	@updatetime:
 		hudVRAM	$DE40
 		moveq	#0,d1
-		move.b	(v_time_min).w,d1 ; load	minutes
+		move.b	(v_time_min).w,d1			; load	minutes
 		bsr.w	Hud_Mins
 		hudVRAM	$DEC0
 		moveq	#0,d1
-		move.b	(v_time_sec).w,d1 ; load	seconds
+		move.b	(v_time_sec).w,d1			; load	seconds
 		bsr.w	Hud_Secs
 
 	@chklives:
-		tst.b	(f_hud_lives_update).w ; does the lives counter need updating?
-		beq.s	@chkbonus	; if not, branch
+		tst.b	(f_hud_lives_update).w			; does the lives counter need updating?
+		beq.s	@chkbonus				; if not, branch
 		clr.b	(f_hud_lives_update).w
 		bsr.w	Hud_Lives
 
 	@chkbonus:
-		tst.b	(f_pass_bonus_update).w ; do time/ring bonus counters need updating?
-		beq.s	@finish		; if not, branch
+		tst.b	(f_pass_bonus_update).w			; do time/ring bonus counters need updating?
+		beq.s	@finish					; if not, branch
 		clr.b	(f_pass_bonus_update).w
 		locVRAM	$AE00
 		moveq	#0,d1
-		move.w	(v_time_bonus).w,d1 ; load time bonus
+		move.w	(v_time_bonus).w,d1			; load time bonus
 		bsr.w	Hud_TimeRingBonus
 		moveq	#0,d1
-		move.w	(v_ring_bonus).w,d1 ; load ring bonus
+		move.w	(v_ring_bonus).w,d1			; load ring bonus
 		bsr.w	Hud_TimeRingBonus
 
 	@finish:
@@ -98,38 +98,38 @@ TimeOver:
 
 HudDebug:
 		bsr.w	HudDb_XY
-		tst.b	(v_hud_rings_update).w	; does the ring	counter	need updating?
-		beq.s	@objcounter	; if not, branch
+		tst.b	(v_hud_rings_update).w			; does the ring	counter	need updating?
+		beq.s	@objcounter				; if not, branch
 		bpl.s	@notzero
-		bsr.w	Hud_LoadZero	; reset rings to 0 if Sonic is hit
+		bsr.w	Hud_LoadZero				; reset rings to 0 if Sonic is hit
 
 	@notzero:
 		clr.b	(v_hud_rings_update).w
-		hudVRAM	$DF40		; set VRAM address
+		hudVRAM	$DF40					; set VRAM address
 		moveq	#0,d1
-		move.w	(v_rings).w,d1	; load number of rings
+		move.w	(v_rings).w,d1				; load number of rings
 		bsr.w	Hud_Rings
 
 	@objcounter:
-		hudVRAM	$DEC0		; set VRAM address
+		hudVRAM	$DEC0					; set VRAM address
 		moveq	#0,d1
-		move.b	(v_spritecount).w,d1 ; load "number of objects" counter
+		move.b	(v_spritecount).w,d1			; load "number of objects" counter
 		bsr.w	Hud_Secs
-		tst.b	(f_hud_lives_update).w ; does the lives counter need updating?
-		beq.s	@chkbonus	; if not, branch
+		tst.b	(f_hud_lives_update).w			; does the lives counter need updating?
+		beq.s	@chkbonus				; if not, branch
 		clr.b	(f_hud_lives_update).w
 		bsr.w	Hud_Lives
 
 	@chkbonus:
-		tst.b	(f_pass_bonus_update).w ; does the ring/time bonus counter need updating?
-		beq.s	@finish		; if not, branch
+		tst.b	(f_pass_bonus_update).w			; does the ring/time bonus counter need updating?
+		beq.s	@finish					; if not, branch
 		clr.b	(f_pass_bonus_update).w
-		locVRAM	$AE00		; set VRAM address
+		locVRAM	$AE00					; set VRAM address
 		moveq	#0,d1
-		move.w	(v_time_bonus).w,d1 ; load time bonus
+		move.w	(v_time_bonus).w,d1			; load time bonus
 		bsr.w	Hud_TimeRingBonus
 		moveq	#0,d1
-		move.w	(v_ring_bonus).w,d1 ; load ring bonus
+		move.w	(v_ring_bonus).w,d1			; load ring bonus
 		bsr.w	Hud_TimeRingBonus
 
 	@finish:
@@ -203,14 +203,14 @@ Hud_TilesZero:	dc.b $FF, $FF, 0, 0
 
 
 HudDb_XY:
-		locVRAM	$DC40		; set VRAM address
-		move.w	(v_camera_x_pos).w,d1 ; load camera x-position
+		locVRAM	$DC40					; set VRAM address
+		move.w	(v_camera_x_pos).w,d1			; load camera x-position
 		swap	d1
-		move.w	(v_ost_player+ost_x_pos).w,d1 ; load Sonic's x-position
+		move.w	(v_ost_player+ost_x_pos).w,d1		; load Sonic's x-position
 		bsr.s	HudDb_XY2
-		move.w	(v_camera_y_pos).w,d1 ; load camera y-position
+		move.w	(v_camera_y_pos).w,d1			; load camera y-position
 		swap	d1
-		move.w	(v_ost_player+ost_y_pos).w,d1 ; load Sonic's y-position
+		move.w	(v_ost_player+ost_y_pos).w,d1		; load Sonic's y-position
 ; End of function HudDb_XY
 
 
@@ -241,7 +241,7 @@ loc_1C8B2:
 		move.l	(a3)+,(a6)
 		move.l	(a3)+,(a6)
 		swap	d1
-		dbf	d6,HudDb_XYLoop	; repeat 7 more	times
+		dbf	d6,HudDb_XYLoop				; repeat 7 more	times
 
 		rts	
 ; End of function HudDb_XY2
@@ -336,7 +336,7 @@ ContScrCounter:
 		lea	(Hud_10).l,a2
 		moveq	#1,d6
 		moveq	#0,d4
-		lea	Art_Hud(pc),a1 ; load numbers patterns
+		lea	Art_Hud(pc),a1				; load numbers patterns
 
 ContScr_Loop:
 		moveq	#0,d2
@@ -369,7 +369,7 @@ loc_1C962:
 		move.l	(a3)+,(a6)
 		move.l	(a3)+,(a6)
 		move.l	(a3)+,(a6)
-		dbf	d6,ContScr_Loop	; repeat 1 more	time
+		dbf	d6,ContScr_Loop				; repeat 1 more	time
 
 		rts	
 ; End of function ContScrCounter
@@ -507,7 +507,7 @@ loc_1CA30:
 		move.l	(a3)+,(a6)
 
 loc_1CA5A:
-		dbf	d6,Hud_BonusLoop ; repeat 3 more times
+		dbf	d6,Hud_BonusLoop			; repeat 3 more times
 
 		rts	
 ; ===========================================================================
@@ -530,9 +530,9 @@ Hud_ClrBonusLoop:
 
 
 Hud_Lives:
-		hudVRAM	$FBA0		; set VRAM address
+		hudVRAM	$FBA0					; set VRAM address
 		moveq	#0,d1
-		move.b	(v_lives).w,d1	; load number of lives
+		move.b	(v_lives).w,d1				; load number of lives
 		lea	(Hud_10).l,a2
 		moveq	#1,d6
 		moveq	#0,d4
@@ -574,7 +574,7 @@ loc_1CAA6:
 
 loc_1CABC:
 		addi.l	#$400000,d0
-		dbf	d6,Hud_LivesLoop ; repeat 1 more time
+		dbf	d6,Hud_LivesLoop			; repeat 1 more time
 
 		rts	
 ; ===========================================================================

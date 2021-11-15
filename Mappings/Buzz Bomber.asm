@@ -10,7 +10,7 @@ Map_Buzz:	index *
 		ptr frame_buzz_fire2
 		
 frame_buzz_fly1:
-		spritemap		; flying
+		spritemap					; flying
 		piece	-$18, -$C, 3x2, 0
 		piece	0, -$C, 3x2, $F
 		piece	-$18, 4, 3x1, $15
@@ -52,7 +52,7 @@ frame_buzz_fly4:
 		endsprite
 		
 frame_buzz_fire1:
-		spritemap		; stopping and firing
+		spritemap					; stopping and firing
 		piece	-$14, -$C, 4x2, 0
 		piece	-$14, 4, 4x1, 8
 		piece	$C, 4, 1x1, $C

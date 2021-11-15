@@ -15,7 +15,7 @@ Map_Cred:	index *
 		ptr frame_cred_sonicteam
 		
 frame_cred_staff:
-		spritemap			; SONIC TEAM STAFF
+		spritemap					; SONIC TEAM STAFF
 		piece	-$78, -8, 2x2, $2E
 		piece	-$68, -8, 2x2, $26
 		piece	-$58, -8, 2x2, $1A
@@ -33,7 +33,7 @@ frame_cred_staff:
 		endsprite
 		
 frame_cred_gameplan:
-		spritemap			; GAME PLAN CAROL YAS
+		spritemap					; GAME PLAN CAROL YAS
 		piece	-$80, -$28, 2x2, 0
 		piece	-$70, -$28, 2x2, 4
 		piece	-$60, -$28, 3x2, 8
@@ -53,7 +53,7 @@ frame_cred_gameplan:
 		endsprite
 		
 frame_cred_program:
-		spritemap			; PROGRAM YU 2
+		spritemap					; PROGRAM YU 2
 		piece	-$80, -$28, 2x2, $12
 		piece	-$70, -$28, 2x2, $22
 		piece	-$60, -$28, 2x2, $26
@@ -67,7 +67,7 @@ frame_cred_program:
 		endsprite
 		
 frame_cred_character:
-		spritemap			; CHARACTER DESIGN BIGISLAND
+		spritemap					; CHARACTER DESIGN BIGISLAND
 		piece	-$78, -$28, 2x2, $1E
 		piece	-$68, -$28, 2x2, $3A
 		piece	-$58, -$28, 2x2, 4
@@ -95,7 +95,7 @@ frame_cred_character:
 		endsprite
 		
 frame_cred_design:
-		spritemap			; DESIGN JINYA	PHENIX RIE
+		spritemap					; DESIGN JINYA	PHENIX RIE
 		piece	-$60, -$30, 2x2, $42
 		piece	-$50, -$30, 2x2, $E
 		piece	-$40, -$30, 2x2, $2E
@@ -119,7 +119,7 @@ frame_cred_design:
 		endsprite
 		
 frame_cred_soundproduce:
-		spritemap			; SOUND PRODUCE MASATO	NAKAMURA
+		spritemap					; SOUND PRODUCE MASATO	NAKAMURA
 		piece	-$68, -$28, 2x2, $2E
 		piece	-$58, -$28, 2x2, $26
 		piece	-$48, -$28, 2x2, $32
@@ -149,7 +149,7 @@ frame_cred_soundproduce:
 		endsprite
 		
 frame_cred_soundprogram:
-		spritemap			; SOUND PROGRAM JIMITA	MACKY
+		spritemap					; SOUND PROGRAM JIMITA	MACKY
 		piece	-$68, -$30, 2x2, $2E
 		piece	-$58, -$30, 2x2, $26
 		piece	-$48, -$30, 2x2, $32
@@ -176,7 +176,7 @@ frame_cred_soundprogram:
 		endsprite
 		
 frame_cred_thanks:
-		spritemap			; SPECIAL THANKS FUJIO	MINEGISHI PAPA
+		spritemap					; SPECIAL THANKS FUJIO	MINEGISHI PAPA
 		piece	-$80, -$28, 2x2, $2E
 		piece	-$70, -$28, 2x2, $12
 		piece	-$60, -$28, 2x2, $E
@@ -211,7 +211,7 @@ frame_cred_thanks:
 		endsprite
 		
 frame_cred_presentedby:
-		spritemap			; PRESENTED BY SEGA
+		spritemap					; PRESENTED BY SEGA
 		piece	-$80, -8, 2x2, $12
 		piece	-$70, -8, 2x2, $22
 		piece	-$60, -8, 2x2, $E
@@ -230,7 +230,7 @@ frame_cred_presentedby:
 		endsprite
 		
 frame_cred_tryagain:
-		spritemap			; TRY AGAIN
+		spritemap					; TRY AGAIN
 		piece	-$40, $30, 2x2, $3E
 		piece	-$30, $30, 2x2, $22
 		piece	-$20, $30, 2x2, $2A
@@ -242,7 +242,7 @@ frame_cred_tryagain:
 		endsprite
 		
 frame_cred_sonicteam:
-		spritemap			; SONIC TEAM PRESENTS
+		spritemap					; SONIC TEAM PRESENTS
 		piece	-$4C, -$18, 2x2, $2E
 		piece	-$3C, -$18, 2x2, $26
 		piece	-$2C, -$18, 2x2, $1A

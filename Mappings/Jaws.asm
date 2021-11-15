@@ -8,13 +8,13 @@ Map_Jaws:	index *
 		ptr frame_jaws_shut2
 		
 frame_jaws_open1:
-		spritemap		; mouth open
+		spritemap					; mouth open
 		piece	-$10, -$C, 4x3, 0
 		piece	$10, -$B, 2x2, $18
 		endsprite
 		
 frame_jaws_shut1:
-		spritemap		; mouth shut
+		spritemap					; mouth shut
 		piece	-$10, -$C, 4x3, $C
 		piece	$10, -$B, 2x2, $1C
 		endsprite

@@ -12,7 +12,7 @@ Map_Flame:	index *
 		ptr frame_flame_pipe8
 		ptr frame_flame_pipe9
 		ptr frame_flame_pipe10
-		ptr frame_flame_pipe11	; $A
+		ptr frame_flame_pipe11				; $A
 		ptr frame_flame_valve1
 		ptr frame_flame_valve2
 		ptr frame_flame_valve3
@@ -23,9 +23,9 @@ Map_Flame:	index *
 		ptr frame_flame_valve8
 		ptr frame_flame_valve9
 		ptr frame_flame_valve10
-		ptr frame_flame_valve11	; $15
+		ptr frame_flame_valve11				; $15
 frame_flame_pipe1:
-		spritemap			; broken pipe style flamethrower
+		spritemap					; broken pipe style flamethrower
 		piece	-5, $28, 2x2, $14, pal3
 		endsprite
 		
@@ -110,7 +110,7 @@ frame_flame_pipe11:
 		endsprite
 		
 frame_flame_valve1:
-		spritemap			; valve style flamethrower
+		spritemap					; valve style flamethrower
 		piece	-7, $28, 2x2, $18, pal3
 		endsprite
 		

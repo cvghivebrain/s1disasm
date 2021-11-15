@@ -7,10 +7,10 @@
 
 		moveq	#0,d2
 		moveq	#0,d0
-		move.b	(v_zone).w,d0	; get level number
+		move.b	(v_zone).w,d0				; get level number
 		add.w	d0,d0
 		move.w	PCycle_Index(pc,d0.w),d0
-		jmp	PCycle_Index(pc,d0.w) ; jump to relevant palette routine
+		jmp	PCycle_Index(pc,d0.w)			; jump to relevant palette routine
 ; End of function PaletteCycle
 
 ; ===========================================================================
@@ -25,7 +25,7 @@ PCycle_Index:	index *
 		ptr PalCycle_SYZ
 		ptr PalCycle_SBZ
 		zonewarning PCycle_Index,2
-		ptr PCycle_GHZ		; Ending
+		ptr PCycle_GHZ					; Ending
 
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
@@ -40,17 +40,17 @@ PCycle_GHZ:
 		lea	(Pal_GHZCyc).l,a0
 
 PCycGHZ_Go:
-		subq.w	#1,(v_palcycle_time).w ; decrement timer
-		bpl.s	PCycGHZ_Skip	; if time remains, branch
+		subq.w	#1,(v_palcycle_time).w			; decrement timer
+		bpl.s	PCycGHZ_Skip				; if time remains, branch
 
-		move.w	#5,(v_palcycle_time).w ; reset timer to 5 frames
-		move.w	(v_palcycle_num).w,d0 ; get cycle number
-		addq.w	#1,(v_palcycle_num).w ; increment cycle number
-		andi.w	#3,d0		; if cycle > 3, reset to 0
+		move.w	#5,(v_palcycle_time).w			; reset timer to 5 frames
+		move.w	(v_palcycle_num).w,d0			; get cycle number
+		addq.w	#1,(v_palcycle_num).w			; increment cycle number
+		andi.w	#3,d0					; if cycle > 3, reset to 0
 		lsl.w	#3,d0
 		lea	(v_pal_dry+$50).w,a1
 		move.l	(a0,d0.w),(a1)+
-		move.l	4(a0,d0.w),(a1)	; copy palette data to RAM
+		move.l	4(a0,d0.w),(a1)				; copy palette data to RAM
 
 PCycGHZ_Skip:
 		rts	
@@ -62,18 +62,18 @@ PCycGHZ_Skip:
 
 PCycle_LZ:
 ; Waterfalls
-		subq.w	#1,(v_palcycle_time).w ; decrement timer
-		bpl.s	PCycLZ_Skip1	; if time remains, branch
+		subq.w	#1,(v_palcycle_time).w			; decrement timer
+		bpl.s	PCycLZ_Skip1				; if time remains, branch
 
-		move.w	#2,(v_palcycle_time).w ; reset timer to 2 frames
+		move.w	#2,(v_palcycle_time).w			; reset timer to 2 frames
 		move.w	(v_palcycle_num).w,d0
-		addq.w	#1,(v_palcycle_num).w ; increment cycle number
-		andi.w	#3,d0		; if cycle > 3, reset to 0
+		addq.w	#1,(v_palcycle_num).w			; increment cycle number
+		andi.w	#3,d0					; if cycle > 3, reset to 0
 		lsl.w	#3,d0
 		lea	(Pal_LZCyc1).l,a0
-		cmpi.b	#3,(v_act).w	; check if level is SBZ3
+		cmpi.b	#3,(v_act).w				; check if level is SBZ3
 		bne.s	PCycLZ_NotSBZ3
-		lea	(Pal_SBZ3Cyc1).l,a0 ; load SBZ3	palette instead
+		lea	(Pal_SBZ3Cyc1).l,a0			; load SBZ3	palette instead
 
 	PCycLZ_NotSBZ3:
 		lea	(v_pal_dry+$56).w,a1
@@ -87,11 +87,11 @@ PCycLZ_Skip1:
 ; Conveyor belts
 		move.w	(v_frame_counter).w,d0
 		andi.w	#7,d0
-		move.b	PCycLZ_Seq(pc,d0.w),d0 ; get byte from palette sequence
-		beq.s	PCycLZ_Skip2	; if byte is 0, branch
+		move.b	PCycLZ_Seq(pc,d0.w),d0			; get byte from palette sequence
+		beq.s	PCycLZ_Skip2				; if byte is 0, branch
 		moveq	#1,d1
-		tst.b	(f_convey_reverse).w	; have conveyor belts been reversed?
-		beq.s	PCycLZ_NoRev	; if not, branch
+		tst.b	(f_convey_reverse).w			; have conveyor belts been reversed?
+		beq.s	PCycLZ_NoRev				; if not, branch
 		neg.w	d1
 
 	PCycLZ_NoRev:

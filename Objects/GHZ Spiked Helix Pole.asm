@@ -15,8 +15,8 @@ Hel_Index:	index *,,2
 		ptr Hel_Delete
 		ptr Hel_Display
 
-ost_helix_frame:	equ $3E	; start frame (different for each spike)
-ost_helix_child_list:	equ $29	; list of child OST indices (up to 15 bytes)
+ost_helix_frame:	equ $3E					; start frame (different for each spike)
+ost_helix_child_list:	equ $29					; list of child OST indices (up to 15 bytes)
 ; ===========================================================================
 
 Hel_Main:	; Routine 0
@@ -30,16 +30,16 @@ Hel_Main:	; Routine 0
 		move.w	ost_y_pos(a0),d2
 		move.w	ost_x_pos(a0),d3
 		move.b	0(a0),d4
-		lea	ost_subtype(a0),a2 ; move helix length to a2
+		lea	ost_subtype(a0),a2			; move helix length to a2
 		moveq	#0,d1
-		move.b	(a2),d1		; move helix length to d1
-		move.b	#0,(a2)+	; clear subtype
+		move.b	(a2),d1					; move helix length to d1
+		move.b	#0,(a2)+				; clear subtype
 		move.w	d1,d0
 		lsr.w	#1,d0
 		lsl.w	#4,d0
-		sub.w	d0,d3		; d3 is x-axis position of leftmost spike
+		sub.w	d0,d3					; d3 is x-axis position of leftmost spike
 		subq.b	#2,d1
-		bcs.s	Hel_Action	; skip to action if length is only 1
+		bcs.s	Hel_Action				; skip to action if length is only 1
 		moveq	#0,d6
 
 Hel_Build:
@@ -50,7 +50,7 @@ Hel_Build:
 		subi.w	#v_ost_all&$FFFF,d5
 		lsr.w	#6,d5
 		andi.w	#$7F,d5
-		move.b	d5,(a2)+	; copy child OST index to byte list in parent OST
+		move.b	d5,(a2)+				; copy child OST index to byte list in parent OST
 		move.b	#id_Hel_Display,ost_routine(a1)
 		move.b	d4,0(a1)
 		move.w	d2,ost_y_pos(a1)
@@ -64,17 +64,17 @@ Hel_Build:
 		addq.b	#1,d6
 		andi.b	#7,d6
 		addi.w	#$10,d3
-		cmp.w	ost_x_pos(a0),d3 ; is this spike in the centre?
-		bne.s	Hel_NotCentre	; if not, branch
+		cmp.w	ost_x_pos(a0),d3			; is this spike in the centre?
+		bne.s	Hel_NotCentre				; if not, branch
 
-		move.b	d6,ost_helix_frame(a0) ; set parent spike frame
+		move.b	d6,ost_helix_frame(a0)			; set parent spike frame
 		addq.b	#1,d6
 		andi.b	#7,d6
-		addi.w	#$10,d3		; skip to next spike
+		addi.w	#$10,d3					; skip to next spike
 		addq.b	#1,ost_subtype(a0)
 
 	Hel_NotCentre:
-		dbf	d1,Hel_Build ; repeat d1 times (helix length)
+		dbf	d1,Hel_Build				; repeat d1 times (helix length)
 
 Hel_Action:	; Routine 2, 4
 		bsr.w	Hel_RotateSpikes
@@ -86,10 +86,10 @@ Hel_Action:	; Routine 2, 4
 
 Hel_RotateSpikes:
 		move.b	(v_syncani_0_frame).w,d0
-		move.b	#0,ost_col_type(a0) ; make object harmless
+		move.b	#0,ost_col_type(a0)			; make object harmless
 		add.b	ost_helix_frame(a0),d0
 		andi.b	#7,d0
-		move.b	d0,ost_frame(a0) ; change current frame
+		move.b	d0,ost_frame(a0)			; change current frame
 		bne.s	locret_7DA6
 		move.b	#id_col_4x16+id_col_hurt,ost_col_type(a0) ; make object harmful
 
@@ -106,8 +106,8 @@ Hel_ChkDel:
 
 Hel_DelAll:
 		moveq	#0,d2
-		lea	ost_subtype(a0),a2 ; move helix length to a2
-		move.b	(a2)+,d2	; move helix length to d2
+		lea	ost_subtype(a0),a2			; move helix length to a2
+		move.b	(a2)+,d2				; move helix length to d2
 		subq.b	#2,d2
 		bcs.s	Hel_Delete
 
@@ -116,9 +116,9 @@ Hel_DelAll:
 		move.b	(a2)+,d0
 		lsl.w	#6,d0
 		addi.l	#v_ost_all&$FFFFFF,d0
-		movea.l	d0,a1		; get child address
-		bsr.w	DeleteChild	; delete object
-		dbf	d2,Hel_DelLoop ; repeat d2 times (helix length)
+		movea.l	d0,a1					; get child address
+		bsr.w	DeleteChild				; delete object
+		dbf	d2,Hel_DelLoop				; repeat d2 times (helix length)
 
 Hel_Delete:	; Routine 6
 		bsr.w	DeleteObject

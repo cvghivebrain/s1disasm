@@ -6,7 +6,7 @@
 
 
 ScrollHorizontal:
-		move.w	(v_camera_x_pos).w,d4 ; save old screen position
+		move.w	(v_camera_x_pos).w,d4			; save old screen position
 		bsr.s	MoveScreenHoriz
 		move.w	(v_camera_x_pos).w,d0
 		andi.w	#$10,d0
@@ -15,7 +15,7 @@ ScrollHorizontal:
 		bne.s	@return
 		eori.b	#$10,(v_fg_x_redraw_flag).w
 		move.w	(v_camera_x_pos).w,d0
-		sub.w	d4,d0		; compare new with old screen position
+		sub.w	d4,d0					; compare new with old screen position
 		bpl.s	@scrollRight
 
 		bset	#redraw_left_bit,(v_fg_redraw_direction).w ; screen moves backward
@@ -34,19 +34,19 @@ ScrollHorizontal:
 
 MoveScreenHoriz:
 		move.w	(v_ost_player+ost_x_pos).w,d0
-		sub.w	(v_camera_x_pos).w,d0 ; Sonic's distance from left edge of screen
-		subi.w	#144,d0		; is distance less than 144px?
-		bcs.s	SH_BehindMid	; if yes, branch
-		subi.w	#16,d0		; is distance more than 160px?
-		bcc.s	SH_AheadOfMid	; if yes, branch
+		sub.w	(v_camera_x_pos).w,d0			; Sonic's distance from left edge of screen
+		subi.w	#144,d0					; is distance less than 144px?
+		bcs.s	SH_BehindMid				; if yes, branch
+		subi.w	#16,d0					; is distance more than 160px?
+		bcc.s	SH_AheadOfMid				; if yes, branch
 		clr.w	(v_camera_x_diff).w
 		rts	
 ; ===========================================================================
 
 SH_AheadOfMid:
-		cmpi.w	#16,d0		; is Sonic within 16px of middle area?
-		bcs.s	SH_Ahead16	; if yes, branch
-		move.w	#16,d0		; set to 16 if greater
+		cmpi.w	#16,d0					; is Sonic within 16px of middle area?
+		bcs.s	SH_Ahead16				; if yes, branch
+		move.w	#16,d0					; set to 16 if greater
 
 	SH_Ahead16:
 		add.w	(v_camera_x_pos).w,d0
@@ -58,8 +58,8 @@ SH_SetScreen:
 		move.w	d0,d1
 		sub.w	(v_camera_x_pos).w,d1
 		asl.w	#8,d1
-		move.w	d0,(v_camera_x_pos).w ; set new screen position
-		move.w	d1,(v_camera_x_diff).w ; set distance for screen movement
+		move.w	d0,(v_camera_x_pos).w			; set new screen position
+		move.w	d1,(v_camera_x_diff).w			; set distance for screen movement
 		rts	
 ; ===========================================================================
 
@@ -91,14 +91,14 @@ loc_6610:
 ScrollVertical:
 		moveq	#0,d1
 		move.w	(v_ost_player+ost_y_pos).w,d0
-		sub.w	(v_camera_y_pos).w,d0 ; Sonic's distance from top of screen
+		sub.w	(v_camera_y_pos).w,d0			; Sonic's distance from top of screen
 		btst	#status_jump_bit,(v_ost_player+ost_status).w ; is Sonic jumping/rolling?
-		beq.s	SV_NotRolling	; if not, branch
+		beq.s	SV_NotRolling				; if not, branch
 		subq.w	#5,d0
 
 	SV_NotRolling:
 		btst	#status_air_bit,(v_ost_player+ost_status).w ; is Sonic jumping?
-		beq.s	loc_664A	; if not, branch
+		beq.s	loc_664A				; if not, branch
 
 		addi.w	#32,d0
 		sub.w	(v_camera_y_shift).w,d0

@@ -21,14 +21,14 @@ PSB_Main:	; Routine 0
 		move.w	#$130,ost_y_screen(a0)
 		move.l	#Map_PSB,ost_mappings(a0)
 		move.w	#$200,ost_tile(a0)
-		cmpi.b	#id_frame_psb_psb+1,ost_frame(a0) ; is object "PRESS START"?
-		bcs.s	PSB_PrsStart	; if yes, branch
+		cmpi.b	#id_frame_psb_psb+1,ost_frame(a0)	; is object "PRESS START"?
+		bcs.s	PSB_PrsStart				; if yes, branch
 
 		addq.b	#2,ost_routine(a0)
-		cmpi.b	#id_frame_psb_tm,ost_frame(a0) ; is the object "TM"?
-		bne.s	PSB_Exit	; if not, branch
+		cmpi.b	#id_frame_psb_tm,ost_frame(a0)		; is the object "TM"?
+		bne.s	PSB_Exit				; if not, branch
 
-		move.w	#$510+tile_pal2,ost_tile(a0) ; "TM" specific code
+		move.w	#$510+tile_pal2,ost_tile(a0)		; "TM" specific code
 		move.w	#$170,ost_x_pos(a0)
 		move.w	#$F8,ost_y_screen(a0)
 
@@ -38,4 +38,4 @@ PSB_Exit:	; Routine 4
 
 PSB_PrsStart:	; Routine 2
 		lea	(Ani_PSB).l,a1
-		bra.w	AnimateSprite	; "PRESS START" is animated
+		bra.w	AnimateSprite				; "PRESS START" is animated

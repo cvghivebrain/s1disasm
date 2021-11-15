@@ -21,7 +21,7 @@ FFloor_Index:	index *,,2
 		ptr loc_19C72
 		ptr loc_19C80
 
-ost_ffloor_children:	equ $30	; addresses of OSTs of child objects (2 bytes * 8)
+ost_ffloor_children:	equ $30					; addresses of OSTs of child objects (2 bytes * 8)
 ; ===========================================================================
 
 FFloor_Main:	; Routine 0
@@ -32,7 +32,7 @@ FFloor_Main:	; Routine 0
 		move.b	#render_rel,ost_render(a0)
 		bset	#render_onscreen_bit,ost_render(a0)
 		moveq	#0,d4
-		move.w	#$2010,d5	; initial x position
+		move.w	#$2010,d5				; initial x position
 		moveq	#7,d6
 		lea	ost_ffloor_children(a0),a2
 
@@ -40,18 +40,18 @@ FFloor_MakeBlock:
 		jsr	(FindFreeObj).l
 		bne.s	FFloor_ExitMake
 		move.w	a1,(a2)+
-		move.b	#id_FalseFloor,(a1) ; load block object
+		move.b	#id_FalseFloor,(a1)			; load block object
 		move.l	#Map_FFloor,ost_mappings(a1)
 		move.w	#$518+tile_pal3,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)
 		move.b	#$10,ost_actwidth(a1)
 		move.b	#$10,ost_height(a1)
 		move.b	#3,ost_priority(a1)
-		move.w	d5,ost_x_pos(a1) ; set x position
+		move.w	d5,ost_x_pos(a1)			; set x position
 		move.w	#$5D0,ost_y_pos(a1)
-		addi.w	#$20,d5		; add $20 for next x position
+		addi.w	#$20,d5					; add $20 for next x position
 		move.b	#8,ost_routine(a1)
-		dbf	d6,FFloor_MakeBlock ; repeat sequence 7 more times
+		dbf	d6,FFloor_MakeBlock			; repeat sequence 7 more times
 
 FFloor_ExitMake:
 		addq.b	#2,ost_routine(a0)
@@ -59,10 +59,10 @@ FFloor_ExitMake:
 ; ===========================================================================
 
 FFloor_ChkBreak:; Routine 2
-		cmpi.w	#$474F,ost_subtype(a0) ; is object set to disintegrate?
-		bne.s	FFloor_Solid	; if not, branch
+		cmpi.w	#$474F,ost_subtype(a0)			; is object set to disintegrate?
+		bne.s	FFloor_Solid				; if not, branch
 		clr.b	ost_frame(a0)
-		addq.b	#2,ost_routine(a0) ; next subroutine
+		addq.b	#2,ost_routine(a0)			; next subroutine
 
 FFloor_Solid:
 		moveq	#0,d0
@@ -107,8 +107,8 @@ loc_19C62:	; Routine 6
 ; ===========================================================================
 
 loc_19C72:	; Routine 8
-		cmpi.w	#$474F,ost_subtype(a0) ; is object set to disintegrate?
-		beq.s	FFloor_Break	; if yes, branch
+		cmpi.w	#$474F,ost_subtype(a0)			; is object set to disintegrate?
+		beq.s	FFloor_Break				; if yes, branch
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 
@@ -155,10 +155,10 @@ loc_19CC4:
 		add.w	d3,ost_y_pos(a1)
 		move.b	d4,ost_frame(a1)
 		addq.w	#1,d4
-		dbf	d1,FFloor_LoopFrag ; repeat sequence 3 more times
+		dbf	d1,FFloor_LoopFrag			; repeat sequence 3 more times
 
 FFloor_BreakSnd:
-		play.w	1, jsr, sfx_Smash		; play smashing sound
+		play.w	1, jsr, sfx_Smash			; play smashing sound
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 FFloor_FragSpeed:dc.w $80, 0

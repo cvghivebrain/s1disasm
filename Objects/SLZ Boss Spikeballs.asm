@@ -26,10 +26,10 @@ Obj7B_Index:	index *,,2
 		ptr Obj7B_Explode
 		ptr Obj7B_MoveFrag
 
-ost_bspike_x_start:	equ $30	; original x position (2 bytes)
-ost_bspike_y_start:	equ $34	; original y position (2 bytes)
-ost_bspike_state:	equ $3A	; 0/2 = seesaw tilted; 1/3 = flat
-ost_bspike_seesaw:	equ $3C	; address of OST of seesaw (4 bytes)
+ost_bspike_x_start:	equ $30					; original x position (2 bytes)
+ost_bspike_y_start:	equ $34					; original y position (2 bytes)
+ost_bspike_state:	equ $3A					; 0/2 = seesaw tilted; 1/3 = flat
+ost_bspike_seesaw:	equ $3C					; address of OST of seesaw (4 bytes)
 ; ===========================================================================
 
 Obj7B_Main:	; Routine 0
@@ -78,7 +78,7 @@ loc_18D8E:
 
 loc_18DAE:
 		move.w	#$F0,ost_subtype(a0)
-		move.b	#10,ost_anim_delay(a0) ; set frame duration to 10 frames
+		move.b	#10,ost_anim_delay(a0)			; set frame duration to 10 frames
 		move.b	ost_anim_delay(a0),ost_anim_time(a0)
 		bra.w	loc_18FA2
 ; ===========================================================================
@@ -298,7 +298,7 @@ loc_18FDC:
 		jsr	(Sonic_ChkRoll).l
 		movea.l	(sp)+,a0
 		move.b	#2,ost_routine(a2)
-		play.w	1, jsr, sfx_Spring		; play "spring" sound
+		play.w	1, jsr, sfx_Spring			; play "spring" sound
 
 loc_19008:
 		clr.w	ost_x_vel(a0)
@@ -330,7 +330,7 @@ Obj7B_MakeFrag:
 Obj7B_Loop:
 		jsr	(FindFreeObj).l
 		bne.s	loc_1909A
-		move.b	#id_BossSpikeball,(a1) ; load shrapnel object
+		move.b	#id_BossSpikeball,(a1)			; load shrapnel object
 		move.b	#$A,ost_routine(a1)
 		move.l	#Map_BSBall,ost_mappings(a1)
 		move.b	#3,ost_priority(a1)
@@ -345,11 +345,11 @@ Obj7B_Loop:
 		move.b	#$C,ost_actwidth(a1)
 
 loc_1909A:
-		dbf	d1,Obj7B_Loop	; repeat sequence 3 more times
+		dbf	d1,Obj7B_Loop				; repeat sequence 3 more times
 
 		rts	
 ; ===========================================================================
-Obj7B_FragSpeed:dc.w -$100, -$340	; horizontal, vertical
+Obj7B_FragSpeed:dc.w -$100, -$340				; horizontal, vertical
 		dc.w -$A0, -$240
 		dc.w $100, -$340
 		dc.w $A0, -$240

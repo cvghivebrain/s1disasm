@@ -16,23 +16,23 @@ SStom_Index:	index *,,2
 		ptr SStom_Pole
 
 		;	routine			x pos	frame
-SStom_Var:	dc.b	id_SStom_Solid,  	4,	id_frame_mash_block	; main block
-		dc.b	id_SStom_Spikes,	-$1C,	id_frame_mash_spikes	; spikes
-		dc.b	id_SStom_Pole,		$34,	id_frame_mash_pole1	; pole
+SStom_Var:	dc.b	id_SStom_Solid,  	4,	id_frame_mash_block ; main block
+		dc.b	id_SStom_Spikes,	-$1C,	id_frame_mash_spikes ; spikes
+		dc.b	id_SStom_Pole,		$34,	id_frame_mash_pole1 ; pole
 		dc.b	id_SStom_Display,	$28,	id_frame_mash_wallbracket ; wall bracket
 
 ;word_B9BE:	; Note that this indicates three subtypes
-SStom_Len:	dc.w $3800	; short
-		dc.w $A000	; long
-		dc.w $5000	; medium
+SStom_Len:	dc.w $3800					; short
+		dc.w $A000					; long
+		dc.w $5000					; medium
 
-ost_mash_x_start:	equ $30	; original x position (2 bytes)
-ost_mash_length:	equ $32	; current pole length (2 bytes)
-ost_mash_max_length:	equ $34	; maximum pole length (2 bytes)
-ost_mash_retract_flag:	equ $36	; 1 = retract (2 bytes)
-ost_mash_wait_time:	equ $38	; time to wait while fully extended (2 bytes)
-ost_mash_y_start:	equ $3A	; original y position (2 bytes)
-ost_mash_parent:	equ $3C	; address of OST of parent object (4 bytes)
+ost_mash_x_start:	equ $30					; original x position (2 bytes)
+ost_mash_length:	equ $32					; current pole length (2 bytes)
+ost_mash_max_length:	equ $34					; maximum pole length (2 bytes)
+ost_mash_retract_flag:	equ $36					; 1 = retract (2 bytes)
+ost_mash_wait_time:	equ $38					; time to wait while fully extended (2 bytes)
+ost_mash_y_start:	equ $3A					; original y position (2 bytes)
+ost_mash_parent:	equ $3C					; address of OST of parent object (4 bytes)
 ; ===========================================================================
 
 SStom_Main:	; Routine 0
@@ -66,14 +66,14 @@ SStom_Main:	; Routine 0
 		move.b	#$20,ost_actwidth(a1)
 		move.w	d2,ost_mash_max_length(a1)
 		move.b	#4,ost_priority(a1)
-		cmpi.b	#1,(a2)		; is subobject spikes?
-		bne.s	@notspikes	; if not, branch
+		cmpi.b	#1,(a2)					; is subobject spikes?
+		bne.s	@notspikes				; if not, branch
 		move.b	#id_col_16x24+id_col_hurt,ost_col_type(a1) ; use harmful collision type
 
 	@notspikes:
 		move.b	(a2)+,ost_frame(a1)
 		move.l	a0,ost_mash_parent(a1)
-		dbf	d1,@loop	; repeat 3 times
+		dbf	d1,@loop				; repeat 3 times
 
 		move.b	#3,ost_priority(a1)
 
@@ -135,36 +135,36 @@ off_BAD6:	index *
 ; ===========================================================================
 
 loc_BADA:
-		tst.w	ost_mash_retract_flag(a0) ; is flag set to retract?
-		beq.s	@extend		; if not, branch
-		tst.w	ost_mash_wait_time(a0) ; has time delay run out?
-		beq.s	@retract	; if yes, branch
-		subq.w	#1,ost_mash_wait_time(a0) ; decrement timer
+		tst.w	ost_mash_retract_flag(a0)		; is flag set to retract?
+		beq.s	@extend					; if not, branch
+		tst.w	ost_mash_wait_time(a0)			; has time delay run out?
+		beq.s	@retract				; if yes, branch
+		subq.w	#1,ost_mash_wait_time(a0)		; decrement timer
 		bra.s	@update_pos
 ; ===========================================================================
 
 @retract:
-		subi.w	#$80,ost_mash_length(a0) ; retract
-		bcc.s	@update_pos	; branch if at least $80 is left on length
-		move.w	#0,ost_mash_length(a0) ; set to 0
+		subi.w	#$80,ost_mash_length(a0)		; retract
+		bcc.s	@update_pos				; branch if at least $80 is left on length
+		move.w	#0,ost_mash_length(a0)			; set to 0
 		move.w	#0,ost_x_vel(a0)
-		move.w	#0,ost_mash_retract_flag(a0) ; reset flag to extend
+		move.w	#0,ost_mash_retract_flag(a0)		; reset flag to extend
 		bra.s	@update_pos
 ; ===========================================================================
 
 @extend:
 		move.w	ost_mash_max_length(a0),d1
-		cmp.w	ost_mash_length(a0),d1 ; is pole fully extended?
-		beq.s	@update_pos	; if yes, branch
+		cmp.w	ost_mash_length(a0),d1			; is pole fully extended?
+		beq.s	@update_pos				; if yes, branch
 		move.w	ost_x_vel(a0),d0
-		addi.w	#$70,ost_x_vel(a0) ; increase speed
+		addi.w	#$70,ost_x_vel(a0)			; increase speed
 		add.w	d0,ost_mash_length(a0)
-		cmp.w	ost_mash_length(a0),d1 ; is pole fully extended?
-		bhi.s	@update_pos	; if not, branch
+		cmp.w	ost_mash_length(a0),d1			; is pole fully extended?
+		bhi.s	@update_pos				; if not, branch
 		move.w	d1,ost_mash_length(a0)
-		move.w	#0,ost_x_vel(a0) ; stop
-		move.w	#1,ost_mash_retract_flag(a0) ; set flag to retract
-		move.w	#60,ost_mash_wait_time(a0) ; set delay to 1 second
+		move.w	#0,ost_x_vel(a0)			; stop
+		move.w	#1,ost_mash_retract_flag(a0)		; set flag to retract
+		move.w	#60,ost_mash_wait_time(a0)		; set delay to 1 second
 
 @update_pos:
 		moveq	#0,d0

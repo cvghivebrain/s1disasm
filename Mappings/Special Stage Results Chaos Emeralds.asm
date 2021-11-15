@@ -41,6 +41,6 @@ frame_ssrc_grey:
 		endsprite
 		
 frame_ssrc_blank:
-		spritemap			; Blank frame
+		spritemap					; Blank frame
 		endsprite
 		even

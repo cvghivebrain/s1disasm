@@ -8,7 +8,7 @@ Map_Ledge:	index *
 		ptr frame_ledge_rightsmash
 		
 frame_ledge_left:
-		spritemap		; ledge facing left
+		spritemap					; ledge facing left
 		piece	$10, -$38, 4x3, $57
 		piece	-$10, -$30, 4x2, $63
 		piece	$10, -$20, 4x2, $6B
@@ -28,7 +28,7 @@ frame_ledge_left:
 		endsprite
 		
 frame_ledge_right:
-		spritemap		; ledge facing right - actually faces left but is always xflipped in the level
+		spritemap					; ledge facing right - actually faces left but is always xflipped in the level
 		piece	$10, -$38, 4x3, $57
 		piece	-$10, -$30, 4x2, $63
 		piece	$10, -$20, 4x2, $6B
@@ -48,7 +48,7 @@ frame_ledge_right:
 		endsprite
 		
 frame_ledge_leftsmash:
-		spritemap		; ledge facing left in pieces
+		spritemap					; ledge facing left in pieces
 		piece	$20, -$38, 2x3, $5D
 		piece	$10, -$38, 2x3, $57
 		piece	0, -$30, 2x2, $67
@@ -77,7 +77,7 @@ frame_ledge_leftsmash:
 		endsprite
 		
 frame_ledge_rightsmash:
-		spritemap		; ledge facing right in pieces
+		spritemap					; ledge facing right in pieces
 		piece	$20, -$38, 2x3, $5D
 		piece	$10, -$38, 2x3, $57
 		piece	0, -$30, 2x2, $67

@@ -2,17 +2,17 @@
 ; Sprite mappings - metal stomping blocks on chains (MZ)
 ; ---------------------------------------------------------------------------
 Map_CStom:	index *
-		ptr frame_cstomp_wideblock	; 0
-		ptr frame_cstomp_spikes		; 1
-		ptr frame_cstomp_ceiling	; 2
-		ptr frame_cstomp_chain1		; 3
-		ptr frame_cstomp_chain2		; 4
-		ptr frame_cstomp_chain3		; 5
-		ptr frame_cstomp_chain4		; 6
-		ptr frame_cstomp_chain5		; 7
-		ptr frame_cstomp_chain5		; 8
-		ptr frame_cstomp_mediumblock	; 9
-		ptr frame_cstomp_smallblock	; $A
+		ptr frame_cstomp_wideblock			; 0
+		ptr frame_cstomp_spikes				; 1
+		ptr frame_cstomp_ceiling			; 2
+		ptr frame_cstomp_chain1				; 3
+		ptr frame_cstomp_chain2				; 4
+		ptr frame_cstomp_chain3				; 5
+		ptr frame_cstomp_chain4				; 6
+		ptr frame_cstomp_chain5				; 7
+		ptr frame_cstomp_chain5				; 8
+		ptr frame_cstomp_mediumblock			; 9
+		ptr frame_cstomp_smallblock			; $A
 		
 frame_cstomp_wideblock:
 		spritemap

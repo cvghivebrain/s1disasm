@@ -29,10 +29,10 @@ Mon_Main:	; Routine 0
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
 		bclr	#7,2(a2,d0.w)
-		btst	#0,2(a2,d0.w)	; has monitor been broken?
-		beq.s	@notbroken	; if not, branch
-		move.b	#id_Mon_Display,ost_routine(a0) ; run "Mon_Display" routine
-		move.b	#id_frame_monitor_broken,ost_frame(a0) ; use broken monitor frame
+		btst	#0,2(a2,d0.w)				; has monitor been broken?
+		beq.s	@notbroken				; if not, branch
+		move.b	#id_Mon_Display,ost_routine(a0)		; run "Mon_Display" routine
+		move.b	#id_frame_monitor_broken,ost_frame(a0)	; use broken monitor frame
 		rts	
 ; ===========================================================================
 
@@ -41,8 +41,8 @@ Mon_Main:	; Routine 0
 		move.b	ost_subtype(a0),ost_anim(a0)
 
 Mon_Solid:	; Routine 2
-		move.b	ost_routine2(a0),d0 ; is monitor set to fall?
-		beq.s	Mon_Solid_Normal ; if not, branch
+		move.b	ost_routine2(a0),d0			; is monitor set to fall?
+		beq.s	Mon_Solid_Normal			; if not, branch
 		subq.b	#2,d0
 		bne.s	Mon_Solid_Fall
 
@@ -51,8 +51,8 @@ Mon_Solid:	; Routine 2
 		move.b	ost_actwidth(a0),d1
 		addi.w	#$B,d1
 		bsr.w	ExitPlatform
-		btst	#status_platform_bit,ost_status(a1) ; is Sonic on top of the monitor?
-		bne.w	@ontop		; if yes, branch
+		btst	#status_platform_bit,ost_status(a1)	; is Sonic on top of the monitor?
+		bne.w	@ontop					; if yes, branch
 		clr.b	ost_routine2(a0)
 		bra.w	Mon_Animate
 ; ===========================================================================
@@ -77,14 +77,14 @@ Mon_Solid_Fall:	; ost_routine2 = 4
 
 Mon_Solid_Normal:
 		; ost_routine2 = 0
-		move.w	#$1A,d1		; monitor width/2
-		move.w	#$F,d2		; monitor height/2
-		bsr.w	Mon_SolidSides	; detect collision
-		beq.w	loc_A25C	; branch if none
+		move.w	#$1A,d1					; monitor width/2
+		move.w	#$F,d2					; monitor height/2
+		bsr.w	Mon_SolidSides				; detect collision
+		beq.w	loc_A25C				; branch if none
 		tst.w	ost_y_vel(a1)
 		bmi.s	loc_A20A
-		cmpi.b	#id_Roll,ost_anim(a1) ; is Sonic rolling?
-		beq.s	loc_A25C	; if yes, branch
+		cmpi.b	#id_Roll,ost_anim(a1)			; is Sonic rolling?
+		beq.s	loc_A25C				; if yes, branch
 
 loc_A20A:
 		tst.w	d1
@@ -124,7 +124,7 @@ loc_A246:
 loc_A25C:
 		btst	#status_pushing_bit,ost_status(a0)
 		beq.s	Mon_Animate
-		move.w	#1,ost_anim(a1)	; clear ost_anim and set ost_anim_restart to 1
+		move.w	#1,ost_anim(a1)				; clear ost_anim and set ost_anim_restart to 1
 
 loc_A26A:
 		bclr	#status_pushing_bit,ost_status(a0)
@@ -145,7 +145,7 @@ Mon_BreakOpen:	; Routine 4
 		move.b	#0,ost_col_type(a0)
 		bsr.w	FindFreeObj
 		bne.s	Mon_Explode
-		move.b	#id_PowerUp,0(a1) ; load monitor contents object
+		move.b	#id_PowerUp,0(a1)			; load monitor contents object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	ost_anim(a0),ost_anim(a1)
@@ -153,8 +153,8 @@ Mon_BreakOpen:	; Routine 4
 Mon_Explode:
 		bsr.w	FindFreeObj
 		bne.s	@fail
-		move.b	#id_ExplosionItem,0(a1) ; load explosion object
-		addq.b	#2,ost_routine(a1) ; don't create an animal
+		move.b	#id_ExplosionItem,0(a1)			; load explosion object
+		addq.b	#2,ost_routine(a1)			; don't create an animal
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 
@@ -163,7 +163,7 @@ Mon_Explode:
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
 		bset	#0,2(a2,d0.w)
-		move.b	#id_ani_monitor_breaking,ost_anim(a0) ; set monitor type to broken
+		move.b	#id_ani_monitor_breaking,ost_anim(a0)	; set monitor type to broken
 		bra.w	DisplaySprite
 
 ; ---------------------------------------------------------------------------
@@ -184,28 +184,28 @@ Mon_SolidSides:
 		move.w	ost_x_pos(a1),d0
 		sub.w	ost_x_pos(a0),d0
 		add.w	d1,d0
-		bmi.s	@no_collision	; branch if Sonic is left of object
+		bmi.s	@no_collision				; branch if Sonic is left of object
 		move.w	d1,d3
 		add.w	d3,d3
 		cmp.w	d3,d0
-		bhi.s	@no_collision	; branch if Sonic is right of object
+		bhi.s	@no_collision				; branch if Sonic is right of object
 		move.b	ost_height(a1),d3
 		ext.w	d3
 		add.w	d3,d2
 		move.w	ost_y_pos(a1),d3
 		sub.w	ost_y_pos(a0),d3
 		add.w	d2,d3
-		bmi.s	@no_collision	; branch if Sonic is above object
+		bmi.s	@no_collision				; branch if Sonic is above object
 		add.w	d2,d2
 		cmp.w	d2,d3
-		bcc.s	@no_collision	; branch if Sonic is below object
+		bcc.s	@no_collision				; branch if Sonic is below object
 		
 		tst.b	(v_lock_multi).w
-		bmi.s	@no_collision	; branch if object collision is off
+		bmi.s	@no_collision				; branch if object collision is off
 		cmpi.b	#id_Sonic_Death,(v_ost_player+ost_routine).w
-		bcc.s	@no_collision	; branch if Sonic is dead
+		bcc.s	@no_collision				; branch if Sonic is dead
 		tst.w	(v_debug_active).w
-		bne.s	@no_collision	; branch if debug mode is in use
+		bne.s	@no_collision				; branch if debug mode is in use
 		
 		cmp.w	d0,d1
 		bcc.s	@loc_A4DC

@@ -13,7 +13,7 @@ Newt_Index:	index *,,2
 		ptr Newt_Action
 		ptr Newt_Delete
 
-ost_newtron_fire_flag:	equ $32	; set to 1 after newtron fires a missile
+ost_newtron_fire_flag:	equ $32					; set to 1 after newtron fires a missile
 ; ===========================================================================
 
 Newt_Main:	; Routine 0
@@ -52,16 +52,16 @@ Newt_Action:	; Routine 2
 		bclr	#status_xflip_bit,ost_status(a0)
 
 	@sonicisright:
-		cmpi.w	#$80,d0		; is Sonic within $80 pixels of	the newtron?
-		bcc.s	@outofrange	; if not, branch
-		addq.b	#2,ost_routine2(a0) ; goto @type00 next
+		cmpi.w	#$80,d0					; is Sonic within $80 pixels of	the newtron?
+		bcc.s	@outofrange				; if not, branch
+		addq.b	#2,ost_routine2(a0)			; goto @type00 next
 		move.b	#id_ani_newt_drop,ost_anim(a0)
-		tst.b	ost_subtype(a0)	; check	object type
-		beq.s	@istype00	; if type is 00, branch
+		tst.b	ost_subtype(a0)				; check	object type
+		beq.s	@istype00				; if type is 00, branch
 
 		move.w	#tile_Nem_Newtron+tile_pal2,ost_tile(a0)
-		move.b	#8,ost_routine2(a0) ; goto @type01 next
-		move.b	#id_ani_newt_firing,ost_anim(a0) ; use different animation
+		move.b	#8,ost_routine2(a0)			; goto @type01 next
+		move.b	#id_ani_newt_firing,ost_anim(a0)	; use different animation
 
 	@outofrange:
 	@istype00:
@@ -69,8 +69,8 @@ Newt_Action:	; Routine 2
 ; ===========================================================================
 
 @type00:
-		cmpi.b	#id_frame_newt_drop2,ost_frame(a0) ; has "appearing" animation finished?
-		bcc.s	@fall		; is yes, branch
+		cmpi.b	#id_frame_newt_drop2,ost_frame(a0)	; has "appearing" animation finished?
+		bcc.s	@fall					; is yes, branch
 		bset	#status_xflip_bit,ost_status(a0)
 		move.w	(v_ost_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0
@@ -89,11 +89,11 @@ Newt_Action:	; Routine 2
 	@loc_DE42:
 		bsr.w	ObjectFall
 		bsr.w	FindFloorObj
-		tst.w	d1		; has newtron hit the floor?
-		bpl.s	@keepfalling	; if not, branch
+		tst.w	d1					; has newtron hit the floor?
+		bpl.s	@keepfalling				; if not, branch
 
 		add.w	d1,ost_y_pos(a0)
-		move.w	#0,ost_y_vel(a0) ; stop newtron falling
+		move.w	#0,ost_y_vel(a0)			; stop newtron falling
 		addq.b	#2,ost_routine2(a0)
 		move.b	#id_ani_newt_fly1,ost_anim(a0)
 		btst	#tile_pal12_bit,ost_tile(a0)
@@ -102,7 +102,7 @@ Newt_Action:	; Routine 2
 
 	@pppppppp:
 		move.b	#id_col_20x8,ost_col_type(a0)
-		move.w	#$200,ost_x_vel(a0) ; move newtron horizontally
+		move.w	#$200,ost_x_vel(a0)			; move newtron horizontally
 		btst	#status_xflip_bit,ost_status(a0)
 		bne.s	@keepfalling
 		neg.w	ost_x_vel(a0)
@@ -118,12 +118,12 @@ Newt_Action:	; Routine 2
 		blt.s	@nextroutine
 		cmpi.w	#$C,d1
 		bge.s	@nextroutine
-		add.w	d1,ost_y_pos(a0) ; match newtron's position with floor
+		add.w	d1,ost_y_pos(a0)			; match newtron's position with floor
 		rts	
 ; ===========================================================================
 
 	@nextroutine:
-		addq.b	#2,ost_routine2(a0) ; goto @speed next
+		addq.b	#2,ost_routine2(a0)			; goto @speed next
 		rts	
 ; ===========================================================================
 
@@ -145,7 +145,7 @@ Newt_Action:	; Routine 2
 		move.b	#1,ost_newtron_fire_flag(a0)
 		bsr.w	FindFreeObj
 		bne.s	@fail
-		move.b	#id_Missile,0(a1) ; load missile object
+		move.b	#id_Missile,0(a1)			; load missile object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		subq.w	#8,ost_y_pos(a1)

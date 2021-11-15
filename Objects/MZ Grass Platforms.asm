@@ -13,19 +13,19 @@ LGrass_Index:	index *,,2
 		ptr LGrass_Action
 
 LGrass_Data:	index *
-LGrass_Data_0:	ptr LGrass_Coll_Wide	 	; collision angle data
-		dc.b id_frame_grass_wide, $40	; frame number,	platform width
+LGrass_Data_0:	ptr LGrass_Coll_Wide				; collision angle data
+		dc.b id_frame_grass_wide, $40			; frame number,	platform width
 LGrass_Data_1:	ptr LGrass_Coll_Sloped
 		dc.b id_frame_grass_sloped, $40
 LGrass_Data_2:	ptr LGrass_Coll_Narrow
 		dc.b id_frame_grass_narrow, $20
 
-ost_grass_x_start:	equ $2A	; original x position (2 bytes)
-ost_grass_y_start:	equ $2C	; original y position (2 bytes)
-ost_grass_coll_ptr:	equ $30	; pointer to collision data (4 bytes)
-ost_grass_sink:		equ $34	; pixels the platform has sunk when stood on
-ost_grass_burn_flag:	equ $35	; 0 = not burning; 1 = burning
-ost_grass_children:	equ $36	; OST indices of child objects (8 bytes)
+ost_grass_x_start:	equ $2A					; original x position (2 bytes)
+ost_grass_y_start:	equ $2C					; original y position (2 bytes)
+ost_grass_coll_ptr:	equ $30					; pointer to collision data (4 bytes)
+ost_grass_sink:		equ $34					; pixels the platform has sunk when stood on
+ost_grass_burn_flag:	equ $35					; 0 = not burning; 1 = burning
+ost_grass_children:	equ $36					; OST indices of child objects (8 bytes)
 
 sizeof_grass_data:	equ LGrass_Data_1-LGrass_Data
 ; ===========================================================================
@@ -98,8 +98,8 @@ LGrass_Display:
 
 LGrass_Types:
 		moveq	#0,d0
-		move.b	ost_subtype(a0),d0 ; get subtype (high nybble was removed earlier)
-		andi.w	#7,d0		; read only bits 0-2
+		move.b	ost_subtype(a0),d0			; get subtype (high nybble was removed earlier)
+		andi.w	#7,d0					; read only bits 0-2
 		add.w	d0,d0
 		move.w	LGrass_TypeIndex(pc,d0.w),d1
 		jmp	LGrass_TypeIndex(pc,d1.w)
@@ -117,7 +117,7 @@ LGrass_TypeIndex:
 ; ===========================================================================
 
 LGrass_Type00:
-		rts			; type 00 platform doesn't move
+		rts						; type 00 platform doesn't move
 ; ===========================================================================
 
 LGrass_Type01:
@@ -143,15 +143,15 @@ LGrass_Type04:
 		move.w	#$60,d1
 
 LGrass_Move:
-		btst	#3,ost_subtype(a0) ; is bit 3 of subtype set? (+8)
-		beq.s	@no_rev		; if not, branch
-		neg.w	d0		; reverse direction
+		btst	#3,ost_subtype(a0)			; is bit 3 of subtype set? (+8)
+		beq.s	@no_rev					; if not, branch
+		neg.w	d0					; reverse direction
 		add.w	d1,d0
 
 	@no_rev:
 		move.w	ost_grass_y_start(a0),d1
 		sub.w	d0,d1
-		move.w	d1,ost_y_pos(a0) ; update position on y-axis
+		move.w	d1,ost_y_pos(a0)			; update position on y-axis
 		rts	
 ; ===========================================================================
 
@@ -185,7 +185,7 @@ loc_B01C:
 		move.b	#1,ost_grass_burn_flag(a0)
 		bsr.w	FindNextFreeObj
 		bne.s	loc_B07A
-		move.b	#id_GrassFire,0(a1) ; load sitting flame object
+		move.b	#id_GrassFire,0(a1)			; load sitting flame object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_grass_y_start(a0),ost_grass_y_start(a1)
 		addq.w	#8,ost_grass_y_start(a1)
@@ -219,16 +219,16 @@ locret_B09A:
 
 
 sub_B09C:
-		lea	ost_grass_children(a2),a2 ; load list of child objects
+		lea	ost_grass_children(a2),a2		; load list of child objects
 		moveq	#0,d0
 		move.b	(a2),d0
 		addq.b	#1,(a2)
-		lea	1(a2,d0.w),a2	; go to end of list
+		lea	1(a2,d0.w),a2				; go to end of list
 		move.w	a1,d0
 		subi.w	#v_ost_all&$FFFF,d0
 		lsr.w	#6,d0
-		andi.w	#$7F,d0		; d0 = OST index of child
-		move.b	d0,(a2)		; copy d0 to end of list
+		andi.w	#$7F,d0					; d0 = OST index of child
+		move.b	d0,(a2)					; copy d0 to end of list
 		rts	
 ; End of function sub_B09C
 

@@ -8,7 +8,7 @@ Map_Missile:	index *
 		ptr frame_buzz_ball2
 		
 frame_buzz_flare1:
-		spritemap		; buzz bomber firing flare
+		spritemap					; buzz bomber firing flare
 		piece	-8, -8, 2x2, $24
 		endsprite
 		
@@ -18,7 +18,7 @@ frame_buzz_flare2:
 		endsprite
 		
 frame_buzz_ball1:
-		spritemap		; missile itself
+		spritemap					; missile itself
 		piece	-8, -8, 2x2, $2C
 		endsprite
 		

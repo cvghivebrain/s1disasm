@@ -6,9 +6,9 @@
 
 
 PaletteFadeIn:
-		move.w	#$003F,(v_palfade_start).w ; set start position = 0; size = $40
+		move.w	#$003F,(v_palfade_start).w		; set start position = 0; size = $40
 
-PalFadeIn_Alt:				; start position and size are already set
+PalFadeIn_Alt:							; start position and size are already set
 		moveq	#0,d0
 		lea	(v_pal_dry).w,a0
 		move.b	(v_palfade_start).w,d0
@@ -18,7 +18,7 @@ PalFadeIn_Alt:				; start position and size are already set
 
 	@fill:
 		move.w	d1,(a0)+
-		dbf	d0,@fill 	; fill palette with black
+		dbf	d0,@fill				; fill palette with black
 
 		move.w	#$15,d4
 
@@ -45,11 +45,11 @@ FadeIn_FromBlack:
 		move.b	(v_palfade_size).w,d0
 
 	@addcolour:
-		bsr.s	FadeIn_AddColour ; increase colour
-		dbf	d0,@addcolour	; repeat for size of palette
+		bsr.s	FadeIn_AddColour			; increase colour
+		dbf	d0,@addcolour				; repeat for size of palette
 
-		cmpi.b	#id_LZ,(v_zone).w ; is level Labyrinth?
-		bne.s	@exit		; if not, branch
+		cmpi.b	#id_LZ,(v_zone).w			; is level Labyrinth?
+		bne.s	@exit					; if not, branch
 
 		moveq	#0,d0
 		lea	(v_pal_water).w,a0
@@ -60,8 +60,8 @@ FadeIn_FromBlack:
 		move.b	(v_palfade_size).w,d0
 
 	@addcolour2:
-		bsr.s	FadeIn_AddColour ; increase colour again
-		dbf	d0,@addcolour2 ; repeat
+		bsr.s	FadeIn_AddColour			; increase colour again
+		dbf	d0,@addcolour2				; repeat
 
 @exit:
 		rts	
@@ -75,32 +75,32 @@ FadeIn_AddColour:
 @addblue:
 		move.w	(a1)+,d2
 		move.w	(a0),d3
-		cmp.w	d2,d3		; is colour already at threshold level?
-		beq.s	@next		; if yes, branch
+		cmp.w	d2,d3					; is colour already at threshold level?
+		beq.s	@next					; if yes, branch
 		move.w	d3,d1
-		addi.w	#$200,d1	; increase blue	value
-		cmp.w	d2,d1		; has blue reached threshold level?
-		bhi.s	@addgreen	; if yes, branch
-		move.w	d1,(a0)+	; update palette
+		addi.w	#$200,d1				; increase blue	value
+		cmp.w	d2,d1					; has blue reached threshold level?
+		bhi.s	@addgreen				; if yes, branch
+		move.w	d1,(a0)+				; update palette
 		rts	
 ; ===========================================================================
 
 @addgreen:
 		move.w	d3,d1
-		addi.w	#$20,d1		; increase green value
+		addi.w	#$20,d1					; increase green value
 		cmp.w	d2,d1
 		bhi.s	@addred
-		move.w	d1,(a0)+	; update palette
+		move.w	d1,(a0)+				; update palette
 		rts	
 ; ===========================================================================
 
 @addred:
-		addq.w	#2,(a0)+	; increase red value
+		addq.w	#2,(a0)+				; increase red value
 		rts	
 ; ===========================================================================
 
 @next:
-		addq.w	#2,a0		; next colour
+		addq.w	#2,a0					; next colour
 		rts	
 ; End of function FadeIn_AddColour
 
@@ -114,7 +114,7 @@ FadeIn_AddColour:
 
 
 PaletteFadeOut:
-		move.w	#$003F,(v_palfade_start).w ; start position = 0; size = $40
+		move.w	#$003F,(v_palfade_start).w		; start position = 0; size = $40
 		move.w	#$15,d4
 
 	@mainloop:
@@ -138,8 +138,8 @@ FadeOut_ToBlack:
 		move.b	(v_palfade_size).w,d0
 
 	@decolour:
-		bsr.s	FadeOut_DecColour ; decrease colour
-		dbf	d0,@decolour	; repeat for size of palette
+		bsr.s	FadeOut_DecColour			; decrease colour
+		dbf	d0,@decolour				; repeat for size of palette
 
 		moveq	#0,d0
 		lea	(v_pal_water).w,a0
@@ -164,7 +164,7 @@ FadeOut_DecColour:
 		move.w	d2,d1
 		andi.w	#$E,d1
 		beq.s	@degreen
-		subq.w	#2,(a0)+	; decrease red value
+		subq.w	#2,(a0)+				; decrease red value
 		rts	
 ; ===========================================================================
 
@@ -172,7 +172,7 @@ FadeOut_DecColour:
 		move.w	d2,d1
 		andi.w	#$E0,d1
 		beq.s	@deblue
-		subi.w	#$20,(a0)+	; decrease green value
+		subi.w	#$20,(a0)+				; decrease green value
 		rts	
 ; ===========================================================================
 
@@ -180,7 +180,7 @@ FadeOut_DecColour:
 		move.w	d2,d1
 		andi.w	#$E00,d1
 		beq.s	@next
-		subi.w	#$200,(a0)+	; decrease blue	value
+		subi.w	#$200,(a0)+				; decrease blue	value
 		rts	
 ; ===========================================================================
 
@@ -197,7 +197,7 @@ FadeOut_DecColour:
 
 
 PaletteWhiteIn:
-		move.w	#$003F,(v_palfade_start).w ; start position = 0; size = $40
+		move.w	#$003F,(v_palfade_start).w		; start position = 0; size = $40
 		moveq	#0,d0
 		lea	(v_pal_dry).w,a0
 		move.b	(v_palfade_start).w,d0
@@ -207,7 +207,7 @@ PaletteWhiteIn:
 
 	@fill:
 		move.w	d1,(a0)+
-		dbf	d0,@fill 	; fill palette with white
+		dbf	d0,@fill				; fill palette with white
 
 		move.w	#$15,d4
 
@@ -234,11 +234,11 @@ WhiteIn_FromWhite:
 		move.b	(v_palfade_size).w,d0
 
 	@decolour:
-		bsr.s	WhiteIn_DecColour ; decrease colour
-		dbf	d0,@decolour	; repeat for size of palette
+		bsr.s	WhiteIn_DecColour			; decrease colour
+		dbf	d0,@decolour				; repeat for size of palette
 
-		cmpi.b	#id_LZ,(v_zone).w ; is level Labyrinth?
-		bne.s	@exit		; if not, branch
+		cmpi.b	#id_LZ,(v_zone).w			; is level Labyrinth?
+		bne.s	@exit					; if not, branch
 		moveq	#0,d0
 		lea	(v_pal_water).w,a0
 		lea	(v_pal_water_dup).w,a1
@@ -266,7 +266,7 @@ WhiteIn_DecColour:
 		cmp.w	d2,d3
 		beq.s	@next
 		move.w	d3,d1
-		subi.w	#$200,d1	; decrease blue	value
+		subi.w	#$200,d1				; decrease blue	value
 		blo.s	@degreen
 		cmp.w	d2,d1
 		blo.s	@degreen
@@ -276,7 +276,7 @@ WhiteIn_DecColour:
 
 @degreen:
 		move.w	d3,d1
-		subi.w	#$20,d1		; decrease green value
+		subi.w	#$20,d1					; decrease green value
 		blo.s	@dered
 		cmp.w	d2,d1
 		blo.s	@dered
@@ -285,7 +285,7 @@ WhiteIn_DecColour:
 ; ===========================================================================
 
 @dered:
-		subq.w	#2,(a0)+	; decrease red value
+		subq.w	#2,(a0)+				; decrease red value
 		rts	
 ; ===========================================================================
 
@@ -302,7 +302,7 @@ WhiteIn_DecColour:
 
 
 PaletteWhiteOut:
-		move.w	#$003F,(v_palfade_start).w ; start position = 0; size = $40
+		move.w	#$003F,(v_palfade_start).w		; start position = 0; size = $40
 		move.w	#$15,d4
 
 	@mainloop:
@@ -354,7 +354,7 @@ WhiteOut_AddColour:
 		andi.w	#$E,d1
 		cmpi.w	#cRed,d1
 		beq.s	@addgreen
-		addq.w	#2,(a0)+	; increase red value
+		addq.w	#2,(a0)+				; increase red value
 		rts	
 ; ===========================================================================
 
@@ -363,7 +363,7 @@ WhiteOut_AddColour:
 		andi.w	#$E0,d1
 		cmpi.w	#cGreen,d1
 		beq.s	@addblue
-		addi.w	#$20,(a0)+	; increase green value
+		addi.w	#$20,(a0)+				; increase green value
 		rts	
 ; ===========================================================================
 
@@ -372,7 +372,7 @@ WhiteOut_AddColour:
 		andi.w	#$E00,d1
 		cmpi.w	#cBlue,d1
 		beq.s	@next
-		addi.w	#$200,(a0)+	; increase blue	value
+		addi.w	#$200,(a0)+				; increase blue	value
 		rts	
 ; ===========================================================================
 

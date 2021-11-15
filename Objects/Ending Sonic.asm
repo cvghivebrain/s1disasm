@@ -21,13 +21,13 @@ ESon_Index:	index *,,2
 		ptr ESon_Leap
 		ptr ESon_Animate
 
-ost_esonic_wait_time:	equ $30	; time to wait between events (2 bytes)
+ost_esonic_wait_time:	equ $30					; time to wait between events (2 bytes)
 ; ===========================================================================
 
 ESon_Main:	; Routine 0
-		cmpi.b	#6,(v_emeralds).w ; do you have all 6 emeralds?
-		beq.s	ESon_Main2	; if yes, branch
-		addi.b	#id_ESon_Leap,ost_routine2(a0) ; else, skip emerald sequence
+		cmpi.b	#6,(v_emeralds).w			; do you have all 6 emeralds?
+		beq.s	ESon_Main2				; if yes, branch
+		addi.b	#id_ESon_Leap,ost_routine2(a0)		; else, skip emerald sequence
 		move.w	#216,ost_esonic_wait_time(a0)
 		rts	
 ; ===========================================================================
@@ -40,15 +40,15 @@ ESon_Main2:
 		clr.b	ost_status(a0)
 		move.b	#2,ost_priority(a0)
 		move.b	#id_frame_esonic_hold1,ost_frame(a0)
-		move.w	#80,ost_esonic_wait_time(a0) ; set duration for Sonic to pause
+		move.w	#80,ost_esonic_wait_time(a0)		; set duration for Sonic to pause
 
 ESon_MakeEmeralds:
 		; Routine 2
-		subq.w	#1,ost_esonic_wait_time(a0) ; subtract 1 from duration
+		subq.w	#1,ost_esonic_wait_time(a0)		; subtract 1 from duration
 		bne.s	ESon_Wait
 		addq.b	#2,ost_routine2(a0)
 		move.w	#id_ani_esonic_confused,ost_anim(a0)
-		move.b	#id_EndChaos,(v_ost_end_emeralds).w ; load chaos emeralds objects
+		move.b	#id_EndChaos,(v_ost_end_emeralds).w	; load chaos emeralds objects
 
 	ESon_Wait:
 		rts	
@@ -56,8 +56,8 @@ ESon_MakeEmeralds:
 
 ESon_LookUp:	; Routine 6
 		cmpi.w	#$2000,((v_ost_end_emeralds&$FFFFFF)+ost_echaos_radius).l ; has emerald circle expanded fully?
-		bne.s	locret_5480	; if not, branch
-		move.w	#1,(f_restart).w ; set level to	restart	(causes	flash)
+		bne.s	locret_5480				; if not, branch
+		move.w	#1,(f_restart).w			; set level to	restart	(causes	flash)
 		move.w	#90,ost_esonic_wait_time(a0)
 		addq.b	#2,ost_routine2(a0)
 
@@ -74,7 +74,7 @@ ESon_ClrObjRam:
 
 ESon_ClrLoop:
 		clr.l	(a1)+
-		dbf	d1,ESon_ClrLoop ; clear the object RAM
+		dbf	d1,ESon_ClrLoop				; clear the object RAM
 		move.w	#1,(f_restart).w
 		addq.b	#2,ost_routine2(a0)
 		move.b	#id_ani_esonic_confused,ost_anim(a0)
@@ -90,7 +90,7 @@ ESon_MakeLogo:	; Routine $C
 		addq.b	#2,ost_routine2(a0)
 		move.w	#180,ost_esonic_wait_time(a0)
 		move.b	#id_ani_esonic_leap,ost_anim(a0)
-		move.b	#id_EndSTH,(v_ost_end_emeralds).w ; load "SONIC THE HEDGEHOG" object
+		move.b	#id_EndSTH,(v_ost_end_emeralds).w	; load "SONIC THE HEDGEHOG" object
 
 ESon_Wait3:
 		rts	
@@ -111,8 +111,8 @@ ESon_Leap:	; Routine $10
 		clr.b	ost_status(a0)
 		move.b	#2,ost_priority(a0)
 		move.b	#id_frame_esonic_leap1,ost_frame(a0)
-		move.b	#id_ani_esonic_leap,ost_anim(a0) ; use "leaping" animation
-		move.b	#id_EndSTH,(v_ost_end_emeralds).w ; load "SONIC THE HEDGEHOG" object
+		move.b	#id_ani_esonic_leap,ost_anim(a0)	; use "leaping" animation
+		move.b	#id_EndSTH,(v_ost_end_emeralds).w	; load "SONIC THE HEDGEHOG" object
 		bra.s	ESon_Animate
 ; ===========================================================================
 

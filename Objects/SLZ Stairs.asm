@@ -15,21 +15,21 @@ Stair_Index:	index *,,2
 		ptr Stair_Move
 		ptr Stair_Solid
 
-ost_stair_x_start:	equ $30	; original x-axis position (2 bytes)
-ost_stair_y_start:	equ $32	; original y-axis position (2 bytes)
-ost_stair_wait_time:	equ $34	; time delay for stairs to move (2 bytes)
-ost_stair_flag:		equ $36	; 1 = stood on; $80+ = hit from below
-ost_stair_child_id:	equ $37	; which child the current object is; $38-$3B
-ost_stair_children:	equ $38	; OST indices of child objects (4 bytes)
-ost_stair_parent:	equ $3C	; address of OST of parent object (4 bytes)
+ost_stair_x_start:	equ $30					; original x-axis position (2 bytes)
+ost_stair_y_start:	equ $32					; original y-axis position (2 bytes)
+ost_stair_wait_time:	equ $34					; time delay for stairs to move (2 bytes)
+ost_stair_flag:		equ $36					; 1 = stood on; $80+ = hit from below
+ost_stair_child_id:	equ $37					; which child the current object is; $38-$3B
+ost_stair_children:	equ $38					; OST indices of child objects (4 bytes)
+ost_stair_parent:	equ $3C					; address of OST of parent object (4 bytes)
 ; ===========================================================================
 
 Stair_Main:	; Routine 0
 		addq.b	#2,ost_routine(a0)
 		moveq	#ost_stair_children,d3
 		moveq	#1,d4
-		btst	#status_xflip_bit,ost_status(a0) ; is object flipped?
-		beq.s	@notflipped	; if not, branch
+		btst	#status_xflip_bit,ost_status(a0)	; is object flipped?
+		beq.s	@notflipped				; if not, branch
 		moveq	#ost_stair_children+3,d3
 		moveq	#-1,d4
 
@@ -46,7 +46,7 @@ Stair_Main:	; Routine 0
 		move.b	#4,ost_routine(a1)
 
 @makeblocks:
-		move.b	#id_Staircase,0(a1) ; load another block object
+		move.b	#id_Staircase,0(a1)			; load another block object
 		move.l	#Map_Stair,ost_mappings(a1)
 		move.w	#0+tile_pal3,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)
@@ -58,10 +58,10 @@ Stair_Main:	; Routine 0
 		move.w	ost_x_pos(a0),ost_stair_x_start(a1)
 		move.w	ost_y_pos(a1),ost_stair_y_start(a1)
 		addi.w	#$20,d2
-		move.b	d3,ost_stair_child_id(a1) ; values $38-$3B (or $3B-$38 if flipped)
+		move.b	d3,ost_stair_child_id(a1)		; values $38-$3B (or $3B-$38 if flipped)
 		move.l	a0,ost_stair_parent(a1)
 		add.b	d4,d3
-		dbf	d1,@loop	; repeat sequence 3 times
+		dbf	d1,@loop				; repeat sequence 3 times
 
 	@fail:
 
@@ -100,9 +100,9 @@ locret_10FA0:
 		rts	
 ; ===========================================================================
 Stair_TypeIndex:index *
-		ptr Stair_Type00 ; form staircase when stood on
+		ptr Stair_Type00				; form staircase when stood on
 		ptr Stair_Type01
-		ptr Stair_Type02 ; form staircase when hit from below
+		ptr Stair_Type02				; form staircase when hit from below
 		ptr Stair_Type01
 ; ===========================================================================
 
@@ -111,7 +111,7 @@ Stair_Type00:
 		bne.s	loc_10FC0
 		cmpi.b	#1,ost_stair_flag(a0)
 		bne.s	locret_10FBE
-		move.w	#30,ost_stair_wait_time(a0) ; set time delay to half a second
+		move.w	#30,ost_stair_wait_time(a0)		; set time delay to half a second
 
 locret_10FBE:
 		rts	
@@ -120,7 +120,7 @@ locret_10FBE:
 loc_10FC0:
 		subq.w	#1,ost_stair_wait_time(a0)
 		bne.s	locret_10FBE
-		addq.b	#1,ost_subtype(a0) ; add 1 to type
+		addq.b	#1,ost_subtype(a0)			; add 1 to type
 		rts	
 ; ===========================================================================
 
@@ -129,7 +129,7 @@ Stair_Type02:
 		bne.s	loc_10FE0
 		tst.b	ost_stair_flag(a0)
 		bpl.s	locret_10FDE
-		move.w	#60,ost_stair_wait_time(a0) ; set time delay to 1 second
+		move.w	#60,ost_stair_wait_time(a0)		; set time delay to 1 second
 
 locret_10FDE:
 		rts	
@@ -138,7 +138,7 @@ locret_10FDE:
 loc_10FE0:
 		subq.w	#1,ost_stair_wait_time(a0)
 		bne.s	loc_10FEC
-		addq.b	#1,ost_subtype(a0) ; add 1 to type
+		addq.b	#1,ost_subtype(a0)			; add 1 to type
 		rts	
 ; ===========================================================================
 

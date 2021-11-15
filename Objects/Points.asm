@@ -21,11 +21,11 @@ Poi_Main:	; Routine 0
 		move.b	#render_rel,ost_render(a0)
 		move.b	#1,ost_priority(a0)
 		move.b	#8,ost_actwidth(a0)
-		move.w	#-$300,ost_y_vel(a0) ; move object upwards
+		move.w	#-$300,ost_y_vel(a0)			; move object upwards
 
 Poi_Slower:	; Routine 2
-		tst.w	ost_y_vel(a0)	; is object moving?
-		bpl.w	DeleteObject	; if not, delete
+		tst.w	ost_y_vel(a0)				; is object moving?
+		bpl.w	DeleteObject				; if not, delete
 		bsr.w	SpeedToPos
-		addi.w	#$18,ost_y_vel(a0) ; reduce object speed
+		addi.w	#$18,ost_y_vel(a0)			; reduce object speed
 		rts	

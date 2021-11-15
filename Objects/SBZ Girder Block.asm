@@ -12,11 +12,11 @@ Gird_Index:	index *,,2
 		ptr Gird_Main
 		ptr Gird_Action
 
-ost_girder_y_start:	equ $30	; original y-axis position (2 bytes)
-ost_girder_x_start:	equ $32	; original x-axis position (2 bytes)
-ost_girder_move_time:	equ $34	; duration for movement in a direction (2 bytes)
-ost_girder_setting:	equ $38	; which movement settings to use, increments by 8
-ost_girder_wait_time:	equ $3A	; delay for movement (2 bytes)
+ost_girder_y_start:	equ $30					; original y-axis position (2 bytes)
+ost_girder_x_start:	equ $32					; original x-axis position (2 bytes)
+ost_girder_move_time:	equ $34					; duration for movement in a direction (2 bytes)
+ost_girder_setting:	equ $38					; which movement settings to use, increments by 8
+ost_girder_wait_time:	equ $3A					; delay for movement (2 bytes)
 ; ===========================================================================
 
 Gird_Main:	; Routine 0
@@ -40,9 +40,9 @@ Gird_Action:	; Routine 2
 
 	@beginmove:
 		jsr	(SpeedToPos).l
-		subq.w	#1,ost_girder_move_time(a0) ; decrement movement duration
-		bne.s	@solid		; if time remains, branch
-		bsr.w	Gird_ChgMove	; if time is zero, branch
+		subq.w	#1,ost_girder_move_time(a0)		; decrement movement duration
+		bne.s	@solid					; if time remains, branch
+		bsr.w	Gird_ChgMove				; if time is zero, branch
 
 	@solid:
 		move.w	(sp)+,d4
@@ -70,15 +70,15 @@ Gird_ChgMove:
 		andi.w	#$18,d0
 		lea	(@settings).l,a1
 		lea	(a1,d0.w),a1
-		move.w	(a1)+,ost_x_vel(a0) ; speed/direction
+		move.w	(a1)+,ost_x_vel(a0)			; speed/direction
 		move.w	(a1)+,ost_y_vel(a0)
-		move.w	(a1)+,ost_girder_move_time(a0) ; how long to move in that direction
-		addq.b	#8,ost_girder_setting(a0) ; use next settings
+		move.w	(a1)+,ost_girder_move_time(a0)		; how long to move in that direction
+		addq.b	#8,ost_girder_setting(a0)		; use next settings
 		move.w	#7,ost_girder_wait_time(a0)
 		rts	
 ; ===========================================================================
 @settings:	;   x vel,   y vel, duration
-		dc.w   $100,	 0,   $60,     0 ; right
-		dc.w	  0,  $100,   $30,     0 ; down
-		dc.w  -$100,  -$40,   $60,     0 ; up/left
-		dc.w	  0, -$100,   $18,     0 ; up
+		dc.w   $100,	 0,   $60,     0		; right
+		dc.w	  0,  $100,   $30,     0		; down
+		dc.w  -$100,  -$40,   $60,     0		; up/left
+		dc.w	  0, -$100,   $18,     0		; up

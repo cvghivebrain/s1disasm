@@ -15,18 +15,18 @@ Obj7A_Index:	index *,,2
 		ptr Obj7A_FlameMain
 		ptr Obj7A_TubeMain
 
-Obj7A_ObjData:	dc.b id_Obj7A_ShipMain,	id_ani_boss_ship, 4		; routine number, animation, priority
+Obj7A_ObjData:	dc.b id_Obj7A_ShipMain,	id_ani_boss_ship, 4	; routine number, animation, priority
 		dc.b id_Obj7A_FaceMain,	id_ani_boss_face1, 4
 		dc.b id_Obj7A_FlameMain, id_ani_boss_blank, 4
 		dc.b id_Obj7A_TubeMain,	0, 3
 
-ost_bslz_seesaw:	equ $2A	; addresses of OSTs of seesaws (2 bytes * 3)
-ost_bslz_parent_x_pos:	equ $30	; parent x position (2 bytes)
-ost_bslz_parent:	equ $34	; address of OST of parent object (4 bytes)
-ost_bslz_parent_y_pos:	equ $38	; parent y position (2 bytes)
-ost_bslz_wait_time:	equ $3C	; time to wait between each action
-ost_bslz_flash_num:	equ $3E	; number of times to make boss flash when hit
-ost_bslz_wobble:	equ $3F	; wobble state as Eggman moves back & forth (1 byte incremented every frame & interpreted by CalcSine)
+ost_bslz_seesaw:	equ $2A					; addresses of OSTs of seesaws (2 bytes * 3)
+ost_bslz_parent_x_pos:	equ $30					; parent x position (2 bytes)
+ost_bslz_parent:	equ $34					; address of OST of parent object (4 bytes)
+ost_bslz_parent_y_pos:	equ $38					; parent y position (2 bytes)
+ost_bslz_wait_time:	equ $3C					; time to wait between each action
+ost_bslz_flash_num:	equ $3E					; number of times to make boss flash when hit
+ost_bslz_wobble:	equ $3F					; wobble state as Eggman moves back & forth (1 byte incremented every frame & interpreted by CalcSine)
 ; ===========================================================================
 
 Obj7A_Main:
@@ -35,7 +35,7 @@ Obj7A_Main:
 		move.w	ost_x_pos(a0),ost_bslz_parent_x_pos(a0)
 		move.w	ost_y_pos(a0),ost_bslz_parent_y_pos(a0)
 		move.b	#id_col_24x24,ost_col_type(a0)
-		move.b	#8,ost_col_property(a0) ; set number of hits to 8
+		move.b	#8,ost_col_property(a0)			; set number of hits to 8
 		lea	Obj7A_ObjData(pc),a2
 		movea.l	a0,a1
 		moveq	#3,d1
@@ -60,7 +60,7 @@ Obj7A_LoadBoss:
 		move.b	#render_rel,ost_render(a1)
 		move.b	#$20,ost_actwidth(a1)
 		move.l	a0,ost_bslz_parent(a1)
-		dbf	d1,Obj7A_Loop	; repeat sequence 3 more times
+		dbf	d1,Obj7A_Loop				; repeat sequence 3 more times
 
 Obj7A_FindSeesaws:
 		lea	(v_ost_all+$40).w,a1
@@ -69,15 +69,15 @@ Obj7A_FindSeesaws:
 		moveq	#$3E,d1
 
 	@loop:
-		cmp.b	(a1),d0		; is object a seesaw?
-		bne.s	@notgood	; if not, branch
-		tst.b	ost_subtype(a1)	; is seesaw empty?
-		beq.s	@notgood	; if not, branch
-		move.w	a1,(a2)+	; set pointer to seesaw OST
+		cmp.b	(a1),d0					; is object a seesaw?
+		bne.s	@notgood				; if not, branch
+		tst.b	ost_subtype(a1)				; is seesaw empty?
+		beq.s	@notgood				; if not, branch
+		move.w	a1,(a2)+				; set pointer to seesaw OST
 
 	@notgood:
-		adda.w	#$40,a1		; next object OST slot
-		dbf	d1,@loop	; repeat for all object OSTs
+		adda.w	#$40,a1					; next object OST slot
+		dbf	d1,@loop				; repeat for all object OSTs
 
 Obj7A_ShipMain:	; Routine 2
 		moveq	#0,d0
@@ -89,7 +89,7 @@ Obj7A_ShipMain:	; Routine 2
 		moveq	#status_xflip+status_yflip,d0
 		and.b	ost_status(a0),d0
 		andi.b	#$FF-render_xflip-render_yflip,ost_render(a0) ; ignore x/yflip bits
-		or.b	d0,ost_render(a0) ; combine x/yflip bits from status instead
+		or.b	d0,ost_render(a0)			; combine x/yflip bits from status instead
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 Obj7A_ShipIndex:index *
@@ -134,7 +134,7 @@ loc_189FE:
 		tst.b	ost_bslz_flash_num(a0)
 		bne.s	loc_18A28
 		move.b	#$20,ost_bslz_flash_num(a0)
-		play.w	1, jsr, sfx_BossHit		; play boss damage sound
+		play.w	1, jsr, sfx_BossHit			; play boss damage sound
 
 loc_18A28:
 		lea	(v_pal_dry+$22).w,a1
@@ -241,7 +241,7 @@ loc_18AFA:
 		jsr	(FindNextFreeObj).l
 		movea.l	(sp)+,a0
 		bne.s	loc_18B40
-		move.b	#id_BossSpikeball,(a1) ; load spiked ball object
+		move.b	#id_BossSpikeball,(a1)			; load spiked ball object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		addi.w	#$20,ost_y_pos(a1)
@@ -310,7 +310,7 @@ loc_18BAE:
 
 loc_18BB4:
 		clr.w	ost_y_vel(a0)
-		play.w	0, jsr, mus_SLZ		; play SLZ music
+		play.w	0, jsr, mus_SLZ				; play SLZ music
 
 loc_18BC2:
 		bra.w	loc_189EE

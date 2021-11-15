@@ -2,23 +2,23 @@
 ; Sprite mappings - rotating disc that grabs Sonic (SBZ)
 ; ---------------------------------------------------------------------------
 Map_Jun:	index *
-		ptr frame_junc_w	; 0
-		ptr frame_junc_wsw	; 1
-		ptr frame_junc_sw	; 2
-		ptr frame_junc_ssw	; 3
-		ptr frame_junc_s	; 4
-		ptr frame_junc_sse	; 5
-		ptr frame_junc_se	; 6
-		ptr frame_junc_ese	; 7
-		ptr frame_junc_e	; 8
-		ptr frame_junc_ene	; 9
-		ptr frame_junc_ne	; $A
-		ptr frame_junc_nne	; $B
-		ptr frame_junc_n	; $C
-		ptr frame_junc_nnw	; $D
-		ptr frame_junc_nw	; $E
-		ptr frame_junc_wnw	; $F
-		ptr frame_junc_circle	; $10
+		ptr frame_junc_w				; 0
+		ptr frame_junc_wsw				; 1
+		ptr frame_junc_sw				; 2
+		ptr frame_junc_ssw				; 3
+		ptr frame_junc_s				; 4
+		ptr frame_junc_sse				; 5
+		ptr frame_junc_se				; 6
+		ptr frame_junc_ese				; 7
+		ptr frame_junc_e				; 8
+		ptr frame_junc_ene				; 9
+		ptr frame_junc_ne				; $A
+		ptr frame_junc_nne				; $B
+		ptr frame_junc_n				; $C
+		ptr frame_junc_nnw				; $D
+		ptr frame_junc_nw				; $E
+		ptr frame_junc_wnw				; $F
+		ptr frame_junc_circle				; $10
 		
 frame_junc_w:
 		spritemap

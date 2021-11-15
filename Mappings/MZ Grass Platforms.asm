@@ -7,7 +7,7 @@ Map_LGrass:	index *
 		ptr frame_grass_narrow
 		
 frame_grass_wide:
-		spritemap		; wide platform
+		spritemap					; wide platform
 		piece	-$40, -$28, 2x3, $57
 		piece	-$40, -$10, 2x2, $53
 		piece	-$40, 0, 4x4, 1
@@ -24,7 +24,7 @@ frame_grass_wide:
 		endsprite
 		
 frame_grass_sloped:
-		spritemap		; sloped platform (catches fire)
+		spritemap					; sloped platform (catches fire)
 		piece	-$40, -$30, 4x4, $27
 		piece	-$40, -$10, 4x2, $37
 		piece	-$40, 0, 4x4, 1
@@ -38,7 +38,7 @@ frame_grass_sloped:
 		endsprite
 		
 frame_grass_narrow:
-		spritemap		; narrow platform
+		spritemap					; narrow platform
 		piece	-$20, -$30, 4x4, $11
 		piece	-$20, -$10, 4x4, 1
 		piece	-$20, $10, 4x4, 1

@@ -13,7 +13,7 @@ Map_SSR:	index *
 		ptr frame_ssr_gotthemall
 		
 frame_ssr_chaos:
-		spritemap			; "CHAOS EMERALDS"
+		spritemap					; "CHAOS EMERALDS"
 		piece -$70, -8, 2x2, 8
 		piece -$60, -8, 2x2, $1C
 		piece -$50, -8, 2x2, 0
@@ -30,7 +30,7 @@ frame_ssr_chaos:
 		endsprite
 		
 frame_ssr_score:
-		spritemap			; "SCORE"
+		spritemap					; "SCORE"
 		piece -$50, -8, 4x2, $14A
 		piece -$30, -8, 1x2, $162
 		piece $18, -8, 3x2, $164
@@ -70,7 +70,7 @@ byte_CD5B:	spritemap
 		endsprite
 		
 frame_ssr_specialstage:
-		spritemap			; "SPECIAL STAGE"
+		spritemap					; "SPECIAL STAGE"
 		piece -$64, -8, 2x2, $3E
 		piece -$54, -8, 2x2, $36
 		piece -$44, -8, 2x2, $10
@@ -86,7 +86,7 @@ frame_ssr_specialstage:
 		endsprite
 		
 frame_ssr_gotthemall:
-		spritemap			; "SONIC GOT THEM ALL"
+		spritemap					; "SONIC GOT THEM ALL"
 		piece -$78, -8, 2x2, $3E
 		piece -$68, -8, 2x2, $32
 		piece -$58, -8, 2x2, $2E

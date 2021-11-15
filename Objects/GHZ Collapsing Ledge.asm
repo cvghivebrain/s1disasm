@@ -16,8 +16,8 @@ Ledge_Index:	index *,,2
 		ptr Ledge_Delete
 		ptr Ledge_WalkOff
 
-ost_ledge_wait_time:	equ $38	; time between touching the ledge and it collapsing
-ost_ledge_flag:		equ $3A	; collapse flag
+ost_ledge_wait_time:	equ $38					; time between touching the ledge and it collapsing
+ost_ledge_flag:		equ $3A					; collapse flag
 ; ===========================================================================
 
 Ledge_Main:	; Routine 0
@@ -26,18 +26,18 @@ Ledge_Main:	; Routine 0
 		move.w	#0+tile_pal3,ost_tile(a0)
 		ori.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)
-		move.b	#7,ost_ledge_wait_time(a0) ; set time delay for collapse
+		move.b	#7,ost_ledge_wait_time(a0)		; set time delay for collapse
 		move.b	#$64,ost_actwidth(a0)
 		move.b	ost_subtype(a0),ost_frame(a0)
 		move.b	#$38,ost_height(a0)
 		bset	#render_useheight_bit,ost_render(a0)
 
 Ledge_Touch:	; Routine 2
-		tst.b	ost_ledge_flag(a0) ; is ledge collapsing?
-		beq.s	@slope		; if not, branch
-		tst.b	ost_ledge_wait_time(a0)	; has time reached zero?
-		beq.w	Ledge_Fragment	; if yes, branch
-		subq.b	#1,ost_ledge_wait_time(a0) ; subtract 1 from time
+		tst.b	ost_ledge_flag(a0)			; is ledge collapsing?
+		beq.s	@slope					; if not, branch
+		tst.b	ost_ledge_wait_time(a0)			; has time reached zero?
+		beq.w	Ledge_Fragment				; if yes, branch
+		subq.b	#1,ost_ledge_wait_time(a0)		; subtract 1 from time
 
 	@slope:
 		move.w	#$30,d1
@@ -49,7 +49,7 @@ Ledge_Touch:	; Routine 2
 Ledge_Collapse:	; Routine 4
 		tst.b	ost_ledge_wait_time(a0)
 		beq.w	loc_847A
-		move.b	#1,ost_ledge_flag(a0) ; set collapse flag
+		move.b	#1,ost_ledge_flag(a0)			; set collapse flag
 		subq.b	#1,ost_ledge_wait_time(a0)
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
@@ -68,11 +68,11 @@ Ledge_WalkOff:	; Routine $A
 ; ===========================================================================
 
 Ledge_Display:	; Routine 6
-		tst.b	ost_ledge_wait_time(a0)	; has time delay reached zero?
-		beq.s	Ledge_TimeZero	; if yes, branch
-		tst.b	ost_ledge_flag(a0) ; is ledge collapsing?
-		bne.w	loc_82D0	; if yes, branch
-		subq.b	#1,ost_ledge_wait_time(a0) ; subtract 1 from time
+		tst.b	ost_ledge_wait_time(a0)			; has time delay reached zero?
+		beq.s	Ledge_TimeZero				; if yes, branch
+		tst.b	ost_ledge_flag(a0)			; is ledge collapsing?
+		bne.w	loc_82D0				; if yes, branch
+		subq.b	#1,ost_ledge_wait_time(a0)		; subtract 1 from time
 		bra.w	DisplaySprite
 ; ===========================================================================
 
@@ -90,7 +90,7 @@ loc_82D0:
 
 loc_82FC:
 		move.b	#0,ost_ledge_flag(a0)
-		move.b	#id_Ledge_Display,ost_routine(a0) ; run "Ledge_Display" routine
+		move.b	#id_Ledge_Display,ost_routine(a0)	; run "Ledge_Display" routine
 
 locret_8308:
 		rts	
@@ -161,7 +161,7 @@ loc_84EE:
 
 loc_84F2:
 		bsr.w	DisplaySprite
-		play.w	1, jmp, sfx_Collapse		; play collapsing sound
+		play.w	1, jmp, sfx_Collapse			; play collapsing sound
 		
 		endm
 		

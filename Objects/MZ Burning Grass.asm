@@ -14,11 +14,11 @@ GFire_Index:	index *,,2
 		ptr loc_B238
 		ptr GFire_Move
 
-ost_burn_x_start:	equ $2A	; original x position (2 bytes)
-ost_burn_y_start:	equ $2C	; original y position (2 bytes)
-ost_burn_coll_ptr:	equ $30	; pointer to collision data (4 bytes)
-ost_burn_parent:	equ $38	; address of OST of parent object (4 bytes)
-ost_burn_sink:		equ $3C	; pixels the platform has sunk when stood on
+ost_burn_x_start:	equ $2A					; original x position (2 bytes)
+ost_burn_y_start:	equ $2C					; original y position (2 bytes)
+ost_burn_coll_ptr:	equ $30					; pointer to collision data (4 bytes)
+ost_burn_parent:	equ $38					; address of OST of parent object (4 bytes)
+ost_burn_sink:		equ $3C					; pixels the platform has sunk when stood on
 ; ===========================================================================
 
 GFire_Main:	; Routine 0
@@ -30,7 +30,7 @@ GFire_Main:	; Routine 0
 		move.b	#1,ost_priority(a0)
 		move.b	#id_col_8x8+id_col_hurt,ost_col_type(a0)
 		move.b	#8,ost_actwidth(a0)
-		play.w	1, jsr, sfx_Burning		; play burning sound
+		play.w	1, jsr, sfx_Burning			; play burning sound
 		tst.b	ost_subtype(a0)
 		beq.s	loc_B238
 		addq.b	#2,ost_routine(a0)

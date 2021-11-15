@@ -17,8 +17,8 @@ Geyser_Index:	index *,,2
 
 Geyser_Speeds:	dc.w $FB00, 0
 
-ost_geyser_y_start:	equ $30	; original y position (2 bytes)
-ost_geyser_parent:	equ $3C	; address of OST of parent object (4 bytes)
+ost_geyser_y_start:	equ $30					; original y position (2 bytes)
+ost_geyser_parent:	equ $3C					; address of OST of parent object (4 bytes)
 ; ===========================================================================
 
 Geyser_Main:	; Routine 0
@@ -85,7 +85,7 @@ Geyser_Main:	; Routine 0
 		move.b	#0,ost_subtype(a0)
 
 	@sound:
-		play.w	1, jsr, sfx_Burning		; play flame sound
+		play.w	1, jsr, sfx_Burning			; play flame sound
 
 Geyser_Action:	; Routine 2
 		moveq	#0,d0
@@ -107,7 +107,7 @@ Geyser_Types:	index *
 ; ===========================================================================
 
 Geyser_Type00:
-		addi.w	#$18,ost_y_vel(a0) ; increase object's falling speed
+		addi.w	#$18,ost_y_vel(a0)			; increase object's falling speed
 		move.w	ost_geyser_y_start(a0),d0
 		cmp.w	ost_y_pos(a0),d0
 		bcc.s	locret_EFDA
@@ -120,7 +120,7 @@ locret_EFDA:
 ; ===========================================================================
 
 Geyser_Type01:
-		addi.w	#$18,ost_y_vel(a0) ; increase object's falling speed
+		addi.w	#$18,ost_y_vel(a0)			; increase object's falling speed
 		move.w	ost_geyser_y_start(a0),d0
 		cmp.w	ost_y_pos(a0),d0
 		bcc.s	locret_EFFA

@@ -12,12 +12,12 @@ Disc_Index:	index *,,2
 		ptr Disc_Main
 		ptr Disc_Action
 
-ost_disc_y_start:	equ $30	; original y-axis position (2 bytes)
-ost_disc_x_start:	equ $32	; original x-axis position (2 bytes)
-ost_disc_inner_radius:	equ $34	; distance of small circle from centre
-ost_disc_rotation:	equ $36	; rate/direction of small circle rotation (2 bytes)
-ost_disc_outer_radius:	equ $38	; distance of Sonic from centre
-ost_disc_init_flag:	equ $3A	; set when Sonic lands on the disc
+ost_disc_y_start:	equ $30					; original y-axis position (2 bytes)
+ost_disc_x_start:	equ $32					; original x-axis position (2 bytes)
+ost_disc_inner_radius:	equ $34					; distance of small circle from centre
+ost_disc_rotation:	equ $36					; rate/direction of small circle rotation (2 bytes)
+ost_disc_outer_radius:	equ $38					; distance of Sonic from centre
+ost_disc_init_flag:	equ $3A					; set when Sonic lands on the disc
 ; ===========================================================================
 
 Disc_Main:	; Routine 0
@@ -31,22 +31,22 @@ Disc_Main:	; Routine 0
 		move.w	ost_y_pos(a0),ost_disc_y_start(a0)
 		move.b	#$18,ost_disc_inner_radius(a0)
 		move.b	#$48,ost_disc_outer_radius(a0)
-		move.b	ost_subtype(a0),d1 ; get object type
-		andi.b	#$F,d1		; read only the	2nd digit
-		beq.s	@typeis0	; branch if 0
-		move.b	#$10,ost_disc_inner_radius(a0) ; unused smaller disc
+		move.b	ost_subtype(a0),d1			; get object type
+		andi.b	#$F,d1					; read only the	2nd digit
+		beq.s	@typeis0				; branch if 0
+		move.b	#$10,ost_disc_inner_radius(a0)		; unused smaller disc
 		move.b	#$38,ost_disc_outer_radius(a0)
 
 	@typeis0:
-		move.b	ost_subtype(a0),d1 ; get object type
-		andi.b	#$F0,d1		; read only the	1st digit
+		move.b	ost_subtype(a0),d1			; get object type
+		andi.b	#$F0,d1					; read only the	1st digit
 		ext.w	d1
-		asl.w	#3,d1		; multiply by 8
+		asl.w	#3,d1					; multiply by 8
 		move.w	d1,ost_disc_rotation(a0)
-		move.b	ost_status(a0),d0 ; get object status
-		ror.b	#2,d0		; move x/yflip bits to top
-		andi.b	#(status_xflip+status_yflip)<<6,d0 ; read only those
-		move.b	d0,ost_angle(a0) ; use as starting angle
+		move.b	ost_status(a0),d0			; get object status
+		ror.b	#2,d0					; move x/yflip bits to top
+		andi.b	#(status_xflip+status_yflip)<<6,d0	; read only those
+		move.b	d0,ost_angle(a0)			; use as starting angle
 
 Disc_Action:	; Routine 2
 		bsr.w	Disc_MoveSonic
@@ -87,8 +87,8 @@ locret_155B6:
 ; ===========================================================================
 
 Disc_MoveSonic2:
-		tst.b	ost_disc_init_flag(a0) ; has Sonic been on the disc for 1 frame already?
-		bne.s	@skip_init	; if yes, branch
+		tst.b	ost_disc_init_flag(a0)			; has Sonic been on the disc for 1 frame already?
+		bne.s	@skip_init				; if yes, branch
 		move.b	#1,ost_disc_init_flag(a0)
 		btst	#status_jump_bit,ost_status(a1)
 		bne.s	@jumping
@@ -101,8 +101,8 @@ Disc_MoveSonic2:
 
 	@skip_init:
 		move.w	ost_inertia(a1),d0
-		tst.w	ost_disc_rotation(a0) ; check rotation direction
-		bpl.s	loc_15608	; branch if positive
+		tst.w	ost_disc_rotation(a0)			; check rotation direction
+		bpl.s	loc_15608				; branch if positive
 		cmpi.w	#-$400,d0
 		ble.s	loc_155FA
 		move.w	#-$400,ost_inertia(a1)

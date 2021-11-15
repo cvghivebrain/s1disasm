@@ -2,26 +2,26 @@
 ; Sprite mappings - lava geyser / lava that falls from the ceiling (MZ)
 ; ---------------------------------------------------------------------------
 Map_Geyser:	index *
-		ptr frame_geyser_bubble1	; 0
-		ptr frame_geyser_bubble2	; 1
-		ptr frame_geyser_bubble3	; 2
-		ptr frame_geyser_bubble4	; 3
-		ptr frame_geyser_bubble5	; 4
-		ptr frame_geyser_bubble6	; 5
-		ptr frame_geyser_end1		; 6
-		ptr frame_geyser_end2		; 7
-		ptr frame_geyser_medcolumn1	; 8
-		ptr frame_geyser_medcolumn2	; 9
-		ptr frame_geyser_medcolumn3	; $A
-		ptr frame_geyser_shortcolumn1	; $B
-		ptr frame_geyser_shortcolumn2	; $C
-		ptr frame_geyser_shortcolumn3	; $D
-		ptr frame_geyser_longcolumn1	; $E
-		ptr frame_geyser_longcolumn2	; $F
-		ptr frame_geyser_longcolumn3	; $10
-		ptr frame_geyser_bubble7	; $11
-		ptr frame_geyser_bubble8	; $12
-		ptr frame_geyser_blank		; $13
+		ptr frame_geyser_bubble1			; 0
+		ptr frame_geyser_bubble2			; 1
+		ptr frame_geyser_bubble3			; 2
+		ptr frame_geyser_bubble4			; 3
+		ptr frame_geyser_bubble5			; 4
+		ptr frame_geyser_bubble6			; 5
+		ptr frame_geyser_end1				; 6
+		ptr frame_geyser_end2				; 7
+		ptr frame_geyser_medcolumn1			; 8
+		ptr frame_geyser_medcolumn2			; 9
+		ptr frame_geyser_medcolumn3			; $A
+		ptr frame_geyser_shortcolumn1			; $B
+		ptr frame_geyser_shortcolumn2			; $C
+		ptr frame_geyser_shortcolumn3			; $D
+		ptr frame_geyser_longcolumn1			; $E
+		ptr frame_geyser_longcolumn2			; $F
+		ptr frame_geyser_longcolumn3			; $10
+		ptr frame_geyser_bubble7			; $11
+		ptr frame_geyser_bubble8			; $12
+		ptr frame_geyser_blank				; $13
 		
 frame_geyser_bubble1:
 		spritemap

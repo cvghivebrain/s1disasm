@@ -23,15 +23,15 @@ MDis_Main:	; Routine 0
 		move.b	#$C,ost_actwidth(a0)
 		move.b	#9,ost_anim_time(a0)
 		move.b	#0,ost_frame(a0)
-		play.w	1, jsr, sfx_BuzzExplode		; play missile explosion sound
+		play.w	1, jsr, sfx_BuzzExplode			; play missile explosion sound
 
 MDis_Animate:	; Routine 2
-		subq.b	#1,ost_anim_time(a0) ; subtract 1 from frame duration
+		subq.b	#1,ost_anim_time(a0)			; subtract 1 from frame duration
 		bpl.s	@display
-		move.b	#9,ost_anim_time(a0) ; set frame duration to 9 frames
-		addq.b	#1,ost_frame(a0) ; next frame
-		cmpi.b	#4,ost_frame(a0) ; has animation completed?
-		beq.w	DeleteObject	; if yes, branch
+		move.b	#9,ost_anim_time(a0)			; set frame duration to 9 frames
+		addq.b	#1,ost_frame(a0)			; next frame
+		cmpi.b	#4,ost_frame(a0)			; has animation completed?
+		beq.w	DeleteObject				; if yes, branch
 
 	@display:
 		bra.w	DisplaySprite

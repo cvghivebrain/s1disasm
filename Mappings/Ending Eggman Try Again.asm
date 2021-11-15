@@ -11,7 +11,7 @@ Map_EEgg:	index *
 		ptr frame_eegg_end3
 		ptr frame_eegg_end4
 		
-frame_eegg_juggle1:				; Eggman juggling chaos emeralds
+frame_eegg_juggle1:						; Eggman juggling chaos emeralds
 		spritemap
 		piece	-$10, -$17, 2x2, 0
 		piece	-$20, -7, 4x1, 4
@@ -59,7 +59,7 @@ frame_eegg_juggle4:
 		piece	4, $18, 2x1, $29, xflip
 		endsprite
 		
-frame_eegg_end1:				; Eggman jumping on the word "end"
+frame_eegg_end1:						; Eggman jumping on the word "end"
 		spritemap
 		piece	-$18, -$13, 3x3, $2B
 		piece	-$20, -$B, 1x1, $34

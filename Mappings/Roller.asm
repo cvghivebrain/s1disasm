@@ -9,29 +9,29 @@ Map_Roll:	index *
 		ptr frame_roll_roll3
 		
 frame_roll_stand:
-		spritemap			; standing
+		spritemap					; standing
 		piece	-$10, -$22, 4x3, 0
 		piece	-$10, -$A, 4x3, $C
 		endsprite
 		
 frame_roll_fold:
-		spritemap			; folding
+		spritemap					; folding
 		piece	-$10, -$1A, 4x3, 0
 		piece	-$10, -2, 4x2, $18
 		endsprite
 		
 frame_roll_roll1:
-		spritemap			; rolling
+		spritemap					; rolling
 		piece	-$10, -$10, 4x4, $20
 		endsprite
 		
 frame_roll_roll2:
-		spritemap			; rolling
+		spritemap					; rolling
 		piece	-$10, -$10, 4x4, $30
 		endsprite
 		
 frame_roll_roll3:
-		spritemap			; rolling
+		spritemap					; rolling
 		piece	-$10, -$10, 4x4, $40
 		endsprite
 		even

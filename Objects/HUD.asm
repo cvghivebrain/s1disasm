@@ -23,9 +23,9 @@ HUD_Main:	; Routine 0
 		move.b	#0,ost_priority(a0)
 
 HUD_Flash:	; Routine 2
-		tst.w	(v_rings).w	; do you have any rings?
-		beq.s	@norings	; if not, branch
-		clr.b	ost_frame(a0)	; make all counters yellow
+		tst.w	(v_rings).w				; do you have any rings?
+		beq.s	@norings				; if not, branch
+		clr.b	ost_frame(a0)				; make all counters yellow
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 
@@ -33,10 +33,10 @@ HUD_Flash:	; Routine 2
 		moveq	#0,d0
 		btst	#3,(v_frame_counter_low).w
 		bne.s	@display
-		addq.w	#id_frame_hud_ringred,d0 ; make ring counter flash red
-		cmpi.b	#9,(v_time_min).w ; have	9 minutes elapsed?
-		bne.s	@display	; if not, branch
-		addq.w	#id_frame_hud_timered,d0 ; make time counter flash red
+		addq.w	#id_frame_hud_ringred,d0		; make ring counter flash red
+		cmpi.b	#9,(v_time_min).w			; have	9 minutes elapsed?
+		bne.s	@display				; if not, branch
+		addq.w	#id_frame_hud_timered,d0		; make time counter flash red
 
 	@display:
 		move.b	d0,ost_frame(a0)

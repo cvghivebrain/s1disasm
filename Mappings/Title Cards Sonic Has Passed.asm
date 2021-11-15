@@ -13,7 +13,7 @@ Map_Has:	index *
 		ptr frame_card_act3
 		
 frame_has_sonichas:
-		spritemap			; SONIC HAS
+		spritemap					; SONIC HAS
 		piece -$48, -8, 2x2, $3E
 		piece -$38, -8, 2x2, $32
 		piece -$28, -8, 2x2, $2E
@@ -25,7 +25,7 @@ frame_has_sonichas:
 		endsprite
 		
 frame_has_passed:
-		spritemap			; PASSED
+		spritemap					; PASSED
 		piece -$30, -8, 2x2, $36
 		piece -$20, -8, 2x2, 0
 		piece -$10, -8, 2x2, $3E
@@ -35,7 +35,7 @@ frame_has_passed:
 		endsprite
 		
 frame_has_score:
-		spritemap			; SCORE
+		spritemap					; SCORE
 		piece -$50, -8, 4x2, $14A
 		piece -$30, -8, 1x2, $162
 		piece $18, -8, 3x2, $164
@@ -45,7 +45,7 @@ frame_has_score:
 		endsprite
 		
 frame_has_timebonus:
-		spritemap			; TIME BONUS
+		spritemap					; TIME BONUS
 		piece -$50, -8, 4x2, $15A
 		piece -$27, -8, 4x2, $66
 		piece -7, -8, 1x2, $14A
@@ -56,7 +56,7 @@ frame_has_timebonus:
 		endsprite
 		
 frame_has_ringbonus:
-		spritemap			; RING BONUS
+		spritemap					; RING BONUS
 		piece -$50, -8, 4x2, $152
 		piece -$27, -8, 4x2, $66
 		piece -7, -8, 1x2, $14A

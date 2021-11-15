@@ -24,12 +24,12 @@ Debug_Main:	; Routine 0
 		andi.w	#$3FF,(v_bg1_y_pos).w
 		move.b	#0,ost_frame(a0)
 		move.b	#id_Walk,ost_anim(a0)
-		cmpi.b	#id_Special,(v_gamemode).w ; is game mode $10 (special stage)?
-		bne.s	@islevel	; if not, branch
+		cmpi.b	#id_Special,(v_gamemode).w		; is game mode $10 (special stage)?
+		bne.s	@islevel				; if not, branch
 
-		move.w	#0,(v_ss_rotation_speed).w ; stop special stage rotating
-		move.w	#0,(v_ss_angle).w ; make	special	stage "upright"
-		moveq	#6,d0		; use 6th debug	item list
+		move.w	#0,(v_ss_rotation_speed).w		; stop special stage rotating
+		move.w	#0,(v_ss_angle).w			; make	special	stage "upright"
+		moveq	#6,d0					; use 6th debug	item list
 		bra.s	@selectlist
 ; ===========================================================================
 
@@ -42,9 +42,9 @@ Debug_Main:	; Routine 0
 		add.w	d0,d0
 		adda.w	(a2,d0.w),a2
 		move.w	(a2)+,d6
-		cmp.b	(v_debug_item_index).w,d6 ; have you gone past the last item?
-		bhi.s	@noreset	; if not, branch
-		move.b	#0,(v_debug_item_index).w ; back to start of list
+		cmp.b	(v_debug_item_index).w,d6		; have you gone past the last item?
+		bhi.s	@noreset				; if not, branch
+		move.b	#0,(v_debug_item_index).w		; back to start of list
 
 	@noreset:
 		bsr.w	Debug_ShowItem
@@ -74,12 +74,12 @@ Debug_Control:
 		moveq	#0,d4
 		move.w	#1,d1
 		move.b	(v_joypad_press_actual).w,d4
-		andi.w	#btnDir,d4	; is up/down/left/right	pressed?
-		bne.s	@dirpressed	; if yes, branch
+		andi.w	#btnDir,d4				; is up/down/left/right	pressed?
+		bne.s	@dirpressed				; if yes, branch
 
 		move.b	(v_joypad_hold_actual).w,d0
-		andi.w	#btnDir,d0	; is up/down/left/right	held?
-		bne.s	@dirheld	; if yes, branch
+		andi.w	#btnDir,d0				; is up/down/left/right	held?
+		bne.s	@dirheld				; if yes, branch
 
 		move.b	#12,(v_debug_x_speed).w
 		move.b	#15,(v_debug_y_speed).w
@@ -105,15 +105,15 @@ loc_1D01C:
 		asr.l	#4,d1
 		move.l	ost_y_pos(a0),d2
 		move.l	ost_x_pos(a0),d3
-		btst	#bitUp,d4	; is up	being pressed?
-		beq.s	loc_1D03C	; if not, branch
+		btst	#bitUp,d4				; is up	being pressed?
+		beq.s	loc_1D03C				; if not, branch
 		sub.l	d1,d2
 		bcc.s	loc_1D03C
 		moveq	#0,d2
 
 loc_1D03C:
-		btst	#bitDn,d4	; is down being	pressed?
-		beq.s	loc_1D052	; if not, branch
+		btst	#bitDn,d4				; is down being	pressed?
+		beq.s	loc_1D052				; if not, branch
 		add.l	d1,d2
 		cmpi.l	#$7FF0000,d2
 		bcs.s	loc_1D052
@@ -136,39 +136,39 @@ loc_1D066:
 		move.l	d3,ost_x_pos(a0)
 
 Debug_ChgItem:
-		btst	#bitA,(v_joypad_hold_actual).w ; is button A pressed?
-		beq.s	@createitem	; if not, branch
-		btst	#bitC,(v_joypad_press_actual).w ; is button C pressed?
-		beq.s	@nextitem	; if not, branch
-		subq.b	#1,(v_debug_item_index).w ; go back 1 item
+		btst	#bitA,(v_joypad_hold_actual).w		; is button A pressed?
+		beq.s	@createitem				; if not, branch
+		btst	#bitC,(v_joypad_press_actual).w		; is button C pressed?
+		beq.s	@nextitem				; if not, branch
+		subq.b	#1,(v_debug_item_index).w		; go back 1 item
 		bcc.s	@display
 		add.b	d6,(v_debug_item_index).w
 		bra.s	@display
 ; ===========================================================================
 
 @nextitem:
-		btst	#bitA,(v_joypad_press_actual).w ; is button A pressed?
-		beq.s	@createitem	; if not, branch
-		addq.b	#1,(v_debug_item_index).w ; go forwards 1 item
+		btst	#bitA,(v_joypad_press_actual).w		; is button A pressed?
+		beq.s	@createitem				; if not, branch
+		addq.b	#1,(v_debug_item_index).w		; go forwards 1 item
 		cmp.b	(v_debug_item_index).w,d6
 		bhi.s	@display
-		move.b	#0,(v_debug_item_index).w ; loop back to first item
+		move.b	#0,(v_debug_item_index).w		; loop back to first item
 
 	@display:
 		bra.w	Debug_ShowItem
 ; ===========================================================================
 
 @createitem:
-		btst	#bitC,(v_joypad_press_actual).w ; is button C pressed?
-		beq.s	@backtonormal	; if not, branch
+		btst	#bitC,(v_joypad_press_actual).w		; is button C pressed?
+		beq.s	@backtonormal				; if not, branch
 		jsr	(FindFreeObj).l
 		bne.s	@backtonormal
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
-		move.b	ost_mappings(a0),0(a1)	; create object (object id is held in high byte of mappings pointer)
+		move.b	ost_mappings(a0),0(a1)			; create object (object id is held in high byte of mappings pointer)
 		move.b	ost_render(a0),ost_render(a1)
 		move.b	ost_render(a0),ost_status(a1)
-		andi.b	#$FF-status_onscreen,ost_status(a1) ; remove onscreen flag from status
+		andi.b	#$FF-status_onscreen,ost_status(a1)	; remove onscreen flag from status
 		moveq	#0,d0
 		move.b	(v_debug_item_index).w,d0
 		lsl.w	#3,d0
@@ -177,10 +177,10 @@ Debug_ChgItem:
 ; ===========================================================================
 
 @backtonormal:
-		btst	#bitB,(v_joypad_press_actual).w ; is button B pressed?
-		beq.s	@stayindebug	; if not, branch
+		btst	#bitB,(v_joypad_press_actual).w		; is button B pressed?
+		beq.s	@stayindebug				; if not, branch
 		moveq	#0,d0
-		move.w	d0,(v_debug_active).w ; deactivate debug mode
+		move.w	d0,(v_debug_active).w			; deactivate debug mode
 		move.l	#Map_Sonic,(v_ost_player+ost_mappings).w
 		move.w	#vram_sonic/$20,(v_ost_player+ost_tile).w
 		move.b	d0,(v_ost_player+ost_anim).w
@@ -188,11 +188,11 @@ Debug_ChgItem:
 		move.w	d0,ost_y_sub(a0)
 		move.w	(v_boundary_top_debugcopy).w,(v_boundary_top).w ; restore level boundaries
 		move.w	(v_boundary_bottom_debugcopy).w,(v_boundary_bottom_next).w
-		cmpi.b	#id_Special,(v_gamemode).w ; are you in the special stage?
-		bne.s	@stayindebug	; if not, branch
+		cmpi.b	#id_Special,(v_gamemode).w		; are you in the special stage?
+		bne.s	@stayindebug				; if not, branch
 
 		clr.w	(v_ss_angle).w
-		move.w	#$40,(v_ss_rotation_speed).w ; set new level rotation speed
+		move.w	#$40,(v_ss_rotation_speed).w		; set new level rotation speed
 		move.l	#Map_Sonic,(v_ost_player+ost_mappings).w
 		move.w	#vram_sonic/$20,(v_ost_player+ost_tile).w
 		move.b	#id_Roll,(v_ost_player+ost_anim).w
@@ -211,9 +211,9 @@ Debug_ShowItem:
 		moveq	#0,d0
 		move.b	(v_debug_item_index).w,d0
 		lsl.w	#3,d0
-		move.l	(a2,d0.w),ost_mappings(a0) ; load mappings for item
-		move.w	6(a2,d0.w),ost_tile(a0) ; load VRAM setting for item
-		move.b	5(a2,d0.w),ost_frame(a0) ; load frame number for item
+		move.l	(a2,d0.w),ost_mappings(a0)		; load mappings for item
+		move.w	6(a2,d0.w),ost_tile(a0)			; load VRAM setting for item
+		move.b	5(a2,d0.w),ost_frame(a0)		; load frame number for item
 		rts	
 ; End of function Debug_ShowItem
 ; ---------------------------------------------------------------------------

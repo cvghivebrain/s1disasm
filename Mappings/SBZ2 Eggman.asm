@@ -98,7 +98,7 @@ frame_eggman_running2:
 		dc.b 0
 		
 frame_eggman_intube:
-		spritemap			; Eggman inside tube in Final Zone
+		spritemap					; Eggman inside tube in Final Zone
 		piece	-$14, -$18, 4x2, $16
 		piece	$C, -$18, 1x2, $1E
 		piece	-$10, -$18, 4x3, 0
@@ -110,7 +110,7 @@ frame_eggman_intube:
 		endsprite
 		
 frame_eggman_cockpit:
-		spritemap			; empty cockpit of Eggmobile in Final Zone
+		spritemap					; empty cockpit of Eggmobile in Final Zone
 		piece	-$1C, -$14, 4x2, $56
 		piece	4, -$C, 3x1, $5E
 		piece	-4, -$14, 4x2, $61

@@ -12,45 +12,45 @@ Map_ESon:	index *
 		ptr frame_esonic_leap3
 		
 frame_esonic_hold1:
-		spritemap			; holding emeralds
+		spritemap					; holding emeralds
 		piece	-8, -$14, 3x4, 0
 		piece	-$10, $C, 4x1, $C
 		endsprite
 		
 frame_esonic_hold2:
-		spritemap 			; holding emeralds (glowing)
+		spritemap					; holding emeralds (glowing)
 		piece	-$10, -4, 4x2, $10
 		piece	-8, -$14, 3x4, 0
 		piece	-$10, $C, 4x1, $C
 		endsprite
 		
 frame_esonic_up:
-		spritemap 			; looking up
+		spritemap					; looking up
 		piece	-8, -$14, 3x2, $18
 		piece	-$10, -4, 4x3, $1E
 		endsprite
 		
 frame_esonic_confused1:
-		spritemap 			; confused
+		spritemap					; confused
 		piece	-8, -$14, 3x2, $2A
 		piece	-$10, -4, 4x3, $30
 		endsprite
 		
 frame_esonic_confused2:
-		spritemap 			; confused #2
+		spritemap					; confused #2
 		piece	-$10, -$14, 3x2, $2A, xflip
 		piece	-$10, -4, 4x3, $30, xflip
 		endsprite
 		
 frame_esonic_leap1:
-		spritemap 			; leaping
+		spritemap					; leaping
 		piece	-$10, -$14, 2x3, $3C
 		piece	0, -$14, 2x3, $3C, xflip
 		piece	-$10, 4, 4x2, $42
 		endsprite
 		
 frame_esonic_leap2:
-		spritemap			; leaping #2
+		spritemap					; leaping #2
 		piece	-8, -$4E, 4x1, $4A
 		piece	-$10, -$46, 4x4, $4E
 		piece	$10, -$46, 2x2, $5E
@@ -61,7 +61,7 @@ frame_esonic_leap2:
 		endsprite
 		
 frame_esonic_leap3:
-		spritemap 			; leaping #3
+		spritemap					; leaping #3
 		piece	-8, -$80, 4x4, $70
 		piece	-$20, -$70, 3x4, $80
 		piece	$18, -$70, 3x4, $8C

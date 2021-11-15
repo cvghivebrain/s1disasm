@@ -14,8 +14,8 @@ Moto_Index:	index *,,2
 		ptr Moto_Animate
 		ptr Moto_Delete
 
-ost_moto_wait_time:	equ $30	; time delay before changing direction (2 bytes)
-ost_moto_smoke_time:	equ $33	; time delay between smoke puffs
+ost_moto_wait_time:	equ $30					; time delay before changing direction (2 bytes)
+ost_moto_smoke_time:	equ $33					; time delay between smoke puffs
 ; ===========================================================================
 
 Moto_Main:	; Routine 0
@@ -24,8 +24,8 @@ Moto_Main:	; Routine 0
 		move.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)
 		move.b	#$14,ost_actwidth(a0)
-		tst.b	ost_anim(a0)	; is object a smoke trail?
-		bne.s	@smoke		; if yes, branch
+		tst.b	ost_anim(a0)				; is object a smoke trail?
+		bne.s	@smoke					; if yes, branch
 		move.b	#$E,ost_height(a0)
 		move.b	#8,ost_width(a0)
 		move.b	#id_col_20x16,ost_col_type(a0)
@@ -33,9 +33,9 @@ Moto_Main:	; Routine 0
 		jsr	(FindFloorObj).l
 		tst.w	d1
 		bpl.s	@notonfloor
-		add.w	d1,ost_y_pos(a0) ; match object's position with the floor
+		add.w	d1,ost_y_pos(a0)			; match object's position with the floor
 		move.w	#0,ost_y_vel(a0)
-		addq.b	#2,ost_routine(a0) ; goto Moto_Action next
+		addq.b	#2,ost_routine(a0)			; goto Moto_Action next
 		bchg	#status_xflip_bit,ost_status(a0)
 
 	@notonfloor:
@@ -43,7 +43,7 @@ Moto_Main:	; Routine 0
 ; ===========================================================================
 
 @smoke:
-		addq.b	#4,ost_routine(a0) ; goto Moto_Animate next
+		addq.b	#4,ost_routine(a0)			; goto Moto_Animate next
 		bra.w	Moto_Animate
 ; ===========================================================================
 
@@ -80,14 +80,14 @@ Moto_ActIndex:	index *
 ; ===========================================================================
 
 @move:
-		subq.w	#1,ost_moto_wait_time(a0) ; subtract 1 from pause time
-		bpl.s	@wait		; if time remains, branch
+		subq.w	#1,ost_moto_wait_time(a0)		; subtract 1 from pause time
+		bpl.s	@wait					; if time remains, branch
 		addq.b	#2,ost_routine2(a0)
-		move.w	#-$100,ost_x_vel(a0) ; move object to the left
+		move.w	#-$100,ost_x_vel(a0)			; move object to the left
 		move.b	#id_ani_moto_walk,ost_anim(a0)
 		bchg	#status_xflip_bit,ost_status(a0)
 		bne.s	@wait
-		neg.w	ost_x_vel(a0)	; change direction
+		neg.w	ost_x_vel(a0)				; change direction
 
 	@wait:
 		rts	
@@ -100,13 +100,13 @@ Moto_ActIndex:	index *
 		blt.s	@pause
 		cmpi.w	#$C,d1
 		bge.s	@pause
-		add.w	d1,ost_y_pos(a0) ; match object's position with the floor
+		add.w	d1,ost_y_pos(a0)			; match object's position with the floor
 		subq.b	#1,ost_moto_smoke_time(a0)
 		bpl.s	@nosmoke
 		move.b	#$F,ost_moto_smoke_time(a0)
 		bsr.w	FindFreeObj
 		bne.s	@nosmoke
-		move.b	#id_MotoBug,0(a1) ; load exhaust smoke object
+		move.b	#id_MotoBug,0(a1)			; load exhaust smoke object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	ost_status(a0),ost_status(a1)
@@ -117,8 +117,8 @@ Moto_ActIndex:	index *
 
 @pause:
 		subq.b	#2,ost_routine2(a0)
-		move.w	#59,ost_moto_wait_time(a0) ; set pause time to 1 second
-		move.w	#0,ost_x_vel(a0) ; stop the object moving
+		move.w	#59,ost_moto_wait_time(a0)		; set pause time to 1 second
+		move.w	#0,ost_x_vel(a0)			; stop the object moving
 		move.b	#id_ani_moto_stand,ost_anim(a0)
 		rts	
 ; ===========================================================================

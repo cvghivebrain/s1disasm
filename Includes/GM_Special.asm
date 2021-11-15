@@ -3,14 +3,14 @@
 ; ---------------------------------------------------------------------------
 
 GM_Special:
-		play.w	1, bsr.w, sfx_EnterSS		; play special stage entry sound
+		play.w	1, bsr.w, sfx_EnterSS			; play special stage entry sound
 		bsr.w	PaletteWhiteOut
 		disable_ints
 		lea	(vdp_control_port).l,a6
-		move.w	#$8B03,(a6)	; line scroll mode
-		move.w	#$8004,(a6)	; 8-colour mode
+		move.w	#$8B03,(a6)				; line scroll mode
+		move.w	#$8004,(a6)				; 8-colour mode
 		move.w	#$8A00+175,(v_vdp_hint_counter).w
-		move.w	#$9011,(a6)	; 64x64 cell plane size
+		move.w	#$9011,(a6)				; 64x64 cell plane size
 		move.w	(v_vdp_mode_buffer).w,d0
 		andi.b	#$BF,d0
 		move.w	d0,(vdp_control_port).l
@@ -19,54 +19,54 @@ GM_Special:
 		dma_fill	0,$6FFF,$5000
 
 	SS_WaitForDMA:
-		move.w	(a5),d1		; read control port ($C00004)
-		btst	#1,d1		; is DMA running?
-		bne.s	SS_WaitForDMA	; if yes, branch
-		move.w	#$8F02,(a5)	; set VDP increment to 2 bytes
+		move.w	(a5),d1					; read control port ($C00004)
+		btst	#1,d1					; is DMA running?
+		bne.s	SS_WaitForDMA				; if yes, branch
+		move.w	#$8F02,(a5)				; set VDP increment to 2 bytes
 		bsr.w	SS_BGLoad
 		moveq	#id_PLC_SpecialStage,d0
-		bsr.w	QuickPLC	; load special stage patterns
+		bsr.w	QuickPLC				; load special stage patterns
 
 		lea	(v_ost_all).w,a1
 		moveq	#0,d0
 		move.w	#((sizeof_ost*countof_ost)/4)-1,d1
 	SS_ClrObjRam:
 		move.l	d0,(a1)+
-		dbf	d1,SS_ClrObjRam	; clear	the object RAM
+		dbf	d1,SS_ClrObjRam				; clear	the object RAM
 
 		lea	(v_camera_x_pos).w,a1
 		moveq	#0,d0
 		move.w	#($100/4)-1,d1
 	SS_ClrRam1:
 		move.l	d0,(a1)+
-		dbf	d1,SS_ClrRam1	; clear	variables $FFFFF700-$FFFFF800
+		dbf	d1,SS_ClrRam1				; clear	variables $FFFFF700-$FFFFF800
 
 		lea	(v_oscillating_table).w,a1
 		moveq	#0,d0
 		move.w	#($A0/4)-1,d1
 	SS_ClrRam2:
 		move.l	d0,(a1)+
-		dbf	d1,SS_ClrRam2	; clear	variables $FFFFFE60-$FFFFFF00
+		dbf	d1,SS_ClrRam2				; clear	variables $FFFFFE60-$FFFFFF00
 
 		lea	(v_nem_gfx_buffer).w,a1
 		moveq	#0,d0
 		move.w	#($200/4)-1,d1
 	SS_ClrNemRam:
 		move.l	d0,(a1)+
-		dbf	d1,SS_ClrNemRam	; clear	Nemesis	buffer
+		dbf	d1,SS_ClrNemRam				; clear	Nemesis	buffer
 
 		clr.b	(f_water_pal_full).w
 		clr.w	(f_restart).w
 		moveq	#id_Pal_Special,d0
-		bsr.w	PalLoad1	; load special stage palette
-		jsr	(SS_Load).l	; load SS layout data
+		bsr.w	PalLoad1				; load special stage palette
+		jsr	(SS_Load).l				; load SS layout data
 		move.l	#0,(v_camera_x_pos).w
 		move.l	#0,(v_camera_y_pos).w
-		move.b	#id_SonicSpecial,(v_ost_player).w ; load special stage Sonic object
+		move.b	#id_SonicSpecial,(v_ost_player).w	; load special stage Sonic object
 		bsr.w	PalCycle_SS
-		clr.w	(v_ss_angle).w	; set stage angle to "upright"
-		move.w	#$40,(v_ss_rotation_speed).w ; set stage rotation speed
-		play.w	0, bsr.w, mus_SpecialStage	; play special stage BG	music
+		clr.w	(v_ss_angle).w				; set stage angle to "upright"
+		move.w	#$40,(v_ss_rotation_speed).w		; set stage rotation speed
+		play.w	0, bsr.w, mus_SpecialStage		; play special stage BG	music
 		move.w	#0,(v_demo_input_counter).w
 		lea	(DemoDataPtr).l,a1
 		moveq	#6,d0
@@ -78,11 +78,11 @@ GM_Special:
 		clr.b	(v_ring_reward).w
 		move.w	#0,(v_debug_active).w
 		move.w	#1800,(v_countdown).w
-		tst.b	(f_debug_cheat).w ; has debug cheat been entered?
-		beq.s	SS_NoDebug	; if not, branch
-		btst	#bitA,(v_joypad_hold_actual).w ; is A button pressed?
-		beq.s	SS_NoDebug	; if not, branch
-		move.b	#1,(f_debug_enable).w ; enable debug mode
+		tst.b	(f_debug_cheat).w			; has debug cheat been entered?
+		beq.s	SS_NoDebug				; if not, branch
+		btst	#bitA,(v_joypad_hold_actual).w		; is A button pressed?
+		beq.s	SS_NoDebug				; if not, branch
+		move.b	#1,(f_debug_enable).w			; enable debug mode
 
 	SS_NoDebug:
 		move.w	(v_vdp_mode_buffer).w,d0
@@ -104,28 +104,28 @@ SS_MainLoop:
 		jsr	(BuildSprites).l
 		jsr	(SS_ShowLayout).l
 		bsr.w	SS_BGAnimate
-		tst.w	(v_demo_mode).w	; is demo mode on?
-		beq.s	SS_ChkEnd	; if not, branch
-		tst.w	(v_countdown).w ; is there time left on the demo?
-		beq.w	SS_ToSegaScreen	; if not, branch
+		tst.w	(v_demo_mode).w				; is demo mode on?
+		beq.s	SS_ChkEnd				; if not, branch
+		tst.w	(v_countdown).w				; is there time left on the demo?
+		beq.w	SS_ToSegaScreen				; if not, branch
 
 	SS_ChkEnd:
-		cmpi.b	#id_Special,(v_gamemode).w ; is game mode $10 (special stage)?
-		beq.w	SS_MainLoop	; if yes, branch
+		cmpi.b	#id_Special,(v_gamemode).w		; is game mode $10 (special stage)?
+		beq.w	SS_MainLoop				; if yes, branch
 
-		tst.w	(v_demo_mode).w	; is demo mode on?
+		tst.w	(v_demo_mode).w				; is demo mode on?
 		if Revision=0
-			bne.w	SS_ToSegaScreen	; if yes, branch
+			bne.w	SS_ToSegaScreen			; if yes, branch
 		else
 			bne.w	SS_ToLevel
 		endc
-		move.b	#id_Level,(v_gamemode).w ; set screen mode to $0C (level)
-		cmpi.w	#(id_SBZ<<8)+3,(v_zone).w ; is level number higher than FZ?
-		blo.s	SS_Finish	; if not, branch
-		clr.w	(v_zone).w	; set to GHZ1
+		move.b	#id_Level,(v_gamemode).w		; set screen mode to $0C (level)
+		cmpi.w	#(id_SBZ<<8)+3,(v_zone).w		; is level number higher than FZ?
+		blo.s	SS_Finish				; if not, branch
+		clr.w	(v_zone).w				; set to GHZ1
 
 SS_Finish:
-		move.w	#60,(v_countdown).w ; set delay time to 1 second
+		move.w	#60,(v_countdown).w			; set delay time to 1 second
 		move.w	#$3F,(v_palfade_start).w
 		clr.w	(v_palfade_time).w
 
@@ -149,36 +149,36 @@ loc_47D4:
 
 		disable_ints
 		lea	(vdp_control_port).l,a6
-		move.w	#$8200+(vram_fg>>10),(a6) ; set foreground nametable address
-		move.w	#$8400+(vram_bg>>13),(a6) ; set background nametable address
-		move.w	#$9001,(a6)		; 64x32 cell plane size
+		move.w	#$8200+(vram_fg>>10),(a6)		; set foreground nametable address
+		move.w	#$8400+(vram_bg>>13),(a6)		; set background nametable address
+		move.w	#$9001,(a6)				; 64x32 cell plane size
 		bsr.w	ClearScreen
 		locVRAM	$B000
-		lea	(Nem_TitleCard).l,a0 ; load title card patterns
+		lea	(Nem_TitleCard).l,a0			; load title card patterns
 		bsr.w	NemDec
 		jsr	(Hud_Base).l
 		enable_ints
 		moveq	#id_Pal_SSResult,d0
-		bsr.w	PalLoad2	; load results screen palette
+		bsr.w	PalLoad2				; load results screen palette
 		moveq	#id_PLC_Main,d0
 		bsr.w	NewPLC
 		moveq	#id_PLC_SSResult,d0
-		bsr.w	AddPLC		; load results screen patterns
-		move.b	#1,(f_hud_score_update).w ; update score counter
-		move.b	#1,(f_pass_bonus_update).w ; update ring bonus counter
+		bsr.w	AddPLC					; load results screen patterns
+		move.b	#1,(f_hud_score_update).w		; update score counter
+		move.b	#1,(f_pass_bonus_update).w		; update ring bonus counter
 		move.w	(v_rings).w,d0
-		mulu.w	#10,d0		; multiply rings by 10
-		move.w	d0,(v_ring_bonus).w ; set rings bonus
-		play.w	1, jsr, mus_GotThrough		; play end-of-level music
+		mulu.w	#10,d0					; multiply rings by 10
+		move.w	d0,(v_ring_bonus).w			; set rings bonus
+		play.w	1, jsr, mus_GotThrough			; play end-of-level music
 
 		lea	(v_ost_all).w,a1
 		moveq	#0,d0
 		move.w	#((sizeof_ost*countof_ost)/4)-1,d1
 	SS_EndClrObjRam:
 		move.l	d0,(a1)+
-		dbf	d1,SS_EndClrObjRam ; clear object RAM
+		dbf	d1,SS_EndClrObjRam			; clear object RAM
 
-		move.b	#id_SSResult,(v_ost_ssresult1).w ; load results screen object
+		move.b	#id_SSResult,(v_ost_ssresult1).w	; load results screen object
 
 SS_NormalExit:
 		bsr.w	PauseGame
@@ -191,13 +191,13 @@ SS_NormalExit:
 		beq.s	SS_NormalExit
 		tst.l	(v_plc_buffer).w
 		bne.s	SS_NormalExit
-		play.w	1, bsr.w, sfx_EnterSS		; play special stage exit sound
+		play.w	1, bsr.w, sfx_EnterSS			; play special stage exit sound
 		bsr.w	PaletteWhiteOut
 		rts	
 ; ===========================================================================
 
 SS_ToSegaScreen:
-		move.b	#id_Sega,(v_gamemode).w ; goto Sega screen
+		move.b	#id_Sega,(v_gamemode).w			; goto Sega screen
 		rts
 
 		if Revision=0
@@ -219,8 +219,8 @@ fish_height:	equ 8
 sizeof_fish:	equ fish_width*fish_height*2
 
 SS_BGLoad:
-		lea	(v_ss_enidec_buffer).l,a1	; buffer
-		lea	(Eni_SSBg1).l,a0 ; load	mappings for the birds and fish
+		lea	(v_ss_enidec_buffer).l,a1		; buffer
+		lea	(Eni_SSBg1).l,a0			; load	mappings for the birds and fish
 		move.w	#tile_Nem_SSBgFish+tile_pal3,d0
 		bsr.w	EniDec
 		locVRAM	$5000,d3
@@ -270,7 +270,7 @@ loc_491C:
 		dbf	d7,loc_48BE
 		
 		lea	(v_ss_enidec_buffer).l,a1
-		lea	(Eni_SSBg2).l,a0 ; load	mappings for the clouds
+		lea	(Eni_SSBg2).l,a0			; load	mappings for the clouds
 		move.w	#0+tile_pal3,d0
 		bsr.w	EniDec
 		lea	(v_ss_enidec_buffer).l,a1
@@ -294,90 +294,90 @@ loc_491C:
 
 
 PalCycle_SS:
-		tst.w	(f_pause).w	; is game paused?
-		bne.s	@exit		; if yes, branch
-		subq.w	#1,(v_palcycle_ss_time).w ; decrement timer
-		bpl.s	@exit		; branch if time remains
+		tst.w	(f_pause).w				; is game paused?
+		bne.s	@exit					; if yes, branch
+		subq.w	#1,(v_palcycle_ss_time).w		; decrement timer
+		bpl.s	@exit					; branch if time remains
 		lea	(vdp_control_port).l,a6
-		move.w	(v_palcycle_ss_num).w,d0 ; get cycle index counter
-		addq.w	#1,(v_palcycle_ss_num).w ; increment
-		andi.w	#$1F,d0		; read only bits 0-4
-		lsl.w	#2,d0		; multiply by 4
+		move.w	(v_palcycle_ss_num).w,d0		; get cycle index counter
+		addq.w	#1,(v_palcycle_ss_num).w		; increment
+		andi.w	#$1F,d0					; read only bits 0-4
+		lsl.w	#2,d0					; multiply by 4
 		lea	(SS_Timing_Values).l,a0
 		adda.w	d0,a0
-		move.b	(a0)+,d0	; get time byte
-		bpl.s	@use_time	; branch if not -1
-		move.w	#$1FF,d0	; use $1FF if -1
+		move.b	(a0)+,d0				; get time byte
+		bpl.s	@use_time				; branch if not -1
+		move.w	#$1FF,d0				; use $1FF if -1
 
 	@use_time:
-		move.w	d0,(v_palcycle_ss_time).w ; set time until next palette change
+		move.w	d0,(v_palcycle_ss_time).w		; set time until next palette change
 		moveq	#0,d0
-		move.b	(a0)+,d0	; get bg mode byte
+		move.b	(a0)+,d0				; get bg mode byte
 		move.w	d0,(v_ss_bg_mode).w
 		lea	(SS_BG_Modes).l,a1
-		lea	(a1,d0.w),a1	; jump to mode data
-		move.w	#$8200,d0	; VDP register - fg nametable address
-		move.b	(a1)+,d0	; apply address from mode data
-		move.w	d0,(a6)		; send VDP instruction
-		move.b	(a1),(v_fg_y_pos_vsram).w ; get byte to send to VSRAM
-		move.w	#$8400,d0	; VDP register - bg nametable address
-		move.b	(a0)+,d0	; apply address from list
-		move.w	d0,(a6)		; send VDP instruction
-		move.l	#$40000010,(vdp_control_port).l ; set VDP to VSRAM write mode
-		move.l	(v_fg_y_pos_vsram).w,(vdp_data_port).l ; update VSRAM
+		lea	(a1,d0.w),a1				; jump to mode data
+		move.w	#$8200,d0				; VDP register - fg nametable address
+		move.b	(a1)+,d0				; apply address from mode data
+		move.w	d0,(a6)					; send VDP instruction
+		move.b	(a1),(v_fg_y_pos_vsram).w		; get byte to send to VSRAM
+		move.w	#$8400,d0				; VDP register - bg nametable address
+		move.b	(a0)+,d0				; apply address from list
+		move.w	d0,(a6)					; send VDP instruction
+		move.l	#$40000010,(vdp_control_port).l		; set VDP to VSRAM write mode
+		move.l	(v_fg_y_pos_vsram).w,(vdp_data_port).l	; update VSRAM
 		moveq	#0,d0
-		move.b	(a0)+,d0	; get palette offset
-		bmi.s	PalCycle_SS_2	; branch if $80+
-		lea	(Pal_SSCyc1).l,a1 ; use palette cycle set 1
+		move.b	(a0)+,d0				; get palette offset
+		bmi.s	PalCycle_SS_2				; branch if $80+
+		lea	(Pal_SSCyc1).l,a1			; use palette cycle set 1
 		adda.w	d0,a1
 		lea	(v_pal_dry+$4E).w,a2
 		move.l	(a1)+,(a2)+
 		move.l	(a1)+,(a2)+
-		move.l	(a1)+,(a2)+	; write palette
+		move.l	(a1)+,(a2)+				; write palette
 
 	@exit:
 		rts	
 ; ===========================================================================
 
 PalCycle_SS_2:
-		move.w	(v_palcycle_ss_unused).w,d1 ; this is always 0
-		cmpi.w	#$8A,d0		; is offset $80-$89?
-		blo.s	@offset_80_89	; if yes, branch
+		move.w	(v_palcycle_ss_unused).w,d1		; this is always 0
+		cmpi.w	#$8A,d0					; is offset $80-$89?
+		blo.s	@offset_80_89				; if yes, branch
 		addq.w	#1,d1
 
 	@offset_80_89:
-		mulu.w	#$2A,d1		; d1 = always 0 or $2A
-		lea	(Pal_SSCyc2).l,a1 ; use palette cycle set 2
+		mulu.w	#$2A,d1					; d1 = always 0 or $2A
+		lea	(Pal_SSCyc2).l,a1			; use palette cycle set 2
 		adda.w	d1,a1
-		andi.w	#$7F,d0		; ignore bit 7
-		bclr	#0,d0		; clear bit 0
-		beq.s	@offset_even	; branch if already clear
+		andi.w	#$7F,d0					; ignore bit 7
+		bclr	#0,d0					; clear bit 0
+		beq.s	@offset_even				; branch if already clear
 		lea	(v_pal_dry+$6E).w,a2
 		move.l	(a1),(a2)+
 		move.l	4(a1),(a2)+
-		move.l	8(a1),(a2)+	; write palette
+		move.l	8(a1),(a2)+				; write palette
 
 	@offset_even:
 		adda.w	#$C,a1
 		lea	(v_pal_dry+$5A).w,a2
-		cmpi.w	#$A,d0		; is offset 0-8?
-		blo.s	@offset_0_8	; if yes, branch
+		cmpi.w	#$A,d0					; is offset 0-8?
+		blo.s	@offset_0_8				; if yes, branch
 		subi.w	#$A,d0
 		lea	(v_pal_dry+$7A).w,a2
 
 	@offset_0_8:
 		move.w	d0,d1
 		add.w	d0,d0
-		add.w	d1,d0		; multiply d0 by 3
+		add.w	d1,d0					; multiply d0 by 3
 		adda.w	d0,a1
 		move.l	(a1)+,(a2)+
-		move.w	(a1)+,(a2)+	; write palette
+		move.w	(a1)+,(a2)+				; write palette
 		rts	
 ; End of function PalCycle_SS
 
 ; ===========================================================================
 SS_Timing_Values:
-		dc.b 3,	0, $E000>>13, $92	; time until next, bg mode, bg namespace address in VRAM, palette offset
+		dc.b 3,	0, $E000>>13, $92			; time until next, bg mode, bg namespace address in VRAM, palette offset
 		dc.b 3, 0, $E000>>13, $90
 		dc.b 3, 0, $E000>>13, $8E
 		dc.b 3, 0, $E000>>13, $8C
@@ -410,14 +410,14 @@ SS_Timing_Values:
 		dc.b 7,	4, $C000>>13, $30
 		dc.b 7, 2, $C000>>13, $24
 		even
-SS_BG_Modes:				; fg namespace address in VRAM, VScroll value
-		dc.b $4000>>10, 1	; 0 - grid
-		dc.b $6000>>10, 0	; 2 - fish morph 1
-		dc.b $6000>>10, 1	; 4 - fish morph 2
-		dc.b $8000>>10, 0	; 6 - fish
-		dc.b $8000>>10, 1	; 8 - bird morph 1
-		dc.b $A000>>10, 0	; $A - bird morph 2
-		dc.b $A000>>10, 1	; $C - bird
+SS_BG_Modes:							; fg namespace address in VRAM, VScroll value
+		dc.b $4000>>10, 1				; 0 - grid
+		dc.b $6000>>10, 0				; 2 - fish morph 1
+		dc.b $6000>>10, 1				; 4 - fish morph 2
+		dc.b $8000>>10, 0				; 6 - fish
+		dc.b $8000>>10, 1				; 8 - bird morph 1
+		dc.b $A000>>10, 0				; $A - bird morph 2
+		dc.b $A000>>10, 1				; $C - bird
 		even
 
 ; ---------------------------------------------------------------------------
@@ -434,19 +434,19 @@ include_Special_2:	macro
 
 
 SS_BGAnimate:
-		move.w	(v_ss_bg_mode).w,d0 ; get frame for fish/bird animation
-		bne.s	@not_0		; branch if not 0
+		move.w	(v_ss_bg_mode).w,d0			; get frame for fish/bird animation
+		bne.s	@not_0					; branch if not 0
 		move.w	#0,(v_bg1_y_pos).w
-		move.w	(v_bg1_y_pos).w,(v_bg_y_pos_vsram).w ; reset vertical scroll for bubble/cloud layer
+		move.w	(v_bg1_y_pos).w,(v_bg_y_pos_vsram).w	; reset vertical scroll for bubble/cloud layer
 
 	@not_0:
 		cmpi.w	#8,d0
-		bhs.s	loc_4C4E	; branch if d0 is 8-$C
+		bhs.s	loc_4C4E				; branch if d0 is 8-$C
 		cmpi.w	#6,d0
-		bne.s	@not_6		; branch if d0 isn't 6
+		bne.s	@not_6					; branch if d0 isn't 6
 		addq.w	#1,(v_bg3_x_pos).w
 		addq.w	#1,(v_bg1_y_pos).w
-		move.w	(v_bg1_y_pos).w,(v_bg_y_pos_vsram).w ; scroll bubble layer
+		move.w	(v_bg1_y_pos).w,(v_bg_y_pos_vsram).w	; scroll bubble layer
 
 	@not_6:
 		moveq	#0,d0
@@ -458,16 +458,16 @@ SS_BGAnimate:
 		moveq	#9,d3
 
 loc_4C26:
-		move.w	2(a3),d0	; get next value from buffer
-		bsr.w	CalcSine	; convert to sine
+		move.w	2(a3),d0				; get next value from buffer
+		bsr.w	CalcSine				; convert to sine
 		moveq	#0,d2
-		move.b	(a1)+,d2	; read 1st byte
-		muls.w	d2,d0		; multiply by sine
-		asr.l	#8,d0		; divide by $10
-		move.w	d0,(a3)+	; write to 1st word of buffer
-		move.b	(a1)+,d2	; read 2nd byte
+		move.b	(a1)+,d2				; read 1st byte
+		muls.w	d2,d0					; multiply by sine
+		asr.l	#8,d0					; divide by $10
+		move.w	d0,(a3)+				; write to 1st word of buffer
+		move.b	(a1)+,d2				; read 2nd byte
 		ext.w	d2
-		add.w	d2,(a3)+	; add to 2nd word of buffer
+		add.w	d2,(a3)+				; add to 2nd word of buffer
 		dbf	d3,loc_4C26
 		
 		lea	(v_nem_gfx_buffer).w,a3
@@ -477,7 +477,7 @@ loc_4C26:
 
 loc_4C4E:
 		cmpi.w	#$C,d0
-		bne.s	@not_C		; branch if d0 isn't $C
+		bne.s	@not_C					; branch if d0 isn't $C
 		subq.w	#1,(v_bg3_x_pos).w
 		lea	($FFFFAB00).w,a3
 		move.l	#$18000,d2
@@ -974,7 +974,7 @@ SS_AniEmeraldSparks:
 		clr.l	(a0)
 		clr.l	4(a0)
 		move.b	#id_Obj09_ExitStage,(v_ost_player+ost_routine).w
-		play.w	1, jsr, sfx_Goal		; play special stage GOAL sound
+		play.w	1, jsr, sfx_Goal			; play special stage GOAL sound
 
 locret_1B60C:
 		rts	
@@ -1032,20 +1032,20 @@ include_Special_4:	macro
 
 SS_Load:
 		moveq	#0,d0
-		move.b	(v_last_ss_levelid).w,d0 ; load number of last special stage entered
+		move.b	(v_last_ss_levelid).w,d0		; load number of last special stage entered
 		addq.b	#1,(v_last_ss_levelid).w
 		cmpi.b	#6,(v_last_ss_levelid).w
 		blo.s	@ss_valid
-		move.b	#0,(v_last_ss_levelid).w ; reset if higher than 6
+		move.b	#0,(v_last_ss_levelid).w		; reset if higher than 6
 
 	@ss_valid:
-		cmpi.b	#6,(v_emeralds).w ; do you have all emeralds?
-		beq.s	SS_LoadData	; if yes, branch
+		cmpi.b	#6,(v_emeralds).w			; do you have all emeralds?
+		beq.s	SS_LoadData				; if yes, branch
 		moveq	#0,d1
 		move.b	(v_emeralds).w,d1
 		subq.b	#1,d1
 		blo.s	SS_LoadData
-		lea	(v_emerald_list).w,a3 ; check which emeralds you have
+		lea	(v_emerald_list).w,a3			; check which emeralds you have
 
 SS_ChkEmldLoop:	
 		cmp.b	(a3,d1.w),d0

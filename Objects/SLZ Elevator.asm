@@ -16,42 +16,42 @@ Elev_Index:	index *,,2
 		ptr Elev_Action
 		ptr Elev_MakeMulti
 
-Elev_Var1:	dc.b $28, 0		; width, frame number
+Elev_Var1:	dc.b $28, 0					; width, frame number
 
-Elev_Var2:				; distance to move, action type
+Elev_Var2:							; distance to move, action type
 Elev_Var2_0:	dc.b $10, id_Elev_Up
 Elev_Var2_1:	dc.b $20, id_Elev_Up
-Elev_Var2_2:	dc.b $34, id_Elev_Up	; unused
+Elev_Var2_2:	dc.b $34, id_Elev_Up				; unused
 Elev_Var2_3:	dc.b $10, id_Elev_Down
-Elev_Var2_4:	dc.b $20, id_Elev_Down	; unused
-Elev_Var2_5:	dc.b $34, id_Elev_Down	; unused
-Elev_Var2_6:	dc.b $14, id_Elev_Up	; unused
-Elev_Var2_7:	dc.b $24, id_Elev_Up	; unused
-Elev_Var2_8:	dc.b $2C, id_Elev_Up	; unused
-Elev_Var2_9:	dc.b $14, id_Elev_Down	; unused
-Elev_Var2_A:	dc.b $24, id_Elev_Down	; unused
-Elev_Var2_B:	dc.b $2C, id_Elev_Down	; unused
+Elev_Var2_4:	dc.b $20, id_Elev_Down				; unused
+Elev_Var2_5:	dc.b $34, id_Elev_Down				; unused
+Elev_Var2_6:	dc.b $14, id_Elev_Up				; unused
+Elev_Var2_7:	dc.b $24, id_Elev_Up				; unused
+Elev_Var2_8:	dc.b $2C, id_Elev_Up				; unused
+Elev_Var2_9:	dc.b $14, id_Elev_Down				; unused
+Elev_Var2_A:	dc.b $24, id_Elev_Down				; unused
+Elev_Var2_B:	dc.b $2C, id_Elev_Down				; unused
 Elev_Var2_C:	dc.b $20, id_Elev_UpRight
-Elev_Var2_D:	dc.b $20, id_Elev_DownLeft ; unused
+Elev_Var2_D:	dc.b $20, id_Elev_DownLeft			; unused
 Elev_Var2_E:	dc.b $30, id_Elev_UpVanish
 
 sizeof_Elev_Var2:	equ Elev_Var2_1-Elev_Var2
 
-ost_elev_y_start:	equ $30	; original y-axis position (2 bytes)
-ost_elev_x_start:	equ $32	; original x-axis position (2 bytes)
-ost_elev_moved:		equ $34	; distance moved (2 bytes)
-ost_elev_acceleration:	equ $38	; acceleration - i.e. its movement is not linear (2 bytes)
-ost_elev_dec_flag:	equ $3A	; 1 = decelerate
-ost_elev_distance:	equ $3C	; distance to move (2 bytes)
-ost_elev_dist_master:	equ $3E	; master copy of ost_elev_distance (2 bytes)
+ost_elev_y_start:	equ $30					; original y-axis position (2 bytes)
+ost_elev_x_start:	equ $32					; original x-axis position (2 bytes)
+ost_elev_moved:		equ $34					; distance moved (2 bytes)
+ost_elev_acceleration:	equ $38					; acceleration - i.e. its movement is not linear (2 bytes)
+ost_elev_dec_flag:	equ $3A					; 1 = decelerate
+ost_elev_distance:	equ $3C					; distance to move (2 bytes)
+ost_elev_dist_master:	equ $3E					; master copy of ost_elev_distance (2 bytes)
 ; ===========================================================================
 
 Elev_Main:	; Routine 0
 		addq.b	#2,ost_routine(a0)
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0
-		bpl.s	@normal		; branch for types 00-7F
-		addq.b	#4,ost_routine(a0) ; goto Elev_MakeMulti next
+		bpl.s	@normal					; branch for types 00-7F
+		addq.b	#4,ost_routine(a0)			; goto Elev_MakeMulti next
 		andi.w	#$7F,d0
 		mulu.w	#6,d0
 		move.w	d0,ost_elev_distance(a0)
@@ -64,8 +64,8 @@ Elev_Main:	; Routine 0
 		lsr.w	#3,d0
 		andi.w	#$1E,d0
 		lea	Elev_Var1(pc,d0.w),a2
-		move.b	(a2)+,ost_actwidth(a0) ; set width
-		move.b	(a2)+,ost_frame(a0) ; set frame
+		move.b	(a2)+,ost_actwidth(a0)			; set width
+		move.b	(a2)+,ost_frame(a0)			; set frame
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0
 		add.w	d0,d0
@@ -73,8 +73,8 @@ Elev_Main:	; Routine 0
 		lea	Elev_Var2(pc,d0.w),a2
 		move.b	(a2)+,d0
 		lsl.w	#2,d0
-		move.w	d0,ost_elev_distance(a0) ; set distance to move
-		move.b	(a2)+,ost_subtype(a0)	; set type
+		move.w	d0,ost_elev_distance(a0)		; set distance to move
+		move.b	(a2)+,ost_subtype(a0)			; set type
 		move.l	#Map_Elev,ost_mappings(a0)
 		move.w	#0+tile_pal3,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
@@ -106,7 +106,7 @@ Elev_Action:	; Routine 4
 
 Elev_Types:
 		moveq	#0,d0
-		move.b	ost_subtype(a0),d0 ; subtype has changed by now, see Elev_Var2
+		move.b	ost_subtype(a0),d0			; subtype has changed by now, see Elev_Var2
 		andi.w	#$F,d0
 		add.w	d0,d0
 		move.w	Elev_Type_Index(pc,d0.w),d1
@@ -114,16 +114,16 @@ Elev_Types:
 ; ===========================================================================
 Elev_Type_Index:
 		index *
-		ptr Elev_Still		; 0 - doesn't move
-		ptr Elev_Up		; 1 - rises when stood on
+		ptr Elev_Still					; 0 - doesn't move
+		ptr Elev_Up					; 1 - rises when stood on
 		ptr Elev_Up_Now	
-		ptr Elev_Down		; 3 - falls when stood on
+		ptr Elev_Down					; 3 - falls when stood on
 		ptr Elev_Down_Now
-		ptr Elev_UpRight	; 5 - rises diagonally when stood on
+		ptr Elev_UpRight				; 5 - rises diagonally when stood on
 		ptr Elev_UpRight_Now
-		ptr Elev_DownLeft	; 7 - falls diagonally when stood on
+		ptr Elev_DownLeft				; 7 - falls diagonally when stood on
 		ptr Elev_DownLeft_Now
-		ptr Elev_UpVanish	; 9 - rises and vanishes
+		ptr Elev_UpVanish				; 9 - rises and vanishes
 ; ===========================================================================
 
 Elev_Still:
@@ -135,9 +135,9 @@ Elev_Up:
 Elev_Down:
 Elev_UpRight:
 Elev_DownLeft:
-		cmpi.b	#4,ost_routine(a0) ; check if Sonic is standing on the object
+		cmpi.b	#4,ost_routine(a0)			; check if Sonic is standing on the object
 		bne.s	@notstanding
-		addq.b	#1,ost_subtype(a0) ; if yes, add 1 to type (goes to 2, 4, 6 or 8)
+		addq.b	#1,ost_subtype(a0)			; if yes, add 1 to type (goes to 2, 4, 6 or 8)
 
 	@notstanding:
 		rts	
@@ -197,8 +197,8 @@ Elev_UpVanish:
 		neg.w	d0
 		add.w	ost_elev_y_start(a0),d0
 		move.w	d0,ost_y_pos(a0)
-		tst.b	ost_subtype(a0)	; has platform reached destination?
-		beq.w	@typereset	; if yes, branch
+		tst.b	ost_subtype(a0)				; has platform reached destination?
+		beq.w	@typereset				; if yes, branch
 		rts	
 ; ===========================================================================
 
@@ -260,7 +260,7 @@ Elev_MakeMulti:	; Routine 6
 		move.w	ost_elev_dist_master(a0),ost_elev_distance(a0)
 		bsr.w	FindFreeObj
 		bne.s	@chkdel
-		move.b	#id_Elevator,0(a1) ; duplicate the object
+		move.b	#id_Elevator,0(a1)			; duplicate the object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	#type_elev_up_vanish_1,ost_subtype(a1)

@@ -12,7 +12,7 @@ Burro_Index:	index *,,2
 		ptr Burro_Main
 		ptr Burro_Action
 
-ost_burro_turn_time:	equ $30	; time between direction changes (2 bytes)
+ost_burro_turn_time:	equ $30					; time between direction changes (2 bytes)
 ;			equ $32	; flag for something
 ; ===========================================================================
 
@@ -26,7 +26,7 @@ Burro_Main:	; Routine 0
 		move.b	#4,ost_priority(a0)
 		move.b	#id_col_12x18,ost_col_type(a0)
 		move.b	#$C,ost_actwidth(a0)
-		addq.b	#6,ost_routine2(a0) ; run "Burro_ChkSonic" routine
+		addq.b	#6,ost_routine2(a0)			; run "Burro_ChkSonic" routine
 		move.b	#id_ani_burro_digging,ost_anim(a0)
 
 Burro_Action:	; Routine 2
@@ -52,9 +52,9 @@ Burro_ChangeDir:
 		move.w	#255,ost_burro_turn_time(a0)
 		move.w	#$80,ost_x_vel(a0)
 		move.b	#id_ani_burro_walk2,ost_anim(a0)
-		bchg	#status_xflip_bit,ost_status(a0) ; change direction the Burrobot is facing
+		bchg	#status_xflip_bit,ost_status(a0)	; change direction the Burrobot is facing
 		beq.s	@nochg
-		neg.w	ost_x_vel(a0)	; change direction the Burrobot	is moving
+		neg.w	ost_x_vel(a0)				; change direction the Burrobot	is moving
 
 	@nochg:
 		rts	

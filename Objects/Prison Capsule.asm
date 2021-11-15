@@ -23,12 +23,12 @@ Pri_Index:	index *,,2
 		ptr Pri_Animals
 		ptr Pri_EndAct
 
-Pri_Var:	dc.b id_Pri_BodyMain, $20, 4, id_frame_prison_capsule	; routine, width, priority, frame
+Pri_Var:	dc.b id_Pri_BodyMain, $20, 4, id_frame_prison_capsule ; routine, width, priority, frame
 		dc.b id_Pri_Switched, $C, 5, id_frame_prison_switch1
 		dc.b id_Pri_Explosion, $10, 4, id_frame_prison_switch2
 		dc.b id_Pri_Explosion+2, $10, 3, id_frame_prison_unused_panel
 
-ost_prison_y_start:	equ $30	; original y position (2 bytes)
+ost_prison_y_start:	equ $30					; original y position (2 bytes)
 ; ===========================================================================
 
 Pri_Main:	; Routine 0
@@ -44,8 +44,8 @@ Pri_Main:	; Routine 0
 		move.b	(a1)+,ost_actwidth(a0)
 		move.b	(a1)+,ost_priority(a0)
 		move.b	(a1)+,ost_frame(a0)
-		cmpi.w	#8,d0		; is object type number	02?
-		bne.s	@not02		; if not, branch
+		cmpi.w	#8,d0					; is object type number	02?
+		bne.s	@not02					; if not, branch
 
 		move.b	#id_col_16x16,ost_col_type(a0)
 		move.b	#8,ost_col_property(a0)
@@ -65,14 +65,14 @@ Pri_BodyMain:	; Routine 2
 ; ===========================================================================
 
 @chkopened:
-		tst.b	ost_routine2(a0) ; has the prison been opened?
-		beq.s	@open		; if yes, branch
+		tst.b	ost_routine2(a0)			; has the prison been opened?
+		beq.s	@open					; if yes, branch
 		clr.b	ost_routine2(a0)
 		bclr	#status_platform_bit,(v_ost_player+ost_status).w
 		bset	#status_air_bit,(v_ost_player+ost_status).w
 
 	@open:
-		move.b	#id_frame_prison_broken,ost_frame(a0) ; use frame number 2 (destroyed prison)
+		move.b	#id_frame_prison_broken,ost_frame(a0)	; use frame number 2 (destroyed prison)
 		rts	
 ; ===========================================================================
 
@@ -85,16 +85,16 @@ Pri_Switched:	; Routine 4
 		lea	(Ani_Pri).l,a1
 		jsr	(AnimateSprite).l
 		move.w	ost_prison_y_start(a0),ost_y_pos(a0)
-		tst.b	ost_routine2(a0) ; has prison already been opened?
-		beq.s	@open2		; if yes, branch
+		tst.b	ost_routine2(a0)			; has prison already been opened?
+		beq.s	@open2					; if yes, branch
 
 		addq.w	#8,ost_y_pos(a0)
 		move.b	#$A,ost_routine(a0)
-		move.w	#60,ost_anim_time(a0) ; set time between animal spawns
-		clr.b	(f_hud_time_update).w	; stop time counter
-		clr.b	(f_boss_boundary).w ; lock screen position
-		move.b	#1,(f_lock_controls).w ; lock controls
-		move.w	#(btnR<<8),(v_joypad_hold).w ; make Sonic run to the right
+		move.w	#60,ost_anim_time(a0)			; set time between animal spawns
+		clr.b	(f_hud_time_update).w			; stop time counter
+		clr.b	(f_boss_boundary).w			; lock screen position
+		move.b	#1,(f_lock_controls).w			; lock controls
+		move.w	#(btnR<<8),(v_joypad_hold).w		; make Sonic run to the right
 		clr.b	ost_routine2(a0)
 		bclr	#status_platform_bit,(v_ost_player+ost_status).w
 		bset	#status_air_bit,(v_ost_player+ost_status).w
@@ -109,7 +109,7 @@ Pri_Explosion:	; Routine 6, 8, $A
 		bne.s	@noexplosion
 		jsr	(FindFreeObj).l
 		bne.s	@noexplosion
-		move.b	#id_ExplosionBomb,0(a1) ; load explosion object
+		move.b	#id_ExplosionBomb,0(a1)			; load explosion object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		jsr	(RandomNumber).l
@@ -130,7 +130,7 @@ Pri_Explosion:	; Routine 6, 8, $A
 
 @makeanimal:
 		move.b	#2,(v_boss_status).w
-		move.b	#id_Pri_Animals,ost_routine(a0) ; replace explosions with animals
+		move.b	#id_Pri_Animals,ost_routine(a0)		; replace explosions with animals
 		move.b	#id_frame_prison_blank,ost_frame(a0)
 		move.w	#150,ost_anim_time(a0)
 		addi.w	#$20,ost_y_pos(a0)
@@ -141,14 +141,14 @@ Pri_Explosion:	; Routine 6, 8, $A
 	@loop:
 		jsr	(FindFreeObj).l
 		bne.s	@fail
-		move.b	#id_Animals,0(a1) ; load animal object
+		move.b	#id_Animals,0(a1)			; load animal object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		add.w	d4,ost_x_pos(a1)
 		addq.w	#7,d4
-		move.w	d5,ost_animal_prison_num(a1) ; give each animal a num so it jumps at a different time
+		move.w	d5,ost_animal_prison_num(a1)		; give each animal a num so it jumps at a different time
 		subq.w	#8,d5
-		dbf	d6,@loop	; repeat 7 more	times
+		dbf	d6,@loop				; repeat 7 more	times
 
 	@fail:
 		rts	
@@ -160,7 +160,7 @@ Pri_Animals:	; Routine $C
 		bne.s	@noanimal
 		jsr	(FindFreeObj).l
 		bne.s	@noanimal
-		move.b	#id_Animals,0(a1) ; load animal object
+		move.b	#id_Animals,0(a1)			; load animal object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		jsr	(RandomNumber).l
@@ -188,13 +188,13 @@ Pri_EndAct:	; Routine $E
 		moveq	#$3E,d0
 		moveq	#id_Animals,d1
 		moveq	#$40,d2
-		lea	(v_ost_all+$40).w,a1 ; load object RAM
+		lea	(v_ost_all+$40).w,a1			; load object RAM
 
 	@findanimal:
-		cmp.b	(a1),d1		; is object $28	(animal) loaded?
-		beq.s	@found		; if yes, branch
-		adda.w	d2,a1		; next object RAM
-		dbf	d0,@findanimal	; repeat $3E times
+		cmp.b	(a1),d1					; is object $28	(animal) loaded?
+		beq.s	@found					; if yes, branch
+		adda.w	d2,a1					; next object RAM
+		dbf	d0,@findanimal				; repeat $3E times
 
 		jsr	(GotThroughAct).l
 		jmp	(DeleteObject).l

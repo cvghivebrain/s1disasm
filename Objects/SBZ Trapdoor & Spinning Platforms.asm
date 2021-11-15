@@ -13,10 +13,10 @@ Spin_Index:	index *,,2
 		ptr Spin_Trapdoor
 		ptr Spin_Spinner
 
-ost_spin_wait_time:	equ $30	; time until change (2 bytes)
-ost_spin_wait_master:	equ $32	; time between changes (2 bytes)
-ost_spin_flag:		equ $34	; 1 = switch between animations, spinning platforms only
-ost_spin_sync:		equ $36	; bitmask used to synchronise timing: subtype $8x = $3F; subtype $9x = $7F (2 bytes)
+ost_spin_wait_time:	equ $30					; time until change (2 bytes)
+ost_spin_wait_master:	equ $32					; time between changes (2 bytes)
+ost_spin_flag:		equ $34					; 1 = switch between animations, spinning platforms only
+ost_spin_sync:		equ $36					; bitmask used to synchronise timing: subtype $8x = $3F; subtype $9x = $7F (2 bytes)
 ; ===========================================================================
 
 Spin_Main:	; Routine 0
@@ -26,48 +26,48 @@ Spin_Main:	; Routine 0
 		ori.b	#render_rel,ost_render(a0)
 		move.b	#$80,ost_actwidth(a0)
 		moveq	#0,d0
-		move.b	ost_subtype(a0),d0 ; get subtype
-		andi.w	#$F,d0		; read only low nybble
-		mulu.w	#60,d0		; multiply by 60 (1 second)
+		move.b	ost_subtype(a0),d0			; get subtype
+		andi.w	#$F,d0					; read only low nybble
+		mulu.w	#60,d0					; multiply by 60 (1 second)
 		move.w	d0,ost_spin_wait_master(a0)
-		tst.b	ost_subtype(a0)	; is subtype $8x?
-		bpl.s	Spin_Trapdoor	; if not, branch
+		tst.b	ost_subtype(a0)				; is subtype $8x?
+		bpl.s	Spin_Trapdoor				; if not, branch
 
-		addq.b	#2,ost_routine(a0) ; goto Spin_Spinner next
+		addq.b	#2,ost_routine(a0)			; goto Spin_Spinner next
 		move.l	#Map_Spin,ost_mappings(a0)
 		move.w	#tile_Nem_SpinPform,ost_tile(a0)
 		move.b	#$10,ost_actwidth(a0)
 		move.b	#id_ani_spin_1,ost_anim(a0)
 		moveq	#0,d0
-		move.b	ost_subtype(a0),d0 ; get object type
+		move.b	ost_subtype(a0),d0			; get object type
 		move.w	d0,d1
-		andi.w	#$F,d0		; read only the	2nd digit
-		mulu.w	#6,d0		; multiply by 6
+		andi.w	#$F,d0					; read only the	2nd digit
+		mulu.w	#6,d0					; multiply by 6
 		move.w	d0,ost_spin_wait_time(a0)
-		move.w	d0,ost_spin_wait_master(a0) ; set time delay
-		andi.w	#$70,d1		; read high nybble (e.g. $80/$90), ignore high bit ($00/$10)
-		addi.w	#$10,d1		; add $10 ($10/$20)
-		lsl.w	#2,d1		; multiply by 4 ($40/$80)
-		subq.w	#1,d1		; subtract 1 ($3F/$7F)
+		move.w	d0,ost_spin_wait_master(a0)		; set time delay
+		andi.w	#$70,d1					; read high nybble (e.g. $80/$90), ignore high bit ($00/$10)
+		addi.w	#$10,d1					; add $10 ($10/$20)
+		lsl.w	#2,d1					; multiply by 4 ($40/$80)
+		subq.w	#1,d1					; subtract 1 ($3F/$7F)
 		move.w	d1,ost_spin_sync(a0)
 		bra.s	Spin_Spinner
 ; ===========================================================================
 
 Spin_Trapdoor:	; Routine 2
-		subq.w	#1,ost_spin_wait_time(a0) ; decrement timer
-		bpl.s	@animate	; if time remains, branch
+		subq.w	#1,ost_spin_wait_time(a0)		; decrement timer
+		bpl.s	@animate				; if time remains, branch
 
 		move.w	ost_spin_wait_master(a0),ost_spin_wait_time(a0)
-		bchg	#0,ost_anim(a0)	; switch between opening/closing animations
+		bchg	#0,ost_anim(a0)				; switch between opening/closing animations
 		tst.b	ost_render(a0)
 		bpl.s	@animate
-		play.w	1, jsr, sfx_Door		; play door sound
+		play.w	1, jsr, sfx_Door			; play door sound
 
 	@animate:
 		lea	(Ani_Spin).l,a1
 		jsr	(AnimateSprite).l
-		tst.b	ost_frame(a0)	; is frame number 0 displayed?
-		bne.s	@notsolid	; if not, branch
+		tst.b	ost_frame(a0)				; is frame number 0 displayed?
+		bne.s	@notsolid				; if not, branch
 		move.w	#$4B,d1
 		move.w	#$C,d2
 		move.w	d2,d3
@@ -78,8 +78,8 @@ Spin_Trapdoor:	; Routine 2
 ; ===========================================================================
 
 @notsolid:
-		btst	#status_platform_bit,ost_status(a0) ; is Sonic standing on the trapdoor?
-		beq.s	@display	; if not, branch
+		btst	#status_platform_bit,ost_status(a0)	; is Sonic standing on the trapdoor?
+		beq.s	@display				; if not, branch
 		lea	(v_ost_player).w,a1
 		bclr	#status_platform_bit,ost_status(a1)
 		bclr	#status_platform_bit,ost_status(a0)
@@ -90,14 +90,14 @@ Spin_Trapdoor:	; Routine 2
 ; ===========================================================================
 
 Spin_Spinner:	; Routine 4
-		move.w	(v_frame_counter).w,d0 ; read frame counter
-		and.w	ost_spin_sync(a0),d0 ; apply bitmask ($3F or $7F)
-		bne.s	@delay		; branch if not 0
-		move.b	#1,ost_spin_flag(a0) ; set flag (occurs every 64 or 128 frames)
+		move.w	(v_frame_counter).w,d0			; read frame counter
+		and.w	ost_spin_sync(a0),d0			; apply bitmask ($3F or $7F)
+		bne.s	@delay					; branch if not 0
+		move.b	#1,ost_spin_flag(a0)			; set flag (occurs every 64 or 128 frames)
 
 	@delay:
-		tst.b	ost_spin_flag(a0) ; is flag set?
-		beq.s	@animate	; if not, branch
+		tst.b	ost_spin_flag(a0)			; is flag set?
+		beq.s	@animate				; if not, branch
 		subq.w	#1,ost_spin_wait_time(a0)
 		bpl.s	@animate
 		move.w	ost_spin_wait_master(a0),ost_spin_wait_time(a0)
@@ -107,8 +107,8 @@ Spin_Spinner:	; Routine 4
 	@animate:
 		lea	(Ani_Spin).l,a1
 		jsr	(AnimateSprite).l
-		tst.b	ost_frame(a0)	; check	if frame number	0 is displayed
-		bne.s	@notsolid2	; if not, branch
+		tst.b	ost_frame(a0)				; check	if frame number	0 is displayed
+		bne.s	@notsolid2				; if not, branch
 		move.w	#$1B,d1
 		move.w	#7,d2
 		move.w	d2,d3

@@ -10,11 +10,11 @@ DynamicLevelEvents:
 		move.b	(v_zone).w,d0
 		add.w	d0,d0
 		move.w	DLE_Index(pc,d0.w),d0
-		jsr	DLE_Index(pc,d0.w) ; run level-specific events
+		jsr	DLE_Index(pc,d0.w)			; run level-specific events
 		moveq	#2,d1
 		move.w	(v_boundary_bottom_next).w,d0
-		sub.w	(v_boundary_bottom).w,d0 ; has lower level boundary changed recently?
-		beq.s	DLE_NoChg	; if not, branch
+		sub.w	(v_boundary_bottom).w,d0		; has lower level boundary changed recently?
+		beq.s	DLE_NoChg				; if not, branch
 		bcc.s	loc_6DAC
 
 		neg.w	d1
@@ -80,10 +80,10 @@ DLE_GHZx:	index *
 ; ===========================================================================
 
 DLE_GHZ1:
-		move.w	#$300,(v_boundary_bottom_next).w ; set lower y-boundary
-		cmpi.w	#$1780,(v_camera_x_pos).w ; has the camera reached $1780 on x-axis?
-		bcs.s	locret_6E08	; if not, branch
-		move.w	#$400,(v_boundary_bottom_next).w ; set lower y-boundary
+		move.w	#$300,(v_boundary_bottom_next).w	; set lower y-boundary
+		cmpi.w	#$1780,(v_camera_x_pos).w		; has the camera reached $1780 on x-axis?
+		bcs.s	locret_6E08				; if not, branch
+		move.w	#$400,(v_boundary_bottom_next).w	; set lower y-boundary
 
 locret_6E08:
 		rts	
@@ -156,16 +156,16 @@ loc_6EB0:
 		bcs.s	locret_6EE8
 		bsr.w	FindFreeObj
 		bne.s	loc_6ED0
-		move.b	#id_BossGreenHill,0(a1) ; load GHZ boss	object
+		move.b	#id_BossGreenHill,0(a1)			; load GHZ boss	object
 		move.w	#$2A60,ost_x_pos(a1)
 		move.w	#$280,ost_y_pos(a1)
 
 loc_6ED0:
-		play.w	0, bsr.w, mus_Boss	; play boss music
-		move.b	#1,(f_boss_boundary).w ; lock screen
+		play.w	0, bsr.w, mus_Boss			; play boss music
+		move.b	#1,(f_boss_boundary).w			; lock screen
 		addq.b	#2,(v_dle_routine).w
 		moveq	#id_PLC_Boss,d0
-		bra.w	AddPLC		; load boss patterns
+		bra.w	AddPLC					; load boss patterns
 ; ===========================================================================
 
 locret_6EE8:
@@ -199,13 +199,13 @@ DLE_LZ12:
 ; ===========================================================================
 
 DLE_LZ3:
-		tst.b	(v_button_state+$F).w	; has switch $F	been pressed?
-		beq.s	loc_6F28	; if not, branch
+		tst.b	(v_button_state+$F).w			; has switch $F	been pressed?
+		beq.s	loc_6F28				; if not, branch
 		lea	(v_level_layout+$106).w,a1
 		cmpi.b	#7,(a1)
 		beq.s	loc_6F28
-		move.b	#7,(a1)		; modify level layout
-		play.w	1, bsr.w, sfx_Rumbling		; play rumbling sound
+		move.b	#7,(a1)					; modify level layout
+		play.w	1, bsr.w, sfx_Rumbling			; play rumbling sound
 
 loc_6F28:
 		tst.b	(v_dle_routine).w
@@ -216,14 +216,14 @@ loc_6F28:
 		bcc.s	locret_6F62
 		bsr.w	FindFreeObj
 		bne.s	loc_6F4A
-		move.b	#id_BossLabyrinth,0(a1) ; load LZ boss object
+		move.b	#id_BossLabyrinth,0(a1)			; load LZ boss object
 
 loc_6F4A:
-		play.w	0, bsr.w, mus_Boss	; play boss music
-		move.b	#1,(f_boss_boundary).w ; lock screen
+		play.w	0, bsr.w, mus_Boss			; play boss music
+		move.b	#1,(f_boss_boundary).w			; lock screen
 		addq.b	#2,(v_dle_routine).w
 		moveq	#id_PLC_Boss,d0
-		bra.w	AddPLC		; load boss patterns
+		bra.w	AddPLC					; load boss patterns
 ; ===========================================================================
 
 locret_6F62:
@@ -237,12 +237,12 @@ locret_6F64:
 DLE_SBZ3:
 		cmpi.w	#$D00,(v_camera_x_pos).w
 		bcs.s	locret_6F8C
-		cmpi.w	#$18,(v_ost_player+ost_y_pos).w ; has Sonic reached the top of the level?
-		bcc.s	locret_6F8C	; if not, branch
+		cmpi.w	#$18,(v_ost_player+ost_y_pos).w		; has Sonic reached the top of the level?
+		bcc.s	locret_6F8C				; if not, branch
 		clr.b	(v_last_lamppost).w
-		move.w	#1,(f_restart).w ; restart level
-		move.w	#(id_SBZ<<8)+2,(v_zone).w ; set level number to 0502 (FZ)
-		move.b	#1,(v_lock_multi).w ; freeze Sonic
+		move.w	#1,(f_restart).w			; restart level
+		move.w	#(id_SBZ<<8)+2,(v_zone).w		; set level number to 0502 (FZ)
+		move.b	#1,(v_lock_multi).w			; freeze Sonic
 
 locret_6F8C:
 		rts	
@@ -399,16 +399,16 @@ DLE_MZ3boss:
 		bcs.s	locret_70E8
 		bsr.w	FindFreeObj
 		bne.s	loc_70D0
-		move.b	#id_BossMarble,0(a1) ; load MZ boss object
+		move.b	#id_BossMarble,0(a1)			; load MZ boss object
 		move.w	#$19F0,ost_x_pos(a1)
 		move.w	#$22C,ost_y_pos(a1)
 
 loc_70D0:
-		play.w	0, bsr.w, mus_Boss	; play boss music
-		move.b	#1,(f_boss_boundary).w ; lock screen
+		play.w	0, bsr.w, mus_Boss			; play boss music
+		move.b	#1,(f_boss_boundary).w			; lock screen
 		addq.b	#2,(v_dle_routine).w
 		moveq	#id_PLC_Boss,d0
-		bra.w	AddPLC		; load boss patterns
+		bra.w	AddPLC					; load boss patterns
 ; ===========================================================================
 
 locret_70E8:
@@ -467,14 +467,14 @@ DLE_SLZ3boss:
 		bcs.s	locret_715C
 		bsr.w	FindFreeObj
 		bne.s	loc_7144
-		move.b	#id_BossStarLight,(a1) ; load SLZ boss object
+		move.b	#id_BossStarLight,(a1)			; load SLZ boss object
 
 loc_7144:
-		play.w	0, bsr.w, mus_Boss	; play boss music
-		move.b	#1,(f_boss_boundary).w ; lock screen
+		play.w	0, bsr.w, mus_Boss			; play boss music
+		move.b	#1,(f_boss_boundary).w			; lock screen
 		addq.b	#2,(v_dle_routine).w
 		moveq	#id_PLC_Boss,d0
-		bra.w	AddPLC		; load boss patterns
+		bra.w	AddPLC					; load boss patterns
 ; ===========================================================================
 
 locret_715C:
@@ -537,7 +537,7 @@ DLE_SYZ3main:
 		bcs.s	locret_71CE
 		bsr.w	FindFreeObj
 		bne.s	locret_71CE
-		move.b	#id_BossBlock,(a1) ; load blocks that boss picks up
+		move.b	#id_BossBlock,(a1)			; load blocks that boss picks up
 		addq.b	#2,(v_dle_routine).w
 
 locret_71CE:
@@ -550,14 +550,14 @@ DLE_SYZ3boss:
 		move.w	#$4CC,(v_boundary_bottom_next).w
 		bsr.w	FindFreeObj
 		bne.s	loc_71EC
-		move.b	#id_BossSpringYard,(a1) ; load SYZ boss	object
+		move.b	#id_BossSpringYard,(a1)			; load SYZ boss	object
 		addq.b	#2,(v_dle_routine).w
 
 loc_71EC:
-		play.w	0, bsr.w, mus_Boss	; play boss music
-		move.b	#1,(f_boss_boundary).w ; lock screen
+		play.w	0, bsr.w, mus_Boss			; play boss music
+		move.b	#1,(f_boss_boundary).w			; lock screen
 		moveq	#id_PLC_Boss,d0
-		bra.w	AddPLC		; load boss patterns
+		bra.w	AddPLC					; load boss patterns
 ; ===========================================================================
 
 locret_7200:
@@ -629,10 +629,10 @@ DLE_SBZ2boss:
 		bcs.s	locret_7298
 		bsr.w	FindFreeObj
 		bne.s	locret_7298
-		move.b	#id_FalseFloor,(a1) ; load collapsing block object
+		move.b	#id_FalseFloor,(a1)			; load collapsing block object
 		addq.b	#2,(v_dle_routine).w
 		moveq	#id_PLC_EggmanSBZ2,d0
-		bra.w	AddPLC		; load SBZ2 Eggman patterns
+		bra.w	AddPLC					; load SBZ2 Eggman patterns
 ; ===========================================================================
 
 locret_7298:
@@ -644,11 +644,11 @@ DLE_SBZ2boss2:
 		bcs.s	loc_72B6
 		bsr.w	FindFreeObj
 		bne.s	loc_72B0
-		move.b	#id_ScrapEggman,(a1) ; load SBZ2 Eggman object
+		move.b	#id_ScrapEggman,(a1)			; load SBZ2 Eggman object
 		addq.b	#2,(v_dle_routine).w
 
 loc_72B0:
-		move.b	#1,(f_boss_boundary).w ; lock screen
+		move.b	#1,(f_boss_boundary).w			; lock screen
 
 loc_72B6:
 		bra.s	loc_72C2
@@ -684,7 +684,7 @@ DLE_FZmain:
 		bcs.s	loc_72F4
 		addq.b	#2,(v_dle_routine).w
 		moveq	#id_PLC_FZBoss,d0
-		bsr.w	AddPLC		; load FZ boss patterns
+		bsr.w	AddPLC					; load FZ boss patterns
 
 loc_72F4:
 		bra.s	loc_72C2
@@ -695,9 +695,9 @@ DLE_FZboss:
 		bcs.s	loc_7312
 		bsr.w	FindFreeObj
 		bne.s	loc_7312
-		move.b	#id_BossFinal,(a1) ; load FZ boss object
+		move.b	#id_BossFinal,(a1)			; load FZ boss object
 		addq.b	#2,(v_dle_routine).w
-		move.b	#1,(f_boss_boundary).w ; lock screen
+		move.b	#1,(f_boss_boundary).w			; lock screen
 
 loc_7312:
 		bra.s	loc_72C2

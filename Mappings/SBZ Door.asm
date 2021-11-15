@@ -13,7 +13,7 @@ Map_ADoor:	index *
 		ptr frame_autodoor_open
 		
 frame_autodoor_closed:
-		spritemap			; door closed
+		spritemap					; door closed
 		piece	-8, -$20, 2x4, 0, xflip
 		piece	-8, 0, 2x4, 0, xflip
 		endsprite
@@ -61,7 +61,7 @@ frame_autodoor_07:
 		endsprite
 		
 frame_autodoor_open:
-		spritemap			; door fully open
+		spritemap					; door fully open
 		piece	-8, -$40, 2x4, 0, xflip
 		piece	-8, $20, 2x4, 0, xflip
 		endsprite

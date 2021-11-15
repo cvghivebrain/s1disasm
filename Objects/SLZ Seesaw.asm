@@ -26,11 +26,11 @@ See_Index:	index *,,2
 		ptr See_MoveSpike
 		ptr See_SpikeFall
 
-ost_seesaw_x_start:	equ $30	; original x-axis position (2 bytes)
-ost_seesaw_y_start:	equ $34	; original y-axis position (2 bytes)
-ost_seesaw_impact:	equ $38	; speed Sonic hits the seesaw (2 bytes)
-ost_seesaw_state:	equ $3A	; 0/2 = tilted; 1/3 = flat
-ost_seesaw_parent:	equ $3C	; address of OST of parent object (4 bytes)
+ost_seesaw_x_start:	equ $30					; original x-axis position (2 bytes)
+ost_seesaw_y_start:	equ $34					; original y-axis position (2 bytes)
+ost_seesaw_impact:	equ $38					; speed Sonic hits the seesaw (2 bytes)
+ost_seesaw_state:	equ $3A					; 0/2 = tilted; 1/3 = flat
+ost_seesaw_parent:	equ $3C					; address of OST of parent object (4 bytes)
 ; ===========================================================================
 
 See_Main:	; Routine 0
@@ -41,22 +41,22 @@ See_Main:	; Routine 0
 		move.b	#4,ost_priority(a0)
 		move.b	#$30,ost_actwidth(a0)
 		move.w	ost_x_pos(a0),ost_seesaw_x_start(a0)
-		tst.b	ost_subtype(a0)	; is object type 00 ?
-		bne.s	@noball		; if not, branch
+		tst.b	ost_subtype(a0)				; is object type 00 ?
+		bne.s	@noball					; if not, branch
 
 		bsr.w	FindNextFreeObj
 		bne.s	@noball
-		move.b	#id_Seesaw,0(a1) ; load spikeball object
-		addq.b	#6,ost_routine(a1) ; use See_Spikeball routine
+		move.b	#id_Seesaw,0(a1)			; load spikeball object
+		addq.b	#6,ost_routine(a1)			; use See_Spikeball routine
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	ost_status(a0),ost_status(a1)
 		move.l	a0,ost_seesaw_parent(a1)
 
 	@noball:
-		btst	#status_xflip_bit,ost_status(a0) ; is seesaw flipped?
-		beq.s	@noflip		; if not, branch
-		move.b	#2,ost_frame(a0) ; use different frame
+		btst	#status_xflip_bit,ost_status(a0)	; is seesaw flipped?
+		beq.s	@noflip					; if not, branch
+		move.b	#2,ost_frame(a0)			; use different frame
 
 	@noflip:
 		move.b	ost_frame(a0),ost_seesaw_state(a0)
@@ -65,8 +65,8 @@ See_Slope:	; Routine 2
 		move.b	ost_seesaw_state(a0),d1
 		bsr.w	See_ChgFrame
 		lea	(See_DataSlope).l,a2
-		btst	#0,ost_frame(a0) ; is seesaw flat?
-		beq.s	@notflat	; if not, branch
+		btst	#0,ost_frame(a0)			; is seesaw flat?
+		beq.s	@notflat				; if not, branch
 		lea	(See_DataFlat).l,a2
 
 	@notflat:
@@ -80,8 +80,8 @@ See_Slope:	; Routine 2
 See_Slope2:	; Routine 4
 		bsr.w	See_ChkSide
 		lea	(See_DataSlope).l,a2
-		btst	#0,ost_frame(a0) ; is seesaw flat?
-		beq.s	@notflat	; if not, branch
+		btst	#0,ost_frame(a0)			; is seesaw flat?
+		beq.s	@notflat				; if not, branch
 		lea	(See_DataFlat).l,a2
 
 	@notflat:
@@ -97,8 +97,8 @@ See_ChkSide:
 		moveq	#2,d1
 		lea	(v_ost_player).w,a1
 		move.w	ost_x_pos(a0),d0
-		sub.w	ost_x_pos(a1),d0 ; is Sonic on the left side of the seesaw?
-		bcc.s	@leftside	; if yes, branch
+		sub.w	ost_x_pos(a1),d0			; is Sonic on the left side of the seesaw?
+		bcc.s	@leftside				; if yes, branch
 		neg.w	d0
 		moveq	#0,d1
 
@@ -109,8 +109,8 @@ See_ChkSide:
 
 See_ChgFrame:
 		move.b	ost_frame(a0),d0
-		cmp.b	d1,d0		; does frame need to change?
-		beq.s	@noflip		; if not, branch
+		cmp.b	d1,d0					; does frame need to change?
+		beq.s	@noflip					; if not, branch
 		bcc.s	@loc_11772
 		addq.b	#2,d0
 
@@ -139,9 +139,9 @@ See_Spikeball:	; Routine 6
 		addi.w	#$28,ost_x_pos(a0)
 		move.w	ost_y_pos(a0),ost_seesaw_y_start(a0)
 		move.b	#id_frame_seesaw_silver,ost_frame(a0)
-		btst	#status_xflip_bit,ost_status(a0) ; is seesaw flipped?
-		beq.s	See_MoveSpike	; if not, branch
-		subi.w	#$50,ost_x_pos(a0) ; move spikeball to the other side
+		btst	#status_xflip_bit,ost_status(a0)	; is seesaw flipped?
+		beq.s	See_MoveSpike				; if not, branch
+		subi.w	#$50,ost_x_pos(a0)			; move spikeball to the other side
 		move.b	#2,ost_seesaw_state(a0)
 
 See_MoveSpike:	; Routine 8
@@ -202,8 +202,8 @@ loc_1185C:
 ; ===========================================================================
 
 See_SpikeFall:	; Routine $A
-		tst.w	ost_y_vel(a0)	; is spikeball falling down?
-		bpl.s	loc_1189A	; if yes, branch
+		tst.w	ost_y_vel(a0)				; is spikeball falling down?
+		bpl.s	loc_1189A				; if yes, branch
 		bsr.w	ObjectFall
 		move.w	ost_seesaw_y_start(a0),d0
 		subi.w	#$2F,d0
@@ -253,9 +253,9 @@ See_Spring:
 		bset	#status_air_bit,ost_status(a2)
 		bclr	#status_platform_bit,ost_status(a2)
 		clr.b	ost_sonic_jump(a2)
-		move.b	#id_Spring,ost_anim(a2) ; change Sonic's animation to "spring" ($10)
+		move.b	#id_Spring,ost_anim(a2)			; change Sonic's animation to "spring" ($10)
 		move.b	#2,ost_routine(a2)
-		play.w	1, jsr, sfx_Spring		; play spring sound
+		play.w	1, jsr, sfx_Spring			; play spring sound
 
 loc_1192C:
 		clr.w	ost_x_vel(a0)

@@ -15,28 +15,28 @@ Map_Newt:	index *
 		ptr frame_newt_blank
 		
 frame_newt_trans:
-		spritemap			; partially visible
+		spritemap					; partially visible
 		piece	-$14, -$14, 4x2, 0
 		piece	$C, -$C, 1x1, 8
 		piece	-$C, -4, 4x3, 9
 		endsprite
 		
 frame_newt_norm:
-		spritemap			; visible
+		spritemap					; visible
 		piece	-$14, -$14, 2x3, $15
 		piece	-4, -$14, 3x2, $1B
 		piece	-4, -4, 3x3, $21
 		endsprite
 		
 frame_newt_firing:
-		spritemap			; open mouth, firing
+		spritemap					; open mouth, firing
 		piece	-$14, -$14, 2x3, $2A
 		piece	-4, -$14, 3x2, $1B
 		piece	-4, -4, 3x3, $21
 		endsprite
 		
 frame_newt_drop1:
-		spritemap			; dropping
+		spritemap					; dropping
 		piece	-$14, -$14, 2x3, $30
 		piece	-4, -$14, 3x2, $1B
 		piece	-4, -4, 3x2, $36
@@ -57,7 +57,7 @@ frame_newt_drop3:
 		endsprite
 		
 frame_newt_fly1a:
-		spritemap			; flying
+		spritemap					; flying
 		piece	-$14, -8, 4x2, $48
 		piece	$C, -8, 1x2, $50
 		piece	$14, -2, 1x1, $52

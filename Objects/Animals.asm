@@ -35,8 +35,8 @@ Anml_VarIndex:	dc.b 0,	5, 2, 3, 6, 3, 4, 5, 4,	1, 0, 1
 
 Anml_Variables:	dc.w $FE00, $FC00
 		dc.l Map_Animal1
-		dc.w $FE00, $FD00	; horizontal speed, vertical speed
-		dc.l Map_Animal2	; mappings address
+		dc.w $FE00, $FD00				; horizontal speed, vertical speed
+		dc.l Map_Animal2				; mappings address
 		dc.w $FE80, $FD00
 		dc.l Map_Animal1
 		dc.w $FEC0, $FE80
@@ -59,28 +59,28 @@ Anml_EndMap:	dc.l Map_Animal2, Map_Animal2, Map_Animal2, Map_Animal1, Map_Animal
 Anml_EndVram:	dc.w $5A5, $5A5, $5A5, $553, $553, $573, $573, $585, $593
 		dc.w $565, $5B3
 
-ost_animal_direction:	equ $29	; animal goes left/right
-ost_animal_type:	equ $30	; type of animal (0-$B)
-ost_animal_x_vel:	equ $32	; horizontal speed (2 bytes)
-ost_animal_y_vel:	equ $34	; vertical speed (2 bytes)
-ost_animal_prison_num:	equ $36	; id num for animals in prison capsule, lets them jummp out 1 at a time (2 bytes)
+ost_animal_direction:	equ $29					; animal goes left/right
+ost_animal_type:	equ $30					; type of animal (0-$B)
+ost_animal_x_vel:	equ $32					; horizontal speed (2 bytes)
+ost_animal_y_vel:	equ $34					; vertical speed (2 bytes)
+ost_animal_prison_num:	equ $36					; id num for animals in prison capsule, lets them jummp out 1 at a time (2 bytes)
 ; ===========================================================================
 
 Anml_Ending:	; Routine 0
-		tst.b	ost_subtype(a0)	; did animal come from a destroyed enemy?
-		beq.w	Anml_FromEnemy	; if yes, branch
+		tst.b	ost_subtype(a0)				; did animal come from a destroyed enemy?
+		beq.w	Anml_FromEnemy				; if yes, branch
 		moveq	#0,d0
-		move.b	ost_subtype(a0),d0 ; move object type to d0
-		add.w	d0,d0		; multiply d0 by 2
-		move.b	d0,ost_routine(a0) ; move d0 to routine counter
+		move.b	ost_subtype(a0),d0			; move object type to d0
+		add.w	d0,d0					; multiply d0 by 2
+		move.b	d0,ost_routine(a0)			; move d0 to routine counter
 		subi.w	#$14,d0
 		move.w	Anml_EndVram(pc,d0.w),ost_tile(a0)
 		add.w	d0,d0
 		move.l	Anml_EndMap(pc,d0.w),ost_mappings(a0)
 		lea	Anml_EndSpeed(pc),a1
-		move.w	(a1,d0.w),ost_animal_x_vel(a0) ; load horizontal speed
+		move.w	(a1,d0.w),ost_animal_x_vel(a0)		; load horizontal speed
 		move.w	(a1,d0.w),ost_x_vel(a0)
-		move.w	2(a1,d0.w),ost_animal_y_vel(a0) ; load vertical speed
+		move.w	2(a1,d0.w),ost_animal_y_vel(a0)		; load vertical speed
 		move.w	2(a1,d0.w),ost_y_vel(a0)
 		move.b	#$C,ost_height(a0)
 		move.b	#render_rel,ost_render(a0)
@@ -105,13 +105,13 @@ Anml_FromEnemy:
 		lsl.w	#3,d0
 		lea	Anml_Variables(pc),a1
 		adda.w	d0,a1
-		move.w	(a1)+,ost_animal_x_vel(a0) ; load horizontal speed
-		move.w	(a1)+,ost_animal_y_vel(a0) ; load vertical speed
-		move.l	(a1)+,ost_mappings(a0) ; load mappings
-		move.w	#tile_Nem_Rabbit,ost_tile(a0) ; VRAM setting for 1st animal
-		btst	#0,ost_animal_type(a0) ; is 1st animal used?
-		beq.s	loc_90C0	; if yes, branch
-		move.w	#tile_Nem_Flicky,ost_tile(a0) ; VRAM setting for 2nd animal
+		move.w	(a1)+,ost_animal_x_vel(a0)		; load horizontal speed
+		move.w	(a1)+,ost_animal_y_vel(a0)		; load vertical speed
+		move.l	(a1)+,ost_mappings(a0)			; load mappings
+		move.w	#tile_Nem_Rabbit,ost_tile(a0)		; VRAM setting for 1st animal
+		btst	#0,ost_animal_type(a0)			; is 1st animal used?
+		beq.s	loc_90C0				; if yes, branch
+		move.w	#tile_Nem_Flicky,ost_tile(a0)		; VRAM setting for 2nd animal
 
 loc_90C0:
 		move.b	#$C,ost_height(a0)
@@ -126,7 +126,7 @@ loc_90C0:
 		bne.s	loc_911C
 		bsr.w	FindFreeObj
 		bne.s	Anml_Display
-		move.b	#id_Points,0(a1) ; load points object
+		move.b	#id_Points,0(a1)			; load points object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.w	ost_enemy_combo(a0),d0

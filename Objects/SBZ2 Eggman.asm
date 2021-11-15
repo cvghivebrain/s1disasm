@@ -16,8 +16,8 @@ SEgg_Index:	index *,,2
 SEgg_ObjData:	dc.b id_SEgg_Eggman, id_ani_eggman_stand, 3	; routine number, animation, priority
 		dc.b id_SEgg_Switch, 0, 3
 
-ost_eggman_parent:	equ $34	; address of OST of parent object (4 bytes)
-ost_eggman_wait_time:	equ $3C	; time delay between events (2 bytes)
+ost_eggman_parent:	equ $34					; address of OST of parent object (4 bytes)
+ost_eggman_wait_time:	equ $3C					; time delay between events (2 bytes)
 ; ===========================================================================
 
 SEgg_Main:	; Routine 0
@@ -39,7 +39,7 @@ SEgg_Main:	; Routine 0
 		jsr	(FindNextFreeObj).l
 		bne.s	SEgg_Eggman
 		move.l	a0,ost_eggman_parent(a1)
-		move.b	#id_ScrapEggman,(a1) ; load switch object
+		move.b	#id_ScrapEggman,(a1)			; load switch object
 		move.w	#$2130,ost_x_pos(a1)
 		move.w	#$5BC,ost_y_pos(a1)
 		clr.b	ost_routine2(a0)
@@ -72,10 +72,10 @@ SEgg_EggIndex:	index *
 SEgg_ChkSonic:
 		move.w	ost_x_pos(a0),d0
 		sub.w	(v_ost_player+ost_x_pos).w,d0
-		cmpi.w	#128,d0		; is Sonic within 128 pixels of	Eggman?
-		bcc.s	SEgg_Move	; if not, branch
+		cmpi.w	#128,d0					; is Sonic within 128 pixels of	Eggman?
+		bcc.s	SEgg_Move				; if not, branch
 		addq.b	#2,ost_routine2(a0)
-		move.w	#180,ost_eggman_wait_time(a0) ; set delay to 3 seconds
+		move.w	#180,ost_eggman_wait_time(a0)		; set delay to 3 seconds
 		move.b	#id_ani_eggman_laugh,ost_anim(a0)
 
 SEgg_Move:
@@ -83,8 +83,8 @@ SEgg_Move:
 ; ===========================================================================
 
 SEgg_PreLeap:
-		subq.w	#1,ost_eggman_wait_time(a0) ; subtract 1 from time delay
-		bne.s	loc_19954	; if time remains, branch
+		subq.w	#1,ost_eggman_wait_time(a0)		; subtract 1 from time delay
+		bne.s	loc_19954				; if time remains, branch
 		addq.b	#2,ost_routine2(a0)
 		move.b	#id_ani_eggman_jump1,ost_anim(a0)
 		addq.w	#4,ost_y_pos(a0)
@@ -98,7 +98,7 @@ SEgg_Leap:
 		subq.w	#1,ost_eggman_wait_time(a0)
 		bgt.s	loc_199D0
 		bne.s	loc_1996A
-		move.w	#-$FC,ost_x_vel(a0) ; make Eggman leap
+		move.w	#-$FC,ost_x_vel(a0)			; make Eggman leap
 		move.w	#-$3C0,ost_y_vel(a0)
 
 loc_1996A:
@@ -122,17 +122,17 @@ SEgg_FindBlocks:
 		move.w	ost_x_vel(a0),d0
 		or.w	ost_y_vel(a0),d0
 		bne.s	loc_199D0
-		lea	(v_ost_all).w,a1 ; start at the first object RAM
+		lea	(v_ost_all).w,a1			; start at the first object RAM
 		moveq	#$3E,d0
 		moveq	#$40,d1
 
 SEgg_FindLoop:	
-		adda.w	d1,a1		; jump to next object RAM
-		cmpi.b	#id_FalseFloor,(a1) ; is object a block? (object $83)
-		dbeq	d0,SEgg_FindLoop ; if not, repeat (max $3E times)
+		adda.w	d1,a1					; jump to next object RAM
+		cmpi.b	#id_FalseFloor,(a1)			; is object a block? (object $83)
+		dbeq	d0,SEgg_FindLoop			; if not, repeat (max $3E times)
 
 		bne.s	loc_199D0
-		move.w	#$474F,ost_subtype(a1) ; set block to disintegrate
+		move.w	#$474F,ost_subtype(a1)			; set block to disintegrate
 		addq.b	#2,ost_routine2(a0)
 		move.b	#id_ani_eggman_laugh,ost_anim(a0)
 

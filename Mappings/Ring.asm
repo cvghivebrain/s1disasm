@@ -15,42 +15,42 @@ Map_Ring:	index *
 		endc
 		
 frame_ring_front:
-		spritemap		; ring front
+		spritemap					; ring front
 		piece	-8, -8, 2x2, 0
 		endsprite
 		
 frame_ring_angle1:
-		spritemap		; ring angle
+		spritemap					; ring angle
 		piece	-8, -8, 2x2, 4
 		endsprite
 		
 frame_ring_edge:
-		spritemap		; ring perpendicular
+		spritemap					; ring perpendicular
 		piece	-4, -8, 1x2, 8
 		endsprite
 		
 frame_ring_angle2:
-		spritemap		; ring angle
+		spritemap					; ring angle
 		piece	-8, -8, 2x2, 4, xflip
 		endsprite
 		
 frame_ring_sparkle1:
-		spritemap		; sparkle
+		spritemap					; sparkle
 		piece	-8, -8, 2x2, $A
 		endsprite
 		
 frame_ring_sparkle2:
-		spritemap		; sparkle
+		spritemap					; sparkle
 		piece	-8, -8, 2x2, $A, xflip, yflip
 		endsprite
 		
 frame_ring_sparkle3:
-		spritemap		;sparkle
+		spritemap					;sparkle
 		piece	-8, -8, 2x2, $A, xflip
 		endsprite
 		
 frame_ring_sparkle4:
-		spritemap		; sparkle
+		spritemap					; sparkle
 		piece	-8, -8, 2x2, $A, yflip
 		endsprite
 		

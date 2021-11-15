@@ -14,9 +14,9 @@ Bom_Index:	index *,,2
 		ptr Bom_Display
 		ptr Bom_End
 
-ost_bomb_fuse_time:	equ $30	; time left on fuse - also used for change direction timer (2 bytes)
-ost_bomb_y_start:	equ $34	; original y-axis position (2 bytes)
-ost_bomb_parent:	equ $3C	; address of OST of parent object (4 bytes)
+ost_bomb_fuse_time:	equ $30					; time left on fuse - also used for change direction timer (2 bytes)
+ost_bomb_y_start:	equ $34					; original y-axis position (2 bytes)
+ost_bomb_parent:	equ $3C					; address of OST of parent object (4 bytes)
 ; ===========================================================================
 
 Bom_Main:	; Routine 0
@@ -53,15 +53,15 @@ Bom_Action:	; Routine 2
 
 @walk:
 		bsr.w	@chksonic
-		subq.w	#1,ost_bomb_fuse_time(a0) ; subtract 1 from time delay
-		bpl.s	@noflip		; if time remains, branch
-		addq.b	#2,ost_routine2(a0) ; goto @wait
-		move.w	#1535,ost_bomb_fuse_time(a0) ; set time delay to 25.5 seconds
+		subq.w	#1,ost_bomb_fuse_time(a0)		; subtract 1 from time delay
+		bpl.s	@noflip					; if time remains, branch
+		addq.b	#2,ost_routine2(a0)			; goto @wait
+		move.w	#1535,ost_bomb_fuse_time(a0)		; set time delay to 25.5 seconds
 		move.w	#$10,ost_x_vel(a0)
-		move.b	#id_ani_bomb_walk,ost_anim(a0) ; use walking animation
+		move.b	#id_ani_bomb_walk,ost_anim(a0)		; use walking animation
 		bchg	#status_xflip_bit,ost_status(a0)
 		beq.s	@noflip
-		neg.w	ost_x_vel(a0)	; change direction
+		neg.w	ost_x_vel(a0)				; change direction
 
 	@noflip:
 		rts	
@@ -69,24 +69,24 @@ Bom_Action:	; Routine 2
 
 @wait:
 		bsr.w	@chksonic
-		subq.w	#1,ost_bomb_fuse_time(a0) ; subtract 1 from time delay
-		bmi.s	@stopwalking	; if time expires, branch
+		subq.w	#1,ost_bomb_fuse_time(a0)		; subtract 1 from time delay
+		bmi.s	@stopwalking				; if time expires, branch
 		bsr.w	SpeedToPos
 		rts	
 ; ===========================================================================
 
 	@stopwalking:
 		subq.b	#2,ost_routine2(a0)
-		move.w	#179,ost_bomb_fuse_time(a0) ; set time delay to 3 seconds
-		clr.w	ost_x_vel(a0)	; stop walking
-		move.b	#id_ani_bomb_stand,ost_anim(a0)	; use waiting animation
+		move.w	#179,ost_bomb_fuse_time(a0)		; set time delay to 3 seconds
+		clr.w	ost_x_vel(a0)				; stop walking
+		move.b	#id_ani_bomb_stand,ost_anim(a0)		; use waiting animation
 		rts	
 ; ===========================================================================
 
 @explode:
-		subq.w	#1,ost_bomb_fuse_time(a0) ; subtract 1 from time delay
-		bpl.s	@noexplode	; if time remains, branch
-		move.b	#id_ExplosionBomb,0(a0) ; change bomb into an explosion
+		subq.w	#1,ost_bomb_fuse_time(a0)		; subtract 1 from time delay
+		bpl.s	@noexplode				; if time remains, branch
+		move.b	#id_ExplosionBomb,0(a0)			; change bomb into an explosion
 		move.b	#0,ost_routine(a0)
 
 	@noexplode:
@@ -100,8 +100,8 @@ Bom_Action:	; Routine 2
 		neg.w	d0
 
 	@isleft:
-		cmpi.w	#$60,d0		; is Sonic within $60 pixels?
-		bcc.s	@outofrange	; if not, branch
+		cmpi.w	#$60,d0					; is Sonic within $60 pixels?
+		bcc.s	@outofrange				; if not, branch
 		move.w	(v_ost_player+ost_y_pos).w,d0
 		sub.w	ost_y_pos(a0),d0
 		bcc.s	@isabove
@@ -114,12 +114,12 @@ Bom_Action:	; Routine 2
 		bne.s	@outofrange
 
 		move.b	#4,ost_routine2(a0)
-		move.w	#143,ost_bomb_fuse_time(a0) ; set fuse time
+		move.w	#143,ost_bomb_fuse_time(a0)		; set fuse time
 		clr.w	ost_x_vel(a0)
-		move.b	#id_ani_bomb_active,ost_anim(a0) ; use activated animation
+		move.b	#id_ani_bomb_active,ost_anim(a0)	; use activated animation
 		bsr.w	FindNextFreeObj
 		bne.s	@outofrange
-		move.b	#id_Bomb,0(a1)	; load fuse object
+		move.b	#id_Bomb,0(a1)				; load fuse object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.w	ost_y_pos(a0),ost_bomb_y_start(a1)
@@ -127,12 +127,12 @@ Bom_Action:	; Routine 2
 		move.b	#id_Bom_Display,ost_subtype(a1)
 		move.b	#id_ani_bomb_fuse,ost_anim(a1)
 		move.w	#$10,ost_y_vel(a1)
-		btst	#status_yflip_bit,ost_status(a0) ; is bomb upside-down?
-		beq.s	@normal		; if not, branch
-		neg.w	ost_y_vel(a1)	; reverse direction for fuse
+		btst	#status_yflip_bit,ost_status(a0)	; is bomb upside-down?
+		beq.s	@normal					; if not, branch
+		neg.w	ost_y_vel(a1)				; reverse direction for fuse
 
 	@normal:
-		move.w	#143,ost_bomb_fuse_time(a1) ; set fuse time
+		move.w	#143,ost_bomb_fuse_time(a1)		; set fuse time
 		move.l	a0,ost_bomb_parent(a1)
 
 @outofrange:
@@ -159,7 +159,7 @@ loc_11B7C:
 		move.w	ost_bomb_y_start(a0),ost_y_pos(a0)
 		moveq	#3,d1
 		movea.l	a0,a1
-		lea	(Bom_ShrSpeed).l,a2 ; load shrapnel speed data
+		lea	(Bom_ShrSpeed).l,a2			; load shrapnel speed data
 		bra.s	@makeshrapnel
 ; ===========================================================================
 
@@ -168,7 +168,7 @@ loc_11B7C:
 		bne.s	@fail
 
 @makeshrapnel:
-		move.b	#id_Bomb,0(a1)	; load shrapnel	object
+		move.b	#id_Bomb,0(a1)				; load shrapnel	object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	#id_Bom_End,ost_subtype(a1)
@@ -179,7 +179,7 @@ loc_11B7C:
 		bset	#render_onscreen_bit,ost_render(a1)
 
 	@fail:
-		dbf	d1,@loop	; repeat 3 more	times
+		dbf	d1,@loop				; repeat 3 more	times
 
 		move.b	#id_Bom_End,ost_routine(a0)
 

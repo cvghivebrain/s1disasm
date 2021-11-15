@@ -14,8 +14,8 @@ SpinC_Display:
 ; ===========================================================================
 
 loc_1629A:
-		cmpi.b	#2,(v_act).w	; check if act is 3
-		bne.s	SpinC_Act1or2	; if not, branch
+		cmpi.b	#2,(v_act).w				; check if act is 3
+		bne.s	SpinC_Act1or2				; if not, branch
 		cmpi.w	#-$80,d0
 		bcc.s	SpinC_Display
 
@@ -33,10 +33,10 @@ SpinC_Index:	index *,,2
 		ptr SpinC_Main
 		ptr loc_163D8
 
-ost_spinc_subtype_copy:	equ $2F	; copy of the initial subtype ($80/$81/etc.)
+ost_spinc_subtype_copy:	equ $2F					; copy of the initial subtype ($80/$81/etc.)
 
-ost_spinc_reverse:	equ $3B	; 1 = conveyors run backwards
-ost_spinc_corner_ptr:	equ $3C	; address of corner position data (4 bytes)
+ost_spinc_reverse:	equ $3B					; 1 = conveyors run backwards
+ost_spinc_corner_ptr:	equ $3C					; address of corner position data (4 bytes)
 ; ===========================================================================
 
 SpinC_Main:	; Routine 0
@@ -54,7 +54,7 @@ SpinC_Main:	; Routine 0
 		lsr.w	#3,d0
 		andi.w	#$1E,d0
 		lea	SpinC_Data(pc),a2
-		adda.w	(a2,d0.w),a2	; get address of corner data
+		adda.w	(a2,d0.w),a2				; get address of corner data
 		move.w	(a2)+,$39-1(a0)
 		move.w	(a2)+,$30(a0)
 		move.l	a2,ost_spinc_corner_ptr(a0)

@@ -12,8 +12,8 @@ Roll_Index:	index *,,2
 		ptr Roll_Main
 		ptr Roll_Action
 
-ost_roller_open_time:	equ $30	; time roller stays open for (2 bytes)
-ost_roller_mode:	equ $32	; +1 = roller has jumped; +$80 = roller has stopped
+ost_roller_open_time:	equ $30					; time roller stays open for (2 bytes)
+ost_roller_mode:	equ $32					; +1 = roller has jumped; +$80 = roller has stopped
 ; ===========================================================================
 
 Roll_Main:	; Routine 0
@@ -23,7 +23,7 @@ Roll_Main:	; Routine 0
 		bsr.w	FindFloorObj
 		tst.w	d1
 		bpl.s	locret_E052
-		add.w	d1,ost_y_pos(a0) ; match roller's position with the floor
+		add.w	d1,ost_y_pos(a0)			; match roller's position with the floor
 		move.w	#0,ost_y_vel(a0)
 		addq.b	#2,ost_routine(a0)
 		move.l	#Map_Roll,ost_mappings(a0)
@@ -75,11 +75,11 @@ Roll_RollChk:
 		move.w	(v_ost_player+ost_x_pos).w,d0
 		subi.w	#$100,d0
 		bcs.s	loc_E0D2
-		sub.w	ost_x_pos(a0),d0 ; check distance between Roller and Sonic
+		sub.w	ost_x_pos(a0),d0			; check distance between Roller and Sonic
 		bcs.s	loc_E0D2
 		addq.b	#4,ost_routine2(a0)
 		move.b	#id_ani_roll_roll,ost_anim(a0)
-		move.w	#$700,ost_x_vel(a0) ; move Roller horizontally
+		move.w	#$700,ost_x_vel(a0)			; move Roller horizontally
 		move.b	#id_col_14x14+id_col_hurt,ost_col_type(a0) ; make Roller invincible
 
 loc_E0D2:
@@ -121,7 +121,7 @@ Roll_Jump:
 		addq.b	#2,ost_routine2(a0)
 		bset	#0,ost_roller_mode(a0)
 		beq.s	locret_E12E
-		move.w	#-$600,ost_y_vel(a0) ; move Roller vertically
+		move.w	#-$600,ost_y_vel(a0)			; move Roller vertically
 
 locret_E12E:
 		rts	
@@ -134,7 +134,7 @@ Roll_MatchFloor:
 		bsr.w	FindFloorObj
 		tst.w	d1
 		bpl.s	locret_E150
-		add.w	d1,ost_y_pos(a0) ; match Roller's position with the floor
+		add.w	d1,ost_y_pos(a0)			; match Roller's position with the floor
 		subq.b	#2,ost_routine2(a0)
 		move.w	#0,ost_y_vel(a0)
 
@@ -154,7 +154,7 @@ Roll_Stop:
 		move.b	#id_ani_roll_unfold,ost_anim(a0)
 		move.b	#id_col_14x14,ost_col_type(a0)
 		clr.w	ost_x_vel(a0)
-		move.w	#120,ost_roller_open_time(a0) ; set waiting time to 2 seconds
+		move.w	#120,ost_roller_open_time(a0)		; set waiting time to 2 seconds
 		move.b	#2,ost_routine2(a0)
 		bset	#7,ost_roller_mode(a0)
 
