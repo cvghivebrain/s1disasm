@@ -455,7 +455,7 @@ loc_1BD46:
 
 
 Obj09_ChkItems:
-		lea	($FF0000).l,a1
+		lea	(v_ss_layout).l,a1
 		moveq	#0,d4
 		move.w	ost_y_pos(a0),d4
 		addi.w	#$50,d4
@@ -478,7 +478,7 @@ Obj09_ChkItems:
 Obj09_ChkCont:
 		cmpi.b	#$3A,d4					; is the item a	ring?
 		bne.s	Obj09_Chk1Up
-		bsr.w	SS_RemoveCollectedItem
+		bsr.w	SS_FindFreeUpdate
 		bne.s	Obj09_GetCont
 		move.b	#1,(a2)
 		move.l	a1,4(a2)
@@ -500,7 +500,7 @@ Obj09_NoCont:
 Obj09_Chk1Up:
 		cmpi.b	#$28,d4					; is the item an extra life?
 		bne.s	Obj09_ChkEmer
-		bsr.w	SS_RemoveCollectedItem
+		bsr.w	SS_FindFreeUpdate
 		bne.s	Obj09_Get1Up
 		move.b	#3,(a2)
 		move.l	a1,4(a2)
@@ -518,7 +518,7 @@ Obj09_ChkEmer:
 		bcs.s	Obj09_ChkGhost
 		cmpi.b	#$40,d4
 		bhi.s	Obj09_ChkGhost
-		bsr.w	SS_RemoveCollectedItem
+		bsr.w	SS_FindFreeUpdate
 		bne.s	Obj09_GetEmer
 		move.b	#5,(a2)
 		move.l	a1,4(a2)
@@ -626,7 +626,7 @@ Obj09_ChkBumper:
 		asr.l	#8,d0
 		move.w	d0,ost_y_vel(a0)
 		bset	#status_air_bit,ost_status(a0)
-		bsr.w	SS_RemoveCollectedItem
+		bsr.w	SS_FindFreeUpdate
 		bne.s	Obj09_BumpSnd
 		move.b	#2,(a2)
 		move.l	ost_ss_item_address(a0),d0
@@ -685,7 +685,7 @@ Obj09_Rblock:
 		tst.b	ost_ss_r_time(a0)
 		bne.w	Obj09_NoGlass
 		move.b	#$1E,ost_ss_r_time(a0)
-		bsr.w	SS_RemoveCollectedItem
+		bsr.w	SS_FindFreeUpdate
 		bne.s	Obj09_RevStage
 		move.b	#4,(a2)
 		move.l	ost_ss_item_address(a0),d0
@@ -708,7 +708,7 @@ Obj09_ChkGlass:
 		bne.s	Obj09_NoGlass				; if not, branch
 
 Obj09_Glass:
-		bsr.w	SS_RemoveCollectedItem
+		bsr.w	SS_FindFreeUpdate
 		bne.s	Obj09_GlassSnd
 		move.b	#6,(a2)
 		movea.l	ost_ss_item_address(a0),a1
@@ -717,7 +717,7 @@ Obj09_Glass:
 		move.b	(a1),d0
 		addq.b	#1,d0					; change glass type when touched
 		cmpi.b	#$30,d0
-		bls.s	Obj09_GlassUpdate			; if glass is	still there, branch
+		bls.s	Obj09_GlassUpdate			; if glass is still there, branch
 		clr.b	d0					; remove the glass block when it's destroyed
 
 Obj09_GlassUpdate:

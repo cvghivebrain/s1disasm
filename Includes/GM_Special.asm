@@ -22,6 +22,7 @@ GM_Special:
 		move.w	(a5),d1					; read control port ($C00004)
 		btst	#1,d1					; is DMA running?
 		bne.s	@wait_for_dma				; if yes, branch
+		
 		move.w	#$8F02,(a5)				; set VDP increment to 2 bytes
 		bsr.w	SS_BGLoad
 		moveq	#id_PLC_SpecialStage,d0
@@ -270,7 +271,7 @@ loc_491C:
 		dbf	d7,loc_48BE
 		
 		lea	(v_ss_enidec_buffer).l,a1
-		lea	(Eni_SSBg2).l,a0			; load	mappings for the clouds
+		lea	(Eni_SSBg2).l,a0			; load mappings for the clouds
 		move.w	#0+tile_pal3,d0
 		bsr.w	EniDec
 		lea	(v_ss_enidec_buffer).l,a1
@@ -563,7 +564,9 @@ include_Special_3:	macro
 
 SS_ShowLayout:
 		bsr.w	SS_AniWallsRings
-		bsr.w	SS_AniItems
+		bsr.w	SS_UpdateItems
+
+; Calculate x/y positions of each cell in a 16x16 grid when rotated
 		move.w	d5,-(sp)
 		lea	(v_ss_sprite_grid_plot).w,a1
 		move.b	(v_ss_angle).w,d0
@@ -617,6 +620,7 @@ SS_ShowLayout:
 		addi.w	#$18,d3
 		dbf	d7,@loop_gridrow
 
+; Populate the 16x16 grid with sprites based on the level layout
 		move.w	(sp)+,d5
 		lea	(v_ss_layout).l,a0
 		moveq	#0,d0
@@ -638,7 +642,7 @@ SS_ShowLayout:
 		moveq	#0,d0
 		move.b	(a0)+,d0				; get level block
 		beq.s	@skip					; branch if 0 (blank)
-		cmpi.b	#(SS_MapIndex_end-SS_MapIndex)/6,d0
+		cmpi.b	#(SS_ItemIndex_end-SS_ItemIndex)/6,d0
 		bhi.s	@skip					; branch if above $4E (invalid)
 		move.w	(a4),d3					; get grid x pos
 		addi.w	#$120,d3				
@@ -698,7 +702,7 @@ SS_AniWallsRings:
 		move.b	(v_ss_angle).w,d0			; get angle
 		lsr.b	#2,d0					; divide by 4
 		andi.w	#$F,d0					; read only low nybble
-		moveq	#((SS_MapIndex_wall_end-SS_MapIndex)/6)-1,d1 ; $23
+		moveq	#((SS_ItemIndex_wall_end-SS_ItemIndex)/6)-1,d1 ; $23
 
 	@wall_loop:
 		move.w	d0,(a1)					; change frame id to appropriately rotated wall
@@ -713,7 +717,7 @@ SS_AniWallsRings:
 		andi.b	#3,(v_syncani_1_frame).w		; there are 4 frames max
 
 	@not0_1:
-		move.b	(v_syncani_1_frame).w,((((SS_Map_Ring-SS_MapIndex)/6)+1)*8)(a1) ; $1D0(a1) ; update ring frame
+		move.b	(v_syncani_1_frame).w,(id_SS_Item_Ring*8)(a1) ; $1D0(a1) ; update ring frame
 		
 		subq.b	#1,(v_syncani_2_time).w
 		bpl.s	@not0_2
@@ -723,16 +727,16 @@ SS_AniWallsRings:
 
 	@not0_2:
 		move.b	(v_syncani_2_frame).w,d0
-		move.b	d0,((((SS_Map_GOAL-SS_MapIndex)/6)+1)*8)(a1) ; $138(a1)
-		move.b	d0,((((SS_Map_RedWhite-SS_MapIndex)/6)+1)*8)(a1) ; $160(a1)
-		move.b	d0,((((SS_Map_Up-SS_MapIndex)/6)+1)*8)(a1) ; $148(a1)
-		move.b	d0,((((SS_Map_Down-SS_MapIndex)/6)+1)*8)(a1) ; $150(a1)
-		move.b	d0,((((SS_Map_Em1-SS_MapIndex)/6)+1)*8)(a1) ; $1D8(a1)
-		move.b	d0,((((SS_Map_Em2-SS_MapIndex)/6)+1)*8)(a1) ; $1E0(a1)
-		move.b	d0,((((SS_Map_Em3-SS_MapIndex)/6)+1)*8)(a1) ; $1E8(a1)
-		move.b	d0,((((SS_Map_Em4-SS_MapIndex)/6)+1)*8)(a1) ; $1F0(a1)
-		move.b	d0,((((SS_Map_Em5-SS_MapIndex)/6)+1)*8)(a1) ; $1F8(a1)
-		move.b	d0,((((SS_Map_Em6-SS_MapIndex)/6)+1)*8)(a1) ; $200(a1)
+		move.b	d0,(id_SS_Item_GOAL*8)(a1)		; $138(a1)
+		move.b	d0,(id_SS_Item_RedWhite*8)(a1)		; $160(a1)
+		move.b	d0,(id_SS_Item_Up*8)(a1)		; $148(a1)
+		move.b	d0,(id_SS_Item_Down*8)(a1)		; $150(a1)
+		move.b	d0,(id_SS_Item_Em1*8)(a1)		; $1D8(a1)
+		move.b	d0,(id_SS_Item_Em2*8)(a1)		; $1E0(a1)
+		move.b	d0,(id_SS_Item_Em3*8)(a1)		; $1E8(a1)
+		move.b	d0,(id_SS_Item_Em4*8)(a1)		; $1F0(a1)
+		move.b	d0,(id_SS_Item_Em5*8)(a1)		; $1F8(a1)
+		move.b	d0,(id_SS_Item_Em6*8)(a1)		; $200(a1)
 		
 		subq.b	#1,(v_syncani_3_time).w
 		bpl.s	@not0_3
@@ -742,10 +746,10 @@ SS_AniWallsRings:
 
 	@not0_3:
 		move.b	(v_syncani_3_frame).w,d0
-		move.b	d0,((((SS_Map_Glass1-SS_MapIndex)/6)+1)*8)(a1) ; $168(a1)
-		move.b	d0,((((SS_Map_Glass2-SS_MapIndex)/6)+1)*8)(a1) ; $170(a1)
-		move.b	d0,((((SS_Map_Glass3-SS_MapIndex)/6)+1)*8)(a1) ; $178(a1)
-		move.b	d0,((((SS_Map_Glass4-SS_MapIndex)/6)+1)*8)(a1) ; $180(a1)
+		move.b	d0,(id_SS_Item_Glass1*8)(a1)		; $168(a1)
+		move.b	d0,(id_SS_Item_Glass2*8)(a1)		; $170(a1)
+		move.b	d0,(id_SS_Item_Glass3*8)(a1)		; $178(a1)
+		move.b	d0,(id_SS_Item_Glass4*8)(a1)		; $180(a1)
 		
 		subq.b	#1,(v_syncani_0_time).w
 		bpl.s	@not0_0
@@ -871,96 +875,103 @@ SS_Wall_Vram_Settings:
 		dc.w tile_Nem_SSWalls+tile_pal3
 
 ; ---------------------------------------------------------------------------
-; Subroutine to	remove items when you collect them in the special stage
+; Subroutine to	find a free slot in sprite update list
+
+; output:
+;	a2 = address of free slot in sprite update list
 ; ---------------------------------------------------------------------------
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 
-SS_RemoveCollectedItem:
-		lea	($FF4400).l,a2
-		move.w	#$1F,d0
+SS_FindFreeUpdate:
+		lea	(v_ss_sprite_update_list).l,a2		; address of sprite update list
+		move.w	#$20-1,d0				; up to $20 slots
 
-loc_1B4C4:
-		tst.b	(a2)
-		beq.s	locret_1B4CE
-		addq.w	#8,a2
-		dbf	d0,loc_1B4C4
+	@loop:
+		tst.b	(a2)					; is slot free?
+		beq.s	@free					; if yes, branch
+		addq.w	#8,a2					; try next slot
+		dbf	d0,@loop
 
-locret_1B4CE:
+	@free:
 		rts	
-; End of function SS_RemoveCollectedItem
+; End of function SS_FindFreeUpdate
 
 ; ---------------------------------------------------------------------------
-; Subroutine to	animate	special	stage items when you touch them
+; Subroutine to	update special stage items when you touch them
 ; ---------------------------------------------------------------------------
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
+ss_update_id:		equ 0					; sprite id (1-6)
+ss_update_time:		equ 2					; time until next frame update
+ss_update_frame:	equ 3					; frame within update data
+ss_update_levelptr:	equ 4					; pointer to item in level layout being updated
 
-SS_AniItems:
-		lea	($FF4400).l,a0
-		move.w	#$1F,d7
+SS_UpdateItems:
+		lea	(v_ss_sprite_update_list).l,a0		; sprite update list
+		move.w	#$20-1,d7
 
-loc_1B4DA:
+	@loop:
 		moveq	#0,d0
-		move.b	(a0),d0
-		beq.s	loc_1B4E8
+		move.b	(a0),d0					; read update id
+		beq.s	@no_update				; branch if 0
 		lsl.w	#2,d0
-		movea.l	SS_AniIndex-4(pc,d0.w),a1
-		jsr	(a1)
+		movea.l	SS_UpdateIndex-4(pc,d0.w),a1
+		jsr	(a1)					; run appropriate routine
 
-loc_1B4E8:
-		addq.w	#8,a0
-
-loc_1B4EA:
-		dbf	d7,loc_1B4DA
+	@no_update:
+		addq.w	#8,a0					; next slot in list
+		dbf	d7,@loop
 
 		rts	
-; End of function SS_AniItems
+; End of function SS_UpdateItems
 
 ; ===========================================================================
-SS_AniIndex:	dc.l SS_AniRingSparks
-		dc.l SS_AniBumper
-		dc.l SS_Ani1Up
-		dc.l SS_AniReverse
-		dc.l SS_AniEmeraldSparks
-		dc.l SS_AniGlassBlock
+SS_UpdateIndex:	index.l 0,1
+		ptr SS_UpdateRing				; 1
+		ptr SS_UpdateBumper				; 2
+		ptr SS_Update1Up					; 3
+		ptr SS_UpdateR				; 4
+		ptr SS_UpdateEmerald				; 5
+		ptr SS_UpdateGlass				; 6
 ; ===========================================================================
 
-SS_AniRingSparks:
-		subq.b	#1,2(a0)
-		bpl.s	locret_1B530
-		move.b	#5,2(a0)
+SS_UpdateRing:
+		subq.b	#1,ss_update_time(a0)			; decrement timer
+		bpl.s	locret_1B530				; branch if positive
+		move.b	#5,ss_update_time(a0)			; 5 frames until next update
 		moveq	#0,d0
-		move.b	3(a0),d0
-		addq.b	#1,3(a0)
-		movea.l	4(a0),a1
-		move.b	SS_AniRingData(pc,d0.w),d0
-		move.b	d0,(a1)
-		bne.s	locret_1B530
-		clr.l	(a0)
-		clr.l	4(a0)
+		move.b	ss_update_frame(a0),d0			; get current frame
+		addq.b	#1,ss_update_frame(a0)			; increment frame
+		movea.l	ss_update_levelptr(a0),a1		; get pointer to level layout
+		move.b	SS_RingData(pc,d0.w),d0			; get new item id
+		move.b	d0,(a1)					; update level layout
+		bne.s	locret_1B530				; branch if id isn't 0
+		clr.l	(a0)					; free slot in update list
+		clr.l	ss_update_levelptr(a0)
 
 locret_1B530:
 		rts	
 ; ===========================================================================
-SS_AniRingData:	dc.b $42, $43, $44, $45, 0, 0
+SS_RingData:	dc.b id_SS_Item_Spark1, id_SS_Item_Spark2, id_SS_Item_Spark3, id_SS_Item_Spark4, 0
+		even
 ; ===========================================================================
 
-SS_AniBumper:
-		subq.b	#1,2(a0)
+SS_UpdateBumper:
+		subq.b	#1,ss_update_time(a0)
 		bpl.s	locret_1B566
-		move.b	#7,2(a0)
+		move.b	#7,ss_update_time(a0)
 		moveq	#0,d0
-		move.b	3(a0),d0
-		addq.b	#1,3(a0)
-		movea.l	4(a0),a1
-		move.b	SS_AniBumpData(pc,d0.w),d0
+		move.b	ss_update_frame(a0),d0
+		addq.b	#1,ss_update_frame(a0)
+		movea.l	ss_update_levelptr(a0),a1
+		move.b	SS_BumperData(pc,d0.w),d0
 		bne.s	loc_1B564
 		clr.l	(a0)
-		clr.l	4(a0)
-		move.b	#$25,(a1)
+		clr.l	ss_update_levelptr(a0)
+		move.b	#id_SS_Item_Bumper,(a1)
 		rts	
 ; ===========================================================================
 
@@ -970,42 +981,44 @@ loc_1B564:
 locret_1B566:
 		rts	
 ; ===========================================================================
-SS_AniBumpData:	dc.b $32, $33, $32, $33, 0, 0
+SS_BumperData:	dc.b id_SS_Item_Bump1, id_SS_Item_Bump2, id_SS_Item_Bump1, id_SS_Item_Bump2, 0
+		even
 ; ===========================================================================
 
-SS_Ani1Up:
-		subq.b	#1,2(a0)
+SS_Update1Up:
+		subq.b	#1,ss_update_time(a0)
 		bpl.s	locret_1B596
-		move.b	#5,2(a0)
+		move.b	#5,ss_update_time(a0)
 		moveq	#0,d0
-		move.b	3(a0),d0
-		addq.b	#1,3(a0)
-		movea.l	4(a0),a1
-		move.b	SS_Ani1UpData(pc,d0.w),d0
+		move.b	ss_update_frame(a0),d0
+		addq.b	#1,ss_update_frame(a0)
+		movea.l	ss_update_levelptr(a0),a1
+		move.b	SS_1UpData(pc,d0.w),d0
 		move.b	d0,(a1)
 		bne.s	locret_1B596
 		clr.l	(a0)
-		clr.l	4(a0)
+		clr.l	ss_update_levelptr(a0)
 
 locret_1B596:
 		rts	
 ; ===========================================================================
-SS_Ani1UpData:	dc.b $46, $47, $48, $49, 0, 0
+SS_1UpData:	dc.b id_SS_Item_EmSp1, id_SS_Item_EmSp2, id_SS_Item_EmSp3, id_SS_Item_EmSp4, 0
+		even
 ; ===========================================================================
 
-SS_AniReverse:
-		subq.b	#1,2(a0)
+SS_UpdateR:
+		subq.b	#1,ss_update_time(a0)
 		bpl.s	locret_1B5CC
-		move.b	#7,2(a0)
+		move.b	#7,ss_update_time(a0)
 		moveq	#0,d0
-		move.b	3(a0),d0
-		addq.b	#1,3(a0)
-		movea.l	4(a0),a1
-		move.b	SS_AniRevData(pc,d0.w),d0
+		move.b	ss_update_frame(a0),d0
+		addq.b	#1,ss_update_frame(a0)
+		movea.l	ss_update_levelptr(a0),a1
+		move.b	SS_RData(pc,d0.w),d0
 		bne.s	loc_1B5CA
 		clr.l	(a0)
-		clr.l	4(a0)
-		move.b	#$2B,(a1)
+		clr.l	ss_update_levelptr(a0)
+		move.b	#id_SS_Item_R,(a1)
 		rts	
 ; ===========================================================================
 
@@ -1015,50 +1028,53 @@ loc_1B5CA:
 locret_1B5CC:
 		rts	
 ; ===========================================================================
-SS_AniRevData:	dc.b $2B, $31, $2B, $31, 0, 0
+SS_RData:	dc.b id_SS_Item_R, id_SS_Item_R2, id_SS_Item_R, id_SS_Item_R2, 0
+		even
 ; ===========================================================================
 
-SS_AniEmeraldSparks:
-		subq.b	#1,2(a0)
+SS_UpdateEmerald:
+		subq.b	#1,ss_update_time(a0)
 		bpl.s	locret_1B60C
-		move.b	#5,2(a0)
+		move.b	#5,ss_update_time(a0)
 		moveq	#0,d0
-		move.b	3(a0),d0
-		addq.b	#1,3(a0)
-		movea.l	4(a0),a1
-		move.b	SS_AniEmerData(pc,d0.w),d0
+		move.b	ss_update_frame(a0),d0
+		addq.b	#1,ss_update_frame(a0)
+		movea.l	ss_update_levelptr(a0),a1
+		move.b	SS_EmeraldData(pc,d0.w),d0
 		move.b	d0,(a1)
 		bne.s	locret_1B60C
 		clr.l	(a0)
-		clr.l	4(a0)
+		clr.l	ss_update_levelptr(a0)
 		move.b	#id_Obj09_ExitStage,(v_ost_player+ost_routine).w
 		play.w	1, jsr, sfx_Goal			; play special stage GOAL sound
 
 locret_1B60C:
 		rts	
 ; ===========================================================================
-SS_AniEmerData:	dc.b $46, $47, $48, $49, 0, 0
+SS_EmeraldData:	dc.b id_SS_Item_EmSp1, id_SS_Item_EmSp2, id_SS_Item_EmSp3, id_SS_Item_EmSp4, 0
+		even
 ; ===========================================================================
 
-SS_AniGlassBlock:
-		subq.b	#1,2(a0)
-		bpl.s	locret_1B640
-		move.b	#1,2(a0)
+SS_UpdateGlass:
+		subq.b	#1,ss_update_time(a0)			; decrement timer
+		bpl.s	locret_1B640				; branch if time is positive
+		move.b	#1,ss_update_time(a0)			; set timer to 1 frame
 		moveq	#0,d0
-		move.b	3(a0),d0
-		addq.b	#1,3(a0)
-		movea.l	4(a0),a1
-		move.b	SS_AniGlassData(pc,d0.w),d0
-		move.b	d0,(a1)
-		bne.s	locret_1B640
-		move.b	4(a0),(a1)
-		clr.l	(a0)
-		clr.l	4(a0)
+		move.b	ss_update_frame(a0),d0			; get current frame
+		addq.b	#1,ss_update_frame(a0)			; increment frame
+		movea.l	ss_update_levelptr(a0),a1		; get pointer to level layout
+		move.b	SS_GlassData(pc,d0.w),d0		; read new frame id
+		move.b	d0,(a1)					; update level layout
+		bne.s	locret_1B640				; branch if frame id isn't 0
+		move.b	4(a0),(a1)				; change id to weakened glass
+		clr.l	(a0)					; free update slot
+		clr.l	ss_update_levelptr(a0)
 
 locret_1B640:
 		rts	
 ; ===========================================================================
-SS_AniGlassData:dc.b $4B, $4C, $4D, $4E, $4B, $4C, $4D,	$4E, 0,	0
+SS_GlassData:	dc.b id_SS_Item_Glass5, id_SS_Item_Glass6, id_SS_Item_Glass7, id_SS_Item_Glass8, id_SS_Item_Glass5, id_SS_Item_Glass6, id_SS_Item_Glass7, id_SS_Item_Glass8, 0
+		even
 
 ; ---------------------------------------------------------------------------
 ; Special stage	layout pointers
@@ -1145,8 +1161,8 @@ SS_ClrRAM3:
 		dbf	d1,@loop_row				; copy layout to RAM in blocks of $40 bytes, with $40 blank between each block
 
 		lea	(v_ss_sprite_info+8).l,a1
-		lea	(SS_MapIndex).l,a0
-		moveq	#((SS_MapIndex_end-SS_MapIndex)/6)-1,d1
+		lea	(SS_ItemIndex).l,a0
+		moveq	#((SS_ItemIndex_end-SS_ItemIndex)/6)-1,d1
 
 	@loop_map_ptrs:
 		move.l	(a0)+,(a1)+				; copy mappings pointer
@@ -1155,13 +1171,13 @@ SS_ClrRAM3:
 		move.w	(a0)+,(a1)+				; copy tile id
 		dbf	d1,@loop_map_ptrs			; copy mappings pointers & VRAM settings to RAM
 
-		lea	($FF4400).l,a1
+		lea	(v_ss_sprite_update_list).l,a1
 		move.w	#($100/4)-1,d1
 
-loc_1B730:
+	@loop_update_list:
 
 		clr.l	(a1)+
-		dbf	d1,loc_1B730				; clear RAM ($4400-$44FF)
+		dbf	d1,@loop_update_list			; clear RAM ($4400-$44FF)
 
 		rts	
 ; End of function SS_Load

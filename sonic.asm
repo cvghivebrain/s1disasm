@@ -5755,12 +5755,16 @@ SS_StartLoc:
 ; Special stage	mappings and VRAM pointers
 ; ---------------------------------------------------------------------------
 
-ss_sprite:	macro map,tile,frame
+ss_sprite:	macro *,map,tile,frame
+		if strlen("\*")>0
+		\*: equ *
+		id_\*: equ ((*-SS_ItemIndex)/6)+1
+		endc
 		dc.l map+(frame*$1000000)
 		dc.w tile
 		endm
 		
-SS_MapIndex:
+SS_ItemIndex:
 		ss_sprite Map_SSWalls,tile_Nem_SSWalls,0	; 1
 		ss_sprite Map_SSWalls,tile_Nem_SSWalls,0
 		ss_sprite Map_SSWalls,tile_Nem_SSWalls,0
@@ -5797,51 +5801,50 @@ SS_MapIndex:
 		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal4,0
 		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal4,0
 		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal4,0
-	SS_MapIndex_wall_end:
-		ss_sprite Map_Bump,tile_Nem_Bumper_SS,0		; $25 - bumper
+	SS_ItemIndex_wall_end:
+SS_Item_Bumper:	ss_sprite Map_Bump,tile_Nem_Bumper_SS,0		; $25 - bumper
 		ss_sprite Map_SS_R,tile_Nem_SSWBlock,0		; $26 - W
-SS_Map_GOAL:	ss_sprite Map_SS_R,tile_Nem_SSGOAL,0		; $27 - GOAL
+SS_Item_GOAL:	ss_sprite Map_SS_R,tile_Nem_SSGOAL,0		; $27 - GOAL
 		ss_sprite Map_SS_R,tile_Nem_SS1UpBlock,0	; $28 - 1UP
-SS_Map_Up:	ss_sprite Map_SS_Up,tile_Nem_SSUpDown,0		; $29 - Up
-SS_Map_Down:	ss_sprite Map_SS_Down,tile_Nem_SSUpDown,0	; $2A - Down
-		ss_sprite Map_SS_R,tile_Nem_SSRBlock+tile_pal2,0 ; $2B - R
-SS_Map_RedWhite:
-		ss_sprite Map_SS_Glass,tile_Nem_SSRedWhite,0	; $2C - red/white
-SS_Map_Glass1:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass,0	; $2D - breakable glass gem
-SS_Map_Glass2:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal4,0
-SS_Map_Glass3:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal2,0
-SS_Map_Glass4:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal3,0
-		ss_sprite Map_SS_R,tile_Nem_SSRBlock,0		; $31 - R
-		ss_sprite Map_Bump,tile_Nem_Bumper_SS,id_frame_bump_bumped1
-		ss_sprite Map_Bump,tile_Nem_Bumper_SS,id_frame_bump_bumped2
+SS_Item_Up:	ss_sprite Map_SS_Up,tile_Nem_SSUpDown,0		; $29 - Up
+SS_Item_Down:	ss_sprite Map_SS_Down,tile_Nem_SSUpDown,0	; $2A - Down
+SS_Item_R:	ss_sprite Map_SS_R,tile_Nem_SSRBlock+tile_pal2,0 ; $2B - R
+SS_Item_RedWhi:	ss_sprite Map_SS_Glass,tile_Nem_SSRedWhite,0 ; $2C - red/white
+SS_Item_Glass1:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass,0	; $2D - breakable glass gem
+SS_Item_Glass2:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal4,0
+SS_Item_Glass3:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal2,0
+SS_Item_Glass4:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal3,0
+SS_Item_R2:	ss_sprite Map_SS_R,tile_Nem_SSRBlock,0		; $31 - R
+SS_Item_Bump1:	ss_sprite Map_Bump,tile_Nem_Bumper_SS,id_frame_bump_bumped1
+SS_Item_Bump2:	ss_sprite Map_Bump,tile_Nem_Bumper_SS,id_frame_bump_bumped2
 		ss_sprite Map_SS_R,tile_Nem_SSZone1,0		; £34 - Zone 1
 		ss_sprite Map_SS_R,tile_Nem_SSZone2,0		; £35 - Zone 2
 		ss_sprite Map_SS_R,tile_Nem_SSZone3,0		; £36 - Zone 3
 		ss_sprite Map_SS_R,tile_Nem_SSZone1,0		; £37 - Zone 4
 		ss_sprite Map_SS_R,tile_Nem_SSZone2,0		; £38 - Zone 5
 		ss_sprite Map_SS_R,tile_Nem_SSZone3,0		; £39 - Zone 6
-SS_Map_Ring:	ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,0	; $3A - ring
-SS_Map_Em1:	ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald,0	; $3B - emerald
-SS_Map_Em2:	ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald+tile_pal2,0 ; $3C - emerald
-SS_Map_Em3:	ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald+tile_pal3,0 ; $3D - emerald
-SS_Map_Em4:	ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald+tile_pal4,0 ; $3E - emerald
-SS_Map_Em5:	ss_sprite Map_SS_Chaos1,tile_Nem_SSEmerald,0	; $3F - emerald
-SS_Map_Em6:	ss_sprite Map_SS_Chaos2,tile_Nem_SSEmerald,0	; $40 - emerald
+SS_Item_Ring:	ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,0	; $3A - ring
+SS_Item_Em1:	ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald,0	; $3B - emerald
+SS_Item_Em2:	ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald+tile_pal2,0 ; $3C - emerald
+SS_Item_Em3:	ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald+tile_pal3,0 ; $3D - emerald
+SS_Item_Em4:	ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald+tile_pal4,0 ; $3E - emerald
+SS_Item_Em5:	ss_sprite Map_SS_Chaos1,tile_Nem_SSEmerald,0	; $3F - emerald
+SS_Item_Em6:	ss_sprite Map_SS_Chaos2,tile_Nem_SSEmerald,0	; $40 - emerald
 		ss_sprite Map_SS_R,tile_Nem_SSGhost,0		; $41 - ghost block
-		ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,id_frame_ring_sparkle1 ; $42 - sparkle
-		ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,id_frame_ring_sparkle2 ; $43 - sparkle
-		ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,id_frame_ring_sparkle3 ; $44 - sparkle
-		ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,id_frame_ring_sparkle4 ; $45 - sparkle
-		ss_sprite Map_SS_Glass,tile_Nem_SSEmStars+tile_pal2,0
-		ss_sprite Map_SS_Glass,tile_Nem_SSEmStars+tile_pal2,1
-		ss_sprite Map_SS_Glass,tile_Nem_SSEmStars+tile_pal2,2
-		ss_sprite Map_SS_Glass,tile_Nem_SSEmStars+tile_pal2,3
+SS_Item_Spark1:	ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,id_frame_ring_sparkle1 ; $42 - sparkle
+SS_Item_Spark2:	ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,id_frame_ring_sparkle2 ; $43 - sparkle
+SS_Item_Spark3:	ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,id_frame_ring_sparkle3 ; $44 - sparkle
+SS_Item_Spark4:	ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,id_frame_ring_sparkle4 ; $45 - sparkle
+SS_Item_EmSp1:	ss_sprite Map_SS_Glass,tile_Nem_SSEmStars+tile_pal2,0 ; $46 - emerald sparkle
+SS_Item_EmSp2:	ss_sprite Map_SS_Glass,tile_Nem_SSEmStars+tile_pal2,1 ; $47 - emerald sparkle
+SS_Item_EmSp3:	ss_sprite Map_SS_Glass,tile_Nem_SSEmStars+tile_pal2,2 ; $48 - emerald sparkle
+SS_Item_EmSp4:	ss_sprite Map_SS_Glass,tile_Nem_SSEmStars+tile_pal2,3 ; $49 - emerald sparkle
 		ss_sprite Map_SS_R,tile_Nem_SSGhost,2
-		ss_sprite Map_SS_Glass,tile_Nem_SSGlass,0
-		ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal4,0
-		ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal2,0
-		ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal3,0 ; $4E
-	SS_MapIndex_end:
+SS_Item_Glass5:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass,0	; $4B
+SS_Item_Glass6:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal4,0 ; $4C
+SS_Item_Glass7:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal2,0 ; $4D
+SS_Item_Glass8:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal3,0 ; $4E
+	SS_ItemIndex_end:
 
 		include "Mappings\Special Stage R.asm"		; Map_SS_R
 		include "Mappings\Special Stage Breakable & Red-White Blocks.asm" ; Map_SS_Glass
