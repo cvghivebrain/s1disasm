@@ -5734,7 +5734,7 @@ word_16516:	dc.w $10, $1C80
 
 		include "Objects\_ReactToItem, HurtSonic & KillSonic.asm"
 
-		include_Special_3				; Includes\Special Stage.asm
+		include_Special_3				; Includes\GM_Special.asm
 
 ; ---------------------------------------------------------------------------
 ; Special stage start locations
@@ -5749,7 +5749,7 @@ SS_StartLoc:
 		incbin	"startpos\ss6.bin"
 		even
 
-		include_Special_4				; Includes\Special Stage.asm
+		include_Special_4				; Includes\GM_Special.asm
 
 ; ---------------------------------------------------------------------------
 ; Special stage	mappings and VRAM pointers

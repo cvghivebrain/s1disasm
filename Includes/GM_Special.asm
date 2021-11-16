@@ -728,7 +728,7 @@ SS_AniWallsRings:
 	@not0_2:
 		move.b	(v_syncani_2_frame).w,d0
 		move.b	d0,(id_SS_Item_GOAL*8)(a1)		; $138(a1)
-		move.b	d0,(id_SS_Item_RedWhite*8)(a1)		; $160(a1)
+		move.b	d0,(id_SS_Item_RedWhi*8)(a1)		; $160(a1)
 		move.b	d0,(id_SS_Item_Up*8)(a1)		; $148(a1)
 		move.b	d0,(id_SS_Item_Down*8)(a1)		; $150(a1)
 		move.b	d0,(id_SS_Item_Em1*8)(a1)		; $1D8(a1)
