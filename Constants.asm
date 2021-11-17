@@ -13,6 +13,10 @@ vram_sonic:	equ $F000	; Sonic graphics ($2E0 bytes)
 vram_sprites:	equ $F800	; sprite table ($280 bytes)
 vram_hscroll:	equ $FC00	; horizontal scroll table ($380 bytes)
 
+sizeof_vram_sonic:	equ $2E0 ; $17 (23) cells
+sizeof_vram_sprites:	equ $280
+sizeof_vram_hscroll:	equ $380
+
 ; Levels
 id_GHZ:		equ 0
 id_LZ:		equ 1
@@ -63,6 +67,7 @@ sonic_deceleration_water:	equ sonic_deceleration/2
 sonic_max_speed_shoes:		equ sonic_max_speed*2		; with speed shoes
 sonic_acceleration_shoes:	equ sonic_acceleration*2
 sonic_deceleration_shoes:	equ sonic_deceleration
+sonic_ss_max_speed:		equ $800
 
 ; Object variables
 ost_render:		equ 1	; bitfield for x/y flip, display mode

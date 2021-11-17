@@ -221,7 +221,7 @@ sizeof_fish:	equ fish_width*fish_height*2
 
 SS_BGLoad:
 		lea	(v_ss_enidec_buffer).l,a1		; buffer
-		lea	(Eni_SSBg1).l,a0			; load	mappings for the birds and fish
+		lea	(Eni_SSBg1).l,a0			; load mappings for the birds and fish
 		move.w	#tile_Nem_SSBgFish+tile_pal3,d0
 		bsr.w	EniDec
 		locVRAM	$5000,d3
@@ -378,7 +378,8 @@ PalCycle_SS_2:
 
 ; ===========================================================================
 SS_Timing_Values:
-		dc.b 3,	0, $E000>>13, $92			; time until next, bg mode, bg namespace address in VRAM, palette offset
+		; time until next, bg mode, bg namespace address in VRAM, palette offset
+		dc.b 3,	0, $E000>>13, $92
 		dc.b 3, 0, $E000>>13, $90
 		dc.b 3, 0, $E000>>13, $8E
 		dc.b 3, 0, $E000>>13, $8C
@@ -411,7 +412,8 @@ SS_Timing_Values:
 		dc.b 7,	4, $C000>>13, $30
 		dc.b 7, 2, $C000>>13, $24
 		even
-SS_BG_Modes:							; fg namespace address in VRAM, VScroll value
+SS_BG_Modes:
+		; fg namespace address in VRAM, VScroll value
 		dc.b $4000>>10, 1				; 0 - grid
 		dc.b $6000>>10, 0				; 2 - fish morph 1
 		dc.b $6000>>10, 1				; 4 - fish morph 2
@@ -899,7 +901,7 @@ SS_FindFreeUpdate:
 ; End of function SS_FindFreeUpdate
 
 ; ---------------------------------------------------------------------------
-; Subroutine to	update special stage items when you touch them
+; Subroutine to	update special stage items after they've been touched
 ; ---------------------------------------------------------------------------
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
@@ -932,8 +934,8 @@ SS_UpdateItems:
 SS_UpdateIndex:	index.l 0,1
 		ptr SS_UpdateRing				; 1
 		ptr SS_UpdateBumper				; 2
-		ptr SS_Update1Up					; 3
-		ptr SS_UpdateR				; 4
+		ptr SS_Update1Up				; 3
+		ptr SS_UpdateR					; 4
 		ptr SS_UpdateEmerald				; 5
 		ptr SS_UpdateGlass				; 6
 ; ===========================================================================
@@ -1045,7 +1047,7 @@ SS_UpdateEmerald:
 		bne.s	locret_1B60C
 		clr.l	(a0)
 		clr.l	ss_update_levelptr(a0)
-		move.b	#id_Obj09_ExitStage,(v_ost_player+ost_routine).w
+		move.b	#id_SSS_ExitStage,(v_ost_player+ost_routine).w
 		play.w	1, jsr, sfx_Goal			; play special stage GOAL sound
 
 locret_1B60C:
@@ -1142,9 +1144,9 @@ SS_LoadData:
 		lea	(v_ss_layout).l,a1
 		move.w	#($4000/4)-1,d0
 
-SS_ClrRAM3:
+	@clear_layout:
 		clr.l	(a1)+
-		dbf	d0,SS_ClrRAM3				; clear RAM (0-$3FFF)
+		dbf	d0,@clear_layout			; clear RAM (0-$3FFF)
 
 		lea	(v_ss_layout+$1020).l,a1
 		lea	(v_ss_layout_buffer).l,a0

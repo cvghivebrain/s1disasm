@@ -27,7 +27,7 @@ Sonic_Main:	; Routine 0
 		move.b	#$13,ost_height(a0)
 		move.b	#9,ost_width(a0)
 		move.l	#Map_Sonic,ost_mappings(a0)
-		move.w	#$780,ost_tile(a0)
+		move.w	#vram_sonic/$20,ost_tile(a0)
 		move.b	#2,ost_priority(a0)
 		move.b	#$18,ost_actwidth(a0)
 		move.b	#render_rel,ost_render(a0)

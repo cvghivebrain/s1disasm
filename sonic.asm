@@ -728,12 +728,12 @@ VBla_08:
 	@waterbelow:
 		move.w	(v_vdp_hint_counter).w,(a5)
 
-		dma	v_hscroll_buffer,$380,vram_hscroll
-		dma	v_sprite_buffer,$280,vram_sprites
+		dma	v_hscroll_buffer,sizeof_vram_hscroll,vram_hscroll
+		dma	v_sprite_buffer,sizeof_vram_sprites,vram_sprites
 		tst.b	(f_sonic_dma_gfx).w			; has Sonic's sprite changed?
 		beq.s	@nochg					; if not, branch
 
-		dma	v_sonic_gfx_buffer,$2E0,vram_sonic	; load new Sonic gfx
+		dma	v_sonic_gfx_buffer,sizeof_vram_sonic,vram_sonic ; load new Sonic gfx
 		move.b	#0,(f_sonic_dma_gfx).w
 
 	@nochg:
@@ -775,14 +775,14 @@ VBla_0A:
 		waitZ80
 		bsr.w	ReadJoypads
 		dma	v_pal_dry,$80,cram
-		dma	v_sprite_buffer,$280,vram_sprites
-		dma	v_hscroll_buffer,$380,vram_hscroll
+		dma	v_sprite_buffer,sizeof_vram_sprites,vram_sprites
+		dma	v_hscroll_buffer,sizeof_vram_hscroll,vram_hscroll
 		startZ80
 		bsr.w	PalCycle_SS
 		tst.b	(f_sonic_dma_gfx).w			; has Sonic's sprite changed?
 		beq.s	@nochg					; if not, branch
 
-		dma	v_sonic_gfx_buffer,$2E0,vram_sonic	; load new Sonic gfx
+		dma	v_sonic_gfx_buffer,sizeof_vram_sonic,vram_sonic ; load new Sonic gfx
 		move.b	#0,(f_sonic_dma_gfx).w
 
 	@nochg:
@@ -809,11 +809,11 @@ VBla_0C:
 
 	@waterbelow:
 		move.w	(v_vdp_hint_counter).w,(a5)
-		dma	v_hscroll_buffer,$380,vram_hscroll
-		dma	v_sprite_buffer,$280,vram_sprites
+		dma	v_hscroll_buffer,sizeof_vram_hscroll,vram_hscroll
+		dma	v_sprite_buffer,sizeof_vram_sprites,vram_sprites
 		tst.b	(f_sonic_dma_gfx).w
 		beq.s	@nochg
-		dma	v_sonic_gfx_buffer,$2E0,vram_sonic
+		dma	v_sonic_gfx_buffer,sizeof_vram_sonic,vram_sonic
 		move.b	#0,(f_sonic_dma_gfx).w
 
 	@nochg:
@@ -847,12 +847,12 @@ VBla_16:
 		waitZ80
 		bsr.w	ReadJoypads
 		dma	v_pal_dry,$80,cram
-		dma	v_sprite_buffer,$280,vram_sprites
-		dma	v_hscroll_buffer,$380,vram_hscroll
+		dma	v_sprite_buffer,sizeof_vram_sprites,vram_sprites
+		dma	v_hscroll_buffer,sizeof_vram_hscroll,vram_hscroll
 		startZ80
 		tst.b	(f_sonic_dma_gfx).w
 		beq.s	@nochg
-		dma	v_sonic_gfx_buffer,$2E0,vram_sonic
+		dma	v_sonic_gfx_buffer,sizeof_vram_sonic,vram_sonic
 		move.b	#0,(f_sonic_dma_gfx).w
 
 	@nochg:
@@ -879,8 +879,8 @@ ReadPad_WaterPal_Sprites_HScroll:
 		dma	v_pal_water,$80,cram
 
 	@waterbelow:
-		dma	v_sprite_buffer,$280,vram_sprites
-		dma	v_hscroll_buffer,$380,vram_hscroll
+		dma	v_sprite_buffer,sizeof_vram_sprites,vram_sprites
+		dma	v_hscroll_buffer,sizeof_vram_hscroll,vram_hscroll
 		startZ80
 		rts	
 ; End of function ReadPad_WaterPal_Sprites_HScroll
@@ -5805,7 +5805,7 @@ SS_ItemIndex:
 SS_Item_Bumper:	ss_sprite Map_Bump,tile_Nem_Bumper_SS,0		; $25 - bumper
 		ss_sprite Map_SS_R,tile_Nem_SSWBlock,0		; $26 - W
 SS_Item_GOAL:	ss_sprite Map_SS_R,tile_Nem_SSGOAL,0		; $27 - GOAL
-		ss_sprite Map_SS_R,tile_Nem_SS1UpBlock,0	; $28 - 1UP
+SS_Item_1Up:	ss_sprite Map_SS_R,tile_Nem_SS1UpBlock,0	; $28 - 1UP
 SS_Item_Up:	ss_sprite Map_SS_Up,tile_Nem_SSUpDown,0		; $29 - Up
 SS_Item_Down:	ss_sprite Map_SS_Down,tile_Nem_SSUpDown,0	; $2A - Down
 SS_Item_R:	ss_sprite Map_SS_R,tile_Nem_SSRBlock+tile_pal2,0 ; $2B - R
