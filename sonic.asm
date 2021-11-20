@@ -250,8 +250,8 @@ SetupValues:	dc.w $8000					; VDP register start number
 		dc.l vdp_data_port				; VDP data
 		dc.l vdp_control_port				; VDP control
 
-SetupVDP:	dc.b 4						; VDP $80 - 8-colour mode
-		dc.b $14					; VDP $81 - Megadrive mode, DMA enable
+SetupVDP:	dc.b 4						; VDP $80 - normal colour mode
+		dc.b $14					; VDP $81 - Mega Drive mode, DMA enable
 		dc.b ($C000>>10)				; VDP $82 - foreground nametable address
 		dc.b ($F000>>10)				; VDP $83 - window nametable address
 		dc.b ($E000>>13)				; VDP $84 - background nametable address
@@ -1012,18 +1012,18 @@ VDPSetupGame:
 		lea	(vdp_control_port).l,a0
 		lea	(vdp_data_port).l,a1
 		lea	(VDPSetupArray).l,a2
-		moveq	#$12,d7
+		moveq	#((VDPSetupArray_end-VDPSetupArray)/2)-1,d7
 
 	@setreg:
 		move.w	(a2)+,(a0)
 		dbf	d7,@setreg				; set the VDP registers
 
 		move.w	(VDPSetupArray+2).l,d0
-		move.w	d0,(v_vdp_mode_buffer).w
-		move.w	#$8A00+223,(v_vdp_hint_counter).w	; H-INT every 224th scanline
+		move.w	d0,(v_vdp_mode_buffer).w		; save $8134 to buffer for later use
+		move.w	#$8A00+223,(v_vdp_hint_counter).w	; horizontal interrupt every 224th scanline
 		moveq	#0,d0
 		move.l	#$C0000000,(vdp_control_port).l		; set VDP to CRAM write
-		move.w	#$3F,d7
+		move.w	#$40-1,d7
 
 	@clrCRAM:
 		move.w	d0,(a1)
@@ -1045,7 +1045,7 @@ VDPSetupGame:
 ; End of function VDPSetupGame
 
 ; ===========================================================================
-VDPSetupArray:	dc.w $8004					; 8-colour mode
+VDPSetupArray:	dc.w $8004					; normal colour mode
 		dc.w $8134					; enable V.interrupts, enable DMA
 		dc.w $8200+(vram_fg>>10)			; set foreground nametable address
 		dc.w $8300+(vram_window>>10)			; set window nametable address
@@ -1064,6 +1064,7 @@ VDPSetupArray:	dc.w $8004					; 8-colour mode
 		dc.w $9001					; 64x32 cell plane size
 		dc.w $9100					; window horizontal position
 		dc.w $9200					; window vertical position
+	VDPSetupArray_end:
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	clear the screen
@@ -1682,9 +1683,7 @@ GM_Sega:
 		move.w	#$8B00,(a6)				; full-screen vertical scrolling
 		clr.b	(f_water_pal_full).w
 		disable_ints
-		move.w	(v_vdp_mode_buffer).w,d0
-		andi.b	#$BF,d0
-		move.w	d0,(vdp_control_port).l
+		disable_display
 		bsr.w	ClearScreen
 		locVRAM	0
 		lea	(Nem_SegaLogo).l,a0			; load Sega	logo patterns
@@ -1711,9 +1710,7 @@ GM_Sega:
 		move.w	#0,(v_palcycle_time).w
 		move.w	#0,(v_palcycle_buffer+$12).w
 		move.w	#0,(v_palcycle_buffer+$10).w
-		move.w	(v_vdp_mode_buffer).w,d0
-		ori.b	#$40,d0
-		move.w	d0,(vdp_control_port).l
+		enable_display
 
 Sega_WaitPal:
 		move.b	#2,(v_vblank_routine).w
@@ -1884,9 +1881,7 @@ GM_Title:
 		bsr.w	NewPLC
 		move.w	#0,(v_title_d_count).w
 		move.w	#0,(v_title_c_count).w
-		move.w	(v_vdp_mode_buffer).w,d0
-		ori.b	#$40,d0
-		move.w	d0,(vdp_control_port).l
+		enable_display
 		bsr.w	PaletteFadeIn
 
 Tit_MainLoop:
@@ -2951,99 +2946,7 @@ Pal_SSCyc2:	incbin	"Palettes\Cycle - Special Stage 2.bin"
 
 		include_Special_2				; Includes\GM_Special.asm
 
-; ---------------------------------------------------------------------------
-; Continue screen
-; ---------------------------------------------------------------------------
-
-GM_Continue:
-		bsr.w	PaletteFadeOut
-		disable_ints
-		move.w	(v_vdp_mode_buffer).w,d0
-		andi.b	#$BF,d0
-		move.w	d0,(vdp_control_port).l
-		lea	(vdp_control_port).l,a6
-		move.w	#$8004,(a6)				; 8 colour mode
-		move.w	#$8700,(a6)				; background colour
-		bsr.w	ClearScreen
-
-		lea	(v_ost_all).w,a1
-		moveq	#0,d0
-		move.w	#$7FF,d1
-	Cont_ClrObjRam:
-		move.l	d0,(a1)+
-		dbf	d1,Cont_ClrObjRam			; clear object RAM
-
-		locVRAM	$B000
-		lea	(Nem_TitleCard).l,a0			; load title card patterns
-		bsr.w	NemDec
-		locVRAM	$A000
-		lea	(Nem_ContSonic).l,a0			; load Sonic patterns
-		bsr.w	NemDec
-		locVRAM	$AA20
-		lea	(Nem_MiniSonic).l,a0			; load continue screen patterns
-		bsr.w	NemDec
-		moveq	#10,d1
-		jsr	(ContScrCounter).l			; run countdown	(start from 10)
-		moveq	#id_Pal_Continue,d0
-		bsr.w	PalLoad1				; load continue	screen palette
-		play.b	0, bsr.w, mus_Continue			; play continue	music
-		move.w	#659,(v_countdown).w			; set time delay to 11 seconds
-		clr.l	(v_camera_x_pos).w
-		move.l	#$1000000,(v_camera_y_pos).w
-		move.b	#id_ContSonic,(v_ost_player).w		; load Sonic object
-		move.b	#id_ContScrItem,(v_ost_cont_text).w	; load continue screen objects
-		move.b	#id_ContScrItem,(v_ost_cont_oval).w
-		move.b	#3,(v_ost_cont_oval+ost_priority).w
-		move.b	#4,(v_ost_cont_oval+ost_frame).w
-		move.b	#id_ContScrItem,(v_ost_cont_minisonic).w
-		move.b	#id_CSI_MakeMiniSonic,(v_ost_cont_minisonic+ost_routine).w
-		jsr	(ExecuteObjects).l
-		jsr	(BuildSprites).l
-		move.w	(v_vdp_mode_buffer).w,d0
-		ori.b	#$40,d0
-		move.w	d0,(vdp_control_port).l
-		bsr.w	PaletteFadeIn
-
-; ---------------------------------------------------------------------------
-; Continue screen main loop
-; ---------------------------------------------------------------------------
-
-Cont_MainLoop:
-		move.b	#$16,(v_vblank_routine).w
-		bsr.w	WaitForVBlank
-		cmpi.b	#6,(v_ost_player+ost_routine).w
-		bhs.s	loc_4DF2
-		disable_ints
-		move.w	(v_countdown).w,d1
-		divu.w	#$3C,d1
-		andi.l	#$F,d1
-		jsr	(ContScrCounter).l
-		enable_ints
-
-loc_4DF2:
-		jsr	(ExecuteObjects).l
-		jsr	(BuildSprites).l
-		cmpi.w	#$180,(v_ost_player+ost_x_pos).w	; has Sonic run off screen?
-		bhs.s	Cont_GotoLevel				; if yes, branch
-		cmpi.b	#6,(v_ost_player+ost_routine).w
-		bhs.s	Cont_MainLoop
-		tst.w	(v_countdown).w
-		bne.w	Cont_MainLoop
-		move.b	#id_Sega,(v_gamemode).w			; go to Sega screen
-		rts	
-; ===========================================================================
-
-Cont_GotoLevel:
-		move.b	#id_Level,(v_gamemode).w		; set screen mode to $0C (level)
-		move.b	#3,(v_lives).w				; set lives to 3
-		moveq	#0,d0
-		move.w	d0,(v_rings).w				; clear rings
-		move.l	d0,(v_time).w				; clear time
-		move.l	d0,(v_score).w				; clear score
-		move.b	d0,(v_last_lamppost).w			; clear lamppost count
-		subq.b	#1,(v_continues).w			; subtract 1 from continues
-		rts	
-; ===========================================================================
+		include "Includes\GM_Continue.asm"
 
 		include "Objects\Continue Screen Items.asm"	; ContScrItem
 		include "Objects\Continue Screen Sonic.asm"	; ContSonic
@@ -3088,9 +2991,7 @@ GM_Ending:
 		dbf	d1,End_ClrRam3				; clear	variables
 
 		disable_ints
-		move.w	(v_vdp_mode_buffer).w,d0
-		andi.b	#$BF,d0
-		move.w	d0,(vdp_control_port).l
+		disable_display
 		bsr.w	ClearScreen
 		lea	(vdp_control_port).l,a6
 		move.w	#$8B03,(a6)				; line scroll mode
@@ -3157,9 +3058,7 @@ End_LoadSonic:
 		move.w	#1800,(v_countdown).w
 		move.b	#$18,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
-		move.w	(v_vdp_mode_buffer).w,d0
-		ori.b	#$40,d0
-		move.w	d0,(vdp_control_port).l
+		enable_display
 		move.w	#$3F,(v_palfade_start).w
 		bsr.w	PaletteFadeIn
 

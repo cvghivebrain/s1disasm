@@ -7,13 +7,11 @@ GM_Special:
 		bsr.w	PaletteWhiteOut
 		disable_ints
 		lea	(vdp_control_port).l,a6
-		move.w	#$8B03,(a6)				; line scroll mode
-		move.w	#$8004,(a6)				; 8-colour mode
+		move.w	#$8B03,(a6)				; 1-pixel line scroll mode
+		move.w	#$8004,(a6)				; normal colour mode
 		move.w	#$8A00+175,(v_vdp_hint_counter).w
 		move.w	#$9011,(a6)				; 64x64 cell plane size
-		move.w	(v_vdp_mode_buffer).w,d0
-		andi.b	#$BF,d0
-		move.w	d0,(vdp_control_port).l
+		disable_display
 		bsr.w	ClearScreen
 		enable_ints
 		dma_fill	0,$6FFF,$5000
@@ -86,9 +84,7 @@ GM_Special:
 		move.b	#1,(f_debug_enable).w			; enable debug mode
 
 	SS_NoDebug:
-		move.w	(v_vdp_mode_buffer).w,d0
-		ori.b	#$40,d0
-		move.w	d0,(vdp_control_port).l
+		enable_display
 		bsr.w	PaletteWhiteIn
 
 ; ---------------------------------------------------------------------------

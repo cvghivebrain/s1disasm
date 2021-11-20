@@ -196,3 +196,23 @@ dma_fill:	macro value,length,loc
 		move.l	#$40000080+((loc&$3FFF)<<16)+((loc&$C000)>>14),(a5)
 		move.w	#value,(vdp_data_port).l
 		endm
+
+; ---------------------------------------------------------------------------
+; Disable display
+; ---------------------------------------------------------------------------
+
+disable_display:	macro
+		move.w	(v_vdp_mode_buffer).w,d0		; $81xx
+		andi.b	#$BF,d0					; clear bit 6
+		move.w	d0,(vdp_control_port).l
+		endm
+
+; ---------------------------------------------------------------------------
+; Enable display
+; ---------------------------------------------------------------------------
+
+enable_display:	macro
+		move.w	(v_vdp_mode_buffer).w,d0		; $81xx
+		ori.b	#$40,d0					; set bit 6
+		move.w	d0,(vdp_control_port).l
+		endm

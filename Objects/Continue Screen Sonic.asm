@@ -29,7 +29,7 @@ CSon_Main:	; Routine 0
 
 CSon_ChkLand:	; Routine 2
 		cmpi.w	#$1A0,ost_y_pos(a0)			; has Sonic landed yet?
-		bne.s	CSon_ShowFall				; if not, branch
+		bne.s	@keep_falling				; if not, branch
 
 		addq.b	#2,ost_routine(a0)
 		clr.w	ost_y_vel(a0)				; stop Sonic falling
@@ -38,7 +38,7 @@ CSon_ChkLand:	; Routine 2
 		move.b	#id_Walk,ost_anim(a0)
 		bra.s	CSon_Animate
 
-CSon_ShowFall:
+	@keep_falling:
 		jsr	(SpeedToPos).l
 		jsr	(Sonic_Animate).l
 		jmp	(Sonic_LoadGfx).l
@@ -46,11 +46,11 @@ CSon_ShowFall:
 
 CSon_Animate:	; Routine 4
 		tst.b	(v_joypad_press_actual).w		; is Start button pressed?
-		bmi.s	CSon_GetUp				; if yes, branch
+		bmi.s	@start_pressed				; if yes, branch
 		lea	(Ani_CSon).l,a1
 		jmp	(AnimateSprite).l
 
-CSon_GetUp:
+	@start_pressed:
 		addq.b	#2,ost_routine(a0)
 		move.l	#Map_Sonic,ost_mappings(a0)
 		move.w	#$780,ost_tile(a0)
@@ -61,14 +61,14 @@ CSon_GetUp:
 
 CSon_Run:	; Routine 6
 		cmpi.w	#$800,ost_inertia(a0)			; check Sonic's inertia
-		bne.s	CSon_AddInertia				; if too low, branch
+		bne.s	@add_inertia				; if too low, branch
 		move.w	#$1000,ost_x_vel(a0)			; move Sonic to the right
-		bra.s	CSon_ShowRun
+		bra.s	@display
 
-CSon_AddInertia:
+	@add_inertia:
 		addi.w	#$20,ost_inertia(a0)			; increase inertia
 
-CSon_ShowRun:
+	@display:
 		jsr	(SpeedToPos).l
 		jsr	(Sonic_Animate).l
 		jmp	(Sonic_LoadGfx).l
