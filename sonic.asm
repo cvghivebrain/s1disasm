@@ -17,11 +17,12 @@
 		include "Macros - More CPUs.asm"
 		include "Macros - 68k Extended.asm"
 		include "Constants.asm"
-		include "sound/Sounds.asm"
-		include "sound/Sound Equates.asm"
+		include "sound\Sounds.asm"
+		include "sound\Sound Equates.asm"
 		include "RAM Addresses.asm"
 		include "Macros - General.asm"
 		include "Macros - Sonic.asm"
+		include "Includes\Compatibility.asm"
 
 		cpu	68000
 
@@ -3316,7 +3317,7 @@ GM_Credits:
 		dbf	d1,Cred_ClrObjRam			; clear object RAM
 
 		locVRAM	$B400
-		lea	(Nem_CreditText).l,a0			;	load credits alphabet patterns
+		lea	(Nem_CreditText).l,a0			; load credits alphabet patterns
 		bsr.w	NemDec
 
 		lea	(v_pal_dry_dup).w,a1
