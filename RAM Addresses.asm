@@ -15,7 +15,7 @@ v_error_type:			equ $FFFFFC44 ; error type - v_respawn_list uses same space
 
 v_256x256_tiles:		equ   $FF0000 ; 256x256 tile mappings ($A400 bytes)
 				rsset $FFFFA400
-v_level_layout:			rs.b $400 ; $FFFFA400 ; level and background layouts
+v_level_layout:			rs.b sizeof_level ; $FFFFA400 ; level and background layouts ($400 bytes)
 v_bgscroll_buffer:		rs.b $200 ; $FFFFA800 ; background scroll buffer
 v_nem_gfx_buffer:		rs.b $200 ; $FFFFAA00 ; Nemesis graphics decompression buffer
 v_sprite_queue:			rs.b $400 ; $FFFFAC00 ; sprite display queue, in order of priority

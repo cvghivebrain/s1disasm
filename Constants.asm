@@ -5,6 +5,10 @@
 sizeof_ost:		equ $40
 countof_ost:		equ $80
 
+level_max_width:	equ $40
+level_max_height:	equ 8
+sizeof_level:		equ level_max_width*level_max_height*2	; includes background in $40 byte alternating strips
+
 ; VRAM data
 vram_window:	equ $A000	; window namespace - unused
 vram_fg:	equ $C000	; foreground namespace ($1000 bytes)
