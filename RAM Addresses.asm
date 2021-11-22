@@ -264,12 +264,12 @@ v_scroll_block_2_height:	rs.w 1 ; $FFFFF7F2 ; scroll block height - always $100,
 v_scroll_block_3_height:	rs.w 1 ; $FFFFF7F4 ; scroll block height - always $100, unused
 v_scroll_block_4_height:	rs.w 1 ; $FFFFF7F6 ; scroll block height - $100 for GHZ; 0 for all others, unused
 
-v_sprite_buffer:		equ $FFFFF800 ; sprite table ($280 bytes, last $80 bytes are overwritten by v_pal_water_dup)
+v_sprite_buffer:		equ $FFFFF800 ; sprite table ($280 bytes, last $80 bytes are overwritten by v_pal_water_next)
 				rsset $FFFFFA00
-v_pal_water_dup:		rs.w $10*4 ; $FFFFFA00 ; duplicate underwater palette, used for transitions
+v_pal_water_next:		rs.w $10*4 ; $FFFFFA00 ; duplicate underwater palette, used for transitions
 v_pal_water:			rs.w $10*4 ; $FFFFFA80 ; main underwater palette
 v_pal_dry:			rs.w $10*4 ; $FFFFFB00 ; main palette
-v_pal_dry_dup:			rs.w $10*4 ; $FFFFFB80 ; duplicate palette, used for transitions
+v_pal_dry_next:			rs.w $10*4 ; $FFFFFB80 ; duplicate palette, used for transitions
 v_respawn_list:			rs.w $100 ; $FFFFFC00 ; object state list
 
 v_stack:			equ $FFFFFD00 ; stack

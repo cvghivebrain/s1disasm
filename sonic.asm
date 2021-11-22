@@ -1213,96 +1213,86 @@ TilemapToVRAM:
 NemDec:		include "Includes\Nemesis Decompression.asm"
 
 ; ---------------------------------------------------------------------------
-; Subroutine to load pattern load cues (aka to queue pattern load requests)
-; ---------------------------------------------------------------------------
+; Subroutine to load pattern load cues (to queue pattern load requests)
 
-; ARGUMENTS
-; d0 = index of PLC list
+; input:
+;	d0 = index of PLC list
 ; ---------------------------------------------------------------------------
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-; LoadPLC:
 AddPLC:
-		movem.l	a1-a2,-(sp)
-		lea	(ArtLoadCues).l,a1
+		movem.l	a1-a2,-(sp)				; save a1/a2 to stack
+		lea	(PatternLoadCues).l,a1
 		add.w	d0,d0
 		move.w	(a1,d0.w),d0
 		lea	(a1,d0.w),a1				; jump to relevant PLC
-		lea	(v_plc_buffer).w,a2			; PLC buffer space
+		lea	(v_plc_buffer).w,a2			; PLC buffer space in RAM
 
 	@findspace:
-		tst.l	(a2)					; is space available in RAM?
+		tst.l	(a2)					; is first space available?
 		beq.s	@copytoRAM				; if yes, branch
-		addq.w	#6,a2					; if not, try next space
-		bra.s	@findspace
+		addq.w	#sizeof_plc,a2				; if not, try next space
+		bra.s	@findspace				; repeat until space is found (warning: there are $10 spaces, but it may overflow)
 ; ===========================================================================
 
 @copytoRAM:
-		move.w	(a1)+,d0				; get length of PLC
-		bmi.s	@skip
+		move.w	(a1)+,d0				; get PLC item count
+		bmi.s	@skip					; branch if -1 (i.e. 0 items)
 
 	@loop:
 		move.l	(a1)+,(a2)+
 		move.w	(a1)+,(a2)+				; copy PLC to RAM
-		dbf	d0,@loop				; repeat for length of PLC
+		dbf	d0,@loop				; repeat for all items in PLC
 
 	@skip:
-		movem.l	(sp)+,a1-a2				; a1=object
+		movem.l	(sp)+,a1-a2				; restore a1/a2 from stack
 		rts	
 ; End of function AddPLC
 
 
+; ---------------------------------------------------------------------------
+; Subroutine to load pattern load cues (to queue pattern load requests)
+; and clear the PLC buffer
+
+; input:
+;	d0 = index of PLC list
+; ---------------------------------------------------------------------------
+
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-; Queue pattern load requests, but clear the PLQ first
 
-; ARGUMENTS
-; d0 = index of PLC list (see ArtLoadCues)
-
-; NOTICE: This subroutine does not check for buffer overruns. The programmer
-;	  (or hacker) is responsible for making sure that no more than
-;	  16 load requests are copied into the buffer.
-;	  _________DO NOT PUT MORE THAN 16 LOAD REQUESTS IN A LIST!__________
-;         (or if you change the size of Plc_Buffer, the limit becomes (Plc_Buffer_Only_End-Plc_Buffer)/6)
-
-; LoadPLC2:
 NewPLC:
-		movem.l	a1-a2,-(sp)
-		lea	(ArtLoadCues).l,a1
+		movem.l	a1-a2,-(sp)				; save a1/a2 to stack
+		lea	(PatternLoadCues).l,a1
 		add.w	d0,d0
 		move.w	(a1,d0.w),d0
 		lea	(a1,d0.w),a1				; jump to relevant PLC
 		bsr.s	ClearPLC				; erase any data in PLC buffer space
 		lea	(v_plc_buffer).w,a2
-		move.w	(a1)+,d0				; get length of PLC
-		bmi.s	@skip					; if it's negative, skip the next loop
+		move.w	(a1)+,d0				; get PLC item count
+		bmi.s	@skip					; branch if -1 (i.e. 0 items)
 
 	@loop:
 		move.l	(a1)+,(a2)+
 		move.w	(a1)+,(a2)+				; copy PLC to RAM
-		dbf	d0,@loop				; repeat for length of PLC
+		dbf	d0,@loop				; repeat for all items in PLC
 
 	@skip:
-		movem.l	(sp)+,a1-a2
+		movem.l	(sp)+,a1-a2				; restore a1/a2 from stack
 		rts	
 ; End of function NewPLC
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 ; ---------------------------------------------------------------------------
-; Subroutine to	clear the pattern load cues
+; Subroutine to	clear the pattern load cue buffer
 ; ---------------------------------------------------------------------------
-
-; Clear the pattern load queue ($FFF680 - $FFF700)
-
 
 ClearPLC:
 		lea	(v_plc_buffer).w,a2			; PLC buffer space in RAM
-		moveq	#$1F,d0					; bytesToLcnt(v_plc_buffer_end-v_plc_buffer)
+		moveq	#$1F,d0
 
 	@loop:
 		clr.l	(a2)+
-		dbf	d0,@loop
+		dbf	d0,@loop				; clear RAM $F680-$F700
 		rts	
 ; End of function ClearPLC
 
@@ -1427,7 +1417,7 @@ loc_16E2:
 
 
 QuickPLC:
-		lea	(ArtLoadCues).l,a1			; load the PLC index
+		lea	(PatternLoadCues).l,a1			; load the PLC index
 		add.w	d0,d0
 		move.w	(a1,d0.w),d0
 		lea	(a1,d0.w),a1
@@ -1514,129 +1504,7 @@ Pal_SBZCyc10:	incbin	"Palettes\Cycle - SBZ 10.bin"
 Pal_Sega1:	incbin	"Palettes\Sega1.bin"
 Pal_Sega2:	incbin	"Palettes\Sega2.bin"
 
-; ---------------------------------------------------------------------------
-; Subroutines to load palettes
-
-; input:
-;	d0 = index number for palette
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-PalLoad1:
-		lea	(PalPointers).l,a1
-		lsl.w	#3,d0
-		adda.w	d0,a1
-		movea.l	(a1)+,a2				; get palette data address
-		movea.w	(a1)+,a3				; get target RAM address
-		adda.w	#v_pal_dry_dup-v_pal_dry,a3		; skip to "main" RAM address
-		move.w	(a1)+,d7				; get length of palette data
-
-	@loop:
-		move.l	(a2)+,(a3)+				; move data to RAM
-		dbf	d7,@loop
-		rts	
-; End of function PalLoad1
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-PalLoad2:
-		lea	(PalPointers).l,a1
-		lsl.w	#3,d0
-		adda.w	d0,a1
-		movea.l	(a1)+,a2				; get palette data address
-		movea.w	(a1)+,a3				; get target RAM address
-		move.w	(a1)+,d7				; get length of palette
-
-	@loop:
-		move.l	(a2)+,(a3)+				; move data to RAM
-		dbf	d7,@loop
-		rts	
-; End of function PalLoad2
-
-; ---------------------------------------------------------------------------
-; Underwater palette loading subroutine
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-PalLoad3_Water:
-		lea	(PalPointers).l,a1
-		lsl.w	#3,d0
-		adda.w	d0,a1
-		movea.l	(a1)+,a2				; get palette data address
-		movea.w	(a1)+,a3				; get target RAM address
-		suba.w	#v_pal_dry-v_pal_water,a3		; skip to "main" RAM address
-		move.w	(a1)+,d7				; get length of palette data
-
-	@loop:
-		move.l	(a2)+,(a3)+				; move data to RAM
-		dbf	d7,@loop
-		rts	
-; End of function PalLoad3_Water
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-PalLoad4_Water:
-		lea	(PalPointers).l,a1
-		lsl.w	#3,d0
-		adda.w	d0,a1
-		movea.l	(a1)+,a2				; get palette data address
-		movea.w	(a1)+,a3				; get target RAM address
-		suba.w	#v_pal_dry-v_pal_water_dup,a3
-		move.w	(a1)+,d7				; get length of palette data
-
-	@loop:
-		move.l	(a2)+,(a3)+				; move data to RAM
-		dbf	d7,@loop
-		rts	
-; End of function PalLoad4_Water
-
-; ===========================================================================
-
-; ---------------------------------------------------------------------------
-; Palette pointers
-; ---------------------------------------------------------------------------
-
-palp:	macro paladdress,ramaddress,colours
-	id_\paladdress:	equ (*-PalPointers)/8
-	dc.l paladdress
-	dc.w ramaddress, (colours>>1)-1
-	endm
-
-PalPointers:
-
-; palette address, RAM address, number of colours
-
-		palp	Pal_SegaBG,v_pal_dry,$40		; 0 - Sega logo
-		palp	Pal_Title,v_pal_dry,$40			; 1 - title screen
-		palp	Pal_LevelSel,v_pal_dry,$40		; 2 - level select
-		palp	Pal_Sonic,v_pal_dry,$10			; 3 - Sonic
-Pal_Levels:
-		palp	Pal_GHZ,v_pal_dry+$20, $30		; 4 - GHZ
-		palp	Pal_LZ,v_pal_dry+$20,$30		; 5 - LZ
-		palp	Pal_MZ,v_pal_dry+$20,$30		; 6 - MZ
-		palp	Pal_SLZ,v_pal_dry+$20,$30		; 7 - SLZ
-		palp	Pal_SYZ,v_pal_dry+$20,$30		; 8 - SYZ
-		palp	Pal_SBZ1,v_pal_dry+$20,$30		; 9 - SBZ1
-			zonewarning Pal_Levels,8
-		palp	Pal_Special,v_pal_dry,$40		; $A (10) - special stage
-		palp	Pal_LZWater,v_pal_dry,$40		; $B (11) - LZ underwater
-		palp	Pal_SBZ3,v_pal_dry+$20,$30		; $C (12) - SBZ3
-		palp	Pal_SBZ3Water,v_pal_dry,$40		; $D (13) - SBZ3 underwater
-		palp	Pal_SBZ2,v_pal_dry+$20,$30		; $E (14) - SBZ2
-		palp	Pal_LZSonWater,v_pal_dry,$10		; $F (15) - LZ Sonic underwater
-		palp	Pal_SBZ3SonWat,v_pal_dry,$10		; $10 (16) - SBZ3 Sonic underwater
-		palp	Pal_SSResult,v_pal_dry,$40		; $11 (17) - special stage results
-		palp	Pal_Continue,v_pal_dry,$20		; $12 (18) - special stage results continue
-		palp	Pal_Ending,v_pal_dry,$40		; $13 (19) - ending sequence
-			even
+		include "Includes\PalLoad & PalPointers.asm"
 
 ; ---------------------------------------------------------------------------
 ; Palette data
@@ -1705,7 +1573,7 @@ GM_Sega:
 
 	@loadpal:
 		moveq	#id_Pal_SegaBG,d0
-		bsr.w	PalLoad2				; load Sega logo palette
+		bsr.w	PalLoad_Now				; load Sega logo palette
 		move.w	#-$A,(v_palcycle_num).w
 		move.w	#0,(v_palcycle_time).w
 		move.w	#0,(v_palcycle_buffer+$12).w
@@ -1778,7 +1646,7 @@ GM_Title:
 
 		copyTilemap	$FF0000,$C000,$27,$1B
 
-		lea	(v_pal_dry_dup).w,a1
+		lea	(v_pal_dry_next).w,a1
 		moveq	#cBlack,d0
 		move.w	#$1F,d1
 
@@ -1787,7 +1655,7 @@ GM_Title:
 		dbf	d1,Tit_ClrPal				; fill palette with 0 (black)
 
 		moveq	#id_Pal_Sonic,d0			; load Sonic's palette
-		bsr.w	PalLoad1
+		bsr.w	PalLoad_Next
 		move.b	#id_CreditsText,(v_ost_credits).w	; load "SONIC TEAM PRESENTS" object
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
@@ -1847,7 +1715,7 @@ GM_Title:
 		lea	(Nem_GHZ_1st).l,a0			; load GHZ patterns
 		bsr.w	NemDec
 		moveq	#id_Pal_Title,d0			; load title screen palette
-		bsr.w	PalLoad1
+		bsr.w	PalLoad_Next
 		play.b	1, bsr.w, mus_TitleScreen		; play title screen music
 		move.b	#0,(f_debug_enable).w			; disable debug mode
 		move.w	#$178,(v_countdown).w			; run title screen for $178 frames
@@ -1964,7 +1832,7 @@ Tit_ChkLevSel:
 		beq.w	PlayLevel				; if not, play level
 
 		moveq	#id_Pal_LevelSel,d0
-		bsr.w	PalLoad2				; load level select palette
+		bsr.w	PalLoad_Now				; load level select palette
 		lea	(v_hscroll_buffer).w,a1
 		moveq	#0,d0
 		move.w	#$DF,d1
@@ -2496,7 +2364,7 @@ Level_LoadPal:
 		move.w	#30,(v_air).w
 		enable_ints
 		moveq	#id_Pal_Sonic,d0
-		bsr.w	PalLoad2				; load Sonic's palette
+		bsr.w	PalLoad_Now				; load Sonic's palette
 		cmpi.b	#id_LZ,(v_zone).w			; is level LZ?
 		bne.s	Level_GetBgm				; if not, branch
 
@@ -2506,7 +2374,7 @@ Level_LoadPal:
 		moveq	#id_Pal_SBZ3SonWat,d0			; palette number $10 (SBZ3)
 
 	Level_WaterPal:
-		bsr.w	PalLoad3_Water				; load underwater palette
+		bsr.w	PalLoad_Water				; load underwater palette
 		tst.b	(v_last_lamppost).w
 		beq.s	Level_GetBgm
 		move.b	($FFFFFE53).w,(f_water_pal_full).w
@@ -2546,7 +2414,7 @@ Level_TtlCardLoop:
 
 	Level_SkipTtlCard:
 		moveq	#id_Pal_Sonic,d0
-		bsr.w	PalLoad1				; load Sonic's palette
+		bsr.w	PalLoad_Next				; load Sonic's palette
 		bsr.w	LevelSizeLoad
 		bsr.w	DeformLayers
 		bset	#redraw_left_bit,(v_fg_redraw_direction).w
@@ -2635,7 +2503,7 @@ Level_ChkWaterPal:
 		moveq	#id_Pal_SBZ3Water,d0			; palette $D (SBZ3 underwater)
 
 	Level_WtrNotSbz:
-		bsr.w	PalLoad4_Water
+		bsr.w	PalLoad_Water_Next
 
 Level_Delay:
 		move.w	#3,d1
@@ -3024,7 +2892,7 @@ End_LoadData:
 		lea	($FFFF9400).w,a1			; RAM address to buffer the patterns
 		bsr.w	KosDec
 		moveq	#id_Pal_Sonic,d0
-		bsr.w	PalLoad1				; load Sonic's palette
+		bsr.w	PalLoad_Next				; load Sonic's palette
 		play.w	0, bsr.w, mus_Ending			; play ending sequence music
 		btst	#bitA,(v_joypad_hold_actual).w		; is button A pressed?
 		beq.s	End_LoadSonic				; if not, branch
@@ -3125,7 +2993,7 @@ End_ChkEmerald:
 		move.w	#$4000,d2
 		bsr.w	DrawChunks
 		moveq	#id_Pal_Ending,d0
-		bsr.w	PalLoad1				; load ending palette
+		bsr.w	PalLoad_Next				; load ending palette
 		bsr.w	PaletteWhiteIn
 		bra.w	End_MainLoop
 
@@ -3219,7 +3087,7 @@ GM_Credits:
 		lea	(Nem_CreditText).l,a0			; load credits alphabet patterns
 		bsr.w	NemDec
 
-		lea	(v_pal_dry_dup).w,a1
+		lea	(v_pal_dry_next).w,a1
 		moveq	#0,d0
 		move.w	#$1F,d1
 	Cred_ClrPal:
@@ -3227,7 +3095,7 @@ GM_Credits:
 		dbf	d1,Cred_ClrPal				; fill palette with black
 
 		moveq	#id_Pal_Sonic,d0
-		bsr.w	PalLoad1				; load Sonic's palette
+		bsr.w	PalLoad_Next				; load Sonic's palette
 		move.b	#id_CreditsText,(v_ost_credits).w	; load credits object
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
@@ -3347,7 +3215,7 @@ TryAgainEnd:
 		moveq	#id_PLC_TryAgain,d0
 		bsr.w	QuickPLC				; load "TRY AGAIN" or "END" patterns
 
-		lea	(v_pal_dry_dup).w,a1
+		lea	(v_pal_dry_next).w,a1
 		moveq	#0,d0
 		move.w	#$1F,d1
 	TryAg_ClrPal:
@@ -3355,8 +3223,8 @@ TryAgainEnd:
 		dbf	d1,TryAg_ClrPal				; fill palette with black
 
 		moveq	#id_Pal_Ending,d0
-		bsr.w	PalLoad1				; load ending palette
-		clr.w	(v_pal_dry_dup+$40).w
+		bsr.w	PalLoad_Next				; load ending palette
+		clr.w	(v_pal_dry_next+$40).w
 		move.b	#id_EndEggman,(v_ost_endeggman).w	; load Eggman object
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
@@ -5610,12 +5478,12 @@ SS_Item_Glass4:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal3,0
 SS_Item_R2:	ss_sprite Map_SS_R,tile_Nem_SSRBlock,0		; $31 - R
 SS_Item_Bump1:	ss_sprite Map_Bump,tile_Nem_Bumper_SS,id_frame_bump_bumped1
 SS_Item_Bump2:	ss_sprite Map_Bump,tile_Nem_Bumper_SS,id_frame_bump_bumped2
-		ss_sprite Map_SS_R,tile_Nem_SSZone1,0		; £34 - Zone 1
-		ss_sprite Map_SS_R,tile_Nem_SSZone2,0		; £35 - Zone 2
-		ss_sprite Map_SS_R,tile_Nem_SSZone3,0		; £36 - Zone 3
-		ss_sprite Map_SS_R,tile_Nem_SSZone1,0		; £37 - Zone 4
-		ss_sprite Map_SS_R,tile_Nem_SSZone2,0		; £38 - Zone 5
-		ss_sprite Map_SS_R,tile_Nem_SSZone3,0		; £39 - Zone 6
+		ss_sprite Map_SS_R,tile_Nem_SSZone1,0		; ??34 - Zone 1
+		ss_sprite Map_SS_R,tile_Nem_SSZone2,0		; ??35 - Zone 2
+		ss_sprite Map_SS_R,tile_Nem_SSZone3,0		; ??36 - Zone 3
+		ss_sprite Map_SS_R,tile_Nem_SSZone1,0		; ??37 - Zone 4
+		ss_sprite Map_SS_R,tile_Nem_SSZone2,0		; ??38 - Zone 5
+		ss_sprite Map_SS_R,tile_Nem_SSZone3,0		; ??39 - Zone 6
 SS_Item_Ring:	ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,0	; $3A - ring
 SS_Item_Em1:	ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald,0	; $3B - emerald
 SS_Item_Em2:	ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald+tile_pal2,0 ; $3C - emerald
@@ -5670,7 +5538,7 @@ Art_LivesNums:	incbin	"Graphics\Lives Counter Numbers.bin"	; 8x8 pixel numbers o
 		include "Objects\_DebugMode.asm"
 
 		include_levelheaders				; Includes\LevelDataLoad, LevelLayoutLoad & LevelHeaders.asm
-ArtLoadCues:	include "Pattern Load Cues.asm"
+		include "Pattern Load Cues.asm"
 
 		align	$200,$FF
 		if Revision=0

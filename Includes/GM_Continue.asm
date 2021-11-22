@@ -30,7 +30,7 @@ GM_Continue:
 		moveq	#10,d1
 		jsr	(ContScrCounter).l			; run countdown	(start from 10)
 		moveq	#id_Pal_Continue,d0
-		bsr.w	PalLoad1				; load continue	screen palette
+		bsr.w	PalLoad_Next				; load continue	screen palette
 		play.b	0, bsr.w, mus_Continue			; play continue	music
 		move.w	#659,(v_countdown).w			; set timer to 11 seconds
 		clr.l	(v_camera_x_pos).w

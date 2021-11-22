@@ -57,7 +57,7 @@ GM_Special:
 		clr.b	(f_water_pal_full).w
 		clr.w	(f_restart).w
 		moveq	#id_Pal_Special,d0
-		bsr.w	PalLoad1				; load special stage palette
+		bsr.w	PalLoad_Next				; load special stage palette
 		jsr	(SS_Load).l				; load SS layout data
 		move.l	#0,(v_camera_x_pos).w
 		move.l	#0,(v_camera_y_pos).w
@@ -156,7 +156,7 @@ SS_FinishLoop:
 		jsr	(Hud_Base).l
 		enable_ints
 		moveq	#id_Pal_SSResult,d0
-		bsr.w	PalLoad2				; load results screen palette
+		bsr.w	PalLoad_Now				; load results screen palette
 		moveq	#id_PLC_Main,d0
 		bsr.w	NewPLC
 		moveq	#id_PLC_SSResult,d0

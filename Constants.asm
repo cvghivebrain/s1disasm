@@ -4,6 +4,8 @@
 
 sizeof_ost:		equ $40
 countof_ost:		equ $80
+sizeof_plc:		equ 6
+countof_plc:		equ $10
 
 level_max_width:	equ $40
 level_max_height:	equ 8

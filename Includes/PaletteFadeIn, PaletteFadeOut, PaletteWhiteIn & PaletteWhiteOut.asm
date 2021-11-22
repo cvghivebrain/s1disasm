@@ -38,7 +38,7 @@ PalFadeIn_Alt:							; start position and size are already set
 FadeIn_FromBlack:
 		moveq	#0,d0
 		lea	(v_pal_dry).w,a0
-		lea	(v_pal_dry_dup).w,a1
+		lea	(v_pal_dry_next).w,a1
 		move.b	(v_palfade_start).w,d0
 		adda.w	d0,a0
 		adda.w	d0,a1
@@ -53,7 +53,7 @@ FadeIn_FromBlack:
 
 		moveq	#0,d0
 		lea	(v_pal_water).w,a0
-		lea	(v_pal_water_dup).w,a1
+		lea	(v_pal_water_next).w,a1
 		move.b	(v_palfade_start).w,d0
 		adda.w	d0,a0
 		adda.w	d0,a1
@@ -227,7 +227,7 @@ PaletteWhiteIn:
 WhiteIn_FromWhite:
 		moveq	#0,d0
 		lea	(v_pal_dry).w,a0
-		lea	(v_pal_dry_dup).w,a1
+		lea	(v_pal_dry_next).w,a1
 		move.b	(v_palfade_start).w,d0
 		adda.w	d0,a0
 		adda.w	d0,a1
@@ -241,7 +241,7 @@ WhiteIn_FromWhite:
 		bne.s	@exit					; if not, branch
 		moveq	#0,d0
 		lea	(v_pal_water).w,a0
-		lea	(v_pal_water_dup).w,a1
+		lea	(v_pal_water_next).w,a1
 		move.b	(v_palfade_start).w,d0
 		adda.w	d0,a0
 		adda.w	d0,a1

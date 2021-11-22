@@ -38,7 +38,7 @@ LevelDataLoad:
 		moveq	#id_Pal_SBZ2,d0				; use SBZ2/FZ palette
 
 	@normalpal:
-		bsr.w	PalLoad1				; load palette (based on d0)
+		bsr.w	PalLoad_Next				; load palette (based on d0)
 		movea.l	(sp)+,a2				; retrieve level header address from stack
 		addq.w	#4,a2					; jump to 2nd PLC
 		moveq	#0,d0
