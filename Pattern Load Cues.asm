@@ -298,12 +298,13 @@ PLC_Signpost:	plcheader
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - beta special stage warp effect
 ; ---------------------------------------------------------------------------
-PLC_Warp:
 		if Revision=0
-PLC_Warp_:	plcheader
+PLC_Warp:	plcheader
 		plcm	Nem_Warp, $A820
-	PLC_Warp__end:
+		else
+PLC_Warp:
 		endc
+	PLC_Warp_end:
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - special stage
 ; ---------------------------------------------------------------------------

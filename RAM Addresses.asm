@@ -129,10 +129,16 @@ v_water_routine:		rs.b 1 ; $FFFFF64D ; water event routine counter
 f_water_pal_full:		rs.b 1 ; $FFFFF64E ; flag set when water covers the entire screen (00 = partly/all dry; 01 = all underwater)
 f_hblank_run_snd:		rs.b 1 ; $FFFFF64F ; flag set when sound driver should be run from HBlank
 v_palcycle_buffer:		rs.b $30 ; $FFFFF650 ; palette data buffer (used for palette cycling)
-v_plc_buffer:			rs.b $60 ; $FFFFF680 ; pattern load cues buffer (maximum $10 PLCs)
-v_nemdec_ptr:			rs.l 1 ; $FFFFF6E0 ; pointer for nemesis decompression code ($1502 or $150C)
-
-f_plc_execute:			equ $FFFFF6F8	; flag set for pattern load cue execution (2 bytes)
+v_plc_buffer:			rs.b sizeof_plc*countof_plc ; $FFFFF680 ; pattern load cues buffer (maximum $10 PLCs) ($60 bytes)
+v_plc_buffer_dest:		equ v_plc_buffer+4 ; VRAM destination for 1st item in PLC buffer (2 bytes)
+v_nem_mode_ptr:			rs.l 1 ; $FFFFF6E0 ; pointer for nemesis decompression code ($1502 or $150C)
+v_nem_repeat:			rs.l 1 ; $FFFFF6E4 ; Nemesis register buffer - d0: repeat counter
+v_nem_pixel:			rs.l 1 ; $FFFFF6E8 ; Nemesis register buffer - d1: pixel value
+v_nem_d2:			rs.l 1 ; $FFFFF6EC ; Nemesis register buffer - d2
+v_nem_header:			rs.l 1 ; $FFFFF6F0 ; Nemesis register buffer - d5: 3rd & 4th bytes of Nemesis archive header
+v_nem_shift:			rs.l 1 ; $FFFFF6F4 ; Nemesis register buffer - d6: shift value
+v_nem_tile_count:		rs.w 1 ; $FFFFF6F8 ; number of 8x8 tiles in a Nemesis archive
+v_nem_tile_count_frame:		rs.w 1 ; $FFFFF6FA ; number of 8x8 tiles to process in 1 frame
 
 				rsset $FFFFF700
 v_camera_x_pos:			rs.l 1 ; $FFFFF700 ; foreground camera x position
@@ -392,7 +398,10 @@ v_title_d_count:		rs.w 1 ; $FFFFFFE4 ; number of times the d-pad is pressed on t
 v_title_c_count:		rs.w 1 ; $FFFFFFE6 ; number of times C is pressed on title screen
 unused_ffe8:			rs.b 2
 v_title_unused:			rs.w 1 ; $FFFFFFEA
-unused_ffec:			rs.b 4
+v_sonic_angle1_unused:		rs.b 1 ; $FFFFFFEC ; Sonic's direction of movement as an angle - unused
+v_sonic_angle2_unused:		rs.b 1 ; $FFFFFFED ; v_sonic_angle1_unused-$20 - unused
+v_sonic_angle3_unused:		rs.b 1 ; $FFFFFFEE ; v_sonic_angle2_unused&$C0 - unused
+v_sonic_floor_dist_unused:	rs.b 1 ; $FFFFFFEF ; distance of Sonic from floor - unused
 v_demo_mode:			rs.w 1 ; $FFFFFFF0 ; demo mode flag - 0 = no; 1 = yes; $8001 = ending
 v_demo_num:			rs.w 1 ; $FFFFFFF2 ; demo level number (not the same as the level number)
 v_credits_num:			rs.w 1 ; $FFFFFFF4 ; credits index number

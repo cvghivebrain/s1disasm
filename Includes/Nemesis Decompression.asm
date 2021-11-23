@@ -9,7 +9,7 @@
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 ; Nemesis decompression to VRAM
-
+NemDec:
 		movem.l	d0-a1/a3-a5,-(sp)
 		lea	(NemPCD_WriteRowToVDP).l,a3		; write all data to the same location
 		lea	(vdp_data_port).l,a4			; specifically, to the VDP data port

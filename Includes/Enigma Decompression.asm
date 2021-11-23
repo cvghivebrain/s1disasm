@@ -17,7 +17,7 @@
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-
+EniDec:
 		movem.l	d0-d7/a1-a5,-(sp)
 		movea.w	d0,a3					; store starting art tile
 		move.b	(a0)+,d0

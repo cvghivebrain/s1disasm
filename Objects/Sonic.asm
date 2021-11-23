@@ -1147,11 +1147,11 @@ Sonic_Floor:
 		move.w	ost_x_vel(a0),d1
 		move.w	ost_y_vel(a0),d2
 		jsr	(CalcAngle).l
-		move.b	d0,($FFFFFFEC).w
+		move.b	d0,(v_sonic_angle1_unused).w
 		subi.b	#$20,d0
-		move.b	d0,($FFFFFFED).w
+		move.b	d0,(v_sonic_angle2_unused).w
 		andi.b	#$C0,d0
-		move.b	d0,($FFFFFFEE).w
+		move.b	d0,(v_sonic_angle3_unused).w
 		cmpi.b	#$40,d0
 		beq.w	loc_13680
 		cmpi.b	#$80,d0
@@ -1173,7 +1173,7 @@ loc_135F0:
 
 loc_13602:
 		bsr.w	Sonic_FindFloor
-		move.b	d1,($FFFFFFEF).w
+		move.b	d1,(v_sonic_floor_dist_unused).w
 		tst.w	d1
 		bpl.s	locret_1367E
 		move.b	ost_y_vel(a0),d2
