@@ -140,9 +140,9 @@ ptr:		macro
 
 locVRAM:	macro loc,controlport
 		if narg=1
-		move.l	#($40000000+((loc&$3FFF)<<16)+((loc&$C000)>>14)),(vdp_control_port).l
+		move.l	#($40000000+(((loc)&$3FFF)<<16)+(((loc)&$C000)>>14)),(vdp_control_port).l
 		else
-		move.l	#($40000000+((loc&$3FFF)<<16)+((loc&$C000)>>14)),\controlport
+		move.l	#($40000000+(((loc)&$3FFF)<<16)+(((loc)&$C000)>>14)),\controlport
 		endc
 		endm
 
@@ -191,9 +191,9 @@ dma:		macro
 dma_fill:	macro value,length,loc
 		lea	(vdp_control_port).l,a5
 		move.w	#$8F01,(a5)
-		move.l	#$94000000+((length&$FF00)<<8)+$9300+(length&$FF),(a5)
+		move.l	#$94000000+(((length)&$FF00)<<8)+$9300+((length)&$FF),(a5)
 		move.w	#$9780,(a5)
-		move.l	#$40000080+((loc&$3FFF)<<16)+((loc&$C000)>>14),(a5)
+		move.l	#$40000080+(((loc)&$3FFF)<<16)+(((loc)&$C000)>>14),(a5)
 		move.w	#value,(vdp_data_port).l
 		endm
 

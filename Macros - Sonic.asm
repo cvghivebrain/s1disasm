@@ -18,9 +18,9 @@ zonewarning:	macro loc,elementsize
 
 copyTilemap:	macro source,loc,width,height
 		lea	(source).l,a1
-		move.l	#$40000000+((loc&$3FFF)<<16)+((loc&$C000)>>14),d0
-		moveq	#width,d1
-		moveq	#height,d2
+		move.l	#$40000000+(((loc)&$3FFF)<<16)+(((loc)&$C000)>>14),d0
+		moveq	#width-1,d1
+		moveq	#height-1,d2
 		bsr.w	TilemapToVRAM
 		endm
 

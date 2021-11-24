@@ -139,8 +139,7 @@ v_nem_header:			rs.l 1 ; $FFFFF6F0 ; Nemesis register buffer - d5: 3rd & 4th byt
 v_nem_shift:			rs.l 1 ; $FFFFF6F4 ; Nemesis register buffer - d6: shift value
 v_nem_tile_count:		rs.w 1 ; $FFFFF6F8 ; number of 8x8 tiles in a Nemesis archive
 v_nem_tile_count_frame:		rs.w 1 ; $FFFFF6FA ; number of 8x8 tiles to process in 1 frame
-
-				rsset $FFFFF700
+unused_f6fc:			rs.b 4
 v_camera_x_pos:			rs.l 1 ; $FFFFF700 ; foreground camera x position
 v_camera_y_pos:			rs.l 1 ; $FFFFF704 ; foreground camera y position
 v_bg1_x_pos:			rs.l 1 ; $FFFFF708 ; background x position

@@ -12,16 +12,18 @@ level_max_height:	equ 8
 sizeof_level:		equ level_max_width*level_max_height*2	; includes background in $40 byte alternating strips
 
 ; VRAM data
-vram_window:	equ $A000	; window namespace - unused
-vram_fg:	equ $C000	; foreground namespace ($1000 bytes)
-vram_bg:	equ $E000	; background namespace ($1000 bytes)
+vram_window:	equ $A000	; window nametable - unused
+vram_fg:	equ $C000	; foreground nametable ($1000 bytes)
+vram_bg:	equ $E000	; background nametable ($1000 bytes)
 vram_sonic:	equ $F000	; Sonic graphics ($2E0 bytes)
 vram_sprites:	equ $F800	; sprite table ($280 bytes)
 vram_hscroll:	equ $FC00	; horizontal scroll table ($380 bytes)
 
-sizeof_vram_sonic:	equ $2E0 ; $17 (23) cells
+sizeof_cell:		equ $20
+sizeof_vram_sonic:	equ $17*sizeof_cell	; Sonic's graphics ($2E0 bytes)
 sizeof_vram_sprites:	equ $280
 sizeof_vram_hscroll:	equ $380
+sizeof_vram_row:	equ 64*2		; single row of fg/bg nametable, assuming 64 wide
 
 ; Levels
 id_GHZ:		equ 0

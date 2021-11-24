@@ -1198,15 +1198,15 @@ TilemapToVRAM:
 		lea	(vdp_data_port).l,a6
 		move.l	#$80<<16,d4
 
-	Tilemap_Line:
-		move.l	d0,4(a6)				; move d0 to VDP_control_port
+	@loop_row:
+		move.l	d0,4(a6)				; move d0 to vdp_control_port
 		move.w	d1,d3
 
-	Tilemap_Cell:
+	@loop_cell:
 		move.w	(a1)+,(a6)				; write value to namespace
-		dbf	d3,Tilemap_Cell				; next tile
+		dbf	d3,@loop_cell				; next tile
 		add.l	d4,d0					; goto next line
-		dbf	d2,Tilemap_Line				; next line
+		dbf	d2,@loop_row				; next line
 		rts	
 ; End of function TilemapToVRAM
 
@@ -1276,7 +1276,7 @@ Pal_SBZCyc9:	incbin	"Palettes\Cycle - SBZ 9.bin"
 Pal_SBZCyc10:	incbin	"Palettes\Cycle - SBZ 10.bin"
 
 		include	"Includes\PaletteFadeIn, PaletteFadeOut, PaletteWhiteIn & PaletteWhiteOut.asm"
-		include	"Includes\PalCycle_Sega.asm"
+		include	"Includes\GM_Sega.asm"
 Pal_Sega1:	incbin	"Palettes\Sega1.bin"
 Pal_Sega2:	incbin	"Palettes\Sega2.bin"
 
@@ -1311,74 +1311,7 @@ Pal_Ending:	incbin	"Palettes\Ending.bin"
 		include "Objects\_RandomNumber.asm"
 		include "Objects\_CalcSine & CalcAngle.asm"
 
-; ---------------------------------------------------------------------------
-; Sega screen
-; ---------------------------------------------------------------------------
-
-GM_Sega:
-		play.b	1, bsr.w, cmd_Stop			; stop music
-		bsr.w	ClearPLC
-		bsr.w	PaletteFadeOut
-		lea	(vdp_control_port).l,a6
-		move.w	#$8004,(a6)				; use 8-colour mode
-		move.w	#$8200+(vram_fg>>10),(a6)		; set foreground nametable address
-		move.w	#$8400+(vram_bg>>13),(a6)		; set background nametable address
-		move.w	#$8700,(a6)				; set background colour (palette entry 0)
-		move.w	#$8B00,(a6)				; full-screen vertical scrolling
-		clr.b	(f_water_pal_full).w
-		disable_ints
-		disable_display
-		bsr.w	ClearScreen
-		locVRAM	0
-		lea	(Nem_SegaLogo).l,a0			; load Sega	logo patterns
-		bsr.w	NemDec
-		lea	($FF0000).l,a1
-		lea	(Eni_SegaLogo).l,a0			; load Sega	logo mappings
-		move.w	#0,d0
-		bsr.w	EniDec
-
-		copyTilemap	$FF0000,$E510,$17,7
-		copyTilemap	$FF0180,$C000,$27,$1B
-
-		if Revision=0
-		else
-			tst.b   (v_console_region).w		; is console Japanese?
-			bmi.s   @loadpal
-			copyTilemap	$FF0A40,$C53A,2,1	; hide "TM" with a white rectangle
-		endc
-
-	@loadpal:
-		moveq	#id_Pal_SegaBG,d0
-		bsr.w	PalLoad_Now				; load Sega logo palette
-		move.w	#-$A,(v_palcycle_num).w
-		move.w	#0,(v_palcycle_time).w
-		move.w	#0,(v_palcycle_buffer+$12).w
-		move.w	#0,(v_palcycle_buffer+$10).w
-		enable_display
-
-Sega_WaitPal:
-		move.b	#2,(v_vblank_routine).w
-		bsr.w	WaitForVBlank
-		bsr.w	PalCycle_Sega
-		bne.s	Sega_WaitPal
-
-		play.b	1, bsr.w, cmd_Sega			; play "SEGA" sound
-		move.b	#$14,(v_vblank_routine).w
-		bsr.w	WaitForVBlank
-		move.w	#$1E,(v_countdown).w
-
-Sega_WaitEnd:
-		move.b	#2,(v_vblank_routine).w
-		bsr.w	WaitForVBlank
-		tst.w	(v_countdown).w
-		beq.s	Sega_GotoTitle
-		andi.b	#btnStart,(v_joypad_press_actual).w	; is Start button pressed?
-		beq.s	Sega_WaitEnd				; if not, branch
-
-Sega_GotoTitle:
-		move.b	#id_Title,(v_gamemode).w		; go to title screen
-		rts	
-; ===========================================================================
+		include_Sega					; "Includes\GM_Sega.asm"
 
 ; ---------------------------------------------------------------------------
 ; Title	screen
@@ -1420,7 +1353,7 @@ GM_Title:
 		move.w	#0,d0
 		bsr.w	EniDec
 
-		copyTilemap	$FF0000,$C000,$27,$1B
+		copyTilemap	$FF0000,$C000,$28,$1C
 
 		lea	(v_pal_dry_next).w,a1
 		moveq	#cBlack,d0
@@ -1485,7 +1418,7 @@ GM_Title:
 		move.w	#0,d0
 		bsr.w	EniDec
 
-		copyTilemap	$FF0000,$C206,$21,$15
+		copyTilemap	$FF0000,$C206,$22,$16
 
 		locVRAM	0
 		lea	(Nem_GHZ_1st).l,a0			; load GHZ patterns
