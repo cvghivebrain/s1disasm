@@ -24,6 +24,7 @@ sizeof_vram_sonic:	equ $17*sizeof_cell	; Sonic's graphics ($2E0 bytes)
 sizeof_vram_sprites:	equ $280
 sizeof_vram_hscroll:	equ $380
 sizeof_vram_row:	equ 64*2		; single row of fg/bg nametable, assuming 64 wide
+sizeof_art_text:	equ filesize("Graphics\Level Select & Debug Text.bin")
 
 ; Levels
 id_GHZ:		equ 0

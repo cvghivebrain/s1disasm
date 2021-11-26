@@ -16,9 +16,10 @@ zonewarning:	macro loc,elementsize
 ; input: source, destination, width [cells], height [cells]
 ; ---------------------------------------------------------------------------
 
-copyTilemap:	macro source,loc,width,height
+copyTilemap:	macro source,loc,x,y,width,height
 		lea	(source).l,a1
-		move.l	#$40000000+(((loc)&$3FFF)<<16)+(((loc)&$C000)>>14),d0
+		vram_loc: = (loc)+(sizeof_vram_row*(y))+((x)*2)
+		move.l	#$40000000+((vram_loc&$3FFF)<<16)+((vram_loc&$C000)>>14),d0
 		moveq	#width-1,d1
 		moveq	#height-1,d2
 		bsr.w	TilemapToVRAM

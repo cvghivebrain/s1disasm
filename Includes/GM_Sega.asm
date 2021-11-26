@@ -31,16 +31,15 @@ GM_Sega:
 		move.w	#0,d0
 		bsr.w	EniDec
 
-		copyTilemap	$FF0000,vram_bg+(sizeof_vram_row*$A)+$10,sega_bg_width,sega_bg_height
-		copyTilemap	$FF0000+(sega_bg_width*sega_bg_height*2),vram_fg,sega_fg_width,sega_fg_height
+		copyTilemap	$FF0000,vram_bg,8,$A,sega_bg_width,sega_bg_height
+		copyTilemap	$FF0000+(sega_bg_width*sega_bg_height*2),vram_fg,0,0,sega_fg_width,sega_fg_height
 								; copy mappings to fg/bg nametables in VRAM
 
 		if Revision=0
 		else
 			tst.b   (v_console_region).w		; is console Japanese?
 			bmi.s   @loadpal			; if not, branch
-			copyTilemap	$FF0A40,vram_fg+(sizeof_vram_row*$A)+$3A,3,2
-								; hide "TM" with a white 3x2 rectangle
+			copyTilemap	$FF0A40,vram_fg,$1D,$A,3,2 ; hide "TM" with a white 3x2 rectangle
 		endc
 
 	@loadpal:
