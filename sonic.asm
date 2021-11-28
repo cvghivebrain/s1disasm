@@ -1340,7 +1340,7 @@ loc_33B6:
 
 loc_33E4:
 		andi.b	#btnStart,(v_joypad_press_actual).w	; is Start button pressed?
-		bne.w	Tit_ChkLevSel				; if yes, branch
+		bne.w	Title_PressedStart			; if yes, branch
 		tst.w	(v_countdown).w
 		bne.w	loc_33B6
 		play.b	1, bsr.w, cmd_Fade			; fade out music

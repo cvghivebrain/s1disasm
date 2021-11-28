@@ -20,6 +20,8 @@ vram_sprites:	equ $F800	; sprite table ($280 bytes)
 vram_hscroll:	equ $FC00	; horizontal scroll table ($380 bytes)
 
 sizeof_cell:		equ $20
+sizeof_vram_fg:		equ sizeof_vram_row*32	; fg nametable, assuming 64x32 ($1000 bytes)
+sizeof_vram_bg:		equ sizeof_vram_row*32	; bg nametable, assuming 64x32 ($1000 bytes)
 sizeof_vram_sonic:	equ $17*sizeof_cell	; Sonic's graphics ($2E0 bytes)
 sizeof_vram_sprites:	equ $280
 sizeof_vram_hscroll:	equ $380

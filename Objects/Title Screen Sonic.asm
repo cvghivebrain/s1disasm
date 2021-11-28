@@ -20,7 +20,7 @@ TSon_Main:	; Routine 0
 		move.w	#$F0,ost_x_pos(a0)
 		move.w	#$DE,ost_y_screen(a0)			; position is fixed to screen
 		move.l	#Map_TSon,ost_mappings(a0)
-		move.w	#$300+tile_pal2,ost_tile(a0)
+		move.w	#(vram_title_sonic/$20)+tile_pal2,ost_tile(a0)
 		move.b	#1,ost_priority(a0)
 		move.b	#29,ost_anim_delay(a0)			; set time delay to 0.5 seconds
 		lea	(Ani_TSon).l,a1

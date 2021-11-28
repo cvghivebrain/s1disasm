@@ -101,7 +101,7 @@ vram_text:		equ $D000
 		lea	(vdp_control_port).l,a5
 		lea	(vdp_data_port).l,a6
 		lea	(v_bg1_x_pos).w,a3
-		lea	(v_level_layout+$40).w,a4
+		lea	(v_level_layout+level_max_width).w,a4	; background layout start address ($FFFFA440)
 		move.w	#$6000,d2
 		bsr.w	DrawChunks				; draw background
 		lea	($FF0000).l,a1
@@ -164,68 +164,69 @@ Title_MainLoop:
 		addq.w	#2,d0
 		move.w	d0,(v_ost_player+ost_x_pos).w		; move dummy to the right
 		cmpi.w	#$1C00,d0				; has dummy object passed $1C00 on x-axis?
-		blo.s	Tit_ChkRegion				; if not, branch
+		blo.s	Title_Cheat				; if not, branch
 
 		move.b	#id_Sega,(v_gamemode).w			; go to Sega screen
 		rts	
 ; ===========================================================================
 
-Tit_ChkRegion:
-		tst.b	(v_console_region).w			; check	if the machine is US or	Japanese
+Title_Cheat:
+		tst.b	(v_console_region).w			; check	if the machine is US/EU or Japanese
 		bpl.s	@japanese				; if Japanese, branch
 
-		lea	(LevSelCode_US).l,a0			; load US code
-		bra.s	Tit_EnterCheat
+		lea	(LevSelCode_US).l,a0			; load US/EU code
+		bra.s	@overseas
 
 	@japanese:
-		lea	(LevSelCode_J).l,a0			; load J code
+		lea	(LevSelCode_J).l,a0			; load JP code
 
-Tit_EnterCheat:
-		move.w	(v_title_d_count).w,d0
-		adda.w	d0,a0
+	@overseas:
+		move.w	(v_title_d_count).w,d0			; get number of times d-pad has been pressed in correct order
+		adda.w	d0,a0					; jump to relevant position in sequence
 		move.b	(v_joypad_press_actual).w,d0		; get button press
 		andi.b	#btnDir,d0				; read only UDLR buttons
 		cmp.b	(a0),d0					; does button press match the cheat code?
-		bne.s	Tit_ResetCheat				; if not, branch
+		bne.s	@reset_cheat				; if not, branch
 		addq.w	#1,(v_title_d_count).w			; next button press
-		tst.b	d0
-		bne.s	Tit_CountC
-		lea	(f_levelselect_cheat).w,a0
-		move.w	(v_title_c_count).w,d1
-		lsr.w	#1,d1
-		andi.w	#3,d1
-		beq.s	Tit_PlayRing
-		tst.b	(v_console_region).w
-		bpl.s	Tit_PlayRing
-		moveq	#1,d1
-		move.b	d1,1(a0,d1.w)				; cheat depends on how many times C is pressed
+		tst.b	d0					; is d-pad currently pressed?
+		bne.s	@count_c				; if yes, branch
 
-	Tit_PlayRing:
-		move.b	#1,(a0,d1.w)				; activate cheat
+		lea	(f_levelselect_cheat).w,a0		; cheat flag array
+		move.w	(v_title_c_count).w,d1			; d1 = number of times C was pressed
+		lsr.w	#1,d1					; divide by 2
+		andi.w	#3,d1					; read only bits 0/1
+		beq.s	@levelselect_only			; branch if 0
+		tst.b	(v_console_region).w
+		bpl.s	@levelselect_only			; branch if region is Japanese
+		moveq	#1,d1
+		move.b	d1,1(a0,d1.w)				; enable debug mode (C is pressed 2 or more times)
+
+	@levelselect_only:
+		move.b	#1,(a0,d1.w)				; activate cheat: no C = level select; CC+ = slowmo (US/EU); CC = slowmo (JP); CCCC = debug (JP); CCCCCC = hidden credits (JP)
 		play.b	1, bsr.w, sfx_Ring			; play ring sound when code is entered
-		bra.s	Tit_CountC
+		bra.s	@count_c
 ; ===========================================================================
 
-Tit_ResetCheat:
-		tst.b	d0
-		beq.s	Tit_CountC
+@reset_cheat:
+		tst.b	d0					; is d-pad currently pressed?
+		beq.s	@count_c				; if not, branch
 		cmpi.w	#9,(v_title_d_count).w
-		beq.s	Tit_CountC
+		beq.s	@count_c
 		move.w	#0,(v_title_d_count).w			; reset UDLR counter
 
-Tit_CountC:
+@count_c:
 		move.b	(v_joypad_press_actual).w,d0
 		andi.b	#btnC,d0				; is C button pressed?
-		beq.s	loc_3230				; if not, branch
+		beq.s	@c_not_pressed				; if not, branch
 		addq.w	#1,(v_title_c_count).w			; increment C counter
 
-loc_3230:
-		tst.w	(v_countdown).w
-		beq.w	GotoDemo
+	@c_not_pressed:
+		tst.w	(v_countdown).w				; has counter hit 0? (started at $178)
+		beq.w	GotoDemo				; if yes, branch
 		andi.b	#btnStart,(v_joypad_press_actual).w	; check if Start is pressed
 		beq.w	Title_MainLoop				; if not, branch
 
-Tit_ChkLevSel:
+Title_PressedStart:
 		tst.b	(f_levelselect_cheat).w			; check if level select code is on
 		beq.w	PlayLevel				; if not, play level
 		btst	#bitA,(v_joypad_hold_actual).w		; check if A is pressed
@@ -235,26 +236,26 @@ Tit_ChkLevSel:
 		bsr.w	PalLoad_Now				; load level select palette
 		lea	(v_hscroll_buffer).w,a1
 		moveq	#0,d0
-		move.w	#$DF,d1
+		move.w	#(sizeof_vram_hscroll/4)-1,d1
 
-	Tit_ClrScroll1:
+	@clear_hscroll:
 		move.l	d0,(a1)+
-		dbf	d1,Tit_ClrScroll1			; clear scroll data (in RAM)
+		dbf	d1,@clear_hscroll			; clear hscroll buffer (in RAM)
 
 		move.l	d0,(v_fg_y_pos_vsram).w
 		disable_ints
 		lea	(vdp_data_port).l,a6
-		locVRAM	$E000
-		move.w	#$3FF,d1
+		locVRAM	vram_bg
+		move.w	#(sizeof_vram_bg/4)-1,d1
 
-	Tit_ClrScroll2:
+	@clear_bg:
 		move.l	d0,(a6)
-		dbf	d1,Tit_ClrScroll2			; clear scroll data (in VRAM)
+		dbf	d1,@clear_bg				; clear bg nametable (in VRAM)
 
 		bsr.w	LevSelTextLoad
 
 ; ---------------------------------------------------------------------------
-; Level	Select
+; Level	Select loop
 ; ---------------------------------------------------------------------------
 
 LevelSelect:
