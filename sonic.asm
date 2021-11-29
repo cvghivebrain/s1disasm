@@ -1315,15 +1315,6 @@ Pal_Ending:	incbin	"Palettes\Ending.bin"
 		include "Includes\GM_Title.asm"
 
 ; ---------------------------------------------------------------------------
-; Level	select menu text
-; ---------------------------------------------------------------------------
-LevelMenuText:	if Revision=0
-		incbin	"Misc Data\Level Select Text.bin"
-		else
-		incbin	"Misc Data\Level Select Text (JP1).bin"
-		endc
-		even
-; ---------------------------------------------------------------------------
 ; Music playlist
 ; ---------------------------------------------------------------------------
 MusicList:

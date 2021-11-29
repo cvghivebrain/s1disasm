@@ -566,7 +566,7 @@ text_y:		= 4
 text_pos:	= (sizeof_vram_row*text_y)+(text_x*2)		; position to draw text (in 8x8 cells)
 soundtest_pos:	= (sizeof_vram_row*$18)+($18*2)
 
-		lea	(LevelMenuText).l,a1
+		lea	(LevSel_Strings).l,a1
 		lea	(vdp_data_port).l,a6
 		locVRAM	vram_bg+text_pos,d4			; $E210
 		move.w	#(vram_text/$20)+tile_pal4+tile_hi,d3	; VRAM setting ($E680: 4th palette, $680th tile)
@@ -585,7 +585,7 @@ soundtest_pos:	= (sizeof_vram_row*$18)+($18*2)
 		lsl.w	#7,d0					; multiply by $80
 		swap	d0					; convert to VDP format
 		add.l	d0,d4					; d4 = VDP address of highlighted line
-		lea	(LevelMenuText).l,a1			; get strings
+		lea	(LevSel_Strings).l,a1			; get strings
 		lsl.w	#3,d1
 		move.w	d1,d0
 		add.w	d1,d1
@@ -650,3 +650,59 @@ LevSel_DrawLine:
 		dbf	d2,@loop
 		rts	
 ; End of function LevSel_DrawLine
+
+; ---------------------------------------------------------------------------
+; Level	select menu text strings
+; ---------------------------------------------------------------------------
+lsline:		macro
+		ls_str:	equs \1
+		rept strlen(\1)
+		ls_chr:	substr ,1,"\ls_str"
+		ls_str:	substr 2,,"\ls_str"
+		if instr("YZ","\ls_chr")
+			dc.b "\ls_chr"-$4A			; Y and Z gfx are stored before A
+		elseif instr(" ","\ls_chr")
+			dc.b $FF				; space = $FF
+		else
+			dc.b "\ls_chr"-$30
+		endc
+		endr
+		endm
+
+LevSel_Strings:	lsline "GREEN HILL ZONE  STAGE 1"
+		lsline "                 STAGE 2"
+		lsline "                 STAGE 3"
+		if Revision=0
+		lsline "LABYRINTH ZONE   STAGE 1"
+		lsline "                 STAGE 2"
+		lsline "                 STAGE 3"
+		lsline "MARBLE ZONE      STAGE 1"
+		lsline "                 STAGE 2"
+		lsline "                 STAGE 3"
+		lsline "STAR LIGHT ZONE  STAGE 1"
+		lsline "                 STAGE 2"
+		lsline "                 STAGE 3"
+		lsline "SPRING YARD ZONE STAGE 1"
+		lsline "                 STAGE 2"
+		lsline "                 STAGE 3"
+		else
+		lsline "MARBLE ZONE      STAGE 1"
+		lsline "                 STAGE 2"
+		lsline "                 STAGE 3"
+		lsline "SPRING YARD ZONE STAGE 1"
+		lsline "                 STAGE 2"
+		lsline "                 STAGE 3"
+		lsline "LABYRINTH ZONE   STAGE 1"
+		lsline "                 STAGE 2"
+		lsline "                 STAGE 3"
+		lsline "STAR LIGHT ZONE  STAGE 1"
+		lsline "                 STAGE 2"
+		lsline "                 STAGE 3"
+		endc
+		lsline "SCRAP BRAIN ZONE STAGE 1"
+		lsline "                 STAGE 2"
+		lsline "                 STAGE 3"
+		lsline "FINAL ZONE              "
+		lsline "SPECIAL STAGE           "
+		lsline "SOUND SELECT            "
+		even

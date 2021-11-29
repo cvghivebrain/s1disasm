@@ -6,6 +6,7 @@ Differences with the disassembly on the [Sonic Retro Github page](https://github
 * __dma__ macro - Replaces writeVRAM and writeCRAM macros.
 * __gmptr__ macro - Generates ids for game modes.
 * __index__ & __ptr__ macros - Creates relative and absolute pointer lists; automatically generates id numbers.
+* __lsline__ macro - Allows level select menu strings to be stored as plain ascii.
 * __mirror_index__ macro - Mirrors an existing pointer list, used to keep Sonic's mappings and DPLCs aligned.
 * __nemesis__ & __nemfile__ macros - Records the file name and decompressed size of Nemesis-compressed art for VRAM management.
 * __objpos__ macro - Object placement in levels, also uses object ids instead of fixed numbers.
