@@ -222,7 +222,7 @@ Title_Cheat:
 
 	@c_not_pressed:
 		tst.w	(v_countdown).w				; has counter hit 0? (started at $178)
-		beq.w	GotoDemo				; if yes, branch
+		beq.w	PlayDemo				; if yes, branch
 		andi.b	#btnStart,(v_joypad_press_actual).w	; check if Start is pressed
 		beq.w	Title_MainLoop				; if not, branch
 
@@ -252,7 +252,7 @@ Title_PressedStart:
 		move.l	d0,(a6)
 		dbf	d1,@clear_bg				; clear bg nametable (in VRAM)
 
-		bsr.w	LevSelTextLoad
+		bsr.w	LevSel_ShowText
 
 ; ---------------------------------------------------------------------------
 ; Level	Select loop
@@ -261,45 +261,46 @@ Title_PressedStart:
 LevelSelect:
 		move.b	#4,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
-		bsr.w	LevSelControls
+		bsr.w	LevSel_Navigate				; detect d-pad usage and change selection accordingly
 		bsr.w	RunPLC
 		tst.l	(v_plc_buffer).w
 		bne.s	LevelSelect
 		andi.b	#btnABC+btnStart,(v_joypad_press_actual).w ; is A, B, C, or Start pressed?
 		beq.s	LevelSelect				; if not, branch
 		move.w	(v_levelselect_item).w,d0
-		cmpi.w	#$14,d0					; have you selected item $14 (sound test)?
+		cmpi.w	#(LevSel_Ptr_ST-LevSel_Ptrs)/2,d0	; have you selected item $14 (sound test)?
 		bne.s	LevSel_Level_SS				; if not, go to	Level/SS subroutine
+
 		move.w	(v_levelselect_sound).w,d0
 		addi.w	#$80,d0
-		tst.b	(f_credits_cheat).w			; is Japanese Credits cheat on?
-		beq.s	LevSel_NoCheat				; if not, branch
+		tst.b	(f_credits_cheat).w			; is Japanese credits cheat on?
+		beq.s	@nocheat				; if not, branch
 		cmpi.w	#$9F,d0					; is sound $9F being played?
 		beq.s	LevSel_Ending				; if yes, branch
 		cmpi.w	#$9E,d0					; is sound $9E being played?
 		beq.s	LevSel_Credits				; if yes, branch
 
-LevSel_NoCheat:
+	@nocheat:
 		; This is a workaround for a bug, see Sound_ChkValue for more.
 		; Once you've fixed the bugs there, comment these four instructions out
 		cmpi.w	#_lastMusic+1,d0			; is sound $80-$93 being played?
-		blo.s	LevSel_PlaySnd				; if yes, branch
+		blo.s	@play					; if yes, branch
 		cmpi.w	#_firstSfx,d0				; is sound $94-$9F being played?
 		blo.s	LevelSelect				; if yes, branch
 
-LevSel_PlaySnd:
+	@play:
 		bsr.w	PlaySound1
 		bra.s	LevelSelect
 ; ===========================================================================
 
 LevSel_Ending:
-		move.b	#id_Ending,(v_gamemode).w		; set screen mode to $18 (Ending)
+		move.b	#id_Ending,(v_gamemode).w		; set gamemode to $18 (Ending)
 		move.w	#(id_EndZ<<8),(v_zone).w		; set level to 0600 (Ending)
 		rts	
 ; ===========================================================================
 
 LevSel_Credits:
-		move.b	#id_Credits,(v_gamemode).w		; set screen mode to $1C (Credits)
+		move.b	#id_Credits,(v_gamemode).w		; set gamemode to $1C (Credits)
 		play.b	1, bsr.w, mus_Credits			; play credits music
 		move.w	#0,(v_credits_num).w
 		rts	
@@ -307,11 +308,11 @@ LevSel_Credits:
 
 LevSel_Level_SS:
 		add.w	d0,d0
-		move.w	LevSel_Ptrs(pc,d0.w),d0			; load level number
-		bmi.w	LevelSelect
+		move.w	LevSel_Ptrs(pc,d0.w),d0			; load zone/act number
+		bmi.w	LevelSelect				; branch if it's $8000+ (sound test)
 		cmpi.w	#id_SS*$100,d0				; check	if level is 0700 (Special Stage)
 		bne.s	LevSel_Level				; if not, branch
-		move.b	#id_Special,(v_gamemode).w		; set screen mode to $10 (Special Stage)
+		move.b	#id_Special,(v_gamemode).w		; set gamemode to $10 (Special Stage)
 		clr.w	(v_zone).w				; clear	level
 		move.b	#3,(v_lives).w				; set lives to 3
 		moveq	#0,d0
@@ -330,7 +331,7 @@ LevSel_Level:
 		move.w	d0,(v_zone).w				; set level number
 
 PlayLevel:
-		move.b	#id_Level,(v_gamemode).w		; set screen mode to $0C (level)
+		move.b	#id_Level,(v_gamemode).w		; set gamemode to $0C (level)
 		move.b	#3,(v_lives).w				; set lives to 3
 		moveq	#0,d0
 		move.w	d0,(v_rings).w				; clear rings
@@ -394,8 +395,9 @@ LevSel_Ptrs:	if Revision=0
 		dc.b id_LZ, 3
 		dc.b id_SBZ, 2
 		endc
-		dc.b id_SS, 0					; Special Stage
-		dc.w $8000					; Sound Test
+LevSel_Ptr_SS:	dc.b id_SS, 0					; Special Stage ($13)
+LevSel_Ptr_ST:	dc.w $8000					; Sound Test ($14)
+LevSel_Ptr_End:
 		even
 ; ---------------------------------------------------------------------------
 ; Level	select codes
@@ -409,3 +411,242 @@ LevSelCode_J:	if Revision=0
 
 LevSelCode_US:	dc.b btnUp,btnDn,btnL,btnR,0,$FF
 		even
+
+; ---------------------------------------------------------------------------
+; Demo mode
+; ---------------------------------------------------------------------------
+
+PlayDemo:
+		move.w	#30,(v_countdown).w			; set delay to half a second
+
+@loop_delay:
+		move.b	#4,(v_vblank_routine).w
+		bsr.w	WaitForVBlank
+		bsr.w	DeformLayers
+		bsr.w	PaletteCycle
+		bsr.w	RunPLC
+		move.w	(v_ost_player+ost_x_pos).w,d0		; dummy object x pos
+		addq.w	#2,d0					; increment
+		move.w	d0,(v_ost_player+ost_x_pos).w		; update
+		cmpi.w	#$1C00,d0				; has dummy object reached $1C00?
+		blo.s	@chk_start				; if not, branch
+		move.b	#id_Sega,(v_gamemode).w			; goto Sega screen
+		rts	
+; ===========================================================================
+
+@chk_start:
+		andi.b	#btnStart,(v_joypad_press_actual).w	; is Start button pressed?
+		bne.w	Title_PressedStart			; if yes, branch
+		tst.w	(v_countdown).w				; has delay timer hit 0?
+		bne.w	@loop_delay				; if not, branch
+
+		play.b	1, bsr.w, cmd_Fade			; fade out music
+		move.w	(v_demo_num).w,d0			; load demo number
+		andi.w	#7,d0
+		add.w	d0,d0
+		move.w	DemoLevelArray(pc,d0.w),d0		; load level number for	demo
+		move.w	d0,(v_zone).w
+		addq.w	#1,(v_demo_num).w			; add 1 to demo number
+		cmpi.w	#4,(v_demo_num).w			; is demo number less than 4?
+		blo.s	@demo_0_to_3				; if yes, branch
+		move.w	#0,(v_demo_num).w			; reset demo number to	0
+
+	@demo_0_to_3:
+		move.w	#1,(v_demo_mode).w			; turn demo mode on
+		move.b	#id_Demo,(v_gamemode).w			; set screen mode to 08 (demo)
+		cmpi.w	#$600,d0				; is level number 0600 (special	stage)?
+		bne.s	@demo_level				; if not, branch
+		move.b	#id_Special,(v_gamemode).w		; set screen mode to $10 (Special Stage)
+		clr.w	(v_zone).w				; clear	level number
+		clr.b	(v_last_ss_levelid).w			; clear special stage number
+
+	@demo_level:
+		move.b	#3,(v_lives).w				; set lives to 3
+		moveq	#0,d0
+		move.w	d0,(v_rings).w				; clear rings
+		move.l	d0,(v_time).w				; clear time
+		move.l	d0,(v_score).w				; clear score
+		if Revision=0
+		else
+			move.l	#5000,(v_score_next_life).w	; extra life is awarded at 50000 points
+		endc
+		rts	
+
+; ---------------------------------------------------------------------------
+; Demo level array
+
+; Lists levels used in demos
+; ---------------------------------------------------------------------------
+DemoLevelArray:
+		dc.b id_GHZ, 0					; Green Hill Zone, act 1
+		dc.b id_MZ, 0					; Marble Zone, act 1
+		dc.b id_SYZ, 0					; Spring Yard Zone, act 1
+		dc.w $600					; Special Stage
+
+; ---------------------------------------------------------------------------
+; Subroutine to	change what you're selecting in the level select
+; ---------------------------------------------------------------------------
+
+; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+
+
+LevSel_Navigate:
+		move.b	(v_joypad_press_actual).w,d1
+		andi.b	#btnUp+btnDn,d1				; is up/down currently pressed?
+		bne.s	@updown					; if yes, branch
+		subq.w	#1,(v_levelselect_hold_delay).w		; decrement cooldown timer
+		bpl.s	LevSel_SndTest				; if time remains, branch
+
+	@updown:
+		move.w	#11,(v_levelselect_hold_delay).w	; reset time delay to 1/5th of a second
+		move.b	(v_joypad_hold_actual).w,d1
+		andi.b	#btnUp+btnDn,d1				; is up/down pressed?
+		beq.s	LevSel_SndTest				; if not, branch
+		move.w	(v_levelselect_item).w,d0
+		btst	#bitUp,d1				; is up	pressed?
+		beq.s	@down					; if not, branch
+		subq.w	#1,d0					; move up 1 selection
+		bhs.s	@down
+		moveq	#(LevSel_Ptr_ST-LevSel_Ptrs)/2,d0	; if selection moves below 0, jump to selection	$14
+
+	@down:
+		btst	#bitDn,d1				; is down pressed?
+		beq.s	@set_item				; if not, branch
+		addq.w	#1,d0					; move down 1 selection
+		cmpi.w	#(LevSel_Ptr_End-LevSel_Ptrs)/2,d0
+		blo.s	@set_item
+		moveq	#0,d0					; if selection moves above $14,	jump to	selection 0
+
+	@set_item:
+		move.w	d0,(v_levelselect_item).w		; set new selection
+		bsr.w	LevSel_ShowText				; refresh text
+		rts	
+; ===========================================================================
+
+LevSel_SndTest:
+		cmpi.w	#(LevSel_Ptr_ST-LevSel_Ptrs)/2,(v_levelselect_item).w ; is item $14 selected?
+		bne.s	@exit					; if not, branch
+		move.b	(v_joypad_press_actual).w,d1
+		andi.b	#btnR+btnL,d1				; is left/right	pressed?
+		beq.s	@exit					; if not, branch
+		move.w	(v_levelselect_sound).w,d0
+		btst	#bitL,d1				; is left pressed?
+		beq.s	@right					; if not, branch
+		subq.w	#1,d0					; subtract 1 from sound	test
+		bhs.s	@right
+		moveq	#$4F,d0					; if sound test	moves below 0, set to $4F
+
+	@right:
+		btst	#bitR,d1				; is right pressed?
+		beq.s	@refresh_text				; if not, branch
+		addq.w	#1,d0					; add 1	to sound test
+		cmpi.w	#$50,d0
+		blo.s	@refresh_text
+		moveq	#0,d0					; if sound test	moves above $4F, set to	0
+
+	@refresh_text:
+		move.w	d0,(v_levelselect_sound).w		; set sound test number
+		bsr.w	LevSel_ShowText				; refresh text
+
+	@exit:
+		rts	
+; End of function LevSel_Navigate
+
+; ---------------------------------------------------------------------------
+; Subroutine to load level select text
+; ---------------------------------------------------------------------------
+
+; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+
+
+LevSel_ShowText:
+
+text_x:		= 8
+text_y:		= 4
+text_pos:	= (sizeof_vram_row*text_y)+(text_x*2)		; position to draw text (in 8x8 cells)
+soundtest_pos:	= (sizeof_vram_row*$18)+($18*2)
+
+		lea	(LevelMenuText).l,a1
+		lea	(vdp_data_port).l,a6
+		locVRAM	vram_bg+text_pos,d4			; $E210
+		move.w	#(vram_text/$20)+tile_pal4+tile_hi,d3	; VRAM setting ($E680: 4th palette, $680th tile)
+		moveq	#$14,d1					; number of lines of text
+
+	@loop_lines:
+		move.l	d4,4(a6)
+		bsr.w	LevSel_DrawLine				; draw line of text
+		addi.l	#sizeof_vram_row<<16,d4			; jump to next line
+		dbf	d1,@loop_lines
+
+		moveq	#0,d0
+		move.w	(v_levelselect_item).w,d0		; get number of line currently highlighted
+		move.w	d0,d1					; copy to d1
+		locVRAM	vram_bg+text_pos,d4			; $E210
+		lsl.w	#7,d0					; multiply by $80
+		swap	d0					; convert to VDP format
+		add.l	d0,d4					; d4 = VDP address of highlighted line
+		lea	(LevelMenuText).l,a1			; get strings
+		lsl.w	#3,d1
+		move.w	d1,d0
+		add.w	d1,d1
+		add.w	d0,d1					; d1 = line number * 24
+		adda.w	d1,a1					; jump to string for highlighted line
+		move.w	#(vram_text/$20)+tile_pal3+tile_hi,d3	; VRAM setting ($C680: 3rd palette, $680th tile)
+		move.l	d4,4(a6)
+		bsr.w	LevSel_DrawLine				; recolour selected line
+
+		move.w	#(vram_text/$20)+tile_pal4+tile_hi,d3	; white text for sound test
+		cmpi.w	#(LevSel_Ptr_ST-LevSel_Ptrs)/2,(v_levelselect_item).w ; is highlighted line the sound test? ($14)
+		bne.s	@soundtest				; if not, branch
+		move.w	#(vram_text/$20)+tile_pal3+tile_hi,d3	; yellow text for sound test
+
+	@soundtest:
+		locVRAM	vram_bg+soundtest_pos			; $EC30	- sound test position on screen
+		move.w	(v_levelselect_sound).w,d0		; get sound test number
+		addi.w	#$80,d0					; add $80
+		move.b	d0,d2					; copy to d2
+		lsr.b	#4,d0					; divide by $10
+		bsr.w	LevSel_DrawSound			; draw low digit
+		move.b	d2,d0					; retrieve from d2
+		bsr.w	LevSel_DrawSound			; draw high digit
+		rts	
+; End of function LevSel_ShowText
+
+
+; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+
+
+LevSel_DrawSound:
+		andi.w	#$F,d0					; read only low nybble
+		cmpi.b	#$A,d0					; is digit $A-$F?
+		blo.s	@is_0_9					; if not, branch
+		addi.b	#7,d0					; graphics for A-F start 7 cells later
+
+	@is_0_9:
+		add.w	d3,d0					; d0 = character + VRAM setting ($EC30)
+		move.w	d0,(a6)					; write to nametable in VRAM
+		rts	
+; End of function LevSel_DrawSound
+
+
+; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+
+
+LevSel_DrawLine:
+		moveq	#$17,d2					; number of characters per line
+
+	@loop:
+		moveq	#0,d0
+		move.b	(a1)+,d0				; get character
+		bpl.s	@isvalid				; branch if valid (0-$7F)
+		move.w	#0,(a6)					; use blank character instead
+		dbf	d2,@loop
+		rts	
+
+
+	@isvalid:
+		add.w	d3,d0					; combine char with VRAM setting
+		move.w	d0,(a6)					; send to VRAM
+		dbf	d2,@loop
+		rts	
+; End of function LevSel_DrawLine
