@@ -1,0 +1,359 @@
+; ---------------------------------------------------------------------------
+; Level
+; ---------------------------------------------------------------------------
+
+GM_Level:
+		bset	#7,(v_gamemode).w			; add $80 to gamemode (for pre level sequence)
+		tst.w	(v_demo_mode).w				; is this an ending demo?
+		bmi.s	@keep_music				; if yes, branch
+		play.b	1, bsr.w, cmd_Fade			; fade out music
+
+	@keep_music:
+		bsr.w	ClearPLC				; clear PLC buffer
+		bsr.w	PaletteFadeOut				; fade out from previous gamemode
+		tst.w	(v_demo_mode).w				; is this an ending demo?
+		bmi.s	@skip_gfx				; if yes, branch
+		disable_ints
+		locVRAM	vram_Nem_TitleCard			; $B000
+		lea	(Nem_TitleCard).l,a0			; load title card patterns
+		bsr.w	NemDec
+		enable_ints
+		moveq	#0,d0
+		move.b	(v_zone).w,d0				; get zone number
+		lsl.w	#4,d0					; multiply by $10 (size of each level header)
+		lea	(LevelHeaders).l,a2
+		lea	(a2,d0.w),a2				; jump to relevant level header
+		moveq	#0,d0
+		move.b	(a2),d0					; get 1st PLC id for level
+		beq.s	@no_plc					; branch if 0
+		bsr.w	AddPLC					; load level graphics over next few frames
+
+	@no_plc:
+		moveq	#id_PLC_Main2,d0
+		bsr.w	AddPLC					; load graphics for monitors/shield/stars over next few frames
+
+	@skip_gfx:
+		lea	(v_ost_all).w,a1
+		moveq	#0,d0
+		move.w	#((sizeof_ost*countof_ost)/4)-1,d1
+
+	@clear_ost:
+		move.l	d0,(a1)+
+		dbf	d1,@clear_ost				; clear object RAM
+
+		lea	(v_vblank_0e_counter).w,a1
+		moveq	#0,d0
+		move.w	#((v_plc_buffer-v_vblank_0e_counter)/4)-1,d1
+
+	@clear_ram1:
+		move.l	d0,(a1)+
+		dbf	d1,@clear_ram1				; clear variables ($F628-$F67F)
+		; $F680-$F6FF is preserved (PLC buffer and related variables)
+
+		lea	(v_camera_x_pos).w,a1
+		moveq	#0,d0
+		move.w	#((v_sprite_buffer-v_camera_x_pos)/4)-1,d1
+
+	@clear_ram2:
+		move.l	d0,(a1)+
+		dbf	d1,@clear_ram2				; clear variables ($F700-$F7FF)
+		; $F800-$FE5F is preserved (sprite buffer, palettes, stack, some game variables)
+
+		lea	(v_oscillating_table).w,a1
+		moveq	#0,d0
+		move.w	#((v_levelselect_hold_delay-v_oscillating_table)/4)-1,d1
+
+	@clear_ram3:
+		move.l	d0,(a1)+
+		dbf	d1,@clear_ram3				; clear variables ($FE60-$FF7F)
+
+		disable_ints
+		bsr.w	ClearScreen
+		lea	(vdp_control_port).l,a6
+		move.w	#$8B03,(a6)				; single pixel line horizontal scrolling
+		move.w	#$8200+(vram_fg>>10),(a6)		; set foreground nametable address
+		move.w	#$8400+(vram_bg>>13),(a6)		; set background nametable address
+		move.w	#$8500+(vram_sprites>>9),(a6)		; set sprite table address
+		move.w	#$9001,(a6)				; 64x32 cell plane size
+		move.w	#$8004,(a6)				; normal colour mode
+		move.w	#$8720,(a6)				; set background colour (line 3; colour 0)
+		move.w	#$8A00+223,(v_vdp_hint_counter).w	; set palette change position (for water)
+		move.w	(v_vdp_hint_counter).w,(a6)
+		cmpi.b	#id_LZ,(v_zone).w			; is level LZ?
+		bne.s	@skip_water				; if not, branch
+
+		move.w	#$8014,(a6)				; enable horizontal interrupts
+		moveq	#0,d0
+		move.b	(v_act).w,d0
+		add.w	d0,d0
+		lea	(WaterHeight).l,a1			; load water height array
+		move.w	(a1,d0.w),d0
+		move.w	d0,(v_water_height_actual).w		; set water heights
+		move.w	d0,(v_water_height_normal).w
+		move.w	d0,(v_water_height_next).w
+		clr.b	(v_water_routine).w			; clear water routine counter
+		clr.b	(f_water_pal_full).w			; clear	water state
+		move.b	#1,(v_water_direction).w		; enable water
+
+	@skip_water:
+		move.w	#30,(v_air).w
+		enable_ints
+		moveq	#id_Pal_Sonic,d0
+		bsr.w	PalLoad_Now				; load Sonic's palette
+		cmpi.b	#id_LZ,(v_zone).w			; is level LZ?
+		bne.s	@skip_waterpal				; if not, branch
+
+		moveq	#id_Pal_LZSonWater,d0			; palette number $F (LZ)
+		cmpi.b	#3,(v_act).w				; is act number 3?
+		bne.s	@not_sbz3				; if not, branch
+		moveq	#id_Pal_SBZ3SonWat,d0			; palette number $10 (SBZ3)
+
+	@not_sbz3:
+		bsr.w	PalLoad_Water				; load underwater palette
+		tst.b	(v_last_lamppost).w			; has a lamppost been used?
+		beq.s	@no_lamp				; if not, branch
+		move.b	(f_water_pal_full_lampcopy).w,(f_water_pal_full).w ; retrieve flag for whole screen being underwater
+
+	@skip_waterpal:
+	@no_lamp:
+		tst.w	(v_demo_mode).w				; is this an ending demo?
+		bmi.s	Level_Skip_TtlCard			; if yes, branch
+		moveq	#0,d0
+		move.b	(v_zone).w,d0
+		cmpi.w	#(id_LZ<<8)+3,(v_zone).w		; is level SBZ3?
+		bne.s	@not_sbz3_bgm				; if not, branch
+		moveq	#5,d0					; use 5th music (SBZ)
+
+	@not_sbz3_bgm:
+		cmpi.w	#(id_SBZ<<8)+2,(v_zone).w		; is level FZ?
+		bne.s	@not_fz_bgm				; if not, branch
+		moveq	#6,d0					; use 6th music (FZ)
+
+	@not_fz_bgm:
+		lea	(MusicList).l,a1			; load music playlist
+		move.b	(a1,d0.w),d0
+		bsr.w	PlaySound0				; play music
+		move.b	#id_TitleCard,(v_ost_titlecard1).w	; load title card object
+
+Level_TtlCardLoop:
+		move.b	#$C,(v_vblank_routine).w
+		bsr.w	WaitForVBlank
+		jsr	(ExecuteObjects).l
+		jsr	(BuildSprites).l
+		bsr.w	RunPLC
+		move.w	(v_ost_titlecard3+ost_x_pos).w,d0
+		cmp.w	(v_ost_titlecard3+ost_card_x_stop).w,d0	; has title card sequence finished?
+		bne.s	Level_TtlCardLoop			; if not, branch
+		tst.l	(v_plc_buffer).w			; are there any items in the pattern load cue?
+		bne.s	Level_TtlCardLoop			; if yes, branch
+		jsr	(Hud_Base).l				; load basic HUD gfx
+
+Level_Skip_TtlCard:
+		moveq	#id_Pal_Sonic,d0
+		bsr.w	PalLoad_Next				; load Sonic's palette
+		bsr.w	LevelSizeLoad				; load level boundaries and start positions
+		bsr.w	DeformLayers
+		bset	#redraw_left_bit,(v_fg_redraw_direction).w
+		bsr.w	LevelDataLoad				; load block mappings and palettes
+		bsr.w	LoadTilesFromStart
+		jsr	(ConvertCollisionArray).l
+		bsr.w	ColIndexLoad
+		bsr.w	LZWaterFeatures
+		move.b	#id_SonicPlayer,(v_ost_player).w	; load Sonic object
+		tst.w	(v_demo_mode).w				; is this an ending demo?
+		bmi.s	@skip_hud				; if yes, branch
+		move.b	#id_HUD,(v_ost_hud).w			; load HUD object
+
+	@skip_hud:
+		tst.b	(f_debug_cheat).w			; has debug cheat been entered?
+		beq.s	@skip_debug				; if not, branch
+		btst	#bitA,(v_joypad_hold_actual).w		; is A button held?
+		beq.s	@skip_debug				; if not, branch
+		move.b	#1,(f_debug_enable).w			; enable debug mode
+
+	@skip_debug:
+		move.w	#0,(v_joypad_hold).w
+		move.w	#0,(v_joypad_hold_actual).w
+		cmpi.b	#id_LZ,(v_zone).w			; is level LZ?
+		bne.s	@skip_water_surface			; if not, branch
+		move.b	#id_WaterSurface,(v_ost_watersurface1).w ; load water surface object
+		move.w	#$60,(v_ost_watersurface1+ost_x_pos).w
+		move.b	#id_WaterSurface,(v_ost_watersurface2).w
+		move.w	#$120,(v_ost_watersurface2+ost_x_pos).w
+
+	@skip_water_surface:
+		jsr	(ObjPosLoad).l
+		jsr	(ExecuteObjects).l
+		jsr	(BuildSprites).l
+		moveq	#0,d0
+		tst.b	(v_last_lamppost).w			; are you starting from	a lamppost?
+		bne.s	@skip_clear				; if yes, branch
+		move.w	d0,(v_rings).w				; clear rings
+		move.l	d0,(v_time).w				; clear time
+		move.b	d0,(v_ring_reward).w			; clear lives counter
+
+	@skip_clear:
+		move.b	d0,(f_time_over).w
+		move.b	d0,(v_shield).w				; clear shield
+		move.b	d0,(v_invincibility).w			; clear invincibility
+		move.b	d0,(v_shoes).w				; clear speed shoes
+		move.b	d0,(v_unused_powerup).w
+		move.w	d0,(v_debug_active).w
+		move.w	d0,(f_restart).w
+		move.w	d0,(v_frame_counter).w
+		bsr.w	OscillateNumInit
+		move.b	#1,(f_hud_score_update).w		; update score counter
+		move.b	#1,(v_hud_rings_update).w		; update rings counter
+		move.b	#1,(f_hud_time_update).w		; update time counter
+		move.w	#0,(v_demo_input_counter).w
+		lea	(DemoDataPtr).l,a1			; load demo data
+		moveq	#0,d0
+		move.b	(v_zone).w,d0
+		lsl.w	#2,d0
+		movea.l	(a1,d0.w),a1
+		tst.w	(v_demo_mode).w				; is demo mode on?
+		bpl.s	Level_Demo				; if yes, branch
+		lea	(DemoEndDataPtr).l,a1			; load ending demo data
+		move.w	(v_credits_num).w,d0
+		subq.w	#1,d0
+		lsl.w	#2,d0
+		movea.l	(a1,d0.w),a1
+
+Level_Demo:
+		move.b	1(a1),(v_demo_input_time).w		; load key press duration
+		subq.b	#1,(v_demo_input_time).w		; subtract 1 from duration
+		move.w	#1800,(v_countdown).w
+		tst.w	(v_demo_mode).w
+		bpl.s	Level_ChkWaterPal
+		move.w	#540,(v_countdown).w
+		cmpi.w	#4,(v_credits_num).w
+		bne.s	Level_ChkWaterPal
+		move.w	#510,(v_countdown).w
+
+Level_ChkWaterPal:
+		cmpi.b	#id_LZ,(v_zone).w			; is level LZ/SBZ3?
+		bne.s	Level_Delay				; if not, branch
+		moveq	#id_Pal_LZWater,d0			; palette $B (LZ underwater)
+		cmpi.b	#3,(v_act).w				; is level SBZ3?
+		bne.s	Level_WtrNotSbz				; if not, branch
+		moveq	#id_Pal_SBZ3Water,d0			; palette $D (SBZ3 underwater)
+
+	Level_WtrNotSbz:
+		bsr.w	PalLoad_Water_Next
+
+Level_Delay:
+		move.w	#3,d1
+
+	Level_DelayLoop:
+		move.b	#8,(v_vblank_routine).w
+		bsr.w	WaitForVBlank
+		dbf	d1,Level_DelayLoop
+
+		move.w	#$202F,(v_palfade_start).w		; fade in 2nd, 3rd & 4th palette lines
+		bsr.w	PalFadeIn_Alt
+		tst.w	(v_demo_mode).w				; is an ending sequence demo running?
+		bmi.s	Level_ClrCardArt			; if yes, branch
+		addq.b	#2,(v_ost_titlecard1+ost_routine).w	; make title card move
+		addq.b	#4,(v_ost_titlecard2+ost_routine).w
+		addq.b	#4,(v_ost_titlecard3+ost_routine).w
+		addq.b	#4,(v_ost_titlecard4+ost_routine).w
+		bra.s	Level_StartGame
+; ===========================================================================
+
+Level_ClrCardArt:
+		moveq	#id_PLC_Explode,d0
+		jsr	(AddPLC).l				; load explosion gfx
+		moveq	#0,d0
+		move.b	(v_zone).w,d0
+		addi.w	#id_PLC_GHZAnimals,d0
+		jsr	(AddPLC).l				; load animal gfx (level no. + $15)
+
+Level_StartGame:
+		bclr	#7,(v_gamemode).w			; subtract $80 from mode to end pre-level stuff
+
+; ---------------------------------------------------------------------------
+; Main level loop (when	all title card and loading sequences are finished)
+; ---------------------------------------------------------------------------
+
+Level_MainLoop:
+		bsr.w	PauseGame
+		move.b	#8,(v_vblank_routine).w
+		bsr.w	WaitForVBlank
+		addq.w	#1,(v_frame_counter).w			; add 1 to level timer
+		bsr.w	MoveSonicInDemo
+		bsr.w	LZWaterFeatures
+		jsr	(ExecuteObjects).l
+		if Revision=0
+		else
+			tst.w   (f_restart).w
+			bne     GM_Level
+		endc
+		tst.w	(v_debug_active).w			; is debug mode being used?
+		bne.s	Level_DoScroll				; if yes, branch
+		cmpi.b	#6,(v_ost_player+ost_routine).w		; has Sonic just died?
+		bhs.s	Level_SkipScroll			; if yes, branch
+
+	Level_DoScroll:
+		bsr.w	DeformLayers
+
+	Level_SkipScroll:
+		jsr	(BuildSprites).l
+		jsr	(ObjPosLoad).l
+		bsr.w	PaletteCycle
+		bsr.w	RunPLC
+		bsr.w	OscillateNumDo
+		bsr.w	SynchroAnimate
+		bsr.w	SignpostArtLoad
+
+		cmpi.b	#id_Demo,(v_gamemode).w
+		beq.s	Level_ChkDemo				; if mode is 8 (demo), branch
+		if Revision=0
+		tst.w	(f_restart).w				; is the level set to restart?
+		bne.w	GM_Level				; if yes, branch
+		else
+		endc
+		cmpi.b	#id_Level,(v_gamemode).w
+		beq.w	Level_MainLoop				; if mode is $C (level), branch
+		rts	
+; ===========================================================================
+
+Level_ChkDemo:
+		tst.w	(f_restart).w				; is level set to restart?
+		bne.s	Level_EndDemo				; if yes, branch
+		tst.w	(v_countdown).w				; is there time left on the demo?
+		beq.s	Level_EndDemo				; if not, branch
+		cmpi.b	#id_Demo,(v_gamemode).w
+		beq.w	Level_MainLoop				; if mode is 8 (demo), branch
+		move.b	#id_Sega,(v_gamemode).w			; go to Sega screen
+		rts	
+; ===========================================================================
+
+Level_EndDemo:
+		cmpi.b	#id_Demo,(v_gamemode).w
+		bne.s	Level_FadeDemo				; if mode is 8 (demo), branch
+		move.b	#id_Sega,(v_gamemode).w			; go to Sega screen
+		tst.w	(v_demo_mode).w				; is demo mode on & not ending sequence?
+		bpl.s	Level_FadeDemo				; if yes, branch
+		move.b	#id_Credits,(v_gamemode).w		; go to credits
+
+Level_FadeDemo:
+		move.w	#$3C,(v_countdown).w
+		move.w	#$3F,(v_palfade_start).w
+		clr.w	(v_palfade_time).w
+
+	Level_FDLoop:
+		move.b	#8,(v_vblank_routine).w
+		bsr.w	WaitForVBlank
+		bsr.w	MoveSonicInDemo
+		jsr	(ExecuteObjects).l
+		jsr	(BuildSprites).l
+		jsr	(ObjPosLoad).l
+		subq.w	#1,(v_palfade_time).w
+		bpl.s	loc_3BC8
+		move.w	#2,(v_palfade_time).w
+		bsr.w	FadeOut_ToBlack
+
+loc_3BC8:
+		tst.w	(v_countdown).w
+		bne.s	Level_FDLoop
+		rts	
