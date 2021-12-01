@@ -28,6 +28,19 @@ sizeof_vram_hscroll:	equ $380
 sizeof_vram_row:	equ 64*2		; single row of fg/bg nametable, assuming 64 wide
 sizeof_art_text:	equ filesize("Graphics\Level Select & Debug Text.bin")
 
+countof_color:		equ 16				; colours per palette line
+countof_colour:		equ countof_color
+countof_pal:		equ 4				; palette lines
+sizeof_pal:		equ countof_color*2		; bytes in 1 palette line
+sizeof_pal_all:		equ sizeof_pal*countof_pal	; bytes in all palette lines
+palfade_line2:		equ sizeof_pal<<8
+palfade_line3:		equ (sizeof_pal*2)<<8
+palfade_line4:		equ (sizeof_pal*3)<<8
+palfade_1:		equ countof_color-1
+palfade_2:		equ (countof_color*2)-1
+palfade_3:		equ (countof_color*3)-1
+palfade_all:		equ (countof_color*4)-1
+
 ; Levels
 id_GHZ:		equ 0
 id_LZ:		equ 1

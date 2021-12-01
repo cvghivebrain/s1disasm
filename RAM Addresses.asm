@@ -84,7 +84,7 @@ unused_f5c0:			rs.b $40 ; $FFFFF5C0 ; unused space (reserved for sound driver?)
 
 ; General variables:
 
-v_gamemode:			rs.b 1 ; $FFFFF600 ; game mode (00=Sega; 04=Title; 08=Demo; 0C=Level; 10=SS; 14=Cont; 18=End; 1C=Credit; 8C=PreLevel)
+v_gamemode:			rs.b 1 ; $FFFFF600 ; gamemode: 00=Sega; 04=Title; 08=Demo; 0C=Level; 10=SS; 14=Cont; 18=End; 1C=Credit; 8C=PreLevel
 unused_f601:			rs.b 1
 v_joypad_hold:			rs.b 1 ; $FFFFF602 ; joypad input - held, can be overridden by demos
 v_joypad_press:			rs.b 1 ; $FFFFF603 ; joypad input - pressed, can be overridden by demos
@@ -271,10 +271,10 @@ v_scroll_block_4_height:	rs.w 1 ; $FFFFF7F6 ; scroll block height - $100 for GHZ
 
 v_sprite_buffer:		equ $FFFFF800 ; sprite table ($280 bytes, last $80 bytes are overwritten by v_pal_water_next)
 				rsset $FFFFFA00
-v_pal_water_next:		rs.w $10*4 ; $FFFFFA00 ; duplicate underwater palette, used for transitions
-v_pal_water:			rs.w $10*4 ; $FFFFFA80 ; main underwater palette
-v_pal_dry:			rs.w $10*4 ; $FFFFFB00 ; main palette
-v_pal_dry_next:			rs.w $10*4 ; $FFFFFB80 ; duplicate palette, used for transitions
+v_pal_water_next:		rs.w countof_color*4 ; $FFFFFA00 ; target underwater palette, used for transitions
+v_pal_water:			rs.w countof_color*4 ; $FFFFFA80 ; main underwater palette
+v_pal_dry:			rs.w countof_color*4 ; $FFFFFB00 ; main palette
+v_pal_dry_next:			rs.w countof_color*4 ; $FFFFFB80 ; target palette, used for transitions
 v_respawn_list:			rs.w $100 ; $FFFFFC00 ; object state list
 
 v_stack:			equ $FFFFFD00 ; stack

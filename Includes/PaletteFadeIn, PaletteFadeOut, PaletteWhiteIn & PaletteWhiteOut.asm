@@ -6,7 +6,7 @@
 
 
 PaletteFadeIn:
-		move.w	#$003F,(v_palfade_start).w		; set start position = 0; size = $40
+		move.w	#palfade_all,(v_palfade_start).w	; set start position = 0; size = $40 ($3F)
 
 PalFadeIn_Alt:							; start position and size are already set
 		moveq	#0,d0
@@ -114,7 +114,7 @@ FadeIn_AddColour:
 
 
 PaletteFadeOut:
-		move.w	#$003F,(v_palfade_start).w		; start position = 0; size = $40
+		move.w	#palfade_all,(v_palfade_start).w	; start position = 0; size = $40 ($3F)
 		move.w	#$15,d4
 
 	@mainloop:
@@ -197,7 +197,7 @@ FadeOut_DecColour:
 
 
 PaletteWhiteIn:
-		move.w	#$003F,(v_palfade_start).w		; start position = 0; size = $40
+		move.w	#palfade_all,(v_palfade_start).w	; start position = 0; size = $40
 		moveq	#0,d0
 		lea	(v_pal_dry).w,a0
 		move.b	(v_palfade_start).w,d0
@@ -302,7 +302,7 @@ WhiteIn_DecColour:
 
 
 PaletteWhiteOut:
-		move.w	#$003F,(v_palfade_start).w		; start position = 0; size = $40
+		move.w	#palfade_all,(v_palfade_start).w	; start position = 0; size = $40 ($3F)
 		move.w	#$15,d4
 
 	@mainloop:

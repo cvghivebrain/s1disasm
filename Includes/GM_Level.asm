@@ -205,62 +205,63 @@ Level_Skip_TtlCard:
 		move.b	#1,(f_hud_score_update).w		; update score counter
 		move.b	#1,(v_hud_rings_update).w		; update rings counter
 		move.b	#1,(f_hud_time_update).w		; update time counter
+
 		move.w	#0,(v_demo_input_counter).w
-		lea	(DemoDataPtr).l,a1			; load demo data
+		lea	(DemoDataPtr).l,a1			; address of pointers to demo data
 		moveq	#0,d0
-		move.b	(v_zone).w,d0
-		lsl.w	#2,d0
-		movea.l	(a1,d0.w),a1
-		tst.w	(v_demo_mode).w				; is demo mode on?
-		bpl.s	Level_Demo				; if yes, branch
-		lea	(DemoEndDataPtr).l,a1			; load ending demo data
+		move.b	(v_zone).w,d0				; get zone number
+		lsl.w	#2,d0					; multiply by 4
+		movea.l	(a1,d0.w),a1				; jump to demo data for that zone
+		tst.w	(v_demo_mode).w				; is this an ending demo?
+		bpl.s	@skip_endingdemo			; if not, branch
+		lea	(DemoEndDataPtr).l,a1			; use ending demo data instead
 		move.w	(v_credits_num).w,d0
 		subq.w	#1,d0
 		lsl.w	#2,d0
 		movea.l	(a1,d0.w),a1
 
-Level_Demo:
+	@skip_endingdemo:
 		move.b	1(a1),(v_demo_input_time).w		; load key press duration
 		subq.b	#1,(v_demo_input_time).w		; subtract 1 from duration
-		move.w	#1800,(v_countdown).w
-		tst.w	(v_demo_mode).w
-		bpl.s	Level_ChkWaterPal
-		move.w	#540,(v_countdown).w
-		cmpi.w	#4,(v_credits_num).w
-		bne.s	Level_ChkWaterPal
-		move.w	#510,(v_countdown).w
+		move.w	#1800,(v_countdown).w			; run demo for 30 seconds max
+		tst.w	(v_demo_mode).w				; is this an ending demo?
+		bpl.s	@not_endingdemo				; if not, branch
+		move.w	#540,(v_countdown).w			; run demo for 9 seconds instead
+		cmpi.w	#4,(v_credits_num).w			; is this the SLZ ending demo?
+		bne.s	@not_endingdemo				; if not, branch
+		move.w	#510,(v_countdown).w			; run for 8.5 seconds instead
 
-Level_ChkWaterPal:
+	@not_endingdemo:
 		cmpi.b	#id_LZ,(v_zone).w			; is level LZ/SBZ3?
-		bne.s	Level_Delay				; if not, branch
+		bne.s	@not_lz					; if not, branch
 		moveq	#id_Pal_LZWater,d0			; palette $B (LZ underwater)
 		cmpi.b	#3,(v_act).w				; is level SBZ3?
-		bne.s	Level_WtrNotSbz				; if not, branch
+		bne.s	@not_sbz3				; if not, branch
 		moveq	#id_Pal_SBZ3Water,d0			; palette $D (SBZ3 underwater)
 
-	Level_WtrNotSbz:
+	@not_sbz3:
 		bsr.w	PalLoad_Water_Next
 
-Level_Delay:
+	@not_lz:
 		move.w	#3,d1
 
-	Level_DelayLoop:
+	@delayloop:
 		move.b	#8,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
-		dbf	d1,Level_DelayLoop
+		dbf	d1,@delayloop				; wait 4 frames for things to process
 
-		move.w	#$202F,(v_palfade_start).w		; fade in 2nd, 3rd & 4th palette lines
+		move.w	#(palfade_line2+palfade_3),(v_palfade_start).w ; fade in 2nd, 3rd & 4th palette lines ($202F)
 		bsr.w	PalFadeIn_Alt
-		tst.w	(v_demo_mode).w				; is an ending sequence demo running?
-		bmi.s	Level_ClrCardArt			; if yes, branch
+		tst.w	(v_demo_mode).w				; is this an ending demo?
+		bmi.s	@skip_titlecard				; if yes, branch
 		addq.b	#2,(v_ost_titlecard1+ost_routine).w	; make title card move
 		addq.b	#4,(v_ost_titlecard2+ost_routine).w
 		addq.b	#4,(v_ost_titlecard3+ost_routine).w
 		addq.b	#4,(v_ost_titlecard4+ost_routine).w
-		bra.s	Level_StartGame
+		bra.s	@end_prelevel
 ; ===========================================================================
 
-Level_ClrCardArt:
+@skip_titlecard:
 		moveq	#id_PLC_Explode,d0
 		jsr	(AddPLC).l				; load explosion gfx
 		moveq	#0,d0
@@ -268,92 +269,92 @@ Level_ClrCardArt:
 		addi.w	#id_PLC_GHZAnimals,d0
 		jsr	(AddPLC).l				; load animal gfx (level no. + $15)
 
-Level_StartGame:
-		bclr	#7,(v_gamemode).w			; subtract $80 from mode to end pre-level stuff
+@end_prelevel:
+		bclr	#7,(v_gamemode).w			; subtract $80 from gamemode to end pre-level stuff
 
 ; ---------------------------------------------------------------------------
 ; Main level loop (when	all title card and loading sequences are finished)
 ; ---------------------------------------------------------------------------
 
 Level_MainLoop:
-		bsr.w	PauseGame
+		bsr.w	PauseGame				; check for pause (enters another loop if paused)
 		move.b	#8,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
-		addq.w	#1,(v_frame_counter).w			; add 1 to level timer
+		addq.w	#1,(v_frame_counter).w			; increment level timer
 		bsr.w	MoveSonicInDemo
 		bsr.w	LZWaterFeatures
 		jsr	(ExecuteObjects).l
 		if Revision=0
 		else
-			tst.w   (f_restart).w
-			bne     GM_Level
+			tst.w	(f_restart).w			; is level restart flag set?
+			bne.w	GM_Level			; if yes, branch
 		endc
 		tst.w	(v_debug_active).w			; is debug mode being used?
-		bne.s	Level_DoScroll				; if yes, branch
-		cmpi.b	#6,(v_ost_player+ost_routine).w		; has Sonic just died?
-		bhs.s	Level_SkipScroll			; if yes, branch
+		bne.s	@skip_death				; if yes, branch
+		cmpi.b	#id_Sonic_Death,(v_ost_player+ost_routine).w ; has Sonic just died?
+		bhs.s	@skip_scroll				; if yes, branch
 
-	Level_DoScroll:
+	@skip_death:
 		bsr.w	DeformLayers
 
-	Level_SkipScroll:
-		jsr	(BuildSprites).l
-		jsr	(ObjPosLoad).l
+	@skip_scroll:
+		jsr	(BuildSprites).l			; create sprite table
+		jsr	(ObjPosLoad).l				; load objects for level
 		bsr.w	PaletteCycle
-		bsr.w	RunPLC
-		bsr.w	OscillateNumDo
-		bsr.w	SynchroAnimate
-		bsr.w	SignpostArtLoad
+		bsr.w	RunPLC					; load graphics listed in PLC buffer
+		bsr.w	OscillateNumDo				; update oscillatory values for objects
+		bsr.w	SynchroAnimate				; update values for synchronised object animations
+		bsr.w	SignpostArtLoad				; check for level end, and load signpost graphics if needed
 
-		cmpi.b	#id_Demo,(v_gamemode).w
-		beq.s	Level_ChkDemo				; if mode is 8 (demo), branch
+		cmpi.b	#id_Demo,(v_gamemode).w			; is this a demo?
+		beq.s	Level_Demo				; if yes, branch
 		if Revision=0
-		tst.w	(f_restart).w				; is the level set to restart?
-		bne.w	GM_Level				; if yes, branch
+			tst.w	(f_restart).w			; is level restart flag set?
+			bne.w	GM_Level			; if yes, branch
 		else
 		endc
 		cmpi.b	#id_Level,(v_gamemode).w
-		beq.w	Level_MainLoop				; if mode is $C (level), branch
+		beq.w	Level_MainLoop				; if gamemode is still $C (level), branch
 		rts	
 ; ===========================================================================
 
-Level_ChkDemo:
+Level_Demo:
 		tst.w	(f_restart).w				; is level set to restart?
-		bne.s	Level_EndDemo				; if yes, branch
+		bne.s	@end_of_demo				; if yes, branch
 		tst.w	(v_countdown).w				; is there time left on the demo?
-		beq.s	Level_EndDemo				; if not, branch
+		beq.s	@end_of_demo				; if not, branch
 		cmpi.b	#id_Demo,(v_gamemode).w
-		beq.w	Level_MainLoop				; if mode is 8 (demo), branch
+		beq.w	Level_MainLoop				; if gamemode is 8 (demo), branch
 		move.b	#id_Sega,(v_gamemode).w			; go to Sega screen
 		rts	
 ; ===========================================================================
 
-Level_EndDemo:
-		cmpi.b	#id_Demo,(v_gamemode).w
-		bne.s	Level_FadeDemo				; if mode is 8 (demo), branch
+@end_of_demo:
+		cmpi.b	#id_Demo,(v_gamemode).w			; is gamemode still 8 (demo)?
+		bne.s	@fade_out				; if not, branch
 		move.b	#id_Sega,(v_gamemode).w			; go to Sega screen
-		tst.w	(v_demo_mode).w				; is demo mode on & not ending sequence?
-		bpl.s	Level_FadeDemo				; if yes, branch
+		tst.w	(v_demo_mode).w				; is this a regular demo & not ending sequence?
+		bpl.s	@fade_out				; if yes, branch
 		move.b	#id_Credits,(v_gamemode).w		; go to credits
 
-Level_FadeDemo:
-		move.w	#$3C,(v_countdown).w
-		move.w	#$3F,(v_palfade_start).w
+	@fade_out:
+		move.w	#60,(v_countdown).w			; set timer to 1 second
+		move.w	#palfade_all,(v_palfade_start).w	; fade out all 4 palette lines
 		clr.w	(v_palfade_time).w
 
-	Level_FDLoop:
+	@fade_loop:
 		move.b	#8,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		bsr.w	MoveSonicInDemo
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
 		jsr	(ObjPosLoad).l
-		subq.w	#1,(v_palfade_time).w
-		bpl.s	loc_3BC8
-		move.w	#2,(v_palfade_time).w
-		bsr.w	FadeOut_ToBlack
+		subq.w	#1,(v_palfade_time).w			; decrement time until next palette update
+		bpl.s	@wait					; branch if positive
+		move.w	#2,(v_palfade_time).w			; set timer to 2 frames
+		bsr.w	FadeOut_ToBlack				; update palette
 
-loc_3BC8:
-		tst.w	(v_countdown).w
-		bne.s	Level_FDLoop
+	@wait:
+		tst.w	(v_countdown).w				; has main timer hit 0?
+		bne.s	@fade_loop				; if not, branch
 		rts	

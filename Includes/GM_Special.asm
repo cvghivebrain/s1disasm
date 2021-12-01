@@ -123,7 +123,7 @@ SS_MainLoop:
 
 	@level_ok:
 		move.w	#60,(v_countdown).w			; set delay time to 1 second
-		move.w	#$3F,(v_palfade_start).w
+		move.w	#palfade_all,(v_palfade_start).w	; $3F
 		clr.w	(v_palfade_time).w
 
 SS_FinishLoop:
