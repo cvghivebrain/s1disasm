@@ -66,19 +66,6 @@ plcheader:	macro *
 		dc.w plc_count\@-1
 		endm
 
-vram_crabmeat:	equ $8000
-vram_bomb:	equ $8000
-vram_orbinaut:	equ $8520
-vram_buzz:	equ $8880
-vram_yadrin:	equ $8F60
-vram_cater:	equ $9FE0
-vram_button:	equ $A1E0
-vram_spikes:	equ $A360
-vram_hspring:	equ $A460
-vram_vspring:	equ $A660
-vram_animal1:	equ $B000
-vram_animal2:	equ $B240
-
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - standard block 1
 ; ---------------------------------------------------------------------------
@@ -407,7 +394,7 @@ PLC_Ending:	plcheader
 PLC_TryAgain:	plcheader
 		plcm	Nem_EndEm, $78A0, TryAgain		; emeralds
 		plcm	Nem_TryAgain				; Eggman ($7C20)
-		plcm	Nem_CreditText, $B400			; credits alphabet
+		plcm	Nem_CreditText, vram_credits		; credits alphabet ($B400)
 	PLC_TryAgain_end:
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - Eggman on SBZ 2

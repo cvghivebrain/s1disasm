@@ -19,6 +19,20 @@ vram_sonic:	equ $F000	; Sonic graphics ($2E0 bytes)
 vram_sprites:	equ $F800	; sprite table ($280 bytes)
 vram_hscroll:	equ $FC00	; horizontal scroll table ($380 bytes)
 
+vram_crabmeat:	equ $8000	; crabmeat graphics
+vram_bomb:	equ $8000	; bomb enemy graphics
+vram_orbinaut:	equ $8520	; orbinaut graphics
+vram_buzz:	equ $8880	; buzz bomber graphics
+vram_yadrin:	equ $8F60	; yadrin graphics
+vram_cater:	equ $9FE0	; caterkiller graphics
+vram_button:	equ $A1E0	; button graphics
+vram_spikes:	equ $A360	; spikes graphics
+vram_hspring:	equ $A460	; horizontal spring graphics
+vram_vspring:	equ $A660	; vertical spring graphics
+vram_animal1:	equ $B000	; animal graphics
+vram_animal2:	equ $B240	; animal graphics
+vram_credits:	equ $B400	; credits font graphics
+
 sizeof_cell:		equ $20
 sizeof_vram_fg:		equ sizeof_vram_row*32	; fg nametable, assuming 64x32 ($1000 bytes)
 sizeof_vram_bg:		equ sizeof_vram_row*32	; bg nametable, assuming 64x32 ($1000 bytes)
