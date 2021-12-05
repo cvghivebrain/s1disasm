@@ -93,7 +93,7 @@ GM_Special:
 
 SS_MainLoop:
 		bsr.w	PauseGame
-		move.b	#$A,(v_vblank_routine).w
+		move.b	#id_VBlank_Special,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		bsr.w	MoveSonicInDemo
 		move.w	(v_joypad_hold_actual).w,(v_joypad_hold).w
@@ -127,7 +127,7 @@ SS_MainLoop:
 		clr.w	(v_palfade_time).w
 
 SS_FinishLoop:
-		move.b	#$16,(v_vblank_routine).w
+		move.b	#id_VBlank_Continue,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		bsr.w	MoveSonicInDemo
 		move.w	(v_joypad_hold_actual).w,(v_joypad_hold).w
@@ -179,7 +179,7 @@ SS_FinishLoop:
 
 SS_NormalExit:
 		bsr.w	PauseGame
-		move.b	#$C,(v_vblank_routine).w
+		move.b	#id_VBlank_TitleCard,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l

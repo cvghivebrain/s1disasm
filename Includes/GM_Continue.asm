@@ -52,7 +52,7 @@ GM_Continue:
 ; ---------------------------------------------------------------------------
 
 Cont_MainLoop:
-		move.b	#$16,(v_vblank_routine).w
+		move.b	#id_VBlank_Continue,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		cmpi.b	#id_CSon_Run,(v_ost_player+ost_routine).w ; is Sonic running?
 		bhs.s	@sonic_running				; if yes, branch

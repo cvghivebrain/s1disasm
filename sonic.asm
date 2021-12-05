@@ -786,7 +786,7 @@ Pause_StopGame:
 		move.b	#1,(v_snddriver_ram+f_pause_sound).w	; pause music
 
 Pause_Loop:
-		move.b	#$10,(v_vblank_routine).w
+		move.b	#id_VBlank_Pause,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		tst.b	(f_slowmotion_cheat).w			; is slow-motion cheat on?
 		beq.s	Pause_ChkStart				; if not, branch

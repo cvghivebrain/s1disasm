@@ -136,7 +136,7 @@ GM_Level:
 		move.b	#id_TitleCard,(v_ost_titlecard1).w	; load title card object
 
 Level_TtlCardLoop:
-		move.b	#$C,(v_vblank_routine).w
+		move.b	#id_VBlank_TitleCard,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
@@ -246,7 +246,7 @@ Level_Skip_TtlCard:
 		move.w	#3,d1
 
 	@delayloop:
-		move.b	#8,(v_vblank_routine).w
+		move.b	#id_VBlank_Level,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		dbf	d1,@delayloop				; wait 4 frames for things to process
 
@@ -278,7 +278,7 @@ Level_Skip_TtlCard:
 
 Level_MainLoop:
 		bsr.w	PauseGame				; check for pause (enters another loop if paused)
-		move.b	#8,(v_vblank_routine).w
+		move.b	#id_VBlank_Level,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		addq.w	#1,(v_frame_counter).w			; increment level timer
 		bsr.w	MoveSonicInDemo
@@ -343,7 +343,7 @@ Level_Demo:
 		clr.w	(v_palfade_time).w
 
 	@fade_loop:
-		move.b	#8,(v_vblank_routine).w
+		move.b	#id_VBlank_Level,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		bsr.w	MoveSonicInDemo
 		jsr	(ExecuteObjects).l

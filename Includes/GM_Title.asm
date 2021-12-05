@@ -153,7 +153,7 @@ vram_text:		equ $D000
 		bsr.w	PaletteFadeIn
 
 Title_MainLoop:
-		move.b	#4,(v_vblank_routine).w
+		move.b	#id_VBlank_Title,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		jsr	(ExecuteObjects).l
 		bsr.w	DeformLayers
@@ -259,7 +259,7 @@ Title_PressedStart:
 ; ---------------------------------------------------------------------------
 
 LevelSelect:
-		move.b	#4,(v_vblank_routine).w
+		move.b	#id_VBlank_Title,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		bsr.w	LevSel_Navigate				; detect d-pad usage and change selection accordingly
 		bsr.w	RunPLC
@@ -420,7 +420,7 @@ PlayDemo:
 		move.w	#30,(v_countdown).w			; set delay to half a second
 
 @loop_delay:
-		move.b	#4,(v_vblank_routine).w
+		move.b	#id_VBlank_Title,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		bsr.w	DeformLayers
 		bsr.w	PaletteCycle

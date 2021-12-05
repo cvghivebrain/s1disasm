@@ -52,18 +52,18 @@ GM_Sega:
 		enable_display
 
 Sega_PaletteLoop:
-		move.b	#2,(v_vblank_routine).w
+		move.b	#id_VBlank_Sega,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		bsr.w	PalCycle_Sega
 		bne.s	Sega_PaletteLoop
 
 		play.b	1, bsr.w, cmd_Sega			; play "SEGA" sound
-		move.b	#$14,(v_vblank_routine).w
+		move.b	#id_VBlank_Sega_SkipLoad,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		move.w	#$1E,(v_countdown).w
 
 Sega_WaitLoop:
-		move.b	#2,(v_vblank_routine).w
+		move.b	#id_VBlank_Sega,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		tst.w	(v_countdown).w
 		beq.s	@goto_title

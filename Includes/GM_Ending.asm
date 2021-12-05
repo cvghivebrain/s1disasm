@@ -100,7 +100,7 @@ GM_Ending:
 		move.b	#1,(v_hud_rings_update).w
 		move.b	#0,(f_hud_time_update).w
 		move.w	#1800,(v_countdown).w
-		move.b	#$18,(v_vblank_routine).w
+		move.b	#id_VBlank_Ending,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		enable_display
 		move.w	#palfade_all,(v_palfade_start).w
@@ -112,7 +112,7 @@ GM_Ending:
 
 End_MainLoop:
 		bsr.w	PauseGame				; check for pause (enters another loop if paused)
-		move.b	#$18,(v_vblank_routine).w
+		move.b	#id_VBlank_Ending,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		addq.w	#1,(v_frame_counter).w
 		bsr.w	End_MoveSonic				; auto control Sonic
@@ -146,7 +146,7 @@ End_MainLoop:
 
 End_FlashLoop:
 		bsr.w	PauseGame
-		move.b	#$18,(v_vblank_routine).w
+		move.b	#id_VBlank_Ending,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		addq.w	#1,(v_frame_counter).w
 		bsr.w	End_MoveSonic

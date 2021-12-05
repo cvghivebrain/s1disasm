@@ -57,7 +57,7 @@ GM_Credits:
 		bsr.w	PaletteFadeIn				; fade credits text in from black
 
 Cred_WaitLoop:
-		move.b	#4,(v_vblank_routine).w
+		move.b	#id_VBlank_Title,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		bsr.w	RunPLC
 		tst.w	(v_countdown).w				; have 2 seconds elapsed?
@@ -196,7 +196,7 @@ TryAgainEnd:
 ; ---------------------------------------------------------------------------
 TryAg_MainLoop:
 		bsr.w	PauseGame
-		move.b	#4,(v_vblank_routine).w
+		move.b	#id_VBlank_Title,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
