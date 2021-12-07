@@ -34,50 +34,55 @@ ScrollHorizontal:
 
 MoveScreenHoriz:
 		move.w	(v_ost_player+ost_x_pos).w,d0
-		sub.w	(v_camera_x_pos).w,d0			; Sonic's distance from left edge of screen
+		sub.w	(v_camera_x_pos).w,d0			; d0 = Sonic's distance from left edge of screen
 		subi.w	#144,d0					; is distance less than 144px?
 		bcs.s	SH_BehindMid				; if yes, branch
 		subi.w	#16,d0					; is distance more than 160px?
 		bcc.s	SH_AheadOfMid				; if yes, branch
-		clr.w	(v_camera_x_diff).w
+		clr.w	(v_camera_x_diff).w			; no camera movement
 		rts	
 ; ===========================================================================
 
 SH_AheadOfMid:
 		cmpi.w	#16,d0					; is Sonic within 16px of middle area?
-		bcs.s	SH_Ahead16				; if yes, branch
+		bcs.s	@within_16				; if yes, branch
 		move.w	#16,d0					; set to 16 if greater
 
-	SH_Ahead16:
-		add.w	(v_camera_x_pos).w,d0
-		cmp.w	(v_boundary_right).w,d0
-		blt.s	SH_SetScreen
-		move.w	(v_boundary_right).w,d0
+	@within_16:
+		add.w	(v_camera_x_pos).w,d0			; d0 = new camera x pos
+		cmp.w	(v_boundary_right).w,d0			; is camera within boundary?
+		blt.s	SH_SetScreen				; if yes, branch
+		move.w	(v_boundary_right).w,d0			; stop camera moving outside boundary
 
 SH_SetScreen:
 		move.w	d0,d1
-		sub.w	(v_camera_x_pos).w,d1
-		asl.w	#8,d1
+		sub.w	(v_camera_x_pos).w,d1			; d1 = difference since last camera x pos
+		asl.w	#8,d1					; move into high byte (multiply by $100)
 		move.w	d0,(v_camera_x_pos).w			; set new screen position
-		move.w	d1,(v_camera_x_diff).w			; set distance for screen movement
+		move.w	d1,(v_camera_x_diff).w			; set distance for camera movement
 		rts	
 ; ===========================================================================
 
 SH_BehindMid:
-		add.w	(v_camera_x_pos).w,d0
-		cmp.w	(v_boundary_left).w,d0
-		bgt.s	SH_SetScreen
-		move.w	(v_boundary_left).w,d0
+		add.w	(v_camera_x_pos).w,d0			; d0 = new camera x pos
+		cmp.w	(v_boundary_left).w,d0			; is camera within boundary?
+		bgt.s	SH_SetScreen				; if yes, branch
+		move.w	(v_boundary_left).w,d0			; stop camera moving outside boundary
 		bra.s	SH_SetScreen
 ; End of function MoveScreenHoriz
 
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Unused subroutine to scroll the level horizontally at a fixed rate
+; ---------------------------------------------------------------------------
+
+AutoScroll:
 		tst.w	d0
-		bpl.s	loc_6610
+		bpl.s	@forwards
 		move.w	#-2,d0
 		bra.s	SH_BehindMid
 
-loc_6610:
+	@forwards:
 		move.w	#2,d0
 		bra.s	SH_AheadOfMid
 
@@ -91,75 +96,76 @@ loc_6610:
 ScrollVertical:
 		moveq	#0,d1
 		move.w	(v_ost_player+ost_y_pos).w,d0
-		sub.w	(v_camera_y_pos).w,d0			; Sonic's distance from top of screen
+		sub.w	(v_camera_y_pos).w,d0			; d0 = Sonic's distance from top of screen
 		btst	#status_jump_bit,(v_ost_player+ost_status).w ; is Sonic jumping/rolling?
-		beq.s	SV_NotRolling				; if not, branch
+		beq.s	@not_rolling				; if not, branch
 		subq.w	#5,d0
 
-	SV_NotRolling:
-		btst	#status_air_bit,(v_ost_player+ost_status).w ; is Sonic jumping?
-		beq.s	loc_664A				; if not, branch
+	@not_rolling:
+		btst	#status_air_bit,(v_ost_player+ost_status).w ; is Sonic in the air?
+		beq.s	@ground					; if not, branch
 
-		addi.w	#32,d0
-		sub.w	(v_camera_y_shift).w,d0
-		bcs.s	loc_6696
-		subi.w	#64,d0
-		bcc.s	loc_6696
-		tst.b	(f_boundary_bottom_change).w
-		bne.s	loc_66A8
-		bra.s	loc_6656
+		addi.w	#32,d0					; pretend Sonic is 32px lower
+		sub.w	(v_camera_y_shift).w,d0			; is Sonic within 96px of top of screen? (or other value if looked up/down recenly)
+		bcs.s	SV_OutsideMid_Air			; if yes, branch
+		subi.w	#64,d0					; is distance more than 160px?
+		bcc.s	SV_OutsideMid_Air			; if yes, branch
+		tst.b	(f_boundary_bottom_change).w		; is bottom level boundary set to change?
+		bne.s	SV_BoundaryChange			; if yes, branch
+		bra.s	@no_change
 ; ===========================================================================
 
-loc_664A:
-		sub.w	(v_camera_y_shift).w,d0
-		bne.s	loc_665C
-		tst.b	(f_boundary_bottom_change).w
-		bne.s	loc_66A8
+@ground:
+		sub.w	(v_camera_y_shift).w,d0			; is Sonic 96px from top of screen?
+		bne.s	SV_OutsideMid_Ground			; if not, branch
+		tst.b	(f_boundary_bottom_change).w		; is bottom level boundary set to change?
+		bne.s	SV_BoundaryChange
 
-loc_6656:
+@no_change:
 		clr.w	(v_camera_y_diff).w
 		rts	
 ; ===========================================================================
 
-loc_665C:
-		cmpi.w	#$60,(v_camera_y_shift).w
-		bne.s	loc_6684
-		move.w	(v_ost_player+ost_inertia).w,d1
-		bpl.s	loc_666C
-		neg.w	d1
+SV_OutsideMid_Ground:
+		cmpi.w	#96,(v_camera_y_shift).w		; has Sonic looked up/down recently? (default y shift is 96)
+		bne.s	@y_shift_different			; if yes, branch
 
-loc_666C:
+		move.w	(v_ost_player+ost_inertia).w,d1		; get Sonic's inertia
+		bpl.s	@inertia_positive			; branch if positive
+		neg.w	d1					; make it positive
+
+	@inertia_positive:
 		cmpi.w	#$800,d1
-		bcc.s	loc_6696
+		bcc.s	SV_OutsideMid_Air			; branch if inertia >= $800
 		move.w	#$600,d1
-		cmpi.w	#6,d0
-		bgt.s	loc_66F6
-		cmpi.w	#-6,d0
-		blt.s	loc_66C0
+		cmpi.w	#6,d0					; is Sonic more than 6px below middle area?
+		bgt.s	SV_BelowMid				; if yes, branch
+		cmpi.w	#-6,d0					; is Sonic more than 6px above middle area?
+		blt.s	SV_AboveMid				; if yes, branch
 		bra.s	loc_66AE
 ; ===========================================================================
 
-loc_6684:
+@y_shift_different:
 		move.w	#$200,d1
-		cmpi.w	#2,d0
-		bgt.s	loc_66F6
-		cmpi.w	#-2,d0
-		blt.s	loc_66C0
+		cmpi.w	#2,d0					; is Sonic more than 2px below middle area?
+		bgt.s	SV_BelowMid				; if yes, branch
+		cmpi.w	#-2,d0					; is Sonic more than 2px above middle area?
+		blt.s	SV_AboveMid				; if yes, branch
 		bra.s	loc_66AE
 ; ===========================================================================
 
-loc_6696:
+SV_OutsideMid_Air:
 		move.w	#$1000,d1
-		cmpi.w	#$10,d0
-		bgt.s	loc_66F6
-		cmpi.w	#-$10,d0
-		blt.s	loc_66C0
+		cmpi.w	#16,d0					; is Sonic more than 16px below middle area?
+		bgt.s	SV_BelowMid				; if yes, branch
+		cmpi.w	#-16,d0					; is Sonic more than 16px above middle area?
+		blt.s	SV_AboveMid				; if yes, branch
 		bra.s	loc_66AE
 ; ===========================================================================
 
-loc_66A8:
+SV_BoundaryChange:
 		moveq	#0,d0
-		move.b	d0,(f_boundary_bottom_change).w
+		move.b	d0,(f_boundary_bottom_change).w		; clear boundary change flag
 
 loc_66AE:
 		moveq	#0,d1
@@ -170,7 +176,7 @@ loc_66AE:
 		bra.w	loc_66CC
 ; ===========================================================================
 
-loc_66C0:
+SV_AboveMid:
 		neg.w	d1
 		ext.l	d1
 		asl.l	#8,d1
@@ -194,7 +200,7 @@ loc_66F0:
 		bra.s	loc_6724
 ; ===========================================================================
 
-loc_66F6:
+SV_BelowMid:
 		ext.l	d1
 		asl.l	#8,d1
 		add.l	(v_camera_y_pos).w,d1
