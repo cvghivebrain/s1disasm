@@ -49,48 +49,55 @@ Deform_Index:	dc.w Deform_GHZ-Deform_Index, Deform_LZ-Deform_Index
 
 
 Deform_GHZ:
-		move.w	(v_camera_x_diff).w,d4
+		move.w	(v_camera_x_diff).w,d4			; get camera x pos change since last frame
 		ext.l	d4
 		asl.l	#5,d4
 		move.l	d4,d1
 		asl.l	#1,d4
-		add.l	d1,d4
+		add.l	d1,d4					; multiply by $60
 		moveq	#0,d5
-		bsr.w	BGScroll_XY
+		bsr.w	BGScroll_XY				; update bg x pos and set redraw flags
 		bsr.w	ScrollBlock4
+
+		; calculate Y position
 		lea	(v_hscroll_buffer).w,a1
-		move.w	(v_camera_y_pos).w,d0
-		andi.w	#$7FF,d0
-		lsr.w	#5,d0
+		move.w	(v_camera_y_pos).w,d0			; get camera pos
+		andi.w	#$7FF,d0				; maximum $7FF
+		lsr.w	#5,d0					; divide by $20
 		neg.w	d0
 		addi.w	#$26,d0
-		move.w	d0,(v_bg2_y_pos).w
+		move.w	d0,(v_bg2_y_pos).w			; update bg y pos
 		move.w	d0,d4
-		bsr.w	BGScroll_YAbsolute
+		bsr.w	BGScroll_YAbsolute			; update bg y pos and set redraw flags
 		move.w	(v_bg1_y_pos).w,(v_bg_y_pos_vsram).w
-		move.w	#$6F,d1
+
+		; clouds and distant mountains
+		move.w	#112-1,d1
 		sub.w	d4,d1
 		move.w	(v_camera_x_pos).w,d0
 		cmpi.b	#id_Title,(v_gamemode).w
-		bne.s	loc_633C
+		bne.s	@not_title
 		moveq	#0,d0
-
-loc_633C:
+	@not_title:
 		neg.w	d0
 		swap	d0
 		move.w	(v_bg1_x_pos).w,d0
 		neg.w	d0
 
-loc_6346:
+	@loop_clouds:
 		move.l	d0,(a1)+
-		dbf	d1,loc_6346
-		move.w	#$27,d1
+		dbf	d1,@loop_clouds
+
+		; hills and waterfalls
+		move.w	#40-1,d1
 		move.w	(v_bg2_x_pos).w,d0
 		neg.w	d0
 
-loc_6356:
+	@loop_hills:
 		move.l	d0,(a1)+
-		dbf	d1,loc_6356
+		dbf	d1,@loop_hills
+
+		; water
 		move.w	(v_bg2_x_pos).w,d0
 		addi.w	#0,d0
 		move.w	(v_camera_x_pos).w,d2
@@ -103,17 +110,17 @@ loc_6356:
 		asl.l	#8,d2
 		moveq	#0,d3
 		move.w	d0,d3
-		move.w	#$47,d1
+		move.w	#72-1,d1
 		add.w	d4,d1
 
-loc_6384:
+	@loop_water:
 		move.w	d3,d0
 		neg.w	d0
 		move.l	d0,(a1)+
 		swap	d3
 		add.l	d2,d3
 		swap	d3
-		dbf	d1,loc_6384
+		dbf	d1,@loop_water
 		rts	
 ; End of function Deform_GHZ
 
@@ -132,7 +139,9 @@ Deform_LZ:
 		ext.l	d5
 		asl.l	#7,d5
 		bsr.w	BGScroll_XY
+
 		move.w	(v_bg1_y_pos).w,(v_bg_y_pos_vsram).w
+
 		lea	(v_hscroll_buffer).w,a1
 		move.w	#223,d1
 		move.w	(v_camera_x_pos).w,d0
@@ -141,9 +150,9 @@ Deform_LZ:
 		move.w	(v_bg1_x_pos).w,d0
 		neg.w	d0
 
-loc_63C6:
-		move.l	d0,(a1)+
-		dbf	d1,loc_63C6
+@loop_hscroll:
+		move.l	d0,(a1)+				; write to v_hscroll_buffer
+		dbf	d1,@loop_hscroll
 		move.w	(v_water_height_actual).w,d0
 		sub.w	(v_camera_y_pos).w,d0
 		rts	

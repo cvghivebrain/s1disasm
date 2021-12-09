@@ -116,13 +116,13 @@ ScrollVertical:
 ; ===========================================================================
 
 @ground:
-		sub.w	(v_camera_y_shift).w,d0			; is Sonic 96px from top of screen?
+		sub.w	(v_camera_y_shift).w,d0			; is Sonic exactly 96px from top of screen?
 		bne.s	SV_OutsideMid_Ground			; if not, branch
 		tst.b	(f_boundary_bottom_change).w		; is bottom level boundary set to change?
 		bne.s	SV_BoundaryChange
 
 @no_change:
-		clr.w	(v_camera_y_diff).w
+		clr.w	(v_camera_y_diff).w			; no camera movement
 		rts	
 ; ===========================================================================
 
@@ -142,7 +142,7 @@ SV_OutsideMid_Ground:
 		bgt.s	SV_BelowMid				; if yes, branch
 		cmpi.w	#-6,d0					; is Sonic more than 6px above middle area?
 		blt.s	SV_AboveMid				; if yes, branch
-		bra.s	loc_66AE
+		bra.s	SV_InsideMid
 ; ===========================================================================
 
 @y_shift_different:
@@ -151,7 +151,7 @@ SV_OutsideMid_Ground:
 		bgt.s	SV_BelowMid				; if yes, branch
 		cmpi.w	#-2,d0					; is Sonic more than 2px above middle area?
 		blt.s	SV_AboveMid				; if yes, branch
-		bra.s	loc_66AE
+		bra.s	SV_InsideMid
 ; ===========================================================================
 
 SV_OutsideMid_Air:
@@ -160,74 +160,75 @@ SV_OutsideMid_Air:
 		bgt.s	SV_BelowMid				; if yes, branch
 		cmpi.w	#-16,d0					; is Sonic more than 16px above middle area?
 		blt.s	SV_AboveMid				; if yes, branch
-		bra.s	loc_66AE
+		bra.s	SV_InsideMid
 ; ===========================================================================
 
 SV_BoundaryChange:
 		moveq	#0,d0
 		move.b	d0,(f_boundary_bottom_change).w		; clear boundary change flag
 
-loc_66AE:
+SV_InsideMid:
 		moveq	#0,d1
-		move.w	d0,d1
-		add.w	(v_camera_y_pos).w,d1
-		tst.w	d0
-		bpl.w	loc_6700
-		bra.w	loc_66CC
+		move.w	d0,d1					; d0/d1 = Sonic's distance from middle area
+		add.w	(v_camera_y_pos).w,d1			; add camera y pos to d1
+		tst.w	d0					; is Sonic below middle?
+		bpl.w	SV_BelowMid_Short			; if yes, branch
+		bra.w	SV_AboveMid_Short
 ; ===========================================================================
 
 SV_AboveMid:
-		neg.w	d1
-		ext.l	d1
-		asl.l	#8,d1
-		add.l	(v_camera_y_pos).w,d1
-		swap	d1
+		neg.w	d1					; d1 = -$200/-$600/-$1000
+		ext.l	d1					; convert to longword
+		asl.l	#8,d1					; d1 = -$20000/-$60000/-$100000
+		add.l	(v_camera_y_pos).w,d1			; add v_camera_y_pos
+		swap	d1					; d1 = v_camera_y_pos minus 2/6/$10 in low word
 
-loc_66CC:
-		cmp.w	(v_boundary_top).w,d1
-		bgt.s	loc_6724
-		cmpi.w	#-$100,d1
-		bgt.s	loc_66F0
-		andi.w	#$7FF,d1
+SV_AboveMid_Short:
+		cmp.w	(v_boundary_top).w,d1			; is camera within top boundary?
+		bgt.s	SV_SetScreen				; if yes, branch
+		cmpi.w	#-$100,d1				; is camera no more than 255px outside boundary?
+		bgt.s	@just_outside				; if yes, branch
+
+		andi.w	#$7FF,d1				; clear high bits for levels that wrap vertically
 		andi.w	#$7FF,(v_ost_player+ost_y_pos).w
 		andi.w	#$7FF,(v_camera_y_pos).w
 		andi.w	#$3FF,(v_bg1_y_pos).w
-		bra.s	loc_6724
+		bra.s	SV_SetScreen
 ; ===========================================================================
 
-loc_66F0:
+@just_outside:
 		move.w	(v_boundary_top).w,d1
-		bra.s	loc_6724
+		bra.s	SV_SetScreen
 ; ===========================================================================
 
 SV_BelowMid:
 		ext.l	d1
-		asl.l	#8,d1
-		add.l	(v_camera_y_pos).w,d1
-		swap	d1
+		asl.l	#8,d1					; d1 = $20000/$60000/$100000
+		add.l	(v_camera_y_pos).w,d1			; add v_camera_y_pos
+		swap	d1					; d1 = v_camera_y_pos plus 2/6/$10 in low word
 
-loc_6700:
-		cmp.w	(v_boundary_bottom).w,d1
-		blt.s	loc_6724
+SV_BelowMid_Short:
+		cmp.w	(v_boundary_bottom).w,d1		; is camera within bottom boundary?
+		blt.s	SV_SetScreen				; if yes, branch
 		subi.w	#$800,d1
-		bcs.s	loc_6720
+		bcs.s	@just_outside
 		andi.w	#$7FF,(v_ost_player+ost_y_pos).w
 		subi.w	#$800,(v_camera_y_pos).w
 		andi.w	#$3FF,(v_bg1_y_pos).w
-		bra.s	loc_6724
+		bra.s	SV_SetScreen
 ; ===========================================================================
 
-loc_6720:
+@just_outside:
 		move.w	(v_boundary_bottom).w,d1
 
-loc_6724:
+SV_SetScreen:
 		move.w	(v_camera_y_pos).w,d4
 		swap	d1
 		move.l	d1,d3
-		sub.l	(v_camera_y_pos).w,d3
+		sub.l	(v_camera_y_pos).w,d3			; d3 = difference since last camera y pos
 		ror.l	#8,d3
-		move.w	d3,(v_camera_y_diff).w
-		move.l	d1,(v_camera_y_pos).w
+		move.w	d3,(v_camera_y_diff).w			; set distance for camera movement
+		move.l	d1,(v_camera_y_pos).w			; set new screen position
 		move.w	(v_camera_y_pos).w,d0
 		andi.w	#$10,d0
 		move.b	(v_fg_y_redraw_flag).w,d1
