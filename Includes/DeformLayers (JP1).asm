@@ -71,7 +71,7 @@ Deform_GHZ:
 		bsr.w	BGScroll_XY				; update bg x pos and set redraw flags
 		bsr.w	ScrollBlock4
 
-		; calculate Y position
+		; calculate y position
 		lea	(v_hscroll_buffer).w,a1
 		move.w	(v_camera_y_pos).w,d0			; get camera pos
 		andi.w	#$7FF,d0				; maximum $7FF
@@ -337,105 +337,136 @@ Lz_Scroll_Data:
 
 
 Deform_MZ:
-	; block 1 - dungeon interior
-		move.w	(v_camera_x_diff).w,d4
+		; block 1 - dungeon interior
+		move.w	(v_camera_x_diff).w,d4			; get camera x pos change since last frame
 		ext.l	d4
 		asl.l	#6,d4
 		move.l	d4,d1
 		asl.l	#1,d4
-		add.l	d1,d4
-		moveq	#redraw_bottom,d6
-		bsr.w	BGScroll_Block1
-	; block 3 - mountains
-		move.w	(v_camera_x_diff).w,d4
-		ext.l	d4
-		asl.l	#6,d4
-		moveq	#redraw_bottom+redraw_left,d6
-		bsr.w	BGScroll_Block3
-	; block 2 - bushes & antique buildings
-		move.w	(v_camera_x_diff).w,d4
-		ext.l	d4
-		asl.l	#7,d4
-		moveq	#redraw_left,d6
-		bsr.w	BGScroll_Block2
-	; calculate y-position of background
-		move.w	#$200,d0				; start with 512px, ignoring 2 chunks
+		add.l	d1,d4					; multiply by $C0
+
+		if Revision=0
+			moveq	#0,d5
+			bsr.w	BGScroll_XY
+		else
+			moveq	#redraw_bottom,d6
+			bsr.w	BGScroll_Block1
+
+		; block 3 - mountains
+			move.w	(v_camera_x_diff).w,d4		; get camera x pos change since last frame
+			ext.l	d4
+			asl.l	#6,d4				; multiply by $40
+			moveq	#redraw_bottom+redraw_left,d6
+			bsr.w	BGScroll_Block3
+
+		; block 2 - bushes & antique buildings
+			move.w	(v_camera_x_diff).w,d4		; get camera x pos change since last frame
+			ext.l	d4
+			asl.l	#7,d4				; multiply by $80
+			moveq	#redraw_left,d6
+			bsr.w	BGScroll_Block2
+
+		endc
+
+		; calculate y position
+		move.w	#512,d0					; start with 512px, ignoring 2 chunks
 		move.w	(v_camera_y_pos).w,d1
-		subi.w	#$1C8,d1				; 0% scrolling when y <= 56px 
-		bcs.s	@noYscroll
+		subi.w	#456,d1
+		bcs.s	@noYscroll				; branch if v_camera_y_pos < 456
 		move.w	d1,d2
 		add.w	d1,d1
 		add.w	d2,d1
 		asr.w	#2,d1
-		add.w	d1,d0
+		add.w	d1,d0					; d0 = 512+((v_camera_y_pos-456)*0.75) = (v_camera_y_pos*0.75)+170
 	@noYscroll:
 		move.w	d0,(v_bg2_y_pos).w
-		move.w	d0,(v_bg3_y_pos).w
+		if Revision=0
+		else
+			move.w	d0,(v_bg3_y_pos).w
+		endc
 		bsr.w	BGScroll_YAbsolute
 		move.w	(v_bg1_y_pos).w,(v_bg_y_pos_vsram).w
-	; do something with redraw flags
-		move.b	(v_bg1_redraw_direction).w,d0
-		or.b	(v_bg2_redraw_direction).w,d0
-		or.b	d0,(v_bg3_redraw_direction).w
-		clr.b	(v_bg1_redraw_direction).w
-		clr.b	(v_bg2_redraw_direction).w
-	; calculate background scroll buffer
-		lea	(v_bgscroll_buffer).w,a1
-		move.w	(v_camera_x_pos).w,d2
-		neg.w	d2
-		move.w	d2,d0
-		asr.w	#2,d0
-		sub.w	d2,d0
-		ext.l	d0
-		asl.l	#3,d0
-		divs.w	#5,d0
-		ext.l	d0
-		asl.l	#4,d0
-		asl.l	#8,d0
-		moveq	#0,d3
-		move.w	d2,d3
-		asr.w	#1,d3
-		move.w	#4,d1
+
+		if Revision=0
+			lea	(v_hscroll_buffer).w,a1
+			move.w	#223,d1
+			move.w	(v_camera_x_pos).w,d0
+			neg.w	d0
+			swap	d0
+			move.w	(v_bg1_x_pos).w,d0
+			neg.w	d0
+
+	@loop_hscroll:
+			move.l	d0,(a1)+
+			dbf	d1,@loop_hscroll
+			rts	
+		else
+		; do something with redraw flags
+			move.b	(v_bg1_redraw_direction).w,d0
+			or.b	(v_bg2_redraw_direction).w,d0
+			or.b	d0,(v_bg3_redraw_direction).w
+			clr.b	(v_bg1_redraw_direction).w
+			clr.b	(v_bg2_redraw_direction).w
+
+		; calculate background scroll buffer
+			lea	(v_bgscroll_buffer).w,a1
+			move.w	(v_camera_x_pos).w,d2
+			neg.w	d2
+			move.w	d2,d0
+			asr.w	#2,d0
+			sub.w	d2,d0
+			ext.l	d0
+			asl.l	#3,d0
+			divs.w	#5,d0
+			ext.l	d0
+			asl.l	#4,d0
+			asl.l	#8,d0
+			moveq	#0,d3
+			move.w	d2,d3
+			asr.w	#1,d3
+			move.w	#4,d1
 	@cloudLoop:		
-		move.w	d3,(a1)+
-		swap	d3
-		add.l	d0,d3
-		swap	d3
-		dbf	d1,@cloudLoop
+			move.w	d3,(a1)+
+			swap	d3
+			add.l	d0,d3
+			swap	d3
+			dbf	d1,@cloudLoop
 
-		move.w	(v_bg3_x_pos).w,d0
-		neg.w	d0
-		move.w	#1,d1
+			move.w	(v_bg3_x_pos).w,d0
+			neg.w	d0
+			move.w	#1,d1
 	@mountainLoop:		
-		move.w	d0,(a1)+
-		dbf	d1,@mountainLoop
+			move.w	d0,(a1)+
+			dbf	d1,@mountainLoop
 
-		move.w	(v_bg2_x_pos).w,d0
-		neg.w	d0
-		move.w	#8,d1
+			move.w	(v_bg2_x_pos).w,d0
+			neg.w	d0
+			move.w	#8,d1
 	@bushLoop:		
-		move.w	d0,(a1)+
-		dbf	d1,@bushLoop
+			move.w	d0,(a1)+
+			dbf	d1,@bushLoop
 
-		move.w	(v_bg1_x_pos).w,d0
-		neg.w	d0
-		move.w	#$F,d1
+			move.w	(v_bg1_x_pos).w,d0
+			neg.w	d0
+			move.w	#$F,d1
 	@interiorLoop:		
-		move.w	d0,(a1)+
-		dbf	d1,@interiorLoop
+			move.w	d0,(a1)+
+			dbf	d1,@interiorLoop
 
-		lea	(v_bgscroll_buffer).w,a2
-		move.w	(v_bg1_y_pos).w,d0
-		subi.w	#$200,d0				; subtract 512px (unused 2 chunks)
-		move.w	d0,d2
-		cmpi.w	#$100,d0
-		bcs.s	@limitY
-		move.w	#$100,d0
+			lea	(v_bgscroll_buffer).w,a2
+			move.w	(v_bg1_y_pos).w,d0
+			subi.w	#512,d0				; subtract 512px (unused 2 chunks)
+			move.w	d0,d2
+			cmpi.w	#$100,d0
+			bcs.s	@limitY
+			move.w	#$100,d0
 	@limitY:
-		andi.w	#$1F0,d0
-		lsr.w	#3,d0
-		lea	(a2,d0),a2
-		bra.w	Bg_Scroll_X
+			andi.w	#$1F0,d0
+			lsr.w	#3,d0
+			lea	(a2,d0),a2
+			bra.w	Bg_Scroll_X
+
+		endc
 ; End of function Deform_MZ
 
 ; ---------------------------------------------------------------------------
@@ -446,13 +477,28 @@ Deform_MZ:
 
 
 Deform_SLZ:
-	; vertical scrolling
-		move.w	(v_camera_y_diff).w,d5
-		ext.l	d5
-		asl.l	#7,d5
-		bsr.w	Bg_Scroll_Y
-		move.w	(v_bg1_y_pos).w,(v_bg_y_pos_vsram).w
-	; calculate background scroll buffer
+		if Revision=0
+			move.w	(v_camera_x_diff).w,d4
+			ext.l	d4
+			asl.l	#7,d4
+			move.w	(v_camera_y_diff).w,d5
+			ext.l	d5
+			asl.l	#7,d5
+			bsr.w	Bg_Scroll_Y
+			move.w	(v_bg1_y_pos).w,(v_bg_y_pos_vsram).w
+			bsr.w	Deform_SLZ_2
+		else
+		; vertical scrolling
+			move.w	(v_camera_y_diff).w,d5
+			ext.l	d5
+			asl.l	#7,d5
+			bsr.w	Bg_Scroll_Y
+			move.w	(v_bg1_y_pos).w,(v_bg_y_pos_vsram).w
+		endc
+
+Deform_SLZ_2_m:	macro
+Deform_SLZ_2:
+		; calculate background scroll buffer
 		lea	(v_bgscroll_buffer).w,a1
 		move.w	(v_camera_x_pos).w,d2
 		neg.w	d2
@@ -467,7 +513,7 @@ Deform_SLZ:
 		asl.l	#8,d0
 		moveq	#0,d3
 		move.w	d2,d3
-		move.w	#$1B,d1
+		move.w	#28-1,d1
 	@starLoop:		
 		move.w	d3,(a1)+
 		swap	d3
@@ -477,9 +523,12 @@ Deform_SLZ:
 
 		move.w	d2,d0
 		asr.w	#3,d0
-		move.w	d0,d1
-		asr.w	#1,d1
-		add.w	d1,d0
+		if Revision=0
+		else
+			move.w	d0,d1
+			asr.w	#1,d1
+			add.w	d1,d0
+		endc
 		move.w	#4,d1
 	@buildingLoop1:						; distant black buildings
 		move.w	d0,(a1)+
@@ -494,10 +543,16 @@ Deform_SLZ:
 
 		move.w	d2,d0
 		asr.w	#1,d0
-		move.w	#$1D,d1
+		move.w	#30-1,d1
 	@bottomLoop:						; bottom part of background
 		move.w	d0,(a1)+
 		dbf	d1,@bottomLoop
+		endm
+
+		if Revision=0
+		else
+			Deform_SLZ_2_m
+		endc
 
 		lea	(v_bgscroll_buffer).w,a2
 		move.w	(v_bg1_y_pos).w,d0
@@ -506,8 +561,7 @@ Deform_SLZ:
 		andi.w	#$3F0,d0
 		lsr.w	#3,d0
 		lea	(a2,d0),a2
-;-------------------------------------------------------------------------------
-;-------------------------------------------------------------------------------
+
 Bg_Scroll_X:
 		lea	(v_hscroll_buffer).w,a1
 		move.w	#$E,d1
@@ -540,6 +594,12 @@ Bg_Scroll_X:
 		dbf	d1,@blockLoop
 		rts
 
+		if Revision=0
+			Deform_SLZ_2_m
+			rts
+		else
+		endc
+
 ; ---------------------------------------------------------------------------
 ; Spring Yard Zone background layer deformation	code
 ; ---------------------------------------------------------------------------
@@ -548,81 +608,106 @@ Bg_Scroll_X:
 
 
 Deform_SYZ:
-	; vertical scrolling
-		move.w	(v_camera_y_diff).w,d5
+		; vertical scrolling
+		if Revision=0
+			move.w	(v_camera_x_diff).w,d4		; get camera x pos change since last frame
+			ext.l	d4
+			asl.l	#6,d4				; multiply by $40
+		else
+		endc
+		move.w	(v_camera_y_diff).w,d5			; get camera y pos change since last frame
 		ext.l	d5
 		asl.l	#4,d5
 		move.l	d5,d1
 		asl.l	#1,d5
-		add.l	d1,d5
-		bsr.w	Bg_Scroll_Y
+		add.l	d1,d5					; multiply by $30
+		if Revision=0
+			bsr.w	BGScroll_XY
+		else
+			bsr.w	Bg_Scroll_Y
+		endc
 		move.w	(v_bg1_y_pos).w,(v_bg_y_pos_vsram).w
-	; calculate background scroll buffer
+
+		; calculate background scroll buffer
 		lea	(v_bgscroll_buffer).w,a1
-		move.w	(v_camera_x_pos).w,d2
-		neg.w	d2
-		move.w	d2,d0
-		asr.w	#3,d0
-		sub.w	d2,d0
-		ext.l	d0
-		asl.l	#3,d0
-		divs.w	#8,d0
-		ext.l	d0
-		asl.l	#4,d0
-		asl.l	#8,d0
-		moveq	#0,d3
-		move.w	d2,d3
-		asr.w	#1,d3
-		move.w	#7,d1
+		if Revision=0
+			move.w	#223,d1
+			move.w	(v_camera_x_pos).w,d0
+			neg.w	d0
+			swap	d0
+			move.w	(v_bg1_x_pos).w,d0
+			neg.w	d0
+
+	@loop_hscroll:
+			move.l	d0,(a1)+
+			dbf	d1,@loop_hscroll
+			rts
+		else
+			move.w	(v_camera_x_pos).w,d2
+			neg.w	d2
+			move.w	d2,d0
+			asr.w	#3,d0
+			sub.w	d2,d0
+			ext.l	d0
+			asl.l	#3,d0
+			divs.w	#8,d0
+			ext.l	d0
+			asl.l	#4,d0
+			asl.l	#8,d0
+			moveq	#0,d3
+			move.w	d2,d3
+			asr.w	#1,d3
+			move.w	#7,d1
 	@cloudLoop:		
-		move.w	d3,(a1)+
-		swap	d3
-		add.l	d0,d3
-		swap	d3
-		dbf	d1,@cloudLoop
+			move.w	d3,(a1)+
+			swap	d3
+			add.l	d0,d3
+			swap	d3
+			dbf	d1,@cloudLoop
 
-		move.w	d2,d0
-		asr.w	#3,d0
-		move.w	#4,d1
+			move.w	d2,d0
+			asr.w	#3,d0
+			move.w	#4,d1
 	@mountainLoop:		
-		move.w	d0,(a1)+
-		dbf	d1,@mountainLoop
+			move.w	d0,(a1)+
+			dbf	d1,@mountainLoop
 
-		move.w	d2,d0
-		asr.w	#2,d0
-		move.w	#5,d1
+			move.w	d2,d0
+			asr.w	#2,d0
+			move.w	#5,d1
 	@buildingLoop:		
-		move.w	d0,(a1)+
-		dbf	d1,@buildingLoop
+			move.w	d0,(a1)+
+			dbf	d1,@buildingLoop
 
-		move.w	d2,d0
-		move.w	d2,d1
-		asr.w	#1,d1
-		sub.w	d1,d0
-		ext.l	d0
-		asl.l	#4,d0
-		divs.w	#$E,d0
-		ext.l	d0
-		asl.l	#4,d0
-		asl.l	#8,d0
-		moveq	#0,d3
-		move.w	d2,d3
-		asr.w	#1,d3
-		move.w	#$D,d1
+			move.w	d2,d0
+			move.w	d2,d1
+			asr.w	#1,d1
+			sub.w	d1,d0
+			ext.l	d0
+			asl.l	#4,d0
+			divs.w	#$E,d0
+			ext.l	d0
+			asl.l	#4,d0
+			asl.l	#8,d0
+			moveq	#0,d3
+			move.w	d2,d3
+			asr.w	#1,d3
+			move.w	#$D,d1
 	@bushLoop:		
-		move.w	d3,(a1)+
-		swap	d3
-		add.l	d0,d3
-		swap	d3
-		dbf	d1,@bushLoop
+			move.w	d3,(a1)+
+			swap	d3
+			add.l	d0,d3
+			swap	d3
+			dbf	d1,@bushLoop
 
-		lea	(v_bgscroll_buffer).w,a2
-		move.w	(v_bg1_y_pos).w,d0
-		move.w	d0,d2
-		andi.w	#$1F0,d0
-		lsr.w	#3,d0
-		lea	(a2,d0),a2
-		bra.w	Bg_Scroll_X
+			lea	(v_bgscroll_buffer).w,a2
+			move.w	(v_bg1_y_pos).w,d0
+			move.w	d0,d2
+			andi.w	#$1F0,d0
+			lsr.w	#3,d0
+			lea	(a2,d0),a2
+			bra.w	Bg_Scroll_X
+		endc
 ; End of function Deform_SYZ
 
 ; ---------------------------------------------------------------------------
@@ -633,30 +718,38 @@ Deform_SYZ:
 
 
 Deform_SBZ:
-		tst.b	(v_act).w
-		bne.w	Deform_SBZ2
-	; block 1 - lower black buildings
-		move.w	(v_camera_x_diff).w,d4
+		if Revision=0
+		else
+; REV01 - different scrolling for act 1
+
+		tst.b	(v_act).w				; is this act 1?
+		bne.w	Deform_SBZ2				; if not, branch
+
+		; block 1 - lower black buildings
+		move.w	(v_camera_x_diff).w,d4			; get camera x pos change since last frame
 		ext.l	d4
-		asl.l	#7,d4
+		asl.l	#7,d4					; multiply by $80
 		moveq	#redraw_bottom,d6
 		bsr.w	BGScroll_Block1
-	; block 3 - distant brown buildings
-		move.w	(v_camera_x_diff).w,d4
+
+		; block 3 - distant brown buildings
+		move.w	(v_camera_x_diff).w,d4			; get camera x pos change since last frame
 		ext.l	d4
-		asl.l	#6,d4
+		asl.l	#6,d4					; multiply by $40
 		moveq	#redraw_bottom+redraw_left,d6
 		bsr.w	BGScroll_Block3
-	; block 2 - upper black buildings
-		move.w	(v_camera_x_diff).w,d4
+
+		; block 2 - upper black buildings
+		move.w	(v_camera_x_diff).w,d4			; get camera x pos change since last frame
 		ext.l	d4
 		asl.l	#5,d4
 		move.l	d4,d1
 		asl.l	#1,d4
-		add.l	d1,d4
+		add.l	d1,d4					; multiply by $60
 		moveq	#redraw_left,d6
 		bsr.w	BGScroll_Block2
-	; vertical scrolling
+
+		; vertical scrolling
 		moveq	#0,d4
 		move.w	(v_camera_y_diff).w,d5
 		ext.l	d5
@@ -672,7 +765,8 @@ Deform_SBZ:
 		or.b	d0,(v_bg2_redraw_direction).w
 		clr.b	(v_bg1_redraw_direction).w
 		clr.b	(v_bg3_redraw_direction).w
-	; calculate background scroll buffer
+
+		; calculate background scroll buffer
 		lea	(v_bgscroll_buffer).w,a1
 		move.w	(v_camera_x_pos).w,d2
 		neg.w	d2
@@ -723,18 +817,26 @@ Deform_SBZ:
 		lsr.w	#3,d0
 		lea	(a2,d0),a2
 		bra.w	Bg_Scroll_X
+
+		endc
 ;-------------------------------------------------------------------------------
-Deform_SBZ2:;loc_68A2:
-	; plain background deformation
+Deform_SBZ2:
+		; plain background deformation
 		move.w	(v_camera_x_diff).w,d4
 		ext.l	d4		
 		asl.l	#6,d4
 		move.w	(v_camera_y_diff).w,d5
 		ext.l	d5
-		asl.l	#5,d5
+		if Revision=0
+			asl.l	#4,d5
+			asl.l	#1,d5
+		else
+			asl.l	#5,d5
+		endc
 		bsr.w	BGScroll_XY
 		move.w	(v_bg1_y_pos).w,(v_bg_y_pos_vsram).w
-	; copy fg & bg x-position to hscroll table
+
+		; copy fg & bg x position to hscroll table
 		lea	(v_hscroll_buffer).w,a1
 		move.w	#223,d1
 		move.w	(v_camera_x_pos).w,d0
@@ -742,8 +844,8 @@ Deform_SBZ2:;loc_68A2:
 		swap	d0
 		move.w	(v_bg1_x_pos).w,d0
 		neg.w	d0
-	@loop:		
+	@loop_hscroll:		
 		move.l	d0,(a1)+
-		dbf	d1,@loop
+		dbf	d1,@loop_hscroll
 		rts
 ; End of function Deform_SBZ

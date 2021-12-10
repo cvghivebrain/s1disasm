@@ -174,6 +174,7 @@ Deform_MZ:
 		add.l	d1,d4
 		moveq	#0,d5
 		bsr.w	BGScroll_XY
+
 		move.w	#$200,d0
 		move.w	(v_camera_y_pos).w,d1
 		subi.w	#$1C8,d1
@@ -188,6 +189,7 @@ loc_6402:
 		move.w	d0,(v_bg2_y_pos).w
 		bsr.w	BGScroll_YAbsolute
 		move.w	(v_bg1_y_pos).w,(v_bg_y_pos_vsram).w
+
 		lea	(v_hscroll_buffer).w,a1
 		move.w	#223,d1
 		move.w	(v_camera_x_pos).w,d0
@@ -219,6 +221,7 @@ Deform_SLZ:
 		bsr.w	Bg_Scroll_Y
 		move.w	(v_bg1_y_pos).w,(v_bg_y_pos_vsram).w
 		bsr.w	Deform_SLZ_2
+
 		lea	(v_bgscroll_buffer).w,a2
 		move.w	(v_bg1_y_pos).w,d0
 		move.w	d0,d2
@@ -226,6 +229,7 @@ Deform_SLZ:
 		andi.w	#$3F0,d0
 		lsr.w	#3,d0
 		lea	(a2,d0.w),a2
+
 		lea	(v_hscroll_buffer).w,a1
 		move.w	#$E,d1
 		move.w	(v_camera_x_pos).w,d0
@@ -280,35 +284,36 @@ Deform_SLZ_2:
 		asl.l	#8,d0
 		moveq	#0,d3
 		move.w	d2,d3
-		move.w	#$1B,d1
+		move.w	#28-1,d1
 
-loc_64CE:
+	@loop_stars:
 		move.w	d3,(a1)+
 		swap	d3
 		add.l	d0,d3
 		swap	d3
-		dbf	d1,loc_64CE
+		dbf	d1,@loop_stars
+
 		move.w	d2,d0
 		asr.w	#3,d0
 		move.w	#4,d1
 
-loc_64E2:
+	@loop_buildings1:
 		move.w	d0,(a1)+
-		dbf	d1,loc_64E2
+		dbf	d1,@loop_buildings1
 		move.w	d2,d0
 		asr.w	#2,d0
 		move.w	#4,d1
 
-loc_64F0:
+	@loop_buildings2:
 		move.w	d0,(a1)+
-		dbf	d1,loc_64F0
+		dbf	d1,@loop_buildings2
 		move.w	d2,d0
 		asr.w	#1,d0
 		move.w	#$1D,d1
 
-loc_64FE:
+	@loop_bottom:
 		move.w	d0,(a1)+
-		dbf	d1,loc_64FE
+		dbf	d1,@loop_bottom
 		rts	
 ; End of function Deform_SLZ_2
 

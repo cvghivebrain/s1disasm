@@ -1548,11 +1548,7 @@ BgScroll_End:
 		rts
 		endc
 
-		if revision=0
-		include	"Includes\DeformLayers.asm"
-		else
 		include	"Includes\DeformLayers (JP1).asm"
-		endc
 		include	"Includes\ScrollHorizontal & ScrollVertical.asm"
 
 
