@@ -629,8 +629,8 @@ Deform_SYZ:
 		move.w	(v_bg1_y_pos).w,(v_bg_y_pos_vsram).w
 
 		; calculate background scroll buffer
-		lea	(v_bgscroll_buffer).w,a1
 		if Revision=0
+			lea	(v_hscroll_buffer).w,a1
 			move.w	#223,d1
 			move.w	(v_camera_x_pos).w,d0
 			neg.w	d0
@@ -643,6 +643,7 @@ Deform_SYZ:
 			dbf	d1,@loop_hscroll
 			rts
 		else
+			lea	(v_bgscroll_buffer).w,a1
 			move.w	(v_camera_x_pos).w,d2
 			neg.w	d2
 			move.w	d2,d0
