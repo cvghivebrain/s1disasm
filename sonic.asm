@@ -1550,115 +1550,6 @@ BgScroll_End:
 
 		include	"Includes\DeformLayers.asm"
 
-		if revision=0
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-ScrollBlock4:
-		move.w	(v_bg2_x_pos).w,d2
-		move.w	(v_bg2_y_pos).w,d3
-		move.w	(v_camera_x_diff).w,d0
-		ext.l	d0
-		asl.l	#7,d0
-		add.l	d0,(v_bg2_x_pos).w
-		move.w	(v_bg2_x_pos).w,d0
-		andi.w	#$10,d0
-		move.b	($FFFFF74E).w,d1
-		eor.b	d1,d0
-		bne.s	locret_6884
-		eori.b	#$10,($FFFFF74E).w
-		move.w	(v_bg2_x_pos).w,d0
-		sub.w	d2,d0
-		bpl.s	loc_687E
-		bset	#redraw_left_bit,(v_bg2_redraw_direction).w
-		bra.s	locret_6884
-; ===========================================================================
-
-loc_687E:
-		bset	#redraw_right_bit,(v_bg2_redraw_direction).w
-
-locret_6884:
-		rts	
-; End of function ScrollBlock4
-		else
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-; d6 - bit to set for redraw
-
-BGScroll_Block1:
-		move.l	(v_bg1_x_pos).w,d2
-		move.l	d2,d0
-		add.l	d4,d0
-		move.l	d0,(v_bg1_x_pos).w
-		move.l	d0,d1
-		swap	d1
-		andi.w	#$10,d1
-		move.b	(v_bg1_x_redraw_flag).w,d3
-		eor.b	d3,d1
-		bne.s	@return
-		eori.b	#$10,(v_bg1_x_redraw_flag).w
-		sub.l	d2,d0
-		bpl.s	@scrollRight
-		bset	d6,(v_bg1_redraw_direction).w
-		bra.s	@return
-	@scrollRight:
-		addq.b	#1,d6
-		bset	d6,(v_bg1_redraw_direction).w
-	@return:
-		rts
-; End of function BGScroll_Block1
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-BGScroll_Block2:
-		move.l	(v_bg2_x_pos).w,d2
-		move.l	d2,d0
-		add.l	d4,d0
-		move.l	d0,(v_bg2_x_pos).w
-		move.l	d0,d1
-		swap	d1
-		andi.w	#$10,d1
-		move.b	(v_bg2_x_redraw_flag).w,d3
-		eor.b	d3,d1
-		bne.s	@return
-		eori.b	#$10,(v_bg2_x_redraw_flag).w
-		sub.l	d2,d0
-		bpl.s	@scrollRight
-		bset	d6,(v_bg2_redraw_direction).w
-		bra.s	@return
-	@scrollRight:
-		addq.b	#1,d6
-		bset	d6,(v_bg2_redraw_direction).w
-	@return:
-		rts
-;-------------------------------------------------------------------------------
-BGScroll_Block3:
-		move.l	(v_bg3_x_pos).w,d2
-		move.l	d2,d0
-		add.l	d4,d0
-		move.l	d0,(v_bg3_x_pos).w
-		move.l	d0,d1
-		swap	d1
-		andi.w	#$10,d1
-		move.b	(v_bg3_x_redraw_flag).w,d3
-		eor.b	d3,d1
-		bne.s	@return
-		eori.b	#$10,(v_bg3_x_redraw_flag).w
-		sub.l	d2,d0
-		bpl.s	@scrollRight
-		bset	d6,(v_bg3_redraw_direction).w
-		bra.s	@return
-	@scrollRight:
-		addq.b	#1,d6
-		bset	d6,(v_bg3_redraw_direction).w
-	@return:
-		rts
-		endc
-
-
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 ; sub_6886:
@@ -2503,7 +2394,7 @@ LoadTilesFromStart:
 		move.w	#$4000,d2
 		bsr.s	DrawChunks
 		lea	(v_bg1_x_pos).w,a3
-		lea	(v_level_layout+$40).w,a4
+		lea	(v_level_layout+level_max_width).w,a4
 		move.w	#$6000,d2
 		if Revision=0
 		else

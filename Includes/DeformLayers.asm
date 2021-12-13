@@ -69,7 +69,7 @@ Deform_GHZ:
 		add.l	d1,d4					; multiply by $60
 		moveq	#0,d5
 		bsr.w	UpdateBG_XY				; update bg x pos and set redraw flags
-		bsr.w	ScrollBlock4
+		bsr.w	UpdateBG_X_Block2_GHZ
 
 		; calculate y position
 		lea	(v_hscroll_buffer).w,a1
@@ -110,15 +110,15 @@ Deform_GHZ:
 		move.l	d4,d1
 		asl.l	#1,d4
 		add.l	d1,d4					; multiply by $60
-		moveq	#0,d6
+		moveq	#redraw_top_bit,d6
 		bsr.w	BGScroll_Block3				; update bg x pos and set redraw flags
 
 		; block 2 - hills & waterfalls
 		move.w	(v_camera_x_diff).w,d4			; get camera x pos change since last frame
 		ext.l	d4
 		asl.l	#7,d4					; multiply by $80
-		moveq	#0,d6
-		bsr.w	BGScroll_Block2				; update bg x pos and set redraw flags
+		moveq	#redraw_top_bit,d6
+		bsr.w	UpdateBG_X_Block2				; update bg x pos and set redraw flags
 
 		; calculate Y position
 		lea	(v_hscroll_buffer).w,a1
@@ -340,22 +340,22 @@ Deform_MZ:
 			moveq	#0,d5
 			bsr.w	UpdateBG_XY
 		else
-			moveq	#redraw_bottom,d6
-			bsr.w	BGScroll_Block1
+			moveq	#redraw_left_bit,d6
+			bsr.w	UpdateBG_X_Block1
 
 		; block 3 - mountains
 			move.w	(v_camera_x_diff).w,d4		; get camera x pos change since last frame
 			ext.l	d4
 			asl.l	#6,d4				; multiply by $40
-			moveq	#redraw_bottom+redraw_left,d6
+			moveq	#6,d6
 			bsr.w	BGScroll_Block3
 
 		; block 2 - bushes & antique buildings
 			move.w	(v_camera_x_diff).w,d4		; get camera x pos change since last frame
 			ext.l	d4
 			asl.l	#7,d4				; multiply by $80
-			moveq	#redraw_left,d6
-			bsr.w	BGScroll_Block2
+			moveq	#redraw_topall_bit,d6
+			bsr.w	UpdateBG_X_Block2
 
 		endc
 
@@ -717,14 +717,14 @@ Deform_SBZ:
 		move.w	(v_camera_x_diff).w,d4			; get camera x pos change since last frame
 		ext.l	d4
 		asl.l	#7,d4					; multiply by $80
-		moveq	#redraw_bottom,d6
-		bsr.w	BGScroll_Block1
+		moveq	#redraw_left_bit,d6
+		bsr.w	UpdateBG_X_Block1
 
 		; block 3 - distant brown buildings
 		move.w	(v_camera_x_diff).w,d4			; get camera x pos change since last frame
 		ext.l	d4
 		asl.l	#6,d4					; multiply by $40
-		moveq	#redraw_bottom+redraw_left,d6
+		moveq	#6,d6
 		bsr.w	BGScroll_Block3
 
 		; block 2 - upper black buildings
@@ -734,8 +734,8 @@ Deform_SBZ:
 		move.l	d4,d1
 		asl.l	#1,d4
 		add.l	d1,d4					; multiply by $60
-		moveq	#redraw_left,d6
-		bsr.w	BGScroll_Block2
+		moveq	#redraw_topall_bit,d6
+		bsr.w	UpdateBG_X_Block2
 
 		; vertical scrolling
 		moveq	#0,d4
@@ -1204,3 +1204,115 @@ UpdateBG_Y_Absolute:
 	@return:
 		rts
 ; End of function UpdateBG_Y_Absolute
+
+; ---------------------------------------------------------------------------
+; Subroutine to update bg position and redraw flags for bg block 2 in GHZ
+; ---------------------------------------------------------------------------
+
+; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+
+		if Revision=0
+UpdateBG_X_Block2_GHZ:
+		move.w	(v_bg2_x_pos).w,d2			; get bg position
+		move.w	(v_bg2_y_pos).w,d3
+		move.w	(v_camera_x_diff).w,d0			; get camera x diff
+		ext.l	d0
+		asl.l	#7,d0					; multiply by $80
+		add.l	d0,(v_bg2_x_pos).w			; update bg position
+		move.w	(v_bg2_x_pos).w,d0
+		andi.w	#$10,d0
+		move.b	(v_bg2_x_redraw_flag).w,d1
+		eor.b	d1,d0
+		bne.s	@no_redraw_x				; insufficient change to redraw bg
+		eori.b	#$10,(v_bg2_x_redraw_flag).w
+		move.w	(v_bg2_x_pos).w,d0
+		sub.w	d2,d0					; new bg pos minus old
+		bpl.s	@redraw_right				; branch if positive (i.e. moving right)
+		bset	#redraw_left_bit,(v_bg2_redraw_direction).w
+		bra.s	@next
+	@redraw_right:
+		bset	#redraw_right_bit,(v_bg2_redraw_direction).w
+	@no_redraw_x:
+	@next:
+		rts
+		endc
+; End of function UpdateBG_X_Block2_GHZ
+
+; ---------------------------------------------------------------------------
+; Subroutines to update bg position and redraw flags for bg blocks 1, 2 and 3
+
+; input:
+;	d4 = background x diff
+;	d6 = bit to set for redraw direction
+; ---------------------------------------------------------------------------
+
+; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+
+		if Revision=0
+		else
+UpdateBG_X_Block1:
+		move.l	(v_bg1_x_pos).w,d2
+		move.l	d2,d0
+		add.l	d4,d0
+		move.l	d0,(v_bg1_x_pos).w
+		move.l	d0,d1
+		swap	d1
+		andi.w	#$10,d1
+		move.b	(v_bg1_x_redraw_flag).w,d3
+		eor.b	d3,d1
+		bne.s	@return
+		eori.b	#$10,(v_bg1_x_redraw_flag).w
+		sub.l	d2,d0
+		bpl.s	@scrollRight
+		bset	d6,(v_bg1_redraw_direction).w
+		bra.s	@return
+	@scrollRight:
+		addq.b	#1,d6
+		bset	d6,(v_bg1_redraw_direction).w
+	@return:
+		rts
+
+UpdateBG_X_Block2:
+		move.l	(v_bg2_x_pos).w,d2
+		move.l	d2,d0
+		add.l	d4,d0
+		move.l	d0,(v_bg2_x_pos).w
+		move.l	d0,d1
+		swap	d1
+		andi.w	#$10,d1
+		move.b	(v_bg2_x_redraw_flag).w,d3
+		eor.b	d3,d1
+		bne.s	@return
+		eori.b	#$10,(v_bg2_x_redraw_flag).w
+		sub.l	d2,d0
+		bpl.s	@scrollRight
+		bset	d6,(v_bg2_redraw_direction).w
+		bra.s	@return
+	@scrollRight:
+		addq.b	#1,d6
+		bset	d6,(v_bg2_redraw_direction).w
+	@return:
+		rts
+
+BGScroll_Block3:
+		move.l	(v_bg3_x_pos).w,d2
+		move.l	d2,d0
+		add.l	d4,d0
+		move.l	d0,(v_bg3_x_pos).w
+		move.l	d0,d1
+		swap	d1
+		andi.w	#$10,d1
+		move.b	(v_bg3_x_redraw_flag).w,d3
+		eor.b	d3,d1
+		bne.s	@return
+		eori.b	#$10,(v_bg3_x_redraw_flag).w
+		sub.l	d2,d0
+		bpl.s	@scrollRight
+		bset	d6,(v_bg3_redraw_direction).w
+		bra.s	@return
+	@scrollRight:
+		addq.b	#1,d6
+		bset	d6,(v_bg3_redraw_direction).w
+	@return:
+		rts
+		endc
