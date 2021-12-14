@@ -103,7 +103,7 @@ VBlank_Sega_SkipLoad:
 ; 4 - GM_Title> Tit_MainLoop, LevelSelect, GotoDemo; GM_Credits> Cred_WaitLoop, TryAg_MainLoop
 VBlank_Title:
 		bsr.w	ReadPad_Palette_Sprites_HScroll
-		bsr.w	LoadTilesAsYouMove_BGOnly
+		bsr.w	DrawTilesWhenMoving_BGOnly
 		bsr.w	ProcessPLC				; decompress 9 cells of Nemesis graphics
 		tst.w	(v_countdown).w
 		beq.w	@end
@@ -156,7 +156,7 @@ VBlank_Level:
 		movem.l	(v_fg_redraw_direction).w,d0-d1		; copy all fg/bg redraw direction flags to d0-d1
 		movem.l	d0-d1,(v_fg_redraw_direction_copy).w	; create duplicates in RAM
 		cmpi.b	#96,(v_vdp_hint_line).w			; is HBlank set to run on line 96 or below? (42% of the way down the screen)
-		bhs.s	LoadTiles_LevelGfx_HUD_PLC		; if yes, branch
+		bhs.s	DrawTiles_LevelGfx_HUD_PLC		; if yes, branch
 		move.b	#1,(f_hblank_run_snd).w			; set flag to run sound driver on HBlank
 		addq.l	#4,sp
 		bra.w	VBlank_Exit
@@ -168,8 +168,8 @@ VBlank_Level:
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 
-LoadTiles_LevelGfx_HUD_PLC:
-		bsr.w	LoadTilesAsYouMove			; display new tiles if camera has moved
+DrawTiles_LevelGfx_HUD_PLC:
+		bsr.w	DrawTilesWhenMoving			; display new tiles if camera has moved
 		jsr	(AnimateLevelGfx).l			; update animated level graphics
 		jsr	(HUD_Update).l				; update HUD graphics
 		bsr.w	ProcessPLC2				; decompress 3 cells of Nemesis graphics
@@ -179,7 +179,7 @@ LoadTiles_LevelGfx_HUD_PLC:
 
 	@end:
 		rts	
-; End of function LoadTiles_LevelGfx_HUD_PLC
+; End of function DrawTiles_LevelGfx_HUD_PLC
 
 ; ===========================================================================
 
@@ -240,7 +240,7 @@ VBlank_Ending:
 		movem.l	d0-d7,(v_camera_x_pos_copy).w		; create duplicates in RAM
 		movem.l	(v_fg_redraw_direction).w,d0-d1		; copy all fg/bg redraw direction flags to d0-d1
 		movem.l	d0-d1,(v_fg_redraw_direction_copy).w	; create duplicates in RAM
-		bsr.w	LoadTilesAsYouMove			; display new tiles if camera has moved
+		bsr.w	DrawTilesWhenMoving			; display new tiles if camera has moved
 		jsr	(AnimateLevelGfx).l			; update animated level graphics
 		jsr	(HUD_Update).l				; update HUD graphics
 		bsr.w	ProcessPLC				; decompress 9 cells of Nemesis graphics
@@ -368,7 +368,7 @@ HBlank:
 @update_hblank:
 		clr.b	(f_hblank_run_snd).w
 		movem.l	d0-a6,-(sp)				; save registers to stack
-		bsr.w	LoadTiles_LevelGfx_HUD_PLC		; display new tiles, update animated gfx, update HUD, decompress 3 cells of Nemesis gfx
+		bsr.w	DrawTiles_LevelGfx_HUD_PLC		; display new tiles, update animated gfx, update HUD, decompress 3 cells of Nemesis gfx
 		jsr	(UpdateSound).l				; update audio
 		movem.l	(sp)+,d0-a6				; restore registers from stack
 		rte	

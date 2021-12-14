@@ -1550,80 +1550,78 @@ BgScroll_End:
 
 		include	"Includes\DeformLayers.asm"
 
+; ---------------------------------------------------------------------------
+; Subroutine to	draw 16x16 tiles at the edge of the screen as the camera moves
+; ---------------------------------------------------------------------------
+
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-; sub_6886:
-LoadTilesAsYouMove_BGOnly:
+; Background only - used by title screen
+DrawTilesWhenMoving_BGOnly:
 		lea	(vdp_control_port).l,a5
 		lea	(vdp_data_port).l,a6
 		lea	(v_bg1_redraw_direction).w,a2
 		lea	(v_bg1_x_pos).w,a3
-		lea	(v_level_layout+$40).w,a4
+		lea	(v_level_layout+level_max_width).w,a4
 		move.w	#$6000,d2
 		bsr.w	DrawBGScrollBlock1
 		lea	(v_bg2_redraw_direction).w,a2
 		lea	(v_bg2_x_pos).w,a3
 		bra.w	DrawBGScrollBlock2
-; End of function sub_6886
-
-; ---------------------------------------------------------------------------
-; Subroutine to	display	correct	tiles as you move
-; ---------------------------------------------------------------------------
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-
-LoadTilesAsYouMove:
+DrawTilesWhenMoving:
 		lea	(vdp_control_port).l,a5
 		lea	(vdp_data_port).l,a6
-		; First, update the background
-		lea	(v_bg1_redraw_direction_copy).w,a2	; Scroll block 1 scroll flags
-		lea	(v_bg1_x_pos_copy).w,a3			; Scroll block 1 X coordinate
-		lea	(v_level_layout+$40).w,a4
-		move.w	#$6000,d2				; VRAM thing for selecting Plane B
+
+		; Background
+		lea	(v_bg1_redraw_direction_copy).w,a2
+		lea	(v_bg1_x_pos_copy).w,a3
+		lea	(v_level_layout+level_max_width).w,a4
+		move.w	#$6000,d2
 		bsr.w	DrawBGScrollBlock1
-		lea	(v_bg2_redraw_direction_copy).w,a2	; Scroll block 2 scroll flags
-		lea	(v_bg2_x_pos_copy).w,a3			; Scroll block 2 X coordinate
+		lea	(v_bg2_redraw_direction_copy).w,a2
+		lea	(v_bg2_x_pos_copy).w,a3
 		bsr.w	DrawBGScrollBlock2
-		if Revision>=1
-		; REV01 added a third scroll block, though, technically,
-		; the RAM for it was already there in REV00
-		lea	(v_bg3_redraw_direction_copy).w,a2	; Scroll block 3 scroll flags
-		lea	(v_bg3_x_pos_copy).w,a3			; Scroll block 3 X coordinate
-		bsr.w	DrawBGScrollBlock3
+		if Revision=0
+		else
+		; REV01 added a third scroll block
+			lea	(v_bg3_redraw_direction_copy).w,a2
+			lea	(v_bg3_x_pos_copy).w,a3
+			bsr.w	DrawBGScrollBlock3
 		endc
-		; Then, update the foreground
-		lea	(v_fg_redraw_direction_copy).w,a2	; Foreground scroll flags
-		lea	(v_camera_x_pos_copy).w,a3		; Foreground X coordinate
+		; Foreground
+		lea	(v_fg_redraw_direction_copy).w,a2
+		lea	(v_camera_x_pos_copy).w,a3
 		lea	(v_level_layout).w,a4
-		move.w	#$4000,d2				; VRAM thing for selecting Plane A
-		; The FG's update function is inlined here
-		tst.b	(a2)
-		beq.s	locret_6952				; If there are no flags set, nothing needs updating
-		bclr	#0,(a2)
-		beq.s	loc_6908
+		move.w	#$4000,d2
+		tst.b	(a2)					; are any redraw flags set?
+		beq.s	@exit					; if not, branch
+		bclr	#redraw_top_bit,(a2)			; clear flag for redraw top
+		beq.s	@chk_bottom				; branch if already clear
 		; Draw new tiles at the top
-		moveq	#-16,d4					; Y coordinate. Note that 16 is the size of a block in pixels
-		moveq	#-16,d5					; X coordinate
-		bsr.w	Calc_VRAM_Pos
-		moveq	#-16,d4					; Y coordinate
-		moveq	#-16,d5					; X coordinate
+		moveq	#-16,d4					; y coordinate - 16px (size of block) above top
+		moveq	#-16,d5					; x coordinate - 16px outside left edge
+		bsr.w	Calc_VRAM_Pos				; d0 = VDP command for fg nametable
+		moveq	#-16,d4					; y coordinate
+		moveq	#-16,d5					; x coordinate
 		bsr.w	DrawBlocks_LR
 
-loc_6908:
-		bclr	#1,(a2)
-		beq.s	loc_6922
+	@chk_bottom:
+		bclr	#redraw_bottom_bit,(a2)			; clear flag for redraw bottom
+		beq.s	@chk_left				; branch if already clear
 		; Draw new tiles at the bottom
-		move.w	#224,d4					; Start at bottom of the screen. Since this draws from top to bottom, we don't need 224+16
+		move.w	#224,d4					; y coordinate - bottom of screen
 		moveq	#-16,d5
 		bsr.w	Calc_VRAM_Pos
 		move.w	#224,d4
 		moveq	#-16,d5
 		bsr.w	DrawBlocks_LR
 
-loc_6922:
-		bclr	#2,(a2)
-		beq.s	loc_6938
+	@chk_left:
+		bclr	#redraw_left_bit,(a2)			; clear flag for redraw left
+		beq.s	@chk_right				; branch if already clear
 		; Draw new tiles on the left
 		moveq	#-16,d4
 		moveq	#-16,d5
@@ -1632,30 +1630,41 @@ loc_6922:
 		moveq	#-16,d5
 		bsr.w	DrawBlocks_TB
 
-loc_6938:
-		bclr	#3,(a2)
-		beq.s	locret_6952
+	@chk_right:
+		bclr	#redraw_right_bit,(a2)			; clear flag for redraw right
+		beq.s	@exit					; branch if already clear
 		; Draw new tiles on the right
 		moveq	#-16,d4
-		move.w	#320,d5
+		move.w	#320,d5					; x coordinate - right edge of screen
 		bsr.w	Calc_VRAM_Pos
 		moveq	#-16,d4
 		move.w	#320,d5
 		bsr.w	DrawBlocks_TB
 
-locret_6952:
+@exit:
 		rts	
-; End of function LoadTilesAsYouMove
+; End of function DrawTilesWhenMoving
 
+; ---------------------------------------------------------------------------
+; Subroutines to draw 16x16 tiles on the background in sections
+
+; input:
+;	d2 = VRAM something
+;	a5 = vdp_control_port
+;	a6 = vdp_data_port
+;	(a2) = redraw direction flags
+;	(a3) = bg x position
+;	4(a3) = bg y position
+;	(a4) = bg layout
+; ---------------------------------------------------------------------------
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-; sub_6954:
 DrawBGScrollBlock1:
-		tst.b	(a2)
-		beq.w	locret_69F2
-		bclr	#redraw_top_bit,(a2)
-		beq.s	loc_6972
+		tst.b	(a2)					; are any redraw flags set?
+		beq.w	locret_69F2				; if not, branch
+		bclr	#redraw_top_bit,(a2)			; clear flag for redraw top
+		beq.s	@chk_bottom				; branch if already clear
 		; Draw new tiles at the top
 		moveq	#-16,d4
 		moveq	#-16,d5
@@ -1663,16 +1672,16 @@ DrawBGScrollBlock1:
 		moveq	#-16,d4
 		moveq	#-16,d5
 		if Revision=0
-			moveq	#(512/16)-1,d6			; Draw entire row of plane
+			moveq	#(512/16)-1,d6			; draw entire row of plane
 			bsr.w	DrawBlocks_LR_2
 		else
 			bsr.w	DrawBlocks_LR
 		endc
 
-loc_6972:
-		bclr	#redraw_bottom_bit,(a2)
-		beq.s	loc_698E
-		; Draw new tiles at the top
+	@chk_bottom:
+		bclr	#redraw_bottom_bit,(a2)			; clear flag for redraw bottom
+		beq.s	@chk_left				; branch if already clear
+		; Draw new tiles at the bottom
 		move.w	#224,d4
 		moveq	#-16,d5
 		bsr.w	Calc_VRAM_Pos
@@ -1685,7 +1694,7 @@ loc_6972:
 			bsr.w	DrawBlocks_LR
 		endc
 
-loc_698E:
+	@chk_left:
 		bclr	#redraw_left_bit,(a2)
 
 		if Revision=0
@@ -2093,14 +2102,23 @@ locret_6AD6:
 
 		endc
 
+; ---------------------------------------------------------------------------
+; Subroutine to draw a row of 16x16 tiles, left to right
+
+; input:
+;	d0 = VRAM address as VDP command
+;	d2 = 
+;	d4 = y coordinate
+;	d5 = x coordinate
+;	d6 = 16x16 tiles to draw minus 1 (DrawBlocks_LR_2 only)
+;	a5 = vdp_control_port
+;	a6 = vdp_data_port
+; ---------------------------------------------------------------------------
+
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-; Don't be fooled by the name: this function's for drawing from left to right
-; when the camera's moving up or down
-; DrawTiles_LR:
 DrawBlocks_LR:
 		moveq	#((320+16+16)/16)-1,d6			; Draw the entire width of the screen + two extra columns
-; DrawTiles_LR_2:
 DrawBlocks_LR_2:
 		move.l	#$800000,d7				; Delta between rows of tiles
 		move.l	d0,d1
@@ -2324,27 +2342,33 @@ locret_6C1E:
 ; End of function GetBlockData
 
 
+; ---------------------------------------------------------------------------
+; Subroutine to	convert screen relative coordinates to VDP command for VRAM
+; fg/bg nametable access
+
+; input:
+;	d4 = y coordinate
+;	d5 = x coordinate
+;	(a3) = camera x position
+;	4(a3) = camera y position
+
+; output:
+;	d0 = VDP command
+; ---------------------------------------------------------------------------
+
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-; Produces a VRAM plane access command from coordinates
-; Parameters:
-; d4 = Relative Y coordinate
-; d5 = Relative X coordinate
-; Returns VDP command in d0
 Calc_VRAM_Pos:
 		if Revision=0
-		add.w	4(a3),d4				; Add camera Y coordinate
-		add.w	(a3),d5					; Add camera X coordinate
+			add.w	4(a3),d4			; add camera y pos
+			add.w	(a3),d5				; add camera x pos
 		else
 			add.w	(a3),d5
 	Calc_VRAM_Pos_2:
 			add.w	4(a3),d4
 		endc
-		; Floor the coordinates to the nearest pair of tiles (the size of a block).
-		; Also note that this wraps the value to the size of the plane:
-		; The plane is 64*8 wide, so wrap at $100, and it's 32*8 tall, so wrap at $200
-		andi.w	#$F0,d4
-		andi.w	#$1F0,d5
+		andi.w	#$F0,d4					; round down to 16 (size of block) and limit to $100 (height of plane, 32*8)
+		andi.w	#$1F0,d5				; round down to 16 (size of block) and limit to $200 (width of plane, 64*8)
 		; Transform the adjusted coordinates into a VDP command
 		lsl.w	#4,d4
 		lsr.w	#2,d5

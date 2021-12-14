@@ -367,7 +367,7 @@ v_boundary_top_debugcopy:	rs.w 1 ; $FFFFFEF0 ; top level boundary, buffered whil
 v_boundary_bottom_debugcopy:	rs.w 1 ; $FFFFFEF2 ; bottom level boundary, buffered while debug mode is in use
 unused_fef4:			rs.b $1C
 
-; Variables copied during VBlank and used by LoadTilesAsYouMove:
+; Variables copied during VBlank and used by DrawTilesWhenMoving:
 
 v_camera_x_pos_copy:		rs.l 1 ; $FFFFFF10 ; copy of v_camera_x_pos
 v_camera_y_pos_copy:		rs.l 1 ; $FFFFFF14 ; copy of v_camera_y_pos
