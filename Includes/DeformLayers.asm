@@ -111,14 +111,14 @@ Deform_GHZ:
 		asl.l	#1,d4
 		add.l	d1,d4					; multiply by $60
 		moveq	#redraw_top_bit,d6
-		bsr.w	BGScroll_Block3				; update bg x pos and set redraw flags
+		bsr.w	UpdateBG_X_Block3			; update bg x pos and set redraw flags
 
 		; block 2 - hills & waterfalls
 		move.w	(v_camera_x_diff).w,d4			; get camera x pos change since last frame
 		ext.l	d4
 		asl.l	#7,d4					; multiply by $80
 		moveq	#redraw_top_bit,d6
-		bsr.w	UpdateBG_X_Block2				; update bg x pos and set redraw flags
+		bsr.w	UpdateBG_X_Block2			; update bg x pos and set redraw flags
 
 		; calculate Y position
 		lea	(v_hscroll_buffer).w,a1
@@ -348,7 +348,7 @@ Deform_MZ:
 			ext.l	d4
 			asl.l	#6,d4				; multiply by $40
 			moveq	#6,d6
-			bsr.w	BGScroll_Block3
+			bsr.w	UpdateBG_X_Block3
 
 		; block 2 - bushes & antique buildings
 			move.w	(v_camera_x_diff).w,d4		; get camera x pos change since last frame
@@ -725,7 +725,7 @@ Deform_SBZ:
 		ext.l	d4
 		asl.l	#6,d4					; multiply by $40
 		moveq	#6,d6
-		bsr.w	BGScroll_Block3
+		bsr.w	UpdateBG_X_Block3
 
 		; block 2 - upper black buildings
 		move.w	(v_camera_x_diff).w,d4			; get camera x pos change since last frame
@@ -1294,7 +1294,7 @@ UpdateBG_X_Block2:
 	@return:
 		rts
 
-BGScroll_Block3:
+UpdateBG_X_Block3:
 		move.l	(v_bg3_x_pos).w,d2
 		move.l	d2,d0
 		add.l	d4,d0
