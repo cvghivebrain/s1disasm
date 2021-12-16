@@ -224,3 +224,5 @@ redraw_left_bit:	equ 2
 redraw_right_bit:	equ 3
 redraw_topall_bit:	equ 4
 redraw_bottomall_bit:	equ 5
+redraw_bg2_left_bit:	equ 0 ; REV01 only
+redraw_bg2_right_bit:	equ 1 ; REV01 only

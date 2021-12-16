@@ -117,7 +117,7 @@ Deform_GHZ:
 		move.w	(v_camera_x_diff).w,d4			; get camera x pos change since last frame
 		ext.l	d4
 		asl.l	#7,d4					; multiply by $80
-		moveq	#redraw_top_bit,d6
+		moveq	#redraw_bg2_left_bit,d6
 		bsr.w	UpdateBG_X_Block2			; update bg x pos and set redraw flags
 
 		; calculate Y position

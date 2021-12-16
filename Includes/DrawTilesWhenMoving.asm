@@ -54,7 +54,7 @@ DrawTilesWhenMoving:
 		bsr.w	Calc_VRAM_Pos				; d0 = VDP command for fg nametable
 		moveq	#-16,d4					; y coordinate
 		moveq	#-16,d5					; x coordinate
-		bsr.w	DrawBlocks_LR
+		bsr.w	DrawRow
 
 	@chk_bottom:
 		bclr	#redraw_bottom_bit,(a2)			; clear flag for redraw bottom
@@ -65,7 +65,7 @@ DrawTilesWhenMoving:
 		bsr.w	Calc_VRAM_Pos
 		move.w	#224,d4
 		moveq	#-16,d5
-		bsr.w	DrawBlocks_LR
+		bsr.w	DrawRow
 
 	@chk_left:
 		bclr	#redraw_left_bit,(a2)			; clear flag for redraw left
@@ -76,7 +76,7 @@ DrawTilesWhenMoving:
 		bsr.w	Calc_VRAM_Pos
 		moveq	#-16,d4
 		moveq	#-16,d5
-		bsr.w	DrawBlocks_TB
+		bsr.w	DrawColumn
 
 	@chk_right:
 		bclr	#redraw_right_bit,(a2)			; clear flag for redraw right
@@ -87,7 +87,7 @@ DrawTilesWhenMoving:
 		bsr.w	Calc_VRAM_Pos
 		moveq	#-16,d4
 		move.w	#320,d5
-		bsr.w	DrawBlocks_TB
+		bsr.w	DrawColumn
 
 @exit:
 		rts	
@@ -121,9 +121,9 @@ DrawBGScrollBlock1:
 		moveq	#-16,d5					; x coordinate
 		if Revision=0
 			moveq	#(512/16)-1,d6			; draw entire row of plane
-			bsr.w	DrawBlocks_LR_2
+			bsr.w	DrawRow_Partial
 		else
-			bsr.w	DrawBlocks_LR
+			bsr.w	DrawRow
 		endc
 
 	@chk_bottom:
@@ -137,9 +137,9 @@ DrawBGScrollBlock1:
 		moveq	#-16,d5
 		if Revision=0
 			moveq	#(512/16)-1,d6
-			bsr.w	DrawBlocks_LR_2
+			bsr.w	DrawRow_Partial
 		else
-			bsr.w	DrawBlocks_LR
+			bsr.w	DrawRow
 		endc
 
 	@chk_left:
@@ -163,9 +163,9 @@ DrawBGScrollBlock1:
 			blo.s	@bg_covers_partial		; branch if less
 			moveq	#((224+16+16)/16)-1,d6		; limit to height of screen + 16px either side
 	@bg_covers_partial:
-			bsr.w	DrawBlocks_TB_2
+			bsr.w	DrawColumn_Partial
 		else
-			bsr.w	DrawBlocks_TB
+			bsr.w	DrawColumn
 		endc
 
 	@chk_right:
@@ -193,9 +193,9 @@ DrawBGScrollBlock1:
 			blo.s	@bg_covers_partial2
 			moveq	#((224+16+16)/16)-1,d6
 	@bg_covers_partial2:
-			bsr.w	DrawBlocks_TB_2
+			bsr.w	DrawColumn_Partial
 		else
-			bsr.w	DrawBlocks_TB
+			bsr.w	DrawColumn
 
 	@chk_topall:
 			bclr	#redraw_topall_bit,(a2)
@@ -207,7 +207,7 @@ DrawBGScrollBlock1:
 			moveq	#-16,d4
 			moveq	#0,d5
 			moveq	#(512/16)-1,d6
-			bsr.w	DrawBlocks_LR_3
+			bsr.w	DrawRow_3
 	@chk_bottomall:
 			bclr	#redraw_bottomall_bit,(a2)
 			beq.s	@exit
@@ -218,7 +218,7 @@ DrawBGScrollBlock1:
 			move.w	#224,d4
 			moveq	#0,d5
 			moveq	#(512/16)-1,d6
-			bsr.w	DrawBlocks_LR_3
+			bsr.w	DrawRow_3
 		endc
 
 @exit:
@@ -257,10 +257,10 @@ DrawBGScrollBlock2:
 			subi.w	#((224+16)/16)-1,d6		; d6 = rows for bg block 2, minus rows for whole screen
 			bhs.s	@chk_right
 			neg.w	d6
-			bsr.w	DrawBlocks_TB_2
+			bsr.w	DrawColumn_Partial
 	@chk_right:
 			bclr	#redraw_right_bit,(a2)		; clear flag for redraw right
-			beq.s	@exit			; branch if already clear
+			beq.s	@exit				; branch if already clear
 		; Draw new tiles on the right
 			move.w	(v_scroll_block_1_height).w,d4
 			move.w	4(a3),d1
@@ -280,23 +280,23 @@ DrawBGScrollBlock2:
 			subi.w	#((224+16)/16)-1,d6
 			bhs.s	@exit
 			neg.w	d6
-			bsr.w	DrawBlocks_TB_2
+			bsr.w	DrawColumn_Partial
 		else
-			cmpi.b	#id_SBZ,(v_zone).w
-			beq.w	Draw_SBz
-			bclr	#redraw_top_bit,(a2)
-			beq.s	@chk_right
+			cmpi.b	#id_SBZ,(v_zone).w		; is current zone SBZ?
+			beq.w	DrawBGScrollBlock2_SBZ		; if yes, branch
+			bclr	#redraw_bg2_left_bit,(a2)	; clear flag for redraw left (REV01 uses bit 0 for redraw left flag)
+			beq.s	@chk_right			; branch if already clear
 		; Draw new tiles on the left
-			move.w	#224/2,d4			; Draw the bottom half of the screen
+			move.w	#224/2,d4			; draw the bottom half of the screen
 			moveq	#-16,d5
 			bsr.w	Calc_VRAM_Pos
 			move.w	#224/2,d4
 			moveq	#-16,d5
-			moveq	#3-1,d6				; Draw three rows... could this be a repurposed version of the above unused code?
-			bsr.w	DrawBlocks_TB_2
+			moveq	#3-1,d6				; draw three 16x16 tiles... could this be a repurposed version of the unused code?
+			bsr.w	DrawColumn_Partial
 	@chk_right:
-			bclr	#redraw_bottom_bit,(a2)
-			beq.s	@exit
+			bclr	#redraw_bg2_right_bit,(a2)	; clear flag for redraw right (REV01 uses bit 0 for redraw right flag)
+			beq.s	@exit				; branch if already clear
 		; Draw new tiles on the right
 			move.w	#224/2,d4
 			move.w	#320,d5
@@ -304,7 +304,7 @@ DrawBGScrollBlock2:
 			move.w	#224/2,d4
 			move.w	#320,d5
 			moveq	#3-1,d6
-			bsr.w	DrawBlocks_TB_2
+			bsr.w	DrawColumn_Partial
 		endc
 @exit:
 		rts	
@@ -314,42 +314,44 @@ DrawBGScrollBlock2:
 
 ; Abandoned unused scroll block code.
 ; This would have drawn a scroll block that started at 208 pixels down, and was 48 pixels long.
+
+DrawBGScrollBlock2_Unused:
 		if Revision=0
-		tst.b	(a2)
-		beq.s	locret_6AD6
-		bclr	#redraw_left_bit,(a2)
-		beq.s	loc_6AAC
+			tst.b	(a2)
+			beq.s	@exit
+			bclr	#redraw_left_bit,(a2)
+			beq.s	@chk_right
 		; Draw new tiles on the left
-		move.w	#224-16,d4				; Note that full screen coverage is normally 224+16+16. This is exactly three blocks less.
-		move.w	4(a3),d1
-		andi.w	#-16,d1
-		sub.w	d1,d4
-		move.w	d4,-(sp)
-		moveq	#-16,d5
-		bsr.w	Calc_VRAM_Pos_Unknown
-		move.w	(sp)+,d4
-		moveq	#-16,d5
-		moveq	#3-1,d6					; Draw only three rows
-		bsr.w	DrawBlocks_TB_2
+			move.w	#224-16,d4			; Note that full screen coverage is normally 224+16+16. This is exactly three blocks less.
+			move.w	4(a3),d1
+			andi.w	#-16,d1
+			sub.w	d1,d4
+			move.w	d4,-(sp)
+			moveq	#-16,d5
+			bsr.w	Calc_VRAM_Pos_Unknown
+			move.w	(sp)+,d4
+			moveq	#-16,d5
+			moveq	#3-1,d6				; Draw only three rows
+			bsr.w	DrawColumn_Partial
 
-loc_6AAC:
-		bclr	#redraw_right_bit,(a2)
-		beq.s	locret_6AD6
+	@chk_right:
+			bclr	#redraw_right_bit,(a2)
+			beq.s	@exit
 		; Draw new tiles on the right
-		move.w	#224-16,d4
-		move.w	4(a3),d1
-		andi.w	#-16,d1
-		sub.w	d1,d4
-		move.w	d4,-(sp)
-		move.w	#320,d5
-		bsr.w	Calc_VRAM_Pos_Unknown
-		move.w	(sp)+,d4
-		move.w	#320,d5
-		moveq	#3-1,d6
-		bsr.w	DrawBlocks_TB_2
+			move.w	#224-16,d4
+			move.w	4(a3),d1
+			andi.w	#-16,d1
+			sub.w	d1,d4
+			move.w	d4,-(sp)
+			move.w	#320,d5
+			bsr.w	Calc_VRAM_Pos_Unknown
+			move.w	(sp)+,d4
+			move.w	#320,d5
+			moveq	#3-1,d6
+			bsr.w	DrawColumn_Partial
 
-locret_6AD6:
-		rts
+	@exit:
+			rts
 		endc
 ;===============================================================================
 		
@@ -360,51 +362,51 @@ locret_6AD6:
 			dc.b $04,$04,$04,$04,$04,$04,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02
 			dc.b $02,$00						
 ;===============================================================================
-	Draw_SBz:
-			moveq	#-16,d4
-			bclr	#redraw_top_bit,(a2)
-			bne.s	locj_6E28
-			bclr	#redraw_bottom_bit,(a2)
-			beq.s	locj_6E72
-			move.w	#224,d4
-	locj_6E28:
+DrawBGScrollBlock2_SBZ:
+			moveq	#-16,d4				; draw 16px above top of screen
+			bclr	#redraw_top_bit,(a2)		; clear flag for redraw top
+			bne.s	@top				; branch if it was set
+			bclr	#redraw_bottom_bit,(a2)		; clear flag for redraw bottom
+			beq.s	@chk_other			; branch if already clear
+			move.w	#224,d4				; draw at bottom of screen
+	@top:
 			lea	(locj_6DF4+1).l,a0
 			move.w	(v_bg1_y_pos).w,d0
-			add.w	d4,d0
-			andi.w	#$1F0,d0
-			lsr.w	#4,d0
+			add.w	d4,d0				; d0 = v_bg1_y_pos -16 or +224
+			andi.w	#$1F0,d0			; round down to nearest 16
+			lsr.w	#4,d0				; divide by 16
 			move.b	(a0,d0.w),d0
-			lea	(locj_6FE4).l,a3
-			movea.w	(a3,d0.w),a3
-			beq.s	locj_6E5E
-			moveq	#-16,d5
+			lea	(locj_6FE4).l,a3		; dc.w v_bg1_x_pos_copy, v_bg1_x_pos_copy, v_bg2_x_pos_copy, v_bg3_x_pos_copy
+			movea.w	(a3,d0.w),a3			; get pointer to bg block 1/2/3 x pos
+			beq.s	@bg_x_pos_0			; branch if 0
+			moveq	#-16,d5				; x coordinate
 			movem.l	d4/d5,-(sp)
-			bsr.w	Calc_VRAM_Pos
+			bsr.w	Calc_VRAM_Pos			; d0 = VDP command for bg nametable
 			movem.l	(sp)+,d4/d5
-			bsr.w	DrawBlocks_LR
-			bra.s	locj_6E72
+			bsr.w	DrawRow				; draw full row on top or bottom of screen
+			bra.s	@chk_other
 ;===============================================================================
-	locj_6E5E:
+	@bg_x_pos_0:
 			moveq	#0,d5
 			movem.l	d4/d5,-(sp)
 			bsr.w	Calc_VRAM_Pos_2
 			movem.l	(sp)+,d4/d5
-			moveq	#(512/16)-1,d6
-			bsr.w	DrawBlocks_LR_3
-	locj_6E72:
-			tst.b	(a2)
-			bne.s	locj_6E78
+			moveq	#(512/16)-1,d6			; draw entire row
+			bsr.w	DrawRow_3
+	@chk_other:
+			tst.b	(a2)				; are any redraw flags set?
+			bne.s	@more				; if yes, branch
 			rts
 ;===============================================================================			
-	locj_6E78:
-			moveq	#-16,d4
-			moveq	#-16,d5
-			move.b	(a2),d0
-			andi.b	#$A8,d0
-			beq.s	locj_6E8C
-			lsr.b	#1,d0
+	@more:
+			moveq	#-16,d4				; y coordinate - top of screen
+			moveq	#-16,d5				; x coordinate - left of screen
+			move.b	(a2),d0				; get remaining redraw flag bits
+			andi.b	#$A8,d0				; read bits 7, 5 and 3 only
+			beq.s	locj_6E8C			; if none are set, branch
+			lsr.b	#1,d0				; shift into bits 6, 4 and 2 respectively
 			move.b	d0,(a2)
-			move.w	#320,d5
+			move.w	#320,d5				; x coordinate - right of screen
 	locj_6E8C:
 			lea	(locj_6DF4).l,a0
 			move.w	(v_bg1_y_pos).w,d0
@@ -419,32 +421,33 @@ locret_6AD6:
 DrawBGScrollBlock3:
 		if Revision=0
 		else
-			tst.b	(a2)
-			beq.w	locj_6EF0
-			cmpi.b	#id_MZ,(v_zone).w
-			beq.w	Draw_Mz
-			bclr	#redraw_top_bit,(a2)
-			beq.s	locj_6ED0
-								; Draw new tiles on the left
+			tst.b	(a2)				; are any redraw flags set?
+			beq.w	@exit				; if not, branch
+			cmpi.b	#id_MZ,(v_zone).w		; is current zone MZ?
+			beq.w	DrawBGScrollBlock3_MZ		; if yes, branch
+
+			bclr	#redraw_bg2_left_bit,(a2)	; clear flag for redraw left
+			beq.s	@chk_right			; branch if already clear
+		; Draw new tiles on the left
 			move.w	#$40,d4
 			moveq	#-16,d5
 			bsr.w	Calc_VRAM_Pos
 			move.w	#$40,d4
 			moveq	#-16,d5
 			moveq	#3-1,d6
-			bsr.w	DrawBlocks_TB_2
-	locj_6ED0:
-			bclr	#redraw_bottom_bit,(a2)
-			beq.s	locj_6EF0
-								; Draw new tiles on the right
+			bsr.w	DrawColumn_Partial
+	@chk_right:
+			bclr	#redraw_bg2_right_bit,(a2)
+			beq.s	@exit
+		; Draw new tiles on the right
 			move.w	#$40,d4
 			move.w	#320,d5
 			bsr.w	Calc_VRAM_Pos
 			move.w	#$40,d4
 			move.w	#320,d5
 			moveq	#3-1,d6
-			bsr.w	DrawBlocks_TB_2
-	locj_6EF0:
+			bsr.w	DrawColumn_Partial
+	@exit:
 			rts
 	locj_6EF2:
 			dc.b $00,$00,$00,$00,$00,$00,$06,$06,$04,$04,$04,$04,$04,$04,$04,$04
@@ -455,7 +458,7 @@ DrawBGScrollBlock3:
 			dc.b $02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02
 			dc.b $02,$00
 ;===============================================================================
-	Draw_Mz:
+DrawBGScrollBlock3_MZ:
 			moveq	#-16,d4
 			bclr	#redraw_top_bit,(a2)
 			bne.s	locj_6F66
@@ -476,7 +479,7 @@ DrawBGScrollBlock3:
 			movem.l	d4/d5,-(sp)
 			bsr.w	Calc_VRAM_Pos
 			movem.l	(sp)+,d4/d5
-			bsr.w	DrawBlocks_LR
+			bsr.w	DrawRow
 			bra.s	locj_6FAE
 ;===============================================================================
 	locj_6F9A:
@@ -485,7 +488,7 @@ DrawBGScrollBlock3:
 			bsr.w	Calc_VRAM_Pos_2
 			movem.l	(sp)+,d4/d5
 			moveq	#(512/16)-1,d6
-			bsr.w	DrawBlocks_LR_3
+			bsr.w	DrawRow_3
 	locj_6FAE:
 			tst.b	(a2)
 			bne.s	locj_6FB4
@@ -533,4 +536,57 @@ DrawBGScrollBlock3:
 			clr.b	(a2)
 			rts			
 
+		endc
+
+; ---------------------------------------------------------------------------
+; Subroutine to draw a row of 16x16 tiles, left to right
+
+; input:
+;	d0 = VRAM address as VDP command
+;	d2 = 
+;	d4 = y coordinate
+;	d5 = x coordinate
+;	d6 = 16x16 tiles to draw minus 1 (DrawRow_Partial only)
+;	a5 = vdp_control_port
+;	a6 = vdp_data_port
+; ---------------------------------------------------------------------------
+
+; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+
+DrawRow:
+		moveq	#((320+16+16)/16)-1,d6			; draw the entire width of the screen + two extra columns
+DrawRow_Partial:
+		move.l	#sizeof_vram_row<<16,d7			; delta between rows of tiles (as in VDP command)
+		move.l	d0,d1
+
+	@loop:
+		movem.l	d4-d5,-(sp)
+		bsr.w	GetBlockData
+		move.l	d1,d0
+		bsr.w	DrawBlock
+		addq.b	#4,d1					; Two tiles ahead
+		andi.b	#$7F,d1					; Wrap around row
+		movem.l	(sp)+,d4-d5
+		addi.w	#16,d5					; Move X coordinate one block ahead
+		dbf	d6,@loop
+		rts
+; End of function DrawRow
+
+		if Revision=0
+		else
+DrawRow_3:
+			move.l	#sizeof_vram_row<<16,d7
+			move.l	d0,d1
+
+	@loop:
+			movem.l	d4-d5,-(sp)
+			bsr.w	GetBlockData_2
+			move.l	d1,d0
+			bsr.w	DrawBlock
+			addq.b	#4,d1
+			andi.b	#$7F,d1
+			movem.l	(sp)+,d4-d5
+			addi.w	#16,d5
+			dbf	d6,@loop
+			rts
 		endc

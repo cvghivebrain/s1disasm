@@ -1551,70 +1551,16 @@ BgScroll_End:
 		include	"Includes\DeformLayers.asm"
 		include	"Includes\DrawTilesWhenMoving.asm"
 
-; ---------------------------------------------------------------------------
-; Subroutine to draw a row of 16x16 tiles, left to right
-
-; input:
-;	d0 = VRAM address as VDP command
-;	d2 = 
-;	d4 = y coordinate
-;	d5 = x coordinate
-;	d6 = 16x16 tiles to draw minus 1 (DrawBlocks_LR_2 only)
-;	a5 = vdp_control_port
-;	a6 = vdp_data_port
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-DrawBlocks_LR:
-		moveq	#((320+16+16)/16)-1,d6			; Draw the entire width of the screen + two extra columns
-DrawBlocks_LR_2:
-		move.l	#$800000,d7				; Delta between rows of tiles
-		move.l	d0,d1
-
-	@loop:
-		movem.l	d4-d5,-(sp)
-		bsr.w	GetBlockData
-		move.l	d1,d0
-		bsr.w	DrawBlock
-		addq.b	#4,d1					; Two tiles ahead
-		andi.b	#$7F,d1					; Wrap around row
-		movem.l	(sp)+,d4-d5
-		addi.w	#16,d5					; Move X coordinate one block ahead
-		dbf	d6,@loop
-		rts
-; End of function DrawBlocks_LR
-
-		if Revision>=1
-; DrawTiles_LR_3:
-DrawBlocks_LR_3:
-		move.l	#$800000,d7
-		move.l	d0,d1
-
-	@loop:
-		movem.l	d4-d5,-(sp)
-		bsr.w	GetBlockData_2
-		move.l	d1,d0
-		bsr.w	DrawBlock
-		addq.b	#4,d1
-		andi.b	#$7F,d1
-		movem.l	(sp)+,d4-d5
-		addi.w	#16,d5
-		dbf	d6,@loop
-		rts	
-; End of function DrawBlocks_LR_3
-		endc
-
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 ; Don't be fooled by the name: this function's for drawing from top to bottom
 ; when the camera's moving left or right
 ; DrawTiles_TB:
-DrawBlocks_TB:
+DrawColumn:
 		moveq	#((224+16+16)/16)-1,d6			; Draw the entire height of the screen + two extra rows
 ; DrawTiles_TB_2:
-DrawBlocks_TB_2:
+DrawColumn_Partial:
 		move.l	#$800000,d7				; Delta between rows of tiles
 		move.l	d0,d1
 
@@ -1629,7 +1575,7 @@ DrawBlocks_TB_2:
 		addi.w	#16,d4					; Move X coordinate one block ahead
 		dbf	d6,@loop
 		rts	
-; End of function DrawBlocks_TB_2
+; End of function DrawColumn_Partial
 
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
@@ -1898,7 +1844,7 @@ DrawChunks:
 		move.w	d1,d4
 		moveq	#0,d5
 		moveq	#(512/16)-1,d6
-		bsr.w	DrawBlocks_LR_2
+		bsr.w	DrawRow_Partial
 		movem.l	(sp)+,d4-d6
 		addi.w	#16,d4
 		dbf	d6,@loop
@@ -1965,7 +1911,7 @@ DrawChunks:
 			movem.l	d4/d5,-(sp)
 			bsr.w	Calc_VRAM_Pos
 			movem.l	(sp)+,d4/d5
-			bsr.w	DrawBlocks_LR
+			bsr.w	DrawRow
 			bra.s	locj_72EE
 	locj_72da:
 			moveq	#0,d5
@@ -1973,7 +1919,7 @@ DrawChunks:
 			bsr.w	Calc_VRAM_Pos_2
 			movem.l	(sp)+,d4/d5
 			moveq	#(512/16)-1,d6
-			bsr.w	DrawBlocks_LR_3
+			bsr.w	DrawRow_3
 	locj_72EE:
 			rts
 		endc
