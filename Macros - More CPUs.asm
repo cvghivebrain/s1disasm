@@ -4,17 +4,17 @@
 
 cpu:		macro
 		if strcmp("\1","z80")
-		pusho			; save previous options
-		cpu_mode:	= 1	; Z80
-		opt	an+		; 1234h style numbering
-		opt	ae-		; disable auto evens
+		pusho						; save previous options
+		cpu_mode:	= 1				; Z80
+		opt	an+					; 1234h style numbering
+		opt	ae-					; disable auto evens
 
 		else
 		if def(cpu_mode)
-		popo			; restore options
+		popo						; restore options
 		endc
 
-		cpu_mode:	= 0	; 68000 by default
+		cpu_mode:	= 0				; 68000 by default
 		endc
 		endm
 
@@ -43,7 +43,7 @@ binclude:	macros
 ; Z80 instruction set
 ; ---------------------------------------------------------------------------
 
-getzreg:	macro		; convert register to numerical value
+getzreg:	macro						; convert register to numerical value
 		if strcmp("\1","a")
 		zreg: = 7
 		elseif strcmp("\1","b")
@@ -65,7 +65,7 @@ getzreg:	macro		; convert register to numerical value
 		endm
 
 
-getindex:	macro		; convert index register to register offset and value
+getindex:	macro						; convert index register to register offset and value
 		if instr("\1","(ix")
 		ireg: = $dd
 		elseif instr("\1","(iy")
@@ -76,7 +76,7 @@ getindex:	macro		; convert index register to register offset and value
 		endm
 
 
-ix: =		0		; allows (ix+n) to be parsed as n
+ix: =		0						; allows (ix+n) to be parsed as n
 iy: =		0
 
 adc:		macro
@@ -98,7 +98,7 @@ adc:		macro
 
 		; "adc a, x" or "adc x"
 		if narg=2 & strcmp("\1","a")
-			shift		; ignore a
+			shift					; ignore a
 		endc
 
 		if (narg=1) | (narg=2)
@@ -113,11 +113,11 @@ adc:		macro
 			dc.w $fd8c
 			elseif strcmp("\1","iyl")
 			dc.w $fd8d
-			elseif instr("\1","(i") ; adc (ix+n)
+			elseif instr("\1","(i")			; adc (ix+n)
 				num: equ \1
 				getindex \1
 				dc.b ireg, $8e, num
-			else			; adc n
+			else					; adc n
 			num: equ \1
 			dc.b $ce, num
 			endc
@@ -133,7 +133,7 @@ bit:		macro
 		if instr("a b c d e h l (hl) ","\2\ ")
 		getzreg	\2
 		dc.b $cb, $40+(num*8)+zreg
-		elseif instr("\2","(i")		; bit n,(ix+n)
+		elseif instr("\2","(i")				; bit n,(ix+n)
 			num2: equ \2
 			getindex \2
 			dc.b ireg, $cb, num2, $40+(num*8)
@@ -145,10 +145,10 @@ bit:		macro
 
 call:		macro
 		local num
-		if narg=1		; call n
+		if narg=1					; call n
 		num: equ \1
 		dc.b $cd
-		elseif narg=2		; call x, n
+		elseif narg=2					; call x, n
 			num: equ \2
 			if strcmp("\1","nz")
 			dc.b $c4
@@ -195,11 +195,11 @@ cp:		macro
 		dc.w $fdbc
 		elseif strcmp("\1","iyl")
 		dc.w $fdbd
-		elseif instr("\1","(i") ; cp (ix+n)
+		elseif instr("\1","(i")				; cp (ix+n)
 			num: equ \1
 			getindex \1
 			dc.b ireg, $be, num
-		else			; cp n
+		else						; cp n
 		num: equ \1
 		dc.b $fe, num
 		endc
@@ -255,7 +255,7 @@ dec:		macro
 		dc.w $fd2b
 		elseif strcmp("\1","sp")
 		dc.b $3b
-		elseif instr("\1","(i")		; dec (ix+n)
+		elseif instr("\1","(i")				; dec (ix+n)
 			num: equ \1
 			getindex \1
 			dc.b ireg, $35, num
@@ -281,7 +281,7 @@ ei:		macros
 
 
 ex:		macro
-		if strcmp("\_","af,af")		; ex af,af'
+		if strcmp("\_","af,af")				; ex af,af'
 		dc.b 8
 		elseif strcmp("\_","(sp),hl")
 		dc.b $e3
@@ -322,7 +322,7 @@ in:		macro
 		if strcmp("\1","a")
 			if strcmp("\2","(c)")
 			dc.w $ed78
-			else		; in a,n
+			else					; in a,n
 			num: equ \2
 			dc.b $db, num
 			endc
@@ -362,7 +362,7 @@ inc:		macro
 		dc.w $fd23
 		elseif strcmp("\1","sp")
 		dc.b $33
-		elseif instr("\1","(i") ; inc (ix+n)
+		elseif instr("\1","(i")				; inc (ix+n)
 			num: equ \1
 			getindex \1
 			dc.b ireg, $34, num
@@ -421,7 +421,7 @@ jp:		macro
 			elseif strcmp("\1","m")
 			num: equ \2
 			dc.b $fa
-			else		; jp n
+			else					; jp n
 			num: equ \1
 			dc.b $c3
 			endc
@@ -447,7 +447,7 @@ jr:		macro
 		elseif strcmp("\1","c")
 		num: equ \2
 		dc.b $38
-		else		; jr n
+		else						; jr n
 		num: equ \1
 		dc.b $18
 		endc
@@ -483,7 +483,7 @@ ld:		macro
 			dc.b $0a
 			elseif strcmp("\2","(de)")
 			dc.b $1a
-			elseif instr("\2","(i") ; ld a,(ix+n)
+			elseif instr("\2","(i")			; ld a,(ix+n)
 				num: equ \2
 				getindex \2
 				dc.b ireg, $7e, num
@@ -494,7 +494,7 @@ ld:		macro
 				tmp_lc:	substr	tmp_len,tmp_len,"\2"
 				if strcmp("\tmp_fc","(") & strcmp("\tmp_lc",")") ; ld a,(n)
 				dc.b $3a, num&$ff, num>>8
-				else			; ld a,n
+				else				; ld a,n
 				dc.b $3e, num
 				endc
 			endc
@@ -510,11 +510,11 @@ ld:		macro
 			dc.w $fd44
 			elseif strcmp("\2","iyl")
 			dc.w $fd45
-			elseif instr("\2","(i") ; ld b,(ix+n)
+			elseif instr("\2","(i")			; ld b,(ix+n)
 				num: equ \2
 				getindex \2
 				dc.b ireg, $46, num
-			else			; ld b,n
+			else					; ld b,n
 			num: equ \2
 			dc.b $6, num
 			endc
@@ -530,11 +530,11 @@ ld:		macro
 			dc.w $fd4c
 			elseif strcmp("\2","iyl")
 			dc.w $fd4d
-			elseif instr("\2","(i") ; ld c,(ix+n)
+			elseif instr("\2","(i")			; ld c,(ix+n)
 				num: equ \2
 				getindex \2
 				dc.b ireg, $4e, num
-			else			; ld c,n
+			else					; ld c,n
 			num: equ \2
 			dc.b $e, num
 			endc
@@ -550,11 +550,11 @@ ld:		macro
 			dc.w $fd54
 			elseif strcmp("\2","iyl")
 			dc.w $fd55
-			elseif instr("\2","(i") ; ld d,(ix+n)
+			elseif instr("\2","(i")			; ld d,(ix+n)
 				num: equ \2
 				getindex \2
 				dc.b ireg, $56, num
-			else			; ld d,n
+			else					; ld d,n
 			num: equ \2
 			dc.b $16, num
 			endc
@@ -570,11 +570,11 @@ ld:		macro
 			dc.w $fd5c
 			elseif strcmp("\2","iyl")
 			dc.w $fd5d
-			elseif instr("\2","(i") ; ld e,(ix+n)
+			elseif instr("\2","(i")			; ld e,(ix+n)
 				num: equ \2
 				getindex \2
 				dc.b ireg, $5e, num
-			else			; ld e,n
+			else					; ld e,n
 			num: equ \2
 			dc.b $1e, num
 			endc
@@ -582,11 +582,11 @@ ld:		macro
 			if instr("a b c d e h l (hl) ","\2\ ")
 			getzreg	\2
 			dc.b $60+zreg
-			elseif instr("\2","(i") ; ld h,(ix+n)
+			elseif instr("\2","(i")			; ld h,(ix+n)
 				num: equ \2
 				getindex \2
 				dc.b ireg, $66, num
-			else			; ld h,n
+			else					; ld h,n
 			num: equ \2
 			dc.b $26, num
 			endc
@@ -594,11 +594,11 @@ ld:		macro
 			if instr("a b c d e h l (hl) ","\2\ ")
 			getzreg	\2
 			dc.b $68+zreg
-			elseif instr("\2","(i") ; ld l,(ix+n)
+			elseif instr("\2","(i")			; ld l,(ix+n)
 				num: equ \2
 				getindex \2
 				dc.b ireg, $6e, num
-			else			; ld l,n
+			else					; ld l,n
 			num: equ \2
 			dc.b $2e, num
 			endc
@@ -614,7 +614,7 @@ ld:		macro
 			dc.w $dd64
 			elseif strcmp("\2","ixl")
 			dc.w $dd65
-			else			; ld ixh,n
+			else					; ld ixh,n
 			num: equ \2
 			dc.b $dd, $26, num
 			endc
@@ -626,7 +626,7 @@ ld:		macro
 			dc.w $dd6c
 			elseif strcmp("\2","ixl")
 			dc.w $dd6d
-			else			; ld ixl,n
+			else					; ld ixl,n
 			num: equ \2
 			dc.b $dd, $2e, num
 			endc
@@ -638,7 +638,7 @@ ld:		macro
 			dc.w $fd64
 			elseif strcmp("\2","iyl")
 			dc.w $fd65
-			else			; ld iyh,n
+			else					; ld iyh,n
 			num: equ \2
 			dc.b $fd, $26, num
 			endc
@@ -650,7 +650,7 @@ ld:		macro
 			dc.w $fd6c
 			elseif strcmp("\2","iyl")
 			dc.w $fd6d
-			else			; ld iyl,n
+			else					; ld iyl,n
 			num: equ \2
 			dc.b $fd, $2e, num
 			endc
@@ -661,7 +661,7 @@ ld:		macro
 			tmp_lc:	substr	tmp_len,tmp_len,"\2"
 			if strcmp("\tmp_fc","(") & strcmp("\tmp_lc",")") ; ld bc,(n)
 			dc.b $ed, $4b, num&$ff, num>>8
-			else			; ld bc,n
+			else					; ld bc,n
 			dc.b $1, num&$ff, num>>8
 			endc
 		elseif strcmp("\1","de")
@@ -671,7 +671,7 @@ ld:		macro
 			tmp_lc:	substr	tmp_len,tmp_len,"\2"
 			if strcmp("\tmp_fc","(") & strcmp("\tmp_lc",")") ; ld de,(n)
 			dc.b $ed, $5b, num&$ff, num>>8
-			else			; ld de,n
+			else					; ld de,n
 			dc.b $11, num&$ff, num>>8
 			endc
 		elseif strcmp("\1","hl")
@@ -681,7 +681,7 @@ ld:		macro
 			tmp_lc:	substr	tmp_len,tmp_len,"\2"
 			if strcmp("\tmp_fc","(") & strcmp("\tmp_lc",")") ; ld hl,(n)
 			dc.b $ed, $6b, num&$ff, num>>8
-			else			; ld hl,n
+			else					; ld hl,n
 			dc.b $21, num&$ff, num>>8
 			endc
 		elseif strcmp("\1","sp")
@@ -698,7 +698,7 @@ ld:		macro
 				tmp_lc:	substr	tmp_len,tmp_len,"\2"
 				if strcmp("\tmp_fc","(") & strcmp("\tmp_lc",")") ; ld sp,(n)
 				dc.b $ed, $7b, num&$ff, num>>8
-				else			; ld sp,n
+				else				; ld sp,n
 				dc.b $31, num&$ff, num>>8
 				endc
 			endc
@@ -709,7 +709,7 @@ ld:		macro
 			tmp_lc:	substr	tmp_len,tmp_len,"\2"
 			if strcmp("\tmp_fc","(") & strcmp("\tmp_lc",")") ; ld ix,(n)
 			dc.b $dd, $2a, num&$ff, num>>8
-			else			; ld ix,n
+			else					; ld ix,n
 			dc.b $dd, $21, num&$ff, num>>8
 			endc
 		elseif strcmp("\1","iy")
@@ -719,7 +719,7 @@ ld:		macro
 			tmp_lc:	substr	tmp_len,tmp_len,"\2"
 			if strcmp("\tmp_fc","(") & strcmp("\tmp_lc",")") ; ld iy,(n)
 			dc.b $fd, $2a, num&$ff, num>>8
-			else			; ld iy,n
+			else					; ld iy,n
 			dc.b $fd, $21, num&$ff, num>>8
 			endc
 		elseif strcmp("\1","(bc)")
@@ -730,23 +730,23 @@ ld:		macro
 			if instr("a b c d e h l ","\2\ ")
 			getzreg	\2
 			dc.b $70+zreg
-			else			; ld (hl),n
+			else					; ld (hl),n
 			num: equ \2
 			dc.b $36, num
 			endc
-		elseif instr("\1","(i")		; ld (ix+n),?
+		elseif instr("\1","(i")				; ld (ix+n),?
 			if instr("a b c d e h l ","\2\ ")
 				num: equ \1
 				getzreg	\2
 				getindex \1
 				dc.b ireg, $70|zreg, num
-			else			; ld (ix+n),n
+			else					; ld (ix+n),n
 				num: equ \1
 				num2: equ \2
 				getindex \1
 				dc.b ireg, $36, num, num2
 			endc
-		else			; ld (n),?
+		else						; ld (n),?
 			num: equ \1
 			if strcmp("\2","a")
 			dc.b $32
@@ -801,7 +801,7 @@ out:		macro
 		dc.w $ed41+(zreg*8)
 		elseif strcmp("\_","(c),0")
 		dc.w $ed71
-		elseif strcmp("\2","a")	; out n,a
+		elseif strcmp("\2","a")				; out n,a
 		num: equ \1
 		dc.b $d3, num
 		else
@@ -847,7 +847,7 @@ push:		macro
 		elseif strcmp("\1","af")
 		dc.b $f5
 		elseif strcmp("\1","ix")
-		dc.w $fde5
+		dc.w $dde5
 		elseif strcmp("\1","iy")
 		dc.w $fde5
 		else
@@ -862,7 +862,7 @@ res:		macro
 		if instr("a b c d e h l (hl) ","\2\ ")
 		getzreg	\2
 		dc.b $cb, $80+(num*8)+zreg
-		elseif instr("\2","(i") ; res n,(ix+n)
+		elseif instr("\2","(i")				; res n,(ix+n)
 			num2: equ \2
 			getindex \2
 			dc.b ireg, $cb, num2
@@ -890,7 +890,7 @@ ret:		macro
 		dc.b $f0
 		elseif strcmp("\1","m")
 		dc.b $f8
-		elseif strlen("\1")=0	; ret
+		elseif strlen("\1")=0				; ret
 		dc.b $c9
 		else
 		fail
@@ -911,12 +911,12 @@ rl:		macro
 		if instr("a b c d e h l (hl) ","\1\ ")
 		getzreg	\1
 		dc.b $cb, $10+zreg
-		elseif instr("\1","(i") ; rl (ix+n)
+		elseif instr("\1","(i")				; rl (ix+n)
 			num: equ \1
 			getindex \1
 			dc.b ireg, $cb, num
 
-			if narg=2	; rl (ix+n),?
+			if narg=2				; rl (ix+n),?
 			getzreg	\2
 			dc.b $10+zreg
 			else
@@ -937,12 +937,12 @@ rlc:		macro
 		if instr("a b c d e h l (hl) ","\1\ ")
 		getzreg	\1
 		dc.b $cb, zreg
-		elseif instr("\1","(i") ; rlc (ix+n)
+		elseif instr("\1","(i")				; rlc (ix+n)
 			num: equ \1
 			getindex \1
 			dc.b ireg, $cb, num
 
-			if narg=2	; rlc (ix+n),?
+			if narg=2				; rlc (ix+n),?
 			getzreg	\2
 			dc.b zreg
 			else
@@ -967,12 +967,12 @@ rr:		macro
 		if instr("a b c d e h l (hl) ","\1\ ")
 		getzreg	\1
 		dc.b $cb, $18+zreg
-		elseif instr("\1","(i") ; rr (ix+n)
+		elseif instr("\1","(i")				; rr (ix+n)
 			num: equ \1
 			getindex \1
 			dc.b ireg, $cb, num
 
-			if narg=2	; rr (ix+n),?
+			if narg=2				; rr (ix+n),?
 			getzreg	\2
 			dc.b $18+zreg
 			else
@@ -993,12 +993,12 @@ rrc:		macro
 		if instr("a b c d e h l (hl) ","\1\ ")
 		getzreg	\1
 		dc.b $cb, $8+zreg
-		elseif instr("\1","(i") ; rrc (ix+n)
+		elseif instr("\1","(i")				; rrc (ix+n)
 			num: equ \1
 			getindex \1
 			dc.b ireg, $cb, num
 
-			if narg=2	; rrc (ix+n),?
+			if narg=2				; rrc (ix+n),?
 			getzreg	\2
 			dc.b $8+zreg
 			else
@@ -1039,11 +1039,11 @@ sbc:		macro
 			dc.w $fd9c
 			elseif strcmp("\2","iyl")
 			dc.w $fd9d
-			elseif instr("\2","(i") ; sbc a,(ix+n)
+			elseif instr("\2","(i")			; sbc a,(ix+n)
 				num: equ \2
 				getindex \2
 				dc.b ireg, $9e, num
-			else			; sbc a,n
+			else					; sbc a,n
 			num: equ \2
 			dc.b $de, num
 			endc
@@ -1075,7 +1075,7 @@ set:		macro
 		if instr("a b c d e h l (hl) ","\2\ ")
 		getzreg	\2
 		dc.b $cb, $c0+(num*8)+zreg
-		elseif instr("\2","(i") ; set n,(ix+n)
+		elseif instr("\2","(i")				; set n,(ix+n)
 			num2: equ \2
 			getindex \2
 			dc.b ireg, $cb, num2, $c0+(num*8)
@@ -1095,10 +1095,10 @@ sla:		macro
 			getindex \1
 			dc.b ireg, $cb, num
 
-			if narg=2	; sla (ix+n),?
+			if narg=2				; sla (ix+n),?
 			getzreg	\2
 			dc.b $20+zreg
-			else		; sla (ix+n)
+			else					; sla (ix+n)
 			dc.b $26
 			endc
 		else
@@ -1117,10 +1117,10 @@ sll:		macro
 			getindex \1
 			dc.b ireg, $cb, num
 
-			if narg=2	; sll (ix+n),?
+			if narg=2				; sll (ix+n),?
 			getzreg	\2
 			dc.b $30+zreg
-			else		; sll (ix+n)
+			else					; sll (ix+n)
 			dc.b $36
 			endc
 		else
@@ -1139,10 +1139,10 @@ sra:		macro
 			getindex \1
 			dc.b ireg, $cb, num
 
-			if narg=2	; sra (ix+n),?
+			if narg=2				; sra (ix+n),?
 			getzreg	\2
 			dc.b $28+zreg
-			else		; sra (ix+n)
+			else					; sra (ix+n)
 			dc.b $2e
 			endc
 		else
@@ -1161,10 +1161,10 @@ srl:		macro
 			getindex \1
 			dc.b ireg, $cb, num
 
-			if narg=2	; srl (ix+n),?
+			if narg=2				; srl (ix+n),?
 			getzreg	\2
 			dc.b $38+zreg
-			else		; srl (ix+n)
+			else					; srl (ix+n)
 			dc.b $3e
 			endc
 		else
@@ -1186,11 +1186,11 @@ xor:		macro
 		dc.w $fdac
 		elseif strcmp("\1","iyl")
 		dc.w $fdad
-		elseif instr("\1","(i") ; xor (ix+n)
+		elseif instr("\1","(i")				; xor (ix+n)
 			num: equ \1
 			getindex \1
 			dc.b ireg, $ae, num
-		else			; xor n
+		else						; xor n
 		num: equ \1
 		dc.b $ee, num
 		endc
@@ -1219,7 +1219,7 @@ dw:		macro
 
 add:		macro
 		local num
-		if cpu_mode=1		; Z80
+		if cpu_mode=1					; Z80
 			if strcmp("\1","hl")
 				if strcmp("\2","bc")
 				dc.b $9
@@ -1263,9 +1263,9 @@ add:		macro
 				mexit
 			endc
 
-			; "add a, x" or "add x"
+								; "add a, x" or "add x"
 			if narg=2 & strcmp("\1","a")
-				shift		; ignore a
+				shift				; ignore a
 			endc
 
 			if (narg=1) | (narg=2)
@@ -1280,18 +1280,18 @@ add:		macro
 				dc.w $fd84
 				elseif strcmp("\1","iyl")
 				dc.w $fd85
-				elseif instr("\1","(i") ; add (ix+n)
+				elseif instr("\1","(i")		; add (ix+n)
 					num: equ \1
 					getindex \1
 					dc.b ireg, $86, num
-				else			; add n
+				else				; add n
 				num: equ \1
 				dc.b $c6, num
 				endc
 			else
 			fail
 			endc
-		else			; 68k
+		else						; 68k
 		axd.\0	\_
 		endc
 		endm
@@ -1299,7 +1299,7 @@ add:		macro
 
 and:		macro
 		local num
-		if cpu_mode=1		; Z80
+		if cpu_mode=1					; Z80
 			if instr("a b c d e h l (hl) ","\1\ ")
 			getzreg	\2
 			dc.b $a0+zreg
@@ -1311,33 +1311,33 @@ and:		macro
 			dc.w $fda4
 			elseif strcmp("\1","iyl")
 			dc.w $fda5
-			elseif instr("\1","(i") ; and (ix+n)
+			elseif instr("\1","(i")			; and (ix+n)
 				num: equ \1
 				getindex \1
 				dc.b ireg, $a6, num
-			else			; and n
+			else					; and n
 			num: equ \1
 			dc.b $e6, num
 			endc
-		else			; 68k
+		else						; 68k
 		anx.\0	\_
 		endc
 		endm
 
 
 neg:		macro
-		if cpu_mode=1		; Z80
+		if cpu_mode=1					; Z80
 		dc.w $ed44
-		else			; 68k
+		else						; 68k
 		nxg
 		endc
 		endm
 
 
 nop:		macro
-		if cpu_mode=1		; Z80
+		if cpu_mode=1					; Z80
 		dc.b 0
-		else			; 68k
+		else						; 68k
 		nxp
 		endc
 		endm
@@ -1345,7 +1345,7 @@ nop:		macro
 
 or:		macro
 		local num
-		if cpu_mode=1		; Z80
+		if cpu_mode=1					; Z80
 			if instr("a b c d e h l (hl) ","\1\ ")
 			getzreg	\1
 			dc.b $b0+zreg
@@ -1357,15 +1357,15 @@ or:		macro
 			dc.w $fdb4
 			elseif strcmp("\1","iyl")
 			dc.w $fdb5
-			elseif instr("\1","(i") ; or (ix+n)
+			elseif instr("\1","(i")			; or (ix+n)
 				num: equ \1
 				getindex \1
 				dc.b ireg, $b6, num
-			else			; or n
+			else					; or n
 			num: equ \1
 			dc.b $f6, num
 			endc
-		else			; 68k
+		else						; 68k
 		ox.\0	\_
 		endc
 		endm
@@ -1373,7 +1373,7 @@ or:		macro
 
 sub:		macro
 		local num
-		if cpu_mode=1		; Z80
+		if cpu_mode=1					; Z80
 			if instr("a b c d e h l (hl) ","\1\ ")
 			getzreg	\2
 			dc.b $90+zreg
@@ -1385,15 +1385,15 @@ sub:		macro
 			dc.w $fd94
 			elseif strcmp("\1","iyl")
 			dc.w $fd95
-			elseif instr("\1","(i") ; sub (ix+n)
+			elseif instr("\1","(i")			; sub (ix+n)
 				um: equ \1
 				getindex \1
 				dc.b ireg, $96, num
-			else			; sub n
+			else					; sub n
 			num: equ \1
 			dc.b $d6, num
 			endc
-		else			; 68k
+		else						; 68k
 		sxb.\0	\_
 		endc
 		endm
