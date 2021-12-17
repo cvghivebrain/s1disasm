@@ -102,7 +102,7 @@ vram_text:		equ $D000
 		lea	(vdp_data_port).l,a6
 		lea	(v_bg1_x_pos).w,a3
 		lea	(v_level_layout+level_max_width).w,a4	; background layout start address ($FFFFA440)
-		move.w	#$6000,d2
+		move.w	#draw_bg,d2
 		bsr.w	DrawChunks				; draw background
 		lea	($FF0000).l,a1
 		lea	(Eni_Title).l,a0			; load title screen mappings

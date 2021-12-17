@@ -61,7 +61,7 @@ GM_Ending:
 		bsr.w	DeformLayers
 		bset	#redraw_left_bit,(v_fg_redraw_direction).w
 		bsr.w	LevelDataLoad				; load block mappings and palettes
-		bsr.w	LoadTilesFromStart
+		bsr.w	DrawTilesAtStart
 		move.l	#Col_GHZ,(v_collision_index_ptr).w	; set pointer to GHZ collision index
 		enable_ints
 		lea	(Kos_EndFlowers).l,a0			; load extra flower patterns
@@ -171,7 +171,7 @@ End_FlashLoop:
 		lea	(vdp_data_port).l,a6
 		lea	(v_camera_x_pos).w,a3
 		lea	(v_level_layout).w,a4
-		move.w	#$4000,d2
+		move.w	#draw_fg,d2
 		bsr.w	DrawChunks				; redraw level
 		moveq	#id_Pal_Ending,d0
 		bsr.w	PalLoad_Next				; load ending palette

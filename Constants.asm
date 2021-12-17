@@ -19,6 +19,10 @@ vram_sonic:	equ $F000	; Sonic graphics ($2E0 bytes)
 vram_sprites:	equ $F800	; sprite table ($280 bytes)
 vram_hscroll:	equ $FC00	; horizontal scroll table ($380 bytes)
 
+draw_base:	equ vram_fg			; base address for nametables, used by Calc_VRAM_Pos (must be multiple of $4000)
+draw_fg:	equ $4000+(vram_fg-draw_base)	; VRAM write command + fg nametable address relative to base
+draw_bg:	equ $4000+(vram_bg-draw_base)	; VRAM write command + bg nametable address relative to base
+
 vram_crabmeat:	equ $8000	; crabmeat graphics
 vram_bomb:	equ $8000	; bomb enemy graphics
 vram_orbinaut:	equ $8520	; orbinaut graphics
