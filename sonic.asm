@@ -708,149 +708,11 @@ VDPSetupArray:	dc.w $8004					; normal colour mode
 		dc.w $9200					; window vertical position
 	VDPSetupArray_end:
 
-; ---------------------------------------------------------------------------
-; Subroutine to	clear the screen
-; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-ClearScreen:
-		dma_fill	0,$FFF,vram_fg			; clear foreground namespace
-
-	@wait1:
-		move.w	(a5),d1
-		btst	#1,d1
-		bne.s	@wait1
-
-		move.w	#$8F02,(a5)
-		dma_fill	0,$FFF,vram_bg			; clear background namespace
-
-	@wait2:
-		move.w	(a5),d1
-		btst	#1,d1
-		bne.s	@wait2
-
-		move.w	#$8F02,(a5)
-		if Revision=0
-		move.l	#0,(v_fg_y_pos_vsram).w
-		move.l	#0,(v_fg_x_pos_hscroll).w
-		else
-		clr.l	(v_fg_y_pos_vsram).w
-		clr.l	(v_fg_x_pos_hscroll).w
-		endc
-
-		lea	(v_sprite_buffer).w,a1
-		moveq	#0,d0
-		move.w	#($280/4),d1				; This should be ($280/4)-1, leading to a slight bug (first bit of v_pal_water is cleared)
-
-	@clearsprites:
-		move.l	d0,(a1)+
-		dbf	d1,@clearsprites			; clear sprite table (in RAM)
-
-		lea	(v_hscroll_buffer).w,a1
-		moveq	#0,d0
-		move.w	#($400/4),d1				; This should be ($400/4)-1, leading to a slight bug (first bit of the Sonic object's RAM is cleared)
-
-	@clearhscroll:
-		move.l	d0,(a1)+
-		dbf	d1,@clearhscroll			; clear hscroll table (in RAM)
-		rts	
-; End of function ClearScreen
-
-; ===========================================================================
-; ---------------------------------------------------------------------------
-; Functions for loading the DAC driver and playing sounds
-; ---------------------------------------------------------------------------
-
-	include "sound/PlaySound + DacDriverLoad.asm"
-
-; ---------------------------------------------------------------------------
-; Subroutine to	pause the game
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-PauseGame:
-		nop	
-		tst.b	(v_lives).w				; do you have any lives	left?
-		beq.s	Unpause					; if not, branch
-		tst.w	(f_pause).w				; is game already paused?
-		bne.s	Pause_StopGame				; if yes, branch
-		btst	#bitStart,(v_joypad_press_actual).w	; is Start button pressed?
-		beq.s	Pause_DoNothing				; if not, branch
-
-Pause_StopGame:
-		move.w	#1,(f_pause).w				; freeze time
-		move.b	#1,(v_snddriver_ram+f_pause_sound).w	; pause music
-
-Pause_Loop:
-		move.b	#id_VBlank_Pause,(v_vblank_routine).w
-		bsr.w	WaitForVBlank
-		tst.b	(f_slowmotion_cheat).w			; is slow-motion cheat on?
-		beq.s	Pause_ChkStart				; if not, branch
-		btst	#bitA,(v_joypad_press_actual).w		; is button A pressed?
-		beq.s	Pause_ChkBC				; if not, branch
-		move.b	#id_Title,(v_gamemode).w		; set game mode to 4 (title screen)
-		nop	
-		bra.s	Pause_EndMusic
-; ===========================================================================
-
-Pause_ChkBC:
-		btst	#bitB,(v_joypad_hold_actual).w		; is button B pressed?
-		bne.s	Pause_SlowMo				; if yes, branch
-		btst	#bitC,(v_joypad_press_actual).w		; is button C pressed?
-		bne.s	Pause_SlowMo				; if yes, branch
-
-Pause_ChkStart:
-		btst	#bitStart,(v_joypad_press_actual).w	; is Start button pressed?
-		beq.s	Pause_Loop				; if not, branch
-
-Pause_EndMusic:
-		move.b	#$80,(v_snddriver_ram+f_pause_sound).w	; unpause the music
-
-Unpause:
-		move.w	#0,(f_pause).w				; unpause the game
-
-Pause_DoNothing:
-		rts	
-; ===========================================================================
-
-Pause_SlowMo:
-		move.w	#1,(f_pause).w
-		move.b	#$80,(v_snddriver_ram+f_pause_sound).w	; Unpause the music
-		rts	
-; End of function PauseGame
-
-; ---------------------------------------------------------------------------
-; Subroutine to	copy a tile map from RAM to VRAM namespace
-
-; input:
-;	a1 = tile map address
-;	d0 = VRAM address
-;	d1 = width (cells)
-;	d2 = height (cells)
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-TilemapToVRAM:
-		lea	(vdp_data_port).l,a6
-		move.l	#sizeof_vram_row<<16,d4			; d4 = $800000
-
-	@loop_row:
-		move.l	d0,4(a6)				; move d0 to vdp_control_port
-		move.w	d1,d3
-
-	@loop_cell:
-		move.w	(a1)+,(a6)				; write value to namespace
-		dbf	d3,@loop_cell				; next tile
-		add.l	d4,d0					; goto next line
-		dbf	d2,@loop_row				; next line
-		rts	
-; End of function TilemapToVRAM
+		include	"Includes\ClearScreen.asm"
+		include	"sound\PlaySound + DacDriverLoad.asm"
+		include	"Includes\PauseGame.asm"
+		include	"Includes\TilemapToVRAM.asm"
 
 		include "Includes\Nemesis Decompression.asm"
 		include "Includes\AddPLC, NewPLC, RunPLC, ProcessPLC & QuickPLC.asm"
@@ -1136,40 +998,40 @@ Demo_EndGHZ2:	incbin	"demodata\Ending - GHZ2.bin"
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 
-LevelSizeLoad:
+LevelParameterLoad:
 		moveq	#0,d0
-		move.b	d0,(v_levelsizeload_unused_1).w
+		move.b	d0,(v_levelsizeload_unused_1).w		; clear unused variables
 		move.b	d0,(v_levelsizeload_unused_2).w
 		move.b	d0,(v_levelsizeload_unused_3).w
 		move.b	d0,(v_levelsizeload_unused_4).w
-		move.b	d0,(v_dle_routine).w
-		move.w	(v_zone).w,d0
-		lsl.b	#6,d0
-		lsr.w	#4,d0
+		move.b	d0,(v_dle_routine).w			; clear DynamicLevelEvents routine counter
+		move.w	(v_zone).w,d0				; get zone/act number
+		lsl.b	#6,d0					; move act number next to zone number
+		lsr.w	#4,d0					; move both into low byte
 		move.w	d0,d1
 		add.w	d0,d0
-		add.w	d1,d0
-		lea	LevelSizeArray(pc,d0.w),a0		; load level boundaries
+		add.w	d1,d0					; d0 = zone/act id multiplied by 12
+		lea	LevelBoundaryList(pc,d0.w),a0		; load level boundaries
 		move.w	(a0)+,d0
-		move.w	d0,(v_boundary_unused).w
+		move.w	d0,(v_boundary_unused).w		; unused, always 4
 		move.l	(a0)+,d0
-		move.l	d0,(v_boundary_left).w
+		move.l	d0,(v_boundary_left).w			; load left & right boundaries (2 bytes each)
 		move.l	d0,(v_boundary_left_next).w
 		move.l	(a0)+,d0
-		move.l	d0,(v_boundary_top).w
+		move.l	d0,(v_boundary_top).w			; load top & bottom boundaries (2 bytes each)
 		move.l	d0,(v_boundary_top_next).w
 		move.w	(v_boundary_left).w,d0
 		addi.w	#$240,d0
-		move.w	d0,(v_boundary_left_unused).w
-		move.w	#$1010,(v_fg_x_redraw_flag).w
+		move.w	d0,(v_boundary_left_unused).w		; unused, v_boundary_left+$240
+		move.w	#$1010,(v_fg_x_redraw_flag).w		; set fg redraw flag
 		move.w	(a0)+,d0
-		move.w	d0,(v_camera_y_shift).w
-		bra.w	LevSz_ChkLamp
-; ===========================================================================
+		move.w	d0,(v_camera_y_shift).w			; default camera shift = $60 (changes when Sonic looks up/down)
+		bra.w	LPL_StartPos
+
 ; ---------------------------------------------------------------------------
-; Level size array
+; Level boundary list
 ; ---------------------------------------------------------------------------
-LevelSizeArray:
+LevelBoundaryList:
 		; GHZ
 		dc.w $0004, $0000, $24BF, $0000, $0300, $0060
 		dc.w $0004, $0000, $1EBF, $0000, $0300, $0060
@@ -1200,7 +1062,7 @@ LevelSizeArray:
 		dc.w $0004, $0000, $1E40, $FF00, $0800, $0060
 		dc.w $0004, $2080, $2460, $0510, $0510, $0060
 		dc.w $0004, $0000, $3EC0, $0000, $0720, $0060
-		zonewarning LevelSizeArray,$30
+		zonewarning LevelBoundaryList,$30
 		; Ending
 		dc.w $0004, $0000, $0500, $0110, $0110, $0060
 		dc.w $0004, $0000, $0DC0, $0110, $0110, $0060
@@ -1224,72 +1086,71 @@ EndingStLocArray:
 
 ; ===========================================================================
 
-LevSz_ChkLamp:
+LPL_StartPos:
 		tst.b	(v_last_lamppost).w			; have any lampposts been hit?
-		beq.s	LevSz_StartLoc				; if not, branch
+		beq.s	@no_lamppost				; if not, branch
 
-		jsr	(Lamp_LoadInfo).l
+		jsr	(Lamp_LoadInfo).l			; load lamppost variables
 		move.w	(v_ost_player+ost_x_pos).w,d1
-		move.w	(v_ost_player+ost_y_pos).w,d0
-		bra.s	LevSz_SkipStartPos
+		move.w	(v_ost_player+ost_y_pos).w,d0		; d0/d1 = Sonic's position from lamppost variables
+		bra.s	LPL_Camera
 ; ===========================================================================
 
-LevSz_StartLoc:
-		move.w	(v_zone).w,d0
+@no_lamppost:
+		move.w	(v_zone).w,d0				; get zone/act number
 		lsl.b	#6,d0
-		lsr.w	#4,d0
-		lea	StartLocArray(pc,d0.w),a1		; load Sonic's start location
+		lsr.w	#4,d0					; convert to 1-byte id, multiplied by 4
+		lea	StartLocArray(pc,d0.w),a1		; load Sonic's start position
 		tst.w	(v_demo_mode).w				; is ending demo mode on?
-		bpl.s	LevSz_SonicPos				; if not, branch
+		bpl.s	@no_ending_demo				; if not, branch
 
 		move.w	(v_credits_num).w,d0
 		subq.w	#1,d0
 		lsl.w	#2,d0
-		lea	EndingStLocArray(pc,d0.w),a1		; load Sonic's start location
+		lea	EndingStLocArray(pc,d0.w),a1		; load Sonic's start position
 
-LevSz_SonicPos:
+	@no_ending_demo:
 		moveq	#0,d1
 		move.w	(a1)+,d1
-		move.w	d1,(v_ost_player+ost_x_pos).w		; set Sonic's position on x-axis
+		move.w	d1,(v_ost_player+ost_x_pos).w		; set Sonic's x position
 		moveq	#0,d0
 		move.w	(a1),d0
-		move.w	d0,(v_ost_player+ost_y_pos).w		; set Sonic's position on y-axis
+		move.w	d0,(v_ost_player+ost_y_pos).w		; set Sonic's y position
 
-SetScreen:
-	LevSz_SkipStartPos:
+LPL_Camera:
 		subi.w	#160,d1					; is Sonic more than 160px from left edge?
-		bcc.s	SetScr_WithinLeft			; if yes, branch
+		bcc.s	@chk_right				; if yes, branch
 		moveq	#0,d1
 
-	SetScr_WithinLeft:
+	@chk_right:
 		move.w	(v_boundary_right).w,d2
 		cmp.w	d2,d1					; is Sonic inside the right edge?
-		bcs.s	SetScr_WithinRight			; if yes, branch
+		bcs.s	@set_camera_x				; if yes, branch
 		move.w	d2,d1
 
-	SetScr_WithinRight:
-		move.w	d1,(v_camera_x_pos).w			; set horizontal screen position
+	@set_camera_x:
+		move.w	d1,(v_camera_x_pos).w			; set camera x position
 
 		subi.w	#96,d0					; is Sonic within 96px of upper edge?
-		bcc.s	SetScr_WithinTop			; if yes, branch
+		bcc.s	@chk_bottom				; if yes, branch
 		moveq	#0,d0
 
-	SetScr_WithinTop:
+	@chk_bottom:
 		cmp.w	(v_boundary_bottom).w,d0		; is Sonic above the bottom edge?
-		blt.s	SetScr_WithinBottom			; if yes, branch
+		blt.s	@set_camera_y				; if yes, branch
 		move.w	(v_boundary_bottom).w,d0
 
-	SetScr_WithinBottom:
+	@set_camera_y:
 		move.w	d0,(v_camera_y_pos).w			; set vertical screen position
-		bsr.w	BgScrollSpeed
+		bsr.w	LPL_InitBG
 		moveq	#0,d0
 		move.b	(v_zone).w,d0
 		lsl.b	#2,d0
-		move.l	LoopTileNums(pc,d0.w),(v_256x256_with_loop_1).w
-		if revision=0
-		bra.w	LevSz_LoadScrollBlockSize
+		move.l	LoopTileNums(pc,d0.w),(v_256x256_with_loop_1).w ; load level tile ids that contain loops and tunnels
+		if Revision=0
+			bra.w	LPL_ScrollBlockHeights
 		else
-		rts
+			rts
 		endc
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
@@ -1341,211 +1202,181 @@ StartLocArray:
 ; ---------------------------------------------------------------------------
 
 LoopTileNums:
+; 			loop	loop	tunnel	tunnel
 
-; 		loop	loop	tunnel	tunnel
-
-	dc.b	$B5,	$7F,	$1F,	$20			; Green Hill
-	dc.b	$7F,	$7F,	$7F,	$7F			; Labyrinth
-	dc.b	$7F,	$7F,	$7F,	$7F			; Marble
-	dc.b	$AA,	$B4,	$7F,	$7F			; Star Light
-	dc.b	$7F,	$7F,	$7F,	$7F			; Spring Yard
-	dc.b	$7F,	$7F,	$7F,	$7F			; Scrap Brain
-	zonewarning LoopTileNums,4
-	dc.b	$7F,	$7F,	$7F,	$7F			; Ending (Green Hill)
-
+		dc.b	$B5,	$7F,	$1F,	$20		; Green Hill
+		dc.b	$7F,	$7F,	$7F,	$7F		; Labyrinth
+		dc.b	$7F,	$7F,	$7F,	$7F		; Marble
+		dc.b	$AA,	$B4,	$7F,	$7F		; Star Light
+		dc.b	$7F,	$7F,	$7F,	$7F		; Spring Yard
+		dc.b	$7F,	$7F,	$7F,	$7F		; Scrap Brain
+		zonewarning LoopTileNums,4
+		dc.b	$7F,	$7F,	$7F,	$7F		; Ending (Green Hill)
 		even
 
 ; ===========================================================================
 
-		if revision=0
-
-; LevSz_Unk:
-LevSz_LoadScrollBlockSize:
+		if Revision=0
+LPL_ScrollBlockHeights:
 		moveq	#0,d0
 		move.b	(v_zone).w,d0
 		lsl.w	#3,d0
-		lea	BGScrollBlockSizes(pc,d0.w),a1
+		lea	ScrollBlockHeightList(pc,d0.w),a1
 		lea	(v_scroll_block_1_height).w,a2
 		move.l	(a1)+,(a2)+
 		move.l	(a1)+,(a2)+
 		rts	
-; End of function LevelSizeLoad
+; End of function LevelParameterLoad
 
-; ===========================================================================
-; dword_61B4:
-BGScrollBlockSizes:
-		; GHZ
-		dc.w $70
-		dc.w $100					; I guess these used to be per act?
-		dc.w $100					; Or maybe each scroll block got its own size?
-		dc.w $100					; Either way, these are unused now.
-		; LZ
-		dc.w $800
-		dc.w $100
-		dc.w $100
-		dc.w 0
-		; MZ
-		dc.w $800
-		dc.w $100
-		dc.w $100
-		dc.w 0
-		; SLZ
-		dc.w $800
-		dc.w $100
-		dc.w $100
-		dc.w 0
-		; SYZ
-		dc.w $800
-		dc.w $100
-		dc.w $100
-		dc.w 0
-		; SBZ
-		dc.w $800
-		dc.w $100
-		dc.w $100
-		dc.w 0
-		zonewarning BGScrollBlockSizes,8
-		; Ending
-		dc.w $70
-		dc.w $100
-		dc.w $100
-		dc.w $100
+ScrollBlockHeightList:
+; Only the first value is used
+		dc.w $70, $100, $100, $100			; GHZ
+		dc.w $800, $100, $100, 0			; LZ
+		dc.w $800, $100, $100, 0			; MZ
+		dc.w $800, $100, $100, 0			; SLZ
+		dc.w $800, $100, $100, 0			; SYZ
+		dc.w $800, $100, $100, 0			; SBZ
+		zonewarning ScrollBlockHeightList,8
+		dc.w $70, $100, $100, $100			; Ending (GHZ)
 		
 		endc
 
 ; ---------------------------------------------------------------------------
-; Subroutine to	set scroll speed of some backgrounds
-; ---------------------------------------------------------------------------
+; Subroutine to	initialise background position and scrolling
 
+; input:
+;	d0 = v_camera_y_pos
+;	d1 = v_camera_x_pos
+; ---------------------------------------------------------------------------
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-
-BgScrollSpeed:
-		tst.b	(v_last_lamppost).w
-		bne.s	loc_6206
+LPL_InitBG:
+		tst.b	(v_last_lamppost).w			; have any lampposts been hit?
+		bne.s	@no_lamppost				; if yes, branch
 		move.w	d0,(v_bg1_y_pos).w
 		move.w	d0,(v_bg2_y_pos).w
 		move.w	d1,(v_bg1_x_pos).w
 		move.w	d1,(v_bg2_x_pos).w
-		move.w	d1,(v_bg3_x_pos).w
+		move.w	d1,(v_bg3_x_pos).w			; use same x/y pos for fg and bg
 
-loc_6206:
+	@no_lamppost:
 		moveq	#0,d2
 		move.b	(v_zone).w,d2
 		add.w	d2,d2
-		move.w	BgScroll_Index(pc,d2.w),d2
-		jmp	BgScroll_Index(pc,d2.w)
-; End of function BgScrollSpeed
+		move.w	LPL_InitBG_Index(pc,d2.w),d2
+		jmp	LPL_InitBG_Index(pc,d2.w)
+; End of function LPL_InitBG
 
 ; ===========================================================================
-BgScroll_Index:	index *
-		ptr BgScroll_GHZ
-		ptr BgScroll_LZ
-		ptr BgScroll_MZ
-		ptr BgScroll_SLZ
-		ptr BgScroll_SYZ
-		ptr BgScroll_SBZ
-		zonewarning BgScroll_Index,2
-		ptr BgScroll_End
+LPL_InitBG_Index:
+		index *
+		ptr LPL_InitBG_GHZ
+		ptr LPL_InitBG_LZ
+		ptr LPL_InitBG_MZ
+		ptr LPL_InitBG_SLZ
+		ptr LPL_InitBG_SYZ
+		ptr LPL_InitBG_SBZ
+		zonewarning LPL_InitBG_Index,2
+		ptr LPL_InitBG_End
 ; ===========================================================================
 
-BgScroll_GHZ:
-		if revision=0
-		bra.w	Deform_GHZ
+LPL_InitBG_GHZ:
+		if Revision=0
+			bra.w	Deform_GHZ
 		else
-		clr.l	(v_bg1_x_pos).w
-		clr.l	(v_bg1_y_pos).w
-		clr.l	(v_bg2_y_pos).w
-		clr.l	(v_bg3_y_pos).w
-		lea	($FFFFA800).w,a2
-		clr.l	(a2)+
-		clr.l	(a2)+
-		clr.l	(a2)+
-		rts
+			clr.l	(v_bg1_x_pos).w
+			clr.l	(v_bg1_y_pos).w
+			clr.l	(v_bg2_y_pos).w
+			clr.l	(v_bg3_y_pos).w
+			lea	(v_bgscroll_buffer).w,a2
+			clr.l	(a2)+
+			clr.l	(a2)+
+			clr.l	(a2)+
+			rts
 		endc
 ; ===========================================================================
 
-BgScroll_LZ:
-		asr.l	#1,d0
+LPL_InitBG_LZ:
+		asr.l	#1,d0					; d0 = v_camera_y_pos/2
 		move.w	d0,(v_bg1_y_pos).w
 		rts	
 ; ===========================================================================
 
-BgScroll_MZ:
+LPL_InitBG_MZ:
 		rts	
 ; ===========================================================================
 
-BgScroll_SLZ:
+LPL_InitBG_SLZ:
 		asr.l	#1,d0
-		addi.w	#$C0,d0
+		addi.w	#$C0,d0					; d0 = (v_camera_y_pos/2)+$C0
 		move.w	d0,(v_bg1_y_pos).w
-		if revision=0
+		if Revision=0
 		else
-		clr.l	(v_bg1_x_pos).w
+			clr.l	(v_bg1_x_pos).w
 		endc
 		rts	
 ; ===========================================================================
 
-BgScroll_SYZ:
+LPL_InitBG_SYZ:
 		asl.l	#4,d0
 		move.l	d0,d2
 		asl.l	#1,d0
 		add.l	d2,d0
-		asr.l	#8,d0
-		if revision=0
-		move.w	d0,(v_bg1_y_pos).w
-		move.w	d0,(v_bg2_y_pos).w
+		asr.l	#8,d0					; d0 = v_camera_y_pos/5 (approx)
+		if Revision=0
+			move.w	d0,(v_bg1_y_pos).w
+			move.w	d0,(v_bg2_y_pos).w
 		else
-		addq.w	#1,d0
-		move.w	d0,(v_bg1_y_pos).w
-		clr.l	(v_bg1_x_pos).w
+			addq.w	#1,d0
+			move.w	d0,(v_bg1_y_pos).w
+			clr.l	(v_bg1_x_pos).w
 		endc
 		rts	
 ; ===========================================================================
 
-BgScroll_SBZ:
-		if revision=0
-		asl.l	#4,d0
-		asl.l	#1,d0
-		asr.l	#8,d0
+LPL_InitBG_SBZ:
+		if Revision=0
+			asl.l	#4,d0
+			asl.l	#1,d0
+			asr.l	#8,d0				; d0 = v_camera_y_pos/8
 		else
-		andi.w	#$7F8,d0
-		asr.w	#3,d0
-		addq.w	#1,d0
+			andi.w	#$7F8,d0
+			asr.w	#3,d0
+			addq.w	#1,d0				; d0 = (v_camera_y_pos/8)+1
 		endc
 		move.w	d0,(v_bg1_y_pos).w
 		rts	
 ; ===========================================================================
 
-BgScroll_End:
-		if revision=0
-		move.w	#$1E,(v_bg1_y_pos).w
-		move.w	#$1E,(v_bg2_y_pos).w
-		rts	
-; ===========================================================================
-		move.w	#$A8,(v_bg1_x_pos).w
-		move.w	#$1E,(v_bg1_y_pos).w
-		move.w	#-$40,(v_bg2_x_pos).w
-		move.w	#$1E,(v_bg2_y_pos).w
-		rts
+LPL_InitBG_End:
+		if Revision=0
+			move.w	#$1E,(v_bg1_y_pos).w
+			move.w	#$1E,(v_bg2_y_pos).w
+			rts	
+
+			move.w	#$A8,(v_bg1_x_pos).w
+			move.w	#$1E,(v_bg1_y_pos).w
+			move.w	#-$40,(v_bg2_x_pos).w
+			move.w	#$1E,(v_bg2_y_pos).w
+			rts
 		else
-		move.w	(v_camera_x_pos).w,d0
-		asr.w	#1,d0
-		move.w	d0,(v_bg1_x_pos).w
-		move.w	d0,(v_bg2_x_pos).w
-		asr.w	#2,d0
-		move.w	d0,d1
-		add.w	d0,d0
-		add.w	d1,d0
-		move.w	d0,(v_bg3_x_pos).w
-		clr.l	(v_bg1_y_pos).w
-		clr.l	(v_bg2_y_pos).w
-		clr.l	(v_bg3_y_pos).w
-		lea	($FFFFA800).w,a2
-		clr.l	(a2)+
-		clr.l	(a2)+
-		clr.l	(a2)+
-		rts
+			move.w	(v_camera_x_pos).w,d0
+			asr.w	#1,d0
+			move.w	d0,(v_bg1_x_pos).w
+			move.w	d0,(v_bg2_x_pos).w
+			asr.w	#2,d0
+			move.w	d0,d1
+			add.w	d0,d0
+			add.w	d1,d0
+			move.w	d0,(v_bg3_x_pos).w
+			clr.l	(v_bg1_y_pos).w
+			clr.l	(v_bg2_y_pos).w
+			clr.l	(v_bg3_y_pos).w
+			lea	(v_bgscroll_buffer).w,a2
+			clr.l	(a2)+
+			clr.l	(a2)+
+			clr.l	(a2)+
+			rts
 		endc
 
 		include	"Includes\DeformLayers.asm"

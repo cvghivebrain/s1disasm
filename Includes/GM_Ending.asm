@@ -57,7 +57,7 @@ GM_Ending:
 		moveq	#id_PLC_Ending,d0
 		bsr.w	QuickPLC				; load ending sequence graphics in 1 frame
 		jsr	(Hud_Base).l				; load uncompressed portion of HUD graphics
-		bsr.w	LevelSizeLoad				; load level boundaries and start positions
+		bsr.w	LevelParameterLoad				; load level boundaries and start positions
 		bsr.w	DeformLayers
 		bset	#redraw_left_bit,(v_fg_redraw_direction).w
 		bsr.w	LevelDataLoad				; load block mappings and palettes

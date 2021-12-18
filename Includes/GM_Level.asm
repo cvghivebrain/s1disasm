@@ -151,7 +151,7 @@ Level_TtlCardLoop:
 Level_Skip_TtlCard:
 		moveq	#id_Pal_Sonic,d0
 		bsr.w	PalLoad_Next				; load Sonic's palette
-		bsr.w	LevelSizeLoad				; load level boundaries and start positions
+		bsr.w	LevelParameterLoad				; load level boundaries and start positions
 		bsr.w	DeformLayers
 		bset	#redraw_left_bit,(v_fg_redraw_direction).w
 		bsr.w	LevelDataLoad				; load block mappings and palettes
