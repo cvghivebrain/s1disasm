@@ -1,7 +1,7 @@
 ;  =========================================================================
 ; |           Sonic the Hedgehog Disassembly for Sega Mega Drive            |
 ;  =========================================================================
-;
+
 ; Disassembly created by Hivebrain
 ; thanks to drx, Stealth, Esrael L.G. Neto and the Sonic Retro Github
 
@@ -17,6 +17,7 @@
 		include "Macros - More CPUs.asm"
 		include "Macros - 68k Extended.asm"
 		include "Constants.asm"
+		include	"Start Positions.asm"
 		include "sound\Sounds.asm"
 		include "sound\Sound Equates.asm"
 		include "RAM Addresses.asm"
@@ -31,7 +32,7 @@ BackupSRAM:	equ 1
 AddressSRAM:	equ 3						; 0 = odd+even; 2 = even only; 3 = odd only
 
 ; Change to 0 to build the original version of the game, dubbed REV00
-; Change to 1 to build the later vesion, dubbed REV01, which includes various bugfixes and enhancements
+; Change to 1 to build the later version, dubbed REV01, which includes various bugfixes and enhancements
 ; Change to 2 to build the version from Sonic Mega Collection, dubbed REVXB, which fixes the infamous "spike bug"
 	if ~def(Revision)					; bit-perfect check will automatically set this variable
 Revision:	equ 1
@@ -166,44 +167,44 @@ ErrorTrap:
 ; ===========================================================================
 
 EntryPoint:
-		tst.l	(port_1_control_hi).l			; test port A & B control registers
-		bne.s	PortA_Ok
-		tst.w	(port_e_control_hi).l			; test port C control register
+		tst.l	(port_1_control_hi).l			; test port 1 & 2 control registers
+		bne.s	@skip					; branch if not 0
+		tst.w	(port_e_control_hi).l			; test ext port control register
+	@skip:
+		bne.s	SkipSetup				; branch if not 0
 
-PortA_Ok:
-		bne.s	SkipSetup				; Skip the VDP and Z80 setup code if port A, B or C is ok...?
-		lea	SetupValues(pc),a5			; Load setup values array address.
-		movem.w	(a5)+,d5-d7
-		movem.l	(a5)+,a0-a4
+		lea	SetupValues(pc),a5			; load setup values array address
+		movem.w	(a5)+,d5-d7				; d5 = VDP reg baseline; d6 = RAM size; d7 = VDP reg diff
+		movem.l	(a5)+,a0-a4				; a0 = z80_ram ; a1 = z80_bus_request; a2 = z80_reset; a3 = vdp_data_port; a4 = vdp_control_port
 		move.b	console_version-z80_bus_request(a1),d0	; get hardware version (from $A10001)
 		andi.b	#$F,d0
-		beq.s	SkipSecurity				; If the console has no TMSS, skip the security stuff.
+		beq.s	@no_tmss				; if the console has no TMSS, skip the security stuff
 		move.l	#'SEGA',tmss_sega-z80_bus_request(a1)	; move "SEGA" to TMSS register ($A14000)
 
-SkipSecurity:
+	@no_tmss:
 		move.w	(a4),d0					; clear write-pending flag in VDP to prevent issues if the 68k has been reset in the middle of writing a command long word to the VDP.
 		moveq	#0,d0					; clear d0
 		movea.l	d0,a6					; clear a6
 		move.l	a6,usp					; set usp to $0
 
 		moveq	#SetupVDP_end-SetupVDP-1,d1
-VDPInitLoop:
+	@loop_vdp:
 		move.b	(a5)+,d5				; add $8000 to value
 		move.w	d5,(a4)					; move value to	VDP register
 		add.w	d7,d5					; next register
-		dbf	d1,VDPInitLoop
+		dbf	d1,@loop_vdp
 
 		move.l	(a5)+,(a4)
 		move.w	d0,(a3)					; clear	the VRAM
 		move.w	d7,(a1)					; stop the Z80
 		move.w	d7,(a2)					; reset	the Z80
 
-@waitz80
+	@waitz80:
 		btst	d0,(a1)					; has the Z80 stopped?
 		bne.s	@waitz80				; if not, branch
 		moveq	#Z80_Startup_size-1,d2			; load the number of bytes in Z80_Startup program into d2
 
-@loadz80
+	@loadz80:
 		move.b	(a5)+,(a0)+				; load the Z80_Startup program byte by byte to Z80 RAM
 		dbf	d2,@loadz80
 
@@ -211,27 +212,28 @@ VDPInitLoop:
 		move.w	d0,(a1)					; start	the Z80
 		move.w	d7,(a2)					; reset	the Z80
 
-ClrRAMLoop:
+	@loop_ram:
 		move.l	d0,-(a6)				; clear 4 bytes of RAM
-		dbf	d6,ClrRAMLoop				; repeat until the entire RAM is clear
+		dbf	d6,@loop_ram				; repeat until the entire RAM is clear
 		move.l	(a5)+,(a4)				; set VDP display mode and increment mode
 		move.l	(a5)+,(a4)				; set VDP to CRAM write
 
-		moveq	#$1F,d3					; set repeat times
-ClrCRAMLoop:
-		move.l	d0,(a3)					; clear 2 palettes
-		dbf	d3,ClrCRAMLoop				; repeat until the entire CRAM is clear
+		moveq	#(sizeof_pal_all/4)-1,d3		; set repeat times
+	@loop_cram:
+		move.l	d0,(a3)					; clear 2 palette colours
+		dbf	d3,@loop_cram				; repeat until the entire CRAM is clear
 		move.l	(a5)+,(a4)				; set VDP to VSRAM write
 
 		moveq	#$13,d4
-ClrVSRAMLoop:
+	@loop_vsram:
 		move.l	d0,(a3)					; clear 4 bytes of VSRAM.
-		dbf	d4,ClrVSRAMLoop				; repeat until the entire VSRAM is clear
-		moveq	#3,d5
+		dbf	d4,@loop_vsram				; repeat until the entire VSRAM is clear
 
-PSGInitLoop:
-		move.b	(a5)+,$11(a3)				; reset	the PSG
-		dbf	d5,PSGInitLoop				; repeat for other channels
+		moveq	#3,d5
+	@loop_psg:
+		move.b	(a5)+,psg_input-vdp_data_port(a3)	; reset	the PSG
+		dbf	d5,@loop_psg				; repeat for other channels
+
 		move.w	d0,(a2)
 		movem.l	(a6),d0-a6				; clear all registers
 		disable_ints
@@ -241,7 +243,7 @@ SkipSetup:
 
 ; ===========================================================================
 SetupValues:	dc.w $8000					; VDP register start number
-		dc.w $3FFF					; size of RAM/4
+		dc.w ($10000/4)-1				; size of RAM/4
 		dc.w $100					; VDP register diff
 
 		dc.l z80_ram					; start	of Z80 RAM
@@ -273,7 +275,7 @@ SetupVDP:	dc.b 4						; VDP $80 - normal colour mode
 		dc.w 0						; VDP $95/96 - DMA source
 		dc.b $80					; VDP $97 - DMA fill VRAM
 SetupVDP_end:
-		dc.l $40000080					; VRAM address 0
+		dc.l $40000080					; VRAM DMA write address 0
 
 Z80_Startup:
 		cpu	z80
@@ -320,8 +322,8 @@ Z80_Startup_size:
 
 		dc.w $8104					; VDP display mode
 		dc.w $8F02					; VDP increment
-		dc.l $C0000000					; CRAM write mode
-		dc.l $40000010					; VSRAM address 0
+		dc.l $C0000000					; CRAM write address 0
+		dc.l $40000010					; VSRAM write address 0
 
 		dc.b $9F, $BF, $DF, $FF				; values for PSG channel volumes
 ; ===========================================================================
@@ -406,7 +408,7 @@ GameModeArray:
 CheckSumError:
 		bsr.w	VDPSetupGame
 		move.l	#$C0000000,(vdp_control_port).l		; set VDP to CRAM write
-		moveq	#$3F,d7
+		moveq	#(sizeof_pal_all/2)-1,d7
 
 	@fillred:
 		move.w	#cRed,(vdp_data_port).l			; fill palette with red
@@ -655,7 +657,6 @@ VDPSetupGame:
 		lea	(vdp_data_port).l,a1
 		lea	(VDPSetupArray).l,a2
 		moveq	#((VDPSetupArray_end-VDPSetupArray)/2)-1,d7
-
 	@setreg:
 		move.w	(a2)+,(a0)
 		dbf	d7,@setreg				; set the VDP registers
@@ -663,10 +664,10 @@ VDPSetupGame:
 		move.w	(VDPSetupArray+2).l,d0
 		move.w	d0,(v_vdp_mode_buffer).w		; save $8134 to buffer for later use
 		move.w	#$8A00+223,(v_vdp_hint_counter).w	; horizontal interrupt every 224th scanline
+
 		moveq	#0,d0
 		move.l	#$C0000000,(vdp_control_port).l		; set VDP to CRAM write
 		move.w	#$40-1,d7
-
 	@clrCRAM:
 		move.w	d0,(a1)
 		dbf	d7,@clrCRAM				; clear	the CRAM
@@ -991,394 +992,7 @@ Demo_EndSBZ2:	incbin	"demodata\Ending - SBZ2.bin"
 Demo_EndGHZ2:	incbin	"demodata\Ending - GHZ2.bin"
 		even
 
-; ---------------------------------------------------------------------------
-; Subroutine to	load level boundaries and start	locations
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-LevelParameterLoad:
-		moveq	#0,d0
-		move.b	d0,(v_levelsizeload_unused_1).w		; clear unused variables
-		move.b	d0,(v_levelsizeload_unused_2).w
-		move.b	d0,(v_levelsizeload_unused_3).w
-		move.b	d0,(v_levelsizeload_unused_4).w
-		move.b	d0,(v_dle_routine).w			; clear DynamicLevelEvents routine counter
-		move.w	(v_zone).w,d0				; get zone/act number
-		lsl.b	#6,d0					; move act number next to zone number
-		lsr.w	#4,d0					; move both into low byte
-		move.w	d0,d1
-		add.w	d0,d0
-		add.w	d1,d0					; d0 = zone/act id multiplied by 12
-		lea	LevelBoundaryList(pc,d0.w),a0		; load level boundaries
-		move.w	(a0)+,d0
-		move.w	d0,(v_boundary_unused).w		; unused, always 4
-		move.l	(a0)+,d0
-		move.l	d0,(v_boundary_left).w			; load left & right boundaries (2 bytes each)
-		move.l	d0,(v_boundary_left_next).w
-		move.l	(a0)+,d0
-		move.l	d0,(v_boundary_top).w			; load top & bottom boundaries (2 bytes each)
-		move.l	d0,(v_boundary_top_next).w
-		move.w	(v_boundary_left).w,d0
-		addi.w	#$240,d0
-		move.w	d0,(v_boundary_left_unused).w		; unused, v_boundary_left+$240
-		move.w	#$1010,(v_fg_x_redraw_flag).w		; set fg redraw flag
-		move.w	(a0)+,d0
-		move.w	d0,(v_camera_y_shift).w			; default camera shift = $60 (changes when Sonic looks up/down)
-		bra.w	LPL_StartPos
-
-; ---------------------------------------------------------------------------
-; Level boundary list
-; ---------------------------------------------------------------------------
-LevelBoundaryList:
-		; GHZ
-		dc.w $0004, $0000, $24BF, $0000, $0300, $0060
-		dc.w $0004, $0000, $1EBF, $0000, $0300, $0060
-		dc.w $0004, $0000, $2960, $0000, $0300, $0060
-		dc.w $0004, $0000, $2ABF, $0000, $0300, $0060
-		; LZ
-		dc.w $0004, $0000, $19BF, $0000, $0530, $0060
-		dc.w $0004, $0000, $10AF, $0000, $0720, $0060
-		dc.w $0004, $0000, $202F, $FF00, $0800, $0060
-		dc.w $0004, $0000, $20BF, $0000, $0720, $0060
-		; MZ
-		dc.w $0004, $0000, $17BF, $0000, $01D0, $0060
-		dc.w $0004, $0000, $17BF, $0000, $0520, $0060
-		dc.w $0004, $0000, $1800, $0000, $0720, $0060
-		dc.w $0004, $0000, $16BF, $0000, $0720, $0060
-		; SLZ
-		dc.w $0004, $0000, $1FBF, $0000, $0640, $0060
-		dc.w $0004, $0000, $1FBF, $0000, $0640, $0060
-		dc.w $0004, $0000, $2000, $0000, $06C0, $0060
-		dc.w $0004, $0000, $3EC0, $0000, $0720, $0060
-		; SYZ
-		dc.w $0004, $0000, $22C0, $0000, $0420, $0060
-		dc.w $0004, $0000, $28C0, $0000, $0520, $0060
-		dc.w $0004, $0000, $2C00, $0000, $0620, $0060
-		dc.w $0004, $0000, $2EC0, $0000, $0620, $0060
-		; SBZ
-		dc.w $0004, $0000, $21C0, $0000, $0720, $0060
-		dc.w $0004, $0000, $1E40, $FF00, $0800, $0060
-		dc.w $0004, $2080, $2460, $0510, $0510, $0060
-		dc.w $0004, $0000, $3EC0, $0000, $0720, $0060
-		zonewarning LevelBoundaryList,$30
-		; Ending
-		dc.w $0004, $0000, $0500, $0110, $0110, $0060
-		dc.w $0004, $0000, $0DC0, $0110, $0110, $0060
-		dc.w $0004, $0000, $2FFF, $0000, $0320, $0060
-		dc.w $0004, $0000, $2FFF, $0000, $0320, $0060
-
-; ---------------------------------------------------------------------------
-; Ending start location array
-; ---------------------------------------------------------------------------
-EndingStLocArray:
-
-		incbin	"startpos\ghz1 (Credits demo 1).bin"
-		incbin	"startpos\mz2 (Credits demo).bin"
-		incbin	"startpos\syz3 (Credits demo).bin"
-		incbin	"startpos\lz3 (Credits demo).bin"
-		incbin	"startpos\slz3 (Credits demo).bin"
-		incbin	"startpos\sbz1 (Credits demo).bin"
-		incbin	"startpos\sbz2 (Credits demo).bin"
-		incbin	"startpos\ghz1 (Credits demo 2).bin"
-		even
-
-; ===========================================================================
-
-LPL_StartPos:
-		tst.b	(v_last_lamppost).w			; have any lampposts been hit?
-		beq.s	@no_lamppost				; if not, branch
-
-		jsr	(Lamp_LoadInfo).l			; load lamppost variables
-		move.w	(v_ost_player+ost_x_pos).w,d1
-		move.w	(v_ost_player+ost_y_pos).w,d0		; d0/d1 = Sonic's position from lamppost variables
-		bra.s	LPL_Camera
-; ===========================================================================
-
-@no_lamppost:
-		move.w	(v_zone).w,d0				; get zone/act number
-		lsl.b	#6,d0
-		lsr.w	#4,d0					; convert to 1-byte id, multiplied by 4
-		lea	StartLocArray(pc,d0.w),a1		; load Sonic's start position
-		tst.w	(v_demo_mode).w				; is ending demo mode on?
-		bpl.s	@no_ending_demo				; if not, branch
-
-		move.w	(v_credits_num).w,d0
-		subq.w	#1,d0
-		lsl.w	#2,d0
-		lea	EndingStLocArray(pc,d0.w),a1		; load Sonic's start position
-
-	@no_ending_demo:
-		moveq	#0,d1
-		move.w	(a1)+,d1
-		move.w	d1,(v_ost_player+ost_x_pos).w		; set Sonic's x position
-		moveq	#0,d0
-		move.w	(a1),d0
-		move.w	d0,(v_ost_player+ost_y_pos).w		; set Sonic's y position
-
-LPL_Camera:
-		subi.w	#160,d1					; is Sonic more than 160px from left edge?
-		bcc.s	@chk_right				; if yes, branch
-		moveq	#0,d1
-
-	@chk_right:
-		move.w	(v_boundary_right).w,d2
-		cmp.w	d2,d1					; is Sonic inside the right edge?
-		bcs.s	@set_camera_x				; if yes, branch
-		move.w	d2,d1
-
-	@set_camera_x:
-		move.w	d1,(v_camera_x_pos).w			; set camera x position
-
-		subi.w	#96,d0					; is Sonic within 96px of upper edge?
-		bcc.s	@chk_bottom				; if yes, branch
-		moveq	#0,d0
-
-	@chk_bottom:
-		cmp.w	(v_boundary_bottom).w,d0		; is Sonic above the bottom edge?
-		blt.s	@set_camera_y				; if yes, branch
-		move.w	(v_boundary_bottom).w,d0
-
-	@set_camera_y:
-		move.w	d0,(v_camera_y_pos).w			; set vertical screen position
-		bsr.w	LPL_InitBG
-		moveq	#0,d0
-		move.b	(v_zone).w,d0
-		lsl.b	#2,d0
-		move.l	LoopTileNums(pc,d0.w),(v_256x256_with_loop_1).w ; load level tile ids that contain loops and tunnels
-		if Revision=0
-			bra.w	LPL_ScrollBlockHeights
-		else
-			rts
-		endc
-; ===========================================================================
-; ---------------------------------------------------------------------------
-; Sonic start location array
-; ---------------------------------------------------------------------------
-StartLocArray:
-
-		incbin	"startpos\ghz1.bin"
-		incbin	"startpos\ghz2.bin"
-		incbin	"startpos\ghz3.bin"
-		dc.w	$80,$A8
-
-		incbin	"startpos\lz1.bin"
-		incbin	"startpos\lz2.bin"
-		incbin	"startpos\lz3.bin"
-		incbin	"startpos\sbz3.bin"
-
-		incbin	"startpos\mz1.bin"
-		incbin	"startpos\mz2.bin"
-		incbin	"startpos\mz3.bin"
-		dc.w	$80,$A8
-
-		incbin	"startpos\slz1.bin"
-		incbin	"startpos\slz2.bin"
-		incbin	"startpos\slz3.bin"
-		dc.w	$80,$A8
-
-		incbin	"startpos\syz1.bin"
-		incbin	"startpos\syz2.bin"
-		incbin	"startpos\syz3.bin"
-		dc.w	$80,$A8
-
-		incbin	"startpos\sbz1.bin"
-		incbin	"startpos\sbz2.bin"
-		incbin	"startpos\fz.bin"
-		dc.w	$80,$A8
-
-		zonewarning StartLocArray,$10
-
-		incbin	"startpos\end1.bin"
-		incbin	"startpos\end2.bin"
-		dc.w	$80,$A8
-		dc.w	$80,$A8
-
-		even
-
-; ---------------------------------------------------------------------------
-; Which	256x256	tiles contain loops or roll-tunnels
-; ---------------------------------------------------------------------------
-
-LoopTileNums:
-; 			loop	loop	tunnel	tunnel
-
-		dc.b	$B5,	$7F,	$1F,	$20		; Green Hill
-		dc.b	$7F,	$7F,	$7F,	$7F		; Labyrinth
-		dc.b	$7F,	$7F,	$7F,	$7F		; Marble
-		dc.b	$AA,	$B4,	$7F,	$7F		; Star Light
-		dc.b	$7F,	$7F,	$7F,	$7F		; Spring Yard
-		dc.b	$7F,	$7F,	$7F,	$7F		; Scrap Brain
-		zonewarning LoopTileNums,4
-		dc.b	$7F,	$7F,	$7F,	$7F		; Ending (Green Hill)
-		even
-
-; ===========================================================================
-
-		if Revision=0
-LPL_ScrollBlockHeights:
-		moveq	#0,d0
-		move.b	(v_zone).w,d0
-		lsl.w	#3,d0
-		lea	ScrollBlockHeightList(pc,d0.w),a1
-		lea	(v_scroll_block_1_height).w,a2
-		move.l	(a1)+,(a2)+
-		move.l	(a1)+,(a2)+
-		rts	
-; End of function LevelParameterLoad
-
-ScrollBlockHeightList:
-; Only the first value is used
-		dc.w $70, $100, $100, $100			; GHZ
-		dc.w $800, $100, $100, 0			; LZ
-		dc.w $800, $100, $100, 0			; MZ
-		dc.w $800, $100, $100, 0			; SLZ
-		dc.w $800, $100, $100, 0			; SYZ
-		dc.w $800, $100, $100, 0			; SBZ
-		zonewarning ScrollBlockHeightList,8
-		dc.w $70, $100, $100, $100			; Ending (GHZ)
-		
-		endc
-
-; ---------------------------------------------------------------------------
-; Subroutine to	initialise background position and scrolling
-
-; input:
-;	d0 = v_camera_y_pos
-;	d1 = v_camera_x_pos
-; ---------------------------------------------------------------------------
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-LPL_InitBG:
-		tst.b	(v_last_lamppost).w			; have any lampposts been hit?
-		bne.s	@no_lamppost				; if yes, branch
-		move.w	d0,(v_bg1_y_pos).w
-		move.w	d0,(v_bg2_y_pos).w
-		move.w	d1,(v_bg1_x_pos).w
-		move.w	d1,(v_bg2_x_pos).w
-		move.w	d1,(v_bg3_x_pos).w			; use same x/y pos for fg and bg
-
-	@no_lamppost:
-		moveq	#0,d2
-		move.b	(v_zone).w,d2
-		add.w	d2,d2
-		move.w	LPL_InitBG_Index(pc,d2.w),d2
-		jmp	LPL_InitBG_Index(pc,d2.w)
-; End of function LPL_InitBG
-
-; ===========================================================================
-LPL_InitBG_Index:
-		index *
-		ptr LPL_InitBG_GHZ
-		ptr LPL_InitBG_LZ
-		ptr LPL_InitBG_MZ
-		ptr LPL_InitBG_SLZ
-		ptr LPL_InitBG_SYZ
-		ptr LPL_InitBG_SBZ
-		zonewarning LPL_InitBG_Index,2
-		ptr LPL_InitBG_End
-; ===========================================================================
-
-LPL_InitBG_GHZ:
-		if Revision=0
-			bra.w	Deform_GHZ
-		else
-			clr.l	(v_bg1_x_pos).w
-			clr.l	(v_bg1_y_pos).w
-			clr.l	(v_bg2_y_pos).w
-			clr.l	(v_bg3_y_pos).w
-			lea	(v_bgscroll_buffer).w,a2
-			clr.l	(a2)+
-			clr.l	(a2)+
-			clr.l	(a2)+
-			rts
-		endc
-; ===========================================================================
-
-LPL_InitBG_LZ:
-		asr.l	#1,d0					; d0 = v_camera_y_pos/2
-		move.w	d0,(v_bg1_y_pos).w
-		rts	
-; ===========================================================================
-
-LPL_InitBG_MZ:
-		rts	
-; ===========================================================================
-
-LPL_InitBG_SLZ:
-		asr.l	#1,d0
-		addi.w	#$C0,d0					; d0 = (v_camera_y_pos/2)+$C0
-		move.w	d0,(v_bg1_y_pos).w
-		if Revision=0
-		else
-			clr.l	(v_bg1_x_pos).w
-		endc
-		rts	
-; ===========================================================================
-
-LPL_InitBG_SYZ:
-		asl.l	#4,d0
-		move.l	d0,d2
-		asl.l	#1,d0
-		add.l	d2,d0
-		asr.l	#8,d0					; d0 = v_camera_y_pos/5 (approx)
-		if Revision=0
-			move.w	d0,(v_bg1_y_pos).w
-			move.w	d0,(v_bg2_y_pos).w
-		else
-			addq.w	#1,d0
-			move.w	d0,(v_bg1_y_pos).w
-			clr.l	(v_bg1_x_pos).w
-		endc
-		rts	
-; ===========================================================================
-
-LPL_InitBG_SBZ:
-		if Revision=0
-			asl.l	#4,d0
-			asl.l	#1,d0
-			asr.l	#8,d0				; d0 = v_camera_y_pos/8
-		else
-			andi.w	#$7F8,d0
-			asr.w	#3,d0
-			addq.w	#1,d0				; d0 = (v_camera_y_pos/8)+1
-		endc
-		move.w	d0,(v_bg1_y_pos).w
-		rts	
-; ===========================================================================
-
-LPL_InitBG_End:
-		if Revision=0
-			move.w	#$1E,(v_bg1_y_pos).w
-			move.w	#$1E,(v_bg2_y_pos).w
-			rts	
-
-			move.w	#$A8,(v_bg1_x_pos).w
-			move.w	#$1E,(v_bg1_y_pos).w
-			move.w	#-$40,(v_bg2_x_pos).w
-			move.w	#$1E,(v_bg2_y_pos).w
-			rts
-		else
-			move.w	(v_camera_x_pos).w,d0
-			asr.w	#1,d0
-			move.w	d0,(v_bg1_x_pos).w
-			move.w	d0,(v_bg2_x_pos).w
-			asr.w	#2,d0
-			move.w	d0,d1
-			add.w	d0,d0
-			add.w	d1,d0
-			move.w	d0,(v_bg3_x_pos).w
-			clr.l	(v_bg1_y_pos).w
-			clr.l	(v_bg2_y_pos).w
-			clr.l	(v_bg3_y_pos).w
-			lea	(v_bgscroll_buffer).w,a2
-			clr.l	(a2)+
-			clr.l	(a2)+
-			clr.l	(a2)+
-			rts
-		endc
-
+		include	"Includes\LevelParameterLoad.asm"
 		include	"Includes\DeformLayers.asm"
 		include	"Includes\DrawTilesWhenMoving, DrawTilesAtStart & DrawChunks.asm"
 
@@ -1903,21 +1517,6 @@ word_16516:	dc.w $10, $1C80
 		include "Objects\_ReactToItem, HurtSonic & KillSonic.asm"
 
 		include_Special_3				; Includes\GM_Special.asm
-
-; ---------------------------------------------------------------------------
-; Special stage start locations
-; ---------------------------------------------------------------------------
-SS_StartLoc:
-
-		incbin	"startpos\ss1.bin"
-		incbin	"startpos\ss2.bin"
-		incbin	"startpos\ss3.bin"
-		incbin	"startpos\ss4.bin"
-		incbin	"startpos\ss5.bin"
-		incbin	"startpos\ss6.bin"
-		even
-
-		include_Special_4				; Includes\GM_Special.asm
 
 ; ---------------------------------------------------------------------------
 ; Special stage	mappings and VRAM pointers

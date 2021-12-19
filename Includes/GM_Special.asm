@@ -1086,21 +1086,22 @@ SS_LayoutIndex:
 		dc.l SS_6
 		even
 
-		endm
-
-
 ; ---------------------------------------------------------------------------
-; Special Stage, part 4
+; Special stage start locations
 ; ---------------------------------------------------------------------------
-
-include_Special_4:	macro
+SpecialStartPosList:
+		dc.l startpos_ss1
+		dc.l startpos_ss2
+		dc.l startpos_ss3
+		dc.l startpos_ss4
+		dc.l startpos_ss5
+		dc.l startpos_ss6
+		even
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	load special stage layout
 ; ---------------------------------------------------------------------------
-
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 SS_Load:
 		moveq	#0,d0
@@ -1130,7 +1131,7 @@ SS_ChkEmldRepeat:
 
 SS_LoadData:
 		lsl.w	#2,d0
-		lea	SS_StartLoc(pc,d0.w),a1
+		lea	SpecialStartPosList(pc,d0.w),a1
 		move.w	(a1)+,(v_ost_player+ost_x_pos).w	; set Sonic's start position
 		move.w	(a1)+,(v_ost_player+ost_y_pos).w
 		movea.l	SS_LayoutIndex(pc,d0.w),a0
