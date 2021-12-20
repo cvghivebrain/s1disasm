@@ -1,19 +1,17 @@
 ; ---------------------------------------------------------------------------
 ; Palette cycling routine loading subroutine
 ; ---------------------------------------------------------------------------
-
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-
+PaletteCycle:
 		moveq	#0,d2
 		moveq	#0,d0
-		move.b	(v_zone).w,d0				; get level number
+		move.b	(v_zone).w,d0				; get zone number
 		add.w	d0,d0
 		move.w	PCycle_Index(pc,d0.w),d0
 		jmp	PCycle_Index(pc,d0.w)			; jump to relevant palette routine
 ; End of function PaletteCycle
 
-; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Palette cycling routines
 ; ---------------------------------------------------------------------------
@@ -27,240 +25,282 @@ PCycle_Index:	index *
 		zonewarning PCycle_Index,2
 		ptr PCycle_GHZ					; Ending
 
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
+; ---------------------------------------------------------------------------
+; Title screen (referenced from GM_Title)
+; ---------------------------------------------------------------------------
 PCycle_Title:
 		lea	(Pal_TitleCyc).l,a0
-		bra.s	PCycGHZ_Go
-; ===========================================================================
+		bra.s	PCycle_GHZ_Run
 
+; ---------------------------------------------------------------------------
+; Green Hill Zone
+; ---------------------------------------------------------------------------
 PCycle_GHZ:
 		lea	(Pal_GHZCyc).l,a0
 
-PCycGHZ_Go:
+PCycle_GHZ_Run:
 		subq.w	#1,(v_palcycle_time).w			; decrement timer
-		bpl.s	PCycGHZ_Skip				; if time remains, branch
+		bpl.s	@exit					; if time remains, branch
 
 		move.w	#5,(v_palcycle_time).w			; reset timer to 5 frames
 		move.w	(v_palcycle_num).w,d0			; get cycle number
 		addq.w	#1,(v_palcycle_num).w			; increment cycle number
 		andi.w	#3,d0					; if cycle > 3, reset to 0
 		lsl.w	#3,d0
-		lea	(v_pal_dry+$50).w,a1
-		move.l	(a0,d0.w),(a1)+
-		move.l	4(a0,d0.w),(a1)				; copy palette data to RAM
+		lea	(v_pal_dry_line3+(8*2)).w,a1		; 3rd line, 8 colours in
+		move.l	(a0,d0.w),(a1)+				; copy 2 colours
+		move.l	4(a0,d0.w),(a1)				; copy 2 more colours
 
-PCycGHZ_Skip:
+	@exit:
 		rts	
 ; End of function PCycle_GHZ
 
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
+; ---------------------------------------------------------------------------
+; Labyrinth Zone
+; ---------------------------------------------------------------------------
 PCycle_LZ:
 ; Waterfalls
 		subq.w	#1,(v_palcycle_time).w			; decrement timer
-		bpl.s	PCycLZ_Skip1				; if time remains, branch
+		bpl.s	PCycle_LZ_Conveyor			; if time remains, branch
 
 		move.w	#2,(v_palcycle_time).w			; reset timer to 2 frames
 		move.w	(v_palcycle_num).w,d0
 		addq.w	#1,(v_palcycle_num).w			; increment cycle number
 		andi.w	#3,d0					; if cycle > 3, reset to 0
-		lsl.w	#3,d0
+		lsl.w	#3,d0					; multiply by 8 (i.e. 4 colours)
 		lea	(Pal_LZCyc1).l,a0
 		cmpi.b	#3,(v_act).w				; check if level is SBZ3
-		bne.s	PCycLZ_NotSBZ3
+		bne.s	@not_sbz3
 		lea	(Pal_SBZ3Cyc1).l,a0			; load SBZ3 palette instead
 
-	PCycLZ_NotSBZ3:
-		lea	(v_pal_dry+$56).w,a1
-		move.l	(a0,d0.w),(a1)+
-		move.l	4(a0,d0.w),(a1)
-		lea	(v_pal_water+$56).w,a1
+	@not_sbz3:
+		lea	(v_pal_dry_line3+(11*2)).w,a1		; 3rd line, 11 colours in
+		move.l	(a0,d0.w),(a1)+				; copy 2 colours
+		move.l	4(a0,d0.w),(a1)				; copy 2 more colours
+		lea	(v_pal_water_line3+(11*2)).w,a1		; also do corresponding underwater palette
 		move.l	(a0,d0.w),(a1)+
 		move.l	4(a0,d0.w),(a1)
 
-PCycLZ_Skip1:
+PCycle_LZ_Conveyor:
 ; Conveyor belts
-		move.w	(v_frame_counter).w,d0
-		andi.w	#7,d0
+		move.w	(v_frame_counter).w,d0			; get value that increments every frame
+		andi.w	#7,d0					; read only bits 0-2 for number that is 0-7
 		move.b	PCycLZ_Seq(pc,d0.w),d0			; get byte from palette sequence
-		beq.s	PCycLZ_Skip2				; if byte is 0, branch
-		moveq	#1,d1
+		beq.s	@exit					; if byte is 0, branch
+		moveq	#1,d1					; d1 = 1
 		tst.b	(f_convey_reverse).w			; have conveyor belts been reversed?
-		beq.s	PCycLZ_NoRev				; if not, branch
-		neg.w	d1
+		beq.s	@no_reverse				; if not, branch
+		neg.w	d1					; d1 = -1
 
-	PCycLZ_NoRev:
-		move.w	(v_palcycle_buffer).w,d0
-		andi.w	#3,d0
-		add.w	d1,d0
-		cmpi.w	#3,d0
-		bcs.s	loc_1A0A
+	@no_reverse:
+		move.w	(v_palcycle_buffer).w,d0		; get saved value
+		andi.w	#3,d0					; read bits 0-1
+		add.w	d1,d0					; increment or decrement d0
+		cmpi.w	#3,d0					; is d0 = 0/1/2?
+		bcs.s	@no_wrap				; if yes, branch
 		move.w	d0,d1
-		moveq	#0,d0
-		tst.w	d1
-		bpl.s	loc_1A0A
-		moveq	#2,d0
+		moveq	#0,d0					; if d0 = 3, reset to 0
+		tst.w	d1					; was d0 = -1?
+		bpl.s	@no_wrap				; if not, branch
+		moveq	#2,d0					; if d0 = -1, reset to 2
 
-loc_1A0A:
-		move.w	d0,(v_palcycle_buffer).w
+	@no_wrap:
+		move.w	d0,(v_palcycle_buffer).w		; save updated value
 		add.w	d0,d0
 		move.w	d0,d1
 		add.w	d0,d0
-		add.w	d1,d0
+		add.w	d1,d0					; multiply by 6
 		lea	(Pal_LZCyc2).l,a0
-		lea	(v_pal_dry+$76).w,a1
-		move.l	(a0,d0.w),(a1)+
-		move.w	4(a0,d0.w),(a1)
+		lea	(v_pal_dry_line4+(11*2)).w,a1		; 4th line, 11 colours in
+		move.l	(a0,d0.w),(a1)+				; copy 2 colours
+		move.w	4(a0,d0.w),(a1)				; copy 1 more colour
 		lea	(Pal_LZCyc3).l,a0
-		lea	(v_pal_water+$76).w,a1
+		lea	(v_pal_water_line4+(11*2)).w,a1		; also do corresponding underwater palette
 		move.l	(a0,d0.w),(a1)+
 		move.w	4(a0,d0.w),(a1)
 
-PCycLZ_Skip2:
+@exit:
 		rts	
 ; End of function PCycle_LZ
 
-; ===========================================================================
 PCycLZ_Seq:	dc.b 1,	0, 0, 1, 0, 0, 1, 0
-; ===========================================================================
 
+; ---------------------------------------------------------------------------
+; Marble Zone
+; ---------------------------------------------------------------------------
 PCycle_MZ:
 		rts	
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
+; ---------------------------------------------------------------------------
+; Star Light Zone
+; ---------------------------------------------------------------------------
 PalCycle_SLZ:
-		subq.w	#1,(v_palcycle_time).w
-		bpl.s	locret_1A80
-		move.w	#7,(v_palcycle_time).w
-		move.w	(v_palcycle_num).w,d0
-		addq.w	#1,d0
-		cmpi.w	#6,d0
-		bcs.s	loc_1A60
-		moveq	#0,d0
+		subq.w	#1,(v_palcycle_time).w			; decrement timer
+		bpl.s	@exit					; if time remains, branch
 
-loc_1A60:
-		move.w	d0,(v_palcycle_num).w
+		move.w	#7,(v_palcycle_time).w			; reset timer to 7 frames
+		move.w	(v_palcycle_num).w,d0			; get cycle number
+		addq.w	#1,d0					; increment
+		cmpi.w	#6,d0					; is d0 less than 6?
+		bcs.s	@no_reset				; if yes, branch
+		moveq	#0,d0					; reset to 0
+
+	@no_reset:
+		move.w	d0,(v_palcycle_num).w			; update cycle number
 		move.w	d0,d1
 		add.w	d1,d1
 		add.w	d1,d0
-		add.w	d0,d0
+		add.w	d0,d0					; multiply by 6
 		lea	(Pal_SLZCyc).l,a0
-		lea	(v_pal_dry+$56).w,a1
-		move.w	(a0,d0.w),(a1)
-		move.l	2(a0,d0.w),4(a1)
+		lea	(v_pal_dry_line3+(11*2)).w,a1		; 3rd line, 11 colours in
+		move.w	(a0,d0.w),(a1)				; copy 1 colour
+		move.l	2(a0,d0.w),4(a1)			; copy 2 more colours
 
-locret_1A80:
+@exit:
 		rts	
 ; End of function PalCycle_SLZ
 
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
+; ---------------------------------------------------------------------------
+; Spring Yard Zone
+; ---------------------------------------------------------------------------
 PalCycle_SYZ:
-		subq.w	#1,(v_palcycle_time).w
-		bpl.s	locret_1AC6
-		move.w	#5,(v_palcycle_time).w
-		move.w	(v_palcycle_num).w,d0
-		addq.w	#1,(v_palcycle_num).w
-		andi.w	#3,d0
-		lsl.w	#2,d0
-		move.w	d0,d1
-		add.w	d0,d0
-		lea	(Pal_SYZCyc1).l,a0
-		lea	(v_pal_dry+$6E).w,a1
-		move.l	(a0,d0.w),(a1)+
-		move.l	4(a0,d0.w),(a1)
-		lea	(Pal_SYZCyc2).l,a0
-		lea	(v_pal_dry+$76).w,a1
-		move.w	(a0,d1.w),(a1)
-		move.w	2(a0,d1.w),4(a1)
+		subq.w	#1,(v_palcycle_time).w			; decrement timer
+		bpl.s	@exit					; if time remains, branch
 
-locret_1AC6:
+		move.w	#5,(v_palcycle_time).w			; reset timer to 5 frames
+		move.w	(v_palcycle_num).w,d0			; get cycle number
+		addq.w	#1,(v_palcycle_num).w			; increment cycle number
+		andi.w	#3,d0					; read bits 0-1
+		lsl.w	#2,d0					; multiply by 4 (2 colours)
+		move.w	d0,d1
+		add.w	d0,d0					; multiply by 8 (4 colours)
+		lea	(Pal_SYZCyc1).l,a0
+		lea	(v_pal_dry_line4+(7*2)).w,a1		; 4th line, 7 colours in
+		move.l	(a0,d0.w),(a1)+				; copy 2 colours
+		move.l	4(a0,d0.w),(a1)				; copy 2 more colours
+		lea	(Pal_SYZCyc2).l,a0
+		lea	(v_pal_dry_line4+(11*2)).w,a1		; 4th line, 11 colours in
+		move.w	(a0,d1.w),(a1)				; copy 1 colour
+		move.w	2(a0,d1.w),4(a1)			; copy 1 more colour, with a gap of 1 colour after the 1st
+
+@exit:
 		rts	
 ; End of function PalCycle_SYZ
 
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
+; ---------------------------------------------------------------------------
+; Scrap Brain Zone
+; ---------------------------------------------------------------------------
 PalCycle_SBZ:
-		lea	(Pal_SBZCycList1).l,a2
-		tst.b	(v_act).w
-		beq.s	loc_1ADA
-		lea	(Pal_SBZCycList2).l,a2
+		lea	(Pal_SBZCycList_Act1).l,a2
+		tst.b	(v_act).w				; is this act 1?
+		beq.s	@is_act1				; if yes, branch
+		lea	(Pal_SBZCycList_Act2).l,a2
 
-loc_1ADA:
+	@is_act1:
 		lea	(v_palcycle_buffer).w,a1
-		move.w	(a2)+,d1
+		move.w	(a2)+,d1				; get number of palette scripts minus 1
 
-loc_1AE0:
-		subq.b	#1,(a1)
-		bmi.s	loc_1AEA
-		addq.l	#2,a1
-		addq.l	#6,a2
-		bra.s	loc_1B06
+@loop_scripts:
+		subq.b	#1,(a1)					; decrement timer
+		bmi.s	@run_script				; branch if less than 0
+		addq.l	#2,a1					; jump to next timer
+		addq.l	#6,a2					; jump to next script
+		bra.s	@next
 ; ===========================================================================
 
-loc_1AEA:
-		move.b	(a2)+,(a1)+
-		move.b	(a1),d0
-		addq.b	#1,d0
-		cmp.b	(a2)+,d0
-		bcs.s	loc_1AF6
-		moveq	#0,d0
+@run_script:
+		move.b	(a2)+,(a1)+				; reset timer
+		move.b	(a1),d0					; get cycle number
+		addq.b	#1,d0					; increment
+		cmp.b	(a2)+,d0				; compare with max value from script
+		bcs.s	@no_wrap				; branch if less than max
+		moveq	#0,d0					; reset to 0
 
-loc_1AF6:
-		move.b	d0,(a1)+
+	@no_wrap:
+		move.b	d0,(a1)+				; update cycle number
 		andi.w	#$F,d0
-		add.w	d0,d0
-		movea.w	(a2)+,a0
-		movea.w	(a2)+,a3
-		move.w	(a0,d0.w),(a3)
+		add.w	d0,d0					; multiply by 2 (1 colour)
+		movea.w	(a2)+,a0				; set address of source data
+		movea.w	(a2)+,a3				; set address of target palette
+		move.w	(a0,d0.w),(a3)				; copy 1 colour
 
-loc_1B06:
-		dbf	d1,loc_1AE0
-		subq.w	#1,(v_palcycle_time).w
-		bpl.s	locret_1B64
+@next:
+		dbf	d1,@loop_scripts
+
+; Conveyor belts
+		subq.w	#1,(v_palcycle_time).w			; decrement timer
+		bpl.s	@exit					; if time remains, branch
+
 		lea	(Pal_SBZCyc4).l,a0
-		move.w	#1,(v_palcycle_time).w
-		tst.b	(v_act).w
-		beq.s	loc_1B2E
+		move.w	#1,(v_palcycle_time).w			; reset timer to 1 frame
+		tst.b	(v_act).w				; is this act 1?
+		beq.s	@is_act1_again				; if yes, branch
 		lea	(Pal_SBZCyc10).l,a0
-		move.w	#0,(v_palcycle_time).w
+		move.w	#0,(v_palcycle_time).w			; reset timer to 0 frames (palette updates every frame)
 
-loc_1B2E:
+	@is_act1_again:
 		moveq	#-1,d1
-		tst.b	(f_convey_reverse).w
-		beq.s	loc_1B38
-		neg.w	d1
+		tst.b	(f_convey_reverse).w			; have conveyor belts been reversed?
+		beq.s	@no_reverse				; if not, branch
+		neg.w	d1					; d1 = 1
 
-loc_1B38:
-		move.w	(v_palcycle_num).w,d0
-		andi.w	#3,d0
-		add.w	d1,d0
-		cmpi.w	#3,d0
-		bcs.s	loc_1B52
+	@no_reverse:
+		move.w	(v_palcycle_num).w,d0			; get cycle number
+		andi.w	#3,d0					; read bits 0-1
+		add.w	d1,d0					; increment or decrement d0
+		cmpi.w	#3,d0					; is d0 = 0/1/2?
+		bcs.s	@no_wrap_again				; if yes, branch
 		move.w	d0,d1
-		moveq	#0,d0
-		tst.w	d1
-		bpl.s	loc_1B52
-		moveq	#2,d0
+		moveq	#0,d0					; if d0 = 3, reset to 0
+		tst.w	d1					; was d0 = -1?
+		bpl.s	@no_wrap_again				; if not, branch
+		moveq	#2,d0					; if d0 = -1, reset to 2
 
-loc_1B52:
-		move.w	d0,(v_palcycle_num).w
-		add.w	d0,d0
-		lea	(v_pal_dry+$58).w,a1
-		move.l	(a0,d0.w),(a1)+
-		move.w	4(a0,d0.w),(a1)
+	@no_wrap_again:
+		move.w	d0,(v_palcycle_num).w			; update cycle number
+		add.w	d0,d0					; multiply by 2 (1 colour offset)
+		lea	(v_pal_dry_line3+(12*2)).w,a1		; 3rd line, 12 colours in
+		move.l	(a0,d0.w),(a1)+				; copy 2 colours
+		move.w	4(a0,d0.w),(a1)				; copy 1 more colour
 
-locret_1B64:
+@exit:
 		rts	
 ; End of function PalCycle_SBZ
+
+; ---------------------------------------------------------------------------
+; Scrap Brain Zone palette cycling script
+; ---------------------------------------------------------------------------
+mSBZp:		macro time,length,paladdress,ramaddress
+		dc.b time, length
+		dc.w paladdress, ramaddress
+		endm
+
+; time between updates in frames, length of sequence, palette address, RAM address
+
+include_Pal_SBZCycList:	macro
+Pal_SBZCycList_Act1:
+		dc.w ((@end-Pal_SBZCycList_Act1-2)/6)-1
+		mSBZp	7,8,Pal_SBZCyc1,v_pal_dry+$50
+		mSBZp	$D,8,Pal_SBZCyc2,v_pal_dry+$52
+		mSBZp	$E,8,Pal_SBZCyc3,v_pal_dry+$6E
+		mSBZp	$B,8,Pal_SBZCyc5,v_pal_dry+$70
+		mSBZp	7,8,Pal_SBZCyc6,v_pal_dry+$72
+		mSBZp	$1C,$10,Pal_SBZCyc7,v_pal_dry+$7E
+		mSBZp	3,3,Pal_SBZCyc8,v_pal_dry+$78
+		mSBZp	3,3,Pal_SBZCyc8+2,v_pal_dry+$7A
+		mSBZp	3,3,Pal_SBZCyc8+4,v_pal_dry+$7C
+	@end:
+		even
+
+Pal_SBZCycList_Act2:
+		dc.w ((@end-Pal_SBZCycList_Act2-2)/6)-1
+		mSBZp	7,8,Pal_SBZCyc1,v_pal_dry+$50
+		mSBZp	$D,8,Pal_SBZCyc2,v_pal_dry+$52
+		mSBZp	9,8,Pal_SBZCyc9,v_pal_dry+$70
+		mSBZp	7,8,Pal_SBZCyc6,v_pal_dry+$72
+		mSBZp	3,3,Pal_SBZCyc8,v_pal_dry+$78
+		mSBZp	3,3,Pal_SBZCyc8+2,v_pal_dry+$7A
+		mSBZp	3,3,Pal_SBZCyc8+4,v_pal_dry+$7C
+	@end:
+		even
+		endm

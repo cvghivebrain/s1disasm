@@ -1,4 +1,21 @@
 ; ---------------------------------------------------------------------------
+; Music playlist
+; ---------------------------------------------------------------------------
+MusicList:
+include_MusicList:	macro
+		dc.b mus_GHZ					; GHZ
+		dc.b mus_LZ					; LZ
+		dc.b mus_MZ					; MZ
+		dc.b mus_SLZ					; SLZ
+		dc.b mus_SYZ					; SYZ
+		dc.b mus_SBZ					; SBZ
+		endm
+		include_MusicList
+		zonewarning MusicList,1
+		dc.b mus_FZ					; Ending/FZ
+		even
+
+; ---------------------------------------------------------------------------
 ; Level
 ; ---------------------------------------------------------------------------
 
@@ -151,7 +168,7 @@ Level_TtlCardLoop:
 Level_Skip_TtlCard:
 		moveq	#id_Pal_Sonic,d0
 		bsr.w	PalLoad_Next				; load Sonic's palette
-		bsr.w	LevelParameterLoad				; load level boundaries and start positions
+		bsr.w	LevelParameterLoad			; load level boundaries and start positions
 		bsr.w	DeformLayers
 		bset	#redraw_left_bit,(v_fg_redraw_direction).w
 		bsr.w	LevelDataLoad				; load block mappings and palettes

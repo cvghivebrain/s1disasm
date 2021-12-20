@@ -721,7 +721,10 @@ VDPSetupArray:	dc.w $8004					; normal colour mode
 		include "Includes\Enigma Decompression.asm"
 		include "Includes\Kosinski Decompression.asm"
 
-PaletteCycle:	include "Includes\PaletteCycle.asm"
+; ---------------------------------------------------------------------------
+; Palette data & routines
+; ---------------------------------------------------------------------------
+		include "Includes\PaletteCycle.asm"
 Pal_TitleCyc:	incbin	"Palettes\Cycle - Title Screen Water.bin"
 Pal_GHZCyc:	incbin	"Palettes\Cycle - GHZ.bin"
 Pal_LZCyc1:	incbin	"Palettes\Cycle - LZ Waterfall.bin"
@@ -731,44 +734,7 @@ Pal_SBZ3Cyc1:	incbin	"Palettes\Cycle - SBZ3 Waterfall.bin"
 Pal_SLZCyc:	incbin	"Palettes\Cycle - SLZ.bin"
 Pal_SYZCyc1:	incbin	"Palettes\Cycle - SYZ1.bin"
 Pal_SYZCyc2:	incbin	"Palettes\Cycle - SYZ2.bin"
-
-; ---------------------------------------------------------------------------
-; Scrap Brain Zone palette cycling script
-; ---------------------------------------------------------------------------
-
-mSBZp:	macro duration,colours,paladdress,ramaddress
-	dc.b duration, colours
-	dc.w paladdress, ramaddress
-	endm
-
-; duration in frames, number of colours, palette address, RAM address
-
-Pal_SBZCycList1:
-	dc.w ((end_SBZCycList1-Pal_SBZCycList1-2)/6)-1
-	mSBZp	7,8,Pal_SBZCyc1,v_pal_dry+$50
-	mSBZp	$D,8,Pal_SBZCyc2,v_pal_dry+$52
-	mSBZp	$E,8,Pal_SBZCyc3,v_pal_dry+$6E
-	mSBZp	$B,8,Pal_SBZCyc5,v_pal_dry+$70
-	mSBZp	7,8,Pal_SBZCyc6,v_pal_dry+$72
-	mSBZp	$1C,$10,Pal_SBZCyc7,v_pal_dry+$7E
-	mSBZp	3,3,Pal_SBZCyc8,v_pal_dry+$78
-	mSBZp	3,3,Pal_SBZCyc8+2,v_pal_dry+$7A
-	mSBZp	3,3,Pal_SBZCyc8+4,v_pal_dry+$7C
-end_SBZCycList1:
-	even
-
-Pal_SBZCycList2:
-	dc.w ((end_SBZCycList2-Pal_SBZCycList2-2)/6)-1
-	mSBZp	7,8,Pal_SBZCyc1,v_pal_dry+$50
-	mSBZp	$D,8,Pal_SBZCyc2,v_pal_dry+$52
-	mSBZp	9,8,Pal_SBZCyc9,v_pal_dry+$70
-	mSBZp	7,8,Pal_SBZCyc6,v_pal_dry+$72
-	mSBZp	3,3,Pal_SBZCyc8,v_pal_dry+$78
-	mSBZp	3,3,Pal_SBZCyc8+2,v_pal_dry+$7A
-	mSBZp	3,3,Pal_SBZCyc8+4,v_pal_dry+$7C
-end_SBZCycList2:
-	even
-
+		include_Pal_SBZCycList				; "Includes\PaletteCycle.asm"
 Pal_SBZCyc1:	incbin	"Palettes\Cycle - SBZ 1.bin"
 Pal_SBZCyc2:	incbin	"Palettes\Cycle - SBZ 2.bin"
 Pal_SBZCyc3:	incbin	"Palettes\Cycle - SBZ 3.bin"
@@ -779,18 +745,11 @@ Pal_SBZCyc7:	incbin	"Palettes\Cycle - SBZ 7.bin"
 Pal_SBZCyc8:	incbin	"Palettes\Cycle - SBZ 8.bin"
 Pal_SBZCyc9:	incbin	"Palettes\Cycle - SBZ 9.bin"
 Pal_SBZCyc10:	incbin	"Palettes\Cycle - SBZ 10.bin"
-
 		include	"Includes\PaletteFadeIn, PaletteFadeOut, PaletteWhiteIn & PaletteWhiteOut.asm"
 		include	"Includes\GM_Sega.asm"
 Pal_Sega1:	incbin	"Palettes\Sega1.bin"
 Pal_Sega2:	incbin	"Palettes\Sega2.bin"
-
 		include "Includes\PalLoad & PalPointers.asm"
-
-; ---------------------------------------------------------------------------
-; Palette data
-; ---------------------------------------------------------------------------
-
 Pal_SegaBG:	incbin	"Palettes\Sega Background.bin"
 Pal_Title:	incbin	"Palettes\Title Screen.bin"
 Pal_LevelSel:	incbin	"Palettes\Level Select.bin"
@@ -818,21 +777,6 @@ Pal_Ending:	incbin	"Palettes\Ending.bin"
 
 		include_Sega					; "Includes\GM_Sega.asm"
 		include "Includes\GM_Title.asm"
-
-; ---------------------------------------------------------------------------
-; Music playlist
-; ---------------------------------------------------------------------------
-MusicList:
-		dc.b mus_GHZ					; GHZ
-		dc.b mus_LZ					; LZ
-		dc.b mus_MZ					; MZ
-		dc.b mus_SLZ					; SLZ
-		dc.b mus_SYZ					; SYZ
-		dc.b mus_SBZ					; SBZ
-		zonewarning MusicList,1
-		dc.b mus_FZ					; Ending
-		even
-; ===========================================================================
 
 		include "Includes\GM_Level.asm"
 		include "Includes\LZWaterFeatures.asm"

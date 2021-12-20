@@ -274,7 +274,15 @@ v_sprite_buffer:		equ $FFFFF800 ; sprite table ($280 bytes, last $80 bytes are o
 				rsset $FFFFFA00
 v_pal_water_next:		rs.w countof_color*4 ; $FFFFFA00 ; target underwater palette, used for transitions
 v_pal_water:			rs.w countof_color*4 ; $FFFFFA80 ; main underwater palette
+v_pal_water_line1:		equ v_pal_water
+v_pal_water_line2:		equ v_pal_water+sizeof_pal ; $FFFFFAA0 ; 2nd palette line
+v_pal_water_line3:		equ v_pal_water+(sizeof_pal*2) ; $FFFFFAC0 ; 3rd palette line
+v_pal_water_line4:		equ v_pal_water+(sizeof_pal*3) ; $FFFFFAE0 ; 4th palette line
 v_pal_dry:			rs.w countof_color*4 ; $FFFFFB00 ; main palette
+v_pal_dry_line1:		equ v_pal_dry
+v_pal_dry_line2:		equ v_pal_dry+sizeof_pal ; $FFFFFB20 ; 2nd palette line
+v_pal_dry_line3:		equ v_pal_dry+(sizeof_pal*2) ; $FFFFFB40 ; 3rd palette line
+v_pal_dry_line4:		equ v_pal_dry+(sizeof_pal*3) ; $FFFFFB60 ; 4th palette line
 v_pal_dry_next:			rs.w countof_color*4 ; $FFFFFB80 ; target palette, used for transitions
 v_respawn_list:			rs.w $100 ; $FFFFFC00 ; object state list
 

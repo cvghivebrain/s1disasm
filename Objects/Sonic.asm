@@ -92,12 +92,7 @@ Sonic_Modes:	index *,,2
 ; Music	to play	after invincibility wears off
 ; ---------------------------------------------------------------------------
 MusicList2:
-		dc.b mus_GHZ
-		dc.b mus_LZ
-		dc.b mus_MZ
-		dc.b mus_SLZ
-		dc.b mus_SYZ
-		dc.b mus_SBZ
+		include_MusicList				; see "Includes\GM_Level.asm"
 		zonewarning MusicList2,1
 		; The ending doesn't get an entry
 		even
