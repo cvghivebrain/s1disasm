@@ -1264,7 +1264,7 @@ add:		macro
 			endc
 
 								; "add a, x" or "add x"
-			if narg=2 & strcmp("\1","a")
+			if (narg=2) & strcmp("\1","a")
 				shift				; ignore a
 			endc
 
@@ -1301,7 +1301,7 @@ and:		macro
 		local num
 		if cpu_mode=1					; Z80
 			if instr("a b c d e h l (hl) ","\1\ ")
-			getzreg	\2
+			getzreg	\1
 			dc.b $a0+zreg
 			elseif strcmp("\1","ixh")
 			dc.w $dda4
@@ -1375,7 +1375,7 @@ sub:		macro
 		local num
 		if cpu_mode=1					; Z80
 			if instr("a b c d e h l (hl) ","\1\ ")
-			getzreg	\2
+			getzreg	\1
 			dc.b $90+zreg
 			elseif strcmp("\1","ixh")
 			dc.w $dd94
