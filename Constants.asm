@@ -37,6 +37,12 @@ vram_animal1:	equ $B000	; animal graphics
 vram_animal2:	equ $B240	; animal graphics
 vram_credits:	equ $B400	; credits font graphics
 
+vram_title:		equ $4000	; main title screen graphics
+vram_title_sonic:	equ $6000	; Sonic title screen graphics
+vram_title_tm:		equ $A200	; "TM" graphics
+vram_text:		equ $D000	; level select text graphics
+vram_error:		equ $F800	; error text graphics
+
 sizeof_cell:		equ $20
 sizeof_vram_fg:		equ sizeof_vram_row*32	; fg nametable, assuming 64x32 ($1000 bytes)
 sizeof_vram_bg:		equ sizeof_vram_row*32	; bg nametable, assuming 64x32 ($1000 bytes)

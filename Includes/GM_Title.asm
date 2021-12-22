@@ -56,11 +56,6 @@ GM_Title:
 		bsr.w	PaletteFadeIn
 		disable_ints
 
-vram_title:		equ $4000
-vram_title_sonic:	equ $6000
-vram_title_tm:		equ $A200
-vram_text:		equ $D000
-
 		locVRAM	vram_title
 		lea	(Nem_TitleFg).l,a0			; load title screen patterns
 		bsr.w	NemDec
