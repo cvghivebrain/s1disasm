@@ -11,12 +11,9 @@
 ;	d4 = collision type: 1 = side collision; -1 = top/bottom collision
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
 SolidObject:
 		tst.b	ost_solid(a0)				; is Sonic standing on the object?
-		beq.w	Solid_ChkEnter				; if not, branch
+		beq.w	Solid_ChkCollision				; if not, branch
 		move.w	d1,d2
 		add.w	d2,d2
 		lea	(v_ost_player).w,a1
@@ -40,12 +37,15 @@ SolidObject:
 		move.w	d4,d2
 		bsr.w	MoveWithPlatform
 		moveq	#0,d4
-		rts	
-; ===========================================================================
+		rts
 
-SolidObject71:
+; ---------------------------------------------------------------------------
+; As above, but the object's on-screen status is not checked
+; ---------------------------------------------------------------------------
+
+SolidObject_NoRenderChk:
 		tst.b	ost_solid(a0)
-		beq.w	Solid_ChkEnter2
+		beq.w	Solid_SkipRenderChk
 		move.w	d1,d2
 		add.w	d2,d2
 		lea	(v_ost_player).w,a1
@@ -70,20 +70,32 @@ SolidObject71:
 		bsr.w	MoveWithPlatform
 		moveq	#0,d4
 		rts	
-; ===========================================================================
 
-SolidObject2F:
+; ---------------------------------------------------------------------------
+; Solid	object with heightmap subroutine (MZ grass platforms)
+;
+; input:
+;	d1 = width
+;	d2 = height / 2
+;	a2 = address of heightmap data
+;
+; output:
+;	d4 = collision type: 1 = side collision; -1 = top/bottom collision
+; ---------------------------------------------------------------------------
+
+SolidObject_Heightmap:
 		lea	(v_ost_player).w,a1
-		tst.b	ost_render(a0)
-		bpl.w	Solid_Ignore
+		tst.b	ost_render(a0)				; is object onscreen?
+		bpl.w	Solid_Ignore				; if not, branch
 		move.w	ost_x_pos(a1),d0
-		sub.w	ost_x_pos(a0),d0
-		add.w	d1,d0
-		bmi.w	Solid_Ignore
+		sub.w	ost_x_pos(a0),d0			; d0: +ve if Sonic is right; -ve if Sonic is left
+		add.w	d1,d0					; add width of object
+		bmi.w	Solid_Ignore				; branch if Sonic is outside left boundary
 		move.w	d1,d3
 		add.w	d3,d3
 		cmp.w	d3,d0
-		bhi.w	Solid_Ignore
+		bhi.w	Solid_Ignore				; branch if Sonic is outside right boundary
+
 		move.w	d0,d5
 		btst	#render_xflip_bit,ost_render(a0)	; is object horizontally flipped?
 		beq.s	@notflipped				; if not, branch
@@ -93,7 +105,7 @@ SolidObject2F:
 	@notflipped:
 		lsr.w	#1,d5
 		moveq	#0,d3
-		move.b	(a2,d5.w),d3
+		move.b	(a2,d5.w),d3				; get heightmap value based on Sonic's position on platform
 		sub.b	(a2),d3
 		move.w	ost_y_pos(a0),d5
 		sub.w	d3,d5
@@ -109,14 +121,14 @@ SolidObject2F:
 		add.w	d4,d4
 		cmp.w	d4,d3
 		bcc.w	Solid_Ignore
-		bra.w	loc_FB0E
+		bra.w	Solid_Collision
 ; ===========================================================================
 
-Solid_ChkEnter:
+Solid_ChkCollision:
 		tst.b	ost_render(a0)				; is object onscreen?
 		bpl.w	Solid_Ignore				; if not, branch
 
-Solid_ChkEnter2:
+Solid_SkipRenderChk:
 		lea	(v_ost_player).w,a1
 		move.w	ost_x_pos(a1),d0
 		sub.w	ost_x_pos(a0),d0			; d0: +ve if Sonic is right; -ve if Sonic is left
@@ -140,7 +152,7 @@ Solid_ChkEnter2:
 		cmp.w	d4,d3
 		bcc.w	Solid_Ignore				; branch if Sonic is outside lower boundary
 
-loc_FB0E:
+Solid_Collision:
 		tst.b	(v_lock_multi).w			; are controls locked?
 		bmi.w	Solid_Ignore				; if yes, branch
 		cmpi.b	#id_Sonic_Death,(v_ost_player+ost_routine).w ; is Sonic dying?
@@ -280,9 +292,10 @@ Solid_Miss:
 		rts	
 ; End of function SolidObject
 
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
+; ---------------------------------------------------------------------------
+; Subroutine to reset platform flags and store the OST index of the object
+; being stood on
+; ---------------------------------------------------------------------------
 
 Solid_ResetFloor:
 		btst	#status_platform_bit,ost_status(a1)	; is Sonic standing on something?

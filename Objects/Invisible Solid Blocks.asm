@@ -40,7 +40,7 @@ Invis_Solid:	; Routine 2
 		move.w	d2,d3
 		addq.w	#1,d3
 		move.w	ost_x_pos(a0),d4
-		bsr.w	SolidObject71
+		bsr.w	SolidObject_NoRenderChk
 
 @chkdel:
 		out_of_range.s	@delete

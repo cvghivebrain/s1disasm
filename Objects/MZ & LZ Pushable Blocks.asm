@@ -300,7 +300,7 @@ loc_C1F2:
 ; ===========================================================================
 
 loc_C218:
-		bsr.w	Solid_ChkEnter
+		bsr.w	Solid_ChkCollision
 		tst.w	d4
 		beq.w	locret_C2E4
 		bmi.w	locret_C2E4

@@ -87,7 +87,7 @@ LGrass_Solid:
 
 loc_AF8E:
 		movea.l	ost_grass_coll_ptr(a0),a2
-		bsr.w	SolidObject2F
+		bsr.w	SolidObject_Heightmap
 
 LGrass_Display:
 		bsr.w	DisplaySprite

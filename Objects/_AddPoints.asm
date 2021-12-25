@@ -5,9 +5,6 @@
 ;	d0 = points to add (appears as *10 larger on the HUD)
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
 AddPoints:
 		move.b	#1,(f_hud_score_update).w		; set score counter to update
 

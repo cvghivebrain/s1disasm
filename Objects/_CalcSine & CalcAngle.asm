@@ -9,9 +9,6 @@
 ;	d1 = cosine
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
 CalcSine:
 		andi.w	#$FF,d0					; read low byte of angle only
 		add.w	d0,d0
@@ -21,10 +18,6 @@ CalcSine:
 		move.w	Sine_Data(pc,d0.w),d0			; get sine
 		rts	
 ; End of function CalcSine
-
-Sine_Data:
-		incbin	"Misc Data\Sine & Cosine Waves.bin"	; values for a 256 degree sine wave
-		incbin	"Misc Data\Sine & Cosine Waves.bin",, $80 ; contains duplicate data at the end!
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to calculate the square root of a number (0 to $FFFF)
@@ -36,38 +29,37 @@ Sine_Data:
 ;	d0 = square root of number
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
+include_CalcAngle:	macro
 
 		if Revision=0
 CalcSqrt:
-		movem.l	d1-d2,-(sp)
-		move.w	d0,d1
-		swap	d1
-		moveq	#0,d0
-		move.w	d0,d1
-		moveq	#7,d2
+			movem.l	d1-d2,-(sp)
+			move.w	d0,d1
+			swap	d1
+			moveq	#0,d0
+			move.w	d0,d1
+			moveq	#7,d2
 
 	loc_2C80:
-		rol.l	#2,d1
-		add.w	d0,d0
-		addq.w	#1,d0
-		sub.w	d0,d1
-		bcc.s	loc_2C9A
-		add.w	d0,d1
-		subq.w	#1,d0
-		dbf	d2,loc_2C80
-		lsr.w	#1,d0
-		movem.l	(sp)+,d1-d2
-		rts	
+			rol.l	#2,d1
+			add.w	d0,d0
+			addq.w	#1,d0
+			sub.w	d0,d1
+			bcc.s	loc_2C9A
+			add.w	d0,d1
+			subq.w	#1,d0
+			dbf	d2,loc_2C80
+			lsr.w	#1,d0
+			movem.l	(sp)+,d1-d2
+			rts	
 ; ===========================================================================
 
 	loc_2C9A:
-		addq.w	#1,d0
-		dbf	d2,loc_2C80
-		lsr.w	#1,d0
-		movem.l	(sp)+,d1-d2
-		rts
+			addq.w	#1,d0
+			dbf	d2,loc_2C80
+			lsr.w	#1,d0
+			movem.l	(sp)+,d1-d2
+			rts
 		endc
 ; End of function CalcSqrt
 
@@ -81,9 +73,6 @@ CalcSqrt:
 ; output:
 ;	d0 = angle
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 CalcAngle:
 		movem.l	d3-d4,-(sp)
@@ -142,4 +131,4 @@ CalcAngle_Both0:
 		rts	
 ; End of function CalcAngle
 
-Angle_Data:	incbin	"Misc Data\Angle Table.bin"
+		endm

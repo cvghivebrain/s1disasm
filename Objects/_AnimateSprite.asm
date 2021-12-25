@@ -1,11 +1,9 @@
 ; ---------------------------------------------------------------------------
 ; Subroutine to	animate	a sprite using an animation script
 ;
-; input: a1 = animation script
+; input:
+;	a1 = animation script
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 AnimateSprite:
 		moveq	#0,d0

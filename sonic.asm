@@ -603,6 +603,10 @@ Pal_Ending:	incbin	"Palettes\Ending.bin"
 		include "Includes\WaitForVBlank.asm"
 		include "Objects\_RandomNumber.asm"
 		include "Objects\_CalcSine & CalcAngle.asm"
+Sine_Data:	incbin	"Misc Data\Sine & Cosine Waves.bin"	; values for a 256 degree sine wave
+		incbin	"Misc Data\Sine & Cosine Waves.bin",,$80 ; contains duplicate data at the end!
+		include_CalcAngle				; "Objects\_CalcSine & CalcAngle.asm"
+Angle_Data:	incbin	"Misc Data\Angle Table.bin"
 
 		include_Sega					; "Includes\GM_Sega.asm"
 		include "Includes\GM_Title.asm"

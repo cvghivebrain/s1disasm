@@ -5,9 +5,6 @@
 ;	d0 = flag set if object is off screen
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
 CheckOffScreen:
 		move.w	ost_x_pos(a0),d0			; get object x position
 		sub.w	(v_camera_x_pos).w,d0			; subtract screen x position
@@ -36,9 +33,6 @@ CheckOffScreen:
 ; output:
 ;	d0 = flag set if object is off screen
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 CheckOffScreen_Wide:
 		moveq	#0,d1
