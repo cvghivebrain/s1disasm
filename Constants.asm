@@ -25,6 +25,7 @@ draw_bg:	equ $4000+(vram_bg-draw_base)	; VRAM write command + bg nametable addre
 
 vram_crabmeat:	equ $8000	; crabmeat graphics
 vram_bomb:	equ $8000	; bomb enemy graphics
+vram_giantring:	equ $8000	; giant ring graphics
 vram_orbinaut:	equ $8520	; orbinaut graphics
 vram_buzz:	equ $8880	; buzz bomber graphics
 vram_yadrin:	equ $8F60	; yadrin graphics
@@ -53,6 +54,7 @@ sizeof_vram_hscroll_padded:	equ $400
 sizeof_vram_row:	equ 64*2		; single row of fg/bg nametable, assuming 64 wide
 sizeof_art_text:	equ filesize("Graphics\Level Select & Debug Text.bin")
 sizeof_art_flowers:	equ filesize("Graphics - Compressed\Ending Flowers.unc")
+sizeof_art_giantring:	equ filesize("Graphics\Giant Ring.bin")
 
 countof_color:		equ 16				; colours per palette line
 countof_colour:		equ countof_color

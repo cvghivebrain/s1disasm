@@ -56,8 +56,11 @@ Anml_EndMap:	dc.l Map_Animal2, Map_Animal2, Map_Animal2, Map_Animal1, Map_Animal
 		dc.l Map_Animal1, Map_Animal1, Map_Animal2, Map_Animal3, Map_Animal2
 		dc.l Map_Animal3
 
-Anml_EndVram:	dc.w $5A5, $5A5, $5A5, $553, $553, $573, $573, $585, $593
-		dc.w $565, $5B3
+Anml_EndVram:	dc.w tile_Nem_Flicky_End, tile_Nem_Flicky_End, tile_Nem_Flicky_End
+		dc.w tile_Nem_Rabbit_End, tile_Nem_Rabbit_End
+		dc.w tile_Nem_BlackBird_End, tile_Nem_BlackBird_End
+		dc.w tile_Nem_Seal_End, tile_Nem_Pig_End
+		dc.w tile_Nem_Chicken_End, tile_Nem_Squirrel_End
 
 ost_animal_direction:	equ $29					; animal goes left/right
 ost_animal_type:	equ $30					; type of animal (0-$B)

@@ -576,19 +576,19 @@ AniArt_GiantRing:
 
 @size:		equ 14
 
-		tst.w	(v_giantring_gfx_offset).w		; Is there any of the art left to load?
-		bne.s	@loadTiles				; If so, get to work
+		tst.w	(v_giantring_gfx_offset).w		; is there any of the art left to load?
+		bne.s	@loadTiles				; if so, get to work
 		rts	
 ; ===========================================================================
 ; loc_1C518:
 @loadTiles:
-		subi.w	#@size*$20,(v_giantring_gfx_offset).w	; Count down the 14 tiles we're going to load now
-		lea	(Art_BigRing).l,a1			; load giant	ring patterns
+		subi.w	#@size*sizeof_cell,(v_giantring_gfx_offset).w ; count down the 14 tiles we're going to load now
+		lea	(Art_BigRing).l,a1			; load giant ring patterns
 		moveq	#0,d0
 		move.w	(v_giantring_gfx_offset).w,d0
 		lea	(a1,d0.w),a1
 		; Turn VRAM address into VDP command
-		addi.w	#$8000,d0
+		addi.w	#vram_giantring,d0
 		lsl.l	#2,d0
 		lsr.w	#2,d0
 		ori.w	#$4000,d0

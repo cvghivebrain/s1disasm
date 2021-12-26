@@ -228,14 +228,14 @@ Debug_GetFrame:
 ; ---------------------------------------------------------------------------
 
 DebugList:	index *
-		ptr @GHZ
-		ptr @LZ
-		ptr @MZ
-		ptr @SLZ
-		ptr @SYZ
-		ptr @SBZ
+		ptr DebugList_GHZ
+		ptr DebugList_LZ
+		ptr DebugList_MZ
+		ptr DebugList_SLZ
+		ptr DebugList_SYZ
+		ptr DebugList_SBZ
 		zonewarning DebugList,2
-		ptr @Ending
+		ptr DebugList_Ending
 
 dbug:		macro map,object,subtype,frame,vram
 		dc.l map+(id_\object<<24)
@@ -243,8 +243,8 @@ dbug:		macro map,object,subtype,frame,vram
 		dc.w vram
 		endm
 
-@GHZ:
-		dc.w (@GHZend-@GHZ-2)/8
+DebugList_GHZ:
+		dc.w (DebugList_GHZ_end-DebugList_GHZ-2)/8
 
 ;			mappings	object		subtype	frame	VRAM setting
 		dbug 	Map_Ring,	Rings,		0,	0,	tile_Nem_Ring+tile_pal2
@@ -261,12 +261,12 @@ dbug:		macro map,object,subtype,frame,vram
 		dbug	Map_Edge,	EdgeWalls,	0,	0,	tile_Nem_GhzWall2+tile_pal3
 		dbug	Map_GBall,	Obj19,		0,	0,	tile_Nem_Ball+tile_pal3
 		dbug	Map_Lamp,	Lamppost,	1,	0,	tile_Nem_Lamp
-		dbug	Map_GRing,	GiantRing,	0,	0,	$400+tile_pal2
+		dbug	Map_GRing,	GiantRing,	0,	0,	(vram_giantring/sizeof_cell)+tile_pal2
 		dbug	Map_Bonus,	HiddenBonus,	1,	id_frame_bonus_10000,	tile_Nem_Bonus+tile_hi
-	@GHZend:
+	DebugList_GHZ_end:
 
-@LZ:
-		dc.w (@LZend-@LZ-2)/8
+DebugList_LZ:
+		dc.w (DebugList_LZ_end-DebugList_LZ-2)/8
 
 ;			mappings	object		subtype	frame	VRAM setting
 		dbug	Map_Ring,	Rings,		0,	0,	tile_Nem_Ring+tile_pal2
@@ -277,7 +277,7 @@ dbug:		macro map,object,subtype,frame,vram
 		dbug	Map_Harp,	Harpoon,	0,	id_frame_harp_h_retracted,	tile_Nem_Harpoon
 		dbug	Map_Harp,	Harpoon,	2,	id_frame_harp_v_retracted,	tile_Nem_Harpoon
 		dbug	Map_Push,	PushBlock,	0,	0,	tile_Nem_LzPole+tile_pal3
-		dbug	Map_But,	Button,		0,	0,	$513
+		dbug	Map_But,	Button,		0,	0,	tile_Nem_LzSwitch+4
 		dbug	Map_Spike,	Spikes,		0,	0,	tile_Nem_Spikes
 		dbug	Map_MBlockLZ,	MovingBlock,	4,	0,	tile_Nem_LzBlock3+tile_pal3
 		dbug	Map_LBlock,	LabyrinthBlock, 1,	id_frame_lblock_sinkblock,	tile_Nem_LzDoor2+tile_pal3
@@ -294,10 +294,10 @@ dbug:		macro map,object,subtype,frame,vram
 		dbug	Map_Pole,	Pole,		0,	0,	tile_Nem_LzPole+tile_pal3
 		dbug	Map_Flap,	FlapDoor,	2,	0,	tile_Nem_FlapDoor+tile_pal3
 		dbug	Map_Lamp,	Lamppost,	1,	0,	tile_Nem_Lamp
-	@LZend:
+	DebugList_LZ_end:
 
-@MZ:
-		dc.w (@MZend-@MZ-2)/8
+DebugList_MZ:
+		dc.w (DebugList_MZ_end-DebugList_MZ-2)/8
 
 ;			mappings	object		subtype	frame	VRAM setting
 		dbug	Map_Ring,	Rings,		0,	0,	tile_Nem_Ring+tile_pal2
@@ -318,10 +318,10 @@ dbug:		macro map,object,subtype,frame,vram
 		dbug	Map_Bat,	Batbrain,	0,	0,	tile_Nem_Batbrain
 		dbug	Map_Cat,	Caterkiller,	0,	0,	tile_Nem_Cater+tile_pal2
 		dbug	Map_Lamp,	Lamppost,	1,	0,	tile_Nem_Lamp
-	@MZend:
+	DebugList_MZ_end:
 
-@SLZ:
-		dc.w (@SLZend-@SLZ-2)/8
+DebugList_SLZ:
+		dc.w (DebugList_SLZ_end-DebugList_SLZ-2)/8
 
 ;			mappings	object		subtype	frame	VRAM setting
 		dbug	Map_Ring,	Rings,		0,	0,	tile_Nem_Ring+tile_pal2
@@ -339,10 +339,10 @@ dbug:		macro map,object,subtype,frame,vram
 		dbug	Map_Bomb,	Bomb,		0,	0,	tile_Nem_Bomb
 		dbug	Map_Orb,	Orbinaut,	0,	0,	tile_Nem_Orbinaut+tile_pal2
 		dbug	Map_Lamp,	Lamppost,	1,	0,	tile_Nem_Lamp
-	@SLZend:
+	DebugList_SLZ_end:
 
-@SYZ:
-		dc.w (@SYZend-@SYZ-2)/8
+DebugList_SYZ:
+		dc.w (DebugList_SYZ_end-DebugList_SYZ-2)/8
 
 ;			mappings	object		subtype	frame	VRAM setting
 		dbug	Map_Ring,	Rings,		0,	0,	tile_Nem_Ring+tile_pal2
@@ -357,13 +357,13 @@ dbug:		macro map,object,subtype,frame,vram
 		dbug	Map_Yad,	Yadrin,		0,	0,	tile_Nem_Yadrin+tile_pal2
 		dbug	Map_Plat_SYZ,	BasicPlatform,	0,	0,	0+tile_pal3
 		dbug	Map_FBlock,	FloatingBlock,	0,	0,	0+tile_pal3
-		dbug	Map_But,	Button,		0,	0,	$513
+		dbug	Map_But,	Button,		0,	0,	tile_Nem_LzSwitch+4
 		dbug	Map_Cat,	Caterkiller,	0,	0,	tile_Nem_Cater+tile_pal2
 		dbug	Map_Lamp,	Lamppost,	1,	0,	tile_Nem_Lamp
-	@SYZend:
+	DebugList_SYZ_end:
 
-@SBZ:
-		dc.w (@SBZend-@SBZ-2)/8
+DebugList_SBZ:
+		dc.w (DebugList_SBZ_end-DebugList_SBZ-2)/8
 
 ;			mappings	object		subtype	frame	VRAM setting
 		dbug	Map_Ring,	Rings,		0,	0,	tile_Nem_Ring+tile_pal2
@@ -374,7 +374,7 @@ dbug:		macro map,object,subtype,frame,vram
 		dbug	Map_BBall,	SwingingPlatform, 7,	id_frame_bball_anchor,	tile_Nem_BigSpike_SBZ+tile_pal3
 		dbug	Map_Disc,	RunningDisc,	$E0,	0,	tile_Nem_SbzWheel1+tile_pal3+tile_hi
 		dbug	Map_MBlock,	MovingBlock,	$28,	id_frame_mblock_sbz,	tile_Nem_Stomper+tile_pal2
-		dbug	Map_But,	Button,		0,	0,	$513
+		dbug	Map_But,	Button,		0,	0,	tile_Nem_LzSwitch+4
 		dbug	Map_Trap,	SpinPlatform,	3,	0,	tile_Nem_TrapDoor+tile_pal3
 		dbug	Map_Spin,	SpinPlatform,	$83,	0,	tile_Nem_SpinPform
 		dbug	Map_Saw,	Saws,		2,	0,	tile_Nem_Cutter+tile_pal3
@@ -395,10 +395,10 @@ dbug:		macro map,object,subtype,frame,vram
 		dbug	Map_Invis,	Invisibarrier,	$11,	0,	tile_Nem_Monitors+tile_hi
 		dbug	Map_Hog,	BallHog,	4,	0,	tile_Nem_BallHog+tile_pal2
 		dbug	Map_Lamp,	Lamppost,	1,	0,	tile_Nem_Lamp
-	@SBZend:
+	DebugList_SBZ_end:
 
-@Ending:
-		dc.w (@Endingend-@Ending-2)/8
+DebugList_Ending:
+		dc.w (DebugList_Ending_end-DebugList_Ending-2)/8
 
 ;			mappings	object		subtype	frame	VRAM setting
 		dbug	Map_Ring,	Rings,		0,	0,	tile_Nem_Ring+tile_pal2
@@ -407,17 +407,17 @@ dbug:		macro map,object,subtype,frame,vram
 		dbug	Map_Animal2,	Animals,	$A,	0,	$5A0
 		dbug	Map_Animal2,	Animals,	$B,	0,	$5A0
 		dbug	Map_Animal2,	Animals,	$C,	0,	$5A0
-		dbug	Map_Animal1,	Animals,	$D,	0,	$553
-		dbug	Map_Animal1,	Animals,	$E,	0,	$553
-		dbug	Map_Animal1,	Animals,	$F,	0,	$573
-		dbug	Map_Animal1,	Animals,	$10,	0,	$573
-		dbug	Map_Animal2,	Animals,	$11,	0,	$585
-		dbug	Map_Animal3,	Animals,	$12,	0,	$593
-		dbug	Map_Animal2,	Animals,	$13,	0,	$565
-		dbug	Map_Animal3,	Animals,	$14,	0,	$5B3
+		dbug	Map_Animal1,	Animals,	$D,	0,	tile_Nem_Rabbit_End
+		dbug	Map_Animal1,	Animals,	$E,	0,	tile_Nem_Rabbit_End
+		dbug	Map_Animal1,	Animals,	$F,	0,	tile_Nem_BlackBird_End
+		dbug	Map_Animal1,	Animals,	$10,	0,	tile_Nem_BlackBird_End
+		dbug	Map_Animal2,	Animals,	$11,	0,	tile_Nem_Seal_End
+		dbug	Map_Animal3,	Animals,	$12,	0,	tile_Nem_Pig_End
+		dbug	Map_Animal2,	Animals,	$13,	0,	tile_Nem_Chicken_End
+		dbug	Map_Animal3,	Animals,	$14,	0,	tile_Nem_Squirrel_End
 	else
 		dbug	Map_Ring,	Rings,		0,	id_frame_ring_blank,	tile_Nem_Ring+tile_pal2
 	endc
-	@Endingend:
+	DebugList_Ending_end:
 
 		even

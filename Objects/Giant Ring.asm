@@ -17,7 +17,7 @@ GRing_Index:	index *,,2
 
 GRing_Main:	; Routine 0
 		move.l	#Map_GRing,ost_mappings(a0)
-		move.w	#$400+tile_pal2,ost_tile(a0)
+		move.w	#(vram_giantring/sizeof_cell)+tile_pal2,ost_tile(a0)
 		ori.b	#render_rel,ost_render(a0)
 		move.b	#$40,ost_actwidth(a0)
 		tst.b	ost_render(a0)
@@ -33,7 +33,7 @@ GRing_Okay:
 		addq.b	#2,ost_routine(a0)
 		move.b	#2,ost_priority(a0)
 		move.b	#id_col_8x16+id_col_item,ost_col_type(a0)
-		move.w	#$C40,(v_giantring_gfx_offset).w	; Signal that Art_BigRing should be loaded ($C40 is the size of Art_BigRing)
+		move.w	#sizeof_art_giantring,(v_giantring_gfx_offset).w ; signal that Art_BigRing should be loaded ($C40 is the size of Art_BigRing)
 
 GRing_Animate:	; Routine 2
 		move.b	(v_syncani_1_frame).w,ost_frame(a0)

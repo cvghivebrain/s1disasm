@@ -379,13 +379,13 @@ PLC_Ending:	plcheader
 		if Revision=0
 		plcm	Nem_EndEggman, $A480			; Eggman's death (unused)
 		endc
-		plcm	Nem_Rabbit, $AA60			; rabbit
-		plcm	Nem_Chicken				; chicken ($ACA0)
-		plcm	Nem_BlackBird				; blackbird ($AE60)
-		plcm	Nem_Seal				; seal ($B0A0)
-		plcm	Nem_Pig					; pig ($B260)
-		plcm	Nem_Flicky				; flicky ($B4A0)
-		plcm	Nem_Squirrel				; squirrel ($B660)
+		plcm	Nem_Rabbit, $AA60, End			; rabbit
+		plcm	Nem_Chicken,, End			; chicken ($ACA0)
+		plcm	Nem_BlackBird,, End			; blackbird ($AE60)
+		plcm	Nem_Seal,, End				; seal ($B0A0)
+		plcm	Nem_Pig,, End				; pig ($B260)
+		plcm	Nem_Flicky,, End			; flicky ($B4A0)
+		plcm	Nem_Squirrel,, End			; squirrel ($B660)
 		plcm	Nem_EndStH				; "SONIC THE HEDGEHOG" ($B8A0)
 	PLC_Ending_end:
 ; ---------------------------------------------------------------------------
