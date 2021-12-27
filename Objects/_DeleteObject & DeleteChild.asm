@@ -1,20 +1,24 @@
 ; ---------------------------------------------------------------------------
 ; Subroutine to	delete an object
+
+; input:
+;	a0 = address of OST of object (DeleteObject only)
+;	a1 = address of OST of object (DeleteChild only)
+
+; output:
+;	a1 = address of next OST
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 DeleteObject:
 		movea.l	a0,a1					; move object RAM address to (a1)
 
 DeleteChild:							; child objects are already in (a1)
 		moveq	#0,d1
-		moveq	#$F,d0
+		moveq	#(sizeof_ost/4)-1,d0
 
-	DelObj_Loop:
+	@loop:
 		move.l	d1,(a1)+				; clear	the object RAM
-		dbf	d0,DelObj_Loop				; repeat for length of object RAM
+		dbf	d0,@loop				; repeat for length of object RAM
 		rts	
 
 ; End of function DeleteObject

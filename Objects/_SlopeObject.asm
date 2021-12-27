@@ -6,9 +6,6 @@
 ;	a2 = address of heightmap data
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
 SlopeObject:
 		lea	(v_ost_player).w,a1
 		tst.w	ost_y_vel(a1)				; is Sonic moving up/jumping?
@@ -45,8 +42,6 @@ SlopeObject:
 ;	d2 = platform x position
 ;	a2 = address of heightmap data
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 include_SlopeObject_NoChk:	macro
 

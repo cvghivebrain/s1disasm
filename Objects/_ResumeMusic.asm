@@ -1,9 +1,9 @@
 ; ---------------------------------------------------------------------------
 ; Subroutine to	play music for LZ/SBZ3 after a countdown
+
+; output:
+;	d0 = track number
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 ResumeMusic:
 		cmpi.w	#12,(v_air).w				; more than 12 seconds of air left?
@@ -30,6 +30,6 @@ ResumeMusic:
 
 	@over12:
 		move.w	#30,(v_air).w				; reset air to 30 seconds
-		clr.b	(v_ost_all+$340+ost_drown_disp_time).w
+		clr.b	(v_ost_all+v_ost_bubble+ost_drown_disp_time).w
 		rts	
 ; End of function ResumeMusic

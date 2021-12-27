@@ -1,9 +1,10 @@
 ; ---------------------------------------------------------------------------
-; Subroutine to	generate a pseudo-random number	in d0
+; Subroutine to generate a pseudo-random number
+
+; output:
+;	d0 = pseudo-random number
+;	d1 = d0 with high/low words swapped
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 RandomNumber:
 		move.l	(v_random).w,d1

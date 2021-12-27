@@ -1,19 +1,17 @@
 ; ---------------------------------------------------------------------------
-; Platform subroutine
+; Subroutine to detect collision with a platform, and update relevant flags
 ;
 ; input:
 ;	d1 = platform width
 ;	d0 = y position (Plat_NoXCheck_AltY only)
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 DetectPlatform:
 		lea	(v_ost_player).w,a1
 		tst.w	ost_y_vel(a1)				; is Sonic moving up/jumping?
 		bmi.w	Plat_Exit				; if yes, branch
 
-;		perform x-axis range check
+		; perform x-axis range check
 		move.w	ost_x_pos(a1),d0
 		sub.w	ost_x_pos(a0),d0
 		add.w	d1,d0
@@ -28,7 +26,7 @@ DetectPlatform:
 
 	Plat_NoXCheck_AltY:					; jump here to skip x position check and use custom y position
 
-;		perform y-axis range check
+		; perform y-axis range check
 		move.w	ost_y_pos(a1),d2
 		move.b	ost_height(a1),d1
 		ext.w	d1

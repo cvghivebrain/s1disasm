@@ -5,7 +5,7 @@
 VBlank:
 		movem.l	d0-a6,-(sp)				; save all registers to stack
 		tst.b	(v_vblank_routine).w			; is routine number 0?
-		beq.s	VBlank_Lag					; if yes, branch
+		beq.s	VBlank_Lag				; if yes, branch
 		move.w	(vdp_control_port).l,d0
 		move.l	#$40000010+(0<<16),(vdp_control_port).l	; write to VSRAM address 0
 		move.l	(v_fg_y_pos_vsram).w,(vdp_data_port).l	; send screen y-axis pos. to VSRAM

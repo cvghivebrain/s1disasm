@@ -2,8 +2,10 @@
 ; Constants
 ; ---------------------------------------------------------------------------
 
-sizeof_ost:		equ $40
-countof_ost:		equ $80
+sizeof_ost:		equ $40					; size of one OST in bytes
+countof_ost:		equ $80					; number of OSTs in RAM
+countof_ost_inert:	equ $20					; number of OSTs that don't interact with Sonic (including Sonic himself)
+countof_ost_ert:	equ countof_ost-countof_ost_inert	; number of OSTs that do interact with Sonic ($60)
 sizeof_plc:		equ 6
 countof_plc:		equ $10
 

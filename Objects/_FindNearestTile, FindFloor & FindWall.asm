@@ -10,9 +10,6 @@
 ;	(a1) = 16x16 tile number
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
 FindNearestTile:
 		move.w	d2,d0					; get y pos. of bottom edge of object
 		lsr.w	#1,d0
@@ -84,9 +81,6 @@ FindNearestTile:
 ;	(a1) = 16x16 tile number
 ;	(a4) = floor angle
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 FindFloor:
 		bsr.s	FindNearestTile
@@ -165,9 +159,9 @@ FindFloor:
 		rts	
 ; End of function FindFloor
 
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
+; ---------------------------------------------------------------------------
+; Subroutine to	find the floor above/below the current 16x16 tile
+; ---------------------------------------------------------------------------
 
 FindFloor2:
 		bsr.w	FindNearestTile
@@ -257,9 +251,6 @@ FindFloor2:
 ;	(a4) = floor angle
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
 FindWall:
 		bsr.w	FindNearestTile
 		move.w	(a1),d0
@@ -337,20 +328,20 @@ FindWall:
 		rts	
 ; End of function FindWall
 
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
+; ---------------------------------------------------------------------------
+; Subroutine to	find a wall left/right of the current 16x16 tile
+; ---------------------------------------------------------------------------
 
 FindWall2:
 		bsr.w	FindNearestTile
 		move.w	(a1),d0
 		move.w	d0,d4
 		andi.w	#$7FF,d0
-		beq.s	loc_14BC6
+		beq.s	@isblank
 		btst	d5,d4
-		bne.s	loc_14BD4
+		bne.s	@issolid
 
-loc_14BC6:
+@isblank:
 		move.w	#$F,d1
 		move.w	d3,d0
 		andi.w	#$F,d0
@@ -358,28 +349,28 @@ loc_14BC6:
 		rts	
 ; ===========================================================================
 
-loc_14BD4:
+@issolid:
 		movea.l	(v_collision_index_ptr).w,a2
 		move.b	(a2,d0.w),d0
 		andi.w	#$FF,d0
-		beq.s	loc_14BC6
+		beq.s	@isblank
 		lea	(AngleMap).l,a2
 		move.b	(a2,d0.w),(a4)
 		lsl.w	#4,d0
 		move.w	d2,d1
 		btst	#$C,d4
-		beq.s	loc_14C02
+		beq.s	@noflip
 		not.w	d1
 		addi.b	#$40,(a4)
 		neg.b	(a4)
 		subi.b	#$40,(a4)
 
-loc_14C02:
+	@noflip:
 		btst	#$B,d4
-		beq.s	loc_14C0A
+		beq.s	@noflip2
 		neg.b	(a4)
 
-loc_14C0A:
+	@noflip2:
 		andi.w	#$F,d1
 		add.w	d0,d1
 		lea	(CollArray2).l,a2
@@ -387,13 +378,13 @@ loc_14C0A:
 		ext.w	d0
 		eor.w	d6,d4
 		btst	#$B,d4
-		beq.s	loc_14C26
+		beq.s	@noflip3
 		neg.w	d0
 
-loc_14C26:
+	@noflip3:
 		tst.w	d0
-		beq.s	loc_14BC6
-		bmi.s	loc_14C3C
+		beq.s	@isblank
+		bmi.s	@negfloor
 		move.w	d3,d1
 		andi.w	#$F,d1
 		add.w	d1,d0
@@ -402,11 +393,11 @@ loc_14C26:
 		rts	
 ; ===========================================================================
 
-loc_14C3C:
+@negfloor:
 		move.w	d3,d1
 		andi.w	#$F,d1
 		add.w	d1,d0
-		bpl.w	loc_14BC6
+		bpl.w	@isblank
 		not.w	d1
 		rts	
 ; End of function FindWall2

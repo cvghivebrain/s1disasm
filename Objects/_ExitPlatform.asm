@@ -6,9 +6,6 @@
 ;	d2 = half platform width, right side (ExitPlatform2 only)
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
 ExitPlatform:
 		move.w	d1,d2					; platform is symmetrical
 

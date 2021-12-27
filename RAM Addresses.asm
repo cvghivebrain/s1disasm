@@ -75,7 +75,7 @@ v_ost_all:			rs.b sizeof_ost*countof_ost ; $FFFFD000 ; object variable space ($4
 	v_ost_ssresult5:	equ v_ost_all+(sizeof_ost*$1B) ; special stage results screen
 	v_ost_ssres_emeralds:	equ v_ost_all+(sizeof_ost*$20) ; special stage results screen chaos emeralds
 	; Level - can interact with Sonic
-	v_ost_level_obj:	equ v_ost_all+(sizeof_ost*$20) ; level object variable space ($1800 bytes)
+	v_ost_level_obj:	equ v_ost_all+(sizeof_ost*countof_ost_inert) ; level object variable space ($1800 bytes)
 v_ost_end:			equ v_ost_all+(sizeof_ost*countof_ost) ; $FFFFF000
 
 v_snddriver_ram:		rs.b v_snddriver_size ; $FFFFF000 ; start of RAM for the sound driver data ($5C0 bytes)

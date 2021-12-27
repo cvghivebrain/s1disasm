@@ -5,17 +5,14 @@
 ;	a1 = free position in OST
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
 FindFreeObj:
 		lea	(v_ost_level_obj).w,a1			; start address for OSTs
-		move.w	#$5F,d0
+		move.w	#countof_ost_ert-1,d0
 
 	@loop:
 		tst.b	(a1)					; is OST slot empty?
 		beq.s	@found					; if yes, branch
-		lea	$40(a1),a1				; goto next OST
+		lea	sizeof_ost(a1),a1			; goto next OST
 		dbf	d0,@loop				; repeat $5F times
 
 	@found:
@@ -23,16 +20,12 @@ FindFreeObj:
 
 ; End of function FindFreeObj
 
-
 ; ---------------------------------------------------------------------------
 ; Subroutine to find a free OST AFTER the current one
 
 ; output:
 ;	a1 = free position in OST
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 FindNextFreeObj:
 		movea.l	a0,a1					; address of OST of current object
@@ -45,7 +38,7 @@ FindNextFreeObj:
 	@loop:
 		tst.b	(a1)					; is OST slot empty?
 		beq.s	@found					; if yes, branch
-		lea	$40(a1),a1				; goto next OST
+		lea	sizeof_ost(a1),a1			; goto next OST
 		dbf	d0,@loop				; repeat until end of OSTs
 
 	@use_current:

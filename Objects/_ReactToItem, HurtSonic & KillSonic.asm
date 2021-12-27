@@ -2,9 +2,6 @@
 ; Subroutine to react to ost_col_type(a0)
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
 ReactToItem:
 		nop	
 		move.w	ost_x_pos(a0),d2			; load Sonic's x-axis position
@@ -23,7 +20,7 @@ ReactToItem:
 		move.w	#$10,d4
 		add.w	d5,d5
 		lea	(v_ost_level_obj).w,a1			; first OST address for interactable objects
-		move.w	#$5F,d6
+		move.w	#countof_ost_ert-1,d6
 
 React_Loop:
 		tst.b	ost_render(a1)
@@ -262,10 +259,10 @@ React_ChkHurt:
 
 ; ---------------------------------------------------------------------------
 ; Hurting Sonic	subroutine
+
+; input:
+;	a2 = address of OST of object hurting Sonic
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 HurtSonic:
 		tst.b	(v_shield).w				; does Sonic have a shield?
@@ -321,10 +318,10 @@ HurtSonic:
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	kill Sonic
+
+; input:
+;	a2 = address of OST of object killing Sonic
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 KillSonic:
 		tst.w	(v_debug_active).w			; is debug mode	active?
@@ -351,9 +348,6 @@ KillSonic:
 		moveq	#-1,d0
 		rts	
 ; End of function KillSonic
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 
 React_Special:
@@ -406,5 +400,4 @@ React_Special:
 
 @D7orE1:
 		addq.b	#1,ost_col_property(a1)
-		rts	
-; End of function React_Special
+		rts
