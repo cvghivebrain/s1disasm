@@ -2,55 +2,64 @@
 ; Sprite mappings - animals
 ; ---------------------------------------------------------------------------
 Map_Animal1:	index *
-		ptr byte_9472
-		ptr byte_9478
-		ptr byte_946C
+		ptr frame_animal1_flap1
+		ptr frame_animal1_flap2
+		ptr frame_animal1_drop
 		
-byte_946C:	spritemap
+frame_animal1_drop:
+		spritemap
 		piece	-8, -$C, 2x3, 0
 		endsprite
 		
-byte_9472:	spritemap
+frame_animal1_flap1:
+		spritemap
 		piece	-8, -$C, 2x3, 6
 		endsprite
 		
-byte_9478:	spritemap
+frame_animal1_flap2:
+		spritemap
 		piece	-8, -$C, 2x3, $C
 		endsprite
 		even
 
 Map_Animal2:	index *
-		ptr byte_948A
-		ptr byte_9490
-		ptr byte_9484
+		ptr frame_animal2_flap1
+		ptr frame_animal2_flap2
+		ptr frame_animal2_drop
 		
-byte_9484:	spritemap
+frame_animal2_drop:
+		spritemap
 		piece	-8, -$C, 2x3, 0
 		endsprite
 		
-byte_948A:	spritemap
+frame_animal2_flap1:
+		spritemap
 		piece	-8, -4, 2x2, 6
 		endsprite
 		
-byte_9490:	spritemap
+frame_animal2_flap2:
+		spritemap
 		piece	-8, -4, 2x2, $A
 		endsprite
 		even
 
 Map_Animal3:	index *
-		ptr byte_94A2
-		ptr byte_94A8
-		ptr byte_949C
+		ptr frame_animal3_flap1
+		ptr frame_animal3_flap2
+		ptr frame_animal3_drop
 		
-byte_949C:	spritemap
+frame_animal3_drop:
+		spritemap
 		piece	-8, -$C, 2x3, 0
 		endsprite
 		
-byte_94A2:	spritemap
+frame_animal3_flap1:
+		spritemap
 		piece	-$C, -4, 3x2, 6
 		endsprite
 		
-byte_94A8:	spritemap
+frame_animal3_flap2:
+		spritemap
 		piece	-$C, -4, 3x2, $C
 		endsprite
 		even

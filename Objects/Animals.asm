@@ -1,5 +1,10 @@
 ; ---------------------------------------------------------------------------
 ; Object 28 - animals
+
+; spawned by:
+;	ExplosionItem - subtype 0
+;	Prison - subtype 0
+;	ObjPos_End - subtypes $A, $C-$14
 ; ---------------------------------------------------------------------------
 
 Animals:
@@ -9,58 +14,85 @@ Animals:
 		jmp	Anml_Index(pc,d1.w)
 ; ===========================================================================
 Anml_Index:	index *,,2
-		ptr Anml_Ending
-		ptr loc_912A
-		ptr loc_9184
-		ptr loc_91C0
-		ptr loc_9184
-		ptr loc_9184
-		ptr loc_9184
-		ptr loc_91C0
-		ptr loc_9184
-		ptr loc_9240
-		ptr loc_9260
-		ptr loc_9260
-		ptr loc_9280
-		ptr loc_92BA
-		ptr loc_9314
-		ptr loc_9332
-		ptr loc_9314
-		ptr loc_9332
-		ptr loc_9314
-		ptr loc_9370
-		ptr loc_92D6
+		ptr Anml_Main
+		ptr Anml_ChkFloor
+		ptr Anml_Type0
+		ptr Anml_Type1
+		ptr Anml_Type0
+		ptr Anml_Type0
+		ptr Anml_Type0
+		ptr Anml_Type5
+		ptr Anml_Type0
+		ptr Anml_FromPrison
+		ptr Anml_End_0A
+		ptr Anml_End_0A
+		ptr Anml_End_0C
+		ptr Anml_End_0D
+		ptr Anml_End_0E
+		ptr Anml_End_0F
+		ptr Anml_End_0E
+		ptr Anml_End_0F
+		ptr Anml_End_0E
+		ptr Anml_End_13
+		ptr Anml_End_14
 
-Anml_VarIndex:	dc.b 0,	5, 2, 3, 6, 3, 4, 5, 4,	1, 0, 1
+Anml_VarIndex:	dc.b 0,	5					; GHZ
+		dc.b 2, 3					; LZ
+		dc.b 6, 3					; MZ
+		dc.b 4, 5					; SLZ
+		dc.b 4,	1					; SYZ
+		dc.b 0, 1					; SBZ
 
-Anml_Variables:	dc.w $FE00, $FC00
+Anml_Variables:	dc.w -$200, -$400				; type 0 - GHZ/SBZ
 		dc.l Map_Animal1
-		dc.w $FE00, $FD00				; horizontal speed, vertical speed
-		dc.l Map_Animal2				; mappings address
-		dc.w $FE80, $FD00
+		dc.w -$200, -$300				; type 1 - SYZ/SBZ
+		dc.l Map_Animal2
+		dc.w -$180, -$300				; type 2 - LZ
 		dc.l Map_Animal1
-		dc.w $FEC0, $FE80
+		dc.w -$140, -$180				; type 3 - MZ/LZ
 		dc.l Map_Animal2
-		dc.w $FE40, $FD00
+		dc.w -$1C0, -$300				; type 4 - SYZ/SLZ
 		dc.l Map_Animal3
-		dc.w $FD00, $FC00
+		dc.w -$300, -$400				; type 5 - GHZ/SLZ
 		dc.l Map_Animal2
-		dc.w $FD80, $FC80
+		dc.w -$280, -$380				; type 6 - MZ
 		dc.l Map_Animal3
 
-Anml_EndSpeed:	dc.w $FBC0, $FC00, $FBC0, $FC00, $FBC0,	$FC00, $FD00, $FC00
-		dc.w $FD00, $FC00, $FE80, $FD00, $FE80,	$FD00, $FEC0, $FE80
-		dc.w $FE40, $FD00, $FE00, $FD00, $FD80,	$FC80
+Anml_EndSpeed:	dc.w -$440, -$400				; $A
+		dc.w -$440, -$400				; $B
+		dc.w -$440, -$400				; $C
+		dc.w -$300, -$400				; $D
+		dc.w -$300, -$400				; $E
+		dc.w -$180, -$300				; $F
+		dc.w -$180, -$300				; $10
+		dc.w -$140, -$180				; $11
+		dc.w -$1C0, -$300				; $12
+		dc.w -$200, -$300				; $13
+		dc.w -$280, -$380				; $14
 
-Anml_EndMap:	dc.l Map_Animal2, Map_Animal2, Map_Animal2, Map_Animal1, Map_Animal1
-		dc.l Map_Animal1, Map_Animal1, Map_Animal2, Map_Animal3, Map_Animal2
-		dc.l Map_Animal3
+Anml_EndMap:	dc.l Map_Animal2				; $A
+		dc.l Map_Animal2				; $B - unused
+		dc.l Map_Animal2				; $C
+		dc.l Map_Animal1				; $D
+		dc.l Map_Animal1				; $E
+		dc.l Map_Animal1				; $F
+		dc.l Map_Animal1				; $10
+		dc.l Map_Animal2				; $11
+		dc.l Map_Animal3				; $12
+		dc.l Map_Animal2				; $13
+		dc.l Map_Animal3				; $14
 
-Anml_EndVram:	dc.w tile_Nem_Flicky_End, tile_Nem_Flicky_End, tile_Nem_Flicky_End
-		dc.w tile_Nem_Rabbit_End, tile_Nem_Rabbit_End
-		dc.w tile_Nem_BlackBird_End, tile_Nem_BlackBird_End
-		dc.w tile_Nem_Seal_End, tile_Nem_Pig_End
-		dc.w tile_Nem_Chicken_End, tile_Nem_Squirrel_End
+Anml_EndVram:	dc.w tile_Nem_Flicky_End			; $A
+		dc.w tile_Nem_Flicky_End			; $B - unused
+		dc.w tile_Nem_Flicky_End			; $C
+		dc.w tile_Nem_Rabbit_End			; $D
+		dc.w tile_Nem_Rabbit_End			; $E
+		dc.w tile_Nem_BlackBird_End			; $F
+		dc.w tile_Nem_BlackBird_End			; $10
+		dc.w tile_Nem_Seal_End				; $11
+		dc.w tile_Nem_Pig_End				; $12
+		dc.w tile_Nem_Chicken_End			; $13
+		dc.w tile_Nem_Squirrel_End			; $14
 
 ost_animal_direction:	equ $29					; animal goes left/right
 ost_animal_type:	equ $30					; type of animal (0-$B)
@@ -69,17 +101,18 @@ ost_animal_y_vel:	equ $34					; vertical speed (2 bytes)
 ost_animal_prison_num:	equ $36					; id num for animals in prison capsule, lets them jummp out 1 at a time (2 bytes)
 ; ===========================================================================
 
-Anml_Ending:	; Routine 0
-		tst.b	ost_subtype(a0)				; did animal come from a destroyed enemy?
+Anml_Main:	; Routine 0
+		tst.b	ost_subtype(a0)				; did animal come from an enemy or prison capsule?
 		beq.w	Anml_FromEnemy				; if yes, branch
+
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0			; move object type to d0
 		add.w	d0,d0					; multiply d0 by 2
 		move.b	d0,ost_routine(a0)			; move d0 to routine counter
 		subi.w	#$14,d0
-		move.w	Anml_EndVram(pc,d0.w),ost_tile(a0)
+		move.w	Anml_EndVram(pc,d0.w),ost_tile(a0)	; get VRAM tile number
 		add.w	d0,d0
-		move.l	Anml_EndMap(pc,d0.w),ost_mappings(a0)
+		move.l	Anml_EndMap(pc,d0.w),ost_mappings(a0)	; get mappings pointer
 		lea	Anml_EndSpeed(pc),a1
 		move.w	(a1,d0.w),ost_animal_x_vel(a0)		; load horizontal speed
 		move.w	(a1,d0.w),ost_x_vel(a0)
@@ -95,40 +128,40 @@ Anml_Ending:	; Routine 0
 ; ===========================================================================
 
 Anml_FromEnemy:
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto Anml_ChkFloor next
 		bsr.w	RandomNumber
-		andi.w	#1,d0
+		andi.w	#1,d0					; d0 = random 0 or 1
 		moveq	#0,d1
-		move.b	(v_zone).w,d1
+		move.b	(v_zone).w,d1				; get zone number
 		add.w	d1,d1
-		add.w	d0,d1
+		add.w	d0,d1					; d1 = (v_zone*2) + 0 or 1
 		lea	Anml_VarIndex(pc),a1
-		move.b	(a1,d1.w),d0
+		move.b	(a1,d1.w),d0				; get type from index based on zone + random 0 or 1
 		move.b	d0,ost_animal_type(a0)
-		lsl.w	#3,d0
+		lsl.w	#3,d0					; multiply by 8
 		lea	Anml_Variables(pc),a1
-		adda.w	d0,a1
+		adda.w	d0,a1					; jump to actual variables
 		move.w	(a1)+,ost_animal_x_vel(a0)		; load horizontal speed
 		move.w	(a1)+,ost_animal_y_vel(a0)		; load vertical speed
 		move.l	(a1)+,ost_mappings(a0)			; load mappings
 		move.w	#tile_Nem_Rabbit,ost_tile(a0)		; VRAM setting for 1st animal
-		btst	#0,ost_animal_type(a0)			; is 1st animal used?
-		beq.s	loc_90C0				; if yes, branch
+		btst	#0,ost_animal_type(a0)			; was the random bit 0?
+		beq.s	@type_0					; if yes, branch
 		move.w	#tile_Nem_Flicky,ost_tile(a0)		; VRAM setting for 2nd animal
 
-loc_90C0:
+	@type_0:
 		move.b	#$C,ost_height(a0)
 		move.b	#render_rel,ost_render(a0)
 		bset	#render_xflip_bit,ost_render(a0)
 		move.b	#6,ost_priority(a0)
 		move.b	#8,ost_actwidth(a0)
 		move.b	#7,ost_anim_time(a0)
-		move.b	#2,ost_frame(a0)
+		move.b	#id_frame_animal1_drop,ost_frame(a0)	; use "dropping" frame
 		move.w	#-$400,ost_y_vel(a0)
-		tst.b	(v_boss_status).w
-		bne.s	loc_911C
+		tst.b	(v_boss_status).w			; has boss been beaten?
+		bne.s	@after_boss				; if yes, branch
 		bsr.w	FindFreeObj
-		bne.s	Anml_Display
+		bne.s	@display
 		move.b	#id_Points,0(a1)			; load points object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
@@ -136,278 +169,294 @@ loc_90C0:
 		lsr.w	#1,d0
 		move.b	d0,ost_frame(a1)
 
-Anml_Display:
+	@display:
 		bra.w	DisplaySprite
 ; ===========================================================================
 
-loc_911C:
-		move.b	#$12,ost_routine(a0)
+@after_boss:
+		move.b	#id_Anml_FromPrison,ost_routine(a0)	; goto Anml_FromPrison next
 		clr.w	ost_x_vel(a0)
 		bra.w	DisplaySprite
 ; ===========================================================================
 
-loc_912A:
-		tst.b	ost_render(a0)
-		bpl.w	DeleteObject
-		bsr.w	ObjectFall
-		tst.w	ost_y_vel(a0)
-		bmi.s	loc_9180
+Anml_ChkFloor:
+		tst.b	ost_render(a0)				; is object on-screen?
+		bpl.w	DeleteObject				; if not, branch
+		bsr.w	ObjectFall				; make object fall and update its position
+		tst.w	ost_y_vel(a0)				; is object currently moving upwards?
+		bmi.s	@display				; if yes, branch
+
 		jsr	(FindFloorObj).l
-		tst.w	d1
-		bpl.s	loc_9180
-		add.w	d1,ost_y_pos(a0)
-		move.w	ost_animal_x_vel(a0),ost_x_vel(a0)
+		tst.w	d1					; has object hit the floor?
+		bpl.s	@display				; if not, branch
+
+		add.w	d1,ost_y_pos(a0)			; align to floor
+		move.w	ost_animal_x_vel(a0),ost_x_vel(a0)	; reset speed
 		move.w	ost_animal_y_vel(a0),ost_y_vel(a0)
-		move.b	#1,ost_frame(a0)
-		move.b	ost_animal_type(a0),d0
+		move.b	#id_frame_animal1_flap2,ost_frame(a0)	; use flapping frame
+		move.b	ost_animal_type(a0),d0			; get type
 		add.b	d0,d0
-		addq.b	#4,d0
-		move.b	d0,ost_routine(a0)
-		tst.b	(v_boss_status).w
-		beq.s	loc_9180
-		btst	#4,(v_vblank_counter_byte).w
-		beq.s	loc_9180
-		neg.w	ost_x_vel(a0)
+		addq.b	#4,d0					; d0 = (type*2) + 4
+		move.b	d0,ost_routine(a0)			; goto relevant routine next
+		tst.b	(v_boss_status).w			; has boss been beaten?
+		beq.s	@display				; if not, branch
+		btst	#4,(v_vblank_counter_byte).w		; check bit that changes every 16 frames
+		beq.s	@display				; branch if 0
+		neg.w	ost_x_vel(a0)				; reverse direction
 		bchg	#render_xflip_bit,ost_render(a0)
 
-loc_9180:
+	@display:
 		bra.w	DisplaySprite
 ; ===========================================================================
 
-loc_9184:
-		bsr.w	ObjectFall
-		move.b	#1,ost_frame(a0)
-		tst.w	ost_y_vel(a0)
-		bmi.s	loc_91AE
-		move.b	#0,ost_frame(a0)
-		jsr	(FindFloorObj).l
-		tst.w	d1
-		bpl.s	loc_91AE
-		add.w	d1,ost_y_pos(a0)
-		move.w	ost_animal_y_vel(a0),ost_y_vel(a0)
+Anml_Type0:
+		bsr.w	ObjectFall				; make object fall and update its position
+		move.b	#id_frame_animal1_flap2,ost_frame(a0)
+		tst.w	ost_y_vel(a0)				; is object currently moving upwards?
+		bmi.s	@chkdel					; if yes, branch
 
-loc_91AE:
-		tst.b	ost_subtype(a0)
-		bne.s	loc_9224
-		tst.b	ost_render(a0)
-		bpl.w	DeleteObject
+		move.b	#id_frame_animal1_flap1,ost_frame(a0)
+		jsr	(FindFloorObj).l
+		tst.w	d1					; has object hit the floor?
+		bpl.s	@chkdel					; if not, branch
+		add.w	d1,ost_y_pos(a0)			; align to floor
+		move.w	ost_animal_y_vel(a0),ost_y_vel(a0)	; reset y speed
+
+	@chkdel:
+		tst.b	ost_subtype(a0)				; is this an animal from the ending?
+		bne.s	Anml_End_ChkDel				; if yes, branch
+		tst.b	ost_render(a0)				; is object on-screen?
+		bpl.w	DeleteObject				; if not, branch
 		bra.w	DisplaySprite
 ; ===========================================================================
 
-loc_91C0:
-		bsr.w	SpeedToPos
-		addi.w	#$18,ost_y_vel(a0)
-		tst.w	ost_y_vel(a0)
-		bmi.s	loc_91FC
+Anml_Type1:
+Anml_Type5:
+		bsr.w	SpeedToPos				; update object position
+		addi.w	#$18,ost_y_vel(a0)			; make object fall downwards
+		tst.w	ost_y_vel(a0)				; is object currently moving upwards?
+		bmi.s	@animate				; if yes, branch
+
 		jsr	(FindFloorObj).l
-		tst.w	d1
-		bpl.s	loc_91FC
-		add.w	d1,ost_y_pos(a0)
-		move.w	ost_animal_y_vel(a0),ost_y_vel(a0)
-		tst.b	ost_subtype(a0)
-		beq.s	loc_91FC
+		tst.w	d1					; has object hit the floor?
+		bpl.s	@animate				; if not, branch
+		add.w	d1,ost_y_pos(a0)			; align to floor
+		move.w	ost_animal_y_vel(a0),ost_y_vel(a0)	; reset y speed
+		tst.b	ost_subtype(a0)				; is this an animal from the ending?
+		beq.s	@animate				; if not, branch
+
 		cmpi.b	#$A,ost_subtype(a0)
-		beq.s	loc_91FC
+		beq.s	@animate
 		neg.w	ost_x_vel(a0)
 		bchg	#render_xflip_bit,ost_render(a0)
 
-loc_91FC:
-		subq.b	#1,ost_anim_time(a0)
-		bpl.s	loc_9212
-		move.b	#1,ost_anim_time(a0)
-		addq.b	#1,ost_frame(a0)
-		andi.b	#1,ost_frame(a0)
+	@animate:
+		subq.b	#1,ost_anim_time(a0)			; decrement timer
+		bpl.s	@chkdel					; branch if time remains
+		move.b	#1,ost_anim_time(a0)			; set timer to 1 frame
+		addq.b	#1,ost_frame(a0)			; change frame
+		andi.b	#1,ost_frame(a0)			; limit to 2 frames
 
-loc_9212:
+	@chkdel:
 		tst.b	ost_subtype(a0)
-		bne.s	loc_9224
+		bne.s	Anml_End_ChkDel
 		tst.b	ost_render(a0)
 		bpl.w	DeleteObject
 		bra.w	DisplaySprite
 ; ===========================================================================
 
-loc_9224:
+Anml_End_ChkDel:
 		move.w	ost_x_pos(a0),d0
-		sub.w	(v_ost_player+ost_x_pos).w,d0
-		bcs.s	loc_923C
-		subi.w	#$180,d0
-		bpl.s	loc_923C
-		tst.b	ost_render(a0)
-		bpl.w	DeleteObject
+		sub.w	(v_ost_player+ost_x_pos).w,d0		; d0 = distance between Sonic & object (+ve if Sonic is to the left)
+		bcs.s	@display				; branch if Sonic is to the right
+		subi.w	#384,d0
+		bpl.s	@display				; branch if Sonic is > 384px to the left
+		tst.b	ost_render(a0)				; is object on-screen?
+		bpl.w	DeleteObject				; if not, branch
 
-loc_923C:
+	@display:
 		bra.w	DisplaySprite
 ; ===========================================================================
 
-loc_9240:
-		tst.b	ost_render(a0)
-		bpl.w	DeleteObject
-		subq.w	#1,ost_animal_prison_num(a0)
-		bne.w	loc_925C
-		move.b	#2,ost_routine(a0)
+Anml_FromPrison:
+		tst.b	ost_render(a0)				; is object on-screen?
+		bpl.w	DeleteObject				; if not, branch
+		subq.w	#1,ost_animal_prison_num(a0)		; decrement prison queue ticket
+		bne.w	@display				; branch if not 0
+		move.b	#id_Anml_ChkFloor,ost_routine(a0)	; goto Anml_ChkFloor next
 		move.b	#3,ost_priority(a0)
 
-loc_925C:
+	@display:
 		bra.w	DisplaySprite
 ; ===========================================================================
 
-loc_9260:
-		bsr.w	sub_9404
-		bcc.s	loc_927C
-		move.w	ost_animal_x_vel(a0),ost_x_vel(a0)
+Anml_End_0A:
+		bsr.w	Anml_End_ChkDist
+		bcc.s	@far_away				; branch if Sonic is to the left, or > 184px right
+
+		move.w	ost_animal_x_vel(a0),ost_x_vel(a0)	; reset speed
 		move.w	ost_animal_y_vel(a0),ost_y_vel(a0)
-		move.b	#$E,ost_routine(a0)
-		bra.w	loc_91C0
+		move.b	#id_Anml_Type5,ost_routine(a0)		; goto Anml_Type1 next
+		bra.w	Anml_Type1
+
+	@far_away:
+		bra.w	Anml_End_ChkDel
 ; ===========================================================================
 
-loc_927C:
-		bra.w	loc_9224
-; ===========================================================================
-
-loc_9280:
-		bsr.w	sub_9404
-		bpl.s	loc_92B6
+Anml_End_0C:
+		bsr.w	Anml_End_ChkDist
+		bpl.s	@far_away				; branch if Sonic is > 184px to the right
 		clr.w	ost_x_vel(a0)
 		clr.w	ost_animal_x_vel(a0)
 		bsr.w	SpeedToPos
 		addi.w	#$18,ost_y_vel(a0)
-		bsr.w	loc_93C4
-		bsr.w	loc_93EC
-		subq.b	#1,ost_anim_time(a0)
-		bpl.s	loc_92B6
-		move.b	#1,ost_anim_time(a0)
-		addq.b	#1,ost_frame(a0)
-		andi.b	#1,ost_frame(a0)
+		bsr.w	Anml_End_Update
+		bsr.w	Anml_End_ChkDirection
+		subq.b	#1,ost_anim_time(a0)			; decrement timer
+		bpl.s	@far_away				; branch if time remains
+		move.b	#1,ost_anim_time(a0)			; set timer to 1 frame
+		addq.b	#1,ost_frame(a0)			; change frame
+		andi.b	#1,ost_frame(a0)			; limit to 2 frames
 
-loc_92B6:
-		bra.w	loc_9224
+	@far_away:
+		bra.w	Anml_End_ChkDel
 ; ===========================================================================
 
-loc_92BA:
-		bsr.w	sub_9404
-		bpl.s	loc_9310
-		move.w	ost_animal_x_vel(a0),ost_x_vel(a0)
+Anml_End_0D:
+		bsr.w	Anml_End_ChkDist
+		bpl.s	Anml_End_ChkDel_			; branch if Sonic is > 184px to the right
+		move.w	ost_animal_x_vel(a0),ost_x_vel(a0)	; reset speed
 		move.w	ost_animal_y_vel(a0),ost_y_vel(a0)
-		move.b	#4,ost_routine(a0)
-		bra.w	loc_9184
+		move.b	#id_Anml_Type0,ost_routine(a0)		; goto Anml_Type0 next
+		bra.w	Anml_Type0
 ; ===========================================================================
 
-loc_92D6:
-		bsr.w	ObjectFall
-		move.b	#1,ost_frame(a0)
-		tst.w	ost_y_vel(a0)
-		bmi.s	loc_9310
-		move.b	#0,ost_frame(a0)
+Anml_End_14:
+		bsr.w	ObjectFall				; make object fall and update position
+		move.b	#id_frame_animal1_flap2,ost_frame(a0)
+		tst.w	ost_y_vel(a0)				; is object currently moving upwards?
+		bmi.s	Anml_End_ChkDel_			; if yes, branch
+		move.b	#id_frame_animal1_flap1,ost_frame(a0)
 		jsr	(FindFloorObj).l
-		tst.w	d1
-		bpl.s	loc_9310
-		not.b	ost_animal_direction(a0)
-		bne.s	loc_9306
-		neg.w	ost_x_vel(a0)
+		tst.w	d1					; has object hit the floor?
+		bpl.s	Anml_End_ChkDel_			; if not, branch
+		not.b	ost_animal_direction(a0)		; change direction flag
+		bne.s	@no_flip				; branch if 1
+		neg.w	ost_x_vel(a0)				; reverse direction
 		bchg	#render_xflip_bit,ost_render(a0)
 
-loc_9306:
-		add.w	d1,ost_y_pos(a0)
-		move.w	ost_animal_y_vel(a0),ost_y_vel(a0)
+	@no_flip:
+		add.w	d1,ost_y_pos(a0)			; align to floor
+		move.w	ost_animal_y_vel(a0),ost_y_vel(a0)	; reset y speed
 
-loc_9310:
-		bra.w	loc_9224
+Anml_End_ChkDel_:
+		bra.w	Anml_End_ChkDel
 ; ===========================================================================
 
-loc_9314:
-		bsr.w	sub_9404
-		bpl.s	loc_932E
+Anml_End_0E:
+		bsr.w	Anml_End_ChkDist
+		bpl.s	@far_away				; branch if Sonic is > 184px to the right
 		clr.w	ost_x_vel(a0)
 		clr.w	ost_animal_x_vel(a0)
-		bsr.w	ObjectFall
-		bsr.w	loc_93C4
-		bsr.w	loc_93EC
+		bsr.w	ObjectFall				; make object fall and update position
+		bsr.w	Anml_End_Update
+		bsr.w	Anml_End_ChkDirection
 
-loc_932E:
-		bra.w	loc_9224
+	@far_away:
+		bra.w	Anml_End_ChkDel
 ; ===========================================================================
 
-loc_9332:
-		bsr.w	sub_9404
-		bpl.s	loc_936C
-		bsr.w	ObjectFall
-		move.b	#1,ost_frame(a0)
-		tst.w	ost_y_vel(a0)
-		bmi.s	loc_936C
-		move.b	#0,ost_frame(a0)
+Anml_End_0F:
+		bsr.w	Anml_End_ChkDist
+		bpl.s	@chkdel					; branch if Sonic is > 184px to the right
+		bsr.w	ObjectFall				; make object fall and update position
+		move.b	#id_frame_animal1_flap2,ost_frame(a0)
+		tst.w	ost_y_vel(a0)				; is object currently moving upwards?
+		bmi.s	@chkdel					; if yes, branch
+		move.b	#id_frame_animal1_flap1,ost_frame(a0)
 		jsr	(FindFloorObj).l
-		tst.w	d1
-		bpl.s	loc_936C
-		neg.w	ost_x_vel(a0)
+		tst.w	d1					; has object hit the floor?
+		bpl.s	@chkdel					; if not, branch
+		neg.w	ost_x_vel(a0)				; reverse direction
 		bchg	#render_xflip_bit,ost_render(a0)
-		add.w	d1,ost_y_pos(a0)
-		move.w	ost_animal_y_vel(a0),ost_y_vel(a0)
+		add.w	d1,ost_y_pos(a0)			; align to floor
+		move.w	ost_animal_y_vel(a0),ost_y_vel(a0)	; reset y speed
 
-loc_936C:
-		bra.w	loc_9224
+	@chkdel:
+		bra.w	Anml_End_ChkDel
 ; ===========================================================================
 
-loc_9370:
-		bsr.w	sub_9404
-		bpl.s	loc_93C0
-		bsr.w	SpeedToPos
-		addi.w	#$18,ost_y_vel(a0)
-		tst.w	ost_y_vel(a0)
-		bmi.s	loc_93AA
+Anml_End_13:
+		bsr.w	Anml_End_ChkDist
+		bpl.s	@chkdel					; branch if Sonic is > 184px to the right
+		bsr.w	SpeedToPos				; update position
+		addi.w	#$18,ost_y_vel(a0)			; fall
+		tst.w	ost_y_vel(a0)				; is object currently moving upwards?
+		bmi.s	@chk_anim				; if yes, branch
 		jsr	(FindFloorObj).l
-		tst.w	d1
-		bpl.s	loc_93AA
-		not.b	ost_animal_direction(a0)
-		bne.s	loc_93A0
-		neg.w	ost_x_vel(a0)
+		tst.w	d1					; has object hit the floor?
+		bpl.s	@chk_anim				; if not, branch
+		not.b	ost_animal_direction(a0)		; change direction flag
+		bne.s	@no_flip				; branch if 1
+		neg.w	ost_x_vel(a0)				; reverse direction
 		bchg	#render_xflip_bit,ost_render(a0)
 
-loc_93A0:
+	@no_flip:
 		add.w	d1,ost_y_pos(a0)
 		move.w	ost_animal_y_vel(a0),ost_y_vel(a0)
 
-loc_93AA:
-		subq.b	#1,ost_anim_time(a0)
-		bpl.s	loc_93C0
-		move.b	#1,ost_anim_time(a0)
-		addq.b	#1,ost_frame(a0)
-		andi.b	#1,ost_frame(a0)
+	@chk_anim:
+		subq.b	#1,ost_anim_time(a0)			; decrement timer
+		bpl.s	@chkdel					; branch if time remains
+		move.b	#1,ost_anim_time(a0)			; set timer to 1 frame
+		addq.b	#1,ost_frame(a0)			; change frame
+		andi.b	#1,ost_frame(a0)			; limit to 2 frames
 
-loc_93C0:
-		bra.w	loc_9224
-; ===========================================================================
+	@chkdel:
+		bra.w	Anml_End_ChkDel
 
-loc_93C4:
-		move.b	#1,ost_frame(a0)
-		tst.w	ost_y_vel(a0)
-		bmi.s	locret_93EA
-		move.b	#0,ost_frame(a0)
+; ---------------------------------------------------------------------------
+; Subroutine to animate and bounce on floor
+; ---------------------------------------------------------------------------
+
+Anml_End_Update:
+		move.b	#id_frame_animal1_flap2,ost_frame(a0)
+		tst.w	ost_y_vel(a0)				; is object currently moving upwards?
+		bmi.s	@exit					; if yes, branch
+		move.b	#id_frame_animal1_flap1,ost_frame(a0)
 		jsr	(FindFloorObj).l
-		tst.w	d1
-		bpl.s	locret_93EA
-		add.w	d1,ost_y_pos(a0)
-		move.w	ost_animal_y_vel(a0),ost_y_vel(a0)
+		tst.w	d1					; has object hit the floor?
+		bpl.s	@exit					; if not, branch
+		add.w	d1,ost_y_pos(a0)			; align to floor
+		move.w	ost_animal_y_vel(a0),ost_y_vel(a0)	; reset y speed
 
-locret_93EA:
+	@exit:
 		rts	
-; ===========================================================================
 
-loc_93EC:
-		bset	#render_xflip_bit,ost_render(a0)
+; ---------------------------------------------------------------------------
+; Subroutine to set/clear xflip bit if Sonic is to the left/right respectively
+; ---------------------------------------------------------------------------
+
+Anml_End_ChkDirection:
+		bset	#render_xflip_bit,ost_render(a0)	; set bit
 		move.w	ost_x_pos(a0),d0
-		sub.w	(v_ost_player+ost_x_pos).w,d0
-		bcc.s	locret_9402
-		bclr	#render_xflip_bit,ost_render(a0)
+		sub.w	(v_ost_player+ost_x_pos).w,d0		; d0 = distance between Sonic & object (-ve if Sonic is to the right)
+		bcc.s	@exit					; branch if Sonic is to the left
+		bclr	#render_xflip_bit,ost_render(a0)	; clear bit
 
-locret_9402:
+	@exit:
 		rts	
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+; ---------------------------------------------------------------------------
+; Subroutine to check if Sonic is more than 184px to the right
 
+; output:
+;	d0 = +ve if true; -ve if false
+; ---------------------------------------------------------------------------
 
-sub_9404:
+Anml_End_ChkDist:
 		move.w	(v_ost_player+ost_x_pos).w,d0
-		sub.w	ost_x_pos(a0),d0
-		subi.w	#$B8,d0
+		sub.w	ost_x_pos(a0),d0			; d0 = distance between Sonic & object (-ve if Sonic is to the left)
+		subi.w	#184,d0					; d0 is -ve if Sonic is left, or < 184px right
 		rts	
-; End of function sub_9404
+; End of function Anml_End_ChkDist
