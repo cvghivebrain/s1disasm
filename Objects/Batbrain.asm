@@ -1,5 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Object 55 - Batbrain enemy (MZ)
+
+; spawned by:
+;	ObjPos_MZ1, ObjPos_MZ2, ObjPos_MZ3
 ; ---------------------------------------------------------------------------
 
 Batbrain:
@@ -43,13 +46,13 @@ Bat_Action:	; Routine 2
 
 @dropcheck:
 		move.w	#$80,d2
-		bsr.w	@chkdistance				; is Sonic < $80 pixels from basaran?
+		bsr.w	Bat_ChkDist				; is Sonic < $80 pixels from batbrain?
 		bcc.s	@nodrop					; if not, branch
 		move.w	(v_ost_player+ost_y_pos).w,d0
 		move.w	d0,ost_bat_sonic_y_pos(a0)
 		sub.w	ost_y_pos(a0),d0
-		bcs.s	@nodrop
-		cmpi.w	#$80,d0					; is Sonic < $80 pixels from basaran?
+		bcs.s	@nodrop					; branch if Sonic is left of the batbrain
+		cmpi.w	#$80,d0					; is Sonic < $80 pixels from batbrain?
 		bcc.s	@nodrop					; if not, branch
 		tst.w	(v_debug_active).w			; is debug mode	on?
 		bne.s	@nodrop					; if yes, branch
@@ -67,16 +70,16 @@ Bat_Action:	; Routine 2
 
 @dropfly:
 		bsr.w	SpeedToPos
-		addi.w	#$18,ost_y_vel(a0)			; make basaran fall
+		addi.w	#$18,ost_y_vel(a0)			; make batbrain fall
 		move.w	#$80,d2
-		bsr.w	@chkdistance
+		bsr.w	Bat_ChkDist
 		move.w	ost_bat_sonic_y_pos(a0),d0
 		sub.w	ost_y_pos(a0),d0
 		bcs.s	@chkdel
-		cmpi.w	#$10,d0					; is basaran close to Sonic vertically?
+		cmpi.w	#$10,d0					; is batbrain close to Sonic vertically?
 		bcc.s	@dropmore				; if not, branch
-		move.w	d1,ost_x_vel(a0)			; make basaran fly horizontally
-		move.w	#0,ost_y_vel(a0)			; stop basaran falling
+		move.w	d1,ost_x_vel(a0)			; make batbrain fly horizontally
+		move.w	#0,ost_y_vel(a0)			; stop batbrain falling
 		move.b	#id_ani_bat_fly,ost_anim(a0)
 		addq.b	#2,ost_routine2(a0)
 
@@ -93,17 +96,17 @@ Bat_Action:	; Routine 2
 		move.b	(v_vblank_counter_byte).w,d0
 		andi.b	#$F,d0
 		bne.s	@nosound
-		play.w	1, jsr, sfx_Basaran			; play flapping sound every 16th frame
+		play.w	1, jsr, sfx_basaran			; play flapping sound every 16th frame
 
 	@nosound:
 		bsr.w	SpeedToPos
 		move.w	(v_ost_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0
-		bcc.s	@isright				; if Sonic is right of basaran, branch
+		bcc.s	@isright				; if Sonic is right of batbrain, branch
 		neg.w	d0
 
 	@isright:
-		cmpi.w	#$80,d0					; is Sonic within $80 pixels of basaran?
+		cmpi.w	#$80,d0					; is Sonic within $80 pixels of batbrain?
 		bcs.s	@dontflyup				; if yes, branch
 		move.b	(v_vblank_counter_byte).w,d0
 		add.b	d7,d0
@@ -117,36 +120,37 @@ Bat_Action:	; Routine 2
 
 @flyup:
 		bsr.w	SpeedToPos
-		subi.w	#$18,ost_y_vel(a0)			; make basaran fly upwards
+		subi.w	#$18,ost_y_vel(a0)			; make batbrain fly upwards
 		bsr.w	FindCeilingObj
-		tst.w	d1					; has basaran hit the ceiling?
+		tst.w	d1					; has batbrain hit the ceiling?
 		bpl.s	@noceiling				; if not, branch
 		sub.w	d1,ost_y_pos(a0)
 		andi.w	#$FFF8,ost_x_pos(a0)			; snap to tile
-		clr.w	ost_x_vel(a0)				; stop basaran moving
+		clr.w	ost_x_vel(a0)				; stop batbrain moving
 		clr.w	ost_y_vel(a0)
 		clr.b	ost_anim(a0)
 		clr.b	ost_routine2(a0)
 
 	@noceiling:
-		rts	
-; ===========================================================================
+		rts
 
-; Subroutine to check Sonic's distance from the basaran
+; ---------------------------------------------------------------------------
+; Subroutine to check Sonic's distance from the batbrain
 
 ; input:
 ;	d2 = distance to compare
 
 ; output:
-;	d0 = distance between Sonic and basaran
-;	d1 = speed/direction for basaran to fly
+;	d0 = distance between Sonic and batbrain (abs negative value)
+;	d1 = speed/direction for batbrain to fly
+; ---------------------------------------------------------------------------
 
-@chkdistance:
+Bat_ChkDist:
 		move.w	#$100,d1
 		bset	#status_xflip_bit,ost_status(a0)
 		move.w	(v_ost_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0
-		bcc.s	@right					; if Sonic is right of basaran, branch
+		bcc.s	@right					; if Sonic is right of batbrain, branch
 		neg.w	d0
 		neg.w	d1
 		bclr	#status_xflip_bit,ost_status(a0)

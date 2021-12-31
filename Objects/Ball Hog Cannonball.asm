@@ -1,5 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Object 20 - cannonball that Ball Hog throws (SBZ)
+
+; spawned by:
+;	BallHog - subtype inherited from parent
 ; ---------------------------------------------------------------------------
 
 Cannonball:
@@ -38,21 +41,22 @@ Cbal_Bounce:	; Routine 2
 		tst.w	d1					; has ball hit the floor?
 		bpl.s	Cbal_ChkExplode				; if not, branch
 
-		add.w	d1,ost_y_pos(a0)
+		add.w	d1,ost_y_pos(a0)			; align to floor
 		move.w	#-$300,ost_y_vel(a0)			; bounce
-		tst.b	d3
-		beq.s	Cbal_ChkExplode
-		bmi.s	loc_8CA4
+		tst.b	d3					; test floor angle
+		beq.s	Cbal_ChkExplode				; branch if perfectly flat
+		bmi.s	@down_left				; branch if sloping up-right or down-left
+
 		tst.w	ost_x_vel(a0)
-		bpl.s	Cbal_ChkExplode
-		neg.w	ost_x_vel(a0)
+		bpl.s	Cbal_ChkExplode				; branch if ball is moving right
+		neg.w	ost_x_vel(a0)				; reverse direction (ball hits down-right slope while moving left)
 		bra.s	Cbal_ChkExplode
 ; ===========================================================================
 
-loc_8CA4:
+@down_left:
 		tst.w	ost_x_vel(a0)
-		bmi.s	Cbal_ChkExplode
-		neg.w	ost_x_vel(a0)
+		bmi.s	Cbal_ChkExplode				; branch if ball is moving left
+		neg.w	ost_x_vel(a0)				; reverse direction (ball hits down-left slope while moving right)
 
 Cbal_ChkExplode:
 		subq.w	#1,ost_ball_time(a0)			; subtract 1 from explosion time

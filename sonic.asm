@@ -16,13 +16,13 @@
 		include "Mega Drive.asm"
 		include "Macros - More CPUs.asm"
 		include "Macros - 68k Extended.asm"
-		include "Constants.asm"
-		include	"Start Positions.asm"
-		include "sound\Sounds.asm"
-		include "sound\Sound Equates.asm"
-		include "RAM Addresses.asm"
 		include "Macros - General.asm"
 		include "Macros - Sonic.asm"
+		include "sound\Sounds.asm"
+		include "sound\Sound Equates.asm"
+		include "Constants.asm"
+		include "RAM Addresses.asm"
+		include	"Start Positions.asm"
 		include "Includes\Compatibility.asm"
 
 		cpu	68000
@@ -47,68 +47,31 @@ StartOfRom:
 Vectors:	dc.l v_stack_pointer&$FFFFFF			; Initial stack pointer value
 		dc.l EntryPoint					; Start of program
 		dc.l BusError					; Bus error
-		dc.l AddressError				; Address error (4)
+		dc.l AddressError				; Address error
 		dc.l IllegalInstr				; Illegal instruction
 		dc.l ZeroDivide					; Division by zero
 		dc.l ChkInstr					; CHK exception
-		dc.l TrapvInstr					; TRAPV exception (8)
+		dc.l TrapvInstr					; TRAPV exception
 		dc.l PrivilegeViol				; Privilege violation
 		dc.l Trace					; TRACE exception
 		dc.l Line1010Emu				; Line-A emulator
-		dc.l Line1111Emu				; Line-F emulator (12)
-		dc.l ErrorExcept				; Unused (reserved)
-		dc.l ErrorExcept				; Unused (reserved)
-		dc.l ErrorExcept				; Unused (reserved)
-		dc.l ErrorExcept				; Unused (reserved) (16)
-		dc.l ErrorExcept				; Unused (reserved)
-		dc.l ErrorExcept				; Unused (reserved)
-		dc.l ErrorExcept				; Unused (reserved)
-		dc.l ErrorExcept				; Unused (reserved) (20)
-		dc.l ErrorExcept				; Unused (reserved)
-		dc.l ErrorExcept				; Unused (reserved)
-		dc.l ErrorExcept				; Unused (reserved)
-		dc.l ErrorExcept				; Unused (reserved) (24)
+		dc.l Line1111Emu				; Line-F emulator
+		dcb.l 2,ErrorExcept				; Unused (reserved)
+		dc.l ErrorExcept				; Format error
+		dc.l ErrorExcept				; Uninitialized interrupt
+		dcb.l 8,ErrorExcept				; Unused (reserved)
 		dc.l ErrorExcept				; Spurious exception
 		dc.l ErrorTrap					; IRQ level 1
 		dc.l ErrorTrap					; IRQ level 2
-		dc.l ErrorTrap					; IRQ level 3 (28)
+		dc.l ErrorTrap					; IRQ level 3
 		dc.l HBlank					; IRQ level 4 (horizontal retrace interrupt)
 		dc.l ErrorTrap					; IRQ level 5
 		dc.l VBlank					; IRQ level 6 (vertical retrace interrupt)
-		dc.l ErrorTrap					; IRQ level 7 (32)
-		dc.l ErrorTrap					; TRAP #00 exception
-		dc.l ErrorTrap					; TRAP #01 exception
-		dc.l ErrorTrap					; TRAP #02 exception
-		dc.l ErrorTrap					; TRAP #03 exception (36)
-		dc.l ErrorTrap					; TRAP #04 exception
-		dc.l ErrorTrap					; TRAP #05 exception
-		dc.l ErrorTrap					; TRAP #06 exception
-		dc.l ErrorTrap					; TRAP #07 exception (40)
-		dc.l ErrorTrap					; TRAP #08 exception
-		dc.l ErrorTrap					; TRAP #09 exception
-		dc.l ErrorTrap					; TRAP #10 exception
-		dc.l ErrorTrap					; TRAP #11 exception (44)
-		dc.l ErrorTrap					; TRAP #12 exception
-		dc.l ErrorTrap					; TRAP #13 exception
-		dc.l ErrorTrap					; TRAP #14 exception
-		dc.l ErrorTrap					; TRAP #15 exception (48)
-		dc.l ErrorTrap					; Unused (reserved)
-		dc.l ErrorTrap					; Unused (reserved)
-		dc.l ErrorTrap					; Unused (reserved)
-		dc.l ErrorTrap					; Unused (reserved)
-		dc.l ErrorTrap					; Unused (reserved)
-		dc.l ErrorTrap					; Unused (reserved)
-		dc.l ErrorTrap					; Unused (reserved)
-		dc.l ErrorTrap					; Unused (reserved)
+		dc.l ErrorTrap					; IRQ level 7
+		dcb.l 16,ErrorTrap				; TRAP #00..#15 exceptions
+		dcb.l 8,ErrorTrap				; Unused (reserved)
 		if Revision<>2
-			dc.l ErrorTrap				; Unused (reserved)
-			dc.l ErrorTrap				; Unused (reserved)
-			dc.l ErrorTrap				; Unused (reserved)
-			dc.l ErrorTrap				; Unused (reserved)
-			dc.l ErrorTrap				; Unused (reserved)
-			dc.l ErrorTrap				; Unused (reserved)
-			dc.l ErrorTrap				; Unused (reserved)
-			dc.l ErrorTrap				; Unused (reserved)
+			dcb.l 8,ErrorTrap			; Unused (reserved)
 		else
 	loc_E0:
 								; Relocated code from Spik_Hurt. REVXB was a nasty hex-edit.
@@ -119,9 +82,7 @@ Vectors:	dc.l v_stack_pointer&$FFFFFF			; Initial stack pointer value
 			jmp	(loc_D5A2).l
 
 			dc.w ErrorTrap
-			dc.l ErrorTrap
-			dc.l ErrorTrap
-			dc.l ErrorTrap
+			dcb.l 3,ErrorTrap
 		endc
 Console:	dc.b "SEGA MEGA DRIVE "				; Hardware system ID (Console name)
 Date:		dc.b "(C)SEGA 1991.APR"				; Copyright holder and release date (generally year)

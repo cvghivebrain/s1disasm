@@ -179,7 +179,7 @@ Anml_FromEnemy:
 		bra.w	DisplaySprite
 ; ===========================================================================
 
-Anml_ChkFloor:
+Anml_ChkFloor:	; Routine 2
 		tst.b	ost_render(a0)				; is object on-screen?
 		bpl.w	DeleteObject				; if not, branch
 		bsr.w	ObjectFall				; make object fall and update its position
@@ -209,7 +209,7 @@ Anml_ChkFloor:
 		bra.w	DisplaySprite
 ; ===========================================================================
 
-Anml_Type0:
+Anml_Type0:	; Routine 6, $A, $C, $E, $12
 		bsr.w	ObjectFall				; make object fall and update its position
 		move.b	#id_frame_animal1_flap2,ost_frame(a0)
 		tst.w	ost_y_vel(a0)				; is object currently moving upwards?
@@ -230,8 +230,8 @@ Anml_Type0:
 		bra.w	DisplaySprite
 ; ===========================================================================
 
-Anml_Type1:
-Anml_Type5:
+Anml_Type1:	; Routine 8
+Anml_Type5:	; Routine $10
 		bsr.w	SpeedToPos				; update object position
 		addi.w	#$18,ost_y_vel(a0)			; make object fall downwards
 		tst.w	ost_y_vel(a0)				; is object currently moving upwards?
@@ -278,7 +278,7 @@ Anml_End_ChkDel:
 		bra.w	DisplaySprite
 ; ===========================================================================
 
-Anml_FromPrison:
+Anml_FromPrison:	; Routine $14
 		tst.b	ost_render(a0)				; is object on-screen?
 		bpl.w	DeleteObject				; if not, branch
 		subq.w	#1,ost_animal_prison_num(a0)		; decrement prison queue ticket
@@ -290,7 +290,7 @@ Anml_FromPrison:
 		bra.w	DisplaySprite
 ; ===========================================================================
 
-Anml_End_0A:
+Anml_End_0A:	; Routine $16, $18
 		bsr.w	Anml_End_ChkDist
 		bcc.s	@far_away				; branch if Sonic is to the left, or > 184px right
 
@@ -303,7 +303,7 @@ Anml_End_0A:
 		bra.w	Anml_End_ChkDel
 ; ===========================================================================
 
-Anml_End_0C:
+Anml_End_0C:	; Routine $1A
 		bsr.w	Anml_End_ChkDist
 		bpl.s	@far_away				; branch if Sonic is > 184px to the right
 		clr.w	ost_x_vel(a0)
@@ -322,7 +322,7 @@ Anml_End_0C:
 		bra.w	Anml_End_ChkDel
 ; ===========================================================================
 
-Anml_End_0D:
+Anml_End_0D:	; Routine $1C
 		bsr.w	Anml_End_ChkDist
 		bpl.s	Anml_End_ChkDel_			; branch if Sonic is > 184px to the right
 		move.w	ost_animal_x_vel(a0),ost_x_vel(a0)	; reset speed
@@ -331,7 +331,7 @@ Anml_End_0D:
 		bra.w	Anml_Type0
 ; ===========================================================================
 
-Anml_End_14:
+Anml_End_14:	; Routine $2A
 		bsr.w	ObjectFall				; make object fall and update position
 		move.b	#id_frame_animal1_flap2,ost_frame(a0)
 		tst.w	ost_y_vel(a0)				; is object currently moving upwards?
@@ -353,7 +353,7 @@ Anml_End_ChkDel_:
 		bra.w	Anml_End_ChkDel
 ; ===========================================================================
 
-Anml_End_0E:
+Anml_End_0E:	; Routine $1E, $22, $26
 		bsr.w	Anml_End_ChkDist
 		bpl.s	@far_away				; branch if Sonic is > 184px to the right
 		clr.w	ost_x_vel(a0)
@@ -366,7 +366,7 @@ Anml_End_0E:
 		bra.w	Anml_End_ChkDel
 ; ===========================================================================
 
-Anml_End_0F:
+Anml_End_0F:	; Routine $20, $24
 		bsr.w	Anml_End_ChkDist
 		bpl.s	@chkdel					; branch if Sonic is > 184px to the right
 		bsr.w	ObjectFall				; make object fall and update position
@@ -386,7 +386,7 @@ Anml_End_0F:
 		bra.w	Anml_End_ChkDel
 ; ===========================================================================
 
-Anml_End_13:
+Anml_End_13:	; Routine $28
 		bsr.w	Anml_End_ChkDist
 		bpl.s	@chkdel					; branch if Sonic is > 184px to the right
 		bsr.w	SpeedToPos				; update position

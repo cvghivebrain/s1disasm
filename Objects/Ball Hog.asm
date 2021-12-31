@@ -1,5 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Object 1E - Ball Hog enemy (SBZ)
+
+; spawned by:
+;	ObjPos_SBZ1, ObjPos_SBZ2
 ; ---------------------------------------------------------------------------
 
 BallHog:
@@ -28,7 +31,7 @@ Hog_Main:	; Routine 0
 		jsr	(FindFloorObj).l			; find floor
 		tst.w	d1
 		bpl.s	@floornotfound
-		add.w	d1,ost_y_pos(a0)
+		add.w	d1,ost_y_pos(a0)			; align to floor
 		move.w	#0,ost_y_vel(a0)
 		addq.b	#2,ost_routine(a0)
 

@@ -1,5 +1,9 @@
 ; ---------------------------------------------------------------------------
 ; Object 32 - buttons (MZ, SYZ, LZ, SBZ)
+
+; spawned by:
+;	ObjPos_MZ1, ObjPos_MZ2, ObjPos_MZ3, ObjPos_SYZ1, ObjPos_SYZ3
+;	ObjPos_LZ1, ObjPos_LZ2, ObjPos_LZ3, ObjPos_SBZ1, ObjPos_SBZ2, ObjPos_SBZ3
 ; ---------------------------------------------------------------------------
 
 Button:
@@ -31,9 +35,9 @@ But_Main:	; Routine 0
 But_Action:	; Routine 2
 		tst.b	ost_render(a0)				; is button on screen?
 		bpl.s	But_Display				; if not, branch
-		move.w	#$1B,d1
-		move.w	#5,d2
-		move.w	#5,d3
+		move.w	#$1B,d1					; width
+		move.w	#5,d2					; height
+		move.w	#5,d3					; height
 		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject
 		bclr	#0,ost_frame(a0)			; use "unpressed" frame
@@ -56,7 +60,7 @@ But_Action:	; Routine 2
 		tst.b	ost_solid(a0)				; is Sonic standing on the button?
 		bne.s	But_Press				; if yes, branch
 		bclr	d3,(a3)					; clear button status
-		bra.s	loc_BDDE
+		bra.s	But_Flash
 ; ===========================================================================
 
 But_Press:
@@ -68,7 +72,7 @@ But_Press:
 		bset	d3,(a3)
 		bset	#0,ost_frame(a0)			; use "pressed" frame
 
-loc_BDDE:
+But_Flash:
 		btst	#5,ost_subtype(a0)			; is subtype +$20?
 		beq.s	But_Display				; if not, branch
 		subq.b	#1,ost_anim_time(a0)			; decrement timer
@@ -86,19 +90,23 @@ But_Delete:
 		bsr.w	DeleteObject
 		rts	
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+; ---------------------------------------------------------------------------
+; Subroutine to detect collision with MZ pushable green block
 
+; output:
+;	d0 = 0 if not found; 1 if found
+; ---------------------------------------------------------------------------
 
 But_PBlock_Chk:
 		move.w	d3,-(sp)
 		move.w	ost_x_pos(a0),d2
 		move.w	ost_y_pos(a0),d3
-		subi.w	#$10,d2
-		subq.w	#8,d3
-		move.w	#$20,d4
-		move.w	#$10,d5
+		subi.w	#$10,d2					; d2 = x pos. of button left edge
+		subq.w	#8,d3					; d3 = y pos. of button top edge
+		move.w	#$20,d4					; d4 = x detection range
+		move.w	#$10,d5					; d5 = y detection range
 		lea	(v_ost_level_obj).w,a1			; begin checking object RAM
-		move.w	#$5F,d6
+		move.w	#countof_ost_ert-1,d6
 
 @loop:
 		tst.b	ost_render(a1)				; is object on screen?
@@ -114,7 +122,7 @@ But_PBlock_Chk:
 		moveq	#0,d0
 		rts	
 ; ===========================================================================
-@xy_radius:	dc.b $10, $10					; x and y radius of button collision
+@xy_radius:	dc.b $10, $10					; x and y radius of pushable block
 ; ===========================================================================
 
 @is_pblock:
