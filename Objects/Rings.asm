@@ -78,7 +78,7 @@ Ring_MakeRings:
 		bne.s	loc_9C0E
 
 loc_9BBA:
-		move.b	#id_Rings,0(a1)				; load ring object
+		move.b	#id_Rings,ost_id(a1)				; load ring object
 		addq.b	#2,ost_routine(a1)
 		move.w	d2,ost_x_pos(a1)			; set x-axis position based on d2
 		move.w	ost_x_pos(a0),ost_ring_x_main(a1)

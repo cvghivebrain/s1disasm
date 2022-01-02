@@ -162,7 +162,7 @@ Anml_FromEnemy:
 		bne.s	@after_boss				; if yes, branch
 		bsr.w	FindFreeObj
 		bne.s	@display
-		move.b	#id_Points,0(a1)			; load points object
+		move.b	#id_Points,ost_id(a1)			; load points object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.w	ost_enemy_combo(a0),d0

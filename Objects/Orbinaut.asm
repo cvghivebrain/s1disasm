@@ -52,7 +52,7 @@ Orb_Main:	; Routine 0
 		lsr.w	#6,d5
 		andi.w	#$7F,d5
 		move.b	d5,(a2)+
-		move.b	0(a0),0(a1)				; load spiked orb object
+		move.b	ost_id(a0),ost_id(a1)			; load spiked orb object
 		move.b	#id_Orb_MoveOrb,ost_routine(a1)		; use Orb_MoveOrb routine
 		move.l	ost_mappings(a0),ost_mappings(a1)
 		move.w	ost_tile(a0),ost_tile(a1)
@@ -148,7 +148,7 @@ Orb_Delete:
 
 Orb_MoveOrb:	; Routine 6
 		movea.l	ost_orb_parent(a0),a1
-		cmpi.b	#id_Orbinaut,0(a1)			; does parent object still exist?
+		cmpi.b	#id_Orbinaut,ost_id(a1)			; does parent object still exist?
 		bne.w	DeleteObject				; if not, delete
 		cmpi.b	#id_frame_orb_angry,ost_frame(a1)	; is orbinaut angry?
 		bne.s	@circle					; if not, branch

@@ -171,10 +171,10 @@ Debug_ChgItem:
 		bne.s	@backtonormal
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
-		move.b	ost_mappings(a0),0(a1)			; create object (object id is held in high byte of mappings pointer)
+		move.b	ost_mappings(a0),ost_id(a1)			; create object (object id is held in high byte of mappings pointer)
 		move.b	ost_render(a0),ost_render(a1)
 		move.b	ost_render(a0),ost_status(a1)
-		andi.b	#$FF-status_onscreen,ost_status(a1)	; remove onscreen flag from status
+		andi.b	#$FF-status_broken,ost_status(a1)	; remove broken flag from status
 		moveq	#0,d0
 		move.b	(v_debug_item_index).w,d0
 		lsl.w	#3,d0

@@ -43,7 +43,7 @@ Obj73_Main:	; Routine 0
 Obj73_Loop:
 		jsr	(FindNextFreeObj).l
 		bne.s	Obj73_ShipMain
-		move.b	#id_BossMarble,0(a1)
+		move.b	#id_BossMarble,ost_id(a1)
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 
@@ -186,7 +186,7 @@ Obj73_MakeLava:
 		bcc.s	loc_1845C
 		jsr	(FindFreeObj).l
 		bne.s	loc_1844A
-		move.b	#id_LavaBall,0(a1)			; load fireball object that comes from lava
+		move.b	#id_LavaBall,ost_id(a1)			; load fireball object that comes from lava
 		move.w	#$2E8,ost_y_pos(a1)			; set y position
 		jsr	(RandomNumber).l
 		andi.l	#$FFFF,d0
@@ -267,7 +267,7 @@ loc_184F6:
 
 loc_18500:
 		bset	#status_xflip_bit,ost_status(a0)
-		bclr	#status_onscreen_bit,ost_status(a0)
+		bclr	#status_broken_bit,ost_status(a0)
 		clr.w	ost_x_vel(a0)
 		addq.b	#2,ost_routine2(a0)
 		move.w	#-$26,ost_bmz_wait_time(a0)

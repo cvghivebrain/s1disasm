@@ -84,7 +84,7 @@ Crab_Action:	; Routine 2
 		move.b	#id_ani_crab_firing,ost_anim(a0)	; use firing animation
 		bsr.w	FindFreeObj
 		bne.s	@failleft
-		move.b	#id_Crabmeat,0(a1)			; load left fireball
+		move.b	#id_Crabmeat,ost_id(a1)			; load left fireball
 		move.b	#id_Crab_BallMain,ost_routine(a1)
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		subi.w	#$10,ost_x_pos(a1)
@@ -94,7 +94,7 @@ Crab_Action:	; Routine 2
 	@failleft:
 		bsr.w	FindFreeObj
 		bne.s	@failright
-		move.b	#id_Crabmeat,0(a1)			; load right fireball
+		move.b	#id_Crabmeat,ost_id(a1)			; load right fireball
 		move.b	#id_Crab_BallMain,ost_routine(a1)
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		addi.w	#$10,ost_x_pos(a1)

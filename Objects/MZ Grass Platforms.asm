@@ -185,7 +185,7 @@ loc_B01C:
 		move.b	#1,ost_grass_burn_flag(a0)
 		bsr.w	FindNextFreeObj
 		bne.s	loc_B07A
-		move.b	#id_GrassFire,0(a1)			; load sitting flame object
+		move.b	#id_GrassFire,ost_id(a1)			; load sitting flame object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_grass_y_start(a0),ost_grass_y_start(a1)
 		addq.w	#8,ost_grass_y_start(a1)

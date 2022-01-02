@@ -229,7 +229,7 @@ loc_18EC0:
 		clr.b	ost_col_type(a1)
 		subq.b	#1,ost_col_property(a1)
 		bne.s	loc_18F38
-		bset	#status_onscreen_bit,ost_status(a1)
+		bset	#status_broken_bit,ost_status(a1)
 		clr.w	ost_x_vel(a0)
 		clr.w	ost_y_vel(a0)
 

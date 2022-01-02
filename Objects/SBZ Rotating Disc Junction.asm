@@ -30,7 +30,7 @@ Jun_Main:	; Routine 0
 	@loop:
 		bsr.w	FindFreeObj
 		bne.s	@fail
-		move.b	#id_Junction,0(a1)
+		move.b	#id_Junction,ost_id(a1)
 		addq.b	#4,ost_routine(a1)			; goto Jun_Display next
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)

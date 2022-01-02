@@ -40,7 +40,7 @@ Gar_MakeFire:	; Routine 2
 		bne.s	@nofire
 		bsr.w	FindFreeObj
 		bne.s	@nofire
-		move.b	#id_Gargoyle,0(a1)			; load fireball object
+		move.b	#id_Gargoyle,ost_id(a1)			; load fireball object
 		addq.b	#4,ost_routine(a1)			; use Gar_FireBall routine
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)

@@ -63,8 +63,8 @@ Cbal_ChkExplode:
 		bpl.s	Cbal_Animate				; if time is > 0, branch
 
 	Cbal_Explode:
-		move.b	#id_MissileDissolve,0(a0)
-		move.b	#id_ExplosionBomb,0(a0)			; change object	to an explosion	($3F)
+		move.b	#id_MissileDissolve,ost_id(a0)
+		move.b	#id_ExplosionBomb,ost_id(a0)			; change object	to an explosion	($3F)
 		move.b	#0,ost_routine(a0)			; reset routine counter
 		bra.w	ExplosionBomb				; jump to explosion code
 ; ===========================================================================

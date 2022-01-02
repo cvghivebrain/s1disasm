@@ -58,7 +58,7 @@ Bump_Hit:	; Routine 2
 		jsr	(AddPoints).l				; add 10 to score
 		bsr.w	FindFreeObj
 		bne.s	@display
-		move.b	#id_Points,0(a1)			; load points object
+		move.b	#id_Points,ost_id(a1)			; load points object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	#id_frame_points_10,ost_frame(a1)

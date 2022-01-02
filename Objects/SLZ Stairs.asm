@@ -46,7 +46,7 @@ Stair_Main:	; Routine 0
 		move.b	#4,ost_routine(a1)
 
 @makeblocks:
-		move.b	#id_Staircase,0(a1)			; load another block object
+		move.b	#id_Staircase,ost_id(a1)			; load another block object
 		move.l	#Map_Stair,ost_mappings(a1)
 		move.w	#0+tile_pal3,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)

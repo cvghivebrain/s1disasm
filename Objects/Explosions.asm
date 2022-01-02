@@ -18,7 +18,7 @@ ExItem_Animal:	; Routine 0
 		addq.b	#2,ost_routine(a0)
 		bsr.w	FindFreeObj
 		bne.s	ExItem_Main
-		move.b	#id_Animals,0(a1)			; load animal object
+		move.b	#id_Animals,ost_id(a1)			; load animal object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.w	ost_enemy_combo(a0),ost_enemy_combo(a1)

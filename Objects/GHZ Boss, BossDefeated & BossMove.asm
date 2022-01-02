@@ -39,7 +39,7 @@ BGHZ_Loop:
 
 BGHZ_LoadBoss:
 		move.b	(a2)+,ost_routine(a1)
-		move.b	#id_BossGreenHill,0(a1)
+		move.b	#id_BossGreenHill,ost_id(a1)
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.l	#Map_Eggman,ost_mappings(a1)
@@ -144,7 +144,7 @@ BossDefeated:
 		bne.s	locret_178A2
 		jsr	(FindFreeObj).l
 		bne.s	locret_178A2
-		move.b	#id_ExplosionBomb,0(a1)			; load explosion object
+		move.b	#id_ExplosionBomb,ost_id(a1)			; load explosion object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		jsr	(RandomNumber).l
@@ -199,7 +199,7 @@ BGHZ_MakeBall:
 		addq.b	#2,ost_routine2(a0)
 		jsr	(FindNextFreeObj).l
 		bne.s	loc_17910
-		move.b	#id_BossBall,0(a1)			; load swinging ball object
+		move.b	#id_BossBall,ost_id(a1)			; load swinging ball object
 		move.w	ost_bghz_parent_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_bghz_parent_y_pos(a0),ost_y_pos(a1)
 		move.l	a0,ost_ball_parent(a1)
@@ -256,7 +256,7 @@ loc_1797A:
 
 loc_17984:
 		bset	#status_xflip_bit,ost_status(a0)
-		bclr	#status_onscreen_bit,ost_status(a0)
+		bclr	#status_broken_bit,ost_status(a0)
 		clr.w	ost_x_vel(a0)
 		addq.b	#2,ost_routine2(a0)
 		move.w	#-$26,ost_bghz_wait_time(a0)

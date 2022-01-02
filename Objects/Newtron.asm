@@ -145,7 +145,7 @@ Newt_Action:	; Routine 2
 		move.b	#1,ost_newtron_fire_flag(a0)
 		bsr.w	FindFreeObj
 		bne.s	@fail
-		move.b	#id_Missile,0(a1)			; load missile object
+		move.b	#id_Missile,ost_id(a1)			; load missile object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		subq.w	#8,ost_y_pos(a1)

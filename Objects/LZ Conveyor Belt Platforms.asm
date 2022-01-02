@@ -126,7 +126,7 @@ LCon_LoadPlatforms:
 		bne.s	@fail
 
 	@makefirst:
-		move.b	#id_LabyrinthConvey,0(a1)		; load platform object
+		move.b	#id_LabyrinthConvey,ost_id(a1)		; load platform object
 		move.w	(a2)+,ost_x_pos(a1)
 		move.w	(a2)+,ost_y_pos(a1)
 		move.w	(a2)+,d0

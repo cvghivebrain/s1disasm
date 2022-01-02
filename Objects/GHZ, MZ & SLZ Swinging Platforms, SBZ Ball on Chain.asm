@@ -75,7 +75,7 @@ Swing_Main:	; Routine 0
 		move.b	#id_Swing_Action,ost_routine(a0)	; goto Swing_Action next
 
 @length:
-		move.b	0(a0),d4
+		move.b	ost_id(a0),d4
 		moveq	#0,d1
 		lea	ost_subtype(a0),a2			; move chain length to a2
 		move.b	(a2),d1					; d1 = chain length
@@ -102,7 +102,7 @@ Swing_Main:	; Routine 0
 		andi.w	#$7F,d5					; convert child OST address to index
 		move.b	d5,(a2)+				; save child OST index to byte list in parent OST
 		move.b	#id_Swing_Display,ost_routine(a1)	; goto Swing_Display next
-		move.b	d4,0(a1)				; load swinging	object
+		move.b	d4,ost_id(a1)				; load swinging	object
 		move.l	ost_mappings(a0),ost_mappings(a1)
 		move.w	ost_tile(a0),ost_tile(a1)
 		bclr	#tile_pal34_bit,ost_tile(a1)

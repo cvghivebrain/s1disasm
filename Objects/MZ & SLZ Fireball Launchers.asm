@@ -36,7 +36,7 @@ LavaM_MakeLava:	; Routine 2
 		bne.s	LavaM_Wait
 		bsr.w	FindFreeObj
 		bne.s	LavaM_Wait
-		move.b	#id_LavaBall,0(a1)			; load lava ball object
+		move.b	#id_LavaBall,ost_id(a1)			; load lava ball object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	ost_subtype(a0),ost_subtype(a1)		; subtype = speed/direction

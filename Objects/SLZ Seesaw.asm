@@ -46,7 +46,7 @@ See_Main:	; Routine 0
 
 		bsr.w	FindNextFreeObj
 		bne.s	@noball
-		move.b	#id_Seesaw,0(a1)			; load spikeball object
+		move.b	#id_Seesaw,ost_id(a1)			; load spikeball object
 		addq.b	#6,ost_routine(a1)			; use See_Spikeball routine
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)

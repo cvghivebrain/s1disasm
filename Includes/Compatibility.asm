@@ -29,7 +29,7 @@ obSubtype:		equ ost_subtype
 obSolid:		equ ost_solid
 
 ; Sonic 2 Github
-id:			equ 0
+id:			equ ost_id
 render_flags:		equ ost_render
 art_tile:		equ ost_tile
 mappings:		equ ost_mappings

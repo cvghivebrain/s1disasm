@@ -234,7 +234,7 @@ PushB_NoLava:
 PushB_LoadLava:
 		bsr.w	FindFreeObj
 		bne.s	locret_C184
-		move.b	#id_GeyserMaker,0(a1)			; load lava geyser object
+		move.b	#id_GeyserMaker,ost_id(a1)			; load lava geyser object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		add.w	d2,ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)

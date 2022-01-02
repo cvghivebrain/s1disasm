@@ -215,7 +215,7 @@ OPL_MakeItem:
 		move.b	d2,ost_respawn(a1)			; give object its place in the respawn table
 
 loc_DA80:
-		move.b	d0,0(a1)
+		move.b	d0,ost_id(a1)
 		move.b	(a0)+,ost_subtype(a1)
 		moveq	#0,d0
 

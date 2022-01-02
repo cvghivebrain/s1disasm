@@ -56,7 +56,7 @@ CSI_MakeMiniSonic:
 		andi.b	#1,d2
 
 CSI_MiniSonicLoop:
-		move.b	#id_ContScrItem,0(a1)			; load mini-Sonic object
+		move.b	#id_ContScrItem,ost_id(a1)			; load mini-Sonic object
 		move.w	(a2)+,ost_x_pos(a1)			; use above data for x-axis position
 		tst.b	d2					; do you have an even number of continues?
 		beq.s	CSI_Even				; if yes, branch

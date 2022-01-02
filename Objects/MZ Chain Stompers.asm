@@ -73,7 +73,7 @@ CStom_Loop:
 
 CStom_MakeStomper:
 		move.b	(a2)+,ost_routine(a1)
-		move.b	#id_ChainStomp,0(a1)
+		move.b	#id_ChainStomp,ost_id(a1)
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.b	(a2)+,d0
 		ext.w	d0

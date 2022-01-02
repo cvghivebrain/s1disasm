@@ -124,7 +124,9 @@ sonic_deceleration_shoes:	equ sonic_deceleration
 sonic_ss_max_speed:		equ $800
 
 ; Object variables
-ost_render:		equ 1	; bitfield for x/y flip, display mode
+			rsset 0
+ost_id:			rs.b 1	; 0 ; object id
+ost_render:		rs.b 1	; 1 ; bitfield for x/y flip, display mode
 	render_xflip:		equ 1	; xflip
 	render_yflip:		equ 2	; yflip
 	render_rel:		equ 4	; relative screen position - coordinates are based on the level
@@ -142,7 +144,7 @@ ost_render:		equ 1	; bitfield for x/y flip, display mode
 	render_rawmap_bit:	equ 5
 	render_behind_bit:	equ 6
 	render_onscreen_bit:	equ 7
-ost_tile:		equ 2	; palette line & VRAM setting (2 bytes)
+ost_tile:		rs.w 1	; 2 ; palette line & VRAM setting (2 bytes)
 	tile_xflip:	equ $800
 	tile_yflip:	equ $1000
 	tile_pal1:	equ 0
@@ -155,28 +157,28 @@ ost_tile:		equ 2	; palette line & VRAM setting (2 bytes)
 	tile_pal12_bit:	equ 5
 	tile_pal34_bit:	equ 6
 	tile_hi_bit:	equ 7
-ost_mappings:		equ 4	; mappings address (4 bytes)
-ost_x_pos:		equ 8	; x-axis position (2 bytes)
-ost_x_sub:		equ $A	; x-axis subpixel position (2 bytes)
-ost_y_screen:		equ $A	; y-axis position for screen-fixed items (2 bytes)
-ost_y_pos:		equ $C	; y-axis position (2 bytes)
-ost_y_sub:		equ $E	; y-axis subpixel position (2 bytes)
-ost_x_vel:		equ $10	; x-axis velocity (2 bytes)
-ost_y_vel:		equ $12	; y-axis velocity (2 bytes)
-ost_inertia:		equ $14	; potential speed (2 bytes)
-ost_height:		equ $16	; height/2
-ost_width:		equ $17	; width/2
-ost_priority:		equ $18	; sprite stack priority - 0 is highest, 7 is lowest
-ost_actwidth:		equ $19	; action width/2
-ost_frame:		equ $1A	; current frame displayed
-ost_anim_frame:		equ $1B	; current frame in animation script
-ost_anim:		equ $1C	; current animation
-ost_anim_restart:	equ $1D	; restart animation flag / next animation number (Sonic)
-ost_anim_time:		equ $1E	; time to next frame
-ost_anim_delay:		equ $1F	; time to delay animation
-ost_col_type:		equ $20	; collision response type - 0 = none; 1-$3F = enemy; $41-$7F = items; $81-BF = hurts; $C1-$FF = custom
-ost_col_property:	equ $21	; collision extra property
-ost_status:		equ $22	; orientation or mode
+ost_mappings:		rs.l 1	; 4 ; mappings address (4 bytes)
+ost_x_pos:		rs.l 1	; 8 ; x-axis position (2 bytes)
+ost_x_sub:		equ ost_x_pos+2	; $A ; x-axis subpixel position (2 bytes)
+ost_y_screen:		equ ost_x_pos+2	; $A ; y-axis position for screen-fixed items (2 bytes)
+ost_y_pos:		rs.l 1	; $C ; y-axis position (2 bytes)
+ost_y_sub:		equ ost_y_pos+2	; $E ; y-axis subpixel position (2 bytes)
+ost_x_vel:		rs.w 1	; $10 ; x-axis velocity (2 bytes)
+ost_y_vel:		rs.w 1	; $12 ; y-axis velocity (2 bytes)
+ost_inertia:		rs.w 1	; $14 ; potential speed (2 bytes)
+ost_height:		rs.b 1	; $16 ; height/2
+ost_width:		rs.b 1	; $17 ; width/2
+ost_priority:		rs.b 1	; $18 ; sprite stack priority - 0 is highest, 7 is lowest
+ost_actwidth:		rs.b 1	; $19 ; action width/2
+ost_frame:		rs.b 1	; $1A ; current frame displayed
+ost_anim_frame:		rs.b 1	; $1B ; current frame in animation script
+ost_anim:		rs.b 1	; $1C ; current animation
+ost_anim_restart:	rs.b 1	; $1D ; restart animation flag / next animation number (Sonic)
+ost_anim_time:		rs.b 1	; $1E ; time to next frame
+ost_anim_delay:		rs.b 1	; $1F ; time to delay animation
+ost_col_type:		rs.b 1	; $20 ; collision response type - 0 = none; 1-$3F = enemy; $41-$7F = items; $81-BF = hurts; $C1-$FF = custom
+ost_col_property:	rs.b 1	; $21 ; collision extra property
+ost_status:		rs.b 1	; $22 ; orientation or mode
 	status_xflip:		equ 1	; xflip
 	status_yflip:		equ 2	; yflip (objects only)
 	status_air:		equ 2	; Sonic is in the air (Sonic only)
@@ -185,7 +187,7 @@ ost_status:		equ $22	; orientation or mode
 	status_rolljump:	equ $10	; Sonic is jumping after rolling (Sonic only)
 	status_pushing:		equ $20	; Sonic is pushing this (objects) / Sonic is pushing an object (Sonic)
 	status_underwater:	equ $40	; Sonic is underwater (Sonic only)
-	status_onscreen:	equ $80	; object is on-screen
+	status_broken:		equ $80	; object has been broken (enemies/bosses)
 	status_xflip_bit:	equ 0
 	status_yflip_bit:	equ 1
 	status_air_bit:		equ 1
@@ -194,13 +196,13 @@ ost_status:		equ $22	; orientation or mode
 	status_rolljump_bit:	equ 4
 	status_pushing_bit:	equ 5
 	status_underwater_bit:	equ 6
-	status_onscreen_bit:	equ 7
-ost_respawn:		equ $23	; respawn list index number
-ost_routine:		equ $24	; routine number
-ost_routine2:		equ $25	; secondary routine number
-ost_solid:		equ $25 ; solid status flag
-ost_angle:		equ $26	; angle of floor or rotation - 0 = flat; $40 = vertical left; $80 = ceiling; $C0 = vertical right
-ost_subtype:		equ $28	; object subtype
+	status_broken_bit:	equ 7
+ost_respawn:		rs.b 1	; $23 ; respawn list index number
+ost_routine:		rs.b 1	; $24 ; routine number
+ost_routine2:		rs.b 1	; $25 ; secondary routine number
+ost_solid:		equ ost_routine2 ; $25 ; solid status flag
+ost_angle:		rs.w 1	; $26 ; angle of floor or rotation - 0 = flat; $40 = vertical left; $80 = ceiling; $C0 = vertical right
+ost_subtype:		rs.b 1	; $28 ; object subtype
 ost_enemy_combo:	equ $3E	; number of enemies broken in a row (0-$A) (2 bytes)
 
 ; Object variables used by Sonic

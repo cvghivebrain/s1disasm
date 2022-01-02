@@ -71,7 +71,7 @@ Cat_Loop:
 		else
 			bne.w	Cat_ChkGone
 		endc
-		move.b	#id_Caterkiller,0(a1)			; load body segment object
+		move.b	#id_Caterkiller,ost_id(a1)			; load body segment object
 		move.b	d6,ost_routine(a1)			; goto Cat_BodySeg1 or Cat_BodySeg2 next
 		addq.b	#2,d6					; alternate between the two
 		move.l	ost_mappings(a0),ost_mappings(a1)
@@ -346,7 +346,7 @@ loc_16C50:
 loc_16C64:
 		cmpi.b	#$C,ost_routine(a1)
 		beq.s	loc_16C90
-		cmpi.b	#id_ExplosionItem,0(a1)
+		cmpi.b	#id_ExplosionItem,ost_id(a1)
 		beq.s	loc_16C7C
 		cmpi.b	#$A,ost_routine(a1)
 		bne.s	loc_16C82

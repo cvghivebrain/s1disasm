@@ -35,7 +35,7 @@ Has_Main:
 		moveq	#6,d1
 
 Has_Loop:
-		move.b	#id_HasPassedCard,0(a1)
+		move.b	#id_HasPassedCard,ost_id(a1)
 		move.w	(a2),ost_x_pos(a1)			; load start x-position
 		move.w	(a2)+,ost_has_x_start(a1)		; load finish x-position (same as start)
 		move.w	(a2)+,ost_has_x_stop(a1)		; load main x-position

@@ -1,5 +1,10 @@
 ; ---------------------------------------------------------------------------
 ; Object 22 - Buzz Bomber enemy	(GHZ, MZ, SYZ)
+
+; spawned by:
+;	ObjPos_GHZ1, ObjPos_GHZ2, ObjPos_GHZ3
+;	ObjPos_MZ1, ObjPos_MZ2, ObjPos_MZ3
+;	ObjPos_SYZ1, ObjPos_SYZ2, ObjPos_SYZ3
 ; ---------------------------------------------------------------------------
 
 BuzzBomber:
@@ -35,32 +40,32 @@ Buzz_Action:	; Routine 2
 		bsr.w	AnimateSprite
 		bra.w	RememberState
 ; ===========================================================================
-@index:		index *
-		ptr @move
-		ptr @chknearsonic
+@index:		index *,,2
+		ptr Buzz_Move
+		ptr Buzz_ChkDist
 ; ===========================================================================
 
-@move:
+Buzz_Move:
 		subq.w	#1,ost_buzz_wait_time(a0)		; subtract 1 from time delay
-		bpl.s	@noflip					; if time remains, branch
+		bpl.s	@wait					; if time remains, branch
 		btst	#1,ost_buzz_mode(a0)			; is Buzz Bomber near Sonic?
 		bne.s	@fire					; if yes, branch
-		addq.b	#2,ost_routine2(a0)
+		addq.b	#2,ost_routine2(a0)			; goto Buzz_ChkDist next
 		move.w	#127,ost_buzz_wait_time(a0)		; set time delay to just over 2 seconds
 		move.w	#$400,ost_x_vel(a0)			; move Buzz Bomber to the right
 		move.b	#id_ani_buzz_fly2,ost_anim(a0)		; use "flying" animation
 		btst	#status_xflip_bit,ost_status(a0)	; is Buzz Bomber facing left?
-		bne.s	@noflip					; if not, branch
+		bne.s	@wait					; if not, branch
 		neg.w	ost_x_vel(a0)				; move Buzz Bomber to the left
 
-	@noflip:
+	@wait:
 		rts	
 ; ===========================================================================
 
 	@fire:
 		bsr.w	FindFreeObj
 		bne.s	@fail
-		move.b	#id_Missile,0(a1)			; load missile object
+		move.b	#id_Missile,ost_id(a1)			; load missile object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		addi.w	#$1C,ost_y_pos(a1)
@@ -68,11 +73,11 @@ Buzz_Action:	; Routine 2
 		move.w	#$200,ost_x_vel(a1)			; move missile to the right
 		move.w	#$18,d0
 		btst	#status_xflip_bit,ost_status(a0)	; is Buzz Bomber facing left?
-		bne.s	@noflip2				; if not, branch
+		bne.s	@noflip					; if not, branch
 		neg.w	d0
 		neg.w	ost_x_vel(a1)				; move missile to the left
 
-	@noflip2:
+	@noflip:
 		add.w	d0,ost_x_pos(a1)
 		move.b	ost_status(a0),ost_status(a1)
 		move.w	#$E,ost_missile_wait_time(a1)
@@ -85,7 +90,7 @@ Buzz_Action:	; Routine 2
 		rts	
 ; ===========================================================================
 
-@chknearsonic:
+Buzz_ChkDist:
 		subq.w	#1,ost_buzz_wait_time(a0)		; subtract 1 from time delay
 		bmi.s	@chgdirection
 		bsr.w	SpeedToPos

@@ -274,7 +274,7 @@ Drown_Countdown:; Routine $A
 		move.w	d0,$3A(a0)
 		jsr	(FindFreeObj).l
 		bne.w	@nocountdown
-		move.b	#id_DrownCount,0(a1)			; load object
+		move.b	#id_DrownCount,ost_id(a1)			; load object
 		move.w	(v_ost_player+ost_x_pos).w,ost_x_pos(a1) ; match X position to Sonic
 		moveq	#6,d0
 		btst	#status_xflip_bit,(v_ost_player+ost_status).w

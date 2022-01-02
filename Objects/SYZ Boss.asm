@@ -388,7 +388,7 @@ loc_1947E:
 		addq.b	#2,ost_routine2(a0)
 		clr.w	ost_y_vel(a0)
 		bset	#status_xflip_bit,ost_status(a0)
-		bclr	#status_onscreen_bit,ost_status(a0)
+		bclr	#status_broken_bit,ost_status(a0)
 		clr.w	ost_x_vel(a0)
 		move.w	#-1,ost_bsyz_wait_time(a0)
 		tst.b	(v_boss_status).w

@@ -96,7 +96,7 @@ Elev_Action:	; Routine 4
 		move.w	ost_x_pos(a0),-(sp)
 		bsr.w	Elev_Types
 		move.w	(sp)+,d2
-		tst.b	0(a0)
+		tst.b	ost_id(a0)
 		beq.s	@deleted
 		jmp	(MoveWithPlatform2).l
 
@@ -260,7 +260,7 @@ Elev_MakeMulti:	; Routine 6
 		move.w	ost_elev_dist_master(a0),ost_elev_distance(a0)
 		bsr.w	FindFreeObj
 		bne.s	@chkdel
-		move.b	#id_Elevator,0(a1)			; duplicate the object
+		move.b	#id_Elevator,ost_id(a1)			; duplicate the object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	#type_elev_up_vanish_1,ost_subtype(a1)

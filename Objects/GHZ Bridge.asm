@@ -31,7 +31,7 @@ Bri_Main:	; Routine 0
 		move.b	#$80,ost_actwidth(a0)
 		move.w	ost_y_pos(a0),d2
 		move.w	ost_x_pos(a0),d3
-		move.b	0(a0),d4				; copy object number ($11) to d4
+		move.b	ost_id(a0),d4				; copy object number ($11) to d4
 		lea	ost_subtype(a0),a2
 		moveq	#0,d1
 		move.b	(a2),d1					; copy bridge length to d1
@@ -68,7 +68,7 @@ Bri_Main:	; Routine 0
 		move.b	d5,(a2)+				; save child OST indices as series of bytes
 		
 		move.b	#id_Bri_Display,ost_routine(a1)
-		move.b	d4,0(a1)				; load bridge object (d4 = $11)
+		move.b	d4,ost_id(a1)				; load bridge object (d4 = $11)
 		move.w	d2,ost_y_pos(a1)
 		move.w	d2,ost_bridge_y_start(a1)
 		move.w	d3,ost_x_pos(a1)

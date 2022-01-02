@@ -61,7 +61,7 @@ loc_B238:	; Routine 2
 		bne.s	loc_B2B0
 		bsr.w	FindNextFreeObj
 		bne.s	loc_B2B0
-		move.b	#id_GrassFire,0(a1)
+		move.b	#id_GrassFire,ost_id(a1)
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	d2,ost_burn_y_start(a1)
 		move.w	ost_burn_sink(a0),ost_burn_sink(a1)

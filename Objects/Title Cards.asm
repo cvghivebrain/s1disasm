@@ -41,7 +41,7 @@ Card_CheckSBZ3:	; Routine 0
 		moveq	#3,d1
 
 Card_Loop:
-		move.b	#id_TitleCard,0(a1)
+		move.b	#id_TitleCard,ost_id(a1)
 		move.w	(a3),ost_x_pos(a1)			; load start x position
 		move.w	(a3)+,ost_card_x_start(a1)		; load finish x position (same as start)
 		move.w	(a3)+,ost_card_x_stop(a1)		; load main x position

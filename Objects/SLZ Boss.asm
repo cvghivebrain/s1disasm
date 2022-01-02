@@ -45,7 +45,7 @@ Obj7A_Main:
 Obj7A_Loop:
 		jsr	(FindNextFreeObj).l
 		bne.s	Obj7A_FindSeesaws
-		move.b	#id_BossStarLight,0(a1)
+		move.b	#id_BossStarLight,ost_id(a1)
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 
@@ -269,7 +269,7 @@ loc_18B52:
 		addq.b	#2,ost_routine2(a0)
 		clr.w	ost_y_vel(a0)
 		bset	#status_xflip_bit,ost_status(a0)
-		bclr	#status_onscreen_bit,ost_status(a0)
+		bclr	#status_broken_bit,ost_status(a0)
 		clr.w	ost_x_vel(a0)
 		move.b	#-$18,ost_bslz_wait_time(a0)
 		tst.b	(v_boss_status).w

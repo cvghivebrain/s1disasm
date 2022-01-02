@@ -53,7 +53,7 @@ GMake_MakeLava:	; Routine 6
 		addq.b	#2,ost_routine(a0)
 		bsr.w	FindNextFreeObj
 		bne.s	@fail
-		move.b	#id_LavaGeyser,0(a1)			; load lavafall object
+		move.b	#id_LavaGeyser,ost_id(a1)			; load lavafall object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	ost_subtype(a0),ost_subtype(a1)

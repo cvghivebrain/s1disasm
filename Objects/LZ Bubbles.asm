@@ -172,7 +172,7 @@ Bub_BblMaker:	; Routine $A
 		move.w	d0,ost_bubble_random_time(a0)
 		bsr.w	FindFreeObj
 		bne.s	@fail
-		move.b	#id_Bubble,0(a1)			; load bubble object
+		move.b	#id_Bubble,ost_id(a1)			; load bubble object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		jsr	(RandomNumber).l
 		andi.w	#$F,d0

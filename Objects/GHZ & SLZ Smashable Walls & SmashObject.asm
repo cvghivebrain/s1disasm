@@ -90,7 +90,7 @@ SmashObject:
 		adda.w	(a3,d0.w),a3				; jump to frame
 		addq.w	#1,a3					; use first sprite piece from that frame
 		bset	#render_rawmap_bit,ost_render(a0)	; raw sprite
-		move.b	0(a0),d4
+		move.b	ost_id(a0),d4
 		move.b	ost_render(a0),d5
 		movea.l	a0,a1
 		bra.s	@loadfrag
@@ -103,7 +103,7 @@ SmashObject:
 
 @loadfrag:
 		move.b	#id_Smash_FragMove,ost_routine(a1)
-		move.b	d4,0(a1)
+		move.b	d4,ost_id(a1)
 		move.l	a3,ost_mappings(a1)
 		move.b	d5,ost_render(a1)
 		move.w	ost_x_pos(a0),ost_x_pos(a1)

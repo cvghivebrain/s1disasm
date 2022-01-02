@@ -31,7 +31,7 @@ LWall_Main:	; Routine 0
 		bne.s	@fail
 
 @make:
-		move.b	#id_LavaWall,0(a1)			; load object
+		move.b	#id_LavaWall,ost_id(a1)			; load object
 		move.l	#Map_LWall,ost_mappings(a1)
 		move.w	#tile_Nem_Lava+tile_pal4,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)

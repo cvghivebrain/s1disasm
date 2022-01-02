@@ -44,7 +44,7 @@ GBall_MakeLinks:
 		bne.s	GBall_MakeBall
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
-		move.b	#id_BossBall,0(a1)			; load chain link object
+		move.b	#id_BossBall,ost_id(a1)			; load chain link object
 		move.b	#id_GBall_Link,ost_routine(a1)
 		move.l	#Map_Swing_GHZ,ost_mappings(a1)
 		move.w	#tile_Nem_Swing,ost_tile(a1)
@@ -138,7 +138,7 @@ loc_17C3C:
 		move.b	ost_status(a1),ost_status(a0)
 		tst.b	ost_status(a1)
 		bpl.s	locret_17C66
-		move.b	#id_ExplosionBomb,0(a0)
+		move.b	#id_ExplosionBomb,ost_id(a0)
 		move.b	#id_ExBom_Main,ost_routine(a0)
 
 locret_17C66:
@@ -151,7 +151,7 @@ GBall_Link:	; Routine 6
 		movea.l	ost_ball_parent(a0),a1
 		tst.b	ost_status(a1)
 		bpl.s	GBall_Display3
-		move.b	#id_ExplosionBomb,0(a0)
+		move.b	#id_ExplosionBomb,ost_id(a0)
 		move.b	#id_ExBom_Main,ost_routine(a0)
 
 GBall_Display3:

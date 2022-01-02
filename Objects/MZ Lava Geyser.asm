@@ -44,7 +44,7 @@ Geyser_Main:	; Routine 0
 		bne.s	@fail
 
 @makelava:
-		move.b	#id_LavaGeyser,0(a1)
+		move.b	#id_LavaGeyser,ost_id(a1)
 		move.l	#Map_Geyser,ost_mappings(a1)
 		move.w	#tile_Nem_Lava+tile_pal4,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)

@@ -188,14 +188,14 @@ React_Enemy:
 		move.b	#0,ost_col_type(a1)
 		subq.b	#1,ost_col_property(a1)
 		bne.s	@flagnotclear
-		bset	#status_onscreen_bit,ost_status(a1)
+		bset	#status_broken_bit,ost_status(a1)
 
 	@flagnotclear:
 		rts	
 ; ===========================================================================
 
 @breakenemy:
-		bset	#status_onscreen_bit,ost_status(a1)
+		bset	#status_broken_bit,ost_status(a1)
 		moveq	#0,d0
 		move.w	(v_enemy_combo).w,d0
 		addq.w	#2,(v_enemy_combo).w			; add 2 to item bonus counter
@@ -213,7 +213,7 @@ React_Enemy:
 
 	@lessthan16:
 		bsr.w	AddPoints
-		move.b	#id_ExplosionItem,0(a1)			; change object to explosion
+		move.b	#id_ExplosionItem,ost_id(a1)			; change object to explosion
 		move.b	#0,ost_routine(a1)
 		tst.w	ost_y_vel(a0)
 		bmi.s	@bouncedown
@@ -237,7 +237,7 @@ React_Enemy:
 ; ===========================================================================
 
 React_Caterkiller:
-		bset	#status_onscreen_bit,ost_status(a1)
+		bset	#status_broken_bit,ost_status(a1)
 
 React_ChkHurt:
 		tst.b	(v_invincibility).w			; is Sonic invincible?
@@ -272,7 +272,7 @@ HurtSonic:
 
 		jsr	(FindFreeObj).l
 		bne.s	@hasshield
-		move.b	#id_RingLoss,0(a1)			; load bouncing multi rings object
+		move.b	#id_RingLoss,ost_id(a1)			; load bouncing multi rings object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 

@@ -145,7 +145,7 @@ Mon_BreakOpen:	; Routine 4
 		move.b	#0,ost_col_type(a0)
 		bsr.w	FindFreeObj
 		bne.s	Mon_Explode
-		move.b	#id_PowerUp,0(a1)			; load monitor contents object
+		move.b	#id_PowerUp,ost_id(a1)			; load monitor contents object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	ost_anim(a0),ost_anim(a1)
@@ -153,7 +153,7 @@ Mon_BreakOpen:	; Routine 4
 Mon_Explode:
 		bsr.w	FindFreeObj
 		bne.s	@fail
-		move.b	#id_ExplosionItem,0(a1)			; load explosion object
+		move.b	#id_ExplosionItem,ost_id(a1)			; load explosion object
 		addq.b	#2,ost_routine(a1)			; don't create an animal
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)

@@ -123,7 +123,7 @@ SpinC_Loop:
 		bne.s	loc_163D0
 
 SpinC_LoadPform:
-		move.b	#id_SpinConvey,0(a1)
+		move.b	#id_SpinConvey,ost_id(a1)
 		move.w	(a2)+,ost_x_pos(a1)
 		move.w	(a2)+,ost_y_pos(a1)
 		move.w	(a2)+,d0

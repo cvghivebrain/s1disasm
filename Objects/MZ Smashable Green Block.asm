@@ -64,7 +64,7 @@ Smab_Solid:	; Routine 2
 		bsr.w	SmashObject
 		bsr.w	FindFreeObj
 		bne.s	Smab_Points
-		move.b	#id_Points,0(a1)			; load points object
+		move.b	#id_Points,ost_id(a1)			; load points object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.w	(v_enemy_combo).w,d2
