@@ -1,5 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Object 81 - Sonic on the continue screen
+
+; spawned by:
+;	GM_Continue
 ; ---------------------------------------------------------------------------
 
 ContSonic:
@@ -21,7 +24,7 @@ CSon_Main:	; Routine 0
 		move.w	#$A0,ost_x_pos(a0)
 		move.w	#$C0,ost_y_pos(a0)
 		move.l	#Map_Sonic,ost_mappings(a0)
-		move.w	#vram_sonic/$20,ost_tile(a0)
+		move.w	#vram_sonic/sizeof_cell,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#2,ost_priority(a0)
 		move.b	#id_Float3,ost_anim(a0)			; use "floating" animation
@@ -31,10 +34,10 @@ CSon_ChkLand:	; Routine 2
 		cmpi.w	#$1A0,ost_y_pos(a0)			; has Sonic landed yet?
 		bne.s	@keep_falling				; if not, branch
 
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto CSon_Animate next
 		clr.w	ost_y_vel(a0)				; stop Sonic falling
 		move.l	#Map_ContScr,ost_mappings(a0)
-		move.w	#$500+tile_hi,ost_tile(a0)
+		move.w	#(vram_cont_sonic/sizeof_cell)+tile_hi,ost_tile(a0)
 		move.b	#id_Walk,ost_anim(a0)
 		bra.s	CSon_Animate
 
@@ -51,7 +54,7 @@ CSon_Animate:	; Routine 4
 		jmp	(AnimateSprite).l
 
 	@start_pressed:
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto CSon_Run next
 		move.l	#Map_Sonic,ost_mappings(a0)
 		move.w	#$780,ost_tile(a0)
 		move.b	#id_Float4,ost_anim(a0)			; use "getting up" animation

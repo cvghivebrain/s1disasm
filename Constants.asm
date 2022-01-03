@@ -40,10 +40,13 @@ vram_animal1:	equ $B000	; animal graphics
 vram_animal2:	equ $B240	; animal graphics
 vram_credits:	equ $B400	; credits font graphics
 
+vram_title_credits:	equ $14C0	; "Sonic Team Presents" title screen graphics
 vram_title:		equ $4000	; main title screen graphics
 vram_title_sonic:	equ $6000	; Sonic title screen graphics
 vram_title_tm:		equ $A200	; "TM" graphics
 vram_text:		equ $D000	; level select text graphics
+vram_cont_sonic:	equ $A000	; oval & Sonic continue screen graphics
+vram_cont_minisonic:	equ $AA20	; mini Sonic continue screen graphics
 vram_error:		equ $F800	; error text graphics
 
 sizeof_cell:		equ $20

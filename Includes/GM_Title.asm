@@ -30,7 +30,7 @@ GM_Title:
 		locVRAM	0
 		lea	(Nem_JapNames).l,a0			; load Japanese credits
 		bsr.w	NemDec
-		locVRAM	$14C0
+		locVRAM	vram_title_credits			; $14C0
 		lea	(Nem_CreditText).l,a0			; load alphabet
 		bsr.w	NemDec
 		lea	($FF0000).l,a1

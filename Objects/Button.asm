@@ -2,8 +2,10 @@
 ; Object 32 - buttons (MZ, SYZ, LZ, SBZ)
 
 ; spawned by:
-;	ObjPos_MZ1, ObjPos_MZ2, ObjPos_MZ3, ObjPos_SYZ1, ObjPos_SYZ3
-;	ObjPos_LZ1, ObjPos_LZ2, ObjPos_LZ3, ObjPos_SBZ1, ObjPos_SBZ2, ObjPos_SBZ3
+;	ObjPos_MZ1, ObjPos_MZ2, ObjPos_MZ3
+;	ObjPos_SYZ1, ObjPos_SYZ3
+;	ObjPos_LZ1, ObjPos_LZ2, ObjPos_LZ3
+;	ObjPos_SBZ1, ObjPos_SBZ2, ObjPos_SBZ3
 ; ---------------------------------------------------------------------------
 
 Button:

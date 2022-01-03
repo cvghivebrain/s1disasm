@@ -21,11 +21,11 @@ GM_Continue:
 		locVRAM	vram_Nem_TitleCard			; $B000
 		lea	(Nem_TitleCard).l,a0			; load title card patterns
 		bsr.w	NemDec
-		locVRAM	$A000
-		lea	(Nem_ContSonic).l,a0			; load Sonic patterns
+		locVRAM	vram_cont_sonic				; $A000
+		lea	(Nem_ContSonic).l,a0			; load oval & Sonic patterns
 		bsr.w	NemDec
-		locVRAM	$AA20
-		lea	(Nem_MiniSonic).l,a0			; load continue screen patterns
+		locVRAM	vram_cont_minisonic			; $AA20
+		lea	(Nem_MiniSonic).l,a0			; load mini Sonic patterns
 		bsr.w	NemDec
 		moveq	#10,d1
 		jsr	(ContScrCounter).l			; run countdown	(start from 10)
