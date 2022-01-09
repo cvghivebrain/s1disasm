@@ -1,5 +1,8 @@
 ; ---------------------------------------------------------------------------
-; Object 8B - Eggman on "TRY AGAIN" and "END"	screens
+; Object 8B - Eggman on "TRY AGAIN" and "END" screens
+
+; spawned by:
+;	GM_Ending
 ; ---------------------------------------------------------------------------
 
 EndEggman:
@@ -19,7 +22,7 @@ ost_eeggman_wait_time:	equ $30					; time between juggle motions (2 bytes)
 ; ===========================================================================
 
 EEgg_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto EEgg_Animate next
 		move.w	#$120,ost_x_pos(a0)
 		move.w	#$F4,ost_y_screen(a0)
 		move.l	#Map_EEgg,ost_mappings(a0)
@@ -37,11 +40,11 @@ EEgg_Main:	; Routine 0
 
 EEgg_Animate:	; Routine 2
 		lea	(Ani_EEgg).l,a1
-		jmp	(AnimateSprite).l
+		jmp	(AnimateSprite).l			; goto EEgg_Juggle after animation finishes
 ; ===========================================================================
 
 EEgg_Juggle:	; Routine 4
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto EEgg_Wait next
 		moveq	#2,d0
 		btst	#0,ost_anim(a0)
 		beq.s	@noflip
@@ -49,17 +52,18 @@ EEgg_Juggle:	; Routine 4
 
 	@noflip:
 		lea	(v_ost_tryag_emeralds).w,a1		; get RAM address for emeralds
-		moveq	#5,d1
+		moveq	#6-1,d1
 
 @emeraldloop:
-		move.b	d0,ost_ectry_speed(a1)
+		move.b	d0,ost_ectry_speed(a1)			; set emerald speed to 2 or -2
 		move.w	d0,d2
-		asl.w	#3,d2
-		add.b	d2,ost_angle(a1)
-		lea	$40(a1),a1
-		dbf	d1,@emeraldloop
+		asl.w	#3,d2					; d2 = speed * 8
+		add.b	d2,ost_angle(a1)			; update angle
+		lea	sizeof_ost(a1),a1			; next emerald
+		dbf	d1,@emeraldloop				; repeat for all emeralds
+
 		addq.b	#1,ost_frame(a0)
-		move.w	#112,ost_eeggman_wait_time(a0)
+		move.w	#112,ost_eeggman_wait_time(a0)		; set time delay between juggles
 
 EEgg_Wait:	; Routine 6
 		subq.w	#1,ost_eeggman_wait_time(a0)		; decrement timer

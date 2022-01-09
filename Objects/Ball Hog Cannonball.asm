@@ -64,8 +64,8 @@ Cbal_ChkExplode:
 
 	Cbal_Explode:
 		move.b	#id_MissileDissolve,ost_id(a0)
-		move.b	#id_ExplosionBomb,ost_id(a0)			; change object	to an explosion	($3F)
-		move.b	#0,ost_routine(a0)			; reset routine counter
+		move.b	#id_ExplosionBomb,ost_id(a0)		; change object	to an explosion	($3F)
+		move.b	#id_ExBom_Main,ost_routine(a0)		; reset routine counter
 		bra.w	ExplosionBomb				; jump to explosion code
 ; ===========================================================================
 

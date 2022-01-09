@@ -40,7 +40,7 @@ Obj86_Generator:; Routine 2
 		cmpi.b	#6,ost_fz_mode(a1)
 		bne.s	loc_1A850
 		move.b	#id_ExplosionBomb,(a0)
-		move.b	#0,ost_routine(a0)
+		move.b	#id_ExBom_Main,ost_routine(a0)
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 

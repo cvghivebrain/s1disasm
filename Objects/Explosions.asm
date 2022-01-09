@@ -1,5 +1,9 @@
 ; ---------------------------------------------------------------------------
 ; Object 27 - explosion	from a destroyed enemy or monitor
+
+; spawned by:
+;	ReactToItem - routine 0
+;	Monitor - routine 2
 ; ---------------------------------------------------------------------------
 
 ExplosionItem:
@@ -15,16 +19,16 @@ ExItem_Index:	index *,,2
 ; ===========================================================================
 
 ExItem_Animal:	; Routine 0
-		addq.b	#2,ost_routine(a0)
-		bsr.w	FindFreeObj
-		bne.s	ExItem_Main
+		addq.b	#2,ost_routine(a0)			; goto ExItem_Main next
+		bsr.w	FindFreeObj				; find free OST slot
+		bne.s	ExItem_Main				; branch if none found
 		move.b	#id_Animals,ost_id(a1)			; load animal object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.w	ost_enemy_combo(a0),ost_enemy_combo(a1)
 
 ExItem_Main:	; Routine 2
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto ExItem_Animate next
 		move.l	#Map_ExplodeItem,ost_mappings(a0)
 		move.w	#tile_Nem_Explode,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
@@ -46,9 +50,12 @@ ExBom_Animate:
 
 	@display:
 		bra.w	DisplaySprite
-; ===========================================================================
+
 ; ---------------------------------------------------------------------------
 ; Object 3F - explosion	from a destroyed boss, bomb or cannonball
+
+; spawned by:
+;	Cannonball, Bomb, BossPlasma, BossBall, BossSpikeball, BossDefeated, Prison
 ; ---------------------------------------------------------------------------
 
 ExplosionBomb:
@@ -63,7 +70,7 @@ ExBom_Index:	index *,,2
 ; ===========================================================================
 
 ExBom_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto ExBom_Animate next
 		move.l	#Map_ExplodeBomb,ost_mappings(a0)
 		move.w	#tile_Nem_Explode,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)

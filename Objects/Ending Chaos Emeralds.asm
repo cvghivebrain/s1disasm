@@ -1,5 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Object 88 - chaos emeralds on	the ending sequence
+
+; spawned by:
+;	EndSonic
 ; ---------------------------------------------------------------------------
 
 EndChaos:
@@ -20,8 +23,8 @@ ost_echaos_angle:	equ $3E					; angle for rotation (2 bytes)
 ; ===========================================================================
 
 ECha_Main:	; Routine 0
-		cmpi.b	#2,(v_ost_player+ost_frame).w		; this isn't `id_frame_Wait1`: `v_ost_player` is Object 88, which has its own frames
-		beq.s	ECha_CreateEms
+		cmpi.b	#id_frame_esonic_up,(v_ost_player+ost_frame).w ; is Sonic looking up?
+		beq.s	ECha_CreateEms				; if yes, branch
 		addq.l	#4,sp
 		rts	
 ; ===========================================================================
@@ -32,11 +35,11 @@ ECha_CreateEms:
 		movea.l	a0,a1
 		moveq	#0,d3
 		moveq	#id_frame_echaos_blue,d2
-		moveq	#5,d1
+		moveq	#6-1,d1
 
 	ECha_LoadLoop:
 		move.b	#id_EndChaos,(a1)			; load chaos emerald object
-		addq.b	#2,ost_routine(a1)
+		addq.b	#2,ost_routine(a1)			; goto ECha_Move next
 		move.l	#Map_ECha,ost_mappings(a1)
 		move.w	#tile_Nem_EndEm,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)
@@ -48,7 +51,7 @@ ECha_CreateEms:
 		addq.b	#1,d2
 		move.b	d3,ost_angle(a1)
 		addi.b	#$100/6,d3				; angle between each emerald
-		lea	$40(a1),a1
+		lea	sizeof_ost(a1),a1
 		dbf	d1,ECha_LoadLoop			; repeat 5 more times
 
 ECha_Move:	; Routine 2

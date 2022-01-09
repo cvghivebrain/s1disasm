@@ -1,5 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Object 8C - chaos emeralds on	the "TRY AGAIN"	screen
+
+; spawned by:
+;	EndEggman
 ; ---------------------------------------------------------------------------
 
 TryChaos:
@@ -23,12 +26,12 @@ TCha_Main:	; Routine 0
 		movea.l	a0,a1
 		moveq	#0,d2
 		moveq	#0,d3
-		moveq	#5,d1
+		moveq	#6-1,d1
 		sub.b	(v_emeralds).w,d1
 
 @makeemerald:
 		move.b	#id_TryChaos,(a1)			; load emerald object
-		addq.b	#2,ost_routine(a1)
+		addq.b	#2,ost_routine(a1)			; goto TCha_Move next
 		move.l	#Map_ECha,ost_mappings(a1)
 		move.w	#tile_Nem_EndEm_TryAgain,ost_tile(a1)
 		move.b	#render_abs,ost_render(a1)
@@ -42,21 +45,21 @@ TCha_Main:	; Routine 0
 
 	@chkemerald:
 		moveq	#0,d0
-		move.b	(v_emeralds).w,d0
+		move.b	(v_emeralds).w,d0			; get emerald count
 		subq.w	#1,d0
-		bcs.s	@loc_5B42
+		bcs.s	@no_emeralds				; branch if 0
 
 	@chkloop:
-		cmp.b	(a3,d0.w),d2
-		bne.s	@notgot
-		addq.b	#1,d2
+		cmp.b	(a3,d0.w),d2				; have you got specific emerald?
+		bne.s	@no_match				; if not, branch
+		addq.b	#1,d2					; try next emerald
 		bra.s	@chkemerald
 ; ===========================================================================
 
-	@notgot:
-		dbf	d0,@chkloop
+	@no_match:
+		dbf	d0,@chkloop				; repeat for number of emeralds you have
 
-@loc_5B42:
+	@no_emeralds:
 		move.b	d2,ost_frame(a1)
 		addq.b	#1,ost_frame(a1)
 		addq.b	#1,d2
@@ -64,33 +67,33 @@ TCha_Main:	; Routine 0
 		move.b	d3,ost_anim_time(a1)
 		move.b	d3,ost_anim_delay(a1)
 		addi.w	#10,d3
-		lea	$40(a1),a1
-		dbf	d1,@makeemerald				; repeat 5 times
+		lea	sizeof_ost(a1),a1
+		dbf	d1,@makeemerald
 
 TCha_Move:	; Routine 2
-		tst.w	ost_ectry_speed(a0)
-		beq.s	locret_5BBA
+		tst.w	ost_ectry_speed(a0)			; should be 0, 2 or -2 (changed by Eggman object)
+		beq.s	@no_move				; branch if 0
 		tst.b	ost_anim_time(a0)
-		beq.s	loc_5B78
-		subq.b	#1,ost_anim_time(a0)
-		bne.s	loc_5B80
+		beq.s	@update_angle				; branch if timer is 0
+		subq.b	#1,ost_anim_time(a0)			; decrement timer
+		bne.s	@chk_angle				; branch if not 0
 
-loc_5B78:
-		move.w	ost_ectry_speed(a0),d0
-		add.w	d0,ost_angle(a0)
+	@update_angle:
+		move.w	ost_ectry_speed(a0),d0			; 2 or -2
+		add.w	d0,ost_angle(a0)			; update angle
 
-loc_5B80:
-		move.b	ost_angle(a0),d0
-		beq.s	loc_5B8C
+	@chk_angle:
+		move.b	ost_angle(a0),d0			; get angle
+		beq.s	@angle_0				; branch if 0
 		cmpi.b	#$80,d0
-		bne.s	loc_5B96
+		bne.s	@angle_not_80				; branch if not $80
 
-loc_5B8C:
+	@angle_0:
 		clr.w	ost_ectry_speed(a0)
 		move.b	ost_anim_delay(a0),ost_anim_time(a0)
 
-loc_5B96:
-		jsr	(CalcSine).l
+	@angle_not_80:
+		jsr	(CalcSine).l				; convert angle (d0) to sine (d0) and cosine (d1)
 		moveq	#0,d4
 		move.b	ost_ectry_radius(a0),d4
 		muls.w	d4,d1
@@ -102,5 +105,5 @@ loc_5B96:
 		move.w	d1,ost_x_pos(a0)
 		move.w	d0,ost_y_screen(a0)
 
-locret_5BBA:
+	@no_move:
 		rts	

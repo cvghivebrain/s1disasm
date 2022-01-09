@@ -357,7 +357,7 @@ v_ring_reward_lampcopy:		rs.b 1 ; $FFFFFE54 ; lamppost copy of v_ring_reward
 unused_fe55:			rs.b 2
 
 v_emeralds:			rs.b 1 ; $FFFFFE57 ; number of chaos emeralds
-v_emerald_list:			rs.b 6 ; $FFFFFE58 ; which individual emeralds you have, 1 byte per emerald - 00 = no; 01 = yes
+v_emerald_list:			rs.b 6 ; $FFFFFE58 ; which individual emeralds you have, 1 byte per emerald numbered 0 to 5
 v_oscillating_direction:	rs.w 1 ; $FFFFFE5E ; bitfield for the direction values in the table below are moving - 0 = up; 1 = down
 v_oscillating_table:		rs.l $10 ; $FFFFFE60 ; table of 16 oscillating values, for platform movement - 1 word for rate, 1 word for current value
 unused_fea0:			rs.b $20

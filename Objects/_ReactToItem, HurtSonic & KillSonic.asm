@@ -213,8 +213,8 @@ React_Enemy:
 
 	@lessthan16:
 		bsr.w	AddPoints
-		move.b	#id_ExplosionItem,ost_id(a1)			; change object to explosion
-		move.b	#0,ost_routine(a1)
+		move.b	#id_ExplosionItem,ost_id(a1)		; change object to explosion
+		move.b	#id_ExItem_Animal,ost_routine(a1)	; explosion also spawns an animal
 		tst.w	ost_y_vel(a0)
 		bmi.s	@bouncedown
 		move.w	ost_y_pos(a0),d0
