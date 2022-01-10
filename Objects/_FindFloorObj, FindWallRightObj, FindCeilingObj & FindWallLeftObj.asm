@@ -45,6 +45,9 @@ FindFloorObj2:
 
 ; Runs FindWall without the need for inputs, taking inputs from local OST variables
 
+; input:
+;	d3 = x radius of object, right side
+
 ; output:
 ;	d1 = distance to the wall
 ;	a1 = address within 256x256 mappings where object is standing
@@ -118,6 +121,9 @@ locret_14FD4:
 ; Subroutine to find the distance of an object to the wall to its left
 
 ; Runs FindWall without the need for inputs, taking inputs from local OST variables
+
+; input:
+;	d3 = x radius of object, left side (negative)
 
 ; output:
 ;	d1 = distance to the wall

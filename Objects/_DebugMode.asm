@@ -305,7 +305,7 @@ DebugList_MZ:
 		dbug	Map_Buzz,	BuzzBomber,	0,	0,	tile_Nem_Buzz
 		dbug	Map_Spike,	Spikes,		0,	0,	tile_Nem_Spikes
 		dbug	Map_Spring,	Springs,	0,	0,	tile_Nem_HSpring
-		dbug	Map_Fire,	LavaMaker,	0,	0,	tile_Nem_Fireball
+		dbug	Map_Fire,	FireMaker,	0,	0,	tile_Nem_Fireball
 		dbug	Map_Brick,	MarbleBrick,	0,	0,	0+tile_pal3
 		dbug	Map_Geyser,	GeyserMaker,	0,	0,	tile_Nem_Lava+tile_pal4
 		dbug	Map_LWall,	LavaWall,	0,	0,	tile_Nem_Lava+tile_pal4
@@ -334,7 +334,7 @@ DebugList_SLZ:
 		dbug	Map_Fan,	Fan,		0,	0,	tile_Nem_Fan+tile_pal3
 		dbug	Map_Seesaw,	Seesaw,		0,	0,	tile_Nem_Seesaw
 		dbug	Map_Spring,	Springs,	0,	0,	tile_Nem_HSpring
-		dbug	Map_Fire,	LavaMaker,	0,	0,	tile_Nem_Fireball_SLZ
+		dbug	Map_Fire,	FireMaker,	0,	0,	tile_Nem_Fireball_SLZ
 		dbug	Map_Scen,	Scenery,	0,	0,	tile_Nem_SlzCannon+tile_pal3
 		dbug	Map_Bomb,	Bomb,		0,	0,	tile_Nem_Bomb
 		dbug	Map_Orb,	Orbinaut,	0,	0,	tile_Nem_Orbinaut+tile_pal2

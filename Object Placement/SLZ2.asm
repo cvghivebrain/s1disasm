@@ -84,7 +84,7 @@ ObjPos_SLZ2:
 		objpos $1368,$0430,Rings,$12,rem
 		objpos $1380,$012C,Rings,$10,rem
 		objpos $1388,$0270,Scenery,type_scen_cannon
-		objpos $13A0,$0270,LavaMaker,$17
+		objpos $13A0,$0270,FireMaker,type_fire_fastest+type_fire_right
 		objpos $13A1,$0135,Rings,$10,rem
 		objpos $13A8,$05D4,Rings,$12,rem
 		objpos $13BB,$014E,Rings,$10,rem

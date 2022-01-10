@@ -70,8 +70,8 @@ Obj_Index:
 		ptr Obj10					; $10
 		ptr Bridge
 		ptr SpinningLight
-		ptr LavaMaker
-		ptr LavaBall					; $14
+		ptr FireMaker
+		ptr FireBall					; $14
 		ptr SwingingPlatform
 		ptr Harpoon
 		ptr Helix

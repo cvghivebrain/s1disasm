@@ -6,15 +6,15 @@ ObjPos_MZ2:
 		objpos $0154,$0258,Rings,$11,rem
 		objpos $01A0,$02F0,LargeGrass,type_grass_narrow+type_grass_3+type_grass_rev
 		objpos $0200,$02A8,Caterkiller,$00,rem
-		objpos $0220,$04B0,LavaMaker,$37
+		objpos $0220,$04B0,FireMaker,type_fire_medium+type_fire_right
 		objpos $0250,$05C0,LavaWall,$00,rem
-		objpos $0280,$0470,LavaMaker,$37
+		objpos $0280,$0470,FireMaker,type_fire_medium+type_fire_right
 		objpos $02D0,$0240,BuzzBomber,$00,rem
-		objpos $02D0,$0420,LavaMaker,$35
+		objpos $02D0,$0420,FireMaker,type_fire_medium+type_fire_down
 		objpos $02E0,$0550,PushBlock,type_pblock_four+type_pblock_nograv,rem
 		objpos $02E8,$04C0,Spikes,$10,xflip
 		objpos $0300,$0530,Spikes,$30
-		objpos $0320,$02D0,LavaMaker,$41
+		objpos $0320,$02D0,FireMaker,type_fire_slow+type_fire_updown_mid
 		objpos $0330,$0490,MarbleBrick,type_brick_still
 		objpos $0340,$0550,Spikes,$30
 		objpos $0350,$0490,MarbleBrick,type_brick_still
@@ -26,7 +26,7 @@ ObjPos_MZ2:
 		objpos $0380,$04E8,LavaTag,$02
 		objpos $0388,$05D4,Rings,$12,rem
 		objpos $0390,$0470,MarbleBrick,type_brick_still
-		objpos $03E0,$02D0,LavaMaker,$42
+		objpos $03E0,$02D0,FireMaker,type_fire_slow+type_fire_updown_high
 		objpos $0440,$03C8,Caterkiller,$00,xflip,rem
 		objpos $0440,$0490,MarbleBrick,type_brick_still
 		objpos $0450,$05E0,MarbleBrick,type_brick_still
@@ -70,20 +70,20 @@ ObjPos_MZ2:
 		objpos $0948,$03C8,Caterkiller,$00,xflip,rem
 		objpos $0970,$04B0,Monitor,type_monitor_rings,rem
 		objpos $0980,$05E8,LavaTag,$02
-		objpos $0990,$02E0,LavaMaker,$41
+		objpos $0990,$02E0,FireMaker,type_fire_slow+type_fire_updown_mid
 		objpos $0990,$04B0,Monitor,type_monitor_1up,rem
 		objpos $09B0,$04B0,Monitor,type_monitor_rings,rem
 		objpos $09C0,$02D0,LargeGrass,type_grass_narrow+type_grass_1
 		objpos $09C0,$02F8,LavaTag,$01
-		objpos $09F0,$02E0,LavaMaker,$31
+		objpos $09F0,$02E0,FireMaker,type_fire_medium+type_fire_updown_mid
 		objpos $0A00,$0568,SwingingPlatform,$04
 		objpos $0A14,$026C,Rings,$11,rem
-		objpos $0A50,$0290,LavaMaker,$41
+		objpos $0A50,$0290,FireMaker,type_fire_slow+type_fire_updown_mid
 		objpos $0A68,$0358,Rings,$12,rem
 		objpos $0A80,$02B0,LargeGrass,type_grass_narrow+type_grass_2
 		objpos $0A80,$02B8,LavaTag,$01
 		objpos $0A80,$05E8,LavaTag,$02
-		objpos $0AB0,$0290,LavaMaker,$31
+		objpos $0AB0,$0290,FireMaker,type_fire_medium+type_fire_updown_mid
 		objpos $0AD0,$0568,SwingingPlatform,$05,xflip
 		objpos $0AD4,$026C,Rings,$11,rem
 		objpos $0AE8,$047C,Spikes,$10,xflip
@@ -93,7 +93,7 @@ ObjPos_MZ2:
 		objpos $0B54,$01FC,Rings,$11,rem
 		objpos $0B80,$0498,LavaTag,$02
 		objpos $0B80,$05E8,LavaTag,$02
-		objpos $0BA0,$0228,LavaMaker,$31
+		objpos $0BA0,$0228,FireMaker,type_fire_medium+type_fire_updown_mid
 		objpos $0BA0,$0248,LavaTag,$00
 		objpos $0BA0,$0568,SwingingPlatform,$04
 		objpos $0BD4,$01AC,Rings,$11,rem

@@ -1,31 +1,31 @@
 	sHeaderSFX
-	sHeaderVoice	LavaBall_Patches
+	sHeaderVoice	FireBall_Patches
 	sHeaderTick	$01
-	sHeaderCH	$80, tFM5, LavaBall_FM5, $00, $00
-	sHeaderCH	$80, tPSG3, LavaBall_PSG3, $00, $00
+	sHeaderCH	$80, tFM5, FireBall_FM5, $00, $00
+	sHeaderCH	$80, tPSG3, FireBall_PSG3, $00, $00
 	sHeaderFinish
 
-LavaBall_FM5:
+FireBall_FM5:
 	sVoice		00
 	sNote		nR, $01
 	sVib		$01, $01, $40, $48
 	sNote		nD0, $06, nE0, $02
 	sEnd
 
-LavaBall_PSG3:
+FireBall_PSG3:
 	sEnv		None
 	sNote		nR, $0B
 	sNoiseSet	snWhitePSG3
 	sNote		nA5, $01, sTie
 
-LavaBall_Loop1:
+FireBall_Loop1:
 	sNote		$02
 	sVolAddPSG	$01
 	sNote		sTie
-	sLoop		$00, $10, LavaBall_Loop1
+	sLoop		$00, $10, FireBall_Loop1
 	sEnd
 
-LavaBall_Patches:
+FireBall_Patches:
 
 	sNewVoice	00					; voice number $00
 	sAlgorithm	$02

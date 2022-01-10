@@ -43,7 +43,7 @@ ObjPos_SLZ3:
 		objpos $0884,$01D4,Rings,$21,rem
 		objpos $0884,$01EC,Rings,$21,rem
 		objpos $0894,$01C8,Rings,$45,rem
-		objpos $08E0,$02D0,LavaMaker,$36
+		objpos $08E0,$02D0,FireMaker,type_fire_medium+type_fire_left
 		objpos $08F8,$02D0,Scenery,type_scen_cannon,xflip
 		objpos $08F8,$0658,Springs,type_spring_yellow+type_spring_up
 		objpos $0910,$04D1,Monitor,type_monitor_1up,rem
@@ -85,11 +85,11 @@ ObjPos_SLZ3:
 		objpos $0D88,$06D0,Scenery,type_scen_cannon
 		objpos $0D90,$05F0,Staircase,type_stair_above,xflip
 		objpos $0D90,$06F0,Staircase,type_stair_above,xflip
-		objpos $0DA0,$06D0,LavaMaker,$37
+		objpos $0DA0,$06D0,FireMaker,type_fire_medium+type_fire_right
 		objpos $0E10,$0670,Staircase,type_stair_above
 		objpos $0E30,$0110,Rings,$44,rem
 		objpos $0E68,$0030,Rings,$12,rem
-		objpos $0E60,$0650,LavaMaker,$36
+		objpos $0E60,$0650,FireMaker,type_fire_medium+type_fire_left
 		objpos $0E78,$0650,Scenery,type_scen_cannon,xflip
 		objpos $0F20,$0768,CollapseFloor,$01
 		objpos $0F28,$0750,Rings,$12,rem
@@ -197,7 +197,7 @@ ObjPos_SLZ3:
 		objpos $1950,$03C0,SmashWall,id_frame_smash_middle,rem
 		objpos $1950,$0451,Monitor,type_monitor_rings,rem
 		objpos $1958,$01E8,Elevator,type_elev_down_short
-		objpos $1960,$0370,LavaMaker,$36
+		objpos $1960,$0370,FireMaker,type_fire_medium+type_fire_left
 		objpos $1970,$03C0,SmashWall,id_frame_smash_middle,rem
 		objpos $1970,$0451,Monitor,type_monitor_rings,rem
 		objpos $1978,$0370,Scenery,type_scen_cannon,xflip
@@ -207,12 +207,12 @@ ObjPos_SLZ3:
 		objpos $1A30,$0210,Bomb,$00,yflip,rem
 		objpos $1A60,$0668,BasicPlatform,type_plat_falls
 		objpos $1A88,$0370,Scenery,type_scen_cannon
-		objpos $1AA0,$0370,LavaMaker,$37
+		objpos $1AA0,$0370,FireMaker,type_fire_medium+type_fire_right
 		objpos $1AB0,$05F0,Seesaw,$00
 		objpos $1B10,$02F0,Staircase,type_stair_above,xflip
 		objpos $1B20,$0668,BasicPlatform,type_plat_falls
 		objpos $1B30,$05C0,Orbinaut,$02,xflip,rem
-		objpos $1B60,$0370,LavaMaker,$36
+		objpos $1B60,$0370,FireMaker,type_fire_medium+type_fire_left
 		objpos $1B78,$02D0,Springs,type_spring_red+type_spring_right,xflip
 		objpos $1B78,$0370,Scenery,type_scen_cannon,xflip
 		objpos $1B60,$0668,BasicPlatform,type_plat_falls
@@ -244,7 +244,7 @@ ObjPos_SLZ3:
 		objpos $1E10,$03F0,Staircase,type_stair_below,xflip
 		objpos $1E78,$0470,Springs,type_spring_red+type_spring_right,xflip
 		objpos $1EB0,$0450,Rings,$12,rem
-		objpos $1EE0,$03F0,LavaMaker,$36
+		objpos $1EE0,$03F0,FireMaker,type_fire_medium+type_fire_left
 		objpos $1EF8,$02CC,Lamppost,$01,rem
 		objpos $1EF8,$03F0,Scenery,type_scen_cannon,xflip
 		

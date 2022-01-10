@@ -1,33 +1,50 @@
 ; ---------------------------------------------------------------------------
-; Object 14 - lava balls (MZ, SLZ)
+; Object 14 - fireballs (MZ, SLZ)
+
+; spawned by:
+;	FireMaker - subtypes 0/1/2/5/6/7
+;	BossMarble - subtype 0
 ; ---------------------------------------------------------------------------
 
-LavaBall:
+FireBall:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
-		move.w	LBall_Index(pc,d0.w),d1
-		jsr	LBall_Index(pc,d1.w)
+		move.w	FBall_Index(pc,d0.w),d1
+		jsr	FBall_Index(pc,d1.w)
 		bra.w	DisplaySprite
 ; ===========================================================================
-LBall_Index:	index *,,2
-		ptr LBall_Main
-		ptr LBall_Action
-		ptr LBall_Delete
+FBall_Index:	index *,,2
+		ptr FBall_Main
+		ptr FBall_Action
+		ptr FBall_Delete
 
-LBall_Speeds:	dc.w -$400, -$500, -$600, -$700, -$200
-		dc.w $200, -$200, $200,	0
+FBall_Speeds:	; Vertical - goes up and falls down
+		dc.w -$400					; x0
+		dc.w -$500					; x1
+		dc.w -$600					; x2
+		dc.w -$700					; x3 (unused)
 
+		; Vertical - constant speed
+		dc.w -$200					; x4 (unused)
+		dc.w $200					; x5
+
+		; Horizontal
+		dc.w -$200					; x6
+		dc.w $200					; x7
+		dc.w 0						; x8
+
+ost_fireball_mz_boss:	equ $29					; set to $FF if spawned by MZ boss
 ost_fireball_y_start:	equ $30					; original y position (2 bytes)
 ; ===========================================================================
 
-LBall_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
+FBall_Main:	; Routine 0
+		addq.b	#2,ost_routine(a0)			; goto FBall_Action next
 		move.b	#8,ost_height(a0)
 		move.b	#8,ost_width(a0)
 		move.l	#Map_Fire,ost_mappings(a0)
 		move.w	#tile_Nem_Fireball,ost_tile(a0)
-		cmpi.b	#3,(v_zone).w				; check if level is SLZ
-		bne.s	@notSLZ
+		cmpi.b	#id_SLZ,(v_zone).w			; check if level is SLZ
+		bne.s	@notSLZ					; if not, branch
 		move.w	#tile_Nem_Fireball_SLZ,ost_tile(a0)	; SLZ specific code
 
 	@notSLZ:
@@ -35,15 +52,15 @@ LBall_Main:	; Routine 0
 		move.b	#3,ost_priority(a0)
 		move.b	#id_col_8x8+id_col_hurt,ost_col_type(a0)
 		move.w	ost_y_pos(a0),ost_fireball_y_start(a0)
-		tst.b	$29(a0)
-		beq.s	@speed
-		addq.b	#2,ost_priority(a0)
+		tst.b	ost_fireball_mz_boss(a0)		; was fireball spawned by MZ boss?
+		beq.s	@speed					; if not, branch
+		addq.b	#2,ost_priority(a0)			; use lower sprite priority
 
 	@speed:
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0
 		add.w	d0,d0
-		move.w	LBall_Speeds(pc,d0.w),ost_y_vel(a0)	; load object speed (vertical)
+		move.w	FBall_Speeds(pc,d0.w),ost_y_vel(a0)	; load object speed (vertical)
 		move.b	#8,ost_actwidth(a0)
 		cmpi.b	#6,ost_subtype(a0)			; is object type 0-5?
 		bcs.s	@sound					; if yes, branch
@@ -54,112 +71,112 @@ LBall_Main:	; Routine 0
 		move.w	#0,ost_y_vel(a0)			; delete vertical speed
 
 	@sound:
-		play.w	1, jsr, sfx_LavaBall			; play lava ball sound
+		play.w	1, jsr, sfx_FireBall			; play lava ball sound
 
-LBall_Action:	; Routine 2
+FBall_Action:	; Routine 2
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0
 		add.w	d0,d0
-		move.w	LBall_TypeIndex(pc,d0.w),d1
-		jsr	LBall_TypeIndex(pc,d1.w)
-		bsr.w	SpeedToPos
+		move.w	FBall_TypeIndex(pc,d0.w),d1
+		jsr	FBall_TypeIndex(pc,d1.w)		; update speed & check for wall collision
+		bsr.w	SpeedToPos				; update position
 		lea	(Ani_Fire).l,a1
 		bsr.w	AnimateSprite
 
-LBall_ChkDel:
+FBall_ChkDel:
 		out_of_range	DeleteObject
 		rts	
 ; ===========================================================================
-LBall_TypeIndex:index *
-		ptr LBall_Type00
-		ptr LBall_Type00
-		ptr LBall_Type00
-		ptr LBall_Type00
-		ptr LBall_Type04
-		ptr LBall_Type05
-		ptr LBall_Type06
-		ptr LBall_Type07
-		ptr LBall_Type08
+FBall_TypeIndex:index *
+		ptr FBall_Type_UpDown
+		ptr FBall_Type_UpDown
+		ptr FBall_Type_UpDown
+		ptr FBall_Type_UpDown				; unused
+		ptr FBall_Type_Up				; unused
+		ptr FBall_Type_Down
+		ptr FBall_Type_Left
+		ptr FBall_Type_Right
+		ptr FBall_Type_Stop
 ; ===========================================================================
-; lavaball types 00-03 fly up and fall back down
+; fireball types 00-03 fly up and fall back down
 
-LBall_Type00:
+FBall_Type_UpDown:
 		addi.w	#$18,ost_y_vel(a0)			; increase object's downward speed
 		move.w	ost_fireball_y_start(a0),d0
 		cmp.w	ost_y_pos(a0),d0			; has object fallen back to its original position?
-		bcc.s	loc_E41E				; if not, branch
-		addq.b	#2,ost_routine(a0)			; goto "LBall_Delete" routine
+		bcc.s	@keep_falling				; if not, branch
+		addq.b	#2,ost_routine(a0)			; goto FBall_Delete next
 
-loc_E41E:
+	@keep_falling:
 		bclr	#status_yflip_bit,ost_status(a0)
-		tst.w	ost_y_vel(a0)
-		bpl.s	locret_E430
-		bset	#status_yflip_bit,ost_status(a0)
+		tst.w	ost_y_vel(a0)				; is fireball falling downwards?
+		bpl.s	@upwards				; if yes, branch
+		bset	#status_yflip_bit,ost_status(a0)	; set yflip
 
-locret_E430:
+	@upwards:
 		rts	
 ; ===========================================================================
-; lavaball type	04 flies up until it hits the ceiling
+; fireball type	04 flies up until it hits the ceiling
 
-LBall_Type04:
+FBall_Type_Up:
 		bset	#status_yflip_bit,ost_status(a0)
 		bsr.w	FindCeilingObj
-		tst.w	d1
-		bpl.s	locret_E452
-		move.b	#8,ost_subtype(a0)
+		tst.w	d1					; distance to ceiling
+		bpl.s	@no_ceiling				; branch if > 0
+		move.b	#id_FBall_Type_Stop,ost_subtype(a0)
 		move.b	#id_ani_fire_vertcollide,ost_anim(a0)
 		move.w	#0,ost_y_vel(a0)			; stop the object when it touches the ceiling
 
-locret_E452:
+	@no_ceiling:
 		rts	
 ; ===========================================================================
-; lavaball type	05 falls down until it hits the	floor
+; fireball type	05 falls down until it hits the	floor
 
-LBall_Type05:
+FBall_Type_Down:
 		bclr	#status_yflip_bit,ost_status(a0)
 		bsr.w	FindFloorObj
-		tst.w	d1
-		bpl.s	locret_E474
-		move.b	#8,ost_subtype(a0)
+		tst.w	d1					; distance to floor
+		bpl.s	@no_floor				; branch if > 0
+		move.b	#id_FBall_Type_Stop,ost_subtype(a0)
 		move.b	#id_ani_fire_vertcollide,ost_anim(a0)
 		move.w	#0,ost_y_vel(a0)			; stop the object when it touches the floor
 
-locret_E474:
+	@no_floor:
 		rts	
 ; ===========================================================================
-; lavaball types 06-07 move sideways until they hit a wall
+; fireball types 06-07 move sideways until they hit a wall
 
-LBall_Type06:
+FBall_Type_Left:
 		bset	#status_xflip_bit,ost_status(a0)
-		moveq	#-8,d3
+		moveq	#-8,d3					; dist. centre to left edge of fireball
 		bsr.w	FindWallLeftObj
-		tst.w	d1
-		bpl.s	locret_E498
-		move.b	#8,ost_subtype(a0)
+		tst.w	d1					; distance to wall
+		bpl.s	@no_wall				; branch if > 0
+		move.b	#id_FBall_Type_Stop,ost_subtype(a0)
 		move.b	#id_ani_fire_horicollide,ost_anim(a0)
 		move.w	#0,ost_x_vel(a0)			; stop object when it touches a wall
 
-locret_E498:
+	@no_wall:
 		rts	
 ; ===========================================================================
 
-LBall_Type07:
+FBall_Type_Right:
 		bclr	#status_xflip_bit,ost_status(a0)
-		moveq	#8,d3
+		moveq	#8,d3					; dist. centre to right edge of fireball
 		bsr.w	FindWallRightObj
-		tst.w	d1
-		bpl.s	locret_E4BC
-		move.b	#8,ost_subtype(a0)
+		tst.w	d1					; distance to wall
+		bpl.s	@no_wall				; branch if > 0
+		move.b	#id_FBall_Type_Stop,ost_subtype(a0)
 		move.b	#id_ani_fire_horicollide,ost_anim(a0)
 		move.w	#0,ost_x_vel(a0)			; stop object when it touches a wall
 
-locret_E4BC:
+	@no_wall:
 		rts	
 ; ===========================================================================
 
-LBall_Type08:
+FBall_Type_Stop:
 		rts	
 ; ===========================================================================
 
-LBall_Delete:
+FBall_Delete:	; Routine 4
 		bra.w	DeleteObject

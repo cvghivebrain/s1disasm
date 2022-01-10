@@ -186,7 +186,7 @@ Obj73_MakeLava:
 		bcc.s	loc_1845C
 		jsr	(FindFreeObj).l
 		bne.s	loc_1844A
-		move.b	#id_LavaBall,ost_id(a1)			; load fireball object that comes from lava
+		move.b	#id_FireBall,ost_id(a1)			; load fireball object that comes from lava
 		move.w	#$2E8,ost_y_pos(a1)			; set y position
 		jsr	(RandomNumber).l
 		andi.l	#$FFFF,d0

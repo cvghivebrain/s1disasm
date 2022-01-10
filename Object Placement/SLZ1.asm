@@ -40,11 +40,11 @@ ObjPos_SLZ1:
 		objpos $0B08,$0550,Scenery,type_scen_cannon
 		objpos $0B10,$0370,Staircase,type_stair_above,xflip
 		objpos $0B10,$0470,Staircase,type_stair_above,xflip
-		objpos $0B18,$0350,LavaMaker,$37
-		objpos $0B18,$03D0,LavaMaker,$37
-		objpos $0B18,$0450,LavaMaker,$37
-		objpos $0B18,$04D0,LavaMaker,$37
-		objpos $0B18,$0550,LavaMaker,$37
+		objpos $0B18,$0350,FireMaker,type_fire_medium+type_fire_right
+		objpos $0B18,$03D0,FireMaker,type_fire_medium+type_fire_right
+		objpos $0B18,$0450,FireMaker,type_fire_medium+type_fire_right
+		objpos $0B18,$04D0,FireMaker,type_fire_medium+type_fire_right
+		objpos $0B18,$0550,FireMaker,type_fire_medium+type_fire_right
 		objpos $0B90,$01F0,Staircase,type_stair_below
 		objpos $0B90,$0230,Orbinaut,$02,rem
 		objpos $0B90,$03F0,Staircase,type_stair_above
@@ -59,13 +59,13 @@ ObjPos_SLZ1:
 		objpos $0C80,$062C,Rings,$10,rem
 		objpos $0C88,$0570,Scenery,type_scen_cannon
 		objpos $0C90,$02F0,Staircase,type_stair_above
-		objpos $0CA0,$0570,LavaMaker,$37
+		objpos $0CA0,$0570,FireMaker,type_fire_medium+type_fire_right
 		objpos $0CA1,$0635,Rings,$10,rem
 		objpos $0CBB,$064E,Rings,$10,rem
 		objpos $0CC5,$066F,Rings,$10,rem
 		objpos $0D10,$0270,Staircase,type_stair_above
 		objpos $0D60,$03D0,Bomb,$00,rem
-		objpos $0D60,$0570,LavaMaker,$36
+		objpos $0D60,$0570,FireMaker,type_fire_medium+type_fire_left
 		objpos $0D68,$0360,Rings,$12,rem
 		objpos $0D78,$0570,Scenery,type_scen_cannon,xflip
 		objpos $0D80,$0360,CirclingPlatform,$00
@@ -85,13 +85,13 @@ ObjPos_SLZ1:
 		objpos $0EE0,$0668,CollapseFloor,$81
 		objpos $0EF0,$02D1,Monitor,type_monitor_invincible,rem
 		objpos $0EF0,$03D0,Bomb,$00,rem
-		objpos $0F60,$0570,LavaMaker,$36
+		objpos $0F60,$0570,FireMaker,type_fire_medium+type_fire_left
 		objpos $0F78,$0570,Scenery,type_scen_cannon,xflip
 		objpos $0F80,$04C8,Orbinaut,$02,rem
 		objpos $0FA8,$0670,Rings,$12,rem
 		objpos $1000,$0628,Orbinaut,$02,rem
 		objpos $1008,$0150,Scenery,type_scen_cannon
-		objpos $1020,$0150,LavaMaker,$37
+		objpos $1020,$0150,FireMaker,type_fire_medium+type_fire_right
 		objpos $1068,$0680,Rings,$12,rem
 		objpos $1080,$0680,CirclingPlatform,$00
 		objpos $1080,$0680,CirclingPlatform,$01
@@ -132,7 +132,7 @@ ObjPos_SLZ1:
 		objpos $13F8,$03D0,Springs,type_spring_red+type_spring_right,xflip
 		objpos $1410,$0250,Fan,type_fan_left_on,xflip
 		objpos $1488,$0670,Scenery,type_scen_cannon
-		objpos $14A0,$0670,LavaMaker,$37
+		objpos $14A0,$0670,FireMaker,type_fire_medium+type_fire_right
 		objpos $1508,$0050,Fan,type_fan_left_onoff
 		objpos $1510,$0270,Staircase,type_stair_below,xflip
 		objpos $1530,$0358,Springs,type_spring_red+type_spring_up
@@ -182,7 +182,7 @@ ObjPos_SLZ1:
 		objpos $1A42,$0150,Rings,$10,rem
 		objpos $1A48,$0268,Rings,$10,rem
 		objpos $1A5A,$0136,Rings,$10,rem
-		objpos $1A60,$0670,LavaMaker,$36
+		objpos $1A60,$0670,FireMaker,type_fire_medium+type_fire_left
 		objpos $1A64,$0255,Rings,$10,rem
 		objpos $1A78,$0670,Scenery,type_scen_cannon,xflip
 		objpos $1A80,$012C,Rings,$10,rem

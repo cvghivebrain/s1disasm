@@ -22,11 +22,11 @@ ObjPos_MZ1:
 		objpos $05A0,$0230,LargeGrass,type_grass_narrow+type_grass_2
 		objpos $05A0,$0230,LargeGrass,type_grass_narrow+type_grass_2
 		objpos $0610,$01A8,Caterkiller,$00,rem
-		objpos $0690,$01E0,LavaMaker,$30
+		objpos $0690,$01E0,FireMaker,type_fire_medium+type_fire_updown_low
 		objpos $06E0,$01E8,LargeGrass,type_grass_wide+type_grass_1
 		objpos $06E0,$01F8,LavaTag,$02
 		objpos $0720,$0170,BuzzBomber,$00,rem
-		objpos $0730,$01E0,LavaMaker,$42
+		objpos $0730,$01E0,FireMaker,type_fire_slow+type_fire_updown_high
 		objpos $0798,$0150,Rings,$11,rem
 		objpos $07A0,$01E8,LargeGrass,type_grass_narrow+type_grass_3
 		objpos $0830,$02D1,Monitor,type_monitor_rings,rem
@@ -127,12 +127,12 @@ ObjPos_MZ1:
 		objpos $1130,$0458,MovingBlock,type_mblock_3+type_mblock_leftright
 		objpos $1250,$0270,BuzzBomber,$00,rem
 		objpos $1294,$0268,Rings,$11,rem
-		objpos $12A0,$02EA,LavaMaker,$41
+		objpos $12A0,$02EA,FireMaker,type_fire_slow+type_fire_updown_mid
 		objpos $12D4,$025C,Rings,$11,rem
 		objpos $12E0,$02D0,LargeGrass,type_grass_narrow+type_grass_1+type_grass_rev
 		objpos $12E0,$02FC,LavaTag,$02
 		objpos $1310,$0250,Rings,$11,rem
-		objpos $1320,$02E0,LavaMaker,$42
+		objpos $1320,$02E0,FireMaker,type_fire_slow+type_fire_updown_high
 		objpos $13A0,$02D0,LargeGrass,type_grass_narrow+type_grass_1
 		objpos $1468,$0258,Rings,$12,rem
 		objpos $1480,$02A8,LargeGrass,type_grass_sloped+type_grass_sinks

@@ -78,7 +78,7 @@ SfxFiles	macro	func
 		\func	UnkAB, $70			; Unknown sound effect
 		\func	BossHit, $70			; Hitting a boss sound effect
 		\func	Bubble, $70			; Bubble sound effect
-		\func	LavaBall, $60			; Lava ball and gargoyle sound effect
+		\func	FireBall, $60			; Lava ball and gargoyle sound effect
 		\func	Shield, $70			; Shield get sound effect
 		\func	Saw, $70			; Saw sound effect
 		\func	Electricity, $60		; Electricity sound effect

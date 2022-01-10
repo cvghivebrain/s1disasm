@@ -963,7 +963,7 @@ NullObject:
 		include "Mappings\GHZ Walls.asm"		; Map_Edge
 
 		include "Objects\MZ & SLZ Fireball Launchers.asm"
-		include "Objects\Fireballs.asm"			; LavaBall
+		include "Objects\Fireballs.asm"			; FireBall
 		include "Animations\Fireballs.asm"		; Ani_Fire
 
 		include "Objects\SBZ Flamethrower.asm"		; Flamethrower

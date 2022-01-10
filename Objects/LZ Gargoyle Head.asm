@@ -69,7 +69,7 @@ Gar_FireBall:	; Routine 4
 		neg.w	ost_x_vel(a0)
 
 	@noflip:
-		play.w	1, jsr, sfx_LavaBall			; play lava ball sound
+		play.w	1, jsr, sfx_FireBall			; play lava ball sound
 
 Gar_AniFire:	; Routine 6
 		move.b	(v_frame_counter_low).w,d0
