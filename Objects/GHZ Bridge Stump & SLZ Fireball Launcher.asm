@@ -1,5 +1,9 @@
 ; ---------------------------------------------------------------------------
 ; Object 1C - scenery (GHZ bridge stump, SLZ lava thrower)
+
+; spawned by:
+;	ObjPos_GHZ1, ObjPos_GHZ2, ObjPos_GHZ3 - subtype 3
+;	ObjPos_SLZ1, ObjPos_SLZ2, ObjPos_SLZ3 - subtype 0
 ; ---------------------------------------------------------------------------
 
 Scenery:
@@ -16,7 +20,7 @@ sizeof_scen_values:	equ Scen_Values_1-Scen_Values_0
 ; ===========================================================================
 
 Scen_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto Scen_ChkDel next
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0			; copy object subtype to d0
 		mulu.w	#sizeof_scen_values,d0			; multiply by $A
