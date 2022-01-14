@@ -12,7 +12,7 @@ CFlo_Index:	index *,,2
 		ptr CFlo_Main
 		ptr CFlo_Touch
 		ptr CFlo_Collapse
-		ptr CFlo_Display
+		ptr CFlo_WaitFall
 		ptr CFlo_Delete
 		ptr CFlo_WalkOff
 
@@ -84,9 +84,9 @@ CFlo_WalkOff:	; Routine $A
 
 ; ===========================================================================
 
-CFlo_Display:	; Routine 6
+CFlo_WaitFall:	; Routine 6
 		tst.b	ost_cfloor_wait_time(a0)		; has time delay reached zero?
-		beq.s	CFlo_TimeZero				; if yes, branch
+		beq.s	CFlo_FallNow				; if yes, branch
 		tst.b	ost_cfloor_flag(a0)			; has Sonic touched the object?
 		bne.w	loc_8402				; if yes, branch
 		subq.b	#1,ost_cfloor_wait_time(a0)		; subtract 1 from time
@@ -107,13 +107,13 @@ loc_8402:
 
 loc_842E:
 		move.b	#0,ost_cfloor_flag(a0)
-		move.b	#id_CFlo_Display,ost_routine(a0)	; run "CFlo_Display" routine
+		move.b	#id_CFlo_WaitFall,ost_routine(a0)	; run "CFlo_WaitFall" routine
 
 locret_843A:
 		rts	
 ; ===========================================================================
 
-CFlo_TimeZero:
+CFlo_FallNow:
 		bsr.w	ObjectFall
 		bsr.w	DisplaySprite
 		tst.b	ost_render(a0)
@@ -138,5 +138,5 @@ CFlo_Collapse_Now:
 loc_846C:
 		moveq	#7,d1
 		addq.b	#1,ost_frame(a0)
-		bra.s	loc_8486				; jump to address in GHZ Collapsing Ledge.asm
+		bra.s	FragmentObject				; jump to address in GHZ Collapsing Ledge.asm
 

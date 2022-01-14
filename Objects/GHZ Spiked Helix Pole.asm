@@ -1,5 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Object 17 - helix of spikes on a pole	(GHZ)
+
+; spawned by:
+;	ObjPos_GHZ3 - subtype $10
 ; ---------------------------------------------------------------------------
 
 Helix:
@@ -20,7 +23,7 @@ ost_helix_child_list:	equ $29					; list of child OST indices (up to 15 bytes)
 ; ===========================================================================
 
 Hel_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto Hel_Action next
 		move.l	#Map_Hel,ost_mappings(a0)
 		move.w	#tile_Nem_SpikePole+tile_pal3,ost_tile(a0)
 		move.b	#status_xflip+status_yflip+status_jump,ost_status(a0)
@@ -30,7 +33,7 @@ Hel_Main:	; Routine 0
 		move.w	ost_y_pos(a0),d2
 		move.w	ost_x_pos(a0),d3
 		move.b	ost_id(a0),d4
-		lea	ost_subtype(a0),a2			; move helix length to a2
+		lea	ost_subtype(a0),a2			; (a2) = subtype, followed by child list
 		moveq	#0,d1
 		move.b	(a2),d1					; move helix length to d1
 		move.b	#0,(a2)+				; clear subtype
@@ -38,14 +41,14 @@ Hel_Main:	; Routine 0
 		lsr.w	#1,d0
 		lsl.w	#4,d0
 		sub.w	d0,d3					; d3 is x-axis position of leftmost spike
-		subq.b	#2,d1
+		subq.b	#2,d1					; d1 = number of spikes, minus 1 for parent, minus 1 for first loop
 		bcs.s	Hel_Action				; skip to action if length is only 1
 		moveq	#0,d6
 
-Hel_Build:
-		bsr.w	FindFreeObj
-		bne.s	Hel_Action
-		addq.b	#1,ost_subtype(a0)
+@loop:
+		bsr.w	FindFreeObj				; find free OST slot
+		bne.s	Hel_Action				; branch if not found
+		addq.b	#1,ost_subtype(a0)			; keep track of number of child objects
 		move.w	a1,d5
 		subi.w	#v_ost_all&$FFFF,d5
 		lsr.w	#6,d5
@@ -60,12 +63,12 @@ Hel_Build:
 		move.b	#render_rel,ost_render(a1)
 		move.b	#3,ost_priority(a1)
 		move.b	#8,ost_actwidth(a1)
-		move.b	d6,ost_helix_frame(a1)
-		addq.b	#1,d6
-		andi.b	#7,d6
-		addi.w	#$10,d3
+		move.b	d6,ost_helix_frame(a1)			; set frame for current spike
+		addq.b	#1,d6					; use next frame on next spike
+		andi.b	#7,d6					; there are only 8 frames
+		addi.w	#$10,d3					; x position of next spike
 		cmp.w	ost_x_pos(a0),d3			; is this spike in the centre?
-		bne.s	Hel_NotCentre				; if not, branch
+		bne.s	@not_centre				; if not, branch
 
 		move.b	d6,ost_helix_frame(a0)			; set parent spike frame
 		addq.b	#1,d6
@@ -73,27 +76,28 @@ Hel_Build:
 		addi.w	#$10,d3					; skip to next spike
 		addq.b	#1,ost_subtype(a0)
 
-	Hel_NotCentre:
-		dbf	d1,Hel_Build				; repeat d1 times (helix length)
+	@not_centre:
+		dbf	d1,@loop				; repeat d1 times (helix length)
 
 Hel_Action:	; Routine 2, 4
 		bsr.w	Hel_RotateSpikes
 		bsr.w	DisplaySprite
 		bra.w	Hel_ChkDel
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
+; ---------------------------------------------------------------------------
+; Subroutine to animate the spikes and set their harmfulness
+; ---------------------------------------------------------------------------
 
 Hel_RotateSpikes:
-		move.b	(v_syncani_0_frame).w,d0
+		move.b	(v_syncani_0_frame).w,d0		; get synchronised frame value
 		move.b	#0,ost_col_type(a0)			; make object harmless
-		add.b	ost_helix_frame(a0),d0
-		andi.b	#7,d0
+		add.b	ost_helix_frame(a0),d0			; add initial frame
+		andi.b	#7,d0					; there are 8 frames max
 		move.b	d0,ost_frame(a0)			; change current frame
-		bne.s	locret_7DA6
+		bne.s	@harmless				; branch if not 0
 		move.b	#id_col_4x16+id_col_hurt,ost_col_type(a0) ; make object harmful
 
-locret_7DA6:
+	@harmless:
 		rts	
 ; End of function Hel_RotateSpikes
 
@@ -106,19 +110,19 @@ Hel_ChkDel:
 
 Hel_DelAll:
 		moveq	#0,d2
-		lea	ost_subtype(a0),a2			; move helix length to a2
-		move.b	(a2)+,d2				; move helix length to d2
-		subq.b	#2,d2
+		lea	ost_subtype(a0),a2
+		move.b	(a2)+,d2				; d2 = helix length
+		subq.b	#2,d2					; minus 1 for parent, minus 1 for first loop
 		bcs.s	Hel_Delete
 
-	Hel_DelLoop:
+	@loop:
 		moveq	#0,d0
 		move.b	(a2)+,d0
 		lsl.w	#6,d0
 		addi.l	#v_ost_all&$FFFFFF,d0
 		movea.l	d0,a1					; get child address
 		bsr.w	DeleteChild				; delete object
-		dbf	d2,Hel_DelLoop				; repeat d2 times (helix length)
+		dbf	d2,@loop				; repeat d2 times (helix length)
 
 Hel_Delete:	; Routine 6
 		bsr.w	DeleteObject

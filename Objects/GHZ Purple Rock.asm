@@ -1,5 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Object 3B - purple rock (GHZ)
+
+; spawned by:
+;	ObjPos_GHZ1, ObjPos_GHZ2, ObjPos_GHZ3
 ; ---------------------------------------------------------------------------
 
 PurpleRock:
@@ -14,7 +17,7 @@ Rock_Index:	index *,,2
 ; ===========================================================================
 
 Rock_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto Rock_Solid next
 		move.l	#Map_PRock,ost_mappings(a0)
 		move.w	#tile_Nem_PplRock+tile_pal4,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
@@ -22,9 +25,9 @@ Rock_Main:	; Routine 0
 		move.b	#4,ost_priority(a0)
 
 Rock_Solid:	; Routine 2
-		move.w	#$1B,d1
-		move.w	#$10,d2
-		move.w	#$10,d3
+		move.w	#$1B,d1					; width
+		move.w	#$10,d2					; height
+		move.w	#$10,d3					; height
 		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject
 		bsr.w	DisplaySprite

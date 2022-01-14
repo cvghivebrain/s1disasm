@@ -8,12 +8,12 @@
 ;	d4 = x-axis position
 ;
 ; output:
-;	d4 = collision type: 1 = side collision; -1 = top/bottom collision
+;	d4 = collision type: 0 = none; 1 = side collision; -1 = top/bottom collision
 ; ---------------------------------------------------------------------------
 
 SolidObject:
 		tst.b	ost_solid(a0)				; is Sonic standing on the object?
-		beq.w	Solid_ChkCollision				; if not, branch
+		beq.w	Solid_ChkCollision			; if not, branch
 		move.w	d1,d2
 		add.w	d2,d2
 		lea	(v_ost_player).w,a1
