@@ -2,7 +2,7 @@
 ; Object 1A - GHZ collapsing ledge
 
 ; spawned by:
-;	ObjPos_GHZ1, ObjPos_GHZ2, ObjPos_GHZ3 - subtype 0/1
+;	ObjPos_GHZ1, ObjPos_GHZ2, ObjPos_GHZ3 - subtypes 0/1
 ; ---------------------------------------------------------------------------
 
 CollapseLedge:
