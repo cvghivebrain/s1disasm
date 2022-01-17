@@ -211,10 +211,10 @@ ObjPos_GHZ1:
 		objpos $2486,$04B5,Rings,$10,rem
 		
 		objpos $2560,$04A2,Signpost,$00
-		objpos $2584,$0460,HiddenBonus,$03
-		objpos $2584,$0478,HiddenBonus,$03
-		objpos $2584,$0490,HiddenBonus,$03
+		objpos $2584,$0460,HiddenBonus,type_bonus_100
+		objpos $2584,$0478,HiddenBonus,type_bonus_100
+		objpos $2584,$0490,HiddenBonus,type_bonus_100
 		objpos $25A8,$0450,GiantRing,$00
-		objpos $25D4,$0450,HiddenBonus,$01
-		objpos $25D4,$0470,HiddenBonus,$02
+		objpos $25D4,$0450,HiddenBonus,type_bonus_10k
+		objpos $25D4,$0470,HiddenBonus,type_bonus_1k
 		endobj

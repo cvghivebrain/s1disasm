@@ -1,5 +1,13 @@
 ; ---------------------------------------------------------------------------
 ; Object 79 - lamppost
+
+; spawned by:
+;	ObjPos_GHZ1, ObjPos_GHZ2, ObjPos_GHZ3 - subtypes 1/2/3/4
+;	ObjPos_MZ1, ObjPos_MZ2, ObjPos_MZ3 - subtypes 1/2/5
+;	ObjPos_SYZ1, ObjPos_SYZ2, ObjPos_SYZ3 - subtypes 1/2
+;	ObjPos_LZ1, ObjPos_LZ2, ObjPos_LZ3 - subtypes 1/2
+;	ObjPos_SLZ3 - subtype 1
+;	ObjPos_SBZ1, ObjPos_SBZ3 - subtypes 1/2
 ; ---------------------------------------------------------------------------
 
 Lamppost:
@@ -21,7 +29,7 @@ ost_lamp_twirl_time:	equ $36					; length of time to twirl the lamp (2 bytes)
 ; ===========================================================================
 
 Lamp_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto Lamp_Blue next
 		move.l	#Map_Lamp,ost_mappings(a0)
 		move.w	#tile_Nem_Lamp,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
@@ -31,9 +39,10 @@ Lamp_Main:	; Routine 0
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
 		bclr	#7,2(a2,d0.w)
-		btst	#0,2(a2,d0.w)
-		bne.s	@red
-		move.b	(v_last_lamppost).w,d1
+		btst	#0,2(a2,d0.w)				; has lamppost been hit?
+		bne.s	@red					; if yes, branch
+
+		move.b	(v_last_lamppost).w,d1			; get number of last lamppost hit
 		andi.b	#$7F,d1
 		move.b	ost_subtype(a0),d2			; get lamppost number
 		andi.b	#$7F,d2
@@ -41,7 +50,7 @@ Lamp_Main:	; Routine 0
 		bcs.s	Lamp_Blue				; if yes, branch
 
 	@red:
-		bset	#0,2(a2,d0.w)
+		bset	#0,2(a2,d0.w)				; remember lamppost as red
 		move.b	#id_Lamp_Finish,ost_routine(a0)		; goto Lamp_Finish next
 		move.b	#id_frame_lamp_red,ost_frame(a0)	; use red lamppost frame
 		rts	
@@ -50,20 +59,21 @@ Lamp_Main:	; Routine 0
 Lamp_Blue:	; Routine 2
 		tst.w	(v_debug_active).w			; is debug mode	being used?
 		bne.w	@donothing				; if yes, branch
-		tst.b	(v_lock_multi).w
-		bmi.w	@donothing
+		tst.b	(v_lock_multi).w			; is object collision enabled?
+		bmi.w	@donothing				; if not, branch
 		move.b	(v_last_lamppost).w,d1
 		andi.b	#$7F,d1
 		move.b	ost_subtype(a0),d2
 		andi.b	#$7F,d2
 		cmp.b	d2,d1					; is this a "new" lamppost?
 		bcs.s	@chkhit					; if yes, branch
+
 		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
-		bset	#0,2(a2,d0.w)
-		move.b	#id_Lamp_Finish,ost_routine(a0)
-		move.b	#id_frame_lamp_red,ost_frame(a0)
+		bset	#0,2(a2,d0.w)				; remember lamppost as red
+		move.b	#id_Lamp_Finish,ost_routine(a0)		; goto Lamp_Finish next
+		move.b	#id_frame_lamp_red,ost_frame(a0)	; use red lamppost frame
 		bra.w	@donothing
 ; ===========================================================================
 
@@ -80,11 +90,11 @@ Lamp_Blue:	; Routine 2
 		bcc.s	@donothing
 
 		play.w	1, jsr, sfx_Lamppost			; play lamppost sound
-		addq.b	#2,ost_routine(a0)
-		jsr	(FindFreeObj).l
-		bne.s	@fail
+		addq.b	#2,ost_routine(a0)			; goto Lamp_Finish next
+		jsr	(FindFreeObj).l				; find free OST slot
+		bne.s	@fail					; branch if not found
 		move.b	#id_Lamppost,ost_id(a1)			; load twirling lamp object
-		move.b	#id_Lamp_Twirl,ost_routine(a1)		; goto Lamp_Twirl next
+		move.b	#id_Lamp_Twirl,ost_routine(a1)		; child object goto Lamp_Twirl next
 		move.w	ost_x_pos(a0),ost_lamp_x_start(a1)
 		move.w	ost_y_pos(a0),ost_lamp_y_start(a1)
 		subi.w	#$18,ost_lamp_y_start(a1)
@@ -98,11 +108,11 @@ Lamp_Blue:	; Routine 2
 
 	@fail:
 		move.b	#id_frame_lamp_poleonly,ost_frame(a0)	; use "post only" frame
-		bsr.w	Lamp_StoreInfo
+		bsr.w	Lamp_StoreInfo				; store Sonic's position, rings, lives etc.
 		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
-		bset	#0,2(a2,d0.w)
+		bset	#0,2(a2,d0.w)				; remember lamppost as red
 
 	@donothing:
 		rts	
@@ -130,8 +140,8 @@ Lamp_Twirl:	; Routine 6
 		swap	d0
 		add.w	ost_lamp_y_start(a0),d0
 		move.w	d0,ost_y_pos(a0)
-		rts	
-; ===========================================================================
+		rts
+
 ; ---------------------------------------------------------------------------
 ; Subroutine to	store information when you hit a lamppost
 ; ---------------------------------------------------------------------------
@@ -163,9 +173,6 @@ Lamp_StoreInfo:
 ; Subroutine to	load stored info when you start	a level	from a lamppost
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
 Lamp_LoadInfo:
 		move.b	(v_last_lamppost_lampcopy).w,(v_last_lamppost).w
 		move.w	(v_sonic_x_pos_lampcopy).w,(v_ost_player+ost_x_pos).w
@@ -175,7 +182,7 @@ Lamp_LoadInfo:
 		clr.w	(v_rings).w
 		clr.b	(v_ring_reward).w
 		move.l	(v_time_lampcopy).w,(v_time).w
-		move.b	#59,(v_time_frames).w
+		move.b	#59,(v_time_frames).w			; second counter ticks at next frame
 		subq.b	#1,(v_time_sec).w
 		move.b	(v_dle_routine_lampcopy).w,(v_dle_routine).w
 		move.b	(v_water_routine_lampcopy).w,(v_water_routine).w
@@ -197,11 +204,11 @@ Lamp_LoadInfo:
 		move.b	(f_water_pal_full_lampcopy).w,(f_water_pal_full).w
 
 	@notlabyrinth:
-		tst.b	(v_last_lamppost).w
-		bpl.s	locret_170F6
+		tst.b	(v_last_lamppost).w			; is last lamppost negative? (it never is)
+		bpl.s	@exit					; if not, branch
 		move.w	(v_sonic_x_pos_lampcopy).w,d0
-		subi.w	#$A0,d0
-		move.w	d0,(v_boundary_left).w
+		subi.w	#160,d0
+		move.w	d0,(v_boundary_left).w			; set left boundary to half a screen to Sonic's left
 
-locret_170F6:
+	@exit:
 		rts	

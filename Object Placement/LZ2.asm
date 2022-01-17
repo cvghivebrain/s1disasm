@@ -134,11 +134,11 @@ ObjPos_LZ2:
 		objpos $0DE4,$03AD,LabyrinthConvey,type_lcon_wheel
 		objpos $0DE4,$04D3,LabyrinthConvey,type_lcon_wheel
 		
-		objpos $1050,$03CC,HiddenBonus,$03
+		objpos $1050,$03CC,HiddenBonus,type_bonus_100
 		objpos $1150,$03E8,Signpost,$00
-		objpos $1058,$03B4,HiddenBonus,$03
-		objpos $1068,$039C,HiddenBonus,$03
-		objpos $1180,$0390,HiddenBonus,$02
+		objpos $1058,$03B4,HiddenBonus,type_bonus_100
+		objpos $1068,$039C,HiddenBonus,type_bonus_100
+		objpos $1180,$0390,HiddenBonus,type_bonus_1k
 		objpos $1190,$0390,GiantRing,$00
-		objpos $11D8,$0390,HiddenBonus,$01
+		objpos $11D8,$0390,HiddenBonus,type_bonus_10k
 		endobj

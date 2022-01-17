@@ -240,11 +240,11 @@ ObjPos_GHZ2:
 		objpos $1DF8,$0480,EdgeWalls,type_edge_dark
 		objpos $1DF8,$04C0,EdgeWalls,type_edge_dark
 		
-		objpos $1F38,$0370,HiddenBonus,$03
-		objpos $1F60,$0350,HiddenBonus,$01
-		objpos $1F60,$0370,HiddenBonus,$03
+		objpos $1F38,$0370,HiddenBonus,type_bonus_100
+		objpos $1F60,$0350,HiddenBonus,type_bonus_10k
+		objpos $1F60,$0370,HiddenBonus,type_bonus_100
 		objpos $1F60,$03A2,Signpost,$00
-		objpos $1F88,$0370,HiddenBonus,$03
+		objpos $1F88,$0370,HiddenBonus,type_bonus_100
 		objpos $1FAC,$0350,GiantRing,$00
-		objpos $1FD4,$0370,HiddenBonus,$02
+		objpos $1FD4,$0370,HiddenBonus,type_bonus_1k
 		endobj

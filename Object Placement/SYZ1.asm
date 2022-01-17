@@ -189,11 +189,11 @@ ObjPos_SYZ1:
 		objpos $228A,$0068,BuzzBomber,$00,rem
 		objpos $22EA,$0088,BuzzBomber,$00,rem
 		
-		objpos $2320,$0294,HiddenBonus,$03
-		objpos $2340,$027A,HiddenBonus,$02
-		objpos $2360,$0260,HiddenBonus,$01
+		objpos $2320,$0294,HiddenBonus,type_bonus_100
+		objpos $2340,$027A,HiddenBonus,type_bonus_1k
+		objpos $2360,$0260,HiddenBonus,type_bonus_10k
 		objpos $2360,$02B2,Signpost,$00
-		objpos $23A0,$0294,HiddenBonus,$03
+		objpos $23A0,$0294,HiddenBonus,type_bonus_100
 		objpos $23A8,$0250,GiantRing,$00
-		objpos $23C0,$027A,HiddenBonus,$03
+		objpos $23C0,$027A,HiddenBonus,type_bonus_100
 		endobj

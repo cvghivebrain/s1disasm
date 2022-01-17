@@ -219,11 +219,11 @@ ObjPos_SLZ1:
 		objpos $1E80,$04A0,CirclingPlatform,$02
 		objpos $1E80,$04A0,CirclingPlatform,$03
 		
-		objpos $2060,$01E0,HiddenBonus,$03
-		objpos $2060,$0200,HiddenBonus,$03
-		objpos $2060,$0220,HiddenBonus,$03
+		objpos $2060,$01E0,HiddenBonus,type_bonus_100
+		objpos $2060,$0200,HiddenBonus,type_bonus_100
+		objpos $2060,$0220,HiddenBonus,type_bonus_100
 		objpos $2060,$0240,Signpost,$00
 		objpos $20B8,$01E8,GiantRing,$00
-		objpos $20B8,$0220,HiddenBonus,$02
-		objpos $20F0,$01E8,HiddenBonus,$01
+		objpos $20B8,$0220,HiddenBonus,type_bonus_1k
+		objpos $20F0,$01E8,HiddenBonus,type_bonus_10k
 		endobj

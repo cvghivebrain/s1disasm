@@ -183,11 +183,11 @@ ObjPos_SLZ2:
 		objpos $1DD0,$0390,Bomb,$00,yflip,rem
 		objpos $1EF0,$0350,Fan,type_fan_left_on
 		
-		objpos $2020,$0268,HiddenBonus,$01
-		objpos $2060,$02A0,HiddenBonus,$03
+		objpos $2020,$0268,HiddenBonus,type_bonus_10k
+		objpos $2060,$02A0,HiddenBonus,type_bonus_100
 		objpos $2060,$02C0,Signpost,$00
-		objpos $2070,$0288,HiddenBonus,$03
-		objpos $2088,$0270,HiddenBonus,$03
-		objpos $20A0,$0268,HiddenBonus,$02
+		objpos $2070,$0288,HiddenBonus,type_bonus_100
+		objpos $2088,$0270,HiddenBonus,type_bonus_100
+		objpos $20A0,$0268,HiddenBonus,type_bonus_1k
 		objpos $20B8,$0260,GiantRing,$00
 		endobj

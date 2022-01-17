@@ -194,11 +194,11 @@ ObjPos_MZ2:
 		objpos $1630,$033C,ChainStomp,type_cstomp_medium+type_cstomp_2
 		objpos $16D0,$031C,ChainStomp,type_cstomp_medium+type_cstomp_2
 		
-		objpos $1860,$0270,HiddenBonus,$03
+		objpos $1860,$0270,HiddenBonus,type_bonus_100
 		objpos $1860,$02A0,Signpost,$00
-		objpos $1870,$0258,HiddenBonus,$03
-		objpos $1888,$0248,HiddenBonus,$03
-		objpos $189C,$0240,HiddenBonus,$02
+		objpos $1870,$0258,HiddenBonus,type_bonus_100
+		objpos $1888,$0248,HiddenBonus,type_bonus_100
+		objpos $189C,$0240,HiddenBonus,type_bonus_1k
 		objpos $18B0,$0240,GiantRing,$00
-		objpos $18F0,$0258,HiddenBonus,$01
+		objpos $18F0,$0258,HiddenBonus,type_bonus_10k
 		endobj

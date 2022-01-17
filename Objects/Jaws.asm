@@ -1,5 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Object 2C - Jaws enemy (LZ)
+
+; spawned by:
+;	ObjPos_LZ1, ObjPos_LZ2, ObjPos_LZ3, ObjPos_SBZ3 - subtypes 6/8/9/$A/$C
 ; ---------------------------------------------------------------------------
 
 Jaws:
@@ -17,7 +20,7 @@ ost_jaws_turn_master:	equ $32					; time between turns, copied to ost_jaws_turn_
 ; ===========================================================================
 
 Jaws_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto Jaws_Turn next
 		move.l	#Map_Jaws,ost_mappings(a0)
 		move.w	#tile_Nem_Jaws+tile_pal2,ost_tile(a0)
 		ori.b	#render_rel,ost_render(a0)
@@ -38,6 +41,7 @@ Jaws_Main:	; Routine 0
 Jaws_Turn:	; Routine 2
 		subq.w	#1,ost_jaws_turn_time(a0)		; subtract 1 from turn delay time
 		bpl.s	@animate				; if time remains, branch
+
 		move.w	ost_jaws_turn_master(a0),ost_jaws_turn_time(a0) ; reset turn delay time
 		neg.w	ost_x_vel(a0)				; change speed direction
 		bchg	#status_xflip_bit,ost_status(a0)	; change Jaws facing direction

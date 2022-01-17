@@ -329,10 +329,10 @@ ObjPos_SBZ1:
 		objpos $1FF0,$0511,Monitor,type_monitor_rings,rem
 		objpos $2015,$02E8,Flamethrower,$43
 		
-		objpos $2230,$02E0,HiddenBonus,$01,rem
+		objpos $2230,$02E0,HiddenBonus,type_bonus_10k,rem
 		objpos $2260,$0348,Signpost,$00
-		objpos $2260,$0320,HiddenBonus,$03,rem
-		objpos $226C,$0300,HiddenBonus,$03,rem
-		objpos $2280,$02EC,HiddenBonus,$03,rem
-		objpos $2298,$02E0,HiddenBonus,$02,rem
+		objpos $2260,$0320,HiddenBonus,type_bonus_100,rem
+		objpos $226C,$0300,HiddenBonus,type_bonus_100,rem
+		objpos $2280,$02EC,HiddenBonus,type_bonus_100,rem
+		objpos $2298,$02E0,HiddenBonus,type_bonus_1k,rem
 		endobj

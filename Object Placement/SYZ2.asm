@@ -219,18 +219,18 @@ ObjPos_SYZ2:
 		objpos $28D0,$04BF,Rings,$00,rem
 		objpos $28E8,$04C0,Rings,$13,rem
 		
-		objpos $28F0,$0460,HiddenBonus,$01
-		objpos $28F0,$0560,HiddenBonus,$01
-		objpos $2928,$0478,HiddenBonus,$02
-		objpos $2928,$0578,HiddenBonus,$02
-		objpos $2960,$0490,HiddenBonus,$03
+		objpos $28F0,$0460,HiddenBonus,type_bonus_10k
+		objpos $28F0,$0560,HiddenBonus,type_bonus_10k
+		objpos $2928,$0478,HiddenBonus,type_bonus_1k
+		objpos $2928,$0578,HiddenBonus,type_bonus_1k
+		objpos $2960,$0490,HiddenBonus,type_bonus_100
 		objpos $2960,$04B1,Signpost,$00
-		objpos $2960,$0590,HiddenBonus,$03
+		objpos $2960,$0590,HiddenBonus,type_bonus_100
 		objpos $2960,$05B1,Signpost,$00
-		objpos $2998,$0478,HiddenBonus,$03
-		objpos $2998,$0578,HiddenBonus,$03
+		objpos $2998,$0478,HiddenBonus,type_bonus_100
+		objpos $2998,$0578,HiddenBonus,type_bonus_100
 		objpos $29C0,$0480,GiantRing,$00
 		objpos $29C0,$0580,GiantRing,$00
-		objpos $29D0,$0478,HiddenBonus,$03
-		objpos $29D0,$0578,HiddenBonus,$03
+		objpos $29D0,$0478,HiddenBonus,type_bonus_100
+		objpos $29D0,$0578,HiddenBonus,type_bonus_100
 		endobj

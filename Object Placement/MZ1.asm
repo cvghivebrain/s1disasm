@@ -145,11 +145,11 @@ ObjPos_MZ1:
 		objpos $16A8,$0298,Rings,$12,rem
 		objpos $16C0,$02E8,LargeGrass,type_grass_sloped+type_grass_sinks
 		
-		objpos $1860,$0270,HiddenBonus,$03
+		objpos $1860,$0270,HiddenBonus,type_bonus_100
 		objpos $1860,$0290,Signpost,$00
-		objpos $1870,$0258,HiddenBonus,$03
-		objpos $1888,$0248,HiddenBonus,$03
-		objpos $189C,$0240,HiddenBonus,$02
+		objpos $1870,$0258,HiddenBonus,type_bonus_100
+		objpos $1888,$0248,HiddenBonus,type_bonus_100
+		objpos $189C,$0240,HiddenBonus,type_bonus_1k
 		objpos $18B0,$0240,GiantRing,$00
-		objpos $18F0,$0258,HiddenBonus,$01
+		objpos $18F0,$0258,HiddenBonus,type_bonus_10k
 		endobj

@@ -17,6 +17,11 @@ type_monitor_shield:	equ id_ani_monitor_shield	; 4 - shield
 type_monitor_invincible: equ id_ani_monitor_invincible	; 5 - invincibility
 type_monitor_rings:	equ id_ani_monitor_rings	; 6 - 10 rings
 
+; HiddenBonus
+type_bonus_10k:		equ (Bonus_Points_1-Bonus_Points)/2	; 1 - 10000 points
+type_bonus_1k:		equ (Bonus_Points_2-Bonus_Points)/2	; 2 - 1000 points
+type_bonus_100:		equ (Bonus_Points_3-Bonus_Points)/2	; 3 - 10 points (should be 100)
+
 ; Scenery
 type_scen_cannon:	equ (Scen_Values_0-Scen_Values)/sizeof_scen_values	; 0 - SLZ cannon
 type_scen_stump:	equ (Scen_Values_3-Scen_Values)/sizeof_scen_values	; 3 - GHZ bridge stump

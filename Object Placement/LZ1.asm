@@ -188,11 +188,11 @@ ObjPos_LZ1:
 		objpos $17B0,$016C,Button,$0A
 		objpos $17F0,$01F1,Monitor,type_monitor_rings,rem
 		
-		objpos $1A50,$00CC,HiddenBonus,$03
+		objpos $1A50,$00CC,HiddenBonus,type_bonus_100
 		objpos $1A50,$00E8,Signpost,$00
-		objpos $1A58,$00B4,HiddenBonus,$03
-		objpos $1A68,$009C,HiddenBonus,$03
-		objpos $1A80,$0090,HiddenBonus,$02
+		objpos $1A58,$00B4,HiddenBonus,type_bonus_100
+		objpos $1A68,$009C,HiddenBonus,type_bonus_100
+		objpos $1A80,$0090,HiddenBonus,type_bonus_1k
 		objpos $1AA0,$0090,GiantRing,$00
-		objpos $1AF0,$0090,HiddenBonus,$01
+		objpos $1AF0,$0090,HiddenBonus,type_bonus_10k
 		endobj
