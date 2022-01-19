@@ -1097,7 +1097,7 @@ Obj4F:
 		include "Objects\_ResumeMusic.asm"
 
 		include "Animations\LZ Drowning Numbers.asm"	; Ani_Drown
-		include "Mappings\LZ Drowning Numbers.asm"	; Map_Drown
+		include "Mappings\LZ Sonic's Drowning Face.asm"	; Map_Drown
 
 		include "Objects\Shield & Invincibility.asm"	; ShieldItem
 		include "Objects\Unused Special Stage Warp.asm"	; VanishSonic
