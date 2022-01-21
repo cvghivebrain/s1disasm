@@ -1,5 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Object 65 - waterfalls (LZ)
+
+; spawned by:
+;	ObjPos_LZ1, ObjPos_LZ2, ObjPos_LZ3 - subtypes 0/2/3/4/5/6/7/8/9/$49/$A9
 ; ---------------------------------------------------------------------------
 
 Waterfall:
@@ -17,7 +20,7 @@ WFall_Index:	index *,,2
 ; ===========================================================================
 
 WFall_Main:	; Routine 0
-		addq.b	#4,ost_routine(a0)
+		addq.b	#4,ost_routine(a0)			; goto WFall_ChkDel next
 		move.l	#Map_WFall,ost_mappings(a0)
 		move.w	#tile_Nem_Splash+tile_pal3,ost_tile(a0)
 		ori.b	#render_rel,ost_render(a0)
@@ -28,7 +31,7 @@ WFall_Main:	; Routine 0
 		bset	#tile_hi_bit,ost_tile(a0)
 
 	@under80:
-		andi.b	#$F,d0					; read only the	2nd digit
+		andi.b	#$F,d0					; read only the	low nybble
 		move.b	d0,ost_frame(a0)			; set frame number
 		cmpi.b	#type_wfall_splash,d0			; is object type $x9 (splash)?
 		bne.s	WFall_ChkDel				; if not, branch
@@ -62,9 +65,9 @@ WFall_OnWater:	; Routine 6
 
 WFall_Priority:	; Routine 8
 		bclr	#tile_hi_bit,ost_tile(a0)
-		cmpi.b	#7,(v_level_layout+$106).w
-		bne.s	@animate
-		bset	#tile_hi_bit,ost_tile(a0)		; high priority sprite if level layout is as stated above
+		cmpi.b	#7,(v_level_layout+$106).w		; has level been modified by pressing a button? (LZ3 only)
+		bne.s	@animate				; if not, branch
+		bset	#tile_hi_bit,ost_tile(a0)		; high priority sprite
 
 	@animate:
 		bra.s	WFall_Animate

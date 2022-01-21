@@ -1,5 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Object 0C - flapping door (LZ)
+
+; spawned by:
+;	ObjPos_LZ2, ObjPos_LZ3, ObjPos_SBZ3 - subtype 2
 ; ---------------------------------------------------------------------------
 
 FlapDoor:
@@ -12,12 +15,12 @@ Flap_Index:	index *,,2
 		ptr Flap_Main
 		ptr Flap_OpenClose
 
-ost_flap_time:	equ $32						; time between opening/closing
-ost_flap_wait:	equ $30						; time until change
+ost_flap_wait:	equ $30						; time until change (2 bytes)
+ost_flap_time:	equ $32						; time between opening/closing (2 bytes)
 ; ===========================================================================
 
 Flap_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto Flap_OpenClose next
 		move.l	#Map_Flap,ost_mappings(a0)
 		move.w	#tile_Nem_FlapDoor+tile_pal3,ost_tile(a0)
 		ori.b	#render_rel,ost_render(a0)

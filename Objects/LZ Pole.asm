@@ -1,5 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Object 0B - pole that	breaks (LZ)
+
+; spawned by:
+;	ObjPos_LZ3 - subtype 4
 ; ---------------------------------------------------------------------------
 
 Pole:
@@ -18,7 +21,7 @@ ost_pole_grabbed:	equ $32					; flag set when Sonic grabs the pole
 ; ===========================================================================
 
 Pole_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto Pole_Action next
 		move.l	#Map_Pole,ost_mappings(a0)
 		move.w	#tile_Nem_LzPole+tile_pal3,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
@@ -44,22 +47,22 @@ Pole_Action:	; Routine 2
 @moveup:
 		lea	(v_ost_player).w,a1
 		move.w	ost_y_pos(a0),d0
-		subi.w	#$18,d0
+		subi.w	#$18,d0					; d0 = y position for top of pole
 		btst	#bitUp,(v_joypad_hold_actual).w		; is "up" pressed?
 		beq.s	@movedown				; if not, branch
 		subq.w	#1,ost_y_pos(a1)			; move Sonic up
 		cmp.w	ost_y_pos(a1),d0
 		bcs.s	@movedown
-		move.w	d0,ost_y_pos(a1)
+		move.w	d0,ost_y_pos(a1)			; keep Sonic from moving beyond top of pole
 
 @movedown:
-		addi.w	#$24,d0
+		addi.w	#$24,d0					; d0 = y position for bottom of pole
 		btst	#bitDn,(v_joypad_hold_actual).w		; is "down" pressed?
 		beq.s	@letgo					; if not, branch
 		addq.w	#1,ost_y_pos(a1)			; move Sonic down
 		cmp.w	ost_y_pos(a1),d0
 		bcc.s	@letgo
-		move.w	d0,ost_y_pos(a1)
+		move.w	d0,ost_y_pos(a1)			; keep Sonic from moving beyond bottom of pole
 
 @letgo:
 		move.b	(v_joypad_press).w,d0
@@ -81,8 +84,9 @@ Pole_Action:	; Routine 2
 		lea	(v_ost_player).w,a1
 		move.w	ost_x_pos(a0),d0
 		addi.w	#$14,d0
-		cmp.w	ost_x_pos(a1),d0
-		bcc.s	Pole_Display
+		cmp.w	ost_x_pos(a1),d0			; is Sonic left of pole?
+		bcc.s	Pole_Display				; if yes, branch
+
 		clr.b	ost_col_property(a0)
 		cmpi.b	#id_Sonic_Hurt,ost_routine(a1)		; is Sonic hurt or dead?
 		bcc.s	Pole_Display				; if yes, branch
@@ -90,7 +94,7 @@ Pole_Action:	; Routine 2
 		clr.w	ost_y_vel(a1)				; stop Sonic moving
 		move.w	ost_x_pos(a0),d0
 		addi.w	#$14,d0
-		move.w	d0,ost_x_pos(a1)
+		move.w	d0,ost_x_pos(a1)			; align Sonic to pole
 		bclr	#status_xflip_bit,ost_status(a1)
 		move.b	#id_Hang,ost_anim(a1)			; set Sonic's animation to "hanging" ($11)
 		move.b	#1,(v_lock_multi).w			; lock controls
