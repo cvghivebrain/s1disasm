@@ -1,5 +1,9 @@
 ; ---------------------------------------------------------------------------
 ; Object 40 - Moto Bug enemy (GHZ)
+
+; spawned by:
+;	ObjPos_GHZ1, ObjPos_GHZ2, ObjPos_GHZ3
+;	MotoBug - animation 2 (smoke)
 ; ---------------------------------------------------------------------------
 
 MotoBug:
@@ -29,12 +33,12 @@ Moto_Main:	; Routine 0
 		move.b	#$E,ost_height(a0)
 		move.b	#8,ost_width(a0)
 		move.b	#id_col_20x16,ost_col_type(a0)
-		bsr.w	ObjectFall
+		bsr.w	ObjectFall				; apply gravity and update position
 		jsr	(FindFloorObj).l
-		tst.w	d1
-		bpl.s	@notonfloor
-		add.w	d1,ost_y_pos(a0)			; match object's position with the floor
-		move.w	#0,ost_y_vel(a0)
+		tst.w	d1					; has motobug hit the floor?
+		bpl.s	@notonfloor				; if not, branch
+		add.w	d1,ost_y_pos(a0)			; align to floor
+		move.w	#0,ost_y_vel(a0)			; stop falling
 		addq.b	#2,ost_routine(a0)			; goto Moto_Action next
 		bchg	#status_xflip_bit,ost_status(a0)
 
@@ -60,29 +64,29 @@ Moto_Action:	; Routine 2
 ; ---------------------------------------------------------------------------
 
 RememberState:
-		out_of_range	@offscreen
+		out_of_range	@offscreen			; branch if object moves off screen
 		bra.w	DisplaySprite
 
 	@offscreen:
 		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
-		move.b	ost_respawn(a0),d0
-		beq.s	@delete
-		bclr	#7,2(a2,d0.w)
+		move.b	ost_respawn(a0),d0			; get respawn id
+		beq.s	@delete					; branch if not set
+		bclr	#7,2(a2,d0.w)				; clear high bit of entry in respawn table
 
 	@delete:
 		bra.w	DeleteObject
 
 ; ===========================================================================
 Moto_ActIndex:	index *
-		ptr @move
-		ptr @findfloor
+		ptr Moto_Move
+		ptr Moto_FindFloor
 ; ===========================================================================
 
-@move:
-		subq.w	#1,ost_moto_wait_time(a0)		; subtract 1 from pause time
+Moto_Move:
+		subq.w	#1,ost_moto_wait_time(a0)		; decrement wait timer
 		bpl.s	@wait					; if time remains, branch
-		addq.b	#2,ost_routine2(a0)
+		addq.b	#2,ost_routine2(a0)			; goto Moto_FindFloor next
 		move.w	#-$100,ost_x_vel(a0)			; move object to the left
 		move.b	#id_ani_moto_walk,ost_anim(a0)
 		bchg	#status_xflip_bit,ost_status(a0)
@@ -93,19 +97,20 @@ Moto_ActIndex:	index *
 		rts	
 ; ===========================================================================
 
-@findfloor:
-		bsr.w	SpeedToPos
-		jsr	(FindFloorObj).l
+Moto_FindFloor:
+		bsr.w	SpeedToPos				; update position
+		jsr	(FindFloorObj).l			; d1 = distance to floor
 		cmpi.w	#-8,d1
 		blt.s	@pause
 		cmpi.w	#$C,d1
-		bge.s	@pause
-		add.w	d1,ost_y_pos(a0)			; match object's position with the floor
-		subq.b	#1,ost_moto_smoke_time(a0)
-		bpl.s	@nosmoke
-		move.b	#$F,ost_moto_smoke_time(a0)
-		bsr.w	FindFreeObj
-		bne.s	@nosmoke
+		bge.s	@pause					; branch if object is more than 11px above or 8px below floor
+
+		add.w	d1,ost_y_pos(a0)			; align to floor
+		subq.b	#1,ost_moto_smoke_time(a0)		; decrement time between smoke puffs
+		bpl.s	@nosmoke				; branch if time remains
+		move.b	#$F,ost_moto_smoke_time(a0)		; reset timer
+		bsr.w	FindFreeObj				; find free OST slot
+		bne.s	@nosmoke				; branch if not found
 		move.b	#id_MotoBug,ost_id(a1)			; load exhaust smoke object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
@@ -116,7 +121,7 @@ Moto_ActIndex:	index *
 		rts	
 
 @pause:
-		subq.b	#2,ost_routine2(a0)
+		subq.b	#2,ost_routine2(a0)			; goto Moto_Move next
 		move.w	#59,ost_moto_wait_time(a0)		; set pause time to 1 second
 		move.w	#0,ost_x_vel(a0)			; stop the object moving
 		move.b	#id_ani_moto_stand,ost_anim(a0)
@@ -125,7 +130,7 @@ Moto_ActIndex:	index *
 
 Moto_Animate:	; Routine 4
 		lea	(Ani_Moto).l,a1
-		bsr.w	AnimateSprite
+		bsr.w	AnimateSprite				; if smoke animation, goto Moto_Delete next
 		bra.w	DisplaySprite
 ; ===========================================================================
 

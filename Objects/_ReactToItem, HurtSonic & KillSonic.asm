@@ -164,8 +164,8 @@ React_Monitor:
 @movingdown:
 		cmpi.b	#id_Roll,ost_anim(a0)			; is Sonic rolling/jumping?
 		bne.s	@donothing
-		neg.w	ost_y_vel(a0)				; reverse Sonic's y-motion
-		addq.b	#2,ost_routine(a1)			; advance the monitor's routine counter
+		neg.w	ost_y_vel(a0)				; reverse Sonic's y speed
+		addq.b	#2,ost_routine(a1)			; set routine counter to goto Mon_BreakOpen next
 
 	@donothing:
 		rts	

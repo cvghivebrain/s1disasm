@@ -1,5 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Object 2E - contents of monitors
+
+; spawned by:
+;	Monitor - animation (used instead of subtype) inherited from parent
 ; ---------------------------------------------------------------------------
 
 PowerUp:
@@ -16,9 +19,9 @@ Pow_Index:	index *,,2
 ; ===========================================================================
 
 Pow_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto Pow_Move next
 		move.w	#tile_Nem_Monitors,ost_tile(a0)
-		move.b	#render_rel+render_rawmap,ost_render(a0)
+		move.b	#render_rel+render_rawmap,ost_render(a0) ; use raw mappings
 		move.b	#3,ost_priority(a0)
 		move.b	#8,ost_actwidth(a0)
 		move.w	#-$300,ost_y_vel(a0)
@@ -28,20 +31,20 @@ Pow_Main:	; Routine 0
 		move.b	d0,ost_frame(a0)			; use correct frame
 		movea.l	#Map_Monitor,a1
 		add.b	d0,d0
-		adda.w	(a1,d0.w),a1
-		addq.w	#1,a1
+		adda.w	(a1,d0.w),a1				; jump to relevant sprite
+		addq.w	#1,a1					; jump to sprite piece
 		move.l	a1,ost_mappings(a0)
 
 Pow_Move:	; Routine 2
 		tst.w	ost_y_vel(a0)				; is object moving?
 		bpl.w	Pow_Checks				; if not, branch
-		bsr.w	SpeedToPos
+		bsr.w	SpeedToPos				; update position
 		addi.w	#$18,ost_y_vel(a0)			; reduce object speed
 		rts	
 ; ===========================================================================
 
 Pow_Checks:
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto Pow_Delete next
 		move.w	#29,ost_anim_time(a0)			; display icon for half a second
 
 Pow_ChkEggman:
