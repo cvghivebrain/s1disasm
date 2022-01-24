@@ -188,17 +188,17 @@ Solid_Collision:
 		bls.s	Solid_SideAir
 		tst.w	d0					; where is Sonic?
 		beq.s	Solid_Centre				; if inside the object, branch
-		bmi.s	Solid_Right				; if right of the object, branch
+		bmi.s	Solid_Left				; if left of the object, branch
 		tst.w	ost_x_vel(a1)				; is Sonic moving left?
 		bmi.s	Solid_Centre				; if yes, branch
-		bra.s	Solid_Left
+		bra.s	Solid_Right
 ; ===========================================================================
 
-Solid_Right:
+Solid_Left:
 		tst.w	ost_x_vel(a1)				; is Sonic moving right?
 		bpl.s	Solid_Centre				; if yes, branch
 
-Solid_Left:
+Solid_Right:
 		move.w	#0,ost_inertia(a1)
 		move.w	#0,ost_x_vel(a1)			; stop Sonic moving
 

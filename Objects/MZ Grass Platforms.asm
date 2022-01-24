@@ -194,7 +194,7 @@ loc_B01C:
 		move.l	ost_grass_coll_ptr(a0),ost_burn_coll_ptr(a1)
 		move.l	a0,ost_burn_parent(a1)
 		movea.l	a0,a2
-		bsr.s	sub_B09C
+		bsr.s	LGrass_AddChildToList
 
 loc_B07A:
 		moveq	#0,d2
@@ -215,22 +215,27 @@ loc_B086:
 locret_B09A:
 		rts	
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+; ---------------------------------------------------------------------------
+; Subroutine to add child to list in parent OST
 
+; input:
+;	a1 = address of OST of child fire
+;	a2 = address of OST of parent platform
+; ---------------------------------------------------------------------------
 
-sub_B09C:
+LGrass_AddChildToList:
 		lea	ost_grass_children(a2),a2		; load list of child objects
 		moveq	#0,d0
-		move.b	(a2),d0
-		addq.b	#1,(a2)
+		move.b	(a2),d0					; get child count
+		addq.b	#1,(a2)					; increment child counter
 		lea	1(a2,d0.w),a2				; go to end of list
-		move.w	a1,d0
+		move.w	a1,d0					; get child OST address
 		subi.w	#v_ost_all&$FFFF,d0
 		lsr.w	#6,d0
 		andi.w	#$7F,d0					; d0 = OST index of child
 		move.b	d0,(a2)					; copy d0 to end of list
 		rts	
-; End of function sub_B09C
+; End of function LGrass_AddChildToList
 
 ; ===========================================================================
 
