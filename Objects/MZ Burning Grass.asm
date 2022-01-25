@@ -56,7 +56,7 @@ GFire_Spread:	; Routine 2
 		move.w	d0,ost_y_pos(a0)			; update y position
 		cmpi.w	#$84,d1
 		bcc.s	@no_fire				; branch if beyond right edge of platform
-		addi.l	#$10000,ost_x_pos(a0)			; move right and clear subpixel x pos
+		addi.l	#$10000,ost_x_pos(a0)			; move 1px right
 		cmpi.w	#$80,d1
 		bcc.s	@no_fire
 		move.l	ost_x_pos(a0),d0
