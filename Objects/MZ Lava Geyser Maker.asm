@@ -1,5 +1,9 @@
 ; ---------------------------------------------------------------------------
 ; Object 4C - lava geyser / lavafall producer (MZ)
+
+; spawned by:
+;	ObjPos_MZ2, ObjPos_MZ3 - subtype 1
+;	PushBlock - subtype 0
 ; ---------------------------------------------------------------------------
 
 GeyserMaker:
@@ -23,7 +27,7 @@ ost_gmake_parent:	equ $3C					; address of OST of parent object (4 bytes)
 ; ===========================================================================
 
 GMake_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto GMake_Wait next
 		move.l	#Map_Geyser,ost_mappings(a0)
 		move.w	#tile_Nem_Lava+tile_pal4+tile_hi,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
@@ -39,21 +43,21 @@ GMake_Wait:	; Routine 2
 		move.w	(v_ost_player+ost_y_pos).w,d0
 		move.w	ost_y_pos(a0),d1
 		cmp.w	d1,d0
-		bcc.s	@cancel
+		bcc.s	@cancel					; branch if Sonic is to the right
 		subi.w	#$170,d1
 		cmp.w	d1,d0
-		bcs.s	@cancel
-		addq.b	#2,ost_routine(a0)			; if Sonic is within range, goto GMake_ChkType
+		bcs.s	@cancel					; branch if Sonic is more than 368px to the left
+		addq.b	#2,ost_routine(a0)			; if Sonic is within range, goto GMake_ChkType next
 
 	@cancel:
 		rts	
 ; ===========================================================================
 
 GMake_MakeLava:	; Routine 6
-		addq.b	#2,ost_routine(a0)
-		bsr.w	FindNextFreeObj
-		bne.s	@fail
-		move.b	#id_LavaGeyser,ost_id(a1)			; load lavafall object
+		addq.b	#2,ost_routine(a0)			; goto GMake_Display next
+		bsr.w	FindNextFreeObj				; find free OST slot
+		bne.s	@fail					; branch if not found
+		move.b	#id_LavaGeyser,ost_id(a1)		; load lavafall object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	ost_subtype(a0),ost_subtype(a1)
@@ -68,22 +72,22 @@ GMake_MakeLava:	; Routine 6
 ; ===========================================================================
 
 	@isgeyser:
-		movea.l	ost_gmake_parent(a0),a1			; get parent object address
+		movea.l	ost_gmake_parent(a0),a1			; copy address of parent OST (from PushBlock)
 		bset	#status_yflip_bit,ost_status(a1)
 		move.w	#-$580,ost_y_vel(a1)
 		bra.s	GMake_Display
 ; ===========================================================================
 
 GMake_ChkType:	; Routine 4
-		tst.b	ost_subtype(a0)				; is object type 00 (geyser) ?
+		tst.b	ost_subtype(a0)				; is object type 0 (geyser) ?
 		beq.s	GMake_Display				; if yes, branch
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto GMake_MakeLava next
 		rts	
 ; ===========================================================================
 
 GMake_Display:	; Routine 8
 		lea	(Ani_Geyser).l,a1
-		bsr.w	AnimateSprite
+		bsr.w	AnimateSprite				; animate and goto next routine if specified
 		bsr.w	DisplaySprite
 		rts	
 ; ===========================================================================

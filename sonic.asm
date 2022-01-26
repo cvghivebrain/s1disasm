@@ -800,7 +800,7 @@ CFlo_Data3:	dc.b $16, $1E, $1A, $12, 6, $E,	$A, 2
 ; Collision data for GHZ collapsing ledge
 ; ---------------------------------------------------------------------------
 Ledge_SlopeData:
-		incbin	"Misc Data\GHZ Collapsing Ledge Heightmap.bin"
+		incbin	"Collision\GHZ Collapsing Ledge Heightmap.bin"
 		even
 
 		include "Mappings\GHZ Collapsing Ledge.asm"	; Map_Ledge
@@ -887,6 +887,12 @@ Ledge_SlopeData:
 		include "Mappings\Burrobot.asm"			; Map_Burro
 
 		include "Objects\MZ Grass Platforms.asm"	; LargeGrass
+LGrass_Coll_Wide:	incbin	"Collision\MZ Grass Platforms Heightmap (Wide).bin"
+			even
+LGrass_Coll_Narrow:	incbin	"Collision\MZ Grass Platforms Heightmap (Narrow).bin"
+			even
+LGrass_Coll_Sloped:	incbin	"Collision\MZ Grass Platforms Heightmap (Sloped).bin"
+			even
 		include "Objects\MZ Burning Grass.asm"		; GrassFire
 		include "Animations\MZ Burning Grass.asm"	; Ani_GFire
 		include "Mappings\MZ Grass Platforms.asm"	; Map_LGrass
@@ -1657,23 +1663,23 @@ Kos_EndFlowers:	incbin	"Graphics - Compressed\Ending Flowers.kos" ; ending seque
 ; ---------------------------------------------------------------------------
 ; Collision data
 ; ---------------------------------------------------------------------------
-AngleMap:	incbin	"collide\Angle Map.bin"
+AngleMap:	incbin	"Collision\Angle Map.bin"
 		even
-CollArray1:	incbin	"collide\Collision Array (Normal).bin"
+CollArray1:	incbin	"Collision\Collision Array (Normal).bin"
 		even
-CollArray2:	incbin	"collide\Collision Array (Rotated).bin"
+CollArray2:	incbin	"Collision\Collision Array (Rotated).bin"
 		even
-Col_GHZ:	incbin	"collide\GHZ.bin"			; GHZ index
+Col_GHZ:	incbin	"Collision\GHZ.bin"			; GHZ index
 		even
-Col_LZ:		incbin	"collide\LZ.bin"			; LZ index
+Col_LZ:		incbin	"Collision\LZ.bin"			; LZ index
 		even
-Col_MZ:		incbin	"collide\MZ.bin"			; MZ index
+Col_MZ:		incbin	"Collision\MZ.bin"			; MZ index
 		even
-Col_SLZ:	incbin	"collide\SLZ.bin"			; SLZ index
+Col_SLZ:	incbin	"Collision\SLZ.bin"			; SLZ index
 		even
-Col_SYZ:	incbin	"collide\SYZ.bin"			; SYZ index
+Col_SYZ:	incbin	"Collision\SYZ.bin"			; SYZ index
 		even
-Col_SBZ:	incbin	"collide\SBZ.bin"			; SBZ index
+Col_SBZ:	incbin	"Collision\SBZ.bin"			; SBZ index
 		even
 ; ---------------------------------------------------------------------------
 ; Special Stage layouts
