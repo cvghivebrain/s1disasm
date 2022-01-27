@@ -1,5 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Object 46 - solid blocks and blocks that fall	from the ceiling (MZ)
+
+; spawned by:
+;	ObjPos_MZ1, ObjPos_MZ2, ObjPos_MZ3 - subtypes 0/1/2/$A
 ; ---------------------------------------------------------------------------
 
 MarbleBrick:
@@ -16,7 +19,7 @@ ost_brick_y_start:	equ $30					; original y position (2 bytes)
 ; ===========================================================================
 
 Brick_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto Brick_Action next
 		move.b	#$F,ost_height(a0)
 		move.b	#$F,ost_width(a0)
 		move.l	#Map_Brick,ost_mappings(a0)
@@ -69,11 +72,11 @@ Brick_Still:
 Brick_Falls:
 		move.w	(v_ost_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0
-		bcc.s	loc_E888
-		neg.w	d0
+		bcc.s	@sonic_is_right				; branch if Sonic is to the right
+		neg.w	d0					; make d0 +ve
 
-	loc_E888:
-		cmpi.w	#$90,d0					; is Sonic within $90 pixels of	the block?
+	@sonic_is_right:
+		cmpi.w	#$90,d0					; is Sonic within 144px of the block?
 		bcc.s	Brick_Wobbles				; if not, resume wobbling
 		move.b	#id_Brick_FallNow,ost_subtype(a0)	; if yes, make the block fall
 
@@ -87,34 +90,34 @@ Brick_Wobbles:
 		addi.w	#$10,d0
 
 	@no_rev:
-		move.w	ost_brick_y_start(a0),d1
-		sub.w	d0,d1
-		move.w	d1,ost_y_pos(a0)			; update the block's position to make it wobble
+		move.w	ost_brick_y_start(a0),d1		; get initial position
+		sub.w	d0,d1					; apply wobble
+		move.w	d1,ost_y_pos(a0)			; update position to make it wobble
 		rts	
 ; ===========================================================================
 
 ; Type 3
 Brick_FallNow:
-		bsr.w	SpeedToPos
-		addi.w	#$18,ost_y_vel(a0)			; increase falling speed
+		bsr.w	SpeedToPos				; update position
+		addi.w	#$18,ost_y_vel(a0)			; apply gravity
 		bsr.w	FindFloorObj
 		tst.w	d1					; has the block	hit the	floor?
-		bpl.w	locret_E8EE				; if not, branch
-		add.w	d1,ost_y_pos(a0)
+		bpl.w	@exit					; if not, branch
+		add.w	d1,ost_y_pos(a0)			; align to floor
 		clr.w	ost_y_vel(a0)				; stop the block falling
 		move.w	ost_y_pos(a0),ost_brick_y_start(a0)
-		move.b	#id_Brick_FallLava,ost_subtype(a0)	; final subtype - slow wobble
-		move.w	(a1),d0
+		move.b	#id_Brick_FallLava,ost_subtype(a0)	; final subtype - slow wobble on lava
+		move.w	(a1),d0					; get 16x16 tile id the block is sitting on
 		andi.w	#$3FF,d0
 		if Revision=0
-			cmpi.w	#$2E8,d0			; wrong 16x16 tile check in rev. 0
+			cmpi.w	#$2E8,d0			; wrong 16x16 tile check in REV00
 		else
 			cmpi.w	#$16A,d0			; is the 16x16 tile it's landed on lava?
 		endc
-		bcc.s	locret_E8EE				; if yes, branch
+		bcc.s	@exit					; if yes, branch
 		move.b	#0,ost_subtype(a0)			; don't wobble
 
-	locret_E8EE:
+	@exit:
 		rts	
 ; ===========================================================================
 

@@ -1,5 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Object 51 - smashable	green block (MZ)
+
+; spawned by:
+;	ObjPos_MZ2, ObjPos_MZ3
 ; ---------------------------------------------------------------------------
 
 SmashBlock:
@@ -12,14 +15,14 @@ SmashBlock:
 Smab_Index:	index *,,2
 		ptr Smab_Main
 		ptr Smab_Solid
-		ptr Smab_Points
+		ptr Smab_FragMove
 
 ost_smash_sonic_ani:	equ $32					; Sonic's current animation number
 ost_smash_count:	equ $34					; number of blocks hit + enemies previously hit in a single jump (2 bytes)
 ; ===========================================================================
 
 Smab_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto Smab_Solid next
 		move.l	#Map_Smab,ost_mappings(a0)
 		move.w	#tile_Nem_MzBlock+tile_pal3,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
@@ -60,10 +63,11 @@ Smab_Solid:	; Routine 2
 		move.b	#id_frame_smash_four,ost_frame(a0)
 		lea	(Smab_Speeds).l,a4			; load broken fragment speed data
 		moveq	#3,d1					; set number of	fragments to 4
-		move.w	#$38,d2
-		bsr.w	SmashObject
+		move.w	#$38,d2					; gravity
+		bsr.w	SmashObject				; break block into 4 fragments, goto Smab_FragMove next
+
 		bsr.w	FindFreeObj
-		bne.s	Smab_Points
+		bne.s	Smab_FragMove
 		move.b	#id_Points,ost_id(a1)			; load points object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
@@ -78,7 +82,7 @@ Smab_Solid:	; Routine 2
 		move.w	Smab_Scores(pc,d2.w),d0
 		cmpi.w	#$20,(v_enemy_combo).w			; have 16 blocks been smashed?
 		bcs.s	@givepoints				; if not, branch
-		move.w	#1000,d0				; give higher points for 16th block
+		move.w	#1000,d0				; give 10000 points for 16th block
 		moveq	#10,d2
 
 	@givepoints:
@@ -86,9 +90,9 @@ Smab_Solid:	; Routine 2
 		lsr.w	#1,d2
 		move.b	d2,ost_frame(a1)
 
-Smab_Points:	; Routine 4
-		bsr.w	SpeedToPos
-		addi.w	#$38,ost_y_vel(a0)
+Smab_FragMove:	; Routine 4
+		bsr.w	SpeedToPos				; update position
+		addi.w	#$38,ost_y_vel(a0)			; apply gravity
 		bsr.w	DisplaySprite
 		tst.b	ost_render(a0)
 		bpl.w	DeleteObject
@@ -99,4 +103,7 @@ Smab_Speeds:	dc.w -$200, -$200				; x speed, y speed
 		dc.w $200, -$200
 		dc.w $100, -$100
 
-Smab_Scores:	dc.w 10, 20, 50, 100
+Smab_Scores:	dc.w 10						; 100 (block 1)
+		dc.w 20						; 200 (block 2)
+		dc.w 50						; 500 (block 3)
+		dc.w 100					; 1000 (blocks 4-15)

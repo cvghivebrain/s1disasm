@@ -6,7 +6,7 @@ Map_LWall:	index *
 		ptr frame_lavawall_1
 		ptr frame_lavawall_2
 		ptr frame_lavawall_3
-		ptr frame_lavawall_4
+		ptr frame_lavawall_back
 		
 frame_lavawall_0:
 		spritemap
@@ -60,7 +60,7 @@ frame_lavawall_3:
 		piece	-$40, 0, 4x4, $FF2A
 		endsprite
 		
-frame_lavawall_4:
+frame_lavawall_back:
 		spritemap
 		piece	$20, -$20, 4x4, $FF2A
 		piece	$20, 0, 4x4, $FF2A

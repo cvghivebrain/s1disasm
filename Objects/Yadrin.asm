@@ -117,3 +117,94 @@ Yad_Pause:
 		move.w	#0,ost_x_vel(a0)
 		move.b	#id_ani_yadrin_stand,ost_anim(a0)
 		rts	
+
+; ---------------------------------------------------------------------------
+; Animation script
+; ---------------------------------------------------------------------------
+
+Ani_Yad:	index *
+		ptr ani_yadrin_stand
+		ptr ani_yadrin_walk
+
+ani_yadrin_stand:	dc.b 7
+			dc.b id_frame_yadrin_walk0
+			dc.b afEnd
+			even
+ani_yadrin_walk:	dc.b 7
+			dc.b id_frame_yadrin_walk0
+			dc.b id_frame_yadrin_walk3
+			dc.b id_frame_yadrin_walk1
+			dc.b id_frame_yadrin_walk4
+			dc.b id_frame_yadrin_walk0
+			dc.b id_frame_yadrin_walk3
+			dc.b id_frame_yadrin_walk2
+			dc.b id_frame_yadrin_walk5
+			dc.b afEnd
+			even
+
+; ---------------------------------------------------------------------------
+; Sprite mappings
+; ---------------------------------------------------------------------------
+
+Map_Yad:	index *
+		ptr frame_yadrin_walk0
+		ptr frame_yadrin_walk1
+		ptr frame_yadrin_walk2
+		ptr frame_yadrin_walk3
+		ptr frame_yadrin_walk4
+		ptr frame_yadrin_walk5
+		
+frame_yadrin_walk0:
+		spritemap
+		piece	-$C, -$C, 3x1, 0
+		piece	-$14, -4, 4x3, 3
+		piece	-4, -$14, 2x1, $F
+		piece	$C, -$C, 1x3, $11
+		piece	-4, 4, 3x2, $31
+		endsprite
+		
+frame_yadrin_walk1:
+		spritemap
+		piece	-$C, -$C, 3x1, $14
+		piece	-$14, -4, 4x3, $17
+		piece	-4, -$14, 2x1, $F
+		piece	$C, -$C, 1x3, $11
+		piece	-4, 4, 3x2, $31
+		endsprite
+		
+frame_yadrin_walk2:
+		spritemap
+		piece	-$C, -$C, 3x2, $23
+		piece	-$14, 4, 4x2, $29
+		piece	-4, -$14, 2x1, $F
+		piece	$C, -$C, 1x3, $11
+		piece	-4, 4, 3x2, $31
+		endsprite
+		
+frame_yadrin_walk3:
+		spritemap
+		piece	-$C, -$C, 3x1, 0
+		piece	-$14, -4, 4x3, 3
+		piece	-4, -$14, 2x1, $F
+		piece	$C, -$C, 1x3, $11
+		piece	-4, 4, 3x2, $37
+		endsprite
+		
+frame_yadrin_walk4:
+		spritemap
+		piece	-$C, -$C, 3x1, $14
+		piece	-$14, -4, 4x3, $17
+		piece	-4, -$14, 2x1, $F
+		piece	$C, -$C, 1x3, $11
+		piece	-4, 4, 3x2, $37
+		endsprite
+		
+frame_yadrin_walk5:
+		spritemap
+		piece	-$C, -$C, 3x2, $23
+		piece	-$14, 4, 4x2, $29
+		piece	-4, -$14, 2x1, $F
+		piece	$C, -$C, 1x3, $11
+		piece	-4, 4, 3x2, $37
+		endsprite
+		even

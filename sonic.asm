@@ -1010,8 +1010,6 @@ Obj4F:
 		rts	
 
 		include "Objects\Yadrin.asm"			;Yadrin
-		include "Animations\Yadrin.asm"			; Ani_Yad
-		include "Mappings\Yadrin.asm"			; Map_Yad
 
 		include "Objects\_SolidObject.asm"
 
