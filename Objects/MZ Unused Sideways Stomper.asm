@@ -1,5 +1,8 @@
 ; ---------------------------------------------------------------------------
-; Object 45 - spiked metal block from beta version (MZ)
+; Object 45 - unused sideway-facing spiked stomper (MZ)
+
+; spawned by:
+;	SideStomp
 ; ---------------------------------------------------------------------------
 
 SideStomp:
@@ -21,10 +24,9 @@ SStom_Var:	dc.b	id_SStom_Solid,  	4,	id_frame_mash_block ; main block
 		dc.b	id_SStom_Pole,		$34,	id_frame_mash_pole1 ; pole
 		dc.b	id_SStom_Display,	$28,	id_frame_mash_wallbracket ; wall bracket
 
-;word_B9BE:	; Note that this indicates three subtypes
-SStom_Len:	dc.w $3800					; short
-		dc.w $A000					; long
-		dc.w $5000					; medium
+SStom_Len:	dc.w $3800					; 0 - short
+		dc.w $A000					; 1 - long
+		dc.w $5000					; 2 - medium (non-functional; see SStom_Move)
 
 ost_mash_x_start:	equ $30					; original x position (2 bytes)
 ost_mash_length:	equ $32					; current pole length (2 bytes)
@@ -37,25 +39,25 @@ ost_mash_parent:	equ $3C					; address of OST of parent object (4 bytes)
 
 SStom_Main:	; Routine 0
 		moveq	#0,d0
-		move.b	ost_subtype(a0),d0
+		move.b	ost_subtype(a0),d0			; get subtype
 		add.w	d0,d0
-		move.w	SStom_Len(pc,d0.w),d2
+		move.w	SStom_Len(pc,d0.w),d2			; get pole length based on subtype
 		lea	(SStom_Var).l,a2
-		movea.l	a0,a1
-		moveq	#3,d1
+		movea.l	a0,a1					; 1st object is main metal block
+		moveq	#3,d1					; 3 additional objects
 		bra.s	@load
 
 	@loop:
-		bsr.w	FindNextFreeObj
-		bne.s	@fail
+		bsr.w	FindNextFreeObj				; find free OST slot
+		bne.s	@fail					; branch if not found
 
 	@load:
-		move.b	(a2)+,ost_routine(a1)
+		move.b	(a2)+,ost_routine(a1)			; goto SStom_Solid/SStom_Spikes/SStom_Pole/SStom_Display next
 		move.b	#id_SideStomp,ost_id(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
-		move.b	(a2)+,d0
+		move.b	(a2)+,d0				; get relative x pos
 		ext.w	d0
-		add.w	ost_x_pos(a0),d0
+		add.w	ost_x_pos(a0),d0			; add to actual x pos
 		move.w	d0,ost_x_pos(a1)
 		move.l	#Map_SStom,ost_mappings(a1)
 		move.w	#tile_Nem_MzMetal,ost_tile(a1)
@@ -64,15 +66,15 @@ SStom_Main:	; Routine 0
 		move.w	ost_x_pos(a0),ost_mash_y_start(a1)
 		move.b	ost_subtype(a0),ost_subtype(a1)
 		move.b	#$20,ost_actwidth(a1)
-		move.w	d2,ost_mash_max_length(a1)
+		move.w	d2,ost_mash_max_length(a1)		; set max pole length from subtype
 		move.b	#4,ost_priority(a1)
-		cmpi.b	#1,(a2)					; is subobject spikes?
+		cmpi.b	#id_frame_mash_spikes,(a2)		; is subobject spikes?
 		bne.s	@notspikes				; if not, branch
 		move.b	#id_col_16x24+id_col_hurt,ost_col_type(a1) ; use harmful collision type
 
 	@notspikes:
 		move.b	(a2)+,ost_frame(a1)
-		move.l	a0,ost_mash_parent(a1)
+		move.l	a0,ost_mash_parent(a1)			; save address of OST of parent
 		dbf	d1,@loop				; repeat 3 times
 
 		move.b	#3,ost_priority(a1)
@@ -82,7 +84,7 @@ SStom_Main:	; Routine 0
 
 SStom_Solid:	; Routine 2
 		move.w	ost_x_pos(a0),-(sp)
-		bsr.w	SStom_Move
+		bsr.w	SStom_Move				; update position of main block
 		move.w	#$17,d1
 		move.w	#$20,d2
 		move.w	#$20,d3
@@ -93,20 +95,20 @@ SStom_Solid:	; Routine 2
 ; ===========================================================================
 
 SStom_Pole:	; Routine 8
-		movea.l	ost_mash_parent(a0),a1
-		move.b	ost_mash_length(a1),d0
+		movea.l	ost_mash_parent(a0),a1			; get parent OST
+		move.b	ost_mash_length(a1),d0			; get current pole length
 		addi.b	#$10,d0
-		lsr.b	#5,d0
-		addq.b	#3,d0
-		move.b	d0,ost_frame(a0)
+		lsr.b	#5,d0					; divide by $20
+		addq.b	#id_frame_mash_pole1,d0			; first pole frame (3)
+		move.b	d0,ost_frame(a0)			; udpate frame
 
 SStom_Spikes:	; Routine 4
-		movea.l	ost_mash_parent(a0),a1
+		movea.l	ost_mash_parent(a0),a1			; get parent OST
 		moveq	#0,d0
-		move.b	ost_mash_length(a1),d0
-		neg.w	d0
-		add.w	ost_mash_x_start(a0),d0
-		move.w	d0,ost_x_pos(a0)
+		move.b	ost_mash_length(a1),d0			; get current pole length
+		neg.w	d0					; make it -ve
+		add.w	ost_mash_x_start(a0),d0			; add to initial x pos
+		move.w	d0,ost_x_pos(a0)			; update x pos
 
 SStom_Display:	; Routine 6
 		bsr.w	DisplaySprite
@@ -115,26 +117,27 @@ SStom_ChkDel:
 		out_of_range	DeleteObject,ost_mash_y_start(a0)
 		rts	
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
+; ---------------------------------------------------------------------------
+; Subroutine to move the main metal block
+; ---------------------------------------------------------------------------
 
 SStom_Move:
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0
 		add.w	d0,d0
-		move.w	off_BAD6(pc,d0.w),d1
-		jmp	off_BAD6(pc,d1.w)
+		move.w	SStom_Move_Index(pc,d0.w),d1
+		jmp	SStom_Move_Index(pc,d1.w)
 ; End of function SStom_Move
 
 ; ===========================================================================
-		; This indicates only two subtypes... that do the same thing
-		; Compare to SStom_Len. This breaks subtype 02
-off_BAD6:	index *
-		ptr loc_BADA
-		ptr loc_BADA
+SStom_Move_Index:
+		index *
+		ptr SStom_Move_0				; 0
+		ptr SStom_Move_0				; 1 - same as 0
+		;ptr SStom_Move_0				; 2 - missing
 ; ===========================================================================
 
-loc_BADA:
+SStom_Move_0:
 		tst.w	ost_mash_retract_flag(a0)		; is flag set to retract?
 		beq.s	@extend					; if not, branch
 		tst.w	ost_mash_wait_time(a0)			; has time delay run out?
@@ -173,3 +176,93 @@ loc_BADA:
 		add.w	ost_mash_x_start(a0),d0
 		move.w	d0,ost_x_pos(a0)
 		rts
+
+; ---------------------------------------------------------------------------
+; Sprite mappings
+; ---------------------------------------------------------------------------
+
+include_SideStomp_mappings	macro
+
+Map_SStom:	index *
+		ptr frame_mash_block
+		ptr frame_mash_spikes
+		ptr frame_mash_wallbracket
+		ptr frame_mash_pole1
+		ptr frame_mash_pole2
+		ptr frame_mash_pole3
+		ptr frame_mash_pole4
+		ptr frame_mash_pole5
+		ptr frame_mash_pole5
+		
+frame_mash_block:
+		spritemap					; main metal block
+		piece	-$C, -$20, 3x4, $1F
+		piece	-$C, 0, 3x4, $1F, yflip
+		piece	$C, -$10, 1x4, $2B
+		endsprite
+		
+frame_mash_spikes:
+		spritemap					; three spikes
+		piece	-$10, -$18, 4x1, $21B, yflip
+		piece	-$10, -4, 4x1, $21B, yflip
+		piece	-$10, $10, 4x1, $21B, yflip
+		endsprite
+		
+frame_mash_wallbracket:
+		spritemap					; thing holding it to the wall
+		piece	-4, -$10, 1x4, $2B, xflip
+		endsprite
+		
+frame_mash_pole1:
+		spritemap					; poles of various lengths
+		piece	-$20, -8, 2x2, $41
+		piece	-$10, -8, 2x2, $41
+		endsprite
+		
+frame_mash_pole2:
+		spritemap
+		piece	-$20, -8, 2x2, $41
+		piece	-$10, -8, 2x2, $41
+		piece	0, -8, 2x2, $41
+		piece	$10, -8, 2x2, $41
+		endsprite
+		
+frame_mash_pole3:
+		spritemap
+		piece	-$20, -8, 2x2, $41
+		piece	-$10, -8, 2x2, $41
+		piece	0, -8, 2x2, $41
+		piece	$10, -8, 2x2, $41
+		piece	$20, -8, 2x2, $41
+		piece	$30, -8, 2x2, $41
+		endsprite
+		
+frame_mash_pole4:
+		spritemap
+		piece	-$20, -8, 2x2, $41
+		piece	-$10, -8, 2x2, $41
+		piece	0, -8, 2x2, $41
+		piece	$10, -8, 2x2, $41
+		piece	$20, -8, 2x2, $41
+		piece	$30, -8, 2x2, $41
+		piece	$40, -8, 2x2, $41
+		piece	$50, -8, 2x2, $41
+		endsprite
+		
+frame_mash_pole5:
+		spritemap					; Incorrect: this should be $A
+		piece	-$20, -8, 2x2, $41
+		piece	-$10, -8, 2x2, $41
+		piece	0, -8, 2x2, $41
+		piece	$10, -8, 2x2, $41
+		piece	$20, -8, 2x2, $41
+		piece	$30, -8, 2x2, $41
+		piece	$40, -8, 2x2, $41
+		piece	$50, -8, 2x2, $41
+		endsprite
+		piece	$60, -8, 2x2, $41
+		piece	$70, -8, 2x2, $41
+		; frame_mash_pole6 should be here, but it isn't...
+		even
+
+		endm

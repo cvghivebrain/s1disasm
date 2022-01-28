@@ -1,5 +1,11 @@
 ; ---------------------------------------------------------------------------
 ; Object 52 - moving platform blocks (MZ, LZ, SBZ)
+
+; spawned by:
+;	ObjPos_MZ1, ObjPos_MZ2, ObjPos_MZ3 - subtypes 1/2/$41
+;	ObjPos_LZ1 - subtype 7
+;	ObjPos_SBZ1, ObjPos_SBZ2 - subtypes $28/$39
+;	ObjPos_SBZ3 - subtype 4
 ; ---------------------------------------------------------------------------
 
 MovingBlock:
@@ -13,12 +19,12 @@ MBlock_Index:	index *,,2
 		ptr MBlock_Platform
 		ptr MBlock_StandOn
 
-MBlock_Var:
-MBlock_Var_0:	dc.b $10, id_frame_mblock_mz1			; object width,	frame number
-MBlock_Var_1:	dc.b $20, id_frame_mblock_mz2
-MBlock_Var_2:	dc.b $20, id_frame_mblock_sbz
-MBlock_Var_3:	dc.b $40, id_frame_mblock_sbzwide
-MBlock_Var_4:	dc.b $30, id_frame_mblock_mz3
+MBlock_Var:	; object width,	frame number
+MBlock_Var_0:	dc.b $10, id_frame_mblock_mz1			; $0x - single block
+MBlock_Var_1:	dc.b $20, id_frame_mblock_mz2			; $1x - double block (unused)
+MBlock_Var_2:	dc.b $20, id_frame_mblock_sbz			; $2x - SBZ black & yellow platform
+MBlock_Var_3:	dc.b $40, id_frame_mblock_sbzwide		; $3x - SBZ red horizontal door
+MBlock_Var_4:	dc.b $30, id_frame_mblock_mz3			; $4x - triple block
 
 sizeof_MBlock_Var:	equ MBlock_Var_1-MBlock_Var
 
@@ -29,11 +35,12 @@ ost_mblock_move_flag:	equ $36					; 1 = move platform back to its original posit
 ; ===========================================================================
 
 MBlock_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto MBlock_Platform next
 		move.l	#Map_MBlock,ost_mappings(a0)
 		move.w	#tile_Nem_MzBlock+tile_pal3,ost_tile(a0)
 		cmpi.b	#id_LZ,(v_zone).w			; check if level is LZ
 		bne.s	@not_lz
+
 		move.l	#Map_MBlockLZ,ost_mappings(a0)		; LZ specific code
 		move.w	#tile_Nem_LzBlock3+tile_pal3,ost_tile(a0)
 		move.b	#7,ost_height(a0)
@@ -41,6 +48,7 @@ MBlock_Main:	; Routine 0
 	@not_lz:
 		cmpi.b	#id_SBZ,(v_zone).w			; check if level is SBZ
 		bne.s	@not_sbz
+
 		move.w	#tile_Nem_Stomper+tile_pal2,ost_tile(a0) ; SBZ specific code (object 5228)
 		cmpi.b	#$28,ost_subtype(a0)			; is object 5228 ?
 		beq.s	@not_sbz_28				; if yes, branch
@@ -62,10 +70,10 @@ MBlock_Main:	; Routine 0
 		andi.b	#$F,ost_subtype(a0)			; clear high nybble of subtype
 
 MBlock_Platform: ; Routine 2
-		bsr.w	MBlock_Move
+		bsr.w	MBlock_Move				; move & update position
 		moveq	#0,d1
 		move.b	ost_actwidth(a0),d1
-		jsr	(DetectPlatform).l
+		jsr	(DetectPlatform).l			; check for collision & goto MBlock_StandOn next if stood on
 		bra.s	MBlock_ChkDel
 ; ===========================================================================
 
@@ -179,7 +187,7 @@ MBlock_Drop_Now:
 		bsr.w	FindFloorObj
 		tst.w	d1					; has platform hit the floor?
 		bpl.w	@keep_falling				; if not, branch
-		add.w	d1,ost_y_pos(a0)
+		add.w	d1,ost_y_pos(a0)			; align to floor
 		clr.w	ost_y_vel(a0)				; stop platform	falling
 		clr.b	ost_subtype(a0)				; change to type 00 (non-moving)
 
@@ -189,7 +197,7 @@ MBlock_Drop_Now:
 
 ; Type 7
 MBlock_RightDrop_Button:
-		tst.b	(v_button_state+2).w			; has switch number 02 been pressed?
+		tst.b	(v_button_state+2).w			; has button number 02 been pressed?
 		beq.s	@not_pressed
 		subq.b	#3,ost_subtype(a0)			; if yes, change object type to 04
 
@@ -240,10 +248,10 @@ MBlock_Slide_Now:
 
 MBlock_0A_Wait:
 		subq.w	#1,ost_mblock_wait_time(a0)		; subtract 1 from time delay
-		bne.s	locret_1002E				; if time remains, branch
+		bne.s	@wait					; if time remains, branch
 		move.w	#1,ost_mblock_move_flag(a0)		; set platform to move back to its original position
 
-locret_1002E:
+	@wait:
 		rts	
 ; ===========================================================================
 
@@ -259,3 +267,58 @@ MBlock_0A_Reset:
 		clr.w	ost_mblock_move_flag(a0)
 		subq.b	#1,ost_subtype(a0)			; restore subtype to 9
 		rts	
+
+; ---------------------------------------------------------------------------
+; Sprite mappings
+; ---------------------------------------------------------------------------
+
+Map_MBlock:	index *
+		ptr frame_mblock_mz1
+		ptr frame_mblock_mz2
+		ptr frame_mblock_sbz
+		ptr frame_mblock_sbzwide
+		ptr frame_mblock_mz3
+		
+frame_mblock_mz1:
+		spritemap
+		piece	-$10, -8, 4x4, 8
+		endsprite
+		
+frame_mblock_mz2:
+		spritemap
+		piece	-$20, -8, 4x4, 8
+		piece	0, -8, 4x4, 8
+		endsprite
+		
+frame_mblock_sbz:
+		spritemap
+		piece	-$20, -8, 4x1, 0, pal2
+		piece	-$20, 0, 4x2, 4
+		piece	0, -8, 4x1, 0, pal2
+		piece	0, 0, 4x2, 4
+		endsprite
+		
+frame_mblock_sbzwide:
+		spritemap
+		piece	-$40, -8, 4x3, 0
+		piece	-$20, -8, 4x3, 3
+		piece	0, -8, 4x3, 3
+		piece	$20, -8, 4x3, 0, xflip
+		endsprite
+		
+frame_mblock_mz3:
+		spritemap
+		piece	-$30, -8, 4x4, 8
+		piece	-$10, -8, 4x4, 8
+		piece	$10, -8, 4x4, 8
+		endsprite
+		even
+
+Map_MBlockLZ:	index *
+		ptr frame_mblocklz_0
+		
+frame_mblocklz_0:
+		spritemap
+		piece	-$10, -8, 4x2, 0
+		endsprite
+		even

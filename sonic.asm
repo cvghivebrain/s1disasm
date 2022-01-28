@@ -787,11 +787,7 @@ Obj19:
 		include "Objects\MZ, SLZ & SBZ Collapsing Floors.asm" ; CollapseFloor
 		include_CollapseLedge_2				; Objects\GHZ Collapsing Ledge.asm
 
-; ---------------------------------------------------------------------------
-; Disintegration data for collapsing ledges (MZ, SLZ, SBZ)
-; ---------------------------------------------------------------------------
-CFlo_Data2:	dc.b $1E, $16, $E, 6, $1A, $12,	$A, 2
-CFlo_Data3:	dc.b $16, $1E, $1A, $12, 6, $E,	$A, 2
+		include_CollapseFloor_fragtiming
 
 		include_SlopeObject_NoChk			; Objects\_SlopeObject.asm
 
@@ -804,7 +800,7 @@ Ledge_SlopeData:
 		even
 
 		include "Mappings\GHZ Collapsing Ledge.asm"	; Map_Ledge
-		include "Mappings\MZ, SLZ & SBZ Collapsing Floors.asm" ; Map_CFlo
+		include_CollapseFloor_mappings
 
 		include "Objects\GHZ Bridge Stump & SLZ Fireball Launcher.asm" ; Scenery
 		include "Mappings\SLZ Fireball Launcher.asm"	; Map_Scen
@@ -904,7 +900,7 @@ LGrass_Coll_Sloped:	incbin	"Collision\MZ Grass Platforms Heightmap (Sloped).bin"
 		include "Objects\MZ Chain Stompers.asm"		; ChainStomp
 		include "Objects\MZ Unused Sideways Stomper.asm" ; SideStomp
 		include "Mappings\MZ Chain Stompers.asm"	; Map_CStom
-		include "Mappings\MZ Unused Sideways Stomper.asm" ; Map_SStom
+		include_SideStomp_mappings
 
 		include "Objects\Button.asm"			; Button
 		include "Mappings\Button.asm"			; Map_But
@@ -956,8 +952,6 @@ NullObject:
 		include "Mappings\Springs.asm"			; Map_Spring
 
 		include "Objects\Newtron.asm"			; Newtron
-		include "Animations\Newtron.asm"		; Ani_Newt
-		include "Mappings\Newtron.asm"			; Map_Newt
 
 		include "Objects\Roller.asm"			; Roller
 		include "Animations\Roller.asm"			; Ani_Roll
@@ -1017,8 +1011,6 @@ Obj4F:
 		include "Mappings\MZ Smashable Green Block.asm"	; Map_Smab
 
 		include "Objects\MZ, LZ & SBZ Moving Blocks.asm" ; MovingBlock
-		include "Mappings\MZ & SBZ Moving Blocks.asm"	; Map_MBlock
-		include "Mappings\LZ Moving Block.asm"		; Map_MBlockLZ
 
 		include "Objects\Batbrain.asm"			; Batbrain
 		include "Animations\Batbrain.asm"		; Ani_Bat

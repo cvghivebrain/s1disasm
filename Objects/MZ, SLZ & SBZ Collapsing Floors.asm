@@ -1,5 +1,10 @@
 ; ---------------------------------------------------------------------------
 ; Object 53 - collapsing floors	(MZ, SLZ, SBZ)
+
+; spawned by:
+;	ObjPos_MZ1 - subtype 1
+;	ObjPos_SLZ1, ObjPos_SLZ2, ObjPos_SLZ3 - subtypes 1/$81
+;	ObjPos_SBZ1, ObjPos_SBZ2 - subtype 1
 ; ---------------------------------------------------------------------------
 
 CollapseFloor:
@@ -21,7 +26,7 @@ ost_cfloor_flag:	equ $3A					; 1 = Sonic has touched the floor
 ; ===========================================================================
 
 CFlo_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto CFlo_Touch next
 		move.l	#Map_CFlo,ost_mappings(a0)
 		move.w	#$2B8+tile_pal3,ost_tile(a0)
 		cmpi.b	#id_SLZ,(v_zone).w			; check if level is SLZ
@@ -69,14 +74,12 @@ CFlo_Collapse:	; Routine 4
 		tst.b	ost_cfloor_wait_time(a0)		; has time delay reached zero?
 		beq.w	CFlo_Collapse_Now			; if yes, branch
 		move.b	#1,ost_cfloor_flag(a0)			; set object as "touched"
-		subq.b	#1,ost_cfloor_wait_time(a0)
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+		subq.b	#1,ost_cfloor_wait_time(a0)		; decrement timer
 
 
 CFlo_WalkOff:	; Routine $A
 		move.w	#$20,d1
-		bsr.w	ExitPlatform
+		bsr.w	ExitPlatform				; goto CFlo_Touch next if Sonic leaves platform
 		move.w	ost_x_pos(a0),d2
 		bsr.w	MoveWithPlatform2
 		bra.w	RememberState
@@ -88,36 +91,36 @@ CFlo_WaitFall:	; Routine 6
 		tst.b	ost_cfloor_wait_time(a0)		; has time delay reached zero?
 		beq.s	CFlo_FallNow				; if yes, branch
 		tst.b	ost_cfloor_flag(a0)			; has Sonic touched the object?
-		bne.w	loc_8402				; if yes, branch
-		subq.b	#1,ost_cfloor_wait_time(a0)		; subtract 1 from time
+		bne.w	@has_touched				; if yes, branch
+		subq.b	#1,ost_cfloor_wait_time(a0)		; decrement timer
 		bra.w	DisplaySprite
 ; ===========================================================================
 
-loc_8402:
-		subq.b	#1,ost_cfloor_wait_time(a0)
-		bsr.w	CFlo_WalkOff
+@has_touched:
+		subq.b	#1,ost_cfloor_wait_time(a0)		; decrement timer
+		bsr.w	CFlo_WalkOff				; check if Sonic leaves platform
 		lea	(v_ost_player).w,a1
-		btst	#status_platform_bit,ost_status(a1)
-		beq.s	loc_842E
+		btst	#status_platform_bit,ost_status(a1)	; is Sonic on platform?
+		beq.s	@skip_platform				; if not, branch
 		tst.b	ost_cfloor_wait_time(a0)
-		bne.s	locret_843A
+		bne.s	@skip_platform2				; branch if time delay > 0
 		bclr	#status_platform_bit,ost_status(a1)
 		bclr	#status_pushing_bit,ost_status(a1)
-		move.b	#1,ost_anim_restart(a1)
+		move.b	#id_Run,ost_anim_restart(a1)
 
-loc_842E:
+	@skip_platform:
 		move.b	#0,ost_cfloor_flag(a0)
-		move.b	#id_CFlo_WaitFall,ost_routine(a0)	; run "CFlo_WaitFall" routine
+		move.b	#id_CFlo_WaitFall,ost_routine(a0)	; goto CFlo_WaitFall next
 
-locret_843A:
+	@skip_platform2:
 		rts	
 ; ===========================================================================
 
 CFlo_FallNow:
-		bsr.w	ObjectFall
+		bsr.w	ObjectFall				; apply gravity & update position
 		bsr.w	DisplaySprite
-		tst.b	ost_render(a0)
-		bpl.s	CFlo_Delete
+		tst.b	ost_render(a0)				; is object on-screen?
+		bpl.s	CFlo_Delete				; if not, branch
 		rts	
 ; ===========================================================================
 
@@ -130,13 +133,78 @@ CFlo_Fragment:
 		move.b	#0,ost_cfloor_flag(a0)
 
 CFlo_Collapse_Now:
-		lea	(CFlo_Data2).l,a4
-		btst	#0,ost_subtype(a0)
-		beq.s	loc_846C
-		lea	(CFlo_Data3).l,a4
+		lea	(CFlo_FragTiming_0).l,a4
+		btst	#0,ost_subtype(a0)			; is subtype = 0?
+		beq.s	@type_0					; if yes, branch
+		lea	(CFlo_FragTiming_1).l,a4
 
-loc_846C:
-		moveq	#7,d1
-		addq.b	#1,ost_frame(a0)
-		bra.s	FragmentObject				; jump to address in GHZ Collapsing Ledge.asm
+	@type_0:
+		moveq	#8-1,d1
+		addq.b	#1,ost_frame(a0)			; use broken frame which comprises 8 sprites
+		bra.s	FragmentObject				; split into 8 fragments, goto CFlo_WaitFall next
+								; see GHZ Collapsing Ledge.asm
 
+include_CollapseFloor_fragtiming:	macro
+
+CFlo_FragTiming_0:
+		dc.b $1E, $16, $E, 6, $1A, $12,	$A, 2		; unused
+CFlo_FragTiming_1:
+		dc.b $16, $1E, $1A, $12, 6, $E,	$A, 2
+		even
+
+		endm
+
+; ---------------------------------------------------------------------------
+; Sprite mappings
+; ---------------------------------------------------------------------------
+
+include_CollapseFloor_mappings:	macro
+
+Map_CFlo:	index *
+		ptr frame_cfloor_mz
+		ptr frame_cfloor_mz_break
+		ptr frame_cfloor_slz
+		ptr frame_cfloor_slz_break
+		
+frame_cfloor_mz:
+		spritemap					; MZ and SBZ blocks
+		piece	-$20, -8, 4x2, 0
+		piece	-$20, 8, 4x2, 0
+		piece	0, -8, 4x2, 0
+		piece	0, 8, 4x2, 0
+		endsprite
+		
+frame_cfloor_mz_break:
+		spritemap
+		piece	-$20, -8, 2x2, 0
+		piece	-$10, -8, 2x2, 0
+		piece	0, -8, 2x2, 0
+		piece	$10, -8, 2x2, 0
+		piece	-$20, 8, 2x2, 0
+		piece	-$10, 8, 2x2, 0
+		piece	0, 8, 2x2, 0
+		piece	$10, 8, 2x2, 0
+		endsprite
+		
+frame_cfloor_slz:
+		spritemap					; SLZ blocks
+		piece	-$20, -8, 4x2, 0
+		piece	-$20, 8, 4x2, 8
+		piece	0, -8, 4x2, 0
+		piece	0, 8, 4x2, 8
+		endsprite
+		
+frame_cfloor_slz_break:
+		spritemap
+		piece	-$20, -8, 2x2, 0
+		piece	-$10, -8, 2x2, 4
+		piece	0, -8, 2x2, 0
+		piece	$10, -8, 2x2, 4
+		piece	-$20, 8, 2x2, 8
+		piece	-$10, 8, 2x2, $C
+		piece	0, 8, 2x2, 8
+		piece	$10, 8, 2x2, $C
+		endsprite
+		even
+
+		endm
