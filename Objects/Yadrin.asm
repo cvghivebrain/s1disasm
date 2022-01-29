@@ -153,9 +153,10 @@ Map_Yad:	index *
 		ptr frame_yadrin_walk3
 		ptr frame_yadrin_walk4
 		ptr frame_yadrin_walk5
+		mapfolder: equs "Yadrin"
 		
 frame_yadrin_walk0:
-		spritemap
+		spritemap	walk0
 		piece	-$C, -$C, 3x1, 0
 		piece	-$14, -4, 4x3, 3
 		piece	-4, -$14, 2x1, $F
@@ -164,7 +165,7 @@ frame_yadrin_walk0:
 		endsprite
 		
 frame_yadrin_walk1:
-		spritemap
+		spritemap	walk1
 		piece	-$C, -$C, 3x1, $14
 		piece	-$14, -4, 4x3, $17
 		piece	-4, -$14, 2x1, $F
@@ -173,7 +174,7 @@ frame_yadrin_walk1:
 		endsprite
 		
 frame_yadrin_walk2:
-		spritemap
+		spritemap	walk2
 		piece	-$C, -$C, 3x2, $23
 		piece	-$14, 4, 4x2, $29
 		piece	-4, -$14, 2x1, $F
@@ -182,7 +183,7 @@ frame_yadrin_walk2:
 		endsprite
 		
 frame_yadrin_walk3:
-		spritemap
+		spritemap	walk3
 		piece	-$C, -$C, 3x1, 0
 		piece	-$14, -4, 4x3, 3
 		piece	-4, -$14, 2x1, $F
@@ -191,7 +192,7 @@ frame_yadrin_walk3:
 		endsprite
 		
 frame_yadrin_walk4:
-		spritemap
+		spritemap	walk4
 		piece	-$C, -$C, 3x1, $14
 		piece	-$14, -4, 4x3, $17
 		piece	-4, -$14, 2x1, $F
@@ -200,7 +201,7 @@ frame_yadrin_walk4:
 		endsprite
 		
 frame_yadrin_walk5:
-		spritemap
+		spritemap	walk5
 		piece	-$C, -$C, 3x2, $23
 		piece	-$14, 4, 4x2, $29
 		piece	-4, -$14, 2x1, $F
