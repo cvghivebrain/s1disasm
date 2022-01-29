@@ -769,10 +769,6 @@ Demo_EndGHZ2:	incbin	"demodata\Ending - GHZ2.bin"
 		include "Mappings\GHZ Spiked Helix Pole.asm"	; Map_Hel
 
 		include "Objects\Platforms.asm"			; BasicPlatform
-		include "Mappings\Unused Platforms.asm"		; Map_Plat_Unused
-		include "Mappings\GHZ Platforms.asm"		; Map_Plat_GHZ
-		include "Mappings\SYZ Platforms.asm"		; Map_Plat_SYZ
-		include "Mappings\SLZ Platforms.asm"		; Map_Plat_SLZ
 
 ; ---------------------------------------------------------------------------
 ; Object 19 - blank
@@ -829,7 +825,7 @@ Ledge_SlopeData:
 		include "Objects\Animals.asm"			; Animals
 		include "Objects\Points.asm"			; Points
 		include "Mappings\Animals.asm"			; Map_Animal1, Map_Animal2 & Map_Animal3
-		include "Mappings\Points.asm"			; Map_Points
+		include_Points_mappings
 
 		include "Objects\Crabmeat.asm"			; Crabmeat
 		include "Animations\Crabmeat.asm"		; Ani_Crab
@@ -1063,8 +1059,6 @@ Obj4F:
 		include "Mappings\Bomb Enemy.asm"		; Map_Bomb
 
 		include "Objects\Orbinaut.asm"			; Orbinaut
-		include "Animations\Orbinaut.asm"		; Ani_Orb
-		include "Mappings\Orbinaut.asm"			; Map_Orb
 
 		include "Objects\LZ Harpoon.asm"		; Harpoon
 		include "Animations\LZ Harpoon.asm"		; Ani_Harp

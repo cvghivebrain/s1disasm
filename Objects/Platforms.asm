@@ -1,5 +1,10 @@
 ; ---------------------------------------------------------------------------
 ; Object 18 - platforms	(GHZ, SYZ, SLZ)
+
+; spawned by:
+;	ObjPos_GHZ1, ObjPos_GHZ2, ObjPos_GHZ3 - subtypes 0/1/2/3/5/6/$A
+;	ObjPos_SYZ1, ObjPos_SYZ2, ObjPos_SYZ3 - subtypes 0/1/2/5/7/$B/$C
+;	ObjPos_SLZ2, ObjPos_SLZ3 - subtype 3
 ; ---------------------------------------------------------------------------
 
 BasicPlatform:
@@ -11,7 +16,7 @@ BasicPlatform:
 Plat_Index:	index *,,2
 		ptr Plat_Main
 		ptr Plat_Solid
-		ptr Plat_Action2
+		ptr Plat_StoodOn
 		ptr Plat_Delete
 		ptr Plat_Action
 
@@ -23,7 +28,7 @@ ost_plat_wait_time:	equ $3A					; time delay for platform moving when stood on (
 ; ===========================================================================
 
 Plat_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto Plat_Solid next
 		move.w	#0+tile_pal3,ost_tile(a0)
 		move.l	#Map_Plat_GHZ,ost_mappings(a0)
 		move.b	#$20,ost_actwidth(a0)
@@ -36,10 +41,11 @@ Plat_Main:	; Routine 0
 	@notSYZ:
 		cmpi.b	#id_SLZ,(v_zone).w			; check if level is SLZ
 		bne.s	@notSLZ
+
 		move.l	#Map_Plat_SLZ,ost_mappings(a0)		; SLZ specific code
 		move.b	#$20,ost_actwidth(a0)
 		move.w	#0+tile_pal3,ost_tile(a0)
-		move.b	#3,ost_subtype(a0)
+		move.b	#id_Plat_Type_Falls,ost_subtype(a0)	; force subtype 3
 
 	@notSLZ:
 		move.b	#render_rel,ost_render(a0)
@@ -59,31 +65,31 @@ Plat_Main:	; Routine 0
 		move.b	d1,ost_frame(a0)			; set frame to d1
 
 Plat_Solid:	; Routine 2
-		tst.b	ost_plat_y_nudge(a0)
-		beq.s	loc_7EE0
-		subq.b	#4,ost_plat_y_nudge(a0)
+		tst.b	ost_plat_y_nudge(a0)			; has platform dipped from being stood on?
+		beq.s	@no_dip					; if not, branch
+		subq.b	#4,ost_plat_y_nudge(a0)			; decrement dip amount
 
-	loc_7EE0:
+	@no_dip:
 		moveq	#0,d1
 		move.b	ost_actwidth(a0),d1
-		bsr.w	DetectPlatform
+		bsr.w	DetectPlatform				; detect collision, update flags, goto Plat_StoodOn next if stood on
 
 Plat_Action:	; Routine 8
-		bsr.w	Plat_Move
-		bsr.w	Plat_Nudge
+		bsr.w	Plat_Move				; move platform
+		bsr.w	Plat_Nudge				; apply nudge
 		bsr.w	DisplaySprite
 		bra.w	Plat_ChkDel
 ; ===========================================================================
 
-Plat_Action2:	; Routine 4
-		cmpi.b	#$40,ost_plat_y_nudge(a0)
-		beq.s	loc_7F06
-		addq.b	#4,ost_plat_y_nudge(a0)
+Plat_StoodOn:	; Routine 4
+		cmpi.b	#$40,ost_plat_y_nudge(a0)		; is platform at max dip?
+		beq.s	@max_dip				; if yes, branch
+		addq.b	#4,ost_plat_y_nudge(a0)			; increment dip
 
-	loc_7F06:
+	@max_dip:
 		moveq	#0,d1
 		move.b	ost_actwidth(a0),d1
-		bsr.w	ExitPlatform
+		bsr.w	ExitPlatform				; detect Sonic leaving platform, goto Plat_Solid next if he does
 		move.w	ost_x_pos(a0),-(sp)
 		bsr.w	Plat_Move
 		bsr.w	Plat_Nudge
@@ -98,17 +104,14 @@ Plat_Action2:	; Routine 4
 ; Subroutine to	move platform slightly when you	stand on it
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
 Plat_Nudge:
-		move.b	ost_plat_y_nudge(a0),d0
-		bsr.w	CalcSine
+		move.b	ost_plat_y_nudge(a0),d0			; get nudge value
+		bsr.w	CalcSine				; convert to sine/cosine
 		move.w	#$400,d1
 		muls.w	d1,d0
 		swap	d0
-		add.w	ost_plat_y_pos(a0),d0
-		move.w	d0,ost_y_pos(a0)
+		add.w	ost_plat_y_pos(a0),d0			; add to y position sans nudge
+		move.w	d0,ost_y_pos(a0)			; update position
 		rts	
 ; End of function Plat_Nudge
 
@@ -116,13 +119,10 @@ Plat_Nudge:
 ; Subroutine to	move platforms
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
 Plat_Move:
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0
-		andi.w	#$F,d0
+		andi.w	#$F,d0					; read low nybble of subtype
 		add.w	d0,d0
 		move.w	@index(pc,d0.w),d1
 		jmp	@index(pc,d1.w)
@@ -324,3 +324,79 @@ Plat_ChkDel:
 
 Plat_Delete:	; Routine 6
 		bra.w	DeleteObject
+
+; ---------------------------------------------------------------------------
+; Sprite mappings
+; ---------------------------------------------------------------------------
+
+Map_Plat_Unused:
+		index *
+		ptr frame_plat_unused_small
+		ptr frame_plat_unused_large
+		
+frame_plat_unused_small:
+		spritemap
+		piece	-$18, -$C, 3x4, $3C
+		piece	0, -$C, 3x4, $48
+		endsprite
+		
+frame_plat_unused_large:
+		spritemap
+		piece	-$20, -$C, 4x4, $CA
+		piece	-$20, 4, 4x4, $DA
+		piece	-$20, $24, 4x4, $DA
+		piece	-$20, $44, 4x4, $DA
+		piece	-$20, $64, 4x4, $DA
+		piece	0, -$C, 4x4, $CA, xflip
+		piece	0, 4, 4x4, $DA, xflip
+		piece	0, $24, 4x4, $DA, xflip
+		piece	0, $44, 4x4, $DA, xflip
+		piece	0, $64, 4x4, $DA, xflip
+		endsprite
+		even
+
+Map_Plat_GHZ:	index *
+		ptr frame_plat_small
+		ptr frame_plat_large
+		
+frame_plat_small:
+		spritemap					; small platform
+		piece	-$20, -$C, 3x4, $3B
+		piece	-8, -$C, 2x4, $3F
+		piece	8, -$C, 2x4, $3F
+		piece	$18, -$C, 1x4, $47
+		endsprite
+		
+frame_plat_large:
+		spritemap					; large column platform
+		piece	-$20, -$C, 4x4, $C5
+		piece	-$20, 4, 4x4, $D5
+		piece	-$20, $24, 4x4, $D5
+		piece	-$20, $44, 4x4, $D5
+		piece	-$20, $64, 4x4, $D5
+		piece	0, -$C, 4x4, $C5, xflip
+		piece	0, 4, 4x4, $D5, xflip
+		piece	0, $24, 4x4, $D5, xflip
+		piece	0, $44, 4x4, $D5, xflip
+		piece	0, $64, 4x4, $D5, xflip
+		endsprite
+		even
+
+Map_Plat_SYZ:	index *
+		ptr frame_plat_syz
+		
+frame_plat_syz:	spritemap
+		piece	-$20, -$A, 3x4, $49
+		piece	-8, -$A, 2x4, $51
+		piece	8, -$A, 3x4, $55
+		endsprite
+		even
+
+Map_Plat_SLZ:	index *
+		ptr frame_plat_slz
+		
+frame_plat_slz:	spritemap
+		piece	-$20, -8, 4x4, $21
+		piece	0, -8, 4x4, $21
+		endsprite
+		even
