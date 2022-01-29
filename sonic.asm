@@ -40,8 +40,6 @@ Revision:	equ 1
 
 ZoneCount:	equ 6						; discrete zones are: GHZ, MZ, SYZ, LZ, SLZ, and SBZ
 
-UseBinMaps:	equ 1						; 0 = inline ASM sprite mappings; 1 = separate binary sprite mappings
-
 		include "Nemesis File List.asm"
 ; ===========================================================================
 

@@ -49,26 +49,18 @@ out_of_range:	macro exit,pos
 ; Sprite mappings header and footer
 ; ---------------------------------------------------------------------------
 
-spritemap:	macro	file
+spritemap:	macro
 		if ~def(current_sprite)
 		current_sprite: = 1
 		endc
 		sprite_start: = *+1
-		if (narg=1)&(UseBinMaps=1)
-		incbin	"\mapfolderroot\\mapfolder\/\file\.bin",2
-		disable_piece: = 1
-		else
 		dc.b (sprite_\#current_sprite-sprite_start)/5
-		disable_piece: = 0
-		endc
 		endm
 
 endsprite:	macro
 		sprite_\#current_sprite: equ *
 		current_sprite: = current_sprite+1
 		endm
-
-mapfolderroot:	equs "Objects\Sprite Mappings\"
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings piece
@@ -77,7 +69,6 @@ mapfolderroot:	equs "Objects\Sprite Mappings\"
 ; ---------------------------------------------------------------------------
 
 piece:		macro
-		if disable_piece = 0
 		dc.b \2		; ypos
 		sprite_width:	substr	1,1,"\3"
 		sprite_height:	substr	3,3,"\3"
@@ -109,7 +100,6 @@ piece:		macro
 		
 		dc.w sprite_tile+sprite_xflip+sprite_yflip+sprite_hi+sprite_pal
 		dc.b sprite_xpos
-		endc
 		endm
 
 ; ---------------------------------------------------------------------------
