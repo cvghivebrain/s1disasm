@@ -843,7 +843,7 @@ Ledge_SlopeData:
 		include "Objects\Ring Loss.asm"			; RingLoss
 		include "Objects\Giant Ring.asm"		; GiantRing
 		include "Objects\Giant Ring Flash.asm"		; RingFlash
-		include "Animations\Ring.asm"			; Ani_Ring
+		include_Rings_animation
 		include "Mappings\Ring.asm"			; Map_Ring
 		include "Mappings\Giant Ring.asm"		; Map_GRing
 		include "Mappings\Giant Ring Flash.asm"		; Map_Flash
@@ -1237,7 +1237,6 @@ word_16516:	dc.w $10, $1C80
 		include "Mappings\FZ Plasma Balls.asm"		; Map_Plasma
 
 		include "Objects\Prison Capsule.asm"		; Prison
-		include "Animations\Prison Capsule.asm"		; Ani_Pri
 		include "Mappings\Prison Capsule.asm"		; Map_Pri
 
 		include "Objects\_ReactToItem, HurtSonic & KillSonic.asm"
