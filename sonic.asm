@@ -805,7 +805,6 @@ Ledge_SlopeData:
 		include "Mappings\Unused Switch.asm"		; Map_Switch
 
 		include "Objects\SBZ Door.asm"			; AutoDoor
-		include "Animations\SBZ Door.asm"		; Ani_ADoor
 		include "Mappings\SBZ Door.asm"			; Map_ADoor
 
 		include "Objects\GHZ Walls.asm"			; EdgeWalls
@@ -950,7 +949,6 @@ NullObject:
 		include "Objects\Newtron.asm"			; Newtron
 
 		include "Objects\Roller.asm"			; Roller
-		include "Animations\Roller.asm"			; Ani_Roll
 		include "Mappings\Roller.asm"			; Map_Roll
 
 		include_EdgeWalls_1				; Objects\GHZ Walls.asm
@@ -1140,45 +1138,7 @@ Obj4F:
 		include "Mappings\SBZ Electric Orb.asm"		; Map_Elec
 
 		include "Objects\SBZ Conveyor Belt Platforms.asm" ; SpinConvey
-		include "Animations\SBZ Conveyor Belt Platforms.asm" ; Ani_SpinConvey
 
-SpinC_Data:	index *
-		ptr word_164B2
-		ptr word_164C6
-		ptr word_164DA
-		ptr word_164EE
-		ptr word_16502
-		ptr word_16516
-word_164B2:	dc.w $10, $E80
-		dc.w $E14, $370
-		dc.w $EEF, $302
-		dc.w $EEF, $340
-		dc.w $E14, $3AE
-word_164C6:	dc.w $10, $F80
-		dc.w $F14, $2E0
-		dc.w $FEF, $272
-		dc.w $FEF, $2B0
-		dc.w $F14, $31E
-word_164DA:	dc.w $10, $1080
-		dc.w $1014, $270
-		dc.w $10EF, $202
-		dc.w $10EF, $240
-		dc.w $1014, $2AE
-word_164EE:	dc.w $10, $F80
-		dc.w $F14, $570
-		dc.w $FEF, $502
-		dc.w $FEF, $540
-		dc.w $F14, $5AE
-word_16502:	dc.w $10, $1B80
-		dc.w $1B14, $670
-		dc.w $1BEF, $602
-		dc.w $1BEF, $640
-		dc.w $1B14, $6AE
-word_16516:	dc.w $10, $1C80
-		dc.w $1C14, $5E0
-		dc.w $1CEF, $572
-		dc.w $1CEF, $5B0
-		dc.w $1C14, $61E
 ; ===========================================================================
 
 		include "Objects\SBZ Girder Block.asm"		; Girder

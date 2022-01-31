@@ -128,8 +128,8 @@ LCon_LoadPlatforms:
 ; ===========================================================================
 
 	@loop:
-		bsr.w	FindFreeObj
-		bne.s	@fail
+		bsr.w	FindFreeObj				; find free OST slot
+		bne.s	@fail					; branch if not found
 
 	@makefirst:
 		move.b	#id_LabyrinthConvey,ost_id(a1)		; load platform object
@@ -297,8 +297,8 @@ LCon_Corner_Data:
 		ptr LCon_Corners_3
 		ptr LCon_Corners_4
 		ptr LCon_Corners_5
-LCon_Corners_0:	dc.w @end-(*+4)
-		dc.w $1070					; act 1
+LCon_Corners_0:	dc.w @end-(*+4)					; act 1
+		dc.w $1070
 		dc.w $1078, $21A
 		dc.w $10BE, $260
 		dc.w $10BE, $393
@@ -307,8 +307,8 @@ LCon_Corners_0:	dc.w @end-(*+4)
 		dc.w $1022, $244
 	@end:
 
-LCon_Corners_1:	dc.w @end-(*+4)
-		dc.w $1280					; act 1
+LCon_Corners_1:	dc.w @end-(*+4)					; act 1
+		dc.w $1280
 		dc.w $127E, $280
 		dc.w $12CE, $2D0
 		dc.w $12CE, $46E
@@ -316,24 +316,24 @@ LCon_Corners_1:	dc.w @end-(*+4)
 		dc.w $1232, $2CC
 	@end:
 
-LCon_Corners_2:	dc.w @end-(*+4)
-		dc.w $D68					; act 2
+LCon_Corners_2:	dc.w @end-(*+4)					; act 2
+		dc.w $D68
 		dc.w $D22, $482
 		dc.w $D22, $5DE
 		dc.w $DAE, $5DE
 		dc.w $DAE, $482
 	@end:
 
-LCon_Corners_3:	dc.w @end-(*+4)
-		dc.w $DA0					; act 2
+LCon_Corners_3:	dc.w @end-(*+4)					; act 2
+		dc.w $DA0
 		dc.w $D62, $3A2
 		dc.w $DEE, $3A2
 		dc.w $DEE, $4DE
 		dc.w $D62, $4DE
 	@end:
 
-LCon_Corners_4:	dc.w @end-(*+4)
-		dc.w $D00					; act 3
+LCon_Corners_4:	dc.w @end-(*+4)					; act 3
+		dc.w $D00
 		dc.w $CAC, $242
 		dc.w $DDE, $242
 		dc.w $DDE, $3DE
@@ -341,8 +341,8 @@ LCon_Corners_4:	dc.w @end-(*+4)
 		dc.w $C52, $29C
 	@end:
 
-LCon_Corners_5:	dc.w @end-(*+4)
-		dc.w $1300					; act 3
+LCon_Corners_5:	dc.w @end-(*+4)					; act 3
+		dc.w $1300
 		dc.w $1252, $20A
 		dc.w $13DE, $20A
 		dc.w $13DE, $2BE
