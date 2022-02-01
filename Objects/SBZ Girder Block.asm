@@ -1,5 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Object 70 - large girder block (SBZ)
+
+; spawned by:
+;	ObjPos_SBZ1
 ; ---------------------------------------------------------------------------
 
 Girder:
@@ -20,7 +23,7 @@ ost_girder_wait_time:	equ $3A					; delay for movement (2 bytes)
 ; ===========================================================================
 
 Gird_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto Gird_Action next
 		move.l	#Map_Gird,ost_mappings(a0)
 		move.w	#tile_Nem_Girder+tile_pal3,ost_tile(a0)
 		ori.b	#render_rel,ost_render(a0)
@@ -29,25 +32,26 @@ Gird_Main:	; Routine 0
 		move.b	#$18,ost_height(a0)
 		move.w	ost_x_pos(a0),ost_girder_x_start(a0)
 		move.w	ost_y_pos(a0),ost_girder_y_start(a0)
-		bsr.w	Gird_ChgMove
+		bsr.w	Gird_ChgDir				; set initial speed & direction
 
 Gird_Action:	; Routine 2
 		move.w	ost_x_pos(a0),-(sp)
-		tst.w	ost_girder_wait_time(a0)
-		beq.s	@beginmove
-		subq.w	#1,ost_girder_wait_time(a0)
-		bne.s	@solid
+		tst.w	ost_girder_wait_time(a0)		; has time delay hit 0?
+		beq.s	@beginmove				; if yes, branch
+		subq.w	#1,ost_girder_wait_time(a0)		; decrement delay timer
+		bne.s	@skip_move				; skip movement update
 
 	@beginmove:
-		jsr	(SpeedToPos).l
-		subq.w	#1,ost_girder_move_time(a0)		; decrement movement duration
-		bne.s	@solid					; if time remains, branch
-		bsr.w	Gird_ChgMove				; if time is zero, branch
+		jsr	(SpeedToPos).l				; update position
+		subq.w	#1,ost_girder_move_time(a0)		; decrement movement timer
+		bne.s	@skip_chg				; if time remains, branch
+		bsr.w	Gird_ChgDir				; if time is 0, set new speed & direction
 
-	@solid:
+	@skip_move:
+	@skip_chg:
 		move.w	(sp)+,d4
-		tst.b	ost_render(a0)
-		bpl.s	@chkdel
+		tst.b	ost_render(a0)				; is object on-screen?
+		bpl.s	@chkdel					; if not, branch
 		moveq	#0,d1
 		move.b	ost_actwidth(a0),d1
 		addi.w	#$B,d1
@@ -63,18 +67,21 @@ Gird_Action:	; Routine 2
 
 	@delete:
 		jmp	(DeleteObject).l
-; ===========================================================================
 
-Gird_ChgMove:
-		move.b	ost_girder_setting(a0),d0
+; ---------------------------------------------------------------------------
+; Subroutine to change the speed/direction the girder is moving
+; ---------------------------------------------------------------------------
+
+Gird_ChgDir:
+		move.b	ost_girder_setting(a0),d0		; get current setting
 		andi.w	#$18,d0
 		lea	(@settings).l,a1
-		lea	(a1,d0.w),a1
+		lea	(a1,d0.w),a1				; jump to relevant settings
 		move.w	(a1)+,ost_x_vel(a0)			; speed/direction
 		move.w	(a1)+,ost_y_vel(a0)
 		move.w	(a1)+,ost_girder_move_time(a0)		; how long to move in that direction
 		addq.b	#8,ost_girder_setting(a0)		; use next settings
-		move.w	#7,ost_girder_wait_time(a0)
+		move.w	#7,ost_girder_wait_time(a0)		; set time until it starts moving again
 		rts	
 ; ===========================================================================
 @settings:	;   x vel,   y vel, duration

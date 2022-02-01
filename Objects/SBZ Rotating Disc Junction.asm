@@ -1,5 +1,9 @@
 ; ---------------------------------------------------------------------------
 ; Object 66 - rotating disc junction that grabs Sonic (SBZ)
+
+; spawned by:
+;	ObjPos_SBZ1 - subtypes 0/2
+;	Junction
 ; ---------------------------------------------------------------------------
 
 Junction:
@@ -16,21 +20,21 @@ Jun_Index:	index *,,2
 
 ost_junc_grab_frame:	equ $32					; which frame the junction grabbed Sonic on
 ost_junc_direction:	equ $34					; direction of rotation: 1 or -1 (added to the frame number)
-ost_junc_switch_flag:	equ $36					; flag set when switch is pressed
-ost_junc_switch_num:	equ $38					; which switch will reverse the disc
+ost_junc_button_flag:	equ $36					; flag set when button is pressed
+ost_junc_button_num:	equ $38					; which button will reverse the disc
 ; ===========================================================================
 
 Jun_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto Jun_Action next
 		move.w	#1,d1
 		movea.l	a0,a1
 		bra.s	@makeitem
 ; ===========================================================================
 
 	@loop:
-		bsr.w	FindFreeObj
-		bne.s	@fail
-		move.b	#id_Junction,ost_id(a1)
+		bsr.w	FindFreeObj				; find free OST slot
+		bne.s	@fail					; branch if not found
+		move.b	#id_Junction,ost_id(a1)			; load 2nd junction object
 		addq.b	#4,ost_routine(a1)			; goto Jun_Display next
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
@@ -44,18 +48,18 @@ Jun_Main:	; Routine 0
 		move.b	#$38,ost_actwidth(a1)
 
 	@fail:
-		dbf	d1,@loop				; repeat once
+		dbf	d1,@loop				; repeat once for large background circle
 
 		move.b	#$30,ost_actwidth(a0)
 		move.b	#4,ost_priority(a0)
 		move.w	#$3C,$30(a0)
-		move.b	#1,ost_junc_direction(a0)
-		move.b	ost_subtype(a0),ost_junc_switch_num(a0)
+		move.b	#1,ost_junc_direction(a0)		; set default direction (anticlockwise)
+		move.b	ost_subtype(a0),ost_junc_button_num(a0)
 
 Jun_Action:	; Routine 2
-		bsr.w	Jun_ChkSwitch
-		tst.b	ost_render(a0)
-		bpl.w	Jun_Display
+		bsr.w	Jun_Update				; check if button is pressed and animate the junction
+		tst.b	ost_render(a0)				; is object on-screen?
+		bpl.w	Jun_Display				; if not, branch
 		move.w	#$30,d1
 		move.w	d1,d2
 		move.w	d2,d3
@@ -88,7 +92,7 @@ Jun_Action:	; Routine 2
 		bset	#status_air_bit,ost_status(a1)
 		move.w	ost_x_pos(a1),d2
 		move.w	ost_y_pos(a1),d3
-		bsr.w	Jun_ChgPos
+		bsr.w	Jun_MoveSonic				; update Sonic's position within the junction
 		add.w	d2,ost_x_pos(a1)
 		add.w	d3,ost_y_pos(a1)
 		asr	ost_x_pos(a1)
@@ -106,85 +110,94 @@ Jun_Release:	; Routine 6
 		bne.s	@dontrelease				; if not, branch
 
 	@release:
-		cmp.b	ost_junc_grab_frame(a0),d0
-		beq.s	@dontrelease
+		cmp.b	ost_junc_grab_frame(a0),d0		; is gap on the frame Sonic was grabbed on?
+		beq.s	@dontrelease				; if yes, branch
 		lea	(v_ost_player).w,a1
 		move.w	#0,ost_x_vel(a1)
-		move.w	#$800,ost_y_vel(a1)
-		cmpi.b	#4,d0
-		beq.s	@isdown
+		move.w	#$800,ost_y_vel(a1)			; drop Sonic straight down
+		cmpi.b	#id_frame_junc_s,d0			; is gap pointing down?
+		beq.s	@isdown					; if yes, branch
 		move.w	#$800,ost_x_vel(a1)
-		move.w	#$800,ost_y_vel(a1)
+		move.w	#$800,ost_y_vel(a1)			; launch Sonic diagonally down-right
 
 	@isdown:
 		clr.b	(v_lock_multi).w			; unlock controls
 		subq.b	#4,ost_routine(a0)			; goto Jun_Action next
 
 	@dontrelease:
-		bsr.s	Jun_ChkSwitch
-		bsr.s	Jun_ChgPos
+		bsr.s	Jun_Update				; check if button is pressed and animate the junction
+		bsr.s	Jun_MoveSonic				; update Sonic's position within the junction
 		bra.w	RememberState
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+; ---------------------------------------------------------------------------
+; Subroutine to update direction when button is pressed and animate
+; ---------------------------------------------------------------------------
 
-
-Jun_ChkSwitch:
+Jun_Update:
 		lea	(v_button_state).w,a2
 		moveq	#0,d0
-		move.b	ost_junc_switch_num(a0),d0
-		btst	#0,(a2,d0.w)				; is switch pressed?
+		move.b	ost_junc_button_num(a0),d0
+		btst	#0,(a2,d0.w)				; is relevant button pressed?
 		beq.s	@unpressed				; if not, branch
 
-		tst.b	ost_junc_switch_flag(a0)		; has switch previously been pressed?
+		tst.b	ost_junc_button_flag(a0)		; has button previously been pressed?
 		bne.s	@animate				; if yes, branch
-		neg.b	ost_junc_direction(a0)
-		move.b	#1,ost_junc_switch_flag(a0)		; set to "previously pressed"
+		neg.b	ost_junc_direction(a0)			; reverse direction (set to -1)
+		move.b	#1,ost_junc_button_flag(a0)		; set to "previously pressed"
 		bra.s	@animate
 ; ===========================================================================
 
 @unpressed:
-		clr.b	ost_junc_switch_flag(a0)		; set to "not yet pressed"
+		clr.b	ost_junc_button_flag(a0)		; set to "not yet pressed"
 
 @animate:
 		subq.b	#1,ost_anim_time(a0)			; decrement frame timer
 		bpl.s	@nochange				; if time remains, branch
-		move.b	#7,ost_anim_time(a0)
+		move.b	#7,ost_anim_time(a0)			; 7 frames until next update
 		move.b	ost_junc_direction(a0),d1
 		move.b	ost_frame(a0),d0
-		add.b	d1,d0
+		add.b	d1,d0					; add direction (1 or -1) to frame
 		andi.b	#$F,d0
 		move.b	d0,ost_frame(a0)			; update frame
 
 	@nochange:
 		rts	
-; End of function Jun_ChkSwitch
+; End of function Jun_Update
 
+; ---------------------------------------------------------------------------
+; Subroutine to move Sonic while he's in the junction
+; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Jun_ChgPos:
+Jun_MoveSonic:
 		lea	(v_ost_player).w,a1
 		moveq	#0,d0
 		move.b	ost_frame(a0),d0
-		add.w	d0,d0
-		lea	@data(pc,d0.w),a2
+		add.w	d0,d0					; d0 = current frame * 2
+		lea	@data(pc,d0.w),a2			; jump to relevant position data
 		move.b	(a2)+,d0
 		ext.w	d0
-		add.w	ost_x_pos(a0),d0
-		move.w	d0,ost_x_pos(a1)
+		add.w	ost_x_pos(a0),d0			; get x pos relative to junction
+		move.w	d0,ost_x_pos(a1)			; update Sonic's x pos
 		move.b	(a2)+,d0
 		ext.w	d0
-		add.w	ost_y_pos(a0),d0
-		move.w	d0,ost_y_pos(a1)
+		add.w	ost_y_pos(a0),d0			; get y pos relative to junction
+		move.w	d0,ost_y_pos(a1)			; update Sonic's y pos
 		rts	
 
-
-@data:		dc.b -$20,    0, -$1E,   $E			; disc x-pos, Sonic x-pos, disc y-pos, Sonic y-pos
-		dc.b -$18,  $18,  -$E,  $1E
-		dc.b    0,  $20,   $E,  $1E
-		dc.b  $18,  $18,  $1E,   $E
-		dc.b  $20,    0,  $1E,  -$E
-		dc.b  $18, -$18,   $E, -$1E
-		dc.b    0, -$20,  -$E, -$1E
-		dc.b -$18, -$18, -$1E,  -$E
+@data:		; x pos, y pos
+		dc.b -$20,    0					; w
+		dc.b -$1E,   $E					; wsw
+		dc.b -$18,  $18					; sw
+		dc.b  -$E,  $1E					; ssw
+		dc.b    0,  $20					; s
+		dc.b   $E,  $1E					; sse
+		dc.b  $18,  $18					; se
+		dc.b  $1E,   $E					; ese
+		dc.b  $20,    0					; e
+		dc.b  $1E,  -$E					; ene
+		dc.b  $18, -$18					; ne
+		dc.b   $E, -$1E					; nne
+		dc.b    0, -$20					; n
+		dc.b  -$E, -$1E					; nnw
+		dc.b -$18, -$18					; nw
+		dc.b -$1E,  -$E					; wnw

@@ -959,7 +959,6 @@ NullObject:
 		include "Animations\Fireballs.asm"		; Ani_Fire
 
 		include "Objects\SBZ Flamethrower.asm"		; Flamethrower
-		include "Animations\SBZ Flamethrower.asm"	; Ani_Flame
 		include "Mappings\SBZ Flamethrower.asm"		; Map_Flame
 
 		include "Objects\MZ Purple Brick Block.asm"	; MarbleBrick
@@ -1134,7 +1133,6 @@ Obj4F:
 		include "Mappings\SBZ Vanishing Platform.asm"	; Map_VanP
 
 		include "Objects\SBZ Electric Orb.asm"		; Electro
-		include "Animations\SBZ Electric Orb.asm"	; Ani_Elec
 		include "Mappings\SBZ Electric Orb.asm"		; Map_Elec
 
 		include "Objects\SBZ Conveyor Belt Platforms.asm" ; SpinConvey
