@@ -206,8 +206,8 @@ type_spin_platform_alt:	equ $90				; $9x - small spinning platform, longer delay
 type_saw_pizza_still:	equ id_Saw_Pizza_Still	 	; 0 - pizza cutter, doesn't move
 type_saw_pizza_sideways: equ id_Saw_Pizza_Sideways 	; 1 - pizza cutter, moves side-to-side
 type_saw_pizza_updown:	equ id_Saw_Pizza_UpDown	 	; 2 - pizza cutter, moves up and down
-type_saw_ground_left:	equ id_Saw_Ground_Left	 	; 3 - ground saw, moves left
-type_saw_ground_right:	equ id_Saw_Ground_Right	 	; 4 - ground saw, moves right
+type_saw_ground_right:	equ id_Saw_Ground_Right	 	; 3 - ground saw, moves right
+type_saw_ground_left:	equ id_Saw_Ground_Left	 	; 4 - ground saw, moves left
 
 ; ScrapStomp
 type_stomp_door:	equ (((Sto_Var_0-Sto_Var)/sizeof_Sto_Var)<<4)+$80			; $8x - horizontal door, activated by button x

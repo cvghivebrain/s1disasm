@@ -1,5 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Object 69 - spinning platforms and trapdoors (SBZ)
+
+; spawned by:
+;	ObjPos_SBZ1, ObjPos_SBZ2 - subtypes 1/2, $80-$83, $90-$9E
 ; ---------------------------------------------------------------------------
 
 SpinPlatform:
@@ -20,7 +23,7 @@ ost_spin_sync:		equ $36					; bitmask used to synchronise timing: subtype $8x = 
 ; ===========================================================================
 
 Spin_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto Spin_Trapdoor next
 		move.l	#Map_Trap,ost_mappings(a0)
 		move.w	#tile_Nem_TrapDoor+tile_pal3,ost_tile(a0)
 		ori.b	#render_rel,ost_render(a0)
@@ -41,7 +44,7 @@ Spin_Main:	; Routine 0
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0			; get object type
 		move.w	d0,d1
-		andi.w	#$F,d0					; read only the	2nd digit
+		andi.w	#$F,d0					; read only low nybble
 		mulu.w	#6,d0					; multiply by 6
 		move.w	d0,ost_spin_wait_time(a0)
 		move.w	d0,ost_spin_wait_master(a0)		; set time delay
@@ -98,11 +101,11 @@ Spin_Spinner:	; Routine 4
 	@delay:
 		tst.b	ost_spin_flag(a0)			; is flag set?
 		beq.s	@animate				; if not, branch
-		subq.w	#1,ost_spin_wait_time(a0)
-		bpl.s	@animate
-		move.w	ost_spin_wait_master(a0),ost_spin_wait_time(a0)
+		subq.w	#1,ost_spin_wait_time(a0)		; decrement timer
+		bpl.s	@animate				; branch if time remains
+		move.w	ost_spin_wait_master(a0),ost_spin_wait_time(a0) ; reset timer
 		clr.b	ost_spin_flag(a0)
-		bchg	#0,ost_anim(a0)
+		bchg	#0,ost_anim(a0)				; restart animation (switches between identical animations)
 
 	@animate:
 		lea	(Ani_Spin).l,a1
@@ -119,8 +122,8 @@ Spin_Spinner:	; Routine 4
 ; ===========================================================================
 
 @notsolid2:
-		btst	#status_platform_bit,ost_status(a0)
-		beq.s	@display
+		btst	#status_platform_bit,ost_status(a0)	; is Sonic on the platform?
+		beq.s	@display				; if not, branch
 		lea	(v_ost_player).w,a1
 		bclr	#status_platform_bit,ost_status(a1)
 		bclr	#status_platform_bit,ost_status(a0)
@@ -128,3 +131,70 @@ Spin_Spinner:	; Routine 4
 
 	@display:
 		bra.w	RememberState
+
+; ---------------------------------------------------------------------------
+; Animation script
+; ---------------------------------------------------------------------------
+
+Ani_Spin:	index *
+		ptr ani_spin_trapopen
+		ptr ani_spin_trapclose
+		ptr ani_spin_1
+		ptr ani_spin_2
+		
+ani_spin_trapopen:
+		dc.b 3
+		dc.b id_frame_trap_closed
+		dc.b id_frame_trap_half
+		dc.b id_frame_trap_open
+		dc.b afBack, 1
+
+ani_spin_trapclose:
+		dc.b 3
+		dc.b id_frame_trap_open
+		dc.b id_frame_trap_half
+		dc.b id_frame_trap_closed
+		dc.b afBack, 1
+
+ani_spin_1:
+		dc.b 1
+		dc.b id_frame_spin_flat
+		dc.b id_frame_spin_1
+		dc.b id_frame_spin_2
+		dc.b id_frame_spin_3
+		dc.b id_frame_spin_4
+		dc.b id_frame_spin_3+afyflip
+		dc.b id_frame_spin_2+afyflip
+		dc.b id_frame_spin_1+afyflip
+		dc.b id_frame_spin_flat+afyflip
+		dc.b id_frame_spin_1+afxflip+afyflip
+		dc.b id_frame_spin_2+afxflip+afyflip
+		dc.b id_frame_spin_3+afxflip+afyflip
+		dc.b id_frame_spin_4+afxflip+afyflip
+		dc.b id_frame_spin_3+afxflip
+		dc.b id_frame_spin_2+afxflip
+		dc.b id_frame_spin_1+afxflip
+		dc.b id_frame_spin_flat
+		dc.b afBack, 1
+
+ani_spin_2:
+		dc.b 1
+		dc.b id_frame_spin_flat
+		dc.b id_frame_spin_1
+		dc.b id_frame_spin_2
+		dc.b id_frame_spin_3
+		dc.b id_frame_spin_4
+		dc.b id_frame_spin_3+afyflip
+		dc.b id_frame_spin_2+afyflip
+		dc.b id_frame_spin_1+afyflip
+		dc.b id_frame_spin_flat+afyflip
+		dc.b id_frame_spin_1+afxflip+afyflip
+		dc.b id_frame_spin_2+afxflip+afyflip
+		dc.b id_frame_spin_3+afxflip+afyflip
+		dc.b id_frame_spin_4+afxflip+afyflip
+		dc.b id_frame_spin_3+afxflip
+		dc.b id_frame_spin_2+afxflip
+		dc.b id_frame_spin_1+afxflip
+		dc.b id_frame_spin_flat
+		dc.b afBack, 1
+		even

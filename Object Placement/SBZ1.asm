@@ -118,7 +118,7 @@ ObjPos_SBZ1:
 		objpos $0CD0,$02E8,VanishPlatform,$00
 		objpos $0CD0,$0792,Rings,$14,rem
 		objpos $0D00,$04E8,Electro,$08
-		objpos $0D00,$07C0,Saws,type_saw_ground_left
+		objpos $0D00,$07C0,Saws,type_saw_ground_right
 		objpos $0D54,$0510,Rings,$11,rem
 		objpos $0D60,$02C7,VanishPlatform,$40
 		objpos $0D80,$02C7,VanishPlatform,$40
@@ -126,7 +126,7 @@ ObjPos_SBZ1:
 		objpos $0DBB,$0787,Flamethrower,$43,yflip
 		objpos $0DD0,$07B2,Rings,$14,rem
 		objpos $0DD4,$0550,Rings,$11,rem
-		objpos $0DE0,$07C0,Saws,type_saw_ground_left
+		objpos $0DE0,$07C0,Saws,type_saw_ground_right
 		objpos $0DF0,$03C0,Invisibarrier,$13
 		objpos $0E00,$0280,ScrapStomp,type_stomp_door+8
 		objpos $0E10,$0265,Monitor,type_monitor_rings,rem
@@ -142,7 +142,7 @@ ObjPos_SBZ1:
 		objpos $0F70,$06A8,VanishPlatform,$C0
 		objpos $0F80,$0300,SpinConvey,$81
 		objpos $0F80,$0500,SpinConvey,$83
-		objpos $0FA0,$07C0,Saws,type_saw_ground_left
+		objpos $0FA0,$07C0,Saws,type_saw_ground_right
 		objpos $0FBB,$0787,Flamethrower,$43,yflip
 		objpos $0FD0,$07B2,Rings,$14,rem
 		objpos $1000,$05F8,Button,$01

@@ -143,7 +143,7 @@ ObjPos_SBZ2:
 		objpos $0AD0,$0270,Monitor,$15,rem
 		objpos $0AD0,$0390,SwingingPlatform,$07
 		objpos $0AD0,$0690,Caterkiller,$00,rem
-		objpos $0AE0,$01C1,Saws,type_saw_ground_left
+		objpos $0AE0,$01C1,Saws,type_saw_ground_right
 		objpos $0B00,$01B4,Rings,$12,rem
 		objpos $0B00,$0578,Electro,$04,yflip
 		objpos $0B10,$06A8,VanishPlatform,$00
@@ -216,7 +216,7 @@ ObjPos_SBZ2:
 		objpos $0F80,$06D0,Conveyor,$E0
 		objpos $0FB0,$0094,Rings,$14,rem
 		objpos $0FB8,$01B0,Conveyor,$21
-		objpos $1080,$06C0,Saws,type_saw_ground_left
+		objpos $1080,$06C0,Saws,type_saw_ground_right
 		objpos $1080,$06D0,Conveyor,$20
 		objpos $10BA,$0090,Flamethrower,$43,yflip
 		objpos $10C0,$06A0,Saws,type_saw_pizza_updown
@@ -250,7 +250,7 @@ ObjPos_SBZ2:
 		objpos $1340,$0408,SwingingPlatform,$07
 		objpos $1350,$0250,Bomb,$00,rem
 		objpos $1380,$00D0,Conveyor,$E0
-		objpos $1380,$00D0,Saws,type_saw_ground_left
+		objpos $1380,$00D0,Saws,type_saw_ground_right
 		objpos $1380,$0250,Bomb,$00,rem
 		objpos $13C0,$0080,Electro,$04,yflip
 		objpos $13D0,$0490,Rings,$14,rem

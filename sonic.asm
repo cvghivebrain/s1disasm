@@ -1118,7 +1118,6 @@ Obj4F:
 
 		include "Objects\SBZ Conveyor Belt.asm"		; Conveyor
 		include "Objects\SBZ Trapdoor & Spinning Platforms.asm" ; SpinPlatform
-		include "Animations\SBZ Trapdoor & Spinning Platforms.asm" ; Ani_Spin
 		include "Mappings\SBZ Trapdoor.asm"		; Map_Trap
 		include "Mappings\SBZ Spinning Platforms.asm"	; Map_Spin
 
