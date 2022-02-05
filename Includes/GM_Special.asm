@@ -166,7 +166,7 @@ SS_FinishLoop:
 		move.w	(v_rings).w,d0
 		mulu.w	#10,d0					; multiply rings by 10
 		move.w	d0,(v_ring_bonus).w			; set rings bonus
-		play.w	1, jsr, mus_GotThrough			; play end-of-level music
+		play.w	1, jsr, mus_HasPassed			; play end-of-level music
 
 		lea	(v_ost_all).w,a1
 		moveq	#0,d0

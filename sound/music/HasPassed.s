@@ -1,21 +1,21 @@
 	sHeaderMusic
-	sHeaderVoice	GotThrough_Voices
+	sHeaderVoice	HasPassed_Voices
 	sHeaderTempo	$02, $03
-	sHeaderDAC	GotThrough_DAC
-	sHeaderFM	GotThrough_FM1, -$0C, $0A
-	sHeaderFM	GotThrough_FM2, -$24, $0A
-	sHeaderFM	GotThrough_FM3, -$0C, $15
-	sHeaderFM	GotThrough_FM4, -$0C, $15
-	sHeaderFM	GotThrough_FM5, -$0C, $14
-	sHeaderPSG	GotThrough_PSG1, -$30, $05, $00, 05
-	sHeaderPSG	GotThrough_PSG2, -$24, $07, $00, 05
-	sHeaderPSG	GotThrough_PSG3, -$24, $00, $00, 04
+	sHeaderDAC	HasPassed_DAC
+	sHeaderFM	HasPassed_FM1, -$0C, $0A
+	sHeaderFM	HasPassed_FM2, -$24, $0A
+	sHeaderFM	HasPassed_FM3, -$0C, $15
+	sHeaderFM	HasPassed_FM4, -$0C, $15
+	sHeaderFM	HasPassed_FM5, -$0C, $14
+	sHeaderPSG	HasPassed_PSG1, -$30, $05, $00, 05
+	sHeaderPSG	HasPassed_PSG2, -$24, $07, $00, 05
+	sHeaderPSG	HasPassed_PSG3, -$24, $00, $00, 04
 	sHeaderFinish
 
-GotThrough_FM1:
+HasPassed_FM1:
 	sVoice		00
 
-GotThrough_PSG1:
+HasPassed_PSG1:
 	sNote		nR, $06, nG4, nA4, nB4, nC5, nD5, nE5
 	sNote		nF5, nG5, $0C, nB6, $02, sTie, nC7, $01
 	sNote		nB6, $03, nG6
@@ -23,7 +23,7 @@ GotThrough_PSG1:
 	sNote		nA6, $33
 	sEnd
 
-GotThrough_FM2:
+HasPassed_FM2:
 	sVoice		01
 	sGate		$0B
 	sTiming		$01
@@ -35,7 +35,7 @@ GotThrough_FM2:
 	sTiming		$01
 	sEnd
 
-GotThrough_FM3:
+HasPassed_FM3:
 	sPan		sPanLeft
 	sVoice		02
 	sGate		$06
@@ -45,7 +45,7 @@ GotThrough_FM3:
 	sNote		nC6, $09, nD6, $33
 	sEnd
 
-GotThrough_FM4:
+HasPassed_FM4:
 	sPan		sPanRight
 	sVoice		02
 	sGate		$06
@@ -55,25 +55,25 @@ GotThrough_FM4:
 	sNote		nA5, $09, nB5, $33
 	sEnd
 
-GotThrough_FM5:
+HasPassed_FM5:
 	sVoice		03
 	sVib		$0D, $01, $02, $05
 
-GotThrough_PSG2:
+HasPassed_PSG2:
 	sNote		nG5, $06, nC6, nB5, nG5, nC6, nB5, nG5
 	sNote		nC6, nB5, $0C, nC6, $09, nB5, $33
 
-GotThrough_PSG3:
+HasPassed_PSG3:
 	sEnd
 
-GotThrough_DAC:
+HasPassed_DAC:
 	sNote		dSnare, $03, dSnare, dKick, $06, dKick, dSnare, $03
 	sNote		dSnare, dKick, $06, dKick, dSnare, $03, dSnare, dTimpaniHi
 	sNote		dTimpaniHi, dTimpaniFloor, dTimpaniFloor, $03, dTimpaniFloor, dTimpaniFloor, dSnare, $09
 	sNote		$33
 	sEnd
 
-GotThrough_Voices:
+HasPassed_Voices:
 
 	sNewVoice	00					; voice number $00
 	sAlgorithm	$05

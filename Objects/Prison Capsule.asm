@@ -204,7 +204,7 @@ Pri_EndAct:	; Routine $E
 		adda.w	d2,a1					; next OST slot
 		dbf	d0,@findanimal				; repeat $3E times (this misses the last $40 OST slots)
 
-		jsr	(GotThroughAct).l			; load gfx, play music (see "Signpost & GotThroughAct.asm")
+		jsr	(HasPassedAct).l			; load gfx, play music (see "Signpost & HasPassedAct.asm")
 		jmp	(DeleteObject).l
 
 	@found:

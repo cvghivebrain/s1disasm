@@ -400,7 +400,7 @@ PLC_TryAgain:	plcheader
 ; Pattern load cues - Eggman on SBZ 2
 ; ---------------------------------------------------------------------------
 PLC_EggmanSBZ2:	plcheader
-		plcm	Nem_SbzBlock, $A300			; block
+		plcm	Nem_SbzBlock, $A300, SBZ2		; block
 		plcm	Nem_Sbz2Eggman, $8000			; Eggman
 		plcm	Nem_LzSwitch, $9400, SBZ2		; switch
 	PLC_EggmanSBZ2_end:

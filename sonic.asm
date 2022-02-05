@@ -971,8 +971,7 @@ NullObject:
 		include "Animations\SYZ Bumper.asm"		; Ani_Bump
 		include "Mappings\SYZ Bumper.asm"		; Map_Bump
 
-		include "Objects\Signpost & GotThroughAct.asm"	; Signpost & GotThroughAct
-		include "Animations\Signpost.asm"		; Ani_Sign
+		include "Objects\Signpost & HasPassedAct.asm"	; Signpost & HasPassedAct
 		include "Mappings\Signpost.asm"			; Map_Sign
 
 		include "Objects\MZ Lava Geyser Maker.asm"	; GeyserMaker
@@ -1089,7 +1088,7 @@ Obj4F:
 		include "Objects\Shield & Invincibility.asm"	; ShieldItem
 		include "Objects\Unused Special Stage Warp.asm"	; VanishSonic
 		include "Objects\LZ Water Splash.asm"		; Splash
-		include "Animations\Shield & Invincibility.asm"	; Ani_Shield
+		include_ShieldItem_animation
 		include "Mappings\Shield & Invincibility.asm"	; Map_Shield
 		include "Animations\Unused Special Stage Warp.asm" ; Ani_Vanish
 		include "Mappings\Unused Special Stage Warp.asm" ; Map_Vanish
@@ -1128,7 +1127,6 @@ Obj4F:
 		include "Mappings\SBZ Stomper & Sliding Doors.asm" ; Map_Stomp
 
 		include "Objects\SBZ Vanishing Platform.asm"	; VanishPlatform
-		include "Animations\SBZ Vanishing Platform.asm"	; Ani_Van
 		include "Mappings\SBZ Vanishing Platform.asm"	; Map_VanP
 
 		include "Objects\SBZ Electric Orb.asm"		; Electro
@@ -1174,7 +1172,6 @@ Obj4F:
 
 		include "Objects\SBZ2 Blocks That Eggman Breaks.asm" ; FalseFloor
 		include "Objects\SBZ2 Eggman.asm"		; ScrapEggman
-		include "Animations\SBZ2 Eggman.asm"		; Ani_SEgg
 		include "Mappings\SBZ2 Eggman.asm"		; Map_SEgg
 		include_FalseFloor_1				; Objects\SBZ2 Blocks That Eggman Breaks.asm
 		include "Mappings\SBZ2 Blocks That Eggman Breaks.asm" ; Map_FFloor

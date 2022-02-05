@@ -43,7 +43,7 @@ MusicFiles	macro	func	; TODO: Find suitable speed-up tempos for the remaining en
 		\func	Ending, $90, ; $00		; Ending music
 		\func	Boss, $90, ; $00		; Boss music
 		\func	FZ, $90, ; $00			; Final Zone music
-		\func	GotThrough, $90, ; $00		; Act Finished music
+		\func	HasPassed, $90, ; $00		; Act Finished music
 		\func	GameOver, $90, ; $00		; Game Over music
 		\func	Continue, $90, ; $00		; Continue music
 		\func	Credits, $90, ; $00		; Credits music
