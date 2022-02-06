@@ -1047,6 +1047,10 @@ Obj4F:
 		include "Mappings\SLZ Fans.asm"			; Map_Fan
 
 		include "Objects\SLZ Seesaw.asm"		; Seesaw
+See_DataSlope:	incbin	"Collision\SLZ Seesaw Heightmap (Sloped).bin"
+		even
+See_DataFlat:	incbin	"Collision\SLZ Seesaw Heightmap (Flat).bin"
+		even
 		include "Mappings\SLZ Seesaw.asm"		; Map_Seesaw
 		include "Mappings\SLZ Seesaw Spike Ball.asm"	; Map_SSawBall
 
