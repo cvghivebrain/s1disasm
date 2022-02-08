@@ -1,5 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Object 3A - "SONIC HAS PASSED" title card
+
+; spawned by:
+;	Signpost, HasPassedCard
 ; ---------------------------------------------------------------------------
 
 HasPassedCard:
@@ -9,133 +12,159 @@ HasPassedCard:
 		jmp	Has_Index(pc,d1.w)
 ; ===========================================================================
 Has_Index:	index *,,2
-		ptr Has_ChkPLC
+		ptr Has_Main
 		ptr Has_Move
 		ptr Has_Wait
-		ptr Has_TimeBonus
+		ptr Has_Bonus
 		ptr Has_Wait
 		ptr Has_NextLevel
 		ptr Has_Wait
-		ptr Has_Move2
-		ptr loc_C766
+		ptr Has_MoveBack
+		ptr Has_Boundary
 
 ost_has_x_stop:		equ $30					; on screen x position (2 bytes)
 ost_has_x_start:	equ $32					; start & finish x position (2 bytes)
+
+include_Has_Config:	macro
+		; x pos start, x pos stop, y pos
+		; routine, frame
+Has_Config:	dc.w 4, $124, $BC				; "SONIC HAS"
+		dc.b id_Has_Move, id_frame_has_sonichas
+
+		dc.w -$120, $120, $D0				; "PASSED"
+		dc.b id_Has_Move, id_frame_has_passed
+
+		dc.w $40C, $14C, $D6				; "ACT" 1/2/3
+		dc.b id_Has_Move, id_frame_card_act1_6
+
+		dc.w $520, $120, $EC				; score
+		dc.b id_Has_Move, id_frame_has_score
+
+		dc.w $540, $120, $FC				; time bonus
+		dc.b id_Has_Move, id_frame_has_timebonus
+
+		dc.w $560, $120, $10C				; ring bonus
+		dc.b id_Has_Move, id_frame_has_ringbonus
+
+		dc.w $20C, $14C, $CC				; oval
+		dc.b id_Has_Move, id_frame_card_oval_5
+		endm
 ; ===========================================================================
 
-Has_ChkPLC:	; Routine 0
+Has_Main:	; Routine 0
 		tst.l	(v_plc_buffer).w			; are the pattern load cues empty?
-		beq.s	Has_Main				; if yes, branch
+		beq.s	@plc_free				; if yes, branch
 		rts	
 ; ===========================================================================
 
-Has_Main:
-		movea.l	a0,a1
-		lea	(Has_Config).l,a2
-		moveq	#6,d1
+@plc_free:
+		movea.l	a0,a1					; replace current object with 1st from list
+		lea	(Has_Config).l,a2			; position, routine & frame settings
+		moveq	#6,d1					; 6 additional items
 
-Has_Loop:
+	@loop:
 		move.b	#id_HasPassedCard,ost_id(a1)
-		move.w	(a2),ost_x_pos(a1)			; load start x-position
-		move.w	(a2)+,ost_has_x_start(a1)		; load finish x-position (same as start)
-		move.w	(a2)+,ost_has_x_stop(a1)		; load main x-position
-		move.w	(a2)+,ost_y_screen(a1)			; load y-position
-		move.b	(a2)+,ost_routine(a1)
-		move.b	(a2)+,d0
-		cmpi.b	#6,d0
-		bne.s	loc_C5CA
+		move.w	(a2),ost_x_pos(a1)			; set actual x position
+		move.w	(a2)+,ost_has_x_start(a1)		; set start x position (same as actual)
+		move.w	(a2)+,ost_has_x_stop(a1)		; set stop x position
+		move.w	(a2)+,ost_y_screen(a1)			; set y position
+		move.b	(a2)+,ost_routine(a1)			; goto Has_Move next
+		move.b	(a2)+,d0				; get frame number
+		cmpi.b	#id_frame_card_act1_6,d0		; is object the act number?
+		bne.s	@not_act				; if not, branch
 		add.b	(v_act).w,d0				; add act number to frame number
 
-	loc_C5CA:
-		move.b	d0,ost_frame(a1)
+	@not_act:
+		move.b	d0,ost_frame(a1)			; set frame number
 		move.l	#Map_Has,ost_mappings(a1)
 		move.w	#tile_Nem_TitleCard+tile_hi,ost_tile(a1)
 		move.b	#render_abs,ost_render(a1)
-		lea	$40(a1),a1
-		dbf	d1,Has_Loop				; repeat 6 times
+		lea	sizeof_ost(a1),a1			; next OST slot in RAM
+		dbf	d1,@loop				; repeat 6 times
 
 Has_Move:	; Routine 2
-		moveq	#$10,d1					; set horizontal speed
+		moveq	#$10,d1					; set horizontal speed (moves right)
 		move.w	ost_has_x_stop(a0),d0
-		cmp.w	ost_x_pos(a0),d0			; has item reached its target position?
-		beq.s	loc_C61A				; if yes, branch
-		bge.s	Has_ChgPos
-		neg.w	d1
+		cmp.w	ost_x_pos(a0),d0			; has object reached its target position?
+		beq.s	@at_target				; if yes, branch
+		bge.s	@is_left				; branch if object is left of target position
+		neg.w	d1					; move left instead
 
-	Has_ChgPos:
-		add.w	d1,ost_x_pos(a0)			; change item's position
+	@is_left:
+		add.w	d1,ost_x_pos(a0)			; update position
 
-	loc_C5FE:
+	@chk_visible:
 		move.w	ost_x_pos(a0),d0
-		bmi.s	locret_C60E
-		cmpi.w	#$200,d0				; has item moved beyond	$200 on	x-axis?
-		bcc.s	locret_C60E				; if yes, branch
+		bmi.s	@exit					; branch if object is at -ve x pos
+		cmpi.w	#$200,d0				; is object further right than $200?
+		bcc.s	@exit					; if yes, branch
 		bra.w	DisplaySprite
 ; ===========================================================================
 
-locret_C60E:
+@exit:
 		rts	
 ; ===========================================================================
 
-loc_C610:
-		move.b	#id_Has_Move2,ost_routine(a0)
-		bra.w	Has_Move2
+@sbz2_ending:
+		move.b	#id_Has_MoveBack,ost_routine(a0)
+		bra.w	Has_MoveBack
 ; ===========================================================================
 
-loc_C61A:
-		cmpi.b	#id_Has_Move2,(v_ost_haspassed6+ost_routine).w
-		beq.s	loc_C610
-		cmpi.b	#4,ost_frame(a0)
-		bne.s	loc_C5FE
-		addq.b	#2,ost_routine(a0)
+@at_target:
+		cmpi.b	#id_Has_MoveBack,(v_ost_haspassed6+ost_routine).w ; is ring bonus object on routine Has_MoveBack?
+		beq.s	@sbz2_ending				; if yes, branch
+		cmpi.b	#id_frame_has_ringbonus,ost_frame(a0)	; is object the ring bonus?
+		bne.s	@chk_visible				; if not, branch
+
+		addq.b	#2,ost_routine(a0)			; goto Has_Wait next, and then Has_Bonus
 		move.w	#180,ost_anim_time(a0)			; set time delay to 3 seconds
 
 Has_Wait:	; Routine 4, 8, $C
-		subq.w	#1,ost_anim_time(a0)			; subtract 1 from time delay
-		bne.s	Has_Display
-		addq.b	#2,ost_routine(a0)
+		subq.w	#1,ost_anim_time(a0)			; decrement timer
+		bne.s	@wait					; branch if time remains
+		addq.b	#2,ost_routine(a0)			; goto Has_Bonus/Has_NextLevel/Has_MoveBack next
 
-Has_Display:
+	@wait:
 		bra.w	DisplaySprite
 ; ===========================================================================
 
-Has_TimeBonus:	; Routine 6
+Has_Bonus:	; Routine 6
 		bsr.w	DisplaySprite
 		move.b	#1,(f_pass_bonus_update).w		; set time/ring bonus update flag
 		moveq	#0,d0
 		tst.w	(v_time_bonus).w			; is time bonus	= zero?
-		beq.s	Has_RingBonus				; if yes, branch
+		beq.s	@skip_timebonus				; if yes, branch
 		addi.w	#10,d0					; add 10 to score
 		subi.w	#10,(v_time_bonus).w			; subtract 10 from time bonus
 
-Has_RingBonus:
+	@skip_timebonus:
 		tst.w	(v_ring_bonus).w			; is ring bonus	= zero?
-		beq.s	Has_ChkBonus				; if yes, branch
+		beq.s	@skip_ringbonus				; if yes, branch
 		addi.w	#10,d0					; add 10 to score
 		subi.w	#10,(v_ring_bonus).w			; subtract 10 from ring bonus
 
-Has_ChkBonus:
+	@skip_ringbonus:
 		tst.w	d0					; is there any bonus?
-		bne.s	Has_AddBonus				; if yes, branch
+		bne.s	@add_bonus				; if yes, branch
 		play.w	1, jsr, sfx_Register			; play "ker-ching" sound
-		addq.b	#2,ost_routine(a0)
-		cmpi.w	#(id_SBZ<<8)+1,(v_zone).w
-		bne.s	Has_SetDelay
-		addq.b	#4,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto Has_Wait next, and then Has_NextLevel
+		cmpi.w	#(id_SBZ<<8)+1,(v_zone).w		; is current level SBZ2?
+		bne.s	@not_sbz2				; if not, branch
+		addq.b	#4,ost_routine(a0)			; goto Has_Wait next, and then Has_MoveBack
 
-Has_SetDelay:
+	@not_sbz2:
 		move.w	#180,ost_anim_time(a0)			; set time delay to 3 seconds
 
-locret_C692:
+@exit:
 		rts	
 ; ===========================================================================
 
-Has_AddBonus:
-		jsr	(AddPoints).l
-		move.b	(v_vblank_counter_byte).w,d0
-		andi.b	#3,d0
-		bne.s	locret_C692
-		play.w	1, jmp, sfx_Switch			; play "blip" sound
+@add_bonus:
+		jsr	(AddPoints).l				; add d0 to score and update counter
+		move.b	(v_vblank_counter_byte).w,d0		; get byte that increments every frame
+		andi.b	#3,d0					; read bits 0-1
+		bne.s	@exit					; branch if either are set
+		play.w	1, jmp, sfx_Switch			; play "blip" sound every 4th frame
 ; ===========================================================================
 
 Has_NextLevel:	; Routine $A
@@ -145,34 +174,35 @@ Has_NextLevel:	; Routine $A
 		move.b	(v_act).w,d1
 		andi.w	#3,d1
 		add.w	d1,d1
-		add.w	d1,d0
+		add.w	d1,d0					; combine zone/act numbers into single value
 		move.w	LevelOrder(pc,d0.w),d0			; load level from level order array
 		move.w	d0,(v_zone).w				; set level number
 		tst.w	d0
-		bne.s	Has_ChkSS
-		move.b	#id_Sega,(v_gamemode).w
-		bra.s	Has_Display2
+		bne.s	@valid_level				; branch if not 0
+		move.b	#id_Sega,(v_gamemode).w			; goto Sega logo screen next
+		bra.s	@skip_restart
 ; ===========================================================================
 
-Has_ChkSS:
+@valid_level:
 		clr.b	(v_last_lamppost).w			; clear	lamppost counter
 		tst.b	(f_giantring_collected).w		; has Sonic jumped into	a giant	ring?
-		beq.s	VBla_08A				; if not, branch
-		move.b	#id_Special,(v_gamemode).w		; set game mode to Special Stage (10)
-		bra.s	Has_Display2
+		beq.s	@restart				; if not, branch
+		move.b	#id_Special,(v_gamemode).w		; set game mode to Special Stage ($10)
+		bra.s	@skip_restart
 ; ===========================================================================
 
-VBla_08A:
+@restart:
 		move.w	#1,(f_restart).w			; restart level
 
-Has_Display2:
+@skip_restart:
 		bra.w	DisplaySprite
-; ===========================================================================
+
 ; ---------------------------------------------------------------------------
 ; Level	order array
 
 ; Lists which levels which are loaded after the current level
 ; ---------------------------------------------------------------------------
+
 LevelOrder:
 		; Green Hill Zone
 		dc.b id_GHZ, 1					; Act 1
@@ -213,60 +243,40 @@ LevelOrder:
 		zonewarning LevelOrder,8
 ; ===========================================================================
 
-Has_Move2:	; Routine $E
-		moveq	#$20,d1					; set horizontal speed
+Has_MoveBack:	; Routine $E
+		; moves title cards off screen during SBZ2 Eggman event
+		moveq	#$20,d1					; set horizontal speed (moves right)
 		move.w	ost_has_x_start(a0),d0
-		cmp.w	ost_x_pos(a0),d0			; has item reached its finish position?
-		beq.s	Has_SBZ2				; if yes, branch
-		bge.s	Has_ChgPos2
-		neg.w	d1
+		cmp.w	ost_x_pos(a0),d0			; has item reached its target position?
+		beq.s	@at_target				; if yes, branch
+		bge.s	@is_left				; branch if object is left of target position
+		neg.w	d1					; move left instead
 
-	Has_ChgPos2:
-		add.w	d1,ost_x_pos(a0)			; change item's position
+	@is_left:
+		add.w	d1,ost_x_pos(a0)			; update position
 		move.w	ost_x_pos(a0),d0
-		bmi.s	locret_C748
-		cmpi.w	#$200,d0				; has item moved beyond	$200 on	x-axis?
-		bcc.s	locret_C748				; if yes, branch
+		bmi.s	@exit					; branch if object is at -ve x pos
+		cmpi.w	#$200,d0				; is object further right than $200?
+		bcc.s	@exit					; if yes, branch
 		bra.w	DisplaySprite
 ; ===========================================================================
 
-locret_C748:
+@exit:
 		rts	
 ; ===========================================================================
 
-Has_SBZ2:
-		cmpi.b	#4,ost_frame(a0)
-		bne.w	DeleteObject
-		addq.b	#2,ost_routine(a0)
+@at_target:
+		cmpi.b	#id_frame_has_ringbonus,ost_frame(a0)	; is object the ring bonus?
+		bne.w	DeleteObject				; if not, branch
+		addq.b	#2,ost_routine(a0)			; goto Has_Boundary next
 		clr.b	(f_lock_controls).w			; unlock controls
 		play.w	0, jmp, mus_FZ				; play FZ music
 ; ===========================================================================
 
-loc_C766:	; Routine $10
-		addq.w	#2,(v_boundary_right).w
+Has_Boundary:	; Routine $10
+		addq.w	#2,(v_boundary_right).w			; extend right level boundary 2px
 		cmpi.w	#$2100,(v_boundary_right).w
-		beq.w	DeleteObject
+		beq.w	DeleteObject				; if boundary reaches $2100, delete object
 		rts	
 ; ===========================================================================
-		;    x start,	x stop,	y,	routine, frame
-
-Has_Config:	dc.w 4,		$124,	$BC			; "SONIC HAS"
-		dc.b 				2,	id_frame_has_sonichas
-
-		dc.w -$120,	$120,	$D0			; "PASSED"
-		dc.b 				2,	id_frame_has_passed
-
-		dc.w $40C,	$14C,	$D6			; "ACT" 1/2/3
-		dc.b 				2,	id_frame_card_act1_6
-
-		dc.w $520,	$120,	$EC			; score
-		dc.b 				2,	id_frame_has_score
-
-		dc.w $540,	$120,	$FC			; time bonus
-		dc.b 				2,	id_frame_has_timebonus
-
-		dc.w $560,	$120,	$10C			; ring bonus
-		dc.b 				2,	id_frame_has_ringbonus
-
-		dc.w $20C,	$14C,	$CC			; oval
-		dc.b 				2,	id_frame_card_oval_5
+		include_Has_Config				; see beginning of this file

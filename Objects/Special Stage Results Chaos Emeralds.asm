@@ -1,5 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Object 7F - chaos emeralds from the special stage results screen
+
+; spawned by:
+;	SSResult, SSRChaos
 ; ---------------------------------------------------------------------------
 
 SSRChaos:
@@ -12,43 +15,46 @@ SSRC_Index:	index *,,2
 		ptr SSRC_Main
 		ptr SSRC_Flash
 
-; ---------------------------------------------------------------------------
-; X-axis positions for chaos emeralds
-; ---------------------------------------------------------------------------
-SSRC_PosData:	dc.w $110, $128, $F8, $140, $E0, $158
+SSRC_PosData:	; x positions for chaos emeralds
+		dc.w $110					; blue
+		dc.w $128					; yellow
+		dc.w $F8					; pink
+		dc.w $140					; green
+		dc.w $E0					; red
+		dc.w $158					; grey
 ; ===========================================================================
 
 SSRC_Main:	; Routine 0
-		movea.l	a0,a1
+		movea.l	a0,a1					; replace current object with 1st emerald
 		lea	(SSRC_PosData).l,a2
 		moveq	#0,d2
 		moveq	#0,d1
-		move.b	(v_emeralds).w,d1			; d1 is number of emeralds
-		subq.b	#1,d1					; subtract 1 from d1
+		move.b	(v_emeralds).w,d1			; get number of emeralds
+		subq.b	#1,d1					; subtract 1 for number of loops
 		bcs.w	DeleteObject				; if you have 0	emeralds, branch
 
-	SSRC_Loop:
+	@loop:
 		move.b	#id_SSRChaos,ost_id(a1)
-		move.w	(a2)+,ost_x_pos(a1)			; set x position
+		move.w	(a2)+,ost_x_pos(a1)			; set x position from list
 		move.w	#$F0,ost_y_screen(a1)			; set y position
-		lea	(v_emerald_list).w,a3			; check which emeralds you have
-		move.b	(a3,d2.w),d3
-		move.b	d3,ost_frame(a1)
-		move.b	d3,ost_anim(a1)
-		addq.b	#1,d2
-		addq.b	#2,ost_routine(a1)
+		lea	(v_emerald_list).w,a3			; get list of individual emeralds (numbered 0 to 5)
+		move.b	(a3,d2.w),d3				; read value of current emerald
+		move.b	d3,ost_frame(a1)			; set frame number
+		move.b	d3,ost_anim(a1)				; copy frame number (not an animation number)
+		addq.b	#1,d2					; next emerald value
+		addq.b	#2,ost_routine(a1)			; goto SSRC_Flash next
 		move.l	#Map_SSRC,ost_mappings(a1)
 		move.w	#tile_Nem_ResultEm+tile_hi,ost_tile(a1)
 		move.b	#render_abs,ost_render(a1)
-		lea	$40(a1),a1				; next object
-		dbf	d1,SSRC_Loop				; loop for d1 number of	emeralds
+		lea	sizeof_ost(a1),a1			; next object
+		dbf	d1,@loop				; repeat for rest of emeralds
 
 SSRC_Flash:	; Routine 2
-		move.b	ost_frame(a0),d0
-		move.b	#id_frame_ssrc_blank,ost_frame(a0)	; load 6th frame (blank)
-		cmpi.b	#6,d0
-		bne.s	SSRC_Display
-		move.b	ost_anim(a0),ost_frame(a0)		; load visible frame
+		move.b	ost_frame(a0),d0			; get previous frame
+		move.b	#id_frame_ssrc_blank,ost_frame(a0)	; use blank frame (6)
+		cmpi.b	#id_frame_ssrc_blank,d0			; was previous frame blank?
+		bne.s	@keep_frame				; if not, branch
+		move.b	ost_anim(a0),ost_frame(a0)		; use original frame stored in ost_anim
 
-	SSRC_Display:
+	@keep_frame:
 		bra.w	DisplaySprite

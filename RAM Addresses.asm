@@ -19,7 +19,7 @@ v_level_layout:			rs.b sizeof_level ; $FFFFA400 ; level and background layouts (
 v_ghz_flower_buffer:		equ v_level_layout-sizeof_art_flowers ; $FFFF9400 ; graphics buffer for GHZ flowers in ending ($1000 bytes)
 v_bgscroll_buffer:		rs.b $200 ; $FFFFA800 ; background scroll buffer
 v_nem_gfx_buffer:		rs.b $200 ; $FFFFAA00 ; Nemesis graphics decompression buffer
-v_sprite_queue:			rs.b $400 ; $FFFFAC00 ; sprite display queue, in order of priority
+v_sprite_queue:			rs.b sizeof_priority*8 ; $FFFFAC00 ; sprite display queue, first section is highest priority ($400 bytes; 8 sections of $80 bytes)
 v_16x16_tiles:			equ $FFFFB000 ; 16x16 tile mappings
 v_sonic_gfx_buffer:		equ $FFFFC800 ; buffered Sonic graphics ($17 cells) ($2E0 bytes)
 v_sonic_pos_tracker:		equ $FFFFCB00 ; earlier position tracking list for Sonic, used by invinciblity stars ($100 bytes)

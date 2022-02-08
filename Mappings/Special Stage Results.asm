@@ -4,11 +4,11 @@
 Map_SSR:	index *
 		ptr frame_ssr_chaos
 		ptr frame_ssr_score
-		ptr byte_CD0D
+		ptr frame_ssr_ringbonus
 		ptr frame_card_oval
-		ptr byte_CD31
-		ptr byte_CD46
-		ptr byte_CD5B
+		ptr frame_ssr_contsonic1
+		ptr frame_ssr_contsonic2
+		ptr frame_ssr_continue
 		ptr frame_ssr_specialstage
 		ptr frame_ssr_gotthemall
 		
@@ -39,7 +39,8 @@ frame_ssr_score:
 		piece -$33, -1, 2x1, $6E, xflip, yflip
 		endsprite
 		
-byte_CD0D:	spritemap
+frame_ssr_ringbonus:
+		spritemap					; "RING BONUS"
 		piece -$50, -8, 4x2, $152
 		piece -$27, -8, 4x2, $66
 		piece -7, -8, 1x2, $14A
@@ -49,21 +50,24 @@ byte_CD0D:	spritemap
 		piece $48, -8, 1x2, $170
 		endsprite
 		
-byte_CD31:	spritemap
+frame_ssr_contsonic1:
+		spritemap					; "CONTINUE" + Sonic
 		piece -$50, -8, 4x2, $FFD1
 		piece -$30, -8, 4x2, $FFD9
 		piece -$10, -8, 1x2, $FFE1
 		piece $40, -8, 2x3, $1FE3
 		endsprite
 		
-byte_CD46:	spritemap
+frame_ssr_contsonic2:
+		spritemap					; "CONTINUE" + Sonic
 		piece -$50, -8, 4x2, $FFD1
 		piece -$30, -8, 4x2, $FFD9
 		piece -$10, -8, 1x2, $FFE1
 		piece $40, -8, 2x3, $1FE9
 		endsprite
 		
-byte_CD5B:	spritemap
+frame_ssr_continue:
+		spritemap					; "CONTINUE"
 		piece -$50, -8, 4x2, $FFD1
 		piece -$30, -8, 4x2, $FFD9
 		piece -$10, -8, 1x2, $FFE1

@@ -5,155 +5,167 @@ BldSpr_ScrPos:	dc.l 0						; blank
 		dc.l v_bg3_x_pos&$FFFFFF			; background x position	2
 		
 ; ---------------------------------------------------------------------------
-; Subroutine to	convert	objects to proper Mega Drive sprites
+; Subroutine to	convert	objects into proper Mega Drive sprites
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 BuildSprites:
 		lea	(v_sprite_buffer).w,a2			; set address for sprite table - $280 bytes, copied to VRAM at VBlank
 		moveq	#0,d5
-		lea	(v_sprite_queue).w,a4
-		moveq	#7,d7					; there are 8 priority levels
+		lea	(v_sprite_queue).w,a4			; address of sprite queue - $400 bytes, 8 sections of $80 bytes (1 word for count, $3F words for OST addresses)
+		moveq	#8-1,d7					; there are 8 priority levels
 
-	@priorityLoop:
-		tst.w	(a4)					; are there objects left to draw?
-		beq.w	@nextPriority				; if not, branch
-		moveq	#2,d6
+	@priority_loop:
+		tst.w	(a4)					; are there objects left in current section?
+		beq.w	@next_priority				; if not, branch
+		moveq	#2,d6					; start address within current section (1st word is object count)
 
-	@objectLoop:
+	@object_loop:
 		movea.w	(a4,d6.w),a0				; load address of OST of object
-		tst.b	(a0)					; if null, branch
-		beq.w	@skipObject
-		bclr	#render_onscreen_bit,ost_render(a0)	; set as not visible
+		tst.b	(a0)
+		beq.w	@next_object				; if object id is 0, branch
 
+		bclr	#render_onscreen_bit,ost_render(a0)	; set as not visible
 		move.b	ost_render(a0),d0
 		move.b	d0,d4
 		andi.w	#render_rel+render_bg,d0		; get drawing coordinate system
-		beq.s	@screenCoords				; branch if 0 (absolute screen coordinates)
-		movea.l	BldSpr_ScrPos(pc,d0.w),a1		; get screen x position (or background x position if render_bg is used)
-	; check object bounds
+		beq.s	@abs_screen_coords			; branch if 0 (absolute screen coordinates)
+		movea.l	BldSpr_ScrPos(pc,d0.w),a1		; get address for camera x position (or background x position if render_bg is used)
+
+		; check object is visible
 		moveq	#0,d0
 		move.b	ost_actwidth(a0),d0
 		move.w	ost_x_pos(a0),d3
 		sub.w	(a1),d3
 		move.w	d3,d1
-		add.w	d0,d1
-		bmi.w	@skipObject				; left edge out of bounds
+		add.w	d0,d1					; d1 = x pos of object's right edge on screen
+		bmi.w	@next_object				; branch if object is outside left side of screen
 		move.w	d3,d1
-		sub.w	d0,d1
+		sub.w	d0,d1					; d1 = x pos of object's left edge on screen
 		cmpi.w	#320,d1
-		bge.s	@skipObject				; right edge out of bounds
-		addi.w	#128,d3					; VDP sprites start at 128px
+		bge.s	@next_object				; branch if object is outside right side of screen
+		addi.w	#128,d3					; d3 = x pos of object on screen, +128px for VDP sprite coordinate
 
 		btst	#render_useheight_bit,d4		; is use height flag on?
-		beq.s	@assumeHeight				; if not, branch
+		beq.s	@assume_height				; if not, branch
 		moveq	#0,d0
 		move.b	ost_height(a0),d0
 		move.w	ost_y_pos(a0),d2
 		sub.w	4(a1),d2
 		move.w	d2,d1
-		add.w	d0,d1
-		bmi.s	@skipObject				; top edge out of bounds
+		add.w	d0,d1					; d1 = y pos of object's bottom edge on screen
+		bmi.s	@next_object				; branch if object is outside top side of screen
 		move.w	d2,d1
-		sub.w	d0,d1
+		sub.w	d0,d1					; d1 = y pos of object's top edge on screen
 		cmpi.w	#224,d1
-		bge.s	@skipObject
-		addi.w	#128,d2					; VDP sprites start at 128px
-		bra.s	@drawObject
+		bge.s	@next_object				; branch if object is outside bottom side of screen
+		addi.w	#128,d2					; d2 = y pos of object on screen, +128px for VDP sprite coordinate
+		bra.s	@draw_object
 ; ===========================================================================
 
-	@screenCoords:
-		move.w	ost_y_screen(a0),d2			; special variable for screen Y
-		move.w	ost_x_pos(a0),d3
-		bra.s	@drawObject
+	@abs_screen_coords:
+		move.w	ost_y_screen(a0),d2			; d2 = y pos
+		move.w	ost_x_pos(a0),d3			; d3 = x pos
+		bra.s	@draw_object
 ; ===========================================================================
 
-	@assumeHeight:
+	@assume_height:
 		move.w	ost_y_pos(a0),d2
-		sub.w	4(a1),d2
-		addi.w	#$80,d2
-		cmpi.w	#$60,d2
-		blo.s	@skipObject
-		cmpi.w	#$180,d2
-		bhs.s	@skipObject
+		sub.w	4(a1),d2				; d2 = y pos of object on screen
+		addi.w	#128,d2
+		cmpi.w	#96,d2
+		blo.s	@next_object				; branch if > 32px outside top side of screen
+		cmpi.w	#384,d2
+		bhs.s	@next_object				; branch if > 32px outside bottom side of screen
 
-	@drawObject:
-		movea.l	ost_mappings(a0),a1
+	@draw_object:
+		movea.l	ost_mappings(a0),a1			; get address of mappings
 		moveq	#0,d1
 		btst	#render_rawmap_bit,d4			; is raw mappings flag on?
-		bne.s	@drawFrame				; if yes, branch
+		bne.s	@draw_now				; if yes, branch
+
 		move.b	ost_frame(a0),d1
 		add.b	d1,d1
-		adda.w	(a1,d1.w),a1				; get mappings frame address
+		adda.w	(a1,d1.w),a1				; jump to frame within mappings
 		move.b	(a1)+,d1				; number of sprite pieces
-		subq.b	#1,d1
-		bmi.s	@setVisible
+		subq.b	#1,d1					; subtract 1 for loops
+		bmi.s	@skip_draw				; branch if frame contained 0 sprite pieces
 
-	@drawFrame:
+	@draw_now:
 		bsr.w	BuildSpr_Draw				; write data from sprite pieces to buffer
 
-	@setVisible:
+	@skip_draw:
 		bset	#render_onscreen_bit,ost_render(a0)	; set object as visible
 
-	@skipObject:
-		addq.w	#2,d6
+	@next_object:
+		addq.w	#2,d6					; read next object in sprite queue
 		subq.w	#2,(a4)					; number of objects left
-		bne.w	@objectLoop
+		bne.w	@object_loop				; branch if not 0
 
-	@nextPriority:
-		lea	$80(a4),a4
-		dbf	d7,@priorityLoop
-		move.b	d5,(v_spritecount).w
+	@next_priority:
+		lea	sizeof_priority(a4),a4			; next priority section ($80)
+		dbf	d7,@priority_loop			; repeat for all sections
+		move.b	d5,(v_spritecount).w			; set sprite count
 		cmpi.b	#$50,d5
-		beq.s	@spriteLimit
-		move.l	#0,(a2)
+		beq.s	@max_sprites				; branch if at max
+		move.l	#0,(a2)					; set next sprite to link to first
 		rts	
 ; ===========================================================================
 
-	@spriteLimit:
-		move.b	#0,-5(a2)				; set last sprite link
+	@max_sprites:
+		move.b	#0,-5(a2)				; set current sprite to link to first
 		rts	
 ; End of function BuildSprites
 
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
+; ---------------------------------------------------------------------------
+; Subroutine to	convert	and add sprite mappings to the sprite buffer
+;
+; input:
+;	d2 = VDP y position
+;	d3 = VDP x position
+;	d4 = render flags (ost_render)
+;	d5 = current sprite count
+;	a1 = current address in sprite mappings
+;	a2 = current address in sprite buffer
+; ---------------------------------------------------------------------------
 
 BuildSpr_Draw:
-		movea.w	ost_tile(a0),a3
+		movea.w	ost_tile(a0),a3				; get VRAM setting (tile, x/yflip, palette, priority)
 		btst	#render_xflip_bit,d4
-		bne.s	BuildSpr_FlipX
+		bne.s	BuildSpr_FlipX				; branch if xflipped
 		btst	#render_yflip_bit,d4
-		bne.w	BuildSpr_FlipY
+		bne.w	BuildSpr_FlipY				; branch if yflipped
 
 
 BuildSpr_Normal:
+	@loop:
 		cmpi.b	#$50,d5					; check sprite limit
-		beq.s	@return
-		move.b	(a1)+,d0				; get y-offset
-		ext.w	d0
-		add.w	d2,d0					; add y-position
-		move.w	d0,(a2)+				; write to buffer
-		move.b	(a1)+,(a2)+				; write sprite size
-		addq.b	#1,d5					; increment sprite counter
-		move.b	d5,(a2)+				; set as sprite link
-		move.b	(a1)+,d0				; get art tile
-		lsl.w	#8,d0
-		move.b	(a1)+,d0
-		add.w	a3,d0					; add art tile offset
-		move.w	d0,(a2)+				; write to buffer
-		move.b	(a1)+,d0				; get x-offset
-		ext.w	d0
-		add.w	d3,d0					; add x-position
-		andi.w	#$1FF,d0				; keep within 512px
-		bne.s	@writeX
-		addq.w	#1,d0
+		beq.s	@return					; branch if at max sprites
 
-	@writeX:
+		move.b	(a1)+,d0				; get relative y pos from mappings
+		ext.w	d0
+		add.w	d2,d0					; add VDP y pos
+		move.w	d0,(a2)+				; write y pos to sprite buffer
+
+		move.b	(a1)+,(a2)+				; write sprite size to buffer
+		addq.b	#1,d5					; increment sprite counter
+		move.b	d5,(a2)+				; write link to next sprite in buffer
+
+		move.b	(a1)+,d0				; get high byte of tile number from mappings
+		lsl.w	#8,d0					; move to high byte of word
+		move.b	(a1)+,d0				; get low byte
+		add.w	a3,d0					; add VRAM setting
 		move.w	d0,(a2)+				; write to buffer
-		dbf	d1,BuildSpr_Normal			; process next sprite piece
+
+		move.b	(a1)+,d0				; get relative x pos from mappings
+		ext.w	d0
+		add.w	d3,d0					; add VDP x pos
+		andi.w	#$1FF,d0				; keep within 512px
+		bne.s	@x_not_0				; branch if x pos isn't 0
+		addq.w	#1,d0					; add 1 to prevent sprite masking (sprites at x pos 0 act as masks)
+
+	@x_not_0:
+		move.w	d0,(a2)+				; write to buffer
+		dbf	d1,@loop				; next sprite piece
 
 	@return:
 		rts	
@@ -191,10 +203,10 @@ BuildSpr_FlipX:
 		sub.w	d4,d0
 		add.w	d3,d0
 		andi.w	#$1FF,d0				; keep within 512px
-		bne.s	@writeX
+		bne.s	@x_not_0
 		addq.w	#1,d0
 
-	@writeX:
+	@x_not_0:
 		move.w	d0,(a2)+				; write to buffer
 		dbf	d1,@loop				; process next sprite piece
 
@@ -228,10 +240,10 @@ BuildSpr_FlipY:
 		ext.w	d0
 		add.w	d3,d0
 		andi.w	#$1FF,d0
-		bne.s	@writeX
+		bne.s	@x_not_0
 		addq.w	#1,d0
 
-	@writeX:
+	@x_not_0:
 		move.w	d0,(a2)+				; write to buffer
 		dbf	d1,BuildSpr_FlipY			; process next sprite piece
 
@@ -271,10 +283,10 @@ BuildSpr_FlipXY:
 		sub.w	d4,d0
 		add.w	d3,d0
 		andi.w	#$1FF,d0
-		bne.s	@writeX
+		bne.s	@x_not_0
 		addq.w	#1,d0
 
-	@writeX:
+	@x_not_0:
 		move.w	d0,(a2)+				; write to buffer
 		dbf	d1,BuildSpr_FlipXY			; process next sprite piece
 

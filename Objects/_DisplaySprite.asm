@@ -1,5 +1,5 @@
 ; ---------------------------------------------------------------------------
-; Subroutine to	display	a sprite/object
+; Subroutine to	add an object to the sprite queue for display by BuildSprites
 ;
 ; input:
 ;	a0 = address of OST for object
@@ -10,12 +10,12 @@ DisplaySprite:
 		move.w	ost_priority(a0),d0			; get sprite priority (as high byte of a word)
 		lsr.w	#1,d0					; d0 = priority * $80
 		andi.w	#$380,d0
-		adda.w	d0,a1					; jump to position in queue
-		cmpi.w	#$7E,(a1)				; is this part of the queue full?
+		adda.w	d0,a1					; jump to priority section in queue
+		cmpi.w	#sizeof_priority-2,(a1)			; is this section full? ($7E)
 		bcc.s	@full					; if yes, branch
 		addq.w	#2,(a1)					; increment sprite count
 		adda.w	(a1),a1					; jump to empty position
-		move.w	a0,(a1)					; insert RAM address for object
+		move.w	a0,(a1)					; insert RAM address for OST of object
 
 	@full:
 		rts	
@@ -23,7 +23,7 @@ DisplaySprite:
 ; End of function DisplaySprite
 
 ; ---------------------------------------------------------------------------
-; Subroutine to	display	a 2nd sprite/object
+; Subroutine to	add a child object to the sprite queue
 ;
 ; input:
 ;	a1 = address of OST for object
@@ -35,7 +35,7 @@ DisplaySprite_a1:
 		lsr.w	#1,d0
 		andi.w	#$380,d0
 		adda.w	d0,a2
-		cmpi.w	#$7E,(a2)
+		cmpi.w	#sizeof_priority-2,(a2)
 		bcc.s	@full
 		addq.w	#2,(a2)
 		adda.w	(a2),a2
