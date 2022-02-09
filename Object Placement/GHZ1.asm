@@ -38,17 +38,17 @@ ObjPos_GHZ1:
 		objpos $0C50,$034C,MotoBug,$00,rem
 		objpos $0D08,$03B0,EdgeWalls,type_edge_shadow
 		objpos $0D08,$03E0,EdgeWalls,type_edge_light
-		objpos $0D28,$0373,Spikes,$00
+		objpos $0D28,$0373,Spikes,type_spike_3up+type_spike_still
 		objpos $0D40,$0268,BuzzBomber,$00,rem
 		objpos $0D50,$02B6,Rings,$10,rem
-		objpos $0D58,$0376,Spikes,$00
+		objpos $0D58,$0376,Spikes,type_spike_3up+type_spike_still
 		objpos $0D70,$02A9,Rings,$10,rem
-		objpos $0D88,$0377,Spikes,$00
+		objpos $0D88,$0377,Spikes,type_spike_3up+type_spike_still
 		objpos $0D92,$0297,Rings,$10,rem
 		objpos $0DB0,$037B,Springs,type_spring_yellow+type_spring_up
 		objpos $0DB4,$0287,Rings,$10,rem
 		objpos $0DD0,$0270,BuzzBomber,$00,rem
-		objpos $0DD8,$0370,Spikes,$00
+		objpos $0DD8,$0370,Spikes,type_spike_3up+type_spike_still
 		objpos $0DDA,$0277,Rings,$10,rem
 		objpos $0E2C,$0278,Springs,type_spring_yellow+type_spring_up
 		objpos $0EB1,$0211,Rings,$10,rem
@@ -57,27 +57,27 @@ ObjPos_GHZ1:
 		objpos $0EF5,$0203,Rings,$10,rem
 		objpos $0F1A,$0205,Rings,$10,rem
 		objpos $0F3F,$0209,Rings,$10,rem
-		objpos $0F48,$0290,Spikes,$20
-		objpos $0F56,$03B3,Spikes,$00
-		objpos $0F58,$028F,Spikes,$20
+		objpos $0F48,$0290,Spikes,type_spike_1up+type_spike_still
+		objpos $0F56,$03B3,Spikes,type_spike_3up+type_spike_still
+		objpos $0F58,$028F,Spikes,type_spike_1up+type_spike_still
 		objpos $0F66,$0208,Rings,$10,rem
-		objpos $0F68,$028C,Spikes,$20
-		objpos $0F78,$0287,Spikes,$20
+		objpos $0F68,$028C,Spikes,type_spike_1up+type_spike_still
+		objpos $0F78,$0287,Spikes,type_spike_1up+type_spike_still
 		objpos $0F80,$03BF,Springs,type_spring_yellow+type_spring_up
 		objpos $0F88,$02D8,Rings,$12,rem
 		objpos $0FA0,$0201,PurpleRock,$00
-		objpos $0FAC,$03B7,Spikes,$00
+		objpos $0FAC,$03B7,Spikes,type_spike_3up+type_spike_still
 		objpos $0FD8,$0272,PurpleRock,$00
 		objpos $1030,$02B0,CollapseLedge,type_ledge_right,xflip,rem
 		objpos $10A0,$02B0,CollapseLedge,type_ledge_left,rem
 		objpos $1100,$01D0,BuzzBomber,$00,rem
 		objpos $1158,$032C,Rings,$12,rem
-		objpos $1170,$0377,Spikes,$00
-		objpos $11D4,$0370,Spikes,$00
+		objpos $1170,$0377,Spikes,type_spike_3up+type_spike_still
+		objpos $11D4,$0370,Spikes,type_spike_3up+type_spike_still
 		objpos $11E8,$022C,Lamppost,$01,rem
 		objpos $1220,$01E8,BasicPlatform,type_plat_sideways
 		objpos $1220,$032C,Rings,$12,rem
-		objpos $1234,$0373,Spikes,$00
+		objpos $1234,$0373,Spikes,type_spike_3up+type_spike_still
 		objpos $125C,$023E,Rings,$10,rem
 		objpos $1260,$01A8,BasicPlatform,type_plat_sideways_rev
 		objpos $1280,$0249,Rings,$10,rem
@@ -95,10 +95,10 @@ ObjPos_GHZ1:
 		objpos $1420,$01A8,BasicPlatform,type_plat_falls
 		objpos $1448,$0304,MotoBug,$00,rem
 		objpos $14A0,$01C8,BasicPlatform,type_plat_falls
-		objpos $14D0,$0334,Spikes,$00
-		objpos $1500,$0331,Spikes,$00
+		objpos $14D0,$0334,Spikes,type_spike_3up+type_spike_still
+		objpos $1500,$0331,Spikes,type_spike_3up+type_spike_still
 		objpos $1510,$017C,BuzzBomber,$00,rem
-		objpos $1530,$0330,Spikes,$00
+		objpos $1530,$0330,Spikes,type_spike_3up+type_spike_still
 		objpos $153C,$0260,Rings,$10,rem
 		objpos $154E,$0230,Rings,$10,rem
 		objpos $1580,$01F1,Monitor,type_monitor_shield,rem
@@ -165,7 +165,7 @@ ObjPos_GHZ1:
 		objpos $1E00,$0268,Rings,$10,rem
 		objpos $1E08,$0370,EdgeWalls,type_edge_shadow
 		objpos $1E18,$0368,Newtron,$01,xflip,rem
-		objpos $1E20,$04B4,Spikes,$00
+		objpos $1E20,$04B4,Spikes,type_spike_3up+type_spike_still
 		objpos $1E40,$0450,Newtron,$01,xflip,rem
 		objpos $1E48,$0340,EdgeWalls,type_edge_shadow
 		objpos $1E60,$0330,Newtron,$01,xflip,rem
@@ -180,13 +180,13 @@ ObjPos_GHZ1:
 		objpos $1FA8,$0318,Bridge,$0C
 		objpos $1FC0,$03D0,Chopper,$00,rem
 		objpos $2010,$030A,Scenery,type_scen_stump
-		objpos $2020,$04B0,Spikes,$00
-		objpos $2048,$0390,Spikes,$20
-		objpos $2058,$038E,Spikes,$20
-		objpos $2068,$038B,Spikes,$20
-		objpos $2078,$0386,Spikes,$20
+		objpos $2020,$04B0,Spikes,type_spike_3up+type_spike_still
+		objpos $2048,$0390,Spikes,type_spike_1up+type_spike_still
+		objpos $2058,$038E,Spikes,type_spike_1up+type_spike_still
+		objpos $2068,$038B,Spikes,type_spike_1up+type_spike_still
+		objpos $2078,$0386,Spikes,type_spike_1up+type_spike_still
 		objpos $2080,$0350,Newtron,$00,rem
-		objpos $2088,$0382,Spikes,$20
+		objpos $2088,$0382,Spikes,type_spike_1up+type_spike_still
 		objpos $20D0,$0370,PurpleRock,$00
 		objpos $2135,$0374,Rings,$10,rem
 		objpos $2158,$037D,Rings,$10,rem

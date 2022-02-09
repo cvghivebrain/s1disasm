@@ -15,7 +15,7 @@ ObjPos_MZ3:
 		objpos $0050,$0490,SmashBlock,$00
 		objpos $0050,$04B0,SmashBlock,$00
 		objpos $0080,$0370,FireMaker,type_fire_medium+type_fire_right
-		objpos $00A0,$05F4,Spikes,$01
+		objpos $00A0,$05F4,Spikes,type_spike_3up+type_spike_updown
 		objpos $00D0,$0320,FireMaker,type_fire_fast+type_fire_down
 		objpos $0110,$04F0,Monitor,type_monitor_shield,rem
 		objpos $0110,$06D0,Monitor,type_monitor_rings,rem
@@ -89,28 +89,28 @@ ObjPos_MZ3:
 		objpos $0670,$0414,Rings,$10,rem
 		objpos $0680,$0370,FireMaker,type_fire_slow+type_fire_right
 		objpos $0690,$03D4,Rings,$10,rem
-		objpos $0698,$06C0,Spikes,$10
+		objpos $0698,$06C0,Spikes,type_spike_3left+type_spike_still
 		objpos $06A0,$02CC,LargeGrass,type_grass_narrow+type_grass_1
 		objpos $06B0,$03B4,Rings,$10,rem
 		objpos $06C0,$05A8,Caterkiller,$00,rem
 		objpos $06D0,$0320,FireMaker,type_fire_slow+type_fire_down
 		objpos $06D4,$0394,Rings,$11,rem
 		objpos $0710,$0360,MarbleBrick,type_brick_still
-		objpos $0720,$05F4,Spikes,$01
+		objpos $0720,$05F4,Spikes,type_spike_3up+type_spike_updown
 		objpos $0750,$0550,MarbleBrick,type_brick_still
 		objpos $0754,$05D4,Rings,$11,rem
 		objpos $0770,$0550,MarbleBrick,type_brick_still
-		objpos $07A0,$05F4,Spikes,$01
+		objpos $07A0,$05F4,Spikes,type_spike_3up+type_spike_updown
 		objpos $07D0,$0550,MarbleBrick,type_brick_still
 		objpos $07E8,$05D4,Rings,$12,rem
 		objpos $07F0,$02B0,Monitor,type_monitor_rings,rem
 		objpos $07F0,$0550,MarbleBrick,type_brick_still
 		objpos $0820,$06B0,FireMaker,type_fire_medium+type_fire_right
-		objpos $0848,$0750,Spikes,$52,xflip
+		objpos $0848,$0750,Spikes,type_spike_1left+type_spike_leftright,xflip
 		objpos $0850,$05E0,MarbleBrick,type_brick_still
 		objpos $0880,$0670,FireMaker,type_fire_medium+type_fire_right
-		objpos $0888,$0790,Spikes,$52,xflip
-		objpos $08A0,$05D4,Spikes,$01
+		objpos $0888,$0790,Spikes,type_spike_1left+type_spike_leftright,xflip
+		objpos $08A0,$05D4,Spikes,type_spike_3up+type_spike_updown
 		objpos $08D0,$0620,FireMaker,type_fire_medium+type_fire_down
 		objpos $0930,$053C,ChainStomp,type_cstomp_medium+type_cstomp_1
 		objpos $0940,$07C0,Caterkiller,$00,xflip,rem
@@ -127,26 +127,26 @@ ObjPos_MZ3:
 		objpos $0CA0,$0768,SwingingPlatform,$04
 		objpos $0D10,$06F1,Monitor,type_monitor_shield,rem
 		objpos $0DA0,$06EC,Lamppost,$01,rem
-		objpos $0DEC,$0710,Spikes,$52,xflip
+		objpos $0DEC,$0710,Spikes,type_spike_1left+type_spike_leftright,xflip
 		objpos $0E00,$0748,Caterkiller,$10,rem
 		objpos $0E28,$03B0,FireMaker,type_fire_slow+type_fire_right
 		objpos $0E30,$0431,Monitor,type_monitor_rings
-		objpos $0E48,$0450,Spikes,$52,xflip
+		objpos $0E48,$0450,Spikes,type_spike_1left+type_spike_leftright,xflip
 		objpos $0E88,$0370,FireMaker,type_fire_slow+type_fire_right
-		objpos $0E88,$0490,Spikes,$52,xflip
-		objpos $0EC8,$04D0,Spikes,$52,xflip
+		objpos $0E88,$0490,Spikes,type_spike_1left+type_spike_leftright,xflip
+		objpos $0EC8,$04D0,Spikes,type_spike_1left+type_spike_leftright,xflip
 		objpos $0ED0,$0328,FireMaker,type_fire_slow+type_fire_down
-		objpos $0EE0,$06F4,Spikes,$01
+		objpos $0EE0,$06F4,Spikes,type_spike_3up+type_spike_updown
 		objpos $0F30,$049C,ChainStomp,type_cstomp_medium+type_cstomp_1
 		objpos $0F60,$0698,GlassBlock,type_glass_updown
 		objpos $0F90,$048C,Batbrain,$00,rem
 		objpos $0F94,$06F2,Rings,$11,rem
-		objpos $0FA0,$0354,Spikes,$01
+		objpos $0FA0,$0354,Spikes,type_spike_3up+type_spike_updown
 		objpos $0FD0,$0650,MarbleBrick,type_brick_still
 		objpos $0FD4,$06A0,Rings,$11,rem
 		objpos $0FE0,$048C,Batbrain,$00,rem
-		objpos $0FE0,$06D4,Spikes,$01
-		objpos $0FE8,$0578,Spikes,$10,xflip
+		objpos $0FE0,$06D4,Spikes,type_spike_3up+type_spike_updown
+		objpos $0FE8,$0578,Spikes,type_spike_3left+type_spike_still,xflip
 		objpos $0FF0,$0650,MarbleBrick,type_brick_still
 		objpos $1008,$0514,Rings,$12,rem
 		objpos $1014,$06F2,Rings,$11,rem
@@ -157,12 +157,12 @@ ObjPos_MZ3:
 		objpos $1094,$06F2,Rings,$11,rem
 		objpos $1098,$030C,Batbrain,$00,rem
 		objpos $1098,$040C,Batbrain,$00,rem
-		objpos $10C0,$0394,Spikes,$01
+		objpos $10C0,$0394,Spikes,type_spike_3up+type_spike_updown
 		objpos $10C0,$040C,Batbrain,$00,rem
 		objpos $10D0,$0650,MarbleBrick,type_brick_still
 		objpos $10D4,$06A0,Rings,$11,rem
 		objpos $10E0,$030C,Batbrain,$00,rem
-		objpos $10E0,$06D4,Spikes,$01
+		objpos $10E0,$06D4,Spikes,type_spike_3up+type_spike_updown
 		objpos $10E8,$040C,Batbrain,$00,rem
 		objpos $10F0,$0650,MarbleBrick,type_brick_still
 		objpos $1108,$0514,Rings,$12,rem
@@ -177,7 +177,7 @@ ObjPos_MZ3:
 		objpos $1180,$0598,LavaTag,$02
 		objpos $1198,$040C,Batbrain,$00,rem
 		objpos $11A0,$030C,Batbrain,$00,rem
-		objpos $11C0,$0394,Spikes,$01
+		objpos $11C0,$0394,Spikes,type_spike_3up+type_spike_updown
 		objpos $11C0,$040C,Batbrain,$00,rem
 		objpos $11E8,$040C,Batbrain,$00,rem
 		objpos $11F0,$030C,Batbrain,$00,rem
@@ -198,26 +198,26 @@ ObjPos_MZ3:
 		objpos $1310,$0550,PushBlock,type_pblock_single,rem
 		objpos $1310,$0710,MarbleBrick,type_brick_still
 		objpos $1330,$0790,MarbleBrick,type_brick_still
-		objpos $1354,$0340,Spikes,$12
+		objpos $1354,$0340,Spikes,type_spike_3left+type_spike_leftright
 		objpos $1380,$07E8,LavaTag,$02
 		objpos $13A0,$04EC,Caterkiller,$00,xflip,rem
 		objpos $13E8,$02A8,Rings,$12,rem
-		objpos $1418,$07C0,Spikes,$10
+		objpos $1418,$07C0,Spikes,type_spike_3left+type_spike_still
 		objpos $1438,$063C,Batbrain,$00,rem
-		objpos $1448,$0550,Spikes,$52,xflip
+		objpos $1448,$0550,Spikes,type_spike_1left+type_spike_leftright,xflip
 		objpos $1450,$048C,Batbrain,$00,rem
 		objpos $1450,$0710,Rings,$14,rem
 		objpos $1458,$063C,Batbrain,$00,rem
 		objpos $1468,$0670,Rings,$12,rem
 		objpos $1478,$063C,Batbrain,$00,rem
-		objpos $1488,$0590,Spikes,$52,xflip
+		objpos $1488,$0590,Spikes,type_spike_1left+type_spike_leftright,xflip
 		objpos $1498,$063C,Batbrain,$00,rem
 		objpos $14A0,$048C,Batbrain,$00,rem
 		objpos $14A8,$02D8,FireMaker,type_fire_slow+type_fire_updown_low
 		objpos $14B8,$04F4,Rings,$12,rem
 		objpos $14B8,$063C,Batbrain,$00,rem
 		objpos $14C0,$02FC,LavaTag,$01
-		objpos $14C8,$05D0,Spikes,$52,xflip
+		objpos $14C8,$05D0,Spikes,type_spike_1left+type_spike_leftright,xflip
 		objpos $14D8,$02D8,FireMaker,type_fire_slowest+type_fire_updown_mid
 		objpos $1518,$0752,Rings,$12,rem
 		objpos $1530,$063C,ChainStomp,type_cstomp_medium+type_cstomp_1

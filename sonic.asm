@@ -73,13 +73,13 @@ Vectors:	dc.l v_stack_pointer&$FFFFFF			; Initial stack pointer value
 		if Revision<>2
 			dcb.l 8,ErrorTrap			; Unused (reserved)
 		else
-	loc_E0:
-								; Relocated code from Spik_Hurt. REVXB was a nasty hex-edit.
+	Spike_Bugfix:
+								; Relocated code from Spike_Hurt. REVXB was a nasty hex-edit.
 			move.l	ost_y_pos(a0),d3
 			move.w	ost_y_vel(a0),d0
 			ext.l	d0
 			asl.l	#8,d0
-			jmp	(loc_D5A2).l
+			jmp	(Spike_Resume).l
 
 			dc.w ErrorTrap
 			dcb.l 3,ErrorTrap
@@ -943,7 +943,6 @@ NullObject:
 		include "Objects\_FindFreeObj & FindNextFreeObj.asm"
 
 		include "Objects\Springs.asm"			; Springs
-		include "Animations\Springs.asm"		; Ani_Spring
 		include "Mappings\Springs.asm"			; Map_Spring
 
 		include "Objects\Newtron.asm"			; Newtron

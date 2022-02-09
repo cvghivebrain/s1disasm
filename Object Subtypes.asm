@@ -9,6 +9,17 @@ type_spring_up:		equ 0				; $0x - facing up
 type_spring_right:	equ $10				; $1x - facing right (or left if xflipped)
 type_spring_down:	equ $20				; $2x - facing down (must also be yflipped)
 
+; Spikes
+type_spike_3up:		equ ((Spike_Var_0-Spike_Var)/2)<<4	; $0x - 3 facing up (or down if yflipped)
+type_spike_3left:	equ ((Spike_Var_1-Spike_Var)/2)<<4	; $1x - 3 facing left (or right if xflipped)
+type_spike_1up:		equ ((Spike_Var_2-Spike_Var)/2)<<4	; $2x - 1 facing up (or down if yflipped)
+type_spike_3upwide:	equ ((Spike_Var_3-Spike_Var)/2)<<4	; $3x - 3 facing up (or down if yflipped), wide spacing
+type_spike_6upwide:	equ ((Spike_Var_4-Spike_Var)/2)<<4	; $4x - 6 facing up (or down if yflipped), wide spacing
+type_spike_1left:	equ ((Spike_Var_5-Spike_Var)/2)<<4	; $5x - 1 facing left (or right if xflipped)
+type_spike_still:	equ id_Spike_Still			; x0 - doesn't move
+type_spike_updown:	equ id_Spike_UpDown			; x1 - moves up and down 32px
+type_spike_leftright:	equ id_Spike_LeftRight			; x2 - moves side-to-side 32px
+
 ; Monitor
 type_monitor_eggman:	equ id_ani_monitor_eggman	; 1 - Eggman, does nothing
 type_monitor_1up:	equ id_ani_monitor_sonic	; 2 - Extra life

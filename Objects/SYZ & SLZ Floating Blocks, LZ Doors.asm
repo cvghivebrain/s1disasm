@@ -1,5 +1,10 @@
 ; ---------------------------------------------------------------------------
 ; Object 56 - floating blocks (SYZ/SLZ), large doors (LZ)
+
+; spawned by:
+;	ObjPos_SYZ1, ObjPos_SYZ2, ObjPos_SYZ3 - subtypes 0/1/2/$13/$17/$20/$37/$A0
+;	ObjPos_LZ1, ObjPos_LZ2, ObjPos_LZ3, ObjPos_SBZ3 - subtypes $E0-$EA, $F0-$FA
+;	ObjPos_SLZ2, ObjPos_SLZ3 - subtypes $58-$5B
 ; ---------------------------------------------------------------------------
 
 FloatingBlock:
@@ -30,14 +35,14 @@ ost_fblock_switch_num:	equ $3C					; which switch the block is linked to
 ; ===========================================================================
 
 FBlock_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto FBlock_Action next
 		move.l	#Map_FBlock,ost_mappings(a0)
 		move.w	#0+tile_pal3,ost_tile(a0)
 		cmpi.b	#id_LZ,(v_zone).w			; check if level is LZ
-		bne.s	@notLZ
+		bne.s	@not_lz					; if not, branch
 		move.w	#tile_Nem_LzDoor1+tile_pal3,ost_tile(a0) ; LZ specific code
 
-	@notLZ:
+	@not_lz:
 		move.b	#render_rel,ost_render(a0)
 		move.b	#3,ost_priority(a0)
 		moveq	#0,d0
@@ -48,13 +53,13 @@ FBlock_Main:	; Routine 0
 		move.b	(a2)+,ost_actwidth(a0)
 		move.b	(a2),ost_height(a0)
 		lsr.w	#1,d0
-		move.b	d0,ost_frame(a0)
+		move.b	d0,ost_frame(a0)			; set frame as high nybble of subtype
 		move.w	ost_x_pos(a0),ost_fblock_x_start(a0)
 		move.w	ost_y_pos(a0),ost_fblock_y_start(a0)
 		moveq	#0,d0
-		move.b	(a2),d0
+		move.b	(a2),d0					; get height from size list
 		add.w	d0,d0
-		move.w	d0,ost_fblock_height(a0)
+		move.w	d0,ost_fblock_height(a0)		; set full height
 		if Revision=0
 		else
 			cmpi.b	#type_fblock_syzrect2x2+type_fblock_farrightbutton,ost_subtype(a0) ; is the subtype $37? (used once in SYZ3)
@@ -73,27 +78,27 @@ FBlock_Main:	; Routine 0
 		endc
 		moveq	#0,d0
 		cmpi.b	#id_LZ,(v_zone).w			; check if level is LZ
-		beq.s	@stillnotLZ
+		beq.s	@not_syzslz				; if yes, branch
 		move.b	ost_subtype(a0),d0			; SYZ/SLZ specific code
 		andi.w	#$F,d0					; read low nybble of subtype
 		subq.w	#8,d0					; subtract 8
-		bcs.s	@stillnotLZ
-		lsl.w	#2,d0
+		bcs.s	@not_syzslz				; branch if low nybble was > 8
+		lsl.w	#2,d0					; multiply by 4
 		lea	(v_oscillating_table+$2A).w,a2
-		lea	(a2,d0.w),a2
+		lea	(a2,d0.w),a2				; read oscillating value
 		tst.w	(a2)
-		bpl.s	@stillnotLZ
-		bchg	#status_xflip_bit,ost_status(a0)
+		bpl.s	@not_syzslz				; branch if not -ve
+		bchg	#status_xflip_bit,ost_status(a0)	; xflip object
 
-	@stillnotLZ:
+	@not_syzslz:
 		move.b	ost_subtype(a0),d0			; get subtype
 		bpl.s	FBlock_Action				; if subtype is 0-$7F, branch
 		andi.b	#$F,d0					; read low nybble
 		move.b	d0,ost_fblock_switch_num(a0)		; save to variable
-		move.b	#id_FBlock_UpButton,ost_subtype(a0)	; force subtype to 5 (moves up when switch is pressed)
+		move.b	#id_FBlock_UpButton,ost_subtype(a0)	; force subtype to 5 (moves up when button is pressed)
 		cmpi.b	#id_frame_fblock_lzhoriz,ost_frame(a0)	; is object a large horizontal LZ door?
 		bne.s	@chkstate				; if not, branch
-		move.b	#id_FBlock_LeftButton,ost_subtype(a0)	; force subtype to $C (moves left when switch is pressed)
+		move.b	#id_FBlock_LeftButton,ost_subtype(a0)	; force subtype to $C (moves left when button is pressed)
 		move.w	#$80,ost_fblock_height(a0)
 
 @chkstate:
@@ -111,10 +116,10 @@ FBlock_Action:	; Routine 2
 		move.w	ost_x_pos(a0),-(sp)
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0			; get object subtype
-		andi.w	#$F,d0					; read only the	2nd digit
+		andi.w	#$F,d0					; read only the	low nybble
 		add.w	d0,d0
 		move.w	FBlock_Types(pc,d0.w),d1
-		jsr	FBlock_Types(pc,d1.w)			; block movement subroutines
+		jsr	FBlock_Types(pc,d1.w)			; update position
 		move.w	(sp)+,d4
 		tst.b	ost_render(a0)
 		bpl.s	@chkdel
@@ -125,12 +130,12 @@ FBlock_Action:	; Routine 2
 		move.b	ost_height(a0),d2
 		move.w	d2,d3
 		addq.w	#1,d3
-		bsr.w	SolidObject
+		bsr.w	SolidObject				; detect collision
 
 	@chkdel:
 		if Revision=0
-		out_of_range	DeleteObject,ost_fblock_x_start(a0)
-		bra.w	DisplaySprite
+			out_of_range	DeleteObject,ost_fblock_x_start(a0)
+			bra.w	DisplaySprite
 		else
 			out_of_range.s	@chkdel2,ost_fblock_x_start(a0)
 		@display:
@@ -161,14 +166,12 @@ FBlock_Types:	index *
 		ptr FBlock_RightButton
 ; ===========================================================================
 
-; Type 0
-; doesn't move
+; Type 0 - doesn't move
 FBlock_Still:
 		rts	
 ; ===========================================================================
 
-; Type 1
-; moves side-to-side
+; Type 1 - moves side-to-side
 FBlock_LeftRight:
 		move.w	#$40,d1					; set move distance
 		moveq	#0,d0
@@ -176,8 +179,7 @@ FBlock_LeftRight:
 		bra.s	FBlock_LeftRight_Move
 ; ===========================================================================
 
-; Type 2
-; moves side-to-side
+; Type 2 - moves side-to-side
 FBlock_LeftRightWide:
 		move.w	#$80,d1					; set move distance
 		moveq	#0,d0
@@ -196,8 +198,7 @@ FBlock_LeftRight_Move:
 		rts	
 ; ===========================================================================
 
-; Type 3
-; moves up/down
+; Type 3 - moves up/down
 FBlock_UpDown:
 		move.w	#$40,d1					; set move distance
 		moveq	#0,d0
@@ -205,8 +206,7 @@ FBlock_UpDown:
 		bra.s	FBlock_UpDown_Move
 ; ===========================================================================
 
-; Type 4
-; moves up/down
+; Type 4 - moves up/down
 FBlock_UpDownWide:
 		move.w	#$80,d1					; set move distance
 		moveq	#0,d0
@@ -225,8 +225,7 @@ FBlock_UpDown_Move:
 		rts	
 ; ===========================================================================
 
-; Type 5
-; moves up when a switch is pressed
+; Type 5 - moves up when a button is pressed
 FBlock_UpButton:
 		tst.b	ost_fblock_move_flag(a0)
 		bne.s	@loc_104A4

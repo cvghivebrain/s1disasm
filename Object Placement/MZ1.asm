@@ -49,8 +49,8 @@ ObjPos_MZ1:
 		objpos $0B00,$02F8,LavaTag,$02
 		objpos $0B10,$036C,Batbrain,$00,rem
 		objpos $0B20,$02E8,LargeGrass,type_grass_sloped+type_grass_sinks
-		objpos $0B34,$0500,Spikes,$12
-		objpos $0B40,$03F4,Spikes,$01
+		objpos $0B34,$0500,Spikes,type_spike_3left+type_spike_leftright
+		objpos $0B40,$03F4,Spikes,type_spike_3up+type_spike_updown
 		objpos $0B60,$036C,Batbrain,$00,rem
 		objpos $0B60,$0510,Invisibarrier,$31
 		objpos $0B60,$05A7,GlassBlock,type_glass_updown
