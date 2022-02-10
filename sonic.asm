@@ -967,7 +967,6 @@ NullObject:
 		include "Mappings\SYZ Lamp.asm"			; Map_Light
 
 		include "Objects\SYZ Bumper.asm"		; Bumper
-		include "Animations\SYZ Bumper.asm"		; Ani_Bump
 		include "Mappings\SYZ Bumper.asm"		; Map_Bump
 
 		include "Objects\Signpost & HasPassedAct.asm"	; Signpost & HasPassedAct

@@ -1,5 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Object 58 - giant spiked balls (SYZ)
+
+; spawned by:
+;	ObjPos_SYZ1, ObjPos_SYZ2, ObjPos_SYZ3 - subtypes 1/2/$B3/$C3/$E3/$F3
 ; ---------------------------------------------------------------------------
 
 BigSpikeBall:
@@ -19,7 +22,7 @@ ost_bball_speed:	equ $3E					; speed (2 bytes)
 ; ===========================================================================
 
 BBall_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto BBall_Move next
 		move.l	#Map_BBall,ost_mappings(a0)
 		move.w	#tile_Nem_BigSpike,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
@@ -29,14 +32,14 @@ BBall_Main:	; Routine 0
 		move.w	ost_y_pos(a0),ost_bball_y_start(a0)
 		move.b	#id_col_16x16+id_col_hurt,ost_col_type(a0)
 		move.b	ost_subtype(a0),d1			; get object type
-		andi.b	#$F0,d1					; read only the	1st digit
+		andi.b	#$F0,d1					; read only the	high nybble
 		ext.w	d1
 		asl.w	#3,d1					; multiply by 8
 		move.w	d1,ost_bball_speed(a0)			; set object speed
 		move.b	ost_status(a0),d0
 		ror.b	#2,d0
-		andi.b	#$C0,d0
-		move.b	d0,ost_angle(a0)
+		andi.b	#$C0,d0					; move x/yflip bits into bits 6-7
+		move.b	d0,ost_angle(a0)			; use as angle
 		move.b	#$50,ost_bball_radius(a0)		; set radius of circle motion
 
 BBall_Move:	; Routine 2
@@ -50,13 +53,13 @@ BBall_Move:	; Routine 2
 		bra.w	DisplaySprite
 ; ===========================================================================
 BBall_Types:	index *
-		ptr BBall_Still
-		ptr BBall_Sideways
-		ptr BBall_UpDown
-		ptr BBall_Circle
+		ptr BBall_Still					; 0 - unused
+		ptr BBall_Sideways				; 1
+		ptr BBall_UpDown				; 2
+		ptr BBall_Circle				; $x3
 ; ===========================================================================
 
-; Type 0
+; Type 0 - doesn't move
 BBall_Still:
 		rts	
 ; ===========================================================================
@@ -65,16 +68,16 @@ BBall_Still:
 BBall_Sideways:
 		move.w	#$60,d1
 		moveq	#0,d0
-		move.b	(v_oscillating_table+$C).w,d0
+		move.b	(v_oscillating_table+$C).w,d0		; get oscillating value
 		btst	#status_xflip_bit,ost_status(a0)
-		beq.s	@noflip1
-		neg.w	d0
+		beq.s	@noflip
+		neg.w	d0					; invert if xflipped
 		add.w	d1,d0
 
-	@noflip1:
-		move.w	ost_bball_x_start(a0),d1
-		sub.w	d0,d1
-		move.w	d1,ost_x_pos(a0)			; move object horizontally
+	@noflip:
+		move.w	ost_bball_x_start(a0),d1		; get initial x pos
+		sub.w	d0,d1					; subtract difference
+		move.w	d1,ost_x_pos(a0)			; update position
 		rts	
 ; ===========================================================================
 
@@ -82,25 +85,25 @@ BBall_Sideways:
 BBall_UpDown:
 		move.w	#$60,d1
 		moveq	#0,d0
-		move.b	(v_oscillating_table+$C).w,d0
+		move.b	(v_oscillating_table+$C).w,d0		; get oscillating value
 		btst	#status_xflip_bit,ost_status(a0)
-		beq.s	@noflip2
-		neg.w	d0
+		beq.s	@noflip
+		neg.w	d0					; invert if xflipped
 		addi.w	#$80,d0
 
-	@noflip2:
-		move.w	ost_bball_y_start(a0),d1
-		sub.w	d0,d1
-		move.w	d1,ost_y_pos(a0)			; move object vertically
+	@noflip:
+		move.w	ost_bball_y_start(a0),d1		; get initial y pos
+		sub.w	d0,d1					; subtract difference
+		move.w	d1,ost_y_pos(a0)			; update position
 		rts	
 ; ===========================================================================
 
 ; Type 3
 BBall_Circle:
-		move.w	ost_bball_speed(a0),d0
-		add.w	d0,ost_angle(a0)
+		move.w	ost_bball_speed(a0),d0			; get rotation speed
+		add.w	d0,ost_angle(a0)			; add to angle
 		move.b	ost_angle(a0),d0
-		jsr	(CalcSine).l
+		jsr	(CalcSine).l				; convert angle to sine
 		move.w	ost_bball_y_start(a0),d2
 		move.w	ost_bball_x_start(a0),d3
 		moveq	#0,d4
@@ -112,6 +115,6 @@ BBall_Circle:
 		asr.l	#8,d5
 		add.w	d2,d4
 		add.w	d3,d5
-		move.w	d4,ost_y_pos(a0)			; move object circularly
+		move.w	d4,ost_y_pos(a0)			; update position
 		move.w	d5,ost_x_pos(a0)
 		rts	

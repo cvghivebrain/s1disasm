@@ -1,5 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Object 34 - zone title cards
+
+; spawned by:
+;	GM_Level, TitleCard
 ; ---------------------------------------------------------------------------
 
 TitleCard:
@@ -9,57 +12,99 @@ TitleCard:
 		jmp	Card_Index(pc,d1.w)
 ; ===========================================================================
 Card_Index:	index *,,2
-		ptr Card_CheckSBZ3
-		ptr Card_ChkPos
+		ptr Card_Main
+		ptr Card_Move
 		ptr Card_Wait
 		ptr Card_Wait
 
 ost_card_x_stop:	equ $30					; on screen x position (2 bytes)
 ost_card_x_start:	equ $32					; start & finish x position (2 bytes)
+
+include_Card_Data:	macro
+Card_ItemData:	; y position, routine number, frame number
+		dc.w $D0
+		dc.b id_Card_Move, id_frame_card_ghz		; zone name (frame number changes)
+		dc.w $E4
+		dc.b id_Card_Move, id_frame_card_zone		; "ZONE"
+		dc.w $EA
+		dc.b id_Card_Move, id_frame_card_act1		; act number (frame number changes)
+		dc.w $E0
+		dc.b id_Card_Move, id_frame_card_oval		; oval
+
+Card_PosData:	; y pos, x pos
+		dc.w 0,	$120					; GREEN HILL
+		dc.w -$104, $13C				; ZONE
+		dc.w $414, $154					; ACT x
+		dc.w $214, $154					; oval
+		dc.w 0,	$120					; LABYRINTH
+		dc.w -$10C, $134
+		dc.w $40C, $14C
+		dc.w $20C, $14C
+		dc.w 0,	$120					; MARBLE
+		dc.w -$120, $120
+		dc.w $3F8, $138
+		dc.w $1F8, $138
+		dc.w 0,	$120					; STAR LIGHT
+		dc.w -$104, $13C
+		dc.w $414, $154
+		dc.w $214, $154
+		dc.w 0,	$120					; SPRING YARD
+		dc.w -$FC, $144
+		dc.w $41C, $15C
+		dc.w $21C, $15C
+		dc.w 0,	$120					; SCRAP BRAIN
+		dc.w -$FC, $144
+		dc.w $41C, $15C
+		dc.w $21C, $15C
+		dc.w 0,	$120					; FINAL
+		dc.w -$11C, $124
+		dc.w $3EC, $3EC
+		dc.w $1EC, $12C
+		endm
 ; ===========================================================================
 
-Card_CheckSBZ3:	; Routine 0
-		movea.l	a0,a1
+Card_Main:	; Routine 0
+		movea.l	a0,a1					; replace current object with 1st item in list
 		moveq	#0,d0
 		move.b	(v_zone).w,d0
-		cmpi.w	#(id_LZ<<8)+3,(v_zone).w		; check if level is SBZ 3
-		bne.s	Card_CheckFZ
+		cmpi.w	#(id_LZ<<8)+3,(v_zone).w		; check if level is SBZ3
+		bne.s	@not_sbz3				; if not, branch
 		moveq	#5,d0					; load title card number 5 (SBZ)
 
-	Card_CheckFZ:
+	@not_sbz3:
 		move.w	d0,d2
 		cmpi.w	#(id_SBZ<<8)+2,(v_zone).w		; check if level is FZ
-		bne.s	Card_LoadConfig
+		bne.s	@not_fz					; if not, branch
 		moveq	#6,d0					; load title card number 6 (FZ)
-		moveq	#$B,d2					; use "FINAL" mappings
+		moveq	#id_frame_card_fz,d2			; use "FINAL" frame ($B)
 
-	Card_LoadConfig:
-		lea	(Card_PosData).l,a3
-		lsl.w	#4,d0
-		adda.w	d0,a3
-		lea	(Card_ItemData).l,a2
-		moveq	#3,d1
+	@not_fz:
+		lea	(Card_PosData).l,a3			; x/y pos data for all items
+		lsl.w	#4,d0					; multiply zone by 8
+		adda.w	d0,a3					; jump to relevant data
+		lea	(Card_ItemData).l,a2			; y pos/routine/frame for each item
+		moveq	#4-1,d1					; there are 4 items (minus 1 for 1st loop)
 
-Card_Loop:
+@loop:
 		move.b	#id_TitleCard,ost_id(a1)
-		move.w	(a3),ost_x_pos(a1)			; load start x position
-		move.w	(a3)+,ost_card_x_start(a1)		; load finish x position (same as start)
-		move.w	(a3)+,ost_card_x_stop(a1)		; load main x position
-		move.w	(a2)+,ost_y_screen(a1)			; load y position
-		move.b	(a2)+,ost_routine(a1)
-		move.b	(a2)+,d0				; load frame number
-		bne.s	Card_ActNumber				; branch if not 0
+		move.w	(a3),ost_x_pos(a1)			; set initial x position
+		move.w	(a3)+,ost_card_x_start(a1)
+		move.w	(a3)+,ost_card_x_stop(a1)		; set target x position
+		move.w	(a2)+,ost_y_screen(a1)			; set y position
+		move.b	(a2)+,ost_routine(a1)			; goto Card_Move next
+		move.b	(a2)+,d0				; set frame number
+		bne.s	@not_ghz				; branch if not 0 (GREEN HILL)
 		move.b	d2,d0					; use zone number instead (or $B for FZ)
 
-	Card_ActNumber:
-		cmpi.b	#7,d0					; is sprite the act number?
-		bne.s	Card_MakeSprite				; if not, branch
+	@not_ghz:
+		cmpi.b	#id_frame_card_act1,d0			; is sprite the act number?
+		bne.s	@not_act				; if not, branch
 		add.b	(v_act).w,d0				; add act number to frame
-		cmpi.b	#3,(v_act).w
-		bne.s	Card_MakeSprite
+		cmpi.b	#3,(v_act).w				; is this act 4? (SBZ3 only)
+		bne.s	@not_act				; if not, branch
 		subq.b	#1,d0					; use act 3 frame if act 4 (for SBZ3)
 
-	Card_MakeSprite:
+	@not_act:
 		move.b	d0,ost_frame(a1)			; display frame number d0
 		move.l	#Map_Card,ost_mappings(a1)
 		move.w	#tile_Nem_TitleCard+tile_hi,ost_tile(a1)
@@ -67,94 +112,76 @@ Card_Loop:
 		move.b	#render_abs,ost_render(a1)
 		move.b	#0,ost_priority(a1)
 		move.w	#60,ost_anim_time(a1)			; set time delay to 1 second
-		lea	$40(a1),a1				; next object
-		dbf	d1,Card_Loop				; repeat sequence another 3 times
+		lea	sizeof_ost(a1),a1			; next object
+		dbf	d1,@loop				; repeat sequence 3 times
 
-Card_ChkPos:	; Routine 2
-		moveq	#$10,d1					; set horizontal speed
+Card_Move:	; Routine 2
+		moveq	#$10,d1					; set to move 16px right
 		move.w	ost_card_x_stop(a0),d0
 		cmp.w	ost_x_pos(a0),d0			; has item reached the target position?
-		beq.s	Card_NoMove				; if yes, branch
-		bge.s	Card_Move
-		neg.w	d1
+		beq.s	@at_target				; if yes, branch
+		bge.s	@is_left				; branch if item is left of target
+		neg.w	d1					; move left instead
 
-Card_Move:
-		add.w	d1,ost_x_pos(a0)			; change item's position
+	@is_left:
+		add.w	d1,ost_x_pos(a0)			; update position
 
-Card_NoMove:
+	@at_target:
 		move.w	ost_x_pos(a0),d0
-		bmi.s	locret_C3D8
-		cmpi.w	#$200,d0				; has item moved beyond	$200 on	x-axis?
-		bcc.s	locret_C3D8				; if yes, branch
+		bmi.s	@no_display				; branch if item is outside left of screen
+		cmpi.w	#$200,d0				; is item right of $200 on x-axis?
+		bcc.s	@no_display				; if yes, branch
 		bra.w	DisplaySprite
 ; ===========================================================================
 
-locret_C3D8:
+@no_display:
 		rts	
 ; ===========================================================================
 
 Card_Wait:	; Routine 4/6
-		tst.w	ost_anim_time(a0)			; is time remaining zero?
-		beq.s	Card_ChkPos2				; if yes, branch
-		subq.w	#1,ost_anim_time(a0)			; subtract 1 from time
+		; title cards are instructed to jump here by GM_Level
+		tst.w	ost_anim_time(a0)			; has timer hit 0?
+		beq.s	Card_MoveBack				; if yes, branch
+		subq.w	#1,ost_anim_time(a0)			; decrement timer
 		bra.w	DisplaySprite
 ; ===========================================================================
 
-Card_ChkPos2:
-		tst.b	ost_render(a0)
-		bpl.s	Card_ChangeArt
-		moveq	#$20,d1
+Card_MoveBack:
+		tst.b	ost_render(a0)				; is item on-screen?
+		bpl.s	Card_ChangeArt				; if not, branch
+
+		moveq	#$20,d1					; set to move 32px right
 		move.w	ost_card_x_start(a0),d0
 		cmp.w	ost_x_pos(a0),d0			; has item reached the finish position?
 		beq.s	Card_ChangeArt				; if yes, branch
-		bge.s	Card_Move2
-		neg.w	d1
+		bge.s	@is_left				; branch if item is left of target
+		neg.w	d1					; move left instead
 
-Card_Move2:
-		add.w	d1,ost_x_pos(a0)			; change item's position
+	@is_left:
+		add.w	d1,ost_x_pos(a0)			; update position
 		move.w	ost_x_pos(a0),d0
-		bmi.s	locret_C412
-		cmpi.w	#$200,d0				; has item moved beyond	$200 on	x-axis?
-		bcc.s	locret_C412				; if yes, branch
+		bmi.s	@no_display				; branch if item is outside left of screen
+		cmpi.w	#$200,d0				; is item right of $200 on x-axis?
+		bcc.s	@no_display				; if yes, branch
 		bra.w	DisplaySprite
 ; ===========================================================================
 
-locret_C412:
+@no_display:
 		rts	
 ; ===========================================================================
 
 Card_ChangeArt:
-		cmpi.b	#id_Card_Wait,ost_routine(a0)
-		bne.s	Card_Delete
+		cmpi.b	#id_Card_Wait,ost_routine(a0)		; is this the main object? (routine 4)
+		bne.s	@delete					; if not, branch
+
 		moveq	#id_PLC_Explode,d0
-		jsr	(AddPLC).l				; load explosion patterns
+		jsr	(AddPLC).l				; load explosion gfx
 		moveq	#0,d0
 		move.b	(v_zone).w,d0
 		addi.w	#id_PLC_GHZAnimals,d0
-		jsr	(AddPLC).l				; load animal patterns
+		jsr	(AddPLC).l				; load animal gfx
 
-Card_Delete:
+	@delete:
 		bra.w	DeleteObject
 ; ===========================================================================
-Card_ItemData:	; y position, routine number, frame number
-		dc.w $D0
-		dc.b id_Card_ChkPos, id_frame_card_ghz		; zone name (frame number changes)
-		dc.w $E4
-		dc.b id_Card_ChkPos, id_frame_card_zone		; "ZONE"
-		dc.w $EA
-		dc.b id_Card_ChkPos, id_frame_card_act1		; act number (frame number changes)
-		dc.w $E0
-		dc.b id_Card_ChkPos, id_frame_card_oval		; oval
-; ---------------------------------------------------------------------------
-; Title	card configuration data
-; Format:
-; 4 bytes per item (YYYY XXXX)
-; 4 items per level (GREEN HILL, ZONE, ACT X, oval)
-; ---------------------------------------------------------------------------
-Card_PosData:	dc.w 0,	$120, -$104, $13C, $414, $154, $214, $154 ; GHZ
-		dc.w 0,	$120, -$10C, $134, $40C, $14C, $20C, $14C ; LZ
-		dc.w 0,	$120, -$120, $120, $3F8, $138, $1F8, $138 ; MZ
-		dc.w 0,	$120, -$104, $13C, $414, $154, $214, $154 ; SLZ
-		dc.w 0,	$120, -$FC, $144, $41C, $15C, $21C, $15C ; SYZ
-		dc.w 0,	$120, -$FC, $144, $41C, $15C, $21C, $15C ; SBZ
-		dc.w 0,	$120, -$11C, $124, $3EC, $3EC, $1EC, $12C ; FZ
+		include_Card_Data

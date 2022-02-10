@@ -1,5 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Object 12 - lamp (SYZ)
+
+; spawned by:
+;	ObjPos_SYZ1, ObjPos_SYZ2, ObjPos_SYZ3
 ; ---------------------------------------------------------------------------
 
 SpinningLight:
@@ -14,7 +17,7 @@ Light_Index:	index *,,2
 ; ===========================================================================
 
 Light_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto Light_Animate next
 		move.l	#Map_Light,ost_mappings(a0)
 		move.w	#0,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
@@ -22,13 +25,13 @@ Light_Main:	; Routine 0
 		move.b	#6,ost_priority(a0)
 
 Light_Animate:	; Routine 2
-		subq.b	#1,ost_anim_time(a0)
-		bpl.s	@chkdel
-		move.b	#7,ost_anim_time(a0)
-		addq.b	#1,ost_frame(a0)
-		cmpi.b	#id_frame_light_5+1,ost_frame(a0)
-		bcs.s	@chkdel
-		move.b	#id_frame_light_0,ost_frame(a0)
+		subq.b	#1,ost_anim_time(a0)			; decrement animation timer
+		bpl.s	@chkdel					; branch if time remains
+		move.b	#7,ost_anim_time(a0)			; reset timer
+		addq.b	#1,ost_frame(a0)			; next frame
+		cmpi.b	#id_frame_light_5+1,ost_frame(a0)	; is frame valid?
+		bcs.s	@chkdel					; if yes, branch
+		move.b	#id_frame_light_0,ost_frame(a0)		; reset to frame 0
 
 	@chkdel:
 		out_of_range	DeleteObject
