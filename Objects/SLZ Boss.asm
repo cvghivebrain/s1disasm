@@ -262,7 +262,7 @@ loc_18B40:
 loc_18B48:
 		subq.b	#1,ost_bslz_wait_time(a0)
 		bmi.s	loc_18B52
-		bra.w	BossDefeated
+		bra.w	BossExplode
 ; ===========================================================================
 
 loc_18B52:

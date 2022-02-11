@@ -262,7 +262,7 @@ locret_184F4:
 loc_184F6:
 		subq.w	#1,ost_bmz_wait_time(a0)
 		bmi.s	loc_18500
-		bra.w	BossDefeated
+		bra.w	BossExplode
 ; ===========================================================================
 
 loc_18500:

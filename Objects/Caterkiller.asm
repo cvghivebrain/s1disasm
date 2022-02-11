@@ -192,9 +192,9 @@ Cat_Floor:
 			jsr	(FindFloorObj).l
 			move.l	(sp)+,d2
 			cmpi.w	#-8,d1
-			blt.s	@loc_16B70
+			blt.s	@loc_16B70			; branch if > 8px below floor
 			cmpi.w	#$C,d1
-			bge.s	@loc_16B70
+			bge.s	@loc_16B70			; branch if > 11px above floor (also detects a ledge)
 			add.w	d1,ost_y_pos(a0)
 			swap	d2
 			cmp.w	ost_x_pos(a0),d2

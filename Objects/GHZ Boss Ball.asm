@@ -170,7 +170,7 @@ GBall_Vanish:
 		tst.b	ost_status(a1)
 		bpl.s	GBall_Display4
 		move.b	#0,ost_col_type(a0)
-		bsr.w	BossDefeated
+		bsr.w	BossExplode
 		subq.b	#1,ost_ball_base_dist(a0)
 		bpl.s	GBall_Display4
 		move.b	#id_ExplosionBomb,(a0)

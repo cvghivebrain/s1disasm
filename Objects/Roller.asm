@@ -115,7 +115,7 @@ Roll_ChkJump:
 		cmpi.w	#-8,d1
 		blt.s	Roll_Jump				; branch if more than 8px below floor
 		cmpi.w	#$C,d1
-		bge.s	Roll_Jump				; branch if more than 12px above floor
+		bge.s	Roll_Jump				; branch if more than 11px above floor (also detects a ledge)
 		add.w	d1,ost_y_pos(a0)			; align to floor
 		rts	
 ; ===========================================================================

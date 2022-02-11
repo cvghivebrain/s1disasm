@@ -857,8 +857,8 @@ Ledge_SlopeData:
 		include "Objects\Title Screen Sonic.asm"	; TitleSonic
 		include "Objects\Title Screen Press Start & TM.asm" ; PSBTM
 
-		include "Animations\Title Screen Sonic.asm"	; Ani_TSon
-		include "Animations\Title Screen Press Start.asm" ; Ani_PSB
+		include_TitleSonic_animation
+		include_PSBTM_animation
 
 		include "Objects\_AnimateSprite.asm"
 
@@ -993,7 +993,8 @@ NullObject:
 Obj4F:
 		rts	
 
-		include "Objects\Yadrin.asm"			;Yadrin
+		include "Objects\Yadrin.asm"			; Yadrin
+		include "Objects\Yadrin [Mappings].asm"		; Map_Yad
 
 		include "Objects\_SolidObject.asm"
 
@@ -1092,7 +1093,7 @@ See_DataFlat:	incbin	"Collision\SLZ Seesaw Heightmap (Flat).bin"
 		include "Objects\LZ Water Splash.asm"		; Splash
 		include_ShieldItem_animation
 		include "Mappings\Shield & Invincibility.asm"	; Map_Shield
-		include "Animations\Unused Special Stage Warp.asm" ; Ani_Vanish
+		include_VanishSonic_animation
 		include "Mappings\Unused Special Stage Warp.asm" ; Map_Vanish
 		include "Animations\LZ Water Splash.asm"	; Ani_Splash
 		include "Mappings\LZ Water Splash.asm"		; Map_Splash
@@ -1156,7 +1157,7 @@ See_DataFlat:	incbin	"Collision\SLZ Seesaw Heightmap (Flat).bin"
 		include "Objects\Credits & Sonic Team Presents.asm" ; CreditsText
 		include "Mappings\Credits & Sonic Team Presents.asm" ; Map_Cred
 
-		include "Objects\GHZ Boss, BossDefeated & BossMove.asm" ; BossGreenHill
+		include "Objects\GHZ Boss, BossExplode & BossMove.asm" ; BossGreenHill
 		include_BossBall_1				; Objects\GHZ Boss Ball.asm; BossBall
 		include "Animations\Bosses.asm"			; Ani_Eggman
 		include "Mappings\Bosses.asm"			; Map_Eggman

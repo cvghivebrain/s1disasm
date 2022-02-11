@@ -530,7 +530,7 @@ loc_1A2E4:
 loc_1A312:
 		tst.b	ost_render(a0)
 		bpl.w	Obj85_Delete
-		bsr.w	BossDefeated
+		bsr.w	BossExplode
 		move.b	#2,ost_priority(a0)
 		move.b	#id_ani_fzeggman_0,ost_anim(a0)
 		move.l	#Map_FZDamaged,ost_mappings(a0)

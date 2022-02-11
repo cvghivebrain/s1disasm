@@ -1,5 +1,5 @@
 ; ---------------------------------------------------------------------------
-; Object 4A - special stage entry from beta
+; Object 4A - unused special stage entry from beta
 ; ---------------------------------------------------------------------------
 
 VanishSonic:
@@ -22,7 +22,7 @@ Van_Main:	; Routine 0
 		rts	
 
 	@isempty:
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto Van_RmvSonic next
 		move.l	#Map_Vanish,ost_mappings(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#1,ost_priority(a0)
@@ -35,11 +35,12 @@ Van_RmvSonic:	; Routine 2
 		move.w	(v_ost_player+ost_y_pos).w,ost_y_pos(a0)
 		move.b	(v_ost_player+ost_status).w,ost_status(a0)
 		lea	(Ani_Vanish).l,a1
-		jsr	(AnimateSprite).l
-		cmpi.b	#id_frame_vanish_flash3,ost_frame(a0)
-		bne.s	@display
-		tst.b	(v_ost_player).w
-		beq.s	@display
+		jsr	(AnimateSprite).l			; animate and goto Van_LoadSonic next
+		cmpi.b	#id_frame_vanish_flash3,ost_frame(a0)	; is final flash frame displayed?
+		bne.s	@display				; if not, branch
+
+		tst.b	(v_ost_player).w			; has Sonic already been removed?
+		beq.s	@display				; if yes, branch
 		move.b	#0,(v_ost_player).w			; remove Sonic
 		play.w	1, jsr, sfx_Goal			; play Special Stage "GOAL" sound
 
@@ -48,10 +49,43 @@ Van_RmvSonic:	; Routine 2
 ; ===========================================================================
 
 Van_LoadSonic:	; Routine 4
-		subq.w	#1,ost_vanish_time(a0)			; subtract 1 from time
+		subq.w	#1,ost_vanish_time(a0)			; decrement timer
 		bne.s	@wait					; if time remains, branch
 		move.b	#id_SonicPlayer,(v_ost_player).w	; load Sonic object
 		jmp	(DeleteObject).l
 
 	@wait:
 		rts	
+
+; ---------------------------------------------------------------------------
+; Animation script - special stage entry effect from beta
+; ---------------------------------------------------------------------------
+
+include_VanishSonic_animation:	macro
+
+Ani_Vanish:	index *
+		ptr ani_vanish_0
+		
+ani_vanish_0:	dc.b 5
+		dc.b id_frame_vanish_flash1
+		dc.b id_frame_vanish_flash2
+		dc.b id_frame_vanish_flash1
+		dc.b id_frame_vanish_flash2
+		dc.b id_frame_vanish_flash1
+		dc.b id_frame_vanish_blank
+		dc.b id_frame_vanish_flash2
+		dc.b id_frame_vanish_blank
+		dc.b id_frame_vanish_flash3
+		dc.b id_frame_vanish_blank
+		dc.b id_frame_vanish_sparkle1
+		dc.b id_frame_vanish_blank
+		dc.b id_frame_vanish_sparkle2
+		dc.b id_frame_vanish_blank
+		dc.b id_frame_vanish_sparkle3
+		dc.b id_frame_vanish_blank
+		dc.b id_frame_vanish_sparkle4
+		dc.b id_frame_vanish_blank
+		dc.b afRoutine
+		even
+
+		endm

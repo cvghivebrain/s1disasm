@@ -141,7 +141,7 @@ Obj84_Bottom:
 		movea.l	ost_cylinder_parent(a0),a1
 		tst.b	ost_col_property(a1)
 		bne.s	loc_1A5B4
-		bsr.w	BossDefeated
+		bsr.w	BossExplode
 		subi.l	#$10000,ost_cylinder_y_move(a0)
 
 loc_1A5B4:
@@ -179,7 +179,7 @@ Obj84_Top:
 		movea.l	ost_cylinder_parent(a0),a1
 		tst.b	ost_col_property(a1)
 		bne.s	loc_1A626
-		bsr.w	BossDefeated
+		bsr.w	BossExplode
 		addi.l	#$10000,ost_cylinder_y_move(a0)
 
 loc_1A626:

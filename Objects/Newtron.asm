@@ -122,7 +122,7 @@ Newt_Type0_Floor:
 		cmpi.w	#-8,d1
 		blt.s	@nextroutine				; branch if more than 8px below floor
 		cmpi.w	#$C,d1
-		bge.s	@nextroutine				; branch if more than 12px above floor
+		bge.s	@nextroutine				; branch if more than 11px above floor (also detects a ledge)
 		add.w	d1,ost_y_pos(a0)			; align to floor
 		rts	
 ; ===========================================================================

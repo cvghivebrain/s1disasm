@@ -55,7 +55,7 @@ ExBom_Animate:
 ; Object 3F - explosion	from a destroyed boss, bomb or cannonball
 
 ; spawned by:
-;	Cannonball, Bomb, BossPlasma, BossBall, BossSpikeball, BossDefeated, Prison
+;	Cannonball, Bomb, BossPlasma, BossBall, BossSpikeball, BossExplode, Prison
 ; ---------------------------------------------------------------------------
 
 ExplosionBomb:

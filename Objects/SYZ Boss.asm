@@ -381,7 +381,7 @@ locret_19472:
 loc_19474:
 		subq.w	#1,ost_bsyz_wait_time(a0)
 		bmi.s	loc_1947E
-		bra.w	BossDefeated
+		bra.w	BossExplode
 ; ===========================================================================
 
 loc_1947E:

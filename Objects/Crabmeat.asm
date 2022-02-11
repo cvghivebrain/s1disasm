@@ -125,9 +125,9 @@ Crab_Walk:
 
 	@noflip:
 		jsr	(FindFloorObj2).l
-		cmpi.w	#-8,d1					; is there a drop ahead?
+		cmpi.w	#-8,d1					; is there a wall ahead?
 		blt.s	@stop					; if yes, branch
-		cmpi.w	#$C,d1					; is there a wall ahead?
+		cmpi.w	#$C,d1					; is there a drop ahead?
 		bge.s	@stop					; if yes, branch
 		rts	
 ; ===========================================================================
