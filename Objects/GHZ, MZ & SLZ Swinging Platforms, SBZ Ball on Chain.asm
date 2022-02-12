@@ -206,7 +206,7 @@ Swing_Move:
 		add.w	d1,d0					; d0 = oscillating value, same for all platforms
 
 	@no_xflip:
-		bra.s	Swing_Move2
+		bra.s	Swing_MoveAll
 ; End of function Swing_Move
 
 		endm
@@ -218,7 +218,14 @@ Swing_Move:
 
 include_SwingingPlatform_3:	macro
 
-Swing_Move2:
+; ---------------------------------------------------------------------------
+; Subroutine to convert angle to position for all chain links
+
+; input:
+;	d0 = current swing angle
+; ---------------------------------------------------------------------------
+
+Swing_MoveAll:
 		bsr.w	CalcSine				; convert d0 to sine
 		move.w	ost_swing_y_start(a0),d2
 		move.w	ost_swing_x_start(a0),d3
@@ -245,7 +252,7 @@ Swing_Move2:
 		move.w	d5,ost_x_pos(a1)
 		dbf	d6,@loop				; repeat for all chainlinks and platform
 		rts	
-; End of function Swing_Move2
+; End of function Swing_MoveAll
 
 ; ===========================================================================
 

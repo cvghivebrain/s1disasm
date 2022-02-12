@@ -116,7 +116,7 @@ BGHZ_Update:
 		moveq	#0,d0					; move 0 (black) to d0
 		tst.w	(a1)					; is colour white?
 		bne.s	@is_white				; if yes, branch
-		move.w	#cWhite,d0				; move 0EEE (white) to d0
+		move.w	#cWhite,d0				; move $EEE (white) to d0
 
 	@is_white:
 		move.w	d0,(a1)					; load colour stored in	d0
@@ -331,12 +331,12 @@ BGHZ_FaceMain:	; Routine 4
 		movea.l	ost_bghz_parent(a0),a1			; get address of OST of parent object
 		move.b	ost_routine2(a1),d0
 		subq.b	#4,d0					; is ship on BGHZ_ShipMove?
-		bne.s	@chk_escape				; if not, branch
+		bne.s	@chk_recover				; if not, branch
 		cmpi.w	#$2A00,ost_bghz_parent_x_pos(a1)	; is ship in middle while ball spawns?
 		bne.s	@chk_hit				; if not, branch
 		moveq	#id_ani_boss_laugh,d1			; laugh while ball spawns
 
-@chk_escape:
+@chk_recover:
 		subq.b	#6,d0					; is ship on BGHZ_Recover?
 		bmi.s	@chk_hit				; if not, branch
 		moveq	#id_ani_boss_defeat,d1
