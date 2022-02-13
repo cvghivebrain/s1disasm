@@ -1,19 +1,23 @@
 ; ---------------------------------------------------------------------------
-; Object 74 - lava that	Eggman drops (MZ)
+; Object 74 - fireball that Eggman drops (MZ)
+
+; spawned by:
+;	BossMarble - subtype 1
+;	BossFire - subtype 0
 ; ---------------------------------------------------------------------------
 
 BossFire:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
-		move.w	Obj74_Index(pc,d0.w),d0
-		jsr	Obj74_Index(pc,d0.w)
+		move.w	BFire_Index(pc,d0.w),d0
+		jsr	BFire_Index(pc,d0.w)
 		jmp	(DisplaySprite).l
 ; ===========================================================================
-Obj74_Index:	index *,,2
-		ptr Obj74_Main
-		ptr Obj74_Action
-		ptr loc_18886
-		ptr Obj74_Delete3
+BFire_Index:	index *,,2
+		ptr BFire_Main
+		ptr BFire_Action
+		ptr BFire_TempFire
+		ptr BFire_TempFireDel
 
 ost_bfire_wait_time:	equ $29					; time to wait between events
 ost_bfire_x_start:	equ $30					; original x position (2 bytes)
@@ -21,7 +25,7 @@ ost_bfire_x_prev:	equ $32					; x position where most recent fire spread object 
 ost_bfire_y_start:	equ $38					; original y position (2 bytes)
 ; ===========================================================================
 
-Obj74_Main:	; Routine 0
+BFire_Main:	; Routine 0
 		move.b	#8,ost_height(a0)
 		move.b	#8,ost_width(a0)
 		move.l	#Map_Fire,ost_mappings(a0)
@@ -30,184 +34,183 @@ Obj74_Main:	; Routine 0
 		move.b	#5,ost_priority(a0)
 		move.w	ost_y_pos(a0),ost_bfire_y_start(a0)
 		move.b	#8,ost_actwidth(a0)
-		addq.b	#2,ost_routine(a0)			; goto Obj74_Action next
+		addq.b	#2,ost_routine(a0)			; goto BFire_Action next
 		tst.b	ost_subtype(a0)				; is subtype 0?
-		bne.s	Obj74_First				; if not, branch
+		bne.s	BFire_First				; if not, branch
 		move.b	#id_col_8x8+id_col_hurt,ost_col_type(a0)
-		addq.b	#2,ost_routine(a0)			; goto loc_18886 next
-		bra.w	loc_18886
+		addq.b	#2,ost_routine(a0)			; goto BFire_TempFire next
+		bra.w	BFire_TempFire
 ; ===========================================================================
 
-; Original fireball launched from Eggman's ship
-Obj74_First:
+; Original fireball dropped by Eggman's ship
+BFire_First:
 		move.b	#30,ost_bfire_wait_time(a0)		; wait half a second before dropping
-		play.w	1, jsr, sfx_FireBall			; play lava sound
+		play.w	1, jsr, sfx_FireBall			; play fireball sound
 
-Obj74_Action:	; Routine 2
+BFire_Action:	; Routine 2
 		moveq	#0,d0
 		move.b	ost_routine2(a0),d0
-		move.w	Obj74_Index2(pc,d0.w),d0
-		jsr	Obj74_Index2(pc,d0.w)
-		jsr	(SpeedToPos).l
+		move.w	BFire_Index2(pc,d0.w),d0
+		jsr	BFire_Index2(pc,d0.w)
+		jsr	(SpeedToPos).l				; update position
 		lea	(Ani_Fire).l,a1
 		jsr	(AnimateSprite).l
-		cmpi.w	#$2E8,ost_y_pos(a0)
-		bhi.s	Obj74_Delete
+		cmpi.w	#$2E8,ost_y_pos(a0)			; has fireball fallen into the lava in the middle?
+		bhi.s	BFire_Delete				; if yes, branch
 		rts	
 ; ===========================================================================
 
-Obj74_Delete:
+BFire_Delete:
 		jmp	(DeleteObject).l
 ; ===========================================================================
-Obj74_Index2:	index *,,2
-		ptr Obj74_Drop
-		ptr Obj74_MakeFlame
-		ptr Obj74_FireSpread
-		ptr Obj74_FallEdge
+BFire_Index2:	index *,,2
+		ptr BFire_Drop
+		ptr BFire_Duplicate
+		ptr BFire_FireSpread
+		ptr BFire_FallEdge
 ; ===========================================================================
 
-Obj74_Drop:
+BFire_Drop:
 		bset	#status_yflip_bit,ost_status(a0)	; invert fireball so only tail is visible
 		subq.b	#1,ost_bfire_wait_time(a0)		; decrement timer
-		bpl.s	locret_18780				; branch if time remains
+		bpl.s	@exit					; branch if time remains
 		move.b	#id_col_8x8+id_col_hurt,ost_col_type(a0)
 		clr.b	ost_subtype(a0)
-		addi.w	#$18,ost_y_vel(a0)
-		bclr	#status_yflip_bit,ost_status(a0)	; yflip fireball so it's poining down
+		addi.w	#$18,ost_y_vel(a0)			; apply gravity
+		bclr	#status_yflip_bit,ost_status(a0)	; yflip fireball so it's pointing down
 		bsr.w	FindFloorObj
-		tst.w	d1
-		bpl.s	locret_18780
-		addq.b	#2,ost_routine2(a0)			; goto Obj74_MakeFlame when it hits the floor
+		tst.w	d1					; has fireball hit the floor?
+		bpl.s	@exit					; if not, branch
+		addq.b	#2,ost_routine2(a0)			; goto BFire_Duplicate when it hits the floor
 
-locret_18780:
+	@exit:
 		rts	
 ; ===========================================================================
 
-Obj74_MakeFlame:
+BFire_Duplicate:
 		subq.w	#2,ost_y_pos(a0)
 		bset	#tile_hi_bit,ost_tile(a0)
 		move.w	#$A0,ost_x_vel(a0)			; move right
 		clr.w	ost_y_vel(a0)				; stop falling
-		move.w	ost_x_pos(a0),ost_bfire_x_start(a0)
+		move.w	ost_x_pos(a0),ost_bfire_x_start(a0)	; save position where the fireball landed
 		move.w	ost_y_pos(a0),ost_bfire_y_start(a0)
 		move.b	#3,ost_bfire_wait_time(a0)
-		jsr	(FindNextFreeObj).l
-		bne.s	loc_187CA
-		lea	(a1),a3
-		lea	(a0),a2
-		moveq	#3,d0
+		jsr	(FindNextFreeObj).l			; find free OST slot
+		bne.s	@fail					; branch if not found
+		lea	(a1),a3					; a3 = address of OST of new object
+		lea	(a0),a2					; a2 = address of OST of original object
+		moveq	#(sizeof_ost/16)-1,d0
 
-Obj74_Loop:
+	@loop:
 		move.l	(a2)+,(a3)+				; duplicate object
 		move.l	(a2)+,(a3)+
 		move.l	(a2)+,(a3)+
 		move.l	(a2)+,(a3)+
-		dbf	d0,Obj74_Loop
+		dbf	d0,@loop
 
 		neg.w	ost_x_vel(a1)				; make duplicate move left
-		addq.b	#2,ost_routine2(a1)			; goto Obj74_FireSpread next
+		addq.b	#2,ost_routine2(a1)			; goto BFire_FireSpread next
 
-loc_187CA:
-		addq.b	#2,ost_routine2(a0)
+	@fail:
+		addq.b	#2,ost_routine2(a0)			; goto BFire_FireSpread next
 		rts	
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+; ---------------------------------------------------------------------------
+; Subroutine to spawn another fireball in the current one's position
+; ---------------------------------------------------------------------------
 
-
-Obj74_FireSpread2:
-		jsr	(FindNextFreeObj).l
-		bne.s	locret_187EE
+BFire_SpawnFire:
+		jsr	(FindNextFreeObj).l			; find free OST slot
+		bne.s	@fail					; branch if not found
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
-		move.b	#id_BossFire,(a1)
-		move.w	#$67,ost_subtype(a1)
+		move.b	#id_BossFire,(a1)			; load fireball object
+		move.w	#$67,ost_subtype(a1)			; subtype 0, timer 1.7 seconds
 
-locret_187EE:
+	@fail:
 		rts	
-; End of function Obj74_FireSpread2
+; End of function BFire_SpawnFire
 
 ; ===========================================================================
 
-Obj74_FireSpread:
+BFire_FireSpread:
 		bsr.w	FindFloorObj
-		tst.w	d1
-		bpl.s	loc_18826
+		tst.w	d1					; is fireball touching the floor?
+		bpl.s	@not_on_floor				; if not, branch
 		move.w	ost_x_pos(a0),d0
-		cmpi.w	#$1940,d0
-		bgt.s	loc_1882C
+		cmpi.w	#$1940,d0				; is fireball outside the right edge of the screen?
+		bgt.s	@outside_right				; if yes, branch
 		move.w	ost_bfire_x_start(a0),d1
 		cmp.w	d0,d1
-		beq.s	loc_1881E
+		beq.s	@skip_fire
 		andi.w	#$10,d0
 		andi.w	#$10,d1
 		cmp.w	d0,d1
-		beq.s	loc_1881E
-		bsr.s	Obj74_FireSpread2
+		beq.s	@skip_fire
+		bsr.s	BFire_SpawnFire				; load another fireball object
 		move.w	ost_x_pos(a0),ost_bfire_x_prev(a0)
 
-loc_1881E:
+	@skip_fire:
 		move.w	ost_x_pos(a0),ost_bfire_x_start(a0)
 		rts	
 ; ===========================================================================
 
-loc_18826:
-		addq.b	#2,ost_routine2(a0)
+@not_on_floor:
+		addq.b	#2,ost_routine2(a0)			; goto BFire_FallEdge next
 		rts	
 ; ===========================================================================
 
-loc_1882C:
-		addq.b	#2,ost_routine(a0)
+@outside_right:
+		addq.b	#2,ost_routine(a0)			; goto BFire_TempFire next
 		rts	
 ; ===========================================================================
 
-Obj74_FallEdge:
+BFire_FallEdge:
 		bclr	#status_yflip_bit,ost_status(a0)
 		addi.w	#$24,ost_y_vel(a0)			; make flame fall
 		move.w	ost_x_pos(a0),d0
-		sub.w	ost_bfire_x_prev(a0),d0
-		bpl.s	loc_1884A
-		neg.w	d0
+		sub.w	ost_bfire_x_prev(a0),d0			; d0 = distance from last new fireball object spawn
+		bpl.s	@is_pos
+		neg.w	d0					; make d0 positive
 
-loc_1884A:
+	@is_pos:
 		cmpi.w	#$12,d0
-		bne.s	loc_18856
-		bclr	#tile_hi_bit,ost_tile(a0)
+		bne.s	@not_18px				; branch if not 18px
+		bclr	#tile_hi_bit,ost_tile(a0)		; clear priority bit so it's drawn behind the lava
 
-loc_18856:
+	@not_18px:
 		bsr.w	FindFloorObj
-		tst.w	d1
-		bpl.s	locret_1887E
-		subq.b	#1,ost_bfire_wait_time(a0)
-		beq.s	Obj74_Delete2
-		clr.w	ost_y_vel(a0)
-		move.w	ost_bfire_x_prev(a0),ost_x_pos(a0)
+		tst.w	d1					; has fireball hit the floor?
+		bpl.s	@not_on_floor				; if not, branch
+		subq.b	#1,ost_bfire_wait_time(a0)		; decrement timer (starts at 3)
+		beq.s	@delete					; branch if time remains
+		clr.w	ost_y_vel(a0)				; stop falling
+		move.w	ost_bfire_x_prev(a0),ost_x_pos(a0)	; return to previous position
 		move.w	ost_bfire_y_start(a0),ost_y_pos(a0)
 		bset	#tile_hi_bit,ost_tile(a0)
-		subq.b	#2,ost_routine2(a0)
+		subq.b	#2,ost_routine2(a0)			; goto BFire_FireSpread next
 
-locret_1887E:
+	@not_on_floor:
 		rts	
 ; ===========================================================================
 
-Obj74_Delete2:
+@delete:
 		jmp	(DeleteObject).l
 ; ===========================================================================
 
-loc_18886:	; Routine 4
+BFire_TempFire:	; Routine 4
 		bset	#tile_hi_bit,ost_tile(a0)
-		subq.b	#1,ost_bfire_wait_time(a0)
-		bne.s	Obj74_Animate
-		move.b	#1,ost_anim(a0)
+		subq.b	#1,ost_bfire_wait_time(a0)		; decrement timer
+		bne.s	@wait					; branch if time remains
+		move.b	#id_ani_fire_vertcollide,ost_anim(a0)	; use animation for vertical fireball disappearing
 		subq.w	#4,ost_y_pos(a0)
-		clr.b	ost_col_type(a0)
+		clr.b	ost_col_type(a0)			; make fireball harmless
 
-Obj74_Animate:
+	@wait:
 		lea	(Ani_Fire).l,a1
-		jmp	(AnimateSprite).l
+		jmp	(AnimateSprite).l			; animate and goto BFire_TempFireDel if 2nd animation ran
 ; ===========================================================================
 
-Obj74_Delete3:	; Routine 6
-		jmp	(DeleteObject).l
-
-	Obj7A_Delete:
+BFire_TempFireDel:
+		; Routine 6
 		jmp	(DeleteObject).l

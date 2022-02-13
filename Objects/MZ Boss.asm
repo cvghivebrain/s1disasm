@@ -1,5 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Object 73 - Eggman (MZ)
+
+; spawned by:
+;	DynamicLevelEvents
 ; ---------------------------------------------------------------------------
 
 BossMarble:
@@ -303,7 +306,7 @@ BMZ_Recover:
 		cmpi.w	#$30,ost_bmz_wait_time(a0)		; have 48 frames passed since ship stopped falling?
 		bcs.s	@ship_rises				; if not, branch
 		beq.s	@stop_rising				; if exactly 48, branch
-		cmpi.w	#$38,ost_bmz_wait_time(a0)		; have 48 frames passed since ship stopped rising?
+		cmpi.w	#$38,ost_bmz_wait_time(a0)		; have 56 frames passed since ship stopped rising?
 		bcs.s	@update					; if not, branch
 		addq.b	#2,ost_routine2(a0)			; if yes, goto BMZ_Escape next
 		bra.s	@update
@@ -320,7 +323,7 @@ BMZ_Recover:
 
 @update:
 		bsr.w	BossMove				; update parent position
-		bra.w	BMZ_Update				; update actual position, check for hits
+		bra.w	BMZ_Update				; update actual position
 ; ===========================================================================
 
 BMZ_Escape:
@@ -338,7 +341,7 @@ BMZ_Escape:
 
 @update:
 		bsr.w	BossMove				; update parent position
-		bra.w	BMZ_Update				; update actual position, check for hits
+		bra.w	BMZ_Update				; update actual position
 ; ===========================================================================
 
 @delete:
@@ -409,7 +412,7 @@ BMZ_FlameMain:	; Routine 6
 @chk_moving:
 		tst.w	ost_x_vel(a1)
 		beq.s	@display				; branch if ship isn't moving
-		move.b	#8,ost_anim(a0)
+		move.b	#id_ani_boss_flame1,ost_anim(a0)
 
 @display:
 		bra.s	BMZ_Display
