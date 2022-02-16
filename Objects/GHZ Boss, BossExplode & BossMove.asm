@@ -283,7 +283,7 @@ BGHZ_Recover:
 		cmpi.w	#$30,ost_bghz_wait_time(a0)		; have 48 frames passed since ship stopped falling?
 		bcs.s	@ship_rises				; if not, branch
 		beq.s	@stop_rising				; if exactly 48, branch
-		cmpi.w	#$38,ost_bghz_wait_time(a0)		; have 48 frames passed since ship stopped rising?
+		cmpi.w	#$38,ost_bghz_wait_time(a0)		; have 56 frames passed since ship stopped rising?
 		bcs.s	@update					; if not, branch
 		addq.b	#2,ost_routine2(a0)			; if yes, goto BGHZ_Escape next
 		bra.s	@update
