@@ -1,5 +1,5 @@
 ; ---------------------------------------------------------------------------
-; Sprite mappings - Eggman (SBZ2)
+; Sprite mappings - Eggman (SBZ2, FZ)
 ; ---------------------------------------------------------------------------
 Map_SEgg:	index *
 		ptr frame_eggman_stand
@@ -8,7 +8,7 @@ Map_SEgg:	index *
 		ptr frame_eggman_jump1
 		ptr frame_eggman_jump2
 		ptr frame_eggman_surprise
-		ptr frame_eggman_starjump
+		ptr frame_eggman_jump
 		ptr frame_eggman_running1
 		ptr frame_eggman_running2
 		ptr frame_eggman_intube
@@ -66,7 +66,7 @@ frame_eggman_surprise:
 		endsprite
 		dc.b 0
 		
-frame_eggman_starjump:
+frame_eggman_jump:
 		spritemap
 		piece	-$14, -$18, 4x2, $16
 		piece	$C, -$18, 1x2, $1E

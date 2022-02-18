@@ -177,7 +177,7 @@ Ani_SEgg:	index *
 		ptr ani_eggman_intube
 		ptr ani_eggman_running
 		ptr ani_eggman_jump2
-		ptr ani_eggman_starjump
+		ptr ani_eggman_jump
 		
 ani_eggman_stand:
 		dc.b $7E
@@ -223,8 +223,8 @@ ani_eggman_jump2:
 		dc.b afEnd
 		even
 
-ani_eggman_starjump:
+ani_eggman_jump:
 		dc.b $7E
-		dc.b id_frame_eggman_starjump
+		dc.b id_frame_eggman_jump
 		dc.b afEnd
 		even

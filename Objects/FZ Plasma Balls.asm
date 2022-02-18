@@ -1,17 +1,21 @@
 ; ---------------------------------------------------------------------------
-; Object 86 - energy balls (FZ)
+; Object 86 - plasma balls (FZ)
+
+; spawned by:
+;	BossFinal
+;	BossPlasma
 ; ---------------------------------------------------------------------------
 
 BossPlasma:
 		moveq	#0,d0
 		move.b	ost_routine(a0),d0
-		move.w	Obj86_Index(pc,d0.w),d0
-		jmp	Obj86_Index(pc,d0.w)
+		move.w	Plasma_Index(pc,d0.w),d0
+		jmp	Plasma_Index(pc,d0.w)
 ; ===========================================================================
-Obj86_Index:	index *,,2
-		ptr Obj86_Main
-		ptr Obj86_Generator
-		ptr Obj86_MakeBalls
+Plasma_Index:	index *,,2
+		ptr Plasma_Main
+		ptr Plasma_Generator
+		ptr Plasma_MakeBalls
 		ptr loc_1A962
 		ptr loc_1A982
 
@@ -22,7 +26,7 @@ ost_plasma_parent:	equ $34					; address of OST of parent object (4 bytes)
 ;			equ $38	; ?  (2 bytes)
 ; ===========================================================================
 
-Obj86_Main:	; Routine 0
+Plasma_Main:	; Routine 0
 		move.w	#$2588,ost_x_pos(a0)
 		move.w	#$53C,ost_y_pos(a0)
 		move.w	#tile_Nem_FzBoss,ost_tile(a0)
@@ -33,26 +37,27 @@ Obj86_Main:	; Routine 0
 		move.b	#8,ost_height(a0)
 		move.b	#render_rel,ost_render(a0)
 		bset	#render_onscreen_bit,ost_render(a0)
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto Plasma_Generator next
 
-Obj86_Generator:; Routine 2
-		movea.l	ost_plasma_parent(a0),a1
-		cmpi.b	#6,ost_fz_mode(a1)
-		bne.s	loc_1A850
-		move.b	#id_ExplosionBomb,(a0)
+Plasma_Generator:
+		; Routine 2
+		movea.l	ost_plasma_parent(a0),a1		; get address of OST of parent object
+		cmpi.b	#id_BFZ_Eggman_Fall,ost_fz_mode(a1)	; has boss been beaten?
+		bne.s	@not_beaten				; if not, branch
+		move.b	#id_ExplosionBomb,(a0)			; replace object with explosion
 		move.b	#id_ExBom_Main,ost_routine(a0)
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 
-loc_1A850:
+@not_beaten:
 		move.b	#id_ani_plaunch_red,ost_anim(a0)
-		tst.b	ost_plasma_flag(a0)
-		beq.s	loc_1A86C
-		addq.b	#2,ost_routine(a0)
-		move.b	#id_ani_plaunch_redsparking,ost_anim(a0)
+		tst.b	ost_plasma_flag(a0)			; is plasma set to activate?
+		beq.s	Plasma_Update				; if not, branch
+		addq.b	#2,ost_routine(a0)			; goto Plasma_MakeBalls next
+		move.b	#id_ani_plaunch_redsparking,ost_anim(a0) ; use sparking animation
 		move.b	#$3E,ost_subtype(a0)
 
-loc_1A86C:
+Plasma_Update:
 		move.w	#$13,d1
 		move.w	#8,d2
 		move.w	#$11,d3
@@ -60,21 +65,22 @@ loc_1A86C:
 		jsr	(SolidObject).l
 		move.w	(v_ost_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0
-		bmi.s	loc_1A89A
-		subi.w	#$140,d0
-		bmi.s	loc_1A89A
-		tst.b	ost_render(a0)
-		bpl.w	Obj84_Delete
+		bmi.s	@animate				; branch if Sonic is left of the plasma launcher
+		subi.w	#320,d0
+		bmi.s	@animate				; branch if Sonic is within 320px of plasma launcher
+		tst.b	ost_render(a0)				; is object on-screen?
+		bpl.w	Cyl_Delete				; if not, branch
 
-loc_1A89A:
+	@animate:
 		lea	Ani_PLaunch(pc),a1
 		jsr	(AnimateSprite).l
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 
-Obj86_MakeBalls:; Routine 4
-		tst.b	ost_plasma_flag(a0)
-		beq.w	loc_1A954
+Plasma_MakeBalls:
+		; Routine 4
+		tst.b	ost_plasma_flag(a0)			; is plasma set to activate?
+		beq.w	loc_1A954				; if not, branch
 		clr.b	ost_plasma_flag(a0)
 		add.w	$30(a0),d0
 		andi.w	#$1E,d0
@@ -83,13 +89,13 @@ Obj86_MakeBalls:; Routine 4
 		clr.w	$32(a0)
 		moveq	#3,d2
 
-Obj86_Loop:
-		jsr	(FindNextFreeObj).l
-		bne.w	loc_1A954
-		move.b	#id_BossPlasma,(a1)
+	@loop:
+		jsr	(FindNextFreeObj).l			; find free OST slot
+		bne.w	loc_1A954				; branch if not found
+		move.b	#id_BossPlasma,(a1)			; load plasma ball object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	#$53C,ost_y_pos(a1)
-		move.b	#8,ost_routine(a1)
+		move.b	#id_loc_1A982,ost_routine(a1)		; goto loc_1A982 next
 		move.w	#tile_Nem_FzBoss+tile_pal2,ost_tile(a1)
 		move.l	#Map_Plasma,ost_mappings(a1)
 		move.b	#$C,ost_height(a1)
@@ -99,8 +105,8 @@ Obj86_Loop:
 		move.w	#$3E,ost_subtype(a1)
 		move.b	#render_rel,ost_render(a1)
 		bset	#render_onscreen_bit,ost_render(a1)
-		move.l	a0,ost_plasma_parent(a1)
-		jsr	(RandomNumber).l
+		move.l	a0,ost_plasma_parent(a1)		; save launcher OST to plasma ball OST
+		jsr	(RandomNumber).l			; d0 = random number
 		move.w	$32(a0),d1
 		muls.w	#-$4F,d1
 		addi.w	#$2578,d1
@@ -110,15 +116,15 @@ Obj86_Loop:
 		move.w	d0,$30(a1)
 		addq.w	#1,$32(a0)
 		move.w	$32(a0),$38(a0)
-		dbf	d2,Obj86_Loop				; repeat sequence 3 more times
+		dbf	d2,@loop				; repeat sequence 3 more times
 
 loc_1A954:
 		tst.w	$32(a0)
 		bne.s	loc_1A95E
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto loc_1A962 next
 
 loc_1A95E:
-		bra.w	loc_1A86C
+		bra.w	Plasma_Update
 ; ===========================================================================
 
 loc_1A962:	; Routine 6
@@ -130,19 +136,19 @@ loc_1A962:	; Routine 6
 		move.w	#-1,$32(a1)
 
 loc_1A97E:
-		bra.w	loc_1A86C
+		bra.w	Plasma_Update
 ; ===========================================================================
 
 loc_1A982:	; Routine 8
 		moveq	#0,d0
 		move.b	ost_routine2(a0),d0
-		move.w	Obj86_Index2(pc,d0.w),d0
-		jsr	Obj86_Index2(pc,d0.w)
+		move.w	Plasma_Index2(pc,d0.w),d0
+		jsr	Plasma_Index2(pc,d0.w)
 		lea	Ani_Plasma(pc),a1
 		jsr	(AnimateSprite).l
 		jmp	(DisplaySprite).l
 ; ===========================================================================
-Obj86_Index2:	index *
+Plasma_Index2:	index *
 		ptr loc_1A9A6
 		ptr loc_1A9C0
 		ptr loc_1AA1E
@@ -200,4 +206,4 @@ loc_1AA1E:
 loc_1AA34:
 		movea.l	ost_plasma_parent(a0),a1
 		subq.w	#1,$38(a1)
-		bra.w	Obj84_Delete
+		bra.w	Cyl_Delete
