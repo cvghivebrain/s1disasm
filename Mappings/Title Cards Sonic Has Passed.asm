@@ -51,7 +51,7 @@ frame_has_timebonus:
 		piece -7, -8, 1x2, $14A
 		piece -$A, -9, 2x1, $6E
 		piece -$A, -1, 2x1, $6E, xflip, yflip
-		piece $28, -8, 4x2, $FFF0
+		piece $28, -8, 4x2, -$10
 		piece $48, -8, 1x2, $170
 		endsprite
 		
@@ -62,7 +62,7 @@ frame_has_ringbonus:
 		piece -7, -8, 1x2, $14A
 		piece -$A, -9, 2x1, $6E
 		piece -$A, -1, 2x1, $6E, xflip, yflip
-		piece $28, -8, 4x2, $FFF8
+		piece $28, -8, 4x2, -8
 		piece $48, -8, 1x2, $170
 		endsprite
 		even

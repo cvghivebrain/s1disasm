@@ -46,31 +46,31 @@ frame_ssr_ringbonus:
 		piece -7, -8, 1x2, $14A
 		piece -$A, -9, 2x1, $6E
 		piece -$A, -1, 2x1, $6E, xflip, yflip
-		piece $28, -8, 4x2, $FFF8
+		piece $28, -8, 4x2, -8
 		piece $48, -8, 1x2, $170
 		endsprite
 		
 frame_ssr_contsonic1:
 		spritemap					; "CONTINUE" + Sonic
-		piece -$50, -8, 4x2, $FFD1
-		piece -$30, -8, 4x2, $FFD9
-		piece -$10, -8, 1x2, $FFE1
-		piece $40, -8, 2x3, $1FE3
+		piece -$50, -8, 4x2, -$2F
+		piece -$30, -8, 4x2, -$27
+		piece -$10, -8, 1x2, -$1F
+		piece $40, -8, 2x3, -$1D, pal2
 		endsprite
 		
 frame_ssr_contsonic2:
 		spritemap					; "CONTINUE" + Sonic
-		piece -$50, -8, 4x2, $FFD1
-		piece -$30, -8, 4x2, $FFD9
-		piece -$10, -8, 1x2, $FFE1
-		piece $40, -8, 2x3, $1FE9
+		piece -$50, -8, 4x2, -$2F
+		piece -$30, -8, 4x2, -$27
+		piece -$10, -8, 1x2, -$1F
+		piece $40, -8, 2x3, -$17, pal2
 		endsprite
 		
 frame_ssr_continue:
 		spritemap					; "CONTINUE"
-		piece -$50, -8, 4x2, $FFD1
-		piece -$30, -8, 4x2, $FFD9
-		piece -$10, -8, 1x2, $FFE1
+		piece -$50, -8, 4x2, -$2F
+		piece -$30, -8, 4x2, -$27
+		piece -$10, -8, 1x2, -$1F
 		endsprite
 		
 frame_ssr_specialstage:

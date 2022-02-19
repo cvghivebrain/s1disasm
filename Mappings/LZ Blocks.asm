@@ -25,6 +25,6 @@ frame_lblock_cork:
 		
 frame_lblock_block:
 		spritemap					; block
-		piece	-$10, -$10, 4x4, $FDFA
+		piece	-$10, -$10, 4x4, -$206
 		endsprite
 		even

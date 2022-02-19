@@ -32,17 +32,17 @@ copyTilemap:	macro source,loc,x,y,width,height
 
 out_of_range:	macro exit,pos
 		if narg=2
-		move.w	pos,d0		; get object position (if specified as not ost_x_pos)
+		move.w	pos,d0					; get object position (if specified as not ost_x_pos)
 		else
-		move.w	ost_x_pos(a0),d0 ; get object position
+		move.w	ost_x_pos(a0),d0			; get object position
 		endc
-		andi.w	#$FF80,d0	; round down to nearest $80
-		move.w	(v_camera_x_pos).w,d1 ; get screen position
+		andi.w	#$FF80,d0				; round down to nearest $80
+		move.w	(v_camera_x_pos).w,d1			; get screen position
 		subi.w	#128,d1
 		andi.w	#$FF80,d1
-		sub.w	d1,d0		; d0 = approx distance between object and screen (negative if object is left of screen)
+		sub.w	d1,d0					; d0 = approx distance between object and screen (negative if object is left of screen)
 		cmpi.w	#128+320+192,d0
-		bhi.\0	exit		; branch if d0 is negative or higher than 640
+		bhi.\0	exit					; branch if d0 is negative or higher than 640
 		endm
 
 ; ---------------------------------------------------------------------------
@@ -74,7 +74,11 @@ piece:		macro
 		sprite_height:	substr	3,3,"\3"
 		dc.b ((sprite_width-1)<<2)+sprite_height-1
 		sprite_xpos: = \1
-		sprite_tile: = \4
+		if \4<0						; is tile index negative?
+			sprite_tile: = $10000\4			; convert signed to unsigned
+		else
+			sprite_tile: = \4
+		endc
 		
 		sprite_xflip: = 0
 		sprite_yflip: = 0
@@ -98,7 +102,7 @@ piece:		macro
 		shift
 		endr
 		
-		dc.w sprite_tile+sprite_xflip+sprite_yflip+sprite_hi+sprite_pal
+		dc.w (sprite_tile+sprite_xflip+sprite_yflip+sprite_hi+sprite_pal)&$FFFF
 		dc.b sprite_xpos
 		endm
 
