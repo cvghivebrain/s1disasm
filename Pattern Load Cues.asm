@@ -109,9 +109,9 @@ PLC_GHZ:	plcheader
 		plcm	Nem_Chopper				; chopper enemy ($8F60)
 		plcm	Nem_Newtron				; newtron enemy ($9360)
 		plcm	Nem_Motobug				; motobug enemy ($9E00)
-		plcm	Nem_Spikes, vram_spikes			; spikes
-		plcm	Nem_HSpring, vram_hspring		; horizontal spring
-		plcm	Nem_VSpring, vram_vspring		; vertical spring
+		plcm	Nem_Spikes, vram_spikes			; spikes ($A360)
+		plcm	Nem_HSpring, vram_hspring		; horizontal spring ($A460)
+		plcm	Nem_VSpring, vram_vspring		; vertical spring ($A660)
 	PLC_GHZ_end:
 
 PLC_GHZ2:	plcheader
@@ -151,11 +151,11 @@ PLC_LZ2:	plcheader
 		plcm	Nem_LzPlatfm, $89E0			; rising platform
 		plcm	Nem_Orbinaut,,LZ			; orbinaut enemy ($8CE0)
 		plcm	Nem_Jaws				; jaws enemy ($90C0)
-		plcm	Nem_LzSwitch, vram_button		; switch ($A1E0)
+		plcm	Nem_LzSwitch, vram_button		; button ($A1E0)
 		plcm	Nem_Cork, $A000				; cork block
-		plcm	Nem_Spikes, vram_spikes			; spikes
-		plcm	Nem_HSpring, vram_hspring		; horizontal spring
-		plcm	Nem_VSpring, vram_vspring		; vertical spring
+		plcm	Nem_Spikes, vram_spikes			; spikes ($A360)
+		plcm	Nem_HSpring, vram_hspring		; horizontal spring ($A460)
+		plcm	Nem_VSpring, vram_vspring		; vertical spring ($A660)
 	PLC_LZ2_end:
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - Marble
@@ -174,10 +174,10 @@ PLC_MZ:		plcheader
 	PLC_MZ_end:
 
 PLC_MZ2:	plcheader
-		plcm	Nem_MzSwitch, $A260			; switch
-		plcm	Nem_Spikes, vram_spikes			; spikes
-		plcm	Nem_HSpring, vram_hspring		; horizontal spring
-		plcm	Nem_VSpring, vram_vspring		; vertical spring
+		plcm	Nem_MzSwitch, $A260			; button
+		plcm	Nem_Spikes, vram_spikes			; spikes ($A360)
+		plcm	Nem_HSpring, vram_hspring		; horizontal spring ($A460)
+		plcm	Nem_VSpring, vram_vspring		; vertical spring ($A660)
 		plcm	Nem_MzBlock, $5700			; green	stone block
 	PLC_MZ2_end:
 ; ---------------------------------------------------------------------------
@@ -190,9 +190,9 @@ PLC_SLZ:	plcheader
 		plcm	Nem_Fireball, $9000,SLZ			; fireballs
 		plcm	Nem_SlzBlock, $9C00			; block
 		plcm	Nem_SlzWall, $A260			; breakable wall
-		plcm	Nem_Spikes, vram_spikes			; spikes
-		plcm	Nem_HSpring, vram_hspring		; horizontal spring
-		plcm	Nem_VSpring, vram_vspring		; vertical spring
+		plcm	Nem_Spikes, vram_spikes			; spikes ($A360)
+		plcm	Nem_HSpring, vram_hspring		; horizontal spring ($A460)
+		plcm	Nem_VSpring, vram_vspring		; vertical spring ($A660)
 	PLC_SLZ_end:
 
 PLC_SLZ2:	plcheader
@@ -219,10 +219,10 @@ PLC_SYZ2:	plcheader
 		plcm	Nem_BigSpike				; large	spikeball ($72C0)
 		plcm	Nem_SmallSpike				; small	spikeball ($7740)
 		plcm	Nem_Cater, vram_cater			; caterkiller enemy ($9FE0)
-		plcm	Nem_LzSwitch, vram_button		; switch ($A1E0)
-		plcm	Nem_Spikes, vram_spikes			; spikes
-		plcm	Nem_HSpring, vram_hspring		; horizontal spring
-		plcm	Nem_VSpring, vram_vspring		; vertical spring
+		plcm	Nem_LzSwitch, vram_button		; button ($A1E0)
+		plcm	Nem_Spikes, vram_spikes			; spikes ($A360)
+		plcm	Nem_HSpring, vram_hspring		; horizontal spring ($A460)
+		plcm	Nem_VSpring, vram_vspring		; vertical spring ($A660)
 	PLC_SYZ2_end:
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - Scrap Brain
@@ -252,10 +252,10 @@ PLC_SBZ2:	plcheader
 		plcm	Nem_TrapDoor				; trapdoor ($9240)
 		plcm	Nem_SbzFloor, $7F20			; collapsing floor
 		plcm	Nem_SpinPform, $9BE0			; small	spinning platform
-		plcm	Nem_LzSwitch, vram_button		; switch ($A1E0)
-		plcm	Nem_Spikes, vram_spikes			; spikes
-		plcm	Nem_HSpring, vram_hspring		; horizontal spring
-		plcm	Nem_VSpring, vram_vspring		; vertical spring
+		plcm	Nem_LzSwitch, vram_button		; button ($A1E0)
+		plcm	Nem_Spikes, vram_spikes			; spikes ($A360)
+		plcm	Nem_HSpring, vram_hspring		; horizontal spring ($A460)
+		plcm	Nem_VSpring, vram_vspring		; vertical spring ($A660)
 	PLC_SBZ2_end:
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - title card
@@ -321,43 +321,43 @@ PLC_SpecialStage:	plcheader
 ; Pattern load cues - GHZ animals
 ; ---------------------------------------------------------------------------
 PLC_GHZAnimals:	plcheader
-		plcm	Nem_Rabbit, vram_animal1		; rabbit
-		plcm	Nem_Flicky, vram_animal2		; flicky
+		plcm	Nem_Rabbit, vram_animal1		; rabbit ($B000)
+		plcm	Nem_Flicky, vram_animal2		; flicky ($B240)
 	PLC_GHZAnimals_end:
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - LZ animals
 ; ---------------------------------------------------------------------------
 PLC_LZAnimals:	plcheader
-		plcm	Nem_BlackBird, vram_animal1		; blackbird
-		plcm	Nem_Seal, vram_animal2			; seal
+		plcm	Nem_BlackBird, vram_animal1		; blackbird ($B000)
+		plcm	Nem_Seal, vram_animal2			; seal ($B240)
 	PLC_LZAnimals_end:
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - MZ animals
 ; ---------------------------------------------------------------------------
 PLC_MZAnimals:	plcheader
-		plcm	Nem_Squirrel, vram_animal1		; squirrel
-		plcm	Nem_Seal, vram_animal2			; seal
+		plcm	Nem_Squirrel, vram_animal1		; squirrel ($B000)
+		plcm	Nem_Seal, vram_animal2			; seal ($B240)
 	PLC_MZAnimals_end:
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - SLZ animals
 ; ---------------------------------------------------------------------------
 PLC_SLZAnimals:	plcheader
-		plcm	Nem_Pig, vram_animal1			; pig
-		plcm	Nem_Flicky, vram_animal2		; flicky
+		plcm	Nem_Pig, vram_animal1			; pig ($B000)
+		plcm	Nem_Flicky, vram_animal2		; flicky ($B240)
 	PLC_SLZAnimals_end:
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - SYZ animals
 ; ---------------------------------------------------------------------------
 PLC_SYZAnimals:	plcheader
-		plcm	Nem_Pig, vram_animal1			; pig
-		plcm	Nem_Chicken, vram_animal2		; chicken
+		plcm	Nem_Pig, vram_animal1			; pig ($B000)
+		plcm	Nem_Chicken, vram_animal2		; chicken ($B240)
 	PLC_SYZAnimals_end:
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - SBZ animals
 ; ---------------------------------------------------------------------------
 PLC_SBZAnimals:	plcheader
-		plcm	Nem_Rabbit, vram_animal1		; rabbit
-		plcm	Nem_Chicken, vram_animal2		; chicken
+		plcm	Nem_Rabbit, vram_animal1		; rabbit ($B000)
+		plcm	Nem_Chicken, vram_animal2		; chicken ($B240)
 	PLC_SBZAnimals_end:
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - special stage results screen
@@ -402,7 +402,7 @@ PLC_TryAgain:	plcheader
 PLC_EggmanSBZ2:	plcheader
 		plcm	Nem_SbzBlock, $A300, SBZ2		; block
 		plcm	Nem_Sbz2Eggman, $8000			; Eggman
-		plcm	Nem_LzSwitch, $9400, SBZ2		; switch
+		plcm	Nem_LzSwitch, $9400, SBZ2		; button
 	PLC_EggmanSBZ2_end:
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - final boss

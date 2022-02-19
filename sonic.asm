@@ -769,6 +769,7 @@ Demo_EndGHZ2:	incbin	"demodata\Ending - GHZ2.bin"
 		include "Mappings\GHZ Spiked Helix Pole.asm"	; Map_Hel
 
 		include "Objects\Platforms.asm"			; BasicPlatform
+		include "Objects\Platforms [Mappings].asm"	; Map_Plat_Unused, Map_Plat_GHZ, Map_Plat_SYZ, Map_Plat_SLZ
 
 ; ---------------------------------------------------------------------------
 ; Object 19 - blank
@@ -796,7 +797,7 @@ Ledge_SlopeData:
 		even
 
 		include "Mappings\GHZ Collapsing Ledge.asm"	; Map_Ledge
-		include_CollapseFloor_mappings
+		include "Objects\MZ, SLZ & SBZ Collapsing Floors [Mappings].asm" ; Map_CFlo
 
 		include "Objects\GHZ Bridge Stump & SLZ Fireball Launcher.asm" ; Scenery
 		include "Mappings\SLZ Fireball Launcher.asm"	; Map_Scen
@@ -824,7 +825,7 @@ Ledge_SlopeData:
 		include "Objects\Animals.asm"			; Animals
 		include "Objects\Points.asm"			; Points
 		include "Mappings\Animals.asm"			; Map_Animal1, Map_Animal2 & Map_Animal3
-		include_Points_mappings
+		include "Objects\Points [Mappings].asm"		; Map_Points
 
 		include "Objects\Crabmeat.asm"			; Crabmeat
 		include "Animations\Crabmeat.asm"		; Ani_Crab
@@ -895,7 +896,7 @@ LGrass_Coll_Sloped:	incbin	"Collision\MZ Grass Platforms Heightmap (Sloped).bin"
 		include "Objects\MZ Chain Stompers.asm"		; ChainStomp
 		include "Objects\MZ Unused Sideways Stomper.asm" ; SideStomp
 		include "Mappings\MZ Chain Stompers.asm"	; Map_CStom
-		include_SideStomp_mappings
+		include "Objects\MZ Unused Sideways Stomper [Mappings].asm" ; Map_SStom
 
 		include "Objects\Button.asm"			; Button
 		include "Mappings\Button.asm"			; Map_But
@@ -946,6 +947,7 @@ NullObject:
 		include "Mappings\Springs.asm"			; Map_Spring
 
 		include "Objects\Newtron.asm"			; Newtron
+		include "Objects\Newtron [Mappings].asm"	; Map_Newt
 
 		include "Objects\Roller.asm"			; Roller
 		include "Mappings\Roller.asm"			; Map_Roll
@@ -1002,6 +1004,7 @@ Obj4F:
 		include "Mappings\MZ Smashable Green Block.asm"	; Map_Smab
 
 		include "Objects\MZ, LZ & SBZ Moving Blocks.asm" ; MovingBlock
+		include "Objects\MZ, LZ & SBZ Moving Blocks [Mappings].asm" ; Map_MBlock, Map_MBlockLZ
 
 		include "Objects\Batbrain.asm"			; Batbrain
 		include "Animations\Batbrain.asm"		; Ani_Bat
@@ -1058,6 +1061,7 @@ See_DataFlat:	incbin	"Collision\SLZ Seesaw Heightmap (Flat).bin"
 		include "Mappings\Bomb Enemy.asm"		; Map_Bomb
 
 		include "Objects\Orbinaut.asm"			; Orbinaut
+		include "Objects\Orbinaut [Mappings].asm"	; Map_Orb
 
 		include "Objects\LZ Harpoon.asm"		; Harpoon
 		include "Animations\LZ Harpoon.asm"		; Ani_Harp

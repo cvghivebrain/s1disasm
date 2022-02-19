@@ -48,7 +48,7 @@ BFZ_ObjData2:	; routine num, animation, sprite priority, width, height
 		dc.b id_BFZ_Flame, 0, 3, 0, 0
 
 ost_fz_cylinder_flag:	equ $30					; -1 when cylinders activate; id of cylinder Eggman is in when crushing (2 bytes)
-ost_fz_phase_state:	equ $32					; 1 = crushing; 0 = plasma; -1 = crushing complete (2 bytes)
+ost_fz_phase_state:	equ $32					; 1 = crushing; 0 = plasma; -1 = crushing/plasma complete (2 bytes)
 ost_fz_parent:		equ $34					; address of OST of parent object - children only (4 bytes)
 ost_fz_mode:		equ $34					; action being performed, increments of 2 - parent only
 ost_fz_flash_num:	equ $35					; number of times to make boss flash when hit - parent only

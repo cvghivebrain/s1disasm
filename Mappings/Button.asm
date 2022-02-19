@@ -1,5 +1,5 @@
 ; ---------------------------------------------------------------------------
-; Sprite mappings - switches (MZ, SYZ, LZ, SBZ)
+; Sprite mappings - buttons (MZ, SYZ, LZ, SBZ)
 ; ---------------------------------------------------------------------------
 Map_But:	index *
 		ptr frame_button_up
