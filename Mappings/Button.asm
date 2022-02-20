@@ -22,7 +22,7 @@ frame_button_down:
 frame_button_unk:
 		spritemap
 		piece	-$10, -$B, 2x2, -4
-		piece	0, -$B, 2x2, $7FC
+		piece	0, -$B, 2x2, -4, xflip
 		endsprite
 		piece	-8, -8, 2x2, 0
 		even

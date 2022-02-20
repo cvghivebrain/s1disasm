@@ -304,8 +304,8 @@ v_debug_move_speed:		rs.b 1 ; $FFFFFE0B ; debug mode - vertical speed
 v_vblank_counter:		rs.l 1 ; $FFFFFE0C ; vertical interrupt counter, increments every VBlank
 v_vblank_counter_word:		equ v_vblank_counter+2 ; low word for v_vblank_counter
 v_vblank_counter_byte:		equ v_vblank_counter_word+1 ; low byte for v_vblank_counter
-v_zone:				rs.b 1 ; $FFFFFE10 ; current zone number
-v_act:				rs.b 1 ; $FFFFFE11 ; current act number
+v_zone:				rs.w 1 ; $FFFFFE10 ; current zone number
+v_act:				equ v_zone+1 ; $FFFFFE11 ; current act number
 v_lives:			rs.b 1 ; $FFFFFE12 ; number of lives
 unused_fe13:			rs.b 1
 v_air:				rs.w 1 ; $FFFFFE14 ; air remaining while underwater (2 bytes)

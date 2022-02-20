@@ -117,6 +117,7 @@ bitUp:		equ 0
 
 ; Sonic physics
 sonic_max_speed:		equ $600
+sonic_max_speed_roll:		equ $1000			; rolling
 sonic_acceleration:		equ $C
 sonic_deceleration:		equ $80
 sonic_max_speed_water:		equ sonic_max_speed/2		; underwater
@@ -125,7 +126,14 @@ sonic_deceleration_water:	equ sonic_deceleration/2
 sonic_max_speed_shoes:		equ sonic_max_speed*2		; with speed shoes
 sonic_acceleration_shoes:	equ sonic_acceleration*2
 sonic_deceleration_shoes:	equ sonic_deceleration
-sonic_ss_max_speed:		equ $800
+sonic_ss_max_speed:		equ $800			; special stage
+sonic_jump_power:		equ $680			; initial jump power
+sonic_jump_power_water:		equ $380			; initial jump power underwater
+
+sonic_width:			equ 9				; half width while standing
+sonic_height:			equ $13				; half height while standing
+sonic_width_roll:		equ 7				; half width while rolling
+sonic_height_roll:		equ $E				; half height while rolling
 
 ; Object variables
 			rsset 0

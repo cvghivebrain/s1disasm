@@ -224,10 +224,10 @@ SSS_Jump:
 		neg.b	d0
 		subi.b	#$40,d0
 		jsr	(CalcSine).l				; convert to sine/cosine
-		muls.w	#$680,d1
+		muls.w	#sonic_jump_power,d1
 		asr.l	#8,d1
 		move.w	d1,ost_x_vel(a0)
-		muls.w	#$680,d0
+		muls.w	#sonic_jump_power,d0
 		asr.l	#8,d0
 		move.w	d0,ost_y_vel(a0)
 		bset	#status_air_bit,ost_status(a0)		; goto SSS_InAir next
