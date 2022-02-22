@@ -1085,6 +1085,8 @@ See_DataFlat:	incbin	"Collision\SLZ Seesaw Heightmap (Flat).bin"
 		include "Mappings\LZ Waterfall.asm"		; Map_WFall
 
 		include "Objects\Sonic.asm"			; SonicPlayer
+		include "Animations\Sonic.asm"			; Ani_Sonic
+		include_Sonic_1
 
 		include "Objects\LZ Drowning Numbers.asm"	; DrownCount
 		include "Objects\_ResumeMusic.asm"

@@ -129,6 +129,8 @@ sonic_deceleration_shoes:	equ sonic_deceleration
 sonic_ss_max_speed:		equ $800			; special stage
 sonic_jump_power:		equ $680			; initial jump power
 sonic_jump_power_water:		equ $380			; initial jump power underwater
+sonic_jump_release:		equ $400			; jump speed after releasing A/B/C
+sonic_jump_release_water:	equ sonic_jump_release/2
 
 sonic_width:			equ 9				; half width while standing
 sonic_height:			equ $13				; half height while standing
