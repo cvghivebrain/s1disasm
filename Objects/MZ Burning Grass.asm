@@ -86,3 +86,18 @@ GFire_Animate:
 		lea	(Ani_GFire).l,a1
 		bsr.w	AnimateSprite
 		bra.w	DisplaySprite
+
+; ---------------------------------------------------------------------------
+; Animation script
+; ---------------------------------------------------------------------------
+
+Ani_GFire:	index *
+		ptr ani_gfire_0
+		
+ani_gfire_0:	dc.b 5
+		dc.b id_frame_fire_vertical1
+		dc.b id_frame_fire_vertical1+afxflip
+		dc.b id_frame_fire_vertical2
+		dc.b id_frame_fire_vertical2+afxflip
+		dc.b afEnd
+		even

@@ -99,3 +99,29 @@ Msl_Animate2:
 		bsr.w	AnimateSprite
 		bsr.w	DisplaySprite
 		rts	
+
+; ---------------------------------------------------------------------------
+; Animation script
+; ---------------------------------------------------------------------------
+
+include_Missile_animation:	macro
+
+Ani_Missile:	index *
+		ptr ani_buzz_flare
+		ptr ani_buzz_missile
+		
+ani_buzz_flare:
+		dc.b 7
+		dc.b id_frame_buzz_flare1
+		dc.b id_frame_buzz_flare2
+		dc.b afRoutine
+		even
+
+ani_buzz_missile:
+		dc.b 1
+		dc.b id_frame_buzz_ball1
+		dc.b id_frame_buzz_ball2
+		dc.b afEnd
+		even
+
+		endm

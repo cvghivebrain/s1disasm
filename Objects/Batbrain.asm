@@ -165,3 +165,30 @@ Bat_ChkDist:
 		tst.b	ost_render(a0)
 		bpl.w	DeleteObject
 		rts	
+
+; ---------------------------------------------------------------------------
+; Animation script
+; ---------------------------------------------------------------------------
+
+Ani_Bat:	index *
+		ptr ani_bat_hang
+		ptr ani_bat_drop
+		ptr ani_bat_fly
+		
+ani_bat_hang:	dc.b $F
+		dc.b id_frame_bat_hanging
+		dc.b afEnd
+		even
+
+ani_bat_drop:	dc.b $F
+		dc.b id_frame_bat_fly1
+		dc.b afEnd
+		even
+
+ani_bat_fly:	dc.b 3
+		dc.b id_frame_bat_fly1
+		dc.b id_frame_bat_fly2
+		dc.b id_frame_bat_fly3
+		dc.b id_frame_bat_fly2
+		dc.b afEnd
+		even

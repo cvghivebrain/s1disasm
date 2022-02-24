@@ -174,3 +174,66 @@ Geyser_Middle:	; Routine 4
 
 Geyser_Delete:	; Routine 6
 		bra.w	DeleteObject
+
+; ---------------------------------------------------------------------------
+; Animation script
+; ---------------------------------------------------------------------------
+
+include_LavaGeyser_animation:	macro
+
+Ani_Geyser:	index *
+		ptr ani_geyser_bubble1
+		ptr ani_geyser_bubble2
+		ptr ani_geyser_end
+		ptr ani_geyser_bubble3
+		ptr ani_geyser_blank
+		ptr ani_geyser_bubble4
+		
+ani_geyser_bubble1:
+		dc.b 2
+		dc.b id_frame_geyser_bubble1
+		dc.b id_frame_geyser_bubble2
+		dc.b id_frame_geyser_bubble1
+		dc.b id_frame_geyser_bubble2
+		dc.b id_frame_geyser_bubble5
+		dc.b id_frame_geyser_bubble6
+		dc.b id_frame_geyser_bubble5
+		dc.b id_frame_geyser_bubble6
+		dc.b afRoutine
+
+ani_geyser_bubble2:
+		dc.b 2
+		dc.b id_frame_geyser_bubble3
+		dc.b id_frame_geyser_bubble4
+		dc.b afEnd
+
+ani_geyser_end:
+		dc.b 2
+		dc.b id_frame_geyser_end1
+		dc.b id_frame_geyser_end2
+		dc.b afEnd
+
+ani_geyser_bubble3:
+		dc.b 2
+		dc.b id_frame_geyser_bubble3
+		dc.b id_frame_geyser_bubble4
+		dc.b id_frame_geyser_bubble1
+		dc.b id_frame_geyser_bubble2
+		dc.b id_frame_geyser_bubble1
+		dc.b id_frame_geyser_bubble2
+		dc.b afRoutine
+
+ani_geyser_blank:
+		dc.b $F
+		dc.b id_frame_geyser_blank
+		dc.b afEnd
+		even
+
+ani_geyser_bubble4:
+		dc.b 2
+		dc.b id_frame_geyser_bubble7
+		dc.b id_frame_geyser_bubble8
+		dc.b afEnd
+		even
+
+		endm

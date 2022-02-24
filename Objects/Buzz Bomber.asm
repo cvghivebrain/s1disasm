@@ -128,3 +128,32 @@ Buzz_ChkDist:
 Buzz_Delete:	; Routine 4
 		bsr.w	DeleteObject
 		rts	
+
+; ---------------------------------------------------------------------------
+; Animation script
+; ---------------------------------------------------------------------------
+
+include_BuzzBomber_animation:	macro
+
+Ani_Buzz:	index *
+		ptr ani_buzz_fly1
+		ptr ani_buzz_fly2
+		ptr ani_buzz_fire
+		
+ani_buzz_fly1:	dc.b 1
+		dc.b id_frame_buzz_fly1
+		dc.b id_frame_buzz_fly2
+		dc.b afEnd
+
+ani_buzz_fly2:	dc.b 1
+		dc.b id_frame_buzz_fly3
+		dc.b id_frame_buzz_fly4
+		dc.b afEnd
+
+ani_buzz_fire:	dc.b 1
+		dc.b id_frame_buzz_fire1
+		dc.b id_frame_buzz_fire2
+		dc.b afEnd
+		even
+
+		endm

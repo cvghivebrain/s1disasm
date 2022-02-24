@@ -686,14 +686,11 @@ Pal_SSCyc2:	incbin	"Palettes\Cycle - Special Stage 2.bin"
 
 		include "Objects\Continue Screen Items.asm"	; ContScrItem
 		include "Objects\Continue Screen Sonic.asm"	; ContSonic
-		include "Animations\Continue Screen Sonic.asm"	; Ani_CSon
 		include "Mappings\Continue Screen.asm"		; Map_ContScr
 
 		include "Includes\GM_Ending.asm"
 
 		include "Objects\Ending Sonic.asm"		; EndSonic
-		include "Animations\Ending Sonic.asm"		; Ani_ESon
-
 		include "Objects\Ending Chaos Emeralds.asm"	; EndChaos
 		include "Objects\Ending StH Text.asm"		; EndSTH
 
@@ -704,10 +701,7 @@ Pal_SSCyc2:	incbin	"Palettes\Cycle - Special Stage 2.bin"
 		include "Includes\GM_Credits.asm"
 
 		include "Objects\Ending Eggman Try Again.asm"	; EndEggman
-		include "Animations\Ending Eggman Try Again.asm" ; Ani_EEgg
-
 		include "Objects\Ending Chaos Emeralds Try Again.asm" ; TryChaos
-
 		include "Mappings\Ending Eggman Try Again.asm"	; Map_EEgg
 
 ; ---------------------------------------------------------------------------
@@ -817,7 +811,7 @@ Ledge_SlopeData:
 		include "Objects\Buzz Bomber Missile Vanishing.asm" ; MissileDissolve
 
 		include "Objects\Explosions.asm"		; ExplosionItem & ExplosionBomb
-		include "Animations\Ball Hog.asm"		; Ani_Hog
+		include_BallHog_animation
 		include "Mappings\Ball Hog.asm"			; Map_Hog
 		include "Mappings\Buzz Bomber Missile Vanishing.asm" ; Map_MisDissolve
 		include "Mappings\Explosions.asm"		; Map_ExplodeItem & Map_ExplodeBomb
@@ -828,13 +822,12 @@ Ledge_SlopeData:
 		include "Objects\Points [Mappings].asm"		; Map_Points
 
 		include "Objects\Crabmeat.asm"			; Crabmeat
-		include "Animations\Crabmeat.asm"		; Ani_Crab
 		include "Mappings\Crabmeat.asm"			; Map_Crab
 
 		include "Objects\Buzz Bomber.asm"		; BuzzBomber
 		include "Objects\Buzz Bomber Missile.asm"	; Missile
-		include "Animations\Buzz Bomber.asm"		; Ani_Buzz
-		include "Animations\Buzz Bomber Missile.asm"	; Ani_Missile
+		include_BuzzBomber_animation
+		include_Missile_animation
 		include "Mappings\Buzz Bomber.asm"		; Map_Buzz
 		include "Mappings\Buzz Bomber Missile.asm"	; Map_Missile
 
@@ -851,8 +844,7 @@ Ledge_SlopeData:
 		include "Objects\Monitors.asm"			; Monitor
 		include "Objects\Monitor Contents.asm"		; PowerUp
 		include_Monitor_2				; Objects\Monitors.asm
-
-		include "Animations\Monitors.asm"		; Ani_Monitor
+		include_Monitor_animation
 		include "Mappings\Monitors.asm"			; Map_Monitor
 
 		include "Objects\Title Screen Sonic.asm"	; TitleSonic
@@ -867,15 +859,12 @@ Ledge_SlopeData:
 		include "Mappings\Title Screen Sonic.asm"	; Map_TSon
 
 		include "Objects\Chopper.asm"			; Chopper
-		include "Animations\Chopper.asm"		; Ani_Chop
 		include "Mappings\Chopper.asm"			; Map_Chop
 
 		include "Objects\Jaws.asm"			; Jaws
-		include "Animations\Jaws.asm"			; Ani_Jaws
 		include "Mappings\Jaws.asm"			; Map_Jaws
 
 		include "Objects\Burrobot.asm"			; Burrobot
-		include "Animations\Burrobot.asm"		; Ani_Burro
 		include "Mappings\Burrobot.asm"			; Map_Burro
 
 		include "Objects\MZ Grass Platforms.asm"	; LargeGrass
@@ -886,7 +875,6 @@ LGrass_Coll_Narrow:	incbin	"Collision\MZ Grass Platforms Heightmap (Narrow).bin"
 LGrass_Coll_Sloped:	incbin	"Collision\MZ Grass Platforms Heightmap (Sloped).bin"
 			even
 		include "Objects\MZ Burning Grass.asm"		; GrassFire
-		include "Animations\MZ Burning Grass.asm"	; Ani_GFire
 		include "Mappings\MZ Grass Platforms.asm"	; Map_LGrass
 		include "Mappings\Fireballs.asm"		; Map_Fire
 
@@ -957,7 +945,6 @@ NullObject:
 
 		include "Objects\MZ & SLZ Fireball Launchers.asm"
 		include "Objects\Fireballs.asm"			; FireBall
-		include "Animations\Fireballs.asm"		; Ani_Fire
 
 		include "Objects\SBZ Flamethrower.asm"		; Flamethrower
 		include "Mappings\SBZ Flamethrower.asm"		; Map_Flame
@@ -979,13 +966,12 @@ NullObject:
 		include "Objects\MZ Lava Wall.asm"		; LavaWall
 		include "Objects\MZ Invisible Lava Tag.asm"	; LavaTag
 		include "Mappings\MZ Invisible Lava Tag.asm"	; Map_LTag
-		include "Animations\MZ Lava Geyser.asm"		; Ani_Geyser
-		include "Animations\MZ Lava Wall.asm"		; Ani_LWall
+		include_LavaGeyser_animation
+		include_LavaWall_animation
 		include "Mappings\MZ Lava Geyser.asm"		; Map_Geyser
 		include "Mappings\MZ Lava Wall.asm"		; Map_LWall
 
 		include "Objects\Moto Bug & RememberState.asm"	; MotoBug
-		include "Animations\Moto Bug.asm"		; Ani_Moto
 		include "Mappings\Moto Bug.asm"			; Map_Moto
 
 ; ---------------------------------------------------------------------------
@@ -1007,7 +993,6 @@ Obj4F:
 		include "Objects\MZ, LZ & SBZ Moving Blocks [Mappings].asm" ; Map_MBlock, Map_MBlockLZ
 
 		include "Objects\Batbrain.asm"			; Batbrain
-		include "Animations\Batbrain.asm"		; Ani_Bat
 		include "Mappings\Batbrain.asm"			; Map_Bat
 
 		include "Objects\SYZ & SLZ Floating Blocks, LZ Doors.asm" ; FloatingBlock
@@ -1039,7 +1024,6 @@ Obj4F:
 		include "Mappings\LZ Pole.asm"			; Map_Pole
 
 		include "Objects\LZ Flapping Door.asm"		; FlapDoor
-		include "Animations\LZ Flapping Door.asm"	; Ani_Flap
 		include "Mappings\LZ Flapping Door.asm"		; Map_Flap
 
 		include "Objects\Invisible Solid Blocks.asm"	; Invisibarrier
@@ -1057,14 +1041,12 @@ See_DataFlat:	incbin	"Collision\SLZ Seesaw Heightmap (Flat).bin"
 		include "Mappings\SLZ Seesaw Spike Ball.asm"	; Map_SSawBall
 
 		include "Objects\Bomb Enemy.asm"		; Bomb
-		include "Animations\Bomb Enemy.asm"		; Ani_Bomb
 		include "Mappings\Bomb Enemy.asm"		; Map_Bomb
 
 		include "Objects\Orbinaut.asm"			; Orbinaut
 		include "Objects\Orbinaut [Mappings].asm"	; Map_Orb
 
 		include "Objects\LZ Harpoon.asm"		; Harpoon
-		include "Animations\LZ Harpoon.asm"		; Ani_Harp
 		include "Mappings\LZ Harpoon.asm"		; Map_Harp
 
 		include "Objects\LZ Blocks.asm"			; LabyrinthBlock
@@ -1077,21 +1059,19 @@ See_DataFlat:	incbin	"Collision\SLZ Seesaw Heightmap (Flat).bin"
 		include "Mappings\LZ Conveyor Belt Platforms.asm" ; Map_LConv
 
 		include "Objects\LZ Bubbles.asm"		; Bubble
-		include "Animations\LZ Bubbles.asm"		; Ani_Bub
 		include "Mappings\LZ Bubbles.asm"		; Map_Bub
 
 		include "Objects\LZ Waterfall.asm"		; Waterfall
-		include "Animations\LZ Waterfall.asm"		; Ani_WFall
 		include "Mappings\LZ Waterfall.asm"		; Map_WFall
 
 		include "Objects\Sonic.asm"			; SonicPlayer
-		include "Animations\Sonic.asm"			; Ani_Sonic
+		include "Objects\Sonic [Animations].asm"	; Ani_Sonic
 		include_Sonic_1
 
 		include "Objects\LZ Drowning Numbers.asm"	; DrownCount
 		include "Objects\_ResumeMusic.asm"
 
-		include "Animations\LZ Drowning Numbers.asm"	; Ani_Drown
+		include_DrownCount_animation
 		include "Mappings\LZ Sonic's Drowning Face.asm"	; Map_Drown
 
 		include "Objects\Shield & Invincibility.asm"	; ShieldItem
@@ -1101,7 +1081,7 @@ See_DataFlat:	incbin	"Collision\SLZ Seesaw Heightmap (Flat).bin"
 		include "Mappings\Shield & Invincibility.asm"	; Map_Shield
 		include_VanishSonic_animation
 		include "Mappings\Unused Special Stage Warp.asm" ; Map_Vanish
-		include "Animations\LZ Water Splash.asm"	; Ani_Splash
+		include_Splash_animation
 		include "Mappings\LZ Water Splash.asm"		; Map_Splash
 
 		include_Sonic_2					; Objects\Sonic.asm
@@ -1151,7 +1131,6 @@ See_DataFlat:	incbin	"Collision\SLZ Seesaw Heightmap (Flat).bin"
 		include "Objects\SBZ Teleporter.asm"		; Teleport
 
 		include "Objects\Caterkiller.asm"		; Caterkiller
-		include "Animations\Caterkiller.asm"		; Ani_Cat
 		include "Mappings\Caterkiller.asm"		; Map_Cat
 
 		include "Objects\Lamppost.asm"			; Lamppost
@@ -1165,7 +1144,7 @@ See_DataFlat:	incbin	"Collision\SLZ Seesaw Heightmap (Flat).bin"
 
 		include "Objects\GHZ Boss, BossExplode & BossMove.asm" ; BossGreenHill
 		include_BossBall_1				; Objects\GHZ Boss Ball.asm; BossBall
-		include "Animations\Bosses.asm"			; Ani_Eggman
+		include "Objects\Bosses [Animations].asm"	; Ani_Eggman
 		include "Mappings\Bosses.asm"			; Map_Eggman
 		include "Mappings\Boss Extras.asm"		; Map_BossItems
 
@@ -1186,7 +1165,6 @@ See_DataFlat:	incbin	"Collision\SLZ Seesaw Heightmap (Flat).bin"
 		include "Mappings\SBZ2 Blocks That Eggman Breaks.asm" ; Map_FFloor
 
 		include "Objects\FZ Boss.asm"			; BossFinal
-		include "Animations\FZ Eggman.asm"		; Ani_FZEgg
 		include "Mappings\FZ Eggman in Damaged Ship.asm" ; Map_FZDamaged
 		include "Mappings\FZ Eggman Ship Legs.asm"	; Map_FZLegs
 
@@ -1194,9 +1172,8 @@ See_DataFlat:	incbin	"Collision\SLZ Seesaw Heightmap (Flat).bin"
 		include "Mappings\FZ Cylinders.asm"		; Map_EggCyl
 
 		include "Objects\FZ Plasma Balls.asm"		; BossPlasma
-		include "Animations\FZ Plasma Launcher.asm"	; Ani_PLaunch
 		include "Mappings\FZ Plasma Launcher.asm"	; Map_PLaunch
-		include "Animations\FZ Plasma Balls.asm"	; Ani_Plasma
+		include_BossPlasma_animation
 		include "Mappings\FZ Plasma Balls.asm"		; Map_Plasma
 
 		include "Objects\Prison Capsule.asm"		; Prison

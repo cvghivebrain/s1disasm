@@ -170,3 +170,37 @@ Burro_ChkDist:
 		cmp.w	d2,d0
 		rts	
 ; End of function Burro_ChkDist
+
+; ---------------------------------------------------------------------------
+; Animation script
+; ---------------------------------------------------------------------------
+
+Ani_Burro:	index *
+		ptr ani_burro_walk1
+		ptr ani_burro_walk2
+		ptr ani_burro_digging
+		ptr ani_burro_fall
+		
+ani_burro_walk1:
+		dc.b 3
+		dc.b id_frame_burro_walk1
+		dc.b id_frame_burro_walk3
+		dc.b afEnd
+
+ani_burro_walk2:
+		dc.b 3
+		dc.b id_frame_burro_walk1
+		dc.b id_frame_burro_walk2
+		dc.b afEnd
+
+ani_burro_digging:
+		dc.b 3
+		dc.b id_frame_burro_dig1
+		dc.b id_frame_burro_dig2
+		dc.b afEnd
+
+ani_burro_fall:
+		dc.b 3
+		dc.b id_frame_burro_fall
+		dc.b afEnd
+		even

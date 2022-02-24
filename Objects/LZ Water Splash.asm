@@ -35,3 +35,21 @@ Spla_Display:	; Routine 2
 
 Spla_Delete:	; Routine 4
 		jmp	(DeleteObject).l			; delete when animation	is complete
+
+; ---------------------------------------------------------------------------
+; Animation script
+; ---------------------------------------------------------------------------
+
+include_Splash_animation:	macro
+
+Ani_Splash:	index *
+		ptr ani_splash_0
+		
+ani_splash_0:	dc.b 4
+		dc.b id_frame_splash_0
+		dc.b id_frame_splash_1
+		dc.b id_frame_splash_2
+		dc.b afRoutine
+		even
+
+		endm

@@ -75,3 +75,23 @@ CSon_Run:	; Routine 6
 		jsr	(SpeedToPos).l
 		jsr	(Sonic_Animate).l
 		jmp	(Sonic_LoadGfx).l
+
+; ---------------------------------------------------------------------------
+; Animation script
+; ---------------------------------------------------------------------------
+
+Ani_CSon:	index *
+		ptr ani_csonic_0
+
+ani_csonic_0:	dc.b 4
+		dc.b id_frame_cont_sonic1
+		dc.b id_frame_cont_sonic1
+		dc.b id_frame_cont_sonic1
+		dc.b id_frame_cont_sonic1
+		dc.b id_frame_cont_sonic2
+		dc.b id_frame_cont_sonic2
+		dc.b id_frame_cont_sonic2
+		dc.b id_frame_cont_sonic3
+		dc.b id_frame_cont_sonic3
+		dc.b afEnd
+		even

@@ -605,3 +605,16 @@ BFZ_EmptyShip:	; Routine $A
 
 	@update:
 		bra.w	BFZ_Update_SkipPos
+
+; ---------------------------------------------------------------------------
+; Animation script
+; ---------------------------------------------------------------------------
+
+Ani_FZEgg:	index *
+		ptr ani_fzeggman_0
+		
+ani_fzeggman_0:	dc.b 3
+		dc.b id_frame_fzeggman_damage1
+		dc.b id_frame_fzeggman_damage2
+		dc.b afEnd
+		even

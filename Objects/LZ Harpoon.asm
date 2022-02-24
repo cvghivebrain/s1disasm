@@ -55,3 +55,38 @@ Harp_Wait:	; Routine 4
 
 	@chkdel:
 		bra.w	RememberState
+
+; ---------------------------------------------------------------------------
+; Animation script
+; ---------------------------------------------------------------------------
+
+Ani_Harp:	index *
+		ptr ani_harp_h_extending
+		ptr ani_harp_h_retracting
+		ptr ani_harp_v_extending
+		ptr ani_harp_v_retracting
+		
+ani_harp_h_extending:
+		dc.b 3
+		dc.b id_frame_harp_h_middle
+		dc.b id_frame_harp_h_extended
+		dc.b afRoutine
+
+ani_harp_h_retracting:
+		dc.b 3
+		dc.b id_frame_harp_h_middle
+		dc.b id_frame_harp_h_retracted
+		dc.b afRoutine
+
+ani_harp_v_extending:
+		dc.b 3
+		dc.b id_frame_harp_v_middle
+		dc.b id_frame_harp_v_extended
+		dc.b afRoutine
+
+ani_harp_v_retracting:
+		dc.b 3
+		dc.b id_frame_harp_v_middle
+		dc.b id_frame_harp_v_retracted
+		dc.b afRoutine
+		even

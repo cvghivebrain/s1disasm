@@ -218,3 +218,72 @@ Crab_BallMove:	; Routine 8
 
 	@delete:
 		bra.w	DeleteObject
+
+; ---------------------------------------------------------------------------
+; Animation script
+; ---------------------------------------------------------------------------
+
+Ani_Crab:	index *
+		ptr ani_crab_stand
+		ptr ani_crab_standslope
+		ptr ani_crab_standsloperev
+		ptr ani_crab_walk
+		ptr ani_crab_walkslope
+		ptr ani_crab_walksloperev
+		ptr ani_crab_firing
+		ptr ani_crab_ball
+		
+ani_crab_stand:
+		dc.b $F
+		dc.b id_frame_crab_stand
+		dc.b afEnd
+		even
+
+ani_crab_standslope:
+		dc.b $F
+		dc.b id_frame_crab_slope1
+		dc.b afEnd
+		even
+
+ani_crab_standsloperev:
+		dc.b $F
+		dc.b id_frame_crab_slope1+afxflip
+		dc.b afEnd
+		even
+
+ani_crab_walk:
+		dc.b $F
+		dc.b id_frame_crab_walk
+		dc.b id_frame_crab_walk+afxflip
+		dc.b id_frame_crab_stand
+		dc.b afEnd
+		even
+
+ani_crab_walkslope:
+		dc.b $F
+		dc.b id_frame_crab_walk+afxflip
+		dc.b id_frame_crab_slope2
+		dc.b id_frame_crab_slope1
+		dc.b afEnd
+		even
+
+ani_crab_walksloperev:
+		dc.b $F
+		dc.b id_frame_crab_walk
+		dc.b id_frame_crab_slope2+afxflip
+		dc.b id_frame_crab_slope1+afxflip
+		dc.b afEnd
+		even
+
+ani_crab_firing:
+		dc.b $F
+		dc.b id_frame_crab_firing
+		dc.b afEnd
+		even
+
+ani_crab_ball:
+		dc.b 1
+		dc.b id_frame_crab_ball1
+		dc.b id_frame_crab_ball2
+		dc.b afEnd
+		even

@@ -335,3 +335,181 @@ Drown_Countdown:; Routine $A
 
 @nocountdown:
 		rts	
+
+; ---------------------------------------------------------------------------
+; Animation script
+; ---------------------------------------------------------------------------
+
+include_DrownCount_animation:	macro
+
+Ani_Drown:	index *
+		ptr ani_drown_zeroappear
+		ptr ani_drown_oneappear
+		ptr ani_drown_twoappear
+		ptr ani_drown_threeappear
+		ptr ani_drown_fourappear
+		ptr ani_drown_fiveappear
+		ptr ani_drown_smallbubble	; 6
+		ptr ani_drown_zeroflash		; 7
+		ptr ani_drown_oneflash		; 8
+		ptr ani_drown_twoflash		; 9
+		ptr ani_drown_threeflash	; $A
+		ptr ani_drown_fourflash		; $B
+		ptr ani_drown_fiveflash		; $C
+		ptr ani_drown_blank		; $D
+		ptr ani_drown_mediumbubble	; $E
+		
+ani_drown_zeroappear:
+		dc.b 5
+		dc.b id_frame_bubble_0
+		dc.b id_frame_bubble_1
+		dc.b id_frame_bubble_2
+		dc.b id_frame_bubble_3
+		dc.b id_frame_bubble_4
+		dc.b id_frame_bubble_zero_small
+		dc.b id_frame_bubble_zero
+		dc.b afRoutine
+		even
+
+ani_drown_oneappear:
+		dc.b 5
+		dc.b id_frame_bubble_0
+		dc.b id_frame_bubble_1
+		dc.b id_frame_bubble_2
+		dc.b id_frame_bubble_3
+		dc.b id_frame_bubble_4
+		dc.b id_frame_bubble_one_small
+		dc.b id_frame_bubble_one
+		dc.b afRoutine
+		even
+
+ani_drown_twoappear:
+		dc.b 5
+		dc.b id_frame_bubble_0
+		dc.b id_frame_bubble_1
+		dc.b id_frame_bubble_2
+		dc.b id_frame_bubble_3
+		dc.b id_frame_bubble_4
+		dc.b id_frame_bubble_one_small
+		dc.b id_frame_bubble_two
+		dc.b afRoutine
+		even
+
+ani_drown_threeappear:
+		dc.b 5
+		dc.b id_frame_bubble_0
+		dc.b id_frame_bubble_1
+		dc.b id_frame_bubble_2
+		dc.b id_frame_bubble_3
+		dc.b id_frame_bubble_4
+		dc.b id_frame_bubble_three_small
+		dc.b id_frame_bubble_three
+		dc.b afRoutine
+		even
+
+ani_drown_fourappear:
+		dc.b 5
+		dc.b id_frame_bubble_0
+		dc.b id_frame_bubble_1
+		dc.b id_frame_bubble_2
+		dc.b id_frame_bubble_3
+		dc.b id_frame_bubble_4
+		dc.b id_frame_bubble_zero_small
+		dc.b id_frame_bubble_four
+		dc.b afRoutine
+		even
+
+ani_drown_fiveappear:
+		dc.b 5
+		dc.b id_frame_bubble_0
+		dc.b id_frame_bubble_1
+		dc.b id_frame_bubble_2
+		dc.b id_frame_bubble_3
+		dc.b id_frame_bubble_4
+		dc.b id_frame_bubble_five_small
+		dc.b id_frame_bubble_five
+		dc.b afRoutine
+		even
+
+ani_drown_smallbubble:
+		dc.b $E
+		dc.b id_frame_bubble_0
+		dc.b id_frame_bubble_1
+		dc.b id_frame_bubble_2
+		dc.b afRoutine
+		even
+
+ani_drown_zeroflash:
+		dc.b 7
+		dc.b id_frame_bubble_blank
+		dc.b id_frame_bubble_zero
+		dc.b id_frame_bubble_blank
+		dc.b id_frame_bubble_zero
+		dc.b id_frame_bubble_blank
+		dc.b id_frame_bubble_zero
+		dc.b afRoutine
+
+ani_drown_oneflash:
+		dc.b 7
+		dc.b id_frame_bubble_blank
+		dc.b id_frame_bubble_one
+		dc.b id_frame_bubble_blank
+		dc.b id_frame_bubble_one
+		dc.b id_frame_bubble_blank
+		dc.b id_frame_bubble_one
+		dc.b afRoutine
+
+ani_drown_twoflash:
+		dc.b 7
+		dc.b id_frame_bubble_blank
+		dc.b id_frame_bubble_two
+		dc.b id_frame_bubble_blank
+		dc.b id_frame_bubble_two
+		dc.b id_frame_bubble_blank
+		dc.b id_frame_bubble_two
+		dc.b afRoutine
+
+ani_drown_threeflash:
+		dc.b 7
+		dc.b id_frame_bubble_blank
+		dc.b id_frame_bubble_three
+		dc.b id_frame_bubble_blank
+		dc.b id_frame_bubble_three
+		dc.b id_frame_bubble_blank
+		dc.b id_frame_bubble_three
+		dc.b afRoutine
+
+ani_drown_fourflash:
+		dc.b 7
+		dc.b id_frame_bubble_blank
+		dc.b id_frame_bubble_four
+		dc.b id_frame_bubble_blank
+		dc.b id_frame_bubble_four
+		dc.b id_frame_bubble_blank
+		dc.b id_frame_bubble_four
+		dc.b afRoutine
+
+ani_drown_fiveflash:
+		dc.b 7
+		dc.b id_frame_bubble_blank
+		dc.b id_frame_bubble_five
+		dc.b id_frame_bubble_blank
+		dc.b id_frame_bubble_five
+		dc.b id_frame_bubble_blank
+		dc.b id_frame_bubble_five
+		dc.b afRoutine
+
+ani_drown_blank:
+		dc.b $E
+		dc.b afRoutine
+
+ani_drown_mediumbubble:
+		dc.b $E
+		dc.b id_frame_bubble_1
+		dc.b id_frame_bubble_2
+		dc.b id_frame_bubble_3
+		dc.b id_frame_bubble_4
+		dc.b afRoutine
+		even
+
+		endm

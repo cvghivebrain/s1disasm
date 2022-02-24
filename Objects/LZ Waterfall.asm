@@ -71,3 +71,18 @@ WFall_Priority:	; Routine 8
 
 	@animate:
 		bra.s	WFall_Animate
+
+; ---------------------------------------------------------------------------
+; Animation script
+; ---------------------------------------------------------------------------
+
+Ani_WFall:	index *
+		ptr ani_wfall_splash
+		
+ani_wfall_splash:
+		dc.b 5
+		dc.b id_frame_wfall_splash1
+		dc.b id_frame_wfall_splash2
+		dc.b id_frame_wfall_splash3
+		dc.b afEnd
+		even

@@ -180,3 +180,41 @@ FBall_Type_Stop:
 
 FBall_Delete:	; Routine 4
 		bra.w	DeleteObject
+
+; ---------------------------------------------------------------------------
+; Animation script
+; ---------------------------------------------------------------------------
+
+Ani_Fire:	index *
+		ptr ani_fire_vertical
+		ptr ani_fire_vertcollide
+		ptr ani_fire_horizontal
+		ptr ani_fire_horicollide
+		
+ani_fire_vertical:
+		dc.b 5
+		dc.b id_frame_fire_vertical1
+		dc.b id_frame_fire_vertical1+afxflip
+		dc.b id_frame_fire_vertical2
+		dc.b id_frame_fire_vertical2+afxflip
+		dc.b afEnd
+
+ani_fire_vertcollide:
+		dc.b 5
+		dc.b id_frame_fire_vertcollide
+		dc.b afRoutine
+		even
+
+ani_fire_horizontal:
+		dc.b 5
+		dc.b id_frame_fire_horizontal1
+		dc.b id_frame_fire_horizontal1+afyflip
+		dc.b id_frame_fire_horizontal2
+		dc.b id_frame_fire_horizontal2+afyflip
+		dc.b afEnd
+
+ani_fire_horicollide:
+		dc.b 5
+		dc.b id_frame_fire_horicollide
+		dc.b afRoutine
+		even

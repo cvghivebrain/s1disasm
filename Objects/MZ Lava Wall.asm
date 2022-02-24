@@ -133,3 +133,22 @@ LWall_BackHalf:	; Routine 6
 
 LWall_Delete:	; Routine 8
 		bra.w	DeleteObject
+
+; ---------------------------------------------------------------------------
+; Animation script
+; ---------------------------------------------------------------------------
+
+include_LavaWall_animation:	macro
+
+Ani_LWall:	index *
+		ptr ani_lavawall_0
+		
+ani_lavawall_0:	dc.b 9
+		dc.b id_frame_lavawall_0
+		dc.b id_frame_lavawall_1
+		dc.b id_frame_lavawall_2
+		dc.b id_frame_lavawall_3
+		dc.b afEnd
+		even
+
+		endm

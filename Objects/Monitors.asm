@@ -257,3 +257,151 @@ Mon_Solid_Detect:
 
 		endm
 		
+; ---------------------------------------------------------------------------
+; Animation script
+; ---------------------------------------------------------------------------
+
+include_Monitor_animation:	macro
+
+Ani_Monitor:	index *
+		ptr ani_monitor_static		; 0
+		ptr ani_monitor_eggman		; 1
+		ptr ani_monitor_sonic		; 2
+		ptr ani_monitor_shoes		; 3
+		ptr ani_monitor_shield		; 4
+		ptr ani_monitor_invincible	; 5
+		ptr ani_monitor_rings		; 6
+		ptr ani_monitor_s		; 7
+		ptr ani_monitor_goggles		; 8
+		ptr ani_monitor_breaking	; 9
+		
+ani_monitor_static:
+		dc.b 1
+		dc.b id_frame_monitor_static0
+		dc.b id_frame_monitor_static1
+		dc.b id_frame_monitor_static2
+		dc.b afEnd
+		even
+
+ani_monitor_eggman:
+		dc.b 1
+		dc.b id_frame_monitor_static0
+		dc.b id_frame_monitor_eggman
+		dc.b id_frame_monitor_eggman
+		dc.b id_frame_monitor_static1
+		dc.b id_frame_monitor_eggman
+		dc.b id_frame_monitor_eggman
+		dc.b id_frame_monitor_static2
+		dc.b id_frame_monitor_eggman
+		dc.b id_frame_monitor_eggman
+		dc.b afEnd
+		even
+
+ani_monitor_sonic:
+		dc.b 1
+		dc.b id_frame_monitor_static0
+		dc.b id_frame_monitor_sonic
+		dc.b id_frame_monitor_sonic
+		dc.b id_frame_monitor_static1
+		dc.b id_frame_monitor_sonic
+		dc.b id_frame_monitor_sonic
+		dc.b id_frame_monitor_static2
+		dc.b id_frame_monitor_sonic
+		dc.b id_frame_monitor_sonic
+		dc.b afEnd
+		even
+
+ani_monitor_shoes:
+		dc.b 1
+		dc.b id_frame_monitor_static0
+		dc.b id_frame_monitor_shoes
+		dc.b id_frame_monitor_shoes
+		dc.b id_frame_monitor_static1
+		dc.b id_frame_monitor_shoes
+		dc.b id_frame_monitor_shoes
+		dc.b id_frame_monitor_static2
+		dc.b id_frame_monitor_shoes
+		dc.b id_frame_monitor_shoes
+		dc.b afEnd
+		even
+
+ani_monitor_shield:
+		dc.b 1
+		dc.b id_frame_monitor_static0
+		dc.b id_frame_monitor_shield
+		dc.b id_frame_monitor_shield
+		dc.b id_frame_monitor_static1
+		dc.b id_frame_monitor_shield
+		dc.b id_frame_monitor_shield
+		dc.b id_frame_monitor_static2
+		dc.b id_frame_monitor_shield
+		dc.b id_frame_monitor_shield
+		dc.b afEnd
+		even
+
+ani_monitor_invincible:
+		dc.b 1
+		dc.b id_frame_monitor_static0
+		dc.b id_frame_monitor_invincible
+		dc.b id_frame_monitor_invincible
+		dc.b id_frame_monitor_static1
+		dc.b id_frame_monitor_invincible
+		dc.b id_frame_monitor_invincible
+		dc.b id_frame_monitor_static2
+		dc.b id_frame_monitor_invincible
+		dc.b id_frame_monitor_invincible
+		dc.b afEnd
+		even
+
+ani_monitor_rings:
+		dc.b 1
+		dc.b id_frame_monitor_static0
+		dc.b id_frame_monitor_rings
+		dc.b id_frame_monitor_rings
+		dc.b id_frame_monitor_static1
+		dc.b id_frame_monitor_rings
+		dc.b id_frame_monitor_rings
+		dc.b id_frame_monitor_static2
+		dc.b id_frame_monitor_rings
+		dc.b id_frame_monitor_rings
+		dc.b afEnd
+		even
+
+ani_monitor_s:
+		dc.b 1
+		dc.b id_frame_monitor_static0
+		dc.b id_frame_monitor_s
+		dc.b id_frame_monitor_s
+		dc.b id_frame_monitor_static1
+		dc.b id_frame_monitor_s
+		dc.b id_frame_monitor_s
+		dc.b id_frame_monitor_static2
+		dc.b id_frame_monitor_s
+		dc.b id_frame_monitor_s
+		dc.b afEnd
+		even
+
+ani_monitor_goggles:
+		dc.b 1
+		dc.b id_frame_monitor_static0
+		dc.b id_frame_monitor_goggles
+		dc.b id_frame_monitor_goggles
+		dc.b id_frame_monitor_static1
+		dc.b id_frame_monitor_goggles
+		dc.b id_frame_monitor_goggles
+		dc.b id_frame_monitor_static2
+		dc.b id_frame_monitor_goggles
+		dc.b id_frame_monitor_goggles
+		dc.b afEnd
+		even
+
+ani_monitor_breaking:
+		dc.b 2
+		dc.b id_frame_monitor_static0
+		dc.b id_frame_monitor_static1
+		dc.b id_frame_monitor_static2
+		dc.b id_frame_monitor_broken
+		dc.b afBack, 1
+		even
+
+		endm

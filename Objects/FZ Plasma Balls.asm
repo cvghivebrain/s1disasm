@@ -208,3 +208,93 @@ Plasma_Move:
 		movea.l	ost_plasma_parent(a0),a1		; address of OST of parent object (launcher)
 		subq.w	#1,ost_plasma_count_any(a1)		; decrement count of plasma balls
 		bra.w	Cyl_Delete
+
+; ---------------------------------------------------------------------------
+; Animation scripts
+; ---------------------------------------------------------------------------
+
+Ani_PLaunch:	index *
+		ptr ani_plaunch_red
+		ptr ani_plaunch_redsparking
+		ptr ani_plaunch_whitesparking
+		
+ani_plaunch_red:
+		dc.b $7E
+		dc.b id_frame_plaunch_red
+		dc.b afEnd
+		even
+
+ani_plaunch_redsparking:
+		dc.b 1
+		dc.b id_frame_plaunch_red
+		dc.b id_frame_plaunch_sparking1
+		dc.b id_frame_plaunch_red
+		dc.b id_frame_plaunch_sparking2
+		dc.b afEnd
+		even
+
+ani_plaunch_whitesparking:
+		dc.b 1
+		dc.b id_frame_plaunch_white
+		dc.b id_frame_plaunch_sparking1
+		dc.b id_frame_plaunch_white
+		dc.b id_frame_plaunch_sparking2
+		dc.b afEnd
+		even
+
+include_BossPlasma_animation:	macro
+
+Ani_Plasma:	index *
+		ptr ani_plasma_full
+		ptr ani_plasma_short
+		
+ani_plasma_full:
+		dc.b 1
+		dc.b id_frame_plasma_fuzzy1
+		dc.b id_frame_plasma_blank
+		dc.b id_frame_plasma_fuzzy5
+		dc.b id_frame_plasma_blank
+		dc.b id_frame_plasma_fuzzy2
+		dc.b id_frame_plasma_blank
+		dc.b id_frame_plasma_fuzzy6
+		dc.b id_frame_plasma_blank
+		dc.b id_frame_plasma_fuzzy3
+		dc.b id_frame_plasma_blank
+		dc.b id_frame_plasma_fuzzy4
+		dc.b id_frame_plasma_blank
+		dc.b id_frame_plasma_fuzzy1
+		dc.b id_frame_plasma_blank
+		dc.b id_frame_plasma_fuzzy5
+		dc.b id_frame_plasma_blank
+		dc.b id_frame_plasma_fuzzy2
+		dc.b id_frame_plasma_blank
+		dc.b id_frame_plasma_fuzzy6
+		dc.b id_frame_plasma_blank
+		dc.b id_frame_plasma_fuzzy3
+		dc.b id_frame_plasma_blank
+		dc.b id_frame_plasma_fuzzy4
+		dc.b id_frame_plasma_blank
+		dc.b id_frame_plasma_white1
+		dc.b id_frame_plasma_blank
+		dc.b id_frame_plasma_white2
+		dc.b id_frame_plasma_blank
+		dc.b id_frame_plasma_white3
+		dc.b id_frame_plasma_blank
+		dc.b id_frame_plasma_white4
+		dc.b afEnd
+		even
+
+ani_plasma_short:
+		dc.b 0
+		dc.b id_frame_plasma_fuzzy3
+		dc.b id_frame_plasma_white4
+		dc.b id_frame_plasma_fuzzy2
+		dc.b id_frame_plasma_white4
+		dc.b id_frame_plasma_fuzzy4
+		dc.b id_frame_plasma_white4
+		dc.b id_frame_plasma_fuzzy2
+		dc.b id_frame_plasma_white4
+		dc.b afEnd
+		even
+
+		endm

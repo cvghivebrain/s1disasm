@@ -203,3 +203,47 @@ Bom_ShrSpeed:	dc.w -$200, -$300				; top left
 		dc.w -$100, -$200				; bottom left
 		dc.w $200, -$300				; top right
 		dc.w $100, -$200				; bottom right
+
+; ---------------------------------------------------------------------------
+; Animation script
+; ---------------------------------------------------------------------------
+
+Ani_Bomb:	index *
+		ptr ani_bomb_stand
+		ptr ani_bomb_walk
+		ptr ani_bomb_active
+		ptr ani_bomb_fuse
+		ptr ani_bomb_shrapnel
+		
+ani_bomb_stand:
+		dc.b $13
+		dc.b id_frame_bomb_stand2
+		dc.b id_frame_bomb_stand1
+		dc.b afEnd
+
+ani_bomb_walk:
+		dc.b $13
+		dc.b id_frame_bomb_walk4
+		dc.b id_frame_bomb_walk3
+		dc.b id_frame_bomb_walk2
+		dc.b id_frame_bomb_walk1
+		dc.b afEnd
+
+ani_bomb_active:
+		dc.b $13
+		dc.b id_frame_bomb_activate2
+		dc.b id_frame_bomb_activate1
+		dc.b afEnd
+
+ani_bomb_fuse:
+		dc.b 3
+		dc.b id_frame_bomb_fuse1
+		dc.b id_frame_bomb_fuse2
+		dc.b afEnd
+
+ani_bomb_shrapnel:
+		dc.b 3
+		dc.b id_frame_bomb_shrapnel1
+		dc.b id_frame_bomb_shrapnel2
+		dc.b afEnd
+		even

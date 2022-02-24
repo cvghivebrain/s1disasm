@@ -59,3 +59,26 @@ Flap_OpenClose:	; Routine 2
 
 	@display:
 		bra.w	RememberState
+
+; ---------------------------------------------------------------------------
+; Animation script
+; ---------------------------------------------------------------------------
+
+Ani_Flap:	index *
+		ptr ani_flap_opening
+		ptr ani_flap_closing
+		
+ani_flap_opening:
+		dc.b 3
+		dc.b id_frame_flap_closed
+		dc.b id_frame_flap_halfway
+		dc.b id_frame_flap_open
+		dc.b afBack, 1
+
+ani_flap_closing:
+		dc.b 3
+		dc.b id_frame_flap_open
+		dc.b id_frame_flap_halfway
+		dc.b id_frame_flap_closed
+		dc.b afBack, 1
+		even

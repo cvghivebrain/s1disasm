@@ -53,3 +53,30 @@ Chop_ChgSpeed:	; Routine 2
 
 	@nochg:
 		rts	
+
+; ---------------------------------------------------------------------------
+; Animation script
+; ---------------------------------------------------------------------------
+
+Ani_Chop:	index *
+		ptr ani_chopper_slow
+		ptr ani_chopper_fast
+		ptr ani_chopper_still
+		
+ani_chopper_slow:
+		dc.b 7
+		dc.b id_frame_chopper_shut
+		dc.b id_frame_chopper_open
+		dc.b afEnd
+
+ani_chopper_fast:
+		dc.b 3
+		dc.b id_frame_chopper_shut
+		dc.b id_frame_chopper_open
+		dc.b afEnd
+
+ani_chopper_still:
+		dc.b 7
+		dc.b id_frame_chopper_shut
+		dc.b afEnd
+		even

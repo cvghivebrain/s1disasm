@@ -73,3 +73,43 @@ EEgg_Wait:	; Routine 6
 
 	@nochg:
 		rts	
+
+; ---------------------------------------------------------------------------
+; Animation script
+; ---------------------------------------------------------------------------
+
+Ani_EEgg:	index *
+		ptr ani_eegg_juggle1
+		ptr ani_eegg_juggle2
+		ptr ani_eegg_end
+		
+ani_eegg_juggle1:
+		dc.b 5
+		dc.b id_frame_eegg_juggle1
+		dc.b afRoutine, 1
+
+ani_eegg_juggle2:
+		dc.b 5
+		dc.b id_frame_eegg_juggle3
+		dc.b afRoutine, 3
+
+ani_eegg_end:
+		dc.b 7
+		dc.b id_frame_eegg_end1
+		dc.b id_frame_eegg_end2
+		dc.b id_frame_eegg_end3
+		dc.b id_frame_eegg_end2
+		dc.b id_frame_eegg_end1
+		dc.b id_frame_eegg_end2
+		dc.b id_frame_eegg_end3
+		dc.b id_frame_eegg_end2
+		dc.b id_frame_eegg_end1
+		dc.b id_frame_eegg_end2
+		dc.b id_frame_eegg_end3
+		dc.b id_frame_eegg_end2
+		dc.b id_frame_eegg_end4
+		dc.b id_frame_eegg_end2
+		dc.b id_frame_eegg_end3
+		dc.b id_frame_eegg_end2
+		dc.b afEnd
+		even

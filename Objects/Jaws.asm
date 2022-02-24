@@ -52,3 +52,18 @@ Jaws_Turn:	; Routine 2
 		bsr.w	AnimateSprite
 		bsr.w	SpeedToPos
 		bra.w	RememberState
+
+; ---------------------------------------------------------------------------
+; Animation script
+; ---------------------------------------------------------------------------
+
+Ani_Jaws:	index *
+		ptr ani_jaws_swim
+		
+ani_jaws_swim:	dc.b 7
+		dc.b id_frame_jaws_open1
+		dc.b id_frame_jaws_shut1
+		dc.b id_frame_jaws_open2
+		dc.b id_frame_jaws_shut2
+		dc.b afEnd
+		even
