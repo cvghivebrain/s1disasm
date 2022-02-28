@@ -2,7 +2,8 @@
 ; Subroutine to find a free OST
 
 ; output:
-;	a1 = free position in OST
+;	a1 = address of free OST slot
+;	uses d0
 ; ---------------------------------------------------------------------------
 
 FindFreeObj:
@@ -16,15 +17,17 @@ FindFreeObj:
 		dbf	d0,@loop				; repeat $5F times
 
 	@found:
-		rts	
-
-; End of function FindFreeObj
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to find a free OST AFTER the current one
 
+; input:
+;	a0 = address of current OST slot
+
 ; output:
-;	a1 = free position in OST
+;	a1 = address of free OST slot
+;	uses d0
 ; ---------------------------------------------------------------------------
 
 FindNextFreeObj:
@@ -43,6 +46,4 @@ FindNextFreeObj:
 
 	@use_current:
 	@found:
-		rts	
-
-; End of function FindNextFreeObj
+		rts

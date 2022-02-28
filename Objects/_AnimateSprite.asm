@@ -2,7 +2,11 @@
 ; Subroutine to	animate	a sprite using an animation script
 ;
 ; input:
-;	a1 = animation script
+;	a1 = animation script index (e.g. Ani_Crab)
+
+; output:
+;	a1 = animation script (e.g. ani_crab_stand)
+;	uses d0, d1
 ; ---------------------------------------------------------------------------
 
 AnimateSprite:
@@ -82,5 +86,4 @@ Anim_End_FA:	; only used by EndSonic
 		addq.b	#2,ost_routine2(a0)			; jump to next routine
 
 Anim_End:
-		rts	
-; End of function AnimateSprite
+		rts

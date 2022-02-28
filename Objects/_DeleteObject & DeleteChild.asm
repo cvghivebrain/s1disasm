@@ -7,6 +7,7 @@
 
 ; output:
 ;	a1 = address of next OST
+;	uses d0, d1
 ; ---------------------------------------------------------------------------
 
 DeleteObject:
@@ -20,5 +21,3 @@ DeleteChild:							; child objects are already in (a1)
 		move.l	d1,(a1)+				; clear	the object RAM
 		dbf	d0,@loop				; repeat for length of object RAM
 		rts	
-
-; End of function DeleteObject

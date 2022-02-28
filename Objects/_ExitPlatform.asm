@@ -4,6 +4,10 @@
 ; input:
 ;	d1 = half platform width, left side
 ;	d2 = half platform width, right side (ExitPlatform2 only)
+
+; output:
+;	a1 = OST of Sonic
+;	uses d0, d2
 ; ---------------------------------------------------------------------------
 
 ExitPlatform:
@@ -27,5 +31,4 @@ ExitPlatform2:							; jump here to use different value for d2 (only GHZ bridges
 		bclr	#status_platform_bit,ost_status(a0)	; clear platform's platform bit
 
 	@do_nothing:
-		rts	
-; End of function ExitPlatform
+		rts

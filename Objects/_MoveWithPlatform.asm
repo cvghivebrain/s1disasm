@@ -3,7 +3,12 @@
 ;
 ; input:
 ;	d2 = platform x position
-;	d3 = platform height
+;	d3 = platform height (MoveWithPlatform only)
+
+; output:
+;	d1 = Sonic's height
+;	a1 = address of OST of Sonic
+;	uses d0, d2
 ; ---------------------------------------------------------------------------
 
 MoveWithPlatform:
@@ -33,5 +38,4 @@ MoveWithPlatform2:						; jump here to use standard height (9)
 		sub.w	d2,ost_x_pos(a1)			; update Sonic's x position
 
 	@exit:
-		rts	
-; End of function MoveWithPlatform2
+		rts

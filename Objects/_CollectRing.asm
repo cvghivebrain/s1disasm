@@ -1,5 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Subroutine to	update ring counters and lives when a ring is collected
+
+;	uses d0
 ; ---------------------------------------------------------------------------
 
 CollectRing:
@@ -22,4 +24,3 @@ CollectRing:
 
 	@playsnd:
 		jmp	(PlaySound1).l
-; End of function CollectRing

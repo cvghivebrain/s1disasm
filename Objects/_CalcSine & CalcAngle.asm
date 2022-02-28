@@ -16,8 +16,7 @@ CalcSine:
 		move.w	Sine_Data(pc,d0.w),d1			; get cosine
 		subi.w	#$80,d0					; start at 0 for sine
 		move.w	Sine_Data(pc,d0.w),d0			; get sine
-		rts	
-; End of function CalcSine
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to calculate the square root of a number (0 to $FFFF)
@@ -33,35 +32,34 @@ include_CalcAngle:	macro
 
 		if Revision=0
 CalcSqrt:
-			movem.l	d1-d2,-(sp)
+			movem.l	d1-d2,-(sp)			; preserve d1 and d2 in stack
 			move.w	d0,d1
-			swap	d1
+			swap	d1				; copy input to high word of d1
 			moveq	#0,d0
-			move.w	d0,d1
-			moveq	#7,d2
+			move.w	d0,d1				; clear low word of d1
+			moveq	#8-1,d2				; number of loops
 
-	loc_2C80:
+	@loop:
 			rol.l	#2,d1
 			add.w	d0,d0
 			addq.w	#1,d0
 			sub.w	d0,d1
-			bcc.s	loc_2C9A
+			bcc.s	@loc_2C9A
 			add.w	d0,d1
 			subq.w	#1,d0
-			dbf	d2,loc_2C80
+			dbf	d2,@loop
 			lsr.w	#1,d0
-			movem.l	(sp)+,d1-d2
+			movem.l	(sp)+,d1-d2			; retrieve d1 and d2 from stack
 			rts	
 ; ===========================================================================
 
-	loc_2C9A:
+	@loc_2C9A:
 			addq.w	#1,d0
-			dbf	d2,loc_2C80
+			dbf	d2,@loop
 			lsr.w	#1,d0
 			movem.l	(sp)+,d1-d2
 			rts
 		endc
-; End of function CalcSqrt
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to convert x/y distance to an angle
@@ -128,7 +126,6 @@ CalcAngle_ChkRotation:
 CalcAngle_Both0:
 		move.w	#$40,d0
 		movem.l	(sp)+,d3-d4
-		rts	
-; End of function CalcAngle
+		rts
 
 		endm

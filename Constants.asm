@@ -257,3 +257,14 @@ redraw_topall_bit:	equ 4
 redraw_bottomall_bit:	equ 5
 redraw_bg2_left_bit:	equ 0 ; REV01 only
 redraw_bg2_right_bit:	equ 1 ; REV01 only
+
+; 16x16 and 256x256 mappings
+tilemap_xflip:		equ $800
+tilemap_yflip:		equ $1000
+tilemap_solid_top:	equ $2000
+tilemap_solid_lrb:	equ $4000
+tilemap_solid_all:	equ $6000
+tilemap_xflip_bit:	equ $B
+tilemap_yflip_bit:	equ $C
+tilemap_solid_top_bit:	equ $D
+tilemap_solid_lrb_bit:	equ $E

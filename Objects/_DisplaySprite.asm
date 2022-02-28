@@ -3,6 +3,8 @@
 ;
 ; input:
 ;	a0 = address of OST for object
+
+;	uses d0, a1
 ; ---------------------------------------------------------------------------
 
 DisplaySprite:
@@ -18,15 +20,15 @@ DisplaySprite:
 		move.w	a0,(a1)					; insert RAM address for OST of object
 
 	@full:
-		rts	
-
-; End of function DisplaySprite
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	add a child object to the sprite queue
 ;
 ; input:
 ;	a1 = address of OST for object
+
+;	uses d0, a2
 ; ---------------------------------------------------------------------------
 
 DisplaySprite_a1:
@@ -42,6 +44,4 @@ DisplaySprite_a1:
 		move.w	a1,(a2)
 
 	@full:
-		rts	
-
-; End of function DisplaySprite_a1
+		rts

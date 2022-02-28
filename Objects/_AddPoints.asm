@@ -3,6 +3,12 @@
 ;
 ; input:
 ;	d0 = points to add (appears as *10 larger on the HUD)
+
+; output:
+;	d0 = score
+;	(a2) = high score (REV00 only)
+;	(a3) = score
+;	uses d1
 ; ---------------------------------------------------------------------------
 
 AddPoints:
@@ -21,7 +27,7 @@ AddPoints:
 		@belowmax:
 			move.l	(a3),d0
 			cmp.l	(a2),d0				; is score smaller than high score?
-			blo.w	@locret_1C6B6			; if yes, branch
+			blo.w	@nohighscore			; if yes, branch
 			move.l	d0,(a2)				; copy score to high score
 
 		else
@@ -32,6 +38,7 @@ AddPoints:
 			cmp.l   (a3),d1				; is score below 999999?
 			bhi.s   @belowmax			; if yes, branch
 			move.l  d1,(a3)				; reset score to 999999
+
 		@belowmax:
 			move.l  (a3),d0
 			cmp.l   (v_score_next_life).w,d0	; has Sonic got 50000+ points?
@@ -45,7 +52,6 @@ AddPoints:
 			play.w	0, jmp, mus_ExtraLife		; play extra life music
 		endc
 
-@locret_1C6B6:
+@nohighscore:
 @noextralife:
-		rts	
-; End of function AddPoints
+		rts

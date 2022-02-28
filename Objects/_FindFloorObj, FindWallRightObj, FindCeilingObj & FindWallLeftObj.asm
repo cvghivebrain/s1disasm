@@ -4,14 +4,15 @@
 ; Runs FindFloor without the need for inputs, taking inputs from local OST variables
 
 ; input:
-;	d3 = x pos. of object (FindFloorObj2 only)
+;	d3 = x position of object (FindFloorObj2 only)
 
 ; output:
 ;	d1 = distance to the floor
 ;	d3 = floor angle
 ;	a1 = address within 256x256 mappings where object is standing
-;	(a1) = 16x16 tile number
+;	(a1) = 16x16 tile number, x/yflip, solidness
 ;	(a4) = floor angle
+;	uses d0, d2, d4, d5, d6
 ; ---------------------------------------------------------------------------
 
 FindFloorObj:
@@ -23,22 +24,20 @@ FindFloorObj2:
 		moveq	#0,d0
 		move.b	ost_height(a0),d0
 		ext.w	d0
-		add.w	d0,d2
-		lea	(v_angle_right).w,a4
+		add.w	d0,d2					; d2 = y pos of bottom edge
+		lea	(v_angle_right).w,a4			; write angle here
 		move.b	#0,(a4)
 		movea.w	#$10,a3					; height of a 16x16 tile
 		move.w	#0,d6
-		moveq	#$D,d5					; bit to test for solidness
+		moveq	#tilemap_solid_top_bit,d5		; bit to test for solidness
 		bsr.w	FindFloor
 		move.b	(v_angle_right).w,d3
-		btst	#0,d3
-		beq.s	locret_14E4E
-		move.b	#0,d3
+		btst	#0,d3					; is angle snap bit set?
+		beq.s	@no_snap
+		move.b	#0,d3					; snap to flat floor
 
-	locret_14E4E:
-		rts	
-
-; End of function FindFloorObj2
+	@no_snap:
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to find the distance of an object to the wall to its right
@@ -51,8 +50,9 @@ FindFloorObj2:
 ; output:
 ;	d1 = distance to the wall
 ;	a1 = address within 256x256 mappings where object is standing
-;	(a1) = 16x16 tile number
+;	(a1) = 16x16 tile number, x/yflip, solidness
 ;	(a4) = floor angle
+;	uses d0, d3, d4, d5, d6
 ; ---------------------------------------------------------------------------
 
 include_FindWallRightObj:	macro
@@ -60,21 +60,19 @@ include_FindWallRightObj:	macro
 FindWallRightObj:
 		add.w	ost_x_pos(a0),d3
 		move.w	ost_y_pos(a0),d2
-		lea	(v_angle_right).w,a4
+		lea	(v_angle_right).w,a4			; write angle here
 		move.b	#0,(a4)
-		movea.w	#$10,a3
+		movea.w	#$10,a3					; width of a 16x16 tile
 		move.w	#0,d6
-		moveq	#$E,d5
+		moveq	#tilemap_solid_lrb_bit,d5		; bit to test for solidness
 		bsr.w	FindWall
 		move.b	(v_angle_right).w,d3
-		btst	#0,d3
-		beq.s	locret_14F06
-		move.b	#-$40,d3
+		btst	#0,d3					; is angle snap bit set?
+		beq.s	@no_snap
+		move.b	#$C0,d3					; snap to flat right wall
 
-locret_14F06:
-		rts	
-
-; End of function FindWallRightObj
+	@no_snap:
+		rts
 
 		endm
 
@@ -87,8 +85,9 @@ locret_14F06:
 ;	d1 = distance to the ceiling
 ;	d3 = ceiling angle
 ;	a1 = address within 256x256 mappings where object is standing
-;	(a1) = 16x16 tile number
+;	(a1) = 16x16 tile number, x/yflip, solidness
 ;	(a4) = floor angle
+;	uses d0, d2, d4, d5, d6
 ; ---------------------------------------------------------------------------
 
 include_FindCeilingObj:	macro
@@ -99,21 +98,20 @@ FindCeilingObj:
 		moveq	#0,d0
 		move.b	ost_height(a0),d0
 		ext.w	d0
-		sub.w	d0,d2
+		sub.w	d0,d2					; d2 = y pos of top edge
 		eori.w	#$F,d2
-		lea	(v_angle_right).w,a4
-		movea.w	#-$10,a3
-		move.w	#$1000,d6
-		moveq	#$E,d5
+		lea	(v_angle_right).w,a4			; write angle here
+		movea.w	#-$10,a3				; height of a 16x16 tile
+		move.w	#tilemap_yflip,d6			; eor mask
+		moveq	#tilemap_solid_lrb_bit,d5		; bit to test for solidness
 		bsr.w	FindFloor
 		move.b	(v_angle_right).w,d3
-		btst	#0,d3
-		beq.s	locret_14FD4
-		move.b	#$80,d3
+		btst	#0,d3					; is angle snap bit set?
+		beq.s	@no_snap
+		move.b	#$80,d3					; snap to flat ceiling
 
-locret_14FD4:
-		rts	
-; End of function FindCeilingObj
+	@no_snap:
+		rts
 
 		endm
 
@@ -128,8 +126,9 @@ locret_14FD4:
 ; output:
 ;	d1 = distance to the wall
 ;	a1 = address within 256x256 mappings where object is standing
-;	(a1) = 16x16 tile number
+;	(a1) = 16x16 tile number, x/yflip, solidness
 ;	(a4) = floor angle
+;	uses d0, d3, d4, d5, d6
 ; ---------------------------------------------------------------------------
 
 include_FindWallLeftObj:	macro
@@ -138,22 +137,20 @@ FindWallLeftObj:
 		add.w	ost_x_pos(a0),d3
 		move.w	ost_y_pos(a0),d2
 		; Engine bug: colliding with left walls is erratic with this function.
-		; The cause is this: a missing instruction to flip collision on the found
-		; 16x16 block; this one:
-		;eori.w	#$F,d3
-		lea	(v_angle_right).w,a4
+		; Caused by a missing instruction to flip collision on the 16x16 block.
+		;eori.w	#$F,d3					; enable this line to fix bug
+		lea	(v_angle_right).w,a4			; write angle here
 		move.b	#0,(a4)
-		movea.w	#-$10,a3
-		move.w	#$800,d6
-		moveq	#$E,d5
+		movea.w	#-$10,a3				; width of a 16x16 tile
+		move.w	#tilemap_xflip,d6			; eor mask
+		moveq	#tilemap_solid_lrb_bit,d5		; bit to test for solidness
 		bsr.w	FindWall
 		move.b	(v_angle_right).w,d3
-		btst	#0,d3
-		beq.s	locret_15098
-		move.b	#$40,d3
+		btst	#0,d3					; is angle snap bit set?
+		beq.s	@no_snap
+		move.b	#$40,d3					; snap to flat left wall
 
-locret_15098:
-		rts	
-; End of function FindWallLeftObj
+	@no_snap:
+		rts
 
 		endm
