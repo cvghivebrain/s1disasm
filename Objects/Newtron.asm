@@ -36,7 +36,7 @@ Newt_Action:	; Routine 2
 		jsr	Newt_Action_Index(pc,d1.w)
 		lea	(Ani_Newt).l,a1
 		bsr.w	AnimateSprite				; animate (green newtron goto Newt_Delete after firing)
-		bra.w	DespawnObj
+		bra.w	DespawnObject
 ; ===========================================================================
 Newt_Action_Index:
 		index *,,2

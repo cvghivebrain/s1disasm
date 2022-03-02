@@ -10,7 +10,7 @@ SmashBlock:
 		move.b	ost_routine(a0),d0
 		move.w	Smab_Index(pc,d0.w),d1
 		jsr	Smab_Index(pc,d1.w)
-		bra.w	DespawnObj
+		bra.w	DespawnObject
 ; ===========================================================================
 Smab_Index:	index *,,2
 		ptr Smab_Main

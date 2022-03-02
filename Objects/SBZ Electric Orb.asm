@@ -49,7 +49,7 @@ Elec_Shock:	; Routine 2
 		move.b	#id_col_72x8+id_col_hurt,ost_col_type(a0) ; if yes, make object hurt Sonic
 
 	@display:
-		bra.w	DespawnObj
+		bra.w	DespawnObject
 
 ; ---------------------------------------------------------------------------
 ; Animation script

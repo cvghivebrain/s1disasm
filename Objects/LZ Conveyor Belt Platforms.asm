@@ -178,7 +178,7 @@ LCon_Wheel:	; Routine 6
 
 	@frame_not_0:
 		addq.l	#4,sp
-		bra.w	DespawnObj
+		bra.w	DespawnObject
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to get next corner coordinates and update platform position

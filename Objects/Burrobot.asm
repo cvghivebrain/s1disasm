@@ -39,7 +39,7 @@ Burro_Action:	; Routine 2
 		jsr	Burro_Action_Index(pc,d1.w)
 		lea	(Ani_Burro).l,a1
 		bsr.w	AnimateSprite
-		bra.w	DespawnObj
+		bra.w	DespawnObject
 ; ===========================================================================
 Burro_Action_Index:
 		index *,,2

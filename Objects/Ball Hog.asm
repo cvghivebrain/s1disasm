@@ -53,7 +53,7 @@ Hog_Action:	; Routine 2
 		clr.b	ost_hog_flag(a0)			; set to launch cannonball
 
 @remember:
-		bra.w	DespawnObj
+		bra.w	DespawnObject
 ; ===========================================================================
 
 @makeball:

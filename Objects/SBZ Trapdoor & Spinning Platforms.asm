@@ -77,7 +77,7 @@ Spin_Trapdoor:	; Routine 2
 		addq.w	#1,d3
 		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject
-		bra.w	DespawnObj
+		bra.w	DespawnObject
 ; ===========================================================================
 
 @notsolid:
@@ -89,7 +89,7 @@ Spin_Trapdoor:	; Routine 2
 		clr.b	ost_solid(a0)
 
 	@display:
-		bra.w	DespawnObj
+		bra.w	DespawnObject
 ; ===========================================================================
 
 Spin_Spinner:	; Routine 4
@@ -118,7 +118,7 @@ Spin_Spinner:	; Routine 4
 		addq.w	#1,d3
 		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject
-		bra.w	DespawnObj
+		bra.w	DespawnObject
 ; ===========================================================================
 
 @notsolid2:
@@ -130,7 +130,7 @@ Spin_Spinner:	; Routine 4
 		clr.b	ost_solid(a0)
 
 	@display:
-		bra.w	DespawnObj
+		bra.w	DespawnObject
 
 ; ---------------------------------------------------------------------------
 ; Animation script

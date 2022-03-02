@@ -11,7 +11,7 @@ SmashWall:
 		move.b	ost_routine(a0),d0
 		move.w	Smash_Index(pc,d0.w),d1
 		jsr	Smash_Index(pc,d1.w)
-		bra.w	DespawnObj
+		bra.w	DespawnObject
 ; ===========================================================================
 Smash_Index:	index *,,2
 		ptr Smash_Main

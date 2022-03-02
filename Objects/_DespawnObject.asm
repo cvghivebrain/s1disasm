@@ -2,7 +2,7 @@
 ; Routine to check if object is still on-screen: display if yes, delete if not
 ; ---------------------------------------------------------------------------
 
-DespawnObj:
+DespawnObject:
 		out_of_range	@offscreen			; branch if object moves off screen
 		bra.w	DisplaySprite				; display instead of despawn
 

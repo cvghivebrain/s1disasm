@@ -47,7 +47,7 @@ Bom_Action:	; Routine 2
 		jsr	Bom_Action_Index(pc,d1.w)
 		lea	(Ani_Bomb).l,a1
 		bsr.w	AnimateSprite
-		bra.w	DespawnObj
+		bra.w	DespawnObject
 ; ===========================================================================
 Bom_Action_Index:
 		index *,,2
@@ -150,7 +150,7 @@ Bom_Fuse:	; Routine 4
 		bsr.s	Bom_Fuse_ChkTime
 		lea	(Ani_Bomb).l,a1
 		bsr.w	AnimateSprite
-		bra.w	DespawnObj
+		bra.w	DespawnObject
 ; ===========================================================================
 
 Bom_Fuse_ChkTime:

@@ -35,7 +35,7 @@ Bat_Action:	; Routine 2
 		jsr	Bat_Action_Index(pc,d1.w)
 		lea	(Ani_Bat).l,a1
 		bsr.w	AnimateSprite
-		bra.w	DespawnObj
+		bra.w	DespawnObject
 ; ===========================================================================
 Bat_Action_Index:
 		index *

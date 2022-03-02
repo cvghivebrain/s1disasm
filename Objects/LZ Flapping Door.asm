@@ -58,7 +58,7 @@ Flap_OpenClose:	; Routine 2
 		bsr.w	SolidObject				; make the door	solid
 
 	@display:
-		bra.w	DespawnObj
+		bra.w	DespawnObject
 
 ; ---------------------------------------------------------------------------
 ; Animation script

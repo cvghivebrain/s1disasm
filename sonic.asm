@@ -972,7 +972,7 @@ NullObject:
 		include "Mappings\MZ Lava Wall.asm"		; Map_LWall
 
 		include "Objects\Moto Bug.asm"			; MotoBug
-		include "Objects\_DespawnObj.asm"
+		include "Objects\_DespawnObject.asm"
 		include_MotoBug_1
 		include "Mappings\Moto Bug.asm"			; Map_Moto
 

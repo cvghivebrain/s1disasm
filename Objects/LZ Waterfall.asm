@@ -53,7 +53,7 @@ WFall_Animate:	; Routine 2
 		jsr	(AnimateSprite).l
 
 WFall_ChkDel:	; Routine 4
-		bra.w	DespawnObj
+		bra.w	DespawnObject
 ; ===========================================================================
 
 WFall_OnWater:	; Routine 6

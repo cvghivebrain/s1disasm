@@ -11,7 +11,7 @@ Gargoyle:
 		move.b	ost_routine(a0),d0
 		move.w	Gar_Index(pc,d0.w),d1
 		jsr	Gar_Index(pc,d1.w)
-		bra.w	DespawnObj
+		bra.w	DespawnObject
 ; ===========================================================================
 Gar_Index:	index *,,2
 		ptr Gar_Main

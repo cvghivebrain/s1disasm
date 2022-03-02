@@ -102,4 +102,4 @@ Pole_Action:	; Routine 2
 		move.b	#1,ost_pole_grabbed(a0)			; begin countdown to breakage
 
 Pole_Display:	; Routine 4
-		bra.w	DespawnObj
+		bra.w	DespawnObject

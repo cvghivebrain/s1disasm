@@ -59,7 +59,7 @@ Moto_Action:	; Routine 2
 		lea	(Ani_Moto).l,a1
 		bsr.w	AnimateSprite
 
-		;jmp	(DespawnObj).l				; runs straight into DespawnObj
+		;jmp	(DespawnObject).l				; runs straight into DespawnObject
 
 include_MotoBug_1:	macro
 

@@ -86,7 +86,7 @@ Yad_Action:	; Routine 2
 		jsr	Yad_Index2(pc,d1.w)
 		lea	(Ani_Yad).l,a1
 		bsr.w	AnimateSprite
-		bra.w	DespawnObj
+		bra.w	DespawnObject
 ; ===========================================================================
 Yad_Index2:	index *,,2
 		ptr Yad_Move
