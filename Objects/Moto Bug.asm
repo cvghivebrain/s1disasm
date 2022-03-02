@@ -59,23 +59,9 @@ Moto_Action:	; Routine 2
 		lea	(Ani_Moto).l,a1
 		bsr.w	AnimateSprite
 
-; ---------------------------------------------------------------------------
-; Subroutine to remember whether an object is destroyed/collected
-; ---------------------------------------------------------------------------
+		;jmp	(DespawnObj).l				; runs straight into DespawnObj
 
-RememberState:
-		out_of_range	@offscreen			; branch if object moves off screen
-		bra.w	DisplaySprite
-
-	@offscreen:
-		lea	(v_respawn_list).w,a2
-		moveq	#0,d0
-		move.b	ost_respawn(a0),d0			; get respawn id
-		beq.s	@delete					; branch if not set
-		bclr	#7,2(a2,d0.w)				; clear high bit of entry in respawn table
-
-	@delete:
-		bra.w	DeleteObject
+include_MotoBug_1:	macro
 
 ; ===========================================================================
 Moto_ActIndex:	index *
@@ -173,3 +159,5 @@ ani_moto_smoke:	dc.b 1
 		dc.b id_frame_moto_smoke3
 		dc.b afRoutine
 		even
+
+		endm

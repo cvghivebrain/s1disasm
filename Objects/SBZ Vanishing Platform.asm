@@ -61,7 +61,7 @@ VanP_Sync:	; Routine 6
 @animate:
 		lea	(Ani_Van).l,a1
 		jsr	(AnimateSprite).l
-		bra.w	RememberState
+		bra.w	DespawnObj
 ; ===========================================================================
 
 VanP_Detect:	; Routine 2
@@ -87,7 +87,7 @@ VanP_StoodOn:	; Routine 4
 		moveq	#0,d1
 		move.b	ost_actwidth(a0),d1
 		jsr	(DetectPlatform).l			; detect collision and goto VanP_StoodOn next if true
-		bra.w	RememberState
+		bra.w	DespawnObj
 ; ===========================================================================
 
 @stood_on:
@@ -96,7 +96,7 @@ VanP_StoodOn:	; Routine 4
 		jsr	(ExitPlatform).l			; goto VanP_Detect next if Sonic leaves platform
 		move.w	ost_x_pos(a0),d2
 		jsr	(MoveWithPlatform2).l
-		bra.w	RememberState
+		bra.w	DespawnObj
 ; ===========================================================================
 
 @notsolid:
@@ -109,7 +109,7 @@ VanP_StoodOn:	; Routine 4
 		clr.b	ost_solid(a0)
 
 	@skip_clear:
-		bra.w	RememberState
+		bra.w	DespawnObj
 
 ; ---------------------------------------------------------------------------
 ; Animation script

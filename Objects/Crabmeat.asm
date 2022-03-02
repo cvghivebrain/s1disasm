@@ -53,7 +53,7 @@ Crab_Action:	; Routine 2
 		jsr	Crab_Action_Index(pc,d1.w)
 		lea	(Ani_Crab).l,a1
 		bsr.w	AnimateSprite
-		bra.w	RememberState
+		bra.w	DespawnObj
 ; ===========================================================================
 Crab_Action_Index:
 		index *

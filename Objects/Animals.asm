@@ -458,5 +458,4 @@ Anml_End_ChkDist:
 		move.w	(v_ost_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0			; d0 = distance between Sonic & object (-ve if Sonic is to the left)
 		subi.w	#184,d0					; d0 is -ve if Sonic is left, or < 184px right
-		rts	
-; End of function Anml_End_ChkDist
+		rts

@@ -33,7 +33,7 @@ Hog_Main:	; Routine 0
 		bpl.s	@floornotfound
 		add.w	d1,ost_y_pos(a0)			; align to floor
 		move.w	#0,ost_y_vel(a0)
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto Hog_Action next
 
 	@floornotfound:
 		rts	
@@ -53,14 +53,14 @@ Hog_Action:	; Routine 2
 		clr.b	ost_hog_flag(a0)			; set to launch cannonball
 
 @remember:
-		bra.w	RememberState
+		bra.w	DespawnObj
 ; ===========================================================================
 
 @makeball:
 		move.b	#1,ost_hog_flag(a0)
 		bsr.w	FindFreeObj
 		bne.s	@fail
-		move.b	#id_Cannonball,ost_id(a1)			; load cannonball object ($20)
+		move.b	#id_Cannonball,ost_id(a1)		; load cannonball object ($20)
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.w	#-$100,ost_x_vel(a1)			; cannonball bounces to the left

@@ -39,7 +39,7 @@ Burro_Action:	; Routine 2
 		jsr	Burro_Action_Index(pc,d1.w)
 		lea	(Ani_Burro).l,a1
 		bsr.w	AnimateSprite
-		bra.w	RememberState
+		bra.w	DespawnObj
 ; ===========================================================================
 Burro_Action_Index:
 		index *,,2
@@ -168,8 +168,7 @@ Burro_ChkDist:
 
 	@right:
 		cmp.w	d2,d0
-		rts	
-; End of function Burro_ChkDist
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Animation script

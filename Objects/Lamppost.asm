@@ -15,7 +15,7 @@ Lamppost:
 		move.b	ost_routine(a0),d0
 		move.w	Lamp_Index(pc,d0.w),d1
 		jsr	Lamp_Index(pc,d1.w)
-		jmp	(RememberState).l
+		jmp	(DespawnObj).l
 ; ===========================================================================
 Lamp_Index:	index *,,2
 		ptr Lamp_Main

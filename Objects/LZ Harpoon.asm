@@ -35,7 +35,7 @@ Harp_Move:	; Routine 2
 		moveq	#0,d0
 		move.b	ost_frame(a0),d0			; get frame number
 		move.b	@types(pc,d0.w),ost_col_type(a0)	; get collision type
-		bra.w	RememberState
+		bra.w	DespawnObj
 
 	@types:
 		dc.b id_col_8x4+id_col_hurt			; horizontal, short
@@ -54,7 +54,7 @@ Harp_Wait:	; Routine 4
 		bchg	#0,ost_anim(a0)				; reverse animation
 
 	@chkdel:
-		bra.w	RememberState
+		bra.w	DespawnObj
 
 ; ---------------------------------------------------------------------------
 ; Animation script

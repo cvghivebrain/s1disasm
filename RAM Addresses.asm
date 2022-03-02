@@ -284,7 +284,7 @@ v_pal_dry_line2:		equ v_pal_dry+sizeof_pal ; $FFFFFB20 ; 2nd palette line
 v_pal_dry_line3:		equ v_pal_dry+(sizeof_pal*2) ; $FFFFFB40 ; 3rd palette line
 v_pal_dry_line4:		equ v_pal_dry+(sizeof_pal*3) ; $FFFFFB60 ; 4th palette line
 v_pal_dry_next:			rs.w countof_color*4 ; $FFFFFB80 ; target palette, used for transitions
-v_respawn_list:			rs.w $100 ; $FFFFFC00 ; object state list
+v_respawn_list:			rs.w $100 ; $FFFFFC00 ; object state list (2 bytes for counter; 1 byte each for up to $FE objects)
 
 v_stack:			equ $FFFFFD00 ; stack
 v_stack_pointer:		equ $FFFFFE00 ; initial stack pointer - items are added to the stack backwards from this address

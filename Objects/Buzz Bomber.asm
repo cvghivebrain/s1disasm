@@ -38,7 +38,7 @@ Buzz_Action:	; Routine 2
 		jsr	@index(pc,d1.w)
 		lea	(Ani_Buzz).l,a1
 		bsr.w	AnimateSprite
-		bra.w	RememberState
+		bra.w	DespawnObj
 ; ===========================================================================
 @index:		index *,,2
 		ptr Buzz_Move

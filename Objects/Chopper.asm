@@ -10,7 +10,7 @@ Chopper:
 		move.b	ost_routine(a0),d0
 		move.w	Chop_Index(pc,d0.w),d1
 		jsr	Chop_Index(pc,d1.w)
-		bra.w	RememberState
+		bra.w	DespawnObj
 ; ===========================================================================
 Chop_Index:	index *,,2
 		ptr Chop_Main

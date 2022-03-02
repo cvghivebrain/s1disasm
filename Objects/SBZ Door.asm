@@ -64,7 +64,7 @@ ADoor_Animate:
 		bsr.w	SolidObject
 
 	@remember:
-		bra.w	RememberState
+		bra.w	DespawnObj
 
 ; ---------------------------------------------------------------------------
 ; Animation script

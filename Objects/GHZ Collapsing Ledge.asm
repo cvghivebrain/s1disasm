@@ -46,7 +46,7 @@ Ledge_Touch:	; Routine 2
 		move.w	#$30,d1					; width
 		lea	(Ledge_SlopeData).l,a2			; heightmap
 		bsr.w	SlopeObject				; detect collision with Sonic, update relevant flags & goto Ledge_Collapse next
-		bra.w	RememberState
+		bra.w	DespawnObj
 ; ===========================================================================
 
 Ledge_Collapse:	; Routine 4
@@ -66,7 +66,7 @@ Ledge_WalkOff:	; Routine $A
 		lea	(Ledge_SlopeData).l,a2			; heightmap
 		move.w	ost_x_pos(a0),d2
 		bsr.w	SlopeObject_NoChk			; update Sonic's y position
-		bra.w	RememberState
+		bra.w	DespawnObj
 ; End of function Ledge_WalkOff
 
 ; ===========================================================================

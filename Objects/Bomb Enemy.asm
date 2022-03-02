@@ -24,7 +24,7 @@ ost_bomb_parent:	equ $3C					; address of OST of parent object (4 bytes)
 ; ===========================================================================
 
 Bom_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto Bom_Action next
 		move.l	#Map_Bomb,ost_mappings(a0)
 		move.w	#tile_Nem_Bomb,ost_tile(a0)
 		ori.b	#render_rel,ost_render(a0)
@@ -47,7 +47,7 @@ Bom_Action:	; Routine 2
 		jsr	Bom_Action_Index(pc,d1.w)
 		lea	(Ani_Bomb).l,a1
 		bsr.w	AnimateSprite
-		bra.w	RememberState
+		bra.w	DespawnObj
 ; ===========================================================================
 Bom_Action_Index:
 		index *,,2
@@ -90,7 +90,7 @@ Bom_Action_Wait:
 Bom_Action_Explode:
 		subq.w	#1,ost_bomb_fuse_time(a0)		; subtract 1 from time delay
 		bpl.s	@noexplode				; if time remains, branch
-		move.b	#id_ExplosionBomb,ost_id(a0)			; change bomb into an explosion
+		move.b	#id_ExplosionBomb,ost_id(a0)		; change bomb into an explosion
 		move.b	#id_ExBom_Main,ost_routine(a0)
 
 	@noexplode:
@@ -126,7 +126,7 @@ Bom_ChkDist:
 		move.b	#id_ani_bomb_active,ost_anim(a0)	; use activated animation
 		bsr.w	FindNextFreeObj
 		bne.s	@outofrange
-		move.b	#id_Bomb,ost_id(a1)				; load fuse object
+		move.b	#id_Bomb,ost_id(a1)			; load fuse object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.w	ost_y_pos(a0),ost_bomb_y_start(a1)
@@ -150,7 +150,7 @@ Bom_Fuse:	; Routine 4
 		bsr.s	Bom_Fuse_ChkTime
 		lea	(Ani_Bomb).l,a1
 		bsr.w	AnimateSprite
-		bra.w	RememberState
+		bra.w	DespawnObj
 ; ===========================================================================
 
 Bom_Fuse_ChkTime:
@@ -175,7 +175,7 @@ Bom_Fuse_ChkTime:
 		bne.s	@fail
 
 @makeshrapnel:
-		move.b	#id_Bomb,ost_id(a1)				; load shrapnel	object
+		move.b	#id_Bomb,ost_id(a1)			; load shrapnel	object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	#id_Bom_Shrapnel,ost_subtype(a1)	; this is copied to ost_routine later

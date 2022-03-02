@@ -19,7 +19,7 @@ ost_ball_time:	equ $30						; time until the cannonball explodes (2 bytes)
 ; ===========================================================================
 
 Cbal_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto Cbal_Bounce next
 		move.b	#7,ost_height(a0)
 		move.l	#Map_Hog,ost_mappings(a0)
 		move.w	#tile_Nem_BallHog+tile_pal2,ost_tile(a0)
@@ -78,7 +78,7 @@ Cbal_Animate:
 Cbal_Display:
 		bsr.w	DisplaySprite
 		move.w	(v_boundary_bottom).w,d0
-		addi.w	#$E0,d0
+		addi.w	#224,d0
 		cmp.w	ost_y_pos(a0),d0			; has object fallen off the level?
 		bcs.w	DeleteObject				; if yes, branch
 		rts	

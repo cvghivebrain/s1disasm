@@ -51,7 +51,7 @@ Jaws_Turn:	; Routine 2
 		lea	(Ani_Jaws).l,a1
 		bsr.w	AnimateSprite
 		bsr.w	SpeedToPos
-		bra.w	RememberState
+		bra.w	DespawnObj
 
 ; ---------------------------------------------------------------------------
 ; Animation script
