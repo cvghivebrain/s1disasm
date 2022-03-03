@@ -57,13 +57,12 @@ Msl_ChkCancel:
 		movea.l	ost_missile_parent(a0),a1
 		cmpi.b	#id_ExplosionItem,ost_id(a1)		; has Buzz Bomber been destroyed?
 		beq.s	Msl_Delete				; if yes, branch
-		rts	
-; End of function Msl_ChkCancel
+		rts
 
 ; ===========================================================================
 
 Msl_FromBuzz:	; Routine 4
-		btst	#status_broken_bit,ost_status(a0)	; is high bit of status set?
+		btst	#status_broken_bit,ost_status(a0)	; is high bit of status set? (it never is)
 		bne.s	@explode				; if yes, branch
 		move.b	#id_col_6x6+id_col_hurt,ost_col_type(a0)
 		move.b	#id_ani_buzz_missile,ost_anim(a0)

@@ -20,7 +20,7 @@ But_Index:	index *,,2
 ; ===========================================================================
 
 But_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto But_Action next
 		move.l	#Map_But,ost_mappings(a0)
 		move.w	#tile_Nem_MzSwitch+tile_pal3,ost_tile(a0) ; MZ specific code
 		cmpi.b	#id_MZ,(v_zone).w			; is level Marble Zone?
@@ -168,5 +168,4 @@ But_PBlock_Chk:
 @pblock_y_ok:
 		move.w	(sp)+,d3
 		moveq	#1,d0
-		rts	
-; End of function But_PBlock_Chk
+		rts

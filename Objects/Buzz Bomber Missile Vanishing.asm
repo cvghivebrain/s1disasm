@@ -1,5 +1,5 @@
 ; ---------------------------------------------------------------------------
-; Object 24 - buzz bomber missile vanishing
+; Object 24 - buzz bomber missile vanishing (referenced but never used)
 
 ; spawned by:
 ;	Missile
