@@ -58,7 +58,7 @@ BLZ_Main:	; Routine 0
 		move.b	(a2)+,ost_routine(a1)			; goto BLZ_ShipMain/BLZ_FaceMain/BLZ_FlameMain next
 		move.b	(a2)+,ost_anim(a1)
 		move.b	ost_priority(a0),ost_priority(a1)
-		move.l	#Map_Eggman,ost_mappings(a1)
+		move.l	#Map_Bosses,ost_mappings(a1)
 		move.w	#tile_Nem_Eggman,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)
 		move.b	#$20,ost_actwidth(a1)
@@ -71,7 +71,7 @@ BLZ_ShipMain:	; Routine 2
 		move.b	ost_routine2(a0),d0
 		move.w	BLZ_ShipIndex(pc,d0.w),d1
 		jsr	BLZ_ShipIndex(pc,d1.w)
-		lea	(Ani_Eggman).l,a1
+		lea	(Ani_Bosses).l,a1
 		jsr	(AnimateSprite).l
 		moveq	#status_xflip+status_yflip,d0
 		and.b	ost_status(a0),d0
@@ -404,7 +404,7 @@ BLZ_FlameMain:; Routine 6
 ; ===========================================================================
 
 BLZ_Display:
-		lea	(Ani_Eggman).l,a1
+		lea	(Ani_Bosses).l,a1
 		jsr	(AnimateSprite).l
 		movea.l	ost_blz_parent(a0),a1			; get address of OST of parent object
 		move.w	ost_x_pos(a1),ost_x_pos(a0)

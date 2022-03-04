@@ -56,7 +56,7 @@ BMZ_Main:	; Routine 0
 		move.b	(a2)+,ost_routine(a1)			; goto BMZ_ShipMain/BMZ_FaceMain/BMZ_FlameMain/BMZ_TubeMain next
 		move.b	(a2)+,ost_anim(a1)
 		move.b	(a2)+,ost_priority(a1)
-		move.l	#Map_Eggman,ost_mappings(a1)
+		move.l	#Map_Bosses,ost_mappings(a1)
 		move.w	#tile_Nem_Eggman,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)
 		move.b	#$20,ost_actwidth(a1)
@@ -68,7 +68,7 @@ BMZ_ShipMain:	; Routine 2
 		move.b	ost_routine2(a0),d0
 		move.w	BMZ_ShipIndex(pc,d0.w),d1
 		jsr	BMZ_ShipIndex(pc,d1.w)
-		lea	(Ani_Eggman).l,a1
+		lea	(Ani_Bosses).l,a1
 		jsr	(AnimateSprite).l
 		moveq	#status_xflip+status_yflip,d0
 		and.b	ost_status(a0),d0
@@ -423,7 +423,7 @@ BMZ_FlameMain:	; Routine 6
 ; ===========================================================================
 
 BMZ_Display:
-		lea	(Ani_Eggman).l,a1
+		lea	(Ani_Bosses).l,a1
 		jsr	(AnimateSprite).l
 
 BMZ_Display_SkipAnim:

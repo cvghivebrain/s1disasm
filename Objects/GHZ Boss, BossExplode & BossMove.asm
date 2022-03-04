@@ -46,7 +46,7 @@ BGHZ_Main:	; Routine 0
 		move.b	#id_BossGreenHill,ost_id(a1)
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
-		move.l	#Map_Eggman,ost_mappings(a1)
+		move.l	#Map_Bosses,ost_mappings(a1)
 		move.w	#tile_Nem_Eggman,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)
 		move.b	#$20,ost_actwidth(a1)
@@ -66,7 +66,7 @@ BGHZ_ShipMain:	; Routine 2
 		move.b	ost_routine2(a0),d0
 		move.w	BGHZ_ShipIndex(pc,d0.w),d1
 		jsr	BGHZ_ShipIndex(pc,d1.w)
-		lea	(Ani_Eggman).l,a1
+		lea	(Ani_Bosses).l,a1
 		jsr	(AnimateSprite).l
 		move.b	ost_status(a0),d0
 		andi.b	#status_xflip+status_yflip,d0
@@ -400,7 +400,7 @@ BGHZ_Display:
 		move.w	ost_x_pos(a1),ost_x_pos(a0)
 		move.w	ost_y_pos(a1),ost_y_pos(a0)
 		move.b	ost_status(a1),ost_status(a0)
-		lea	(Ani_Eggman).l,a1
+		lea	(Ani_Bosses).l,a1
 		jsr	(AnimateSprite).l
 		move.b	ost_status(a0),d0
 		andi.b	#status_xflip+status_yflip,d0

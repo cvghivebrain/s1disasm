@@ -1,8 +1,8 @@
 ; ---------------------------------------------------------------------------
-; Animation script - Eggman (bosses)
+; Animation script - Bosses (ship, Eggman and flame)
 ; ---------------------------------------------------------------------------
 
-Ani_Eggman:	index *
+Ani_Bosses:	index *
 		ptr ani_boss_ship	; 0
 		ptr ani_boss_face1	; 1
 		ptr ani_boss_face2	; 2

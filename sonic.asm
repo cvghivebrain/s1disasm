@@ -686,7 +686,7 @@ Pal_SSCyc2:	incbin	"Palettes\Cycle - Special Stage 2.bin"
 
 		include "Objects\Continue Screen Items.asm"	; ContScrItem
 		include "Objects\Continue Screen Sonic.asm"	; ContSonic
-		include "Mappings\Continue Screen.asm"		; Map_ContScr
+		include "Objects\Continue Screen [Mappings].asm" ; Map_ContScr
 
 		include "Includes\GM_Ending.asm"
 
@@ -694,15 +694,15 @@ Pal_SSCyc2:	incbin	"Palettes\Cycle - Special Stage 2.bin"
 		include "Objects\Ending Chaos Emeralds.asm"	; EndChaos
 		include "Objects\Ending StH Text.asm"		; EndSTH
 
-		include "Mappings\Ending Sonic.asm"		; Map_ESon
-		include "Mappings\Ending Chaos Emeralds.asm"	; Map_ECha
-		include "Mappings\Ending StH Text.asm"		; Map_ESth
+		include "Objects\Ending Sonic [Mappings].asm"	; Map_ESon
+		include "Objects\Ending Chaos Emeralds [Mappings].asm" ; Map_ECha
+		include "Objects\Ending StH Text [Mappings].asm" ; Map_ESth
 
 		include "Includes\GM_Credits.asm"
 
 		include "Objects\Ending Eggman Try Again.asm"	; EndEggman
 		include "Objects\Ending Chaos Emeralds Try Again.asm" ; TryChaos
-		include "Mappings\Ending Eggman Try Again.asm"	; Map_EEgg
+		include "Objects\Ending Eggman Try Again [Mappings].asm" ; Map_EEgg
 
 ; ---------------------------------------------------------------------------
 ; Ending sequence demos
@@ -743,7 +743,7 @@ Demo_EndGHZ2:	incbin	"demodata\Ending - GHZ2.bin"
 		include "Objects\_ExitPlatform.asm"
 
 		include_Bridge_3				; Objects\GHZ Bridge.asm
-		include "Mappings\GHZ Bridge.asm"		; Map_Bri
+		include "Objects\GHZ Bridge [Mappings].asm"	; Map_Bri
 
 		include_SwingingPlatform_1			; Objects\GHZ, MZ & SLZ Swinging Platforms, SBZ Ball on Chain.asm
 
@@ -756,11 +756,11 @@ Demo_EndGHZ2:	incbin	"demodata\Ending - GHZ2.bin"
 
 		include_SwingingPlatform_3			; Objects\GHZ, MZ & SLZ Swinging Platforms, SBZ Ball on Chain.asm
 		
-		include "Mappings\GHZ & MZ Swinging Platforms.asm" ; Map_Swing_GHZ
-		include "Mappings\SLZ Swinging Platforms.asm"	; Map_Swing_SLZ
+		include "Objects\GHZ & MZ Swinging Platforms [Mappings].asm" ; Map_Swing_GHZ
+		include "Objects\SLZ Swinging Platforms [Mappings].asm" ; Map_Swing_SLZ
 
 		include "Objects\GHZ Spiked Helix Pole.asm"	; Helix
-		include "Mappings\GHZ Spiked Helix Pole.asm"	; Map_Hel
+		include "Objects\GHZ Spiked Helix Pole [Mappings].asm" ; Map_Hel
 
 		include "Objects\Platforms.asm"			; BasicPlatform
 		include "Objects\Platforms [Mappings].asm"	; Map_Plat_Unused, Map_Plat_GHZ, Map_Plat_SYZ, Map_Plat_SLZ
@@ -772,7 +772,7 @@ Demo_EndGHZ2:	incbin	"demodata\Ending - GHZ2.bin"
 Obj19:
 		rts	
 		
-		include "Mappings\GHZ Giant Ball.asm"		; Map_GBall
+		include "Objects\GHZ Giant Ball [Mappings].asm"	; Map_GBall
 
 		include "Objects\GHZ Collapsing Ledge.asm"	; CollapseLedge
 		include "Objects\MZ, SLZ & SBZ Collapsing Floors.asm" ; CollapseFloor
@@ -790,17 +790,17 @@ Ledge_SlopeData:
 		incbin	"Collision\GHZ Collapsing Ledge Heightmap.bin"
 		even
 
-		include "Mappings\GHZ Collapsing Ledge.asm"	; Map_Ledge
+		include "Objects\GHZ Collapsing Ledge [Mappings].asm" ; Map_Ledge
 		include "Objects\MZ, SLZ & SBZ Collapsing Floors [Mappings].asm" ; Map_CFlo
 
 		include "Objects\GHZ Bridge Stump & SLZ Fireball Launcher.asm" ; Scenery
-		include "Mappings\SLZ Fireball Launcher.asm"	; Map_Scen
+		include "Objects\SLZ Fireball Launcher [Mappings].asm" ; Map_Scen
 
 		include "Objects\Unused Switch.asm"		; MagicSwitch
-		include "Mappings\Unused Switch.asm"		; Map_Switch
+		include "Objects\Unused Switch [Mappings].asm"	; Map_Switch
 
 		include "Objects\SBZ Door.asm"			; AutoDoor
-		include "Mappings\SBZ Door.asm"			; Map_ADoor
+		include "Objects\SBZ Door [Mappings].asm"	; Map_ADoor
 
 		include "Objects\GHZ Walls.asm"			; EdgeWalls
 		include_EdgeWalls_2
@@ -812,24 +812,24 @@ Ledge_SlopeData:
 
 		include "Objects\Explosions.asm"		; ExplosionItem & ExplosionBomb
 		include_BallHog_animation
-		include "Mappings\Ball Hog.asm"			; Map_Hog
-		include "Mappings\Buzz Bomber Missile Vanishing.asm" ; Map_MisDissolve
-		include "Mappings\Explosions.asm"		; Map_ExplodeItem & Map_ExplodeBomb
+		include "Objects\Ball Hog [Mappings].asm"	; Map_Hog
+		include "Objects\Buzz Bomber Missile Vanishing [Mappings].asm" ; Map_MisDissolve
+		include "Objects\Explosions [Mappings].asm"	; Map_ExplodeItem & Map_ExplodeBomb
 
 		include "Objects\Animals.asm"			; Animals
 		include "Objects\Points.asm"			; Points
-		include "Mappings\Animals.asm"			; Map_Animal1, Map_Animal2 & Map_Animal3
+		include "Objects\Animals [Mappings].asm"	; Map_Animal1, Map_Animal2 & Map_Animal3
 		include "Objects\Points [Mappings].asm"		; Map_Points
 
 		include "Objects\Crabmeat.asm"			; Crabmeat
-		include "Mappings\Crabmeat.asm"			; Map_Crab
+		include "Objects\Crabmeat [Mappings].asm"	; Map_Crab
 
 		include "Objects\Buzz Bomber.asm"		; BuzzBomber
 		include "Objects\Buzz Bomber Missile.asm"	; Missile
 		include_BuzzBomber_animation
 		include_Missile_animation
-		include "Mappings\Buzz Bomber.asm"		; Map_Buzz
-		include "Mappings\Buzz Bomber Missile.asm"	; Map_Missile
+		include "Objects\Buzz Bomber [Mappings].asm"	; Map_Buzz
+		include "Objects\Buzz Bomber Missile [Mappings].asm" ; Map_Missile
 
 		include "Objects\Rings.asm"			; Rings
 		include "Objects\_CollectRing.asm"
@@ -837,15 +837,15 @@ Ledge_SlopeData:
 		include "Objects\Giant Ring.asm"		; GiantRing
 		include "Objects\Giant Ring Flash.asm"		; RingFlash
 		include_Rings_animation
-		include "Mappings\Ring.asm"			; Map_Ring
-		include "Mappings\Giant Ring.asm"		; Map_GRing
-		include "Mappings\Giant Ring Flash.asm"		; Map_Flash
+		include "Objects\Ring [Mappings].asm"		; Map_Ring
+		include "Objects\Giant Ring [Mappings].asm"	; Map_GRing
+		include "Objects\Giant Ring Flash [Mappings].asm" ; Map_Flash
 
 		include "Objects\Monitors.asm"			; Monitor
 		include "Objects\Monitor Contents.asm"		; PowerUp
 		include_Monitor_2				; Objects\Monitors.asm
 		include_Monitor_animation
-		include "Mappings\Monitors.asm"			; Map_Monitor
+		include "Objects\Monitors [Mappings].asm"	; Map_Monitor
 
 		include "Objects\Title Screen Sonic.asm"	; TitleSonic
 		include "Objects\Title Screen Press Start & TM.asm" ; PSBTM
@@ -855,17 +855,17 @@ Ledge_SlopeData:
 
 		include "Objects\_AnimateSprite.asm"
 
-		include "Mappings\Title Screen Press Start & TM.asm" ; Map_PSB
-		include "Mappings\Title Screen Sonic.asm"	; Map_TSon
+		include "Objects\Title Screen Press Start & TM [Mappings].asm" ; Map_PSB
+		include "Objects\Title Screen Sonic [Mappings].asm" ; Map_TSon
 
 		include "Objects\Chopper.asm"			; Chopper
-		include "Mappings\Chopper.asm"			; Map_Chop
+		include "Objects\Chopper [Mappings].asm"	; Map_Chop
 
 		include "Objects\Jaws.asm"			; Jaws
-		include "Mappings\Jaws.asm"			; Map_Jaws
+		include "Objects\Jaws [Mappings].asm"		; Map_Jaws
 
 		include "Objects\Burrobot.asm"			; Burrobot
-		include "Mappings\Burrobot.asm"			; Map_Burro
+		include "Objects\Burrobot [Mappings].asm"	; Map_Burro
 
 		include "Objects\MZ Grass Platforms.asm"	; LargeGrass
 LGrass_Coll_Wide:	incbin	"Collision\MZ Grass Platforms Heightmap (Wide).bin"
@@ -875,22 +875,22 @@ LGrass_Coll_Narrow:	incbin	"Collision\MZ Grass Platforms Heightmap (Narrow).bin"
 LGrass_Coll_Sloped:	incbin	"Collision\MZ Grass Platforms Heightmap (Sloped).bin"
 			even
 		include "Objects\MZ Burning Grass.asm"		; GrassFire
-		include "Mappings\MZ Grass Platforms.asm"	; Map_LGrass
-		include "Mappings\Fireballs.asm"		; Map_Fire
+		include "Objects\MZ Grass Platforms [Mappings].asm" ; Map_LGrass
+		include "Objects\Fireballs [Mappings].asm"	; Map_Fire
 
 		include "Objects\MZ Green Glass Blocks.asm"	; GlassBlock
-		include "Mappings\MZ Green Glass Blocks.asm"	; Map_Glass
+		include "Objects\MZ Green Glass Blocks [Mappings].asm" ; Map_Glass
 
 		include "Objects\MZ Chain Stompers.asm"		; ChainStomp
 		include "Objects\MZ Unused Sideways Stomper.asm" ; SideStomp
-		include "Mappings\MZ Chain Stompers.asm"	; Map_CStom
+		include "Objects\MZ Chain Stompers [Mappings].asm" ; Map_CStom
 		include "Objects\MZ Unused Sideways Stomper [Mappings].asm" ; Map_SStom
 
 		include "Objects\Button.asm"			; Button
-		include "Mappings\Button.asm"			; Map_But
+		include "Objects\Button [Mappings].asm"		; Map_But
 
 		include "Objects\MZ & LZ Pushable Blocks.asm"	; PushBlock
-		include "Mappings\MZ & LZ Pushable Blocks.asm"	; Map_Push
+		include "Objects\MZ & LZ Pushable Blocks [Mappings].asm" ; Map_Push
 
 		include "Objects\Title Cards.asm"		; TitleCard
 		include "Objects\Game Over & Time Over.asm"	; GameOverCard
@@ -898,21 +898,21 @@ LGrass_Coll_Sloped:	incbin	"Collision\MZ Grass Platforms Heightmap (Sloped).bin"
 
 		include "Objects\Special Stage Results.asm"	; SSResult
 		include "Objects\Special Stage Results Chaos Emeralds.asm" ; SSRChaos
-		include "Mappings\Title Cards.asm"		; Map_Card
-		include "Mappings\Game Over & Time Over.asm"	; Map_Over
-		include "Mappings\Title Cards Sonic Has Passed.asm" ; Map_Has
-		include "Mappings\Special Stage Results.asm"	; Map_SSR
-		include "Mappings\Special Stage Results Chaos Emeralds.asm" ; Map_SSRC
+		include "Objects\Title Cards [Mappings].asm"	; Map_Card
+		include "Objects\Game Over & Time Over [Mappings].asm" ; Map_Over
+		include "Objects\Title Cards Sonic Has Passed [Mappings].asm" ; Map_Has
+		include "Objects\Special Stage Results [Mappings].asm" ; Map_SSR
+		include "Objects\Special Stage Results Chaos Emeralds [Mappings].asm" ; Map_SSRC
 
 		include "Objects\Spikes.asm"			; Spikes
-		include "Mappings\Spikes.asm"			; Map_Spike
+		include "Objects\Spikes [Mappings].asm"		; Map_Spike
 
 		include "Objects\GHZ Purple Rock.asm"		; PurpleRock
 		include "Objects\GHZ Waterfall Sound.asm"	; WaterSound
-		include "Mappings\GHZ Purple Rock.asm"		; Map_PRock
+		include "Objects\GHZ Purple Rock [Mappings].asm" ; Map_PRock
 
 		include "Objects\GHZ & SLZ Smashable Walls & SmashObject.asm" ; SmashWall
-		include "Mappings\GHZ & SLZ Smashable Walls.asm" ; Map_Smash
+		include "Objects\GHZ & SLZ Smashable Walls [Mappings].asm" ; Map_Smash
 
 		include "Includes\ExecuteObjects & Object Pointers.asm"
 
@@ -932,49 +932,49 @@ NullObject:
 		include "Objects\_FindFreeObj & FindNextFreeObj.asm"
 
 		include "Objects\Springs.asm"			; Springs
-		include "Mappings\Springs.asm"			; Map_Spring
+		include "Objects\Springs [Mappings].asm"	; Map_Spring
 
 		include "Objects\Newtron.asm"			; Newtron
 		include "Objects\Newtron [Mappings].asm"	; Map_Newt
 
 		include "Objects\Roller.asm"			; Roller
-		include "Mappings\Roller.asm"			; Map_Roll
+		include "Objects\Roller [Mappings].asm"		; Map_Roll
 
 		include_EdgeWalls_1				; Objects\GHZ Walls.asm
-		include "Mappings\GHZ Walls.asm"		; Map_Edge
+		include "Objects\GHZ Walls [Mappings].asm"	; Map_Edge
 
 		include "Objects\MZ & SLZ Fireball Launchers.asm"
 		include "Objects\Fireballs.asm"			; FireBall
 
 		include "Objects\SBZ Flamethrower.asm"		; Flamethrower
-		include "Mappings\SBZ Flamethrower.asm"		; Map_Flame
+		include "Objects\SBZ Flamethrower [Mappings].asm" ; Map_Flame
 
 		include "Objects\MZ Purple Brick Block.asm"	; MarbleBrick
-		include "Mappings\MZ Purple Brick Block.asm"	; Map_Brick
+		include "Objects\MZ Purple Brick Block [Mappings].asm" ; Map_Brick
 
 		include "Objects\SYZ Lamp.asm"			; SpinningLight
-		include "Mappings\SYZ Lamp.asm"			; Map_Light
+		include "Objects\SYZ Lamp [Mappings].asm"	; Map_Light
 
 		include "Objects\SYZ Bumper.asm"		; Bumper
-		include "Mappings\SYZ Bumper.asm"		; Map_Bump
+		include "Objects\SYZ Bumper [Mappings].asm"	; Map_Bump
 
 		include "Objects\Signpost & HasPassedAct.asm"	; Signpost & HasPassedAct
-		include "Mappings\Signpost.asm"			; Map_Sign
+		include "Objects\Signpost [Mappings].asm"	; Map_Sign
 
 		include "Objects\MZ Lava Geyser Maker.asm"	; GeyserMaker
 		include "Objects\MZ Lava Geyser.asm"		; LavaGeyser
 		include "Objects\MZ Lava Wall.asm"		; LavaWall
 		include "Objects\MZ Invisible Lava Tag.asm"	; LavaTag
-		include "Mappings\MZ Invisible Lava Tag.asm"	; Map_LTag
+		include "Objects\MZ Invisible Lava Tag [Mappings].asm" ; Map_LTag
 		include_LavaGeyser_animation
 		include_LavaWall_animation
-		include "Mappings\MZ Lava Geyser.asm"		; Map_Geyser
-		include "Mappings\MZ Lava Wall.asm"		; Map_LWall
+		include "Objects\MZ Lava Geyser [Mappings].asm"	; Map_Geyser
+		include "Objects\MZ Lava Wall [Mappings].asm"	; Map_LWall
 
 		include "Objects\Moto Bug.asm"			; MotoBug
 		include "Objects\_DespawnObject.asm"
 		include_MotoBug_1
-		include "Mappings\Moto Bug.asm"			; Map_Moto
+		include "Objects\Moto Bug [Mappings].asm"	; Map_Moto
 
 ; ---------------------------------------------------------------------------
 ; Object 4F - blank
@@ -989,82 +989,81 @@ Obj4F:
 		include "Objects\_SolidObject.asm"
 
 		include "Objects\MZ Smashable Green Block.asm"	; SmashBlock
-		include "Mappings\MZ Smashable Green Block.asm"	; Map_Smab
+		include "Objects\MZ Smashable Green Block [Mappings].asm" ; Map_Smab
 
 		include "Objects\MZ, LZ & SBZ Moving Blocks.asm" ; MovingBlock
 		include "Objects\MZ, LZ & SBZ Moving Blocks [Mappings].asm" ; Map_MBlock, Map_MBlockLZ
 
 		include "Objects\Batbrain.asm"			; Batbrain
-		include "Mappings\Batbrain.asm"			; Map_Bat
+		include "Objects\Batbrain [Mappings].asm"	; Map_Bat
 
 		include "Objects\SYZ & SLZ Floating Blocks, LZ Doors.asm" ; FloatingBlock
-		include "Mappings\SYZ & SLZ Floating Blocks, LZ Doors.asm" ; Map_FBlock
+		include "Objects\SYZ & SLZ Floating Blocks, LZ Doors [Mappings].asm" ; Map_FBlock
 
 		include "Objects\SYZ & LZ Spike Ball Chain.asm"	; SpikeBall
-		include "Mappings\SYZ Spike Ball Chain.asm"	; Map_SBall
-		include "Mappings\LZ Spike Ball on Chain.asm"	; Map_SBall2
+		include "Objects\SYZ & LZ Spike Ball Chain [Mappings].asm" ; Map_SBall, Map_SBall2
 
 		include "Objects\SYZ Large Spike Balls.asm"	; BigSpikeBall
-		include "Mappings\SYZ & SBZ Large Spike Balls.asm" ; Map_BBall
+		include "Objects\SYZ & SBZ Large Spike Balls [Mappings].asm" ; Map_BBall
 
 		include "Objects\SLZ Elevator.asm"		; Elevator
-		include "Mappings\SLZ Elevator.asm"		; Map_Elev
+		include "Objects\SLZ Elevator [Mappings].asm"	; Map_Elev
 
 		include "Objects\SLZ Circling Platform.asm"	; CirclingPlatform
-		include "Mappings\SLZ Circling Platform.asm"	; Map_Circ
+		include "Objects\SLZ Circling Platform [Mappings].asm" ; Map_Circ
 
 		include "Objects\SLZ Stairs.asm"		; Staircase
-		include "Mappings\SLZ Stairs.asm"		; Map_Stair
+		include "Objects\SLZ Stairs [Mappings].asm"	; Map_Stair
 
 		include "Objects\SLZ Pylon.asm"			; Pylon
-		include "Mappings\SLZ Pylon.asm"		; Map_Pylon
+		include "Objects\SLZ Pylon [Mappings].asm"	; Map_Pylon
 
 		include "Objects\LZ Water Surface.asm"		; WaterSurface
-		include "Mappings\LZ Water Surface.asm"		; Map_Surf
+		include "Objects\LZ Water Surface [Mappings].asm" ; Map_Surf
 
 		include "Objects\LZ Pole.asm"			; Pole
-		include "Mappings\LZ Pole.asm"			; Map_Pole
+		include "Objects\LZ Pole [Mappings].asm"	; Map_Pole
 
 		include "Objects\LZ Flapping Door.asm"		; FlapDoor
-		include "Mappings\LZ Flapping Door.asm"		; Map_Flap
+		include "Objects\LZ Flapping Door [Mappings].asm" ; Map_Flap
 
 		include "Objects\Invisible Solid Blocks.asm"	; Invisibarrier
-		include "Mappings\Invisible Solid Blocks.asm"	; Map_Invis
+		include "Objects\Invisible Solid Blocks [Mappings].asm" ; Map_Invis
 
 		include "Objects\SLZ Fans.asm"			; Fan
-		include "Mappings\SLZ Fans.asm"			; Map_Fan
+		include "Objects\SLZ Fans [Mappings].asm"	; Map_Fan
 
 		include "Objects\SLZ Seesaw.asm"		; Seesaw
 See_DataSlope:	incbin	"Collision\SLZ Seesaw Heightmap (Sloped).bin"
 		even
 See_DataFlat:	incbin	"Collision\SLZ Seesaw Heightmap (Flat).bin"
 		even
-		include "Mappings\SLZ Seesaw.asm"		; Map_Seesaw
-		include "Mappings\SLZ Seesaw Spike Ball.asm"	; Map_SSawBall
+		include "Objects\SLZ Seesaw [Mappings].asm"	; Map_Seesaw
+		include "Objects\SLZ Seesaw Spike Ball [Mappings].asm" ; Map_SSawBall
 
 		include "Objects\Bomb Enemy.asm"		; Bomb
-		include "Mappings\Bomb Enemy.asm"		; Map_Bomb
+		include "Objects\Bomb Enemy [Mappings].asm"	; Map_Bomb
 
 		include "Objects\Orbinaut.asm"			; Orbinaut
 		include "Objects\Orbinaut [Mappings].asm"	; Map_Orb
 
 		include "Objects\LZ Harpoon.asm"		; Harpoon
-		include "Mappings\LZ Harpoon.asm"		; Map_Harp
+		include "Objects\LZ Harpoon [Mappings].asm"	; Map_Harp
 
 		include "Objects\LZ Blocks.asm"			; LabyrinthBlock
-		include "Mappings\LZ Blocks.asm"		; Map_LBlock
+		include "Objects\LZ Blocks [Mappings].asm"	; Map_LBlock
 
 		include "Objects\LZ Gargoyle Head.asm"		; Gargoyle
-		include "Mappings\LZ Gargoyle Head.asm"		; Map_Gar
+		include "Objects\LZ Gargoyle Head [Mappings].asm" ; Map_Gar
 
 		include "Objects\LZ Conveyor Belt Platforms.asm" ; LabyrinthConvey
-		include "Mappings\LZ Conveyor Belt Platforms.asm" ; Map_LConv
+		include "Objects\LZ Conveyor Belt Platforms [Mappings].asm" ; Map_LConv
 
 		include "Objects\LZ Bubbles.asm"		; Bubble
-		include "Mappings\LZ Bubbles.asm"		; Map_Bub
+		include "Objects\LZ Bubbles [Mappings].asm"	; Map_Bub
 
 		include "Objects\LZ Waterfall.asm"		; Waterfall
-		include "Mappings\LZ Waterfall.asm"		; Map_WFall
+		include "Objects\LZ Waterfall [Mappings].asm"	; Map_WFall
 
 		include "Objects\Sonic.asm"			; SonicPlayer
 		include "Objects\Sonic [Animations].asm"	; Ani_Sonic
@@ -1074,17 +1073,17 @@ See_DataFlat:	incbin	"Collision\SLZ Seesaw Heightmap (Flat).bin"
 		include "Objects\_ResumeMusic.asm"
 
 		include_DrownCount_animation
-		include "Mappings\LZ Sonic's Drowning Face.asm"	; Map_Drown
+		include "Objects\LZ Sonic's Drowning Face [Mappings].asm" ; Map_Drown
 
 		include "Objects\Shield & Invincibility.asm"	; ShieldItem
 		include "Objects\Unused Special Stage Warp.asm"	; VanishSonic
 		include "Objects\LZ Water Splash.asm"		; Splash
 		include_ShieldItem_animation
-		include "Mappings\Shield & Invincibility.asm"	; Map_Shield
+		include "Objects\Shield & Invincibility [Mappings].asm" ; Map_Shield
 		include_VanishSonic_animation
-		include "Mappings\Unused Special Stage Warp.asm" ; Map_Vanish
+		include "Objects\Unused Special Stage Warp [Mappings].asm" ; Map_Vanish
 		include_Splash_animation
-		include "Mappings\LZ Water Splash.asm"		; Map_Splash
+		include "Objects\LZ Water Splash [Mappings].asm" ; Map_Splash
 
 		include_Sonic_2					; Objects\Sonic.asm
 		include "Objects\_FindNearestTile, FindFloor & FindWall.asm"
@@ -1101,85 +1100,83 @@ See_DataFlat:	incbin	"Collision\SLZ Seesaw Heightmap (Flat).bin"
 		include_FindWallLeftObj				; Objects\_FindFloorObj, FindWallRightObj, FindCeilingObj & FindWallLeftObj.asm
 
 		include "Objects\SBZ Rotating Disc Junction.asm" ; Junction
-		include "Mappings\SBZ Rotating Disc Junction.asm" ; Map_Jun
+		include "Objects\SBZ Rotating Disc Junction [Mappings].asm" ; Map_Jun
 
 		include "Objects\SBZ Running Disc.asm"		; RunningDisc
-		include "Mappings\SBZ Running Disc.asm"		; Map_Disc
+		include "Objects\SBZ Running Disc [Mappings].asm" ; Map_Disc
 
 		include "Objects\SBZ Conveyor Belt.asm"		; Conveyor
 		include "Objects\SBZ Trapdoor & Spinning Platforms.asm" ; SpinPlatform
-		include "Mappings\SBZ Trapdoor.asm"		; Map_Trap
-		include "Mappings\SBZ Spinning Platforms.asm"	; Map_Spin
+		include "Objects\SBZ Trapdoor & Spinning Platforms [Mappings].asm" ; Map_Trap, Map_Spin
 
 		include "Objects\SBZ Saws.asm"			; Saws
-		include "Mappings\SBZ Saws.asm"			; Map_Saw
+		include "Objects\SBZ Saws [Mappings].asm"	; Map_Saw
 
 		include "Objects\SBZ Stomper & Sliding Doors.asm" ; ScrapStomp
-		include "Mappings\SBZ Stomper & Sliding Doors.asm" ; Map_Stomp
+		include "Objects\SBZ Stomper & Sliding Doors [Mappings].asm" ; Map_Stomp
 
 		include "Objects\SBZ Vanishing Platform.asm"	; VanishPlatform
-		include "Mappings\SBZ Vanishing Platform.asm"	; Map_VanP
+		include "Objects\SBZ Vanishing Platform [Mappings].asm" ; Map_VanP
 
 		include "Objects\SBZ Electric Orb.asm"		; Electro
-		include "Mappings\SBZ Electric Orb.asm"		; Map_Elec
+		include "Objects\SBZ Electric Orb [Mappings].asm" ; Map_Elec
 
 		include "Objects\SBZ Conveyor Belt Platforms.asm" ; SpinConvey
 
 ; ===========================================================================
 
 		include "Objects\SBZ Girder Block.asm"		; Girder
-		include "Mappings\SBZ Girder Block.asm"		; Map_Gird
+		include "Objects\SBZ Girder Block [Mappings].asm" ; Map_Gird
 
 		include "Objects\SBZ Teleporter.asm"		; Teleport
 
 		include "Objects\Caterkiller.asm"		; Caterkiller
-		include "Mappings\Caterkiller.asm"		; Map_Cat
+		include "Objects\Caterkiller [Mappings].asm"	; Map_Cat
 
 		include "Objects\Lamppost.asm"			; Lamppost
-		include "Mappings\Lamppost.asm"			; Map_Lamp
+		include "Objects\Lamppost [Mappings].asm"	; Map_Lamp
 
 		include "Objects\Hidden Bonus Points.asm"	; HiddenBonus
-		include "Mappings\Hidden Bonus Points.asm"	; Map_Bonus
+		include "Objects\Hidden Bonus Points [Mappings].asm" ; Map_Bonus
 
 		include "Objects\Credits & Sonic Team Presents.asm" ; CreditsText
-		include "Mappings\Credits & Sonic Team Presents.asm" ; Map_Cred
+		include "Objects\Credits & Sonic Team Presents [Mappings].asm" ; Map_Cred
 
 		include "Objects\GHZ Boss, BossExplode & BossMove.asm" ; BossGreenHill
 		include_BossBall_1				; Objects\GHZ Boss Ball.asm; BossBall
-		include "Objects\Bosses [Animations].asm"	; Ani_Eggman
-		include "Mappings\Bosses.asm"			; Map_Eggman
-		include "Mappings\Boss Extras.asm"		; Map_BossItems
+		include "Objects\Bosses [Animations].asm"	; Ani_Bosses
+		include "Objects\Bosses [Mappings].asm"		; Map_Bosses, Map_BossItems
 
 		include "Objects\LZ Boss.asm"			; BossLabyrinth
 		include "Objects\MZ Boss.asm"			; BossMarble
 		include "Objects\MZ Boss Fire.asm"		; BossFire
 		include "Objects\SLZ Boss.asm"			; BossStarLight
 		include "Objects\SLZ Boss Spikeballs.asm"	; BossSpikeball
-		include "Mappings\SLZ Boss Spikeballs.asm"	; Map_BSBall
+		include "Objects\SLZ Boss Spikeballs [Mappings].asm" ; Map_BSBall
 		include "Objects\SYZ Boss.asm"			; BossSpringYard
 		include "Objects\SYZ Blocks at Boss.asm"	; BossBlock
-		include "Mappings\SYZ Blocks at Boss.asm"	; Map_BossBlock
+		include "Objects\SYZ Blocks at Boss [Mappings].asm" ; Map_BossBlock
 
 		include "Objects\SBZ2 Blocks That Eggman Breaks.asm" ; FalseFloor
 		include "Objects\SBZ2 Eggman.asm"		; ScrapEggman
-		include "Mappings\SBZ2 Eggman.asm"		; Map_SEgg
+		include "Objects\SBZ2 Eggman [Mappings].asm"	; Map_SEgg
 		include_FalseFloor_1				; Objects\SBZ2 Blocks That Eggman Breaks.asm
-		include "Mappings\SBZ2 Blocks That Eggman Breaks.asm" ; Map_FFloor
+		include "Objects\SBZ2 Blocks That Eggman Breaks [Mappings].asm" ; Map_FFloor
 
 		include "Objects\FZ Boss.asm"			; BossFinal
-		include "Mappings\FZ Eggman in Damaged Ship.asm" ; Map_FZDamaged
-		include "Mappings\FZ Eggman Ship Legs.asm"	; Map_FZLegs
+		include "Objects\FZ Eggman in Damaged Ship [Mappings].asm" ; Map_FZDamaged
+		include "Objects\FZ Eggman Ship Legs [Mappings].asm" ; Map_FZLegs
 
 		include "Objects\FZ Cylinders.asm"		; EggmanCylinder
-		include "Mappings\FZ Cylinders.asm"		; Map_EggCyl
+		include "Objects\FZ Cylinders [Mappings].asm"	; Map_EggCyl
 
 		include "Objects\FZ Plasma Balls.asm"		; BossPlasma
-		include "Mappings\FZ Plasma Launcher.asm"	; Map_PLaunch
+		include "Objects\FZ Plasma Launcher [Mappings].asm" ; Map_PLaunch
 		include_BossPlasma_animation
-		include "Mappings\FZ Plasma Balls.asm"		; Map_Plasma
+		include "Objects\FZ Plasma Balls [Mappings].asm" ; Map_Plasma
 
 		include "Objects\Prison Capsule.asm"		; Prison
-		include "Mappings\Prison Capsule.asm"		; Map_Pri
+		include "Objects\Prison Capsule [Mappings].asm"	; Map_Pri
 
 		include "Objects\_ReactToItem, HurtSonic & KillSonic.asm"
 
@@ -1243,7 +1240,7 @@ SS_Item_1Up:	ss_sprite Map_SS_R,tile_Nem_SS1UpBlock,0	; $28 - 1UP
 SS_Item_Up:	ss_sprite Map_SS_Up,tile_Nem_SSUpDown,0		; $29 - Up
 SS_Item_Down:	ss_sprite Map_SS_Down,tile_Nem_SSUpDown,0	; $2A - Down
 SS_Item_R:	ss_sprite Map_SS_R,tile_Nem_SSRBlock+tile_pal2,0 ; $2B - R
-SS_Item_RedWhi:	ss_sprite Map_SS_Glass,tile_Nem_SSRedWhite,0 ; $2C - red/white
+SS_Item_RedWhi:	ss_sprite Map_SS_Glass,tile_Nem_SSRedWhite,0	; $2C - red/white
 SS_Item_Glass1:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass,0	; $2D - breakable glass gem
 SS_Item_Glass2:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal4,0
 SS_Item_Glass3:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal2,0
@@ -1280,11 +1277,11 @@ SS_Item_Glass7:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal2,0 ; $4D
 SS_Item_Glass8:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal3,0 ; $4E
 	SS_ItemIndex_end:
 
-		include "Mappings\Special Stage R.asm"		; Map_SS_R
-		include "Mappings\Special Stage Breakable & Red-White Blocks.asm" ; Map_SS_Glass
-		include "Mappings\Special Stage Up.asm"		; Map_SS_Up
-		include "Mappings\Special Stage Down.asm"	; Map_SS_Down
-		include "Mappings\Special Stage Chaos Emeralds.asm" ; Map_SS_Chaos1, Map_SS_Chaos2 & Map_SS_Chaos3
+		include "Objects\Special Stage R [Mappings].asm" ; Map_SS_R
+		include "Objects\Special Stage Breakable & Red-White Blocks [Mappings].asm" ; Map_SS_Glass
+		include "Objects\Special Stage Up [Mappings].asm" ; Map_SS_Up
+		include "Objects\Special Stage Down [Mappings].asm" ; Map_SS_Down
+		include "Objects\Special Stage Chaos Emeralds [Mappings].asm" ; Map_SS_Chaos1, Map_SS_Chaos2 & Map_SS_Chaos3
 
 		include "Objects\Special Stage Sonic.asm"	; SonicSpecial
 ; ---------------------------------------------------------------------------
@@ -1297,7 +1294,7 @@ Obj10:
 		include "Includes\AnimateLevelGfx.asm"
 
 		include "Objects\HUD.asm"			; HUD
-		include "Mappings\HUD Score, Time & Rings.asm"	; Map_HUD
+		include "Objects\HUD Score, Time & Rings [Mappings].asm" ; Map_HUD
 
 		include "Objects\_AddPoints.asm"
 
@@ -1333,8 +1330,8 @@ Eni_JapNames:	incbin	"tilemaps\Hidden Japanese Credits.bin"	; Japanese credits (
 		even
 		nemfile	Nem_JapNames
 
-		include "Mappings\Sonic.asm"			; Map_Sonic
-		include "Mappings\Sonic DPLCs.asm"		; SonicDynPLC
+		include "Objects\Sonic [Mappings].asm"		; Map_Sonic
+		include "Objects\Sonic DPLCs.asm"		; SonicDynPLC
 
 ; ---------------------------------------------------------------------------
 ; Uncompressed graphics	- Sonic
@@ -1357,7 +1354,7 @@ Art_Sonic:	incbin	"Graphics\Sonic.bin"			; Sonic
 			nemfile	Nem_Goggle
 		endc
 
-		include "Mappings\Special Stage Walls.asm"	; Map_SSWalls
+		include "Objects\Special Stage Walls [Mappings].asm" ; Map_SSWalls
 
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - special stage

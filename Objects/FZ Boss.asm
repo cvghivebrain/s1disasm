@@ -35,9 +35,9 @@ BFZ_ObjData:	; x pos, y pos,	VRAM setting, mappings pointer
 		dc.w $26E0, $596, tile_Nem_Sbz2Eggman_FZ
 		dc.l Map_SEgg
 		dc.w $26E0, $596, tile_Nem_Eggman
-		dc.l Map_Eggman
+		dc.l Map_Bosses
 		dc.w $26E0, $596, tile_Nem_Eggman
-		dc.l Map_Eggman
+		dc.l Map_Bosses
 
 BFZ_ObjData2:	; routine num, animation, sprite priority, width, height
 		dc.b id_BFZ_Eggman, id_ani_eggman_stand, 4, $20, $19
@@ -419,7 +419,7 @@ BFZ_Eggman_Scroll:
 ; ===========================================================================
 
 BFZ_Eggman_Ship:
-		move.l	#Map_Eggman,ost_mappings(a0)		; use standard boss mappings
+		move.l	#Map_Bosses,ost_mappings(a0)		; use standard boss mappings
 		move.w	#tile_Nem_Eggman,ost_tile(a0)
 		move.b	#id_ani_boss_ship,ost_anim(a0)
 		bset	#status_xflip_bit,ost_status(a0)	; ship faces right
@@ -502,7 +502,7 @@ BFZ_Flame:	; Routine $C
 		move.b	#id_ani_boss_bigflame,ost_anim(a0)	; use large flame animation
 
 	@not_moving:
-		lea	Ani_Eggman(pc),a1
+		lea	Ani_Bosses(pc),a1
 		jsr	(AnimateSprite).l
 
 BFZ_Update:
@@ -525,7 +525,7 @@ BFZ_Cockpit:	; Routine 8
 		move.b	(a1),d0
 		cmp.b	(a0),d0					; has parent been deleted?
 		bne.w	BFZ_Delete				; if yes, branch
-		cmpi.l	#Map_Eggman,ost_mappings(a1)		; is Eggman in his ship?
+		cmpi.l	#Map_Bosses,ost_mappings(a1)		; is Eggman in his ship?
 		beq.s	@chk_hit				; if yes, branch
 		move.b	#id_frame_eggman_cockpit,ost_frame(a0)	; use empty cockpit frame
 		bra.s	BFZ_Update_SkipPos
@@ -536,9 +536,9 @@ BFZ_Cockpit:	; Routine 8
 		tst.b	ost_col_property(a1)			; has ship been hit?
 		ble.s	@explode				; if yes, branch
 		move.b	#id_ani_boss_panic,ost_anim(a0)		; use sweating animation
-		move.l	#Map_Eggman,ost_mappings(a0)		; use standard boss mappings
+		move.l	#Map_Bosses,ost_mappings(a0)		; use standard boss mappings
 		move.w	#tile_Nem_Eggman,ost_tile(a0)
-		lea	Ani_Eggman(pc),a1
+		lea	Ani_Bosses(pc),a1
 		jsr	(AnimateSprite).l
 		bra.w	BFZ_Update
 ; ===========================================================================
@@ -559,7 +559,7 @@ BFZ_Cockpit:	; Routine 8
 BFZ_Legs:	; Routine 6
 		bset	#status_xflip_bit,ost_status(a0)
 		movea.l	ost_fz_parent(a0),a1			; get address of OST of parent object
-		cmpi.l	#Map_Eggman,ost_mappings(a1)		; is Eggman in his ship?
+		cmpi.l	#Map_Bosses,ost_mappings(a1)		; is Eggman in his ship?
 		beq.s	@animate				; if yes, branch
 		bra.w	BFZ_Update_SkipPos
 ; ===========================================================================
@@ -600,7 +600,7 @@ BFZ_EmptyShip:	; Routine $A
 		movea.l	ost_fz_parent(a0),a1			; get address of OST of parent object
 		cmpi.b	#id_BFZ_Eggman_Ship,ost_fz_mode(a1)	; is Eggman in his ship? (pre-escaping)
 		bne.s	@update					; if not, branch
-		cmpi.l	#Map_Eggman,ost_mappings(a1)		; is Eggman in his ship at all?
+		cmpi.l	#Map_Bosses,ost_mappings(a1)		; is Eggman in his ship at all?
 		beq.w	BFZ_Delete				; if yes, branch
 
 	@update:

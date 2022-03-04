@@ -63,7 +63,7 @@ BSLZ_Main:
 		move.b	(a2)+,ost_routine(a1)			; goto BSLZ_ShipMain/BSLZ_FaceMain/BSLZ_FlameMain/BSLZ_TubeMain next
 		move.b	(a2)+,ost_anim(a1)
 		move.b	(a2)+,ost_priority(a1)
-		move.l	#Map_Eggman,ost_mappings(a1)
+		move.l	#Map_Bosses,ost_mappings(a1)
 		move.w	#tile_Nem_Eggman,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)
 		move.b	#$20,ost_actwidth(a1)
@@ -92,7 +92,7 @@ BSLZ_ShipMain:	; Routine 2
 		move.b	ost_routine2(a0),d0
 		move.w	BSLZ_ShipIndex(pc,d0.w),d0
 		jsr	BSLZ_ShipIndex(pc,d0.w)
-		lea	(Ani_Eggman).l,a1
+		lea	(Ani_Bosses).l,a1
 		jsr	(AnimateSprite).l
 		moveq	#status_xflip+status_yflip,d0
 		and.b	ost_status(a0),d0
@@ -398,7 +398,7 @@ BSLZ_FlameMain:; Routine 6
 		move.b	#id_ani_boss_blank,ost_anim(a0)		; hide flame
 
 BSLZ_FaceFlame_Display:
-		lea	(Ani_Eggman).l,a1
+		lea	(Ani_Bosses).l,a1
 		jsr	(AnimateSprite).l
 
 BSLZ_Tube_Display:

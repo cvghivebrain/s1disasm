@@ -61,7 +61,7 @@ BSYZ_Main:	; Routine 0
 		move.b	(a2)+,ost_routine(a1)			; goto BSYZ_ShipMain/BSYZ_FaceMain/BSYZ_FlameMain/BSYZ_SpikeMain next
 		move.b	(a2)+,ost_anim(a1)
 		move.b	(a2)+,ost_priority(a1)
-		move.l	#Map_Eggman,ost_mappings(a1)
+		move.l	#Map_Bosses,ost_mappings(a1)
 		move.w	#tile_Nem_Eggman,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)
 		move.b	#$20,ost_actwidth(a1)
@@ -73,7 +73,7 @@ BSYZ_ShipMain:	; Routine 2
 		move.b	ost_routine2(a0),d0
 		move.w	BSYZ_ShipIndex(pc,d0.w),d1
 		jsr	BSYZ_ShipIndex(pc,d1.w)
-		lea	(Ani_Eggman).l,a1
+		lea	(Ani_Bosses).l,a1
 		jsr	(AnimateSprite).l
 		moveq	#status_xflip+status_yflip,d0
 		and.b	ost_status(a0),d0
@@ -566,7 +566,7 @@ BSYZ_FlameMain:; Routine 6
 ; ===========================================================================
 
 BSYZ_Display:
-		lea	(Ani_Eggman).l,a1
+		lea	(Ani_Bosses).l,a1
 		jsr	(AnimateSprite).l
 		movea.l	ost_bsyz_parent(a0),a1			; get address of OST of parent object
 		move.w	ost_x_pos(a1),ost_x_pos(a0)
