@@ -8,7 +8,7 @@
 ; ===========================================================================
 
 		opt	l@					; @ is the local label symbol
-		opt	ae-					; automatic even's are disabled by default
+		opt	ae-					; automatic evens are disabled by default
 		opt	ws+					; allow statements to contain white-spaces
 		opt	w+					; print warnings
 		opt	m+					; do not expand macros - if enabled, this can break assembling

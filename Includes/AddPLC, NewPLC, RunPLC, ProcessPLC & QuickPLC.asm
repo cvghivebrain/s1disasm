@@ -5,8 +5,6 @@
 ;	d0 = index of PLC list
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 AddPLC:
 		movem.l	a1-a2,-(sp)				; save a1/a2 to stack
 		lea	(PatternLoadCues).l,a1
@@ -33,9 +31,7 @@ AddPLC:
 
 	@skip:
 		movem.l	(sp)+,a1-a2				; restore a1/a2 from stack
-		rts	
-; End of function AddPLC
-
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to load pattern load cues (to queue pattern load requests) and
@@ -44,8 +40,6 @@ AddPLC:
 ; input:
 ;	d0 = index of PLC list
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 NewPLC:
 		movem.l	a1-a2,-(sp)				; save a1/a2 to stack
@@ -65,11 +59,12 @@ NewPLC:
 
 	@skip:
 		movem.l	(sp)+,a1-a2				; restore a1/a2 from stack
-		rts	
-; End of function NewPLC
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	clear the pattern load cue buffer
+
+;	uses d0, a2
 ; ---------------------------------------------------------------------------
 
 ClearPLC:
@@ -79,16 +74,12 @@ ClearPLC:
 	@loop:
 		clr.l	(a2)+
 		dbf	d0,@loop				; clear RAM $F680-$F700
-		rts	
-; End of function ClearPLC
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	check the PLC buffer and begin decompression if it contains
 ; anything
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 RunPLC:
 		tst.l	(v_plc_buffer).w			; does PLC buffer contain any items?
@@ -120,15 +111,11 @@ RunPLC:
 		move.l	d6,(v_nem_shift).w
 
 	@exit:
-		rts	
-; End of function RunPLC
-
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	decompress graphics listed in the PLC buffer
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 nem_tile_count:	= 9
 
@@ -138,12 +125,8 @@ ProcessPLC:
 		move.w	#nem_tile_count,(v_nem_tile_count_frame).w ; 9 tiles per frame
 		moveq	#0,d0
 		move.w	(v_plc_buffer_dest).w,d0		; copy VRAM destination to d0
-		addi.w	#nem_tile_count*$20,(v_plc_buffer_dest).w ; update for next frame
+		addi.w	#nem_tile_count*sizeof_cell,(v_plc_buffer_dest).w ; update for next frame
 		bra.s	ProcessPLC_Decompress
-; End of function ProcessPLC
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 nem_tile_count:	= 3
 
@@ -153,7 +136,7 @@ ProcessPLC2:
 		move.w	#nem_tile_count,(v_nem_tile_count_frame).w ; 3 tiles per frame
 		moveq	#0,d0
 		move.w	(v_plc_buffer_dest).w,d0		; copy VRAM destination to d0
-		addi.w	#nem_tile_count*$20,(v_plc_buffer_dest).w ; update for next frame
+		addi.w	#nem_tile_count*sizeof_cell,(v_plc_buffer_dest).w ; update for next frame
 
 ProcessPLC_Decompress:
 		lea	(vdp_control_port).l,a4
@@ -199,8 +182,7 @@ ProcessPLC_Finish:
 	@loop:
 		move.l	6(a0),(a0)+				; shift contents of PLC buffer up 6 bytes
 		dbf	d0,@loop
-		rts	
-; End of function ProcessPLC2
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	decompress graphics listed in a pattern load cue in a single
@@ -209,9 +191,6 @@ ProcessPLC_Finish:
 ; input:
 ;	d0 = index of PLC list
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 QuickPLC:
 		lea	(PatternLoadCues).l,a1			; load the PLC index
@@ -231,5 +210,4 @@ QuickPLC:
 		move.l	d0,(vdp_control_port).l			; converted VRAM address to VDP format
 		bsr.w	NemDec					; decompress
 		dbf	d1,@loop				; repeat for length of PLC
-		rts	
-; End of function QuickPLC
+		rts

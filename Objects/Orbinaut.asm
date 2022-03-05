@@ -5,6 +5,7 @@
 ;	ObjPos_LZ1, ObjPos_LZ2, ObjPos_LZ3 - subtype 0
 ;	ObjPos_SLZ1, ObjPos_SLZ2, ObjPos_SLZ3 - subtype 2
 ;	ObjPos_SBZ3 - subtype 0
+;	Orbinaut - routine 6
 ; ---------------------------------------------------------------------------
 
 Orbinaut:
@@ -93,21 +94,21 @@ Orb_Main:	; Routine 0
 
 Orb_ChkSonic:	; Routine 2
 		move.w	(v_ost_player+ost_x_pos).w,d0
-		sub.w	ost_x_pos(a0),d0			; is Sonic to the right of the orbinaut?
-		bcc.s	@isright				; if yes, branch
-		neg.w	d0
+		sub.w	ost_x_pos(a0),d0
+		bcc.s	@sonic_right				; branch if Sonic is right of the orbinaut
+		neg.w	d0					; d0 = x dist between Sonic and orbinaut
 
-	@isright:
-		cmpi.w	#$A0,d0					; is Sonic within $A0 pixels of	orbinaut?
-		bcc.s	@animate				; if not, branch
+	@sonic_right:
+		cmpi.w	#160,d0
+		bcc.s	@animate				; branch if Sonic is > 160px from orbinaut
 		move.w	(v_ost_player+ost_y_pos).w,d0
-		sub.w	ost_y_pos(a0),d0			; is Sonic above the orbinaut?
-		bcc.s	@isabove				; if yes, branch
-		neg.w	d0
+		sub.w	ost_y_pos(a0),d0
+		bcc.s	@sonic_below				; branch if Sonic is below the orbinaut
+		neg.w	d0					; d0 = y dist between Sonic and orbinaut
 
-	@isabove:
-		cmpi.w	#$50,d0					; is Sonic within $50 pixels of	orbinaut?
-		bcc.s	@animate				; if not, branch
+	@sonic_below:
+		cmpi.w	#80,d0
+		bcc.s	@animate				; branch if Sonic is > 80px from orbinaut
 		tst.w	(v_debug_active).w			; is debug mode	on?
 		bne.s	@animate				; if yes, branch
 		move.b	#id_ani_orb_angry,ost_anim(a0)		; use "angry" animation
@@ -129,15 +130,15 @@ Orb_ChkDel:
 		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
-		beq.s	loc_11E34
+		beq.s	@no_respawn_id
 		bclr	#7,2(a2,d0.w)
 
-	loc_11E34:
+	@no_respawn_id:
 		lea	ost_orb_child_count(a0),a2
 		moveq	#0,d2
 		move.b	(a2)+,d2
 		subq.w	#1,d2					; d2 = number of children minus 1
-		bcs.s	Orb_Delete
+		bcs.s	Orb_Delete				; branch if no children are found
 
 	@del_loop:
 		moveq	#0,d0

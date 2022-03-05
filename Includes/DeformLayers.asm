@@ -1,9 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Background layer deformation subroutines
+
+;	uses d0, d1, d2, d3, d4, d5, d6, a1, a2, a3
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 DeformLayers:
 		tst.b	(f_disable_scrolling).w			; is scrolling disabled?
@@ -35,9 +34,7 @@ DeformLayers:
 		add.w	d0,d0					; multiply by 2
 		move.w	Deform_Index(pc,d0.w),d0
 		jmp	Deform_Index(pc,d0.w)			; goto relevant deformation code
-; End of function DeformLayers
 
-; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Offset index for background layer deformation	code
 ; ---------------------------------------------------------------------------
@@ -50,12 +47,10 @@ Deform_Index:	index *
 		ptr Deform_SBZ
 		zonewarning Deform_Index,2
 		ptr Deform_GHZ
+
 ; ---------------------------------------------------------------------------
 ; Green	Hill Zone background layer deformation code
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 Deform_GHZ:
 		if Revision=0
@@ -219,14 +214,10 @@ Deform_GHZ:
 		swap	d3
 		dbf	d1,@waterLoop
 		rts
-; End of function Deform_GHZ
 
 ; ---------------------------------------------------------------------------
 ; Labyrinth Zone background layer deformation code
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 Deform_LZ:
 		; plain background scroll
@@ -316,16 +307,11 @@ LZ_FG_Ripple_Data:
 		dc.b 1, 1, 2, 2, 3, 3, 3, 3, 2, 2, 1, 1		; 12 lines shifted to right
 		dcb.b 84, 0					; 84 lines normal (total 256 lines)
 
-; End of function Deform_LZ
-
 		endc
 
 ; ---------------------------------------------------------------------------
 ; Marble Zone background layer deformation code
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 Deform_MZ:
 		; block 1 - dungeon interior
@@ -458,14 +444,10 @@ Deform_MZ:
 			bra.w	UpdateHscrollBuffer
 
 		endc
-; End of function Deform_MZ
 
 ; ---------------------------------------------------------------------------
 ; Star Light Zone background layer deformation code
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 Deform_SLZ:
 		if Revision=0
@@ -560,6 +542,8 @@ Deform_SLZ_2:
 ; input:
 ;	d2 = background y position
 ;	a2 = address of bg scroll buffer
+
+;	uses d0, d1, d2, a1, a2
 ; ---------------------------------------------------------------------------
 
 UpdateHscrollBuffer:
@@ -590,9 +574,6 @@ UpdateHscrollBuffer:
 ; ---------------------------------------------------------------------------
 ; Spring Yard Zone background layer deformation	code
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 Deform_SYZ:
 		; vertical scrolling
@@ -696,14 +677,10 @@ Deform_SYZ:
 			lea	(a2,d0),a2
 			bra.w	UpdateHscrollBuffer
 		endc
-; End of function Deform_SYZ
 
 ; ---------------------------------------------------------------------------
 ; Scrap	Brain Zone background layer deformation	code
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 Deform_SBZ:
 		if Revision=0
@@ -836,14 +813,12 @@ Deform_SBZ2:
 		move.l	d0,(a1)+
 		dbf	d1,@loop_hscroll
 		rts
-; End of function Deform_SBZ
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	update camera and redraw flags as Sonic moves horizontally
+
+;	uses d0, d1, d4
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 UpdateCamera_X:
 		move.w	(v_camera_x_pos).w,d4			; save old screen position
@@ -865,12 +840,8 @@ UpdateCamera_X:
 		bset	#redraw_right_bit,(v_fg_redraw_direction).w ; screen moves forward
 
 	@return:
-		rts	
-; End of function UpdateCamera_X
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
+		rts
+; ===========================================================================
 
 UCX_Camera:
 		move.w	(v_ost_player+ost_x_pos).w,d0
@@ -909,11 +880,11 @@ UCX_BehindMid:
 		bgt.s	UCX_SetScreen				; if yes, branch
 		move.w	(v_boundary_left).w,d0			; stop camera moving outside boundary
 		bra.s	UCX_SetScreen
-; End of function UCX_Camera
 
-; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Unused subroutine to scroll the level horizontally at a fixed rate
+
+;	uses d0
 ; ---------------------------------------------------------------------------
 
 AutoScroll:
@@ -928,10 +899,9 @@ AutoScroll:
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	update camera and redraw flags as Sonic moves vertically
+
+;	uses d0, d1, d3, d4
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 UpdateCamera_Y:
 		moveq	#0,d1
@@ -1086,8 +1056,7 @@ UCY_SetScreen:
 		bset	#redraw_bottom_bit,(v_fg_redraw_direction).w
 
 	@return:
-		rts	
-; End of function UpdateCamera_Y
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	update bg position and redraw flags
@@ -1095,9 +1064,9 @@ UCY_SetScreen:
 ; input:
 ;	d4 = background x diff
 ;	d5 = background y diff
-; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+;	uses d0, d1, d2, d3
+; ---------------------------------------------------------------------------
 
 UpdateBG_XY:
 		move.l	(v_bg1_x_pos).w,d2
@@ -1139,7 +1108,7 @@ UpdateBG_Y:
 		bset	#redraw_bottom_bit,(v_bg1_redraw_direction).w
 	@return:
 		rts
-; End of function UpdateBG_XY
+; ===========================================================================
 
 UpdateBG_Y2:
 		if revision=0
@@ -1181,10 +1150,9 @@ UpdateBG_Y2:
 
 ; input:
 ;	d0 = new background y position
+
+;	uses d0, d1, d2, d3
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 UpdateBG_Y_Absolute:
 		move.w	(v_bg1_y_pos).w,d3			; save old bg position
@@ -1203,13 +1171,12 @@ UpdateBG_Y_Absolute:
 		bset	#redraw_bottom_bit,(v_bg1_redraw_direction).w
 	@return:
 		rts
-; End of function UpdateBG_Y_Absolute
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to update bg position and redraw flags for bg block 2 in GHZ
-; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+;	uses d0, d1, d2, d3
+; ---------------------------------------------------------------------------
 
 		if Revision=0
 UpdateBG_X_Block2_GHZ:
@@ -1236,7 +1203,6 @@ UpdateBG_X_Block2_GHZ:
 	@next:
 		rts
 		endc
-; End of function UpdateBG_X_Block2_GHZ
 
 ; ---------------------------------------------------------------------------
 ; Subroutines to update bg position and redraw flags for bg blocks 1, 2 and 3
@@ -1244,9 +1210,9 @@ UpdateBG_X_Block2_GHZ:
 ; input:
 ;	d4 = background x diff
 ;	d6 = bit to set for redraw direction
-; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+;	uses d0, d1, d2, d3, d6
+; ---------------------------------------------------------------------------
 
 		if Revision=0
 		else

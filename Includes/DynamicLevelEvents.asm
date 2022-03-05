@@ -1,9 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Dynamic level events
+
+;	uses d0, d1, a1
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 DynamicLevelEvents:
 		moveq	#0,d0
@@ -12,43 +11,41 @@ DynamicLevelEvents:
 		move.w	DLE_Index(pc,d0.w),d0
 		jsr	DLE_Index(pc,d0.w)			; run level-specific events
 		moveq	#2,d1
-		move.w	(v_boundary_bottom_next).w,d0
-		sub.w	(v_boundary_bottom).w,d0		; has lower level boundary changed recently?
-		beq.s	DLE_NoChg				; if not, branch
-		bcc.s	loc_6DAC
+		move.w	(v_boundary_bottom_next).w,d0		; new boundary y pos is written here
+		sub.w	(v_boundary_bottom).w,d0
+		beq.s	@keep_boundary				; branch if boundary is where it should be
+		bcc.s	@move_boundary_down			; branch if new boundary is below current one
 
 		neg.w	d1
 		move.w	(v_camera_y_pos).w,d0
 		cmp.w	(v_boundary_bottom_next).w,d0
-		bls.s	loc_6DA0
-		move.w	d0,(v_boundary_bottom).w
-		andi.w	#$FFFE,(v_boundary_bottom).w
+		bls.s	@camera_below				; branch if camera y pos is above boundary
+		move.w	d0,(v_boundary_bottom).w		; match boundary to camera
+		andi.w	#$FFFE,(v_boundary_bottom).w		; round down to nearest 2px
 
-loc_6DA0:
-		add.w	d1,(v_boundary_bottom).w
+	@camera_below:
+		add.w	d1,(v_boundary_bottom).w		; move boundary up 2px
 		move.b	#1,(f_boundary_bottom_change).w
 
-DLE_NoChg:
+	@keep_boundary:
 		rts	
 ; ===========================================================================
 
-loc_6DAC:
+@move_boundary_down:
 		move.w	(v_camera_y_pos).w,d0
 		addq.w	#8,d0
 		cmp.w	(v_boundary_bottom).w,d0
-		bcs.s	loc_6DC4
+		bcs.s	@down_2px				; branch if boundary is at least 8px below camera
 		btst	#status_air_bit,(v_ost_player+ost_status).w
-		beq.s	loc_6DC4
+		beq.s	@down_2px				; branch if Sonic isn't in the air
 		add.w	d1,d1
-		add.w	d1,d1
+		add.w	d1,d1					; boundary moves 8px instead of 2px
 
-loc_6DC4:
-		add.w	d1,(v_boundary_bottom).w
+	@down_2px:
+		add.w	d1,(v_boundary_bottom).w		; move boundary down 2px (or 8px)
 		move.b	#1,(f_boundary_bottom_change).w
-		rts	
-; End of function DynamicLevelEvents
+		rts
 
-; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Offset index for dynamic level events
 ; ---------------------------------------------------------------------------
@@ -61,7 +58,7 @@ DLE_Index:	index *
 		ptr DLE_SBZ
 		zonewarning DLE_Index,2
 		ptr DLE_Ending
-; ===========================================================================
+
 ; ---------------------------------------------------------------------------
 ; Green	Hill Zone dynamic level events
 ; ---------------------------------------------------------------------------
@@ -80,102 +77,110 @@ DLE_GHZx:	index *
 ; ===========================================================================
 
 DLE_GHZ1:
-		move.w	#$300,(v_boundary_bottom_next).w	; set lower y-boundary
-		cmpi.w	#$1780,(v_camera_x_pos).w		; has the camera reached $1780 on x-axis?
-		bcs.s	locret_6E08				; if not, branch
+		move.w	#$300,(v_boundary_bottom_next).w	; initial boundary
+		cmpi.w	#$1780,(v_camera_x_pos).w
+		bcs.s	@exit					; branch if camera is left of $1780
+
 		move.w	#$400,(v_boundary_bottom_next).w	; set lower y-boundary
 
-locret_6E08:
+	@exit:
 		rts	
 ; ===========================================================================
 
 DLE_GHZ2:
 		move.w	#$300,(v_boundary_bottom_next).w
 		cmpi.w	#$ED0,(v_camera_x_pos).w
-		bcs.s	locret_6E3A
+		bcs.s	@exit
+
 		move.w	#$200,(v_boundary_bottom_next).w
 		cmpi.w	#$1600,(v_camera_x_pos).w
-		bcs.s	locret_6E3A
+		bcs.s	@exit
+
 		move.w	#$400,(v_boundary_bottom_next).w
 		cmpi.w	#$1D60,(v_camera_x_pos).w
-		bcs.s	locret_6E3A
+		bcs.s	@exit
+
 		move.w	#$300,(v_boundary_bottom_next).w
 
-locret_6E3A:
+	@exit:
 		rts	
 ; ===========================================================================
 
 DLE_GHZ3:
 		moveq	#0,d0
 		move.b	(v_dle_routine).w,d0
-		move.w	off_6E4A(pc,d0.w),d0
-		jmp	off_6E4A(pc,d0.w)
+		move.w	DLE_GHZ3_Index(pc,d0.w),d0
+		jmp	DLE_GHZ3_Index(pc,d0.w)
 ; ===========================================================================
-off_6E4A:	index *
-		ptr DLE_GHZ3main
-		ptr DLE_GHZ3boss
-		ptr DLE_GHZ3end
+DLE_GHZ3_Index:	index *
+		ptr DLE_GHZ3_Main
+		ptr DLE_GHZ3_Boss
+		ptr DLE_GHZ3_End
 ; ===========================================================================
 
-DLE_GHZ3main:
+DLE_GHZ3_Main:
 		move.w	#$300,(v_boundary_bottom_next).w
 		cmpi.w	#$380,(v_camera_x_pos).w
-		bcs.s	locret_6E96
+		bcs.s	@exit					; branch if camera is left of $380
+
 		move.w	#$310,(v_boundary_bottom_next).w
 		cmpi.w	#$960,(v_camera_x_pos).w
-		bcs.s	locret_6E96
+		bcs.s	@exit					; branch if camera is left of $960
+
 		cmpi.w	#$280,(v_camera_y_pos).w
-		bcs.s	loc_6E98
+		bcs.s	@final_section				; branch if camera is above $280
+
 		move.w	#$400,(v_boundary_bottom_next).w
 		cmpi.w	#$1380,(v_camera_x_pos).w
-		bcc.s	loc_6E8E
+		bcc.s	@skip_underground			; branch if camera is right of $1380
+
 		move.w	#$4C0,(v_boundary_bottom_next).w
 		move.w	#$4C0,(v_boundary_bottom).w
 
-loc_6E8E:
+	@skip_underground:
 		cmpi.w	#$1700,(v_camera_x_pos).w
-		bcc.s	loc_6E98
+		bcc.s	@final_section				; branch if camera is right of $1700
 
-locret_6E96:
+	@exit:
 		rts	
 ; ===========================================================================
 
-loc_6E98:
+@final_section:
 		move.w	#$300,(v_boundary_bottom_next).w
-		addq.b	#2,(v_dle_routine).w
+		addq.b	#2,(v_dle_routine).w			; goto DLE_GHZ3_Boss next
 		rts	
 ; ===========================================================================
 
-DLE_GHZ3boss:
+DLE_GHZ3_Boss:
 		cmpi.w	#$960,(v_camera_x_pos).w
-		bcc.s	loc_6EB0
-		subq.b	#2,(v_dle_routine).w
+		bcc.s	@dont_return				; branch if camera is right of $960
+		subq.b	#2,(v_dle_routine).w			; goto DLE_GHZ3_Main next
 
-loc_6EB0:
+	@dont_return:
 		cmpi.w	#$2960,(v_camera_x_pos).w
-		bcs.s	locret_6EE8
-		bsr.w	FindFreeObj
-		bne.s	loc_6ED0
+		bcs.s	@exit					; branch if camera is left of $2960
+		bsr.w	FindFreeObj				; find free OST slot
+		bne.s	@fail					; branch if not found
 		move.b	#id_BossGreenHill,ost_id(a1)		; load GHZ boss	object
 		move.w	#$2A60,ost_x_pos(a1)
 		move.w	#$280,ost_y_pos(a1)
 
-loc_6ED0:
+	@fail:
 		play.w	0, bsr.w, mus_Boss			; play boss music
 		move.b	#1,(f_boss_boundary).w			; lock screen
-		addq.b	#2,(v_dle_routine).w
+		addq.b	#2,(v_dle_routine).w			; goto DLE_GHZ3_End next
 		moveq	#id_PLC_Boss,d0
-		bra.w	AddPLC					; load boss patterns
+		bra.w	AddPLC					; load boss gfx
 ; ===========================================================================
 
-locret_6EE8:
+@exit:
 		rts	
 ; ===========================================================================
 
-DLE_GHZ3end:
-		move.w	(v_camera_x_pos).w,(v_boundary_left).w
-		rts	
-; ===========================================================================
+DLE_GHZ3_End:
+		move.w	(v_camera_x_pos).w,(v_boundary_left).w	; set boundary to current position
+		rts
+
 ; ---------------------------------------------------------------------------
 ; Labyrinth Zone dynamic level events
 ; ---------------------------------------------------------------------------
@@ -386,11 +391,11 @@ DLE_MZ3:
 		jmp	off_7098(pc,d0.w)
 ; ===========================================================================
 off_7098:	index *
-		ptr DLE_MZ3boss
-		ptr DLE_MZ3end
+		ptr DLE_MZ3_Boss
+		ptr DLE_MZ3_End
 ; ===========================================================================
 
-DLE_MZ3boss:
+DLE_MZ3_Boss:
 		move.w	#$720,(v_boundary_bottom_next).w
 		cmpi.w	#$1560,(v_camera_x_pos).w
 		bcs.s	locret_70E8
@@ -415,7 +420,7 @@ locret_70E8:
 		rts	
 ; ===========================================================================
 
-DLE_MZ3end:
+DLE_MZ3_End:
 		move.w	(v_camera_x_pos).w,(v_boundary_left).w
 		rts	
 ; ===========================================================================
@@ -447,12 +452,12 @@ DLE_SLZ3:
 		jmp	off_7118(pc,d0.w)
 ; ===========================================================================
 off_7118:	index *
-		ptr DLE_SLZ3main
-		ptr DLE_SLZ3boss
-		ptr DLE_SLZ3end
+		ptr DLE_SLZ3_Main
+		ptr DLE_SLZ3_Boss
+		ptr DLE_SLZ3_End
 ; ===========================================================================
 
-DLE_SLZ3main:
+DLE_SLZ3_Main:
 		cmpi.w	#$1E70,(v_camera_x_pos).w
 		bcs.s	locret_7130
 		move.w	#$210,(v_boundary_bottom_next).w
@@ -462,7 +467,7 @@ locret_7130:
 		rts	
 ; ===========================================================================
 
-DLE_SLZ3boss:
+DLE_SLZ3_Boss:
 		cmpi.w	#$2000,(v_camera_x_pos).w
 		bcs.s	locret_715C
 		bsr.w	FindFreeObj
@@ -481,7 +486,7 @@ locret_715C:
 		rts	
 ; ===========================================================================
 
-DLE_SLZ3end:
+DLE_SLZ3_End:
 		move.w	(v_camera_x_pos).w,(v_boundary_left).w
 		rts
 		rts
@@ -527,12 +532,12 @@ DLE_SYZ3:
 		jmp	off_71B2(pc,d0.w)
 ; ===========================================================================
 off_71B2:	index *
-		ptr DLE_SYZ3main
-		ptr DLE_SYZ3boss
-		ptr DLE_SYZ3end
+		ptr DLE_SYZ3_Main
+		ptr DLE_SYZ3_Boss
+		ptr DLE_SYZ3_End
 ; ===========================================================================
 
-DLE_SYZ3main:
+DLE_SYZ3_Main:
 		cmpi.w	#$2AC0,(v_camera_x_pos).w
 		bcs.s	locret_71CE
 		bsr.w	FindFreeObj
@@ -544,7 +549,7 @@ locret_71CE:
 		rts	
 ; ===========================================================================
 
-DLE_SYZ3boss:
+DLE_SYZ3_Boss:
 		cmpi.w	#$2C00,(v_camera_x_pos).w
 		bcs.s	locret_7200
 		move.w	#$4CC,(v_boundary_bottom_next).w
@@ -564,7 +569,7 @@ locret_7200:
 		rts	
 ; ===========================================================================
 
-DLE_SYZ3end:
+DLE_SYZ3_End:
 		move.w	(v_camera_x_pos).w,(v_boundary_left).w
 		rts	
 ; ===========================================================================

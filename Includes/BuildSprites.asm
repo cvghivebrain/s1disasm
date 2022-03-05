@@ -6,6 +6,10 @@ BldSpr_ScrPos:	dc.l 0						; blank
 		
 ; ---------------------------------------------------------------------------
 ; Subroutine to	convert	objects into proper Mega Drive sprites
+
+; output:
+;	a2 = address of last sprite in sprite buffer
+;	uses d0, d1, d2, d3, d4, d5, d6, d7, a0, a1, a4
 ; ---------------------------------------------------------------------------
 
 BuildSprites:
@@ -113,19 +117,21 @@ BuildSprites:
 
 	@max_sprites:
 		move.b	#0,-5(a2)				; set current sprite to link to first
-		rts	
-; End of function BuildSprites
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	convert	and add sprite mappings to the sprite buffer
 ;
 ; input:
+;	d1 = number of sprite pieces
 ;	d2 = VDP y position
 ;	d3 = VDP x position
 ;	d4 = render flags (ost_render)
 ;	d5 = current sprite count
 ;	a1 = current address in sprite mappings
 ;	a2 = current address in sprite buffer
+
+;	uses d0, d1, d4, d5, a1, a2
 ; ---------------------------------------------------------------------------
 
 BuildSpr_Draw:
@@ -168,8 +174,7 @@ BuildSpr_Normal:
 		dbf	d1,@loop				; next sprite piece
 
 	@return:
-		rts	
-; End of function BuildSpr_Normal
+		rts
 
 ; ===========================================================================
 
@@ -211,7 +216,8 @@ BuildSpr_FlipX:
 		dbf	d1,@loop				; process next sprite piece
 
 	@return:
-		rts	
+		rts
+
 ; ===========================================================================
 
 BuildSpr_FlipY:
@@ -248,7 +254,8 @@ BuildSpr_FlipY:
 		dbf	d1,BuildSpr_FlipY			; process next sprite piece
 
 	@return:
-		rts	
+		rts
+
 ; ===========================================================================
 
 BuildSpr_FlipXY:

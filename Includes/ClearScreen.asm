@@ -1,8 +1,12 @@
 ; ---------------------------------------------------------------------------
 ; Subroutine to	clear the screen
 ; Deletes fg/bg nametables and sprite/hscroll buffers
+
+; input:
+;	a5 = vdp_control_port ($C00004)
+
+;	uses d0, d1, a1
 ; ---------------------------------------------------------------------------
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 ClearScreen:
 		dma_fill	0,sizeof_vram_fg-1,vram_fg	; clear foreground nametable
@@ -44,5 +48,4 @@ ClearScreen:
 	@clearhscroll:
 		move.l	d0,(a1)+
 		dbf	d1,@clearhscroll			; clear hscroll table (in RAM)
-		rts	
-; End of function ClearScreen
+		rts

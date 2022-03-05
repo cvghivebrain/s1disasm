@@ -4,13 +4,12 @@
 ; Pointers to said raw data are dummied out.
 ; Curiously, an example of the original 'raw' data that this was intended
 ; to process can be found in the J2ME version, in a file called 'blkcol.bct'.
+
+;	uses d0, d1, d2, d3, d4, d5, a1, a2
 ; ---------------------------------------------------------------------------
 
 RawColBlocks		equ CollArray1
 ConvRowColBlocks	equ CollArray1
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 ConvertCollisionArray:
 		rts	
@@ -104,6 +103,4 @@ ConvertCollisionArray:
 		move.b	d2,(a2)+				; Store column collision height
 		dbf	d3,@processLoop
 
-		rts	
-
-; End of function ConvertCollisionArray
+		rts
