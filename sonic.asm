@@ -406,9 +406,13 @@ JoypadInit:
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	read joypad input, and send it to the RAM
-; ---------------------------------------------------------------------------
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
+; output:
+;	d0 = actual joypad input (SACBRLDU)
+;	d1 = actual joypad input, new since last frame only (SACBRLDU)
+;	a1 = port_1_data ($A10003)
+;	uses a0
+; ---------------------------------------------------------------------------
 
 ReadJoypads:
 		lea	(v_joypad_hold_actual).w,a0		; address where joypad states are written
@@ -435,8 +439,7 @@ ReadJoypads:
 		move.b	d0,(a0)+				; v_joypad_hold_actual = SACBRLDU
 		and.b	d0,d1					; d1 = new joypad inputs only
 		move.b	d1,(a0)+				; v_joypad_press_actual = SACBRLDU (new only)
-		rts	
-; End of function ReadJoypads
+		rts
 
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||

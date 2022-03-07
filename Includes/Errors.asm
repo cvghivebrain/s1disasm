@@ -79,14 +79,18 @@ ErrorWaitForC:
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to display an error message of v_error_type on screen
+
+; output:
+;	a6 = vdp_data_port ($C00000)
+
+;	uses d0, d1, a0
 ; ---------------------------------------------------------------------------
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 ShowErrorMessage:
 		lea	(vdp_data_port).l,a6
 		locVRAM	vram_error				; target $F800 in VRAM
 		lea	(Art_Text).l,a0				; level select text graphics
-		move.w	#((sizeof_art_text-$20)/2)-1,d1		; -$20 because the last letter (X) is missed off
+		move.w	#((sizeof_art_text-sizeof_cell)/2)-1,d1	; -$20 because the last letter (X) is missed off
 	@loadgfx:
 		move.w	(a0)+,(a6)
 		dbf	d1,@loadgfx
@@ -104,8 +108,7 @@ ShowErrorMessage:
 		addi.w	#(vram_error/sizeof_cell)-"0",d0	; VRAM tile id minus ASCII baseline ("0" = $30)
 		move.w	d0,(a6)					; write to fg nametable in VRAM
 		dbf	d1,@showchars				; repeat for number of characters
-		rts	
-; End of function ShowErrorMessage
+		rts
 
 ; ===========================================================================
 ErrorText:	index *
@@ -138,8 +141,10 @@ ErrorText:	index *
 
 ; input:
 ;	d0 = longword to display
+;	a6 = vdp_data_port ($C00000)
+
+;	uses d0, d1, d2
 ; ---------------------------------------------------------------------------
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 ShowErrorValue:
 		move.w	#(vram_error/sizeof_cell)+$A,(a6)	; display "$" symbol
@@ -161,8 +166,7 @@ ShowErrorValue:
 	@chars0to9:
 		addi.w	#(vram_error/sizeof_cell),d1
 		move.w	d1,(a6)					; write to fg nametable in VRAM
-		rts	
-; End of function sub_5CA
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Loop that ends when C is pressed
@@ -172,5 +176,4 @@ Error_Loop:
 		bsr.w	ReadJoypads				; get joypad inputs
 		cmpi.b	#btnC,(v_joypad_press_actual).w		; is button C pressed?
 		bne.w	Error_Loop				; if not, branch
-		rts	
-; End of function Error_Loop
+		rts

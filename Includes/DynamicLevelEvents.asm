@@ -200,58 +200,60 @@ DLE_LZx:	index *
 ; ===========================================================================
 
 DLE_LZ12:
-		rts	
+		rts						; no events for acts 1/2
 ; ===========================================================================
 
 DLE_LZ3:
 		tst.b	(v_button_state+$F).w			; has switch $F	been pressed?
-		beq.s	loc_6F28				; if not, branch
-		lea	(v_level_layout+$106).w,a1
+		beq.s	@skip_layout				; if not, branch
+		lea	(v_level_layout+(sizeof_levelrow*2)+6).w,a1 ; address of layout at row 2, column 6
 		cmpi.b	#7,(a1)
-		beq.s	loc_6F28
+		beq.s	@skip_layout				; branch if already modified
 		move.b	#7,(a1)					; modify level layout
 		play.w	1, bsr.w, sfx_Rumbling			; play rumbling sound
 
-loc_6F28:
+	@skip_layout:
 		tst.b	(v_dle_routine).w
-		bne.s	locret_6F64
+		bne.s	@skip_boss				; branch if boss is already loaded
 		cmpi.w	#$1CA0,(v_camera_x_pos).w
-		bcs.s	locret_6F62
+		bcs.s	@skip_boss2				; branch if camera is left of $1CA0
 		cmpi.w	#$600,(v_camera_y_pos).w
-		bcc.s	locret_6F62
-		bsr.w	FindFreeObj
-		bne.s	loc_6F4A
+		bcc.s	@skip_boss2				; branch if camera is below $600
+
+		bsr.w	FindFreeObj				; find free OST slot
+		bne.s	@fail					; branch if not found
 		move.b	#id_BossLabyrinth,ost_id(a1)		; load LZ boss object
 
-loc_6F4A:
+	@fail:
 		play.w	0, bsr.w, mus_Boss			; play boss music
 		move.b	#1,(f_boss_boundary).w			; lock screen
-		addq.b	#2,(v_dle_routine).w
+		addq.b	#2,(v_dle_routine).w			; don't load boss again
 		moveq	#id_PLC_Boss,d0
-		bra.w	AddPLC					; load boss patterns
+		bra.w	AddPLC					; load boss gfx
 ; ===========================================================================
 
-locret_6F62:
+@skip_boss2:
 		rts	
 ; ===========================================================================
 
-locret_6F64:
+@skip_boss:
 		rts	
 ; ===========================================================================
 
 DLE_SBZ3:
 		cmpi.w	#$D00,(v_camera_x_pos).w
-		bcs.s	locret_6F8C
+		bcs.s	@exit					; branch if camera is left of $D00
 		cmpi.w	#$18,(v_ost_player+ost_y_pos).w		; has Sonic reached the top of the level?
-		bcc.s	locret_6F8C				; if not, branch
+		bcc.s	@exit					; if not, branch
+
 		clr.b	(v_last_lamppost).w
 		move.w	#1,(f_restart).w			; restart level
 		move.w	#(id_SBZ<<8)+2,(v_zone).w		; set level number to 0502 (FZ)
-		move.b	#1,(v_lock_multi).w			; freeze Sonic
+		move.b	#1,(v_lock_multi).w			; lock controls, position & animation
 
-locret_6F8C:
-		rts	
-; ===========================================================================
+	@exit:
+		rts
+
 ; ---------------------------------------------------------------------------
 ; Marble Zone dynamic level events
 ; ---------------------------------------------------------------------------
@@ -272,125 +274,140 @@ DLE_MZx:	index *
 DLE_MZ1:
 		moveq	#0,d0
 		move.b	(v_dle_routine).w,d0
-		move.w	off_6FB2(pc,d0.w),d0
-		jmp	off_6FB2(pc,d0.w)
+		move.w	DLE_MZ1_Index(pc,d0.w),d0
+		jmp	DLE_MZ1_Index(pc,d0.w)
 ; ===========================================================================
-off_6FB2:	index *
-		ptr loc_6FBA
-		ptr loc_6FEA
-		ptr loc_702E
-		ptr loc_7050
+DLE_MZ1_Index:	index *
+		ptr DLE_MZ1_0
+		ptr DLE_MZ1_2
+		ptr DLE_MZ1_4
+		ptr DLE_MZ1_6
 ; ===========================================================================
 
-loc_6FBA:
+DLE_MZ1_0:
 		move.w	#$1D0,(v_boundary_bottom_next).w
 		cmpi.w	#$700,(v_camera_x_pos).w
-		bcs.s	locret_6FE8
+		bcs.s	@exit					; branch if camera is left of $700
+
 		move.w	#$220,(v_boundary_bottom_next).w
 		cmpi.w	#$D00,(v_camera_x_pos).w
-		bcs.s	locret_6FE8
+		bcs.s	@exit					; branch if camera is left of $D00
+
 		move.w	#$340,(v_boundary_bottom_next).w
 		cmpi.w	#$340,(v_camera_y_pos).w
-		bcs.s	locret_6FE8
-		addq.b	#2,(v_dle_routine).w
+		bcs.s	@exit					; branch if camera is above $340
 
-locret_6FE8:
+		addq.b	#2,(v_dle_routine).w			; goto DLE_MZ1_2 next
+
+	@exit:
 		rts	
 ; ===========================================================================
 
-loc_6FEA:
+DLE_MZ1_2:
 		cmpi.w	#$340,(v_camera_y_pos).w
-		bcc.s	loc_6FF8
-		subq.b	#2,(v_dle_routine).w
+		bcc.s	@next					; branch if camera is below $340
+
+		subq.b	#2,(v_dle_routine).w			; goto DLE_MZ1_0 next
 		rts	
 ; ===========================================================================
 
-loc_6FF8:
+@next:
 		move.w	#0,(v_boundary_top).w
 		cmpi.w	#$E00,(v_camera_x_pos).w
-		bcc.s	locret_702C
+		bcc.s	@exit					; branch if camera is right of $E00
+
 		move.w	#$340,(v_boundary_top).w
 		move.w	#$340,(v_boundary_bottom_next).w
 		cmpi.w	#$A90,(v_camera_x_pos).w
-		bcc.s	locret_702C
+		bcc.s	@exit					; branch if camera is right of $A90
+
 		move.w	#$500,(v_boundary_bottom_next).w
 		cmpi.w	#$370,(v_camera_y_pos).w
-		bcs.s	locret_702C
-		addq.b	#2,(v_dle_routine).w
+		bcs.s	@exit					; branch if camera is above $370
 
-locret_702C:
+		addq.b	#2,(v_dle_routine).w			; goto DLE_MZ1_4 next
+
+	@exit:
 		rts	
 ; ===========================================================================
 
-loc_702E:
+DLE_MZ1_4:
 		cmpi.w	#$370,(v_camera_y_pos).w
-		bcc.s	loc_703C
-		subq.b	#2,(v_dle_routine).w
+		bcc.s	@next					; branch if camera is below $370
+
+		subq.b	#2,(v_dle_routine).w			; goto DLE_MZ1_2 next
 		rts	
 ; ===========================================================================
 
-loc_703C:
+@next:
 		cmpi.w	#$500,(v_camera_y_pos).w
-		bcs.s	locret_704E
+		bcs.s	@exit					; branch if camera is above $500
 		if Revision=0
 		else
 			cmpi.w	#$B80,(v_camera_x_pos).w
-			bcs.s	locret_704E
+			bcs.s	@exit				; branch if camera is left of $B80
 		endc
 		move.w	#$500,(v_boundary_top).w
-		addq.b	#2,(v_dle_routine).w
+		addq.b	#2,(v_dle_routine).w			; goto DLE_MZ1_6 next
 
-locret_704E:
+	@exit:
 		rts	
 ; ===========================================================================
 
-loc_7050:
+DLE_MZ1_6:
 		if Revision=0
 		else
 			cmpi.w	#$B80,(v_camera_x_pos).w
-			bcc.s	locj_76B8
+			bcc.s	@skip_mid			; branch if camera is right of $B80
+
 			cmpi.w	#$340,(v_boundary_top).w
-			beq.s	locret_7072
-			subq.w	#2,(v_boundary_top).w
+			beq.s	@exit				; branch if top boundary is set for middle section
+
+			subq.w	#2,(v_boundary_top).w		; move top boundary up 2px
 			rts
-	locj_76B8:
+	@skip_mid:
 			cmpi.w	#$500,(v_boundary_top).w
-			beq.s	locj_76CE
+			beq.s	@skip_btm			; branch if top boundary is set for bottom section
+
 			cmpi.w	#$500,(v_camera_y_pos).w
-			bcs.s	locret_7072
+			bcs.s	@exit				; branch if camera is above $500
+
 			move.w	#$500,(v_boundary_top).w
-	locj_76CE:
+	@skip_btm:
 		endc
 
 		cmpi.w	#$E70,(v_camera_x_pos).w
-		bcs.s	locret_7072
+		bcs.s	@exit					; branch if camera is left of $E70
+
 		move.w	#0,(v_boundary_top).w
 		move.w	#$500,(v_boundary_bottom_next).w
 		cmpi.w	#$1430,(v_camera_x_pos).w
-		bcs.s	locret_7072
+		bcs.s	@exit					; branch if camera is left of $1430
+
 		move.w	#$210,(v_boundary_bottom_next).w
 
-locret_7072:
+	@exit:
 		rts	
 ; ===========================================================================
 
 DLE_MZ2:
 		move.w	#$520,(v_boundary_bottom_next).w
 		cmpi.w	#$1700,(v_camera_x_pos).w
-		bcs.s	locret_7088
+		bcs.s	@exit					; branch if camera is left of $1700
+
 		move.w	#$200,(v_boundary_bottom_next).w
 
-locret_7088:
+	@exit:
 		rts	
 ; ===========================================================================
 
 DLE_MZ3:
 		moveq	#0,d0
 		move.b	(v_dle_routine).w,d0
-		move.w	off_7098(pc,d0.w),d0
-		jmp	off_7098(pc,d0.w)
+		move.w	DLE_MZ3_Index(pc,d0.w),d0
+		jmp	DLE_MZ3_Index(pc,d0.w)
 ; ===========================================================================
-off_7098:	index *
+DLE_MZ3_Index:	index *
 		ptr DLE_MZ3_Boss
 		ptr DLE_MZ3_End
 ; ===========================================================================
@@ -398,32 +415,34 @@ off_7098:	index *
 DLE_MZ3_Boss:
 		move.w	#$720,(v_boundary_bottom_next).w
 		cmpi.w	#$1560,(v_camera_x_pos).w
-		bcs.s	locret_70E8
+		bcs.s	@exit					; branch if camera is left of $1560
+
 		move.w	#$210,(v_boundary_bottom_next).w
 		cmpi.w	#$17F0,(v_camera_x_pos).w
-		bcs.s	locret_70E8
-		bsr.w	FindFreeObj
-		bne.s	loc_70D0
+		bcs.s	@exit					; branch if camera is left of $17F0
+
+		bsr.w	FindFreeObj				; find free OST slot
+		bne.s	@fail					; branch if not found
 		move.b	#id_BossMarble,ost_id(a1)		; load MZ boss object
 		move.w	#$19F0,ost_x_pos(a1)
 		move.w	#$22C,ost_y_pos(a1)
 
-loc_70D0:
+	@fail:
 		play.w	0, bsr.w, mus_Boss			; play boss music
 		move.b	#1,(f_boss_boundary).w			; lock screen
-		addq.b	#2,(v_dle_routine).w
+		addq.b	#2,(v_dle_routine).w			; goto DLE_MZ3_End next
 		moveq	#id_PLC_Boss,d0
-		bra.w	AddPLC					; load boss patterns
+		bra.w	AddPLC					; load boss gfx
 ; ===========================================================================
 
-locret_70E8:
+@exit:
 		rts	
 ; ===========================================================================
 
 DLE_MZ3_End:
-		move.w	(v_camera_x_pos).w,(v_boundary_left).w
-		rts	
-; ===========================================================================
+		move.w	(v_camera_x_pos).w,(v_boundary_left).w	; set boundary to current position
+		rts
+
 ; ---------------------------------------------------------------------------
 ; Star Light Zone dynamic level events
 ; ---------------------------------------------------------------------------
@@ -442,16 +461,16 @@ DLE_SLZx:	index *
 ; ===========================================================================
 
 DLE_SLZ12:
-		rts	
+		rts						; no events for acts 1/2
 ; ===========================================================================
 
 DLE_SLZ3:
 		moveq	#0,d0
 		move.b	(v_dle_routine).w,d0
-		move.w	off_7118(pc,d0.w),d0
-		jmp	off_7118(pc,d0.w)
+		move.w	DLE_SLZ3_Index(pc,d0.w),d0
+		jmp	DLE_SLZ3_Index(pc,d0.w)
 ; ===========================================================================
-off_7118:	index *
+DLE_SLZ3_Index:	index *
 		ptr DLE_SLZ3_Main
 		ptr DLE_SLZ3_Boss
 		ptr DLE_SLZ3_End
@@ -459,38 +478,40 @@ off_7118:	index *
 
 DLE_SLZ3_Main:
 		cmpi.w	#$1E70,(v_camera_x_pos).w
-		bcs.s	locret_7130
-		move.w	#$210,(v_boundary_bottom_next).w
-		addq.b	#2,(v_dle_routine).w
+		bcs.s	@exit					; branch if camera is left of $1E70
 
-locret_7130:
+		move.w	#$210,(v_boundary_bottom_next).w
+		addq.b	#2,(v_dle_routine).w			; goto DLE_SLZ3_Boss next
+
+	@exit:
 		rts	
 ; ===========================================================================
 
 DLE_SLZ3_Boss:
 		cmpi.w	#$2000,(v_camera_x_pos).w
-		bcs.s	locret_715C
-		bsr.w	FindFreeObj
-		bne.s	loc_7144
+		bcs.s	@exit					; branch if camera is left of $2000
+
+		bsr.w	FindFreeObj				; find free OST slot
+		bne.s	@fail					; branch if not found
 		move.b	#id_BossStarLight,(a1)			; load SLZ boss object
 
-loc_7144:
+	@fail:
 		play.w	0, bsr.w, mus_Boss			; play boss music
 		move.b	#1,(f_boss_boundary).w			; lock screen
-		addq.b	#2,(v_dle_routine).w
+		addq.b	#2,(v_dle_routine).w			; goto DLE_SLZ3_End next
 		moveq	#id_PLC_Boss,d0
-		bra.w	AddPLC					; load boss patterns
+		bra.w	AddPLC					; load boss gfx
 ; ===========================================================================
 
-locret_715C:
+@exit:
 		rts	
 ; ===========================================================================
 
 DLE_SLZ3_End:
-		move.w	(v_camera_x_pos).w,(v_boundary_left).w
+		move.w	(v_camera_x_pos).w,(v_boundary_left).w	; set boundary to current position
 		rts
 		rts
-; ===========================================================================
+
 ; ---------------------------------------------------------------------------
 ; Spring Yard Zone dynamic level events
 ; ---------------------------------------------------------------------------
@@ -509,29 +530,31 @@ DLE_SYZx:	index *
 ; ===========================================================================
 
 DLE_SYZ1:
-		rts	
+		rts						; no events for act 1	
 ; ===========================================================================
 
 DLE_SYZ2:
 		move.w	#$520,(v_boundary_bottom_next).w
 		cmpi.w	#$25A0,(v_camera_x_pos).w
-		bcs.s	locret_71A2
+		bcs.s	@exit					; branch if camera is left of $25A0
+
 		move.w	#$420,(v_boundary_bottom_next).w
 		cmpi.w	#$4D0,(v_ost_player+ost_y_pos).w
-		bcs.s	locret_71A2
+		bcs.s	@exit					; branch if Sonic is above $4D0
+
 		move.w	#$520,(v_boundary_bottom_next).w
 
-locret_71A2:
+	@exit:
 		rts	
 ; ===========================================================================
 
 DLE_SYZ3:
 		moveq	#0,d0
 		move.b	(v_dle_routine).w,d0
-		move.w	off_71B2(pc,d0.w),d0
-		jmp	off_71B2(pc,d0.w)
+		move.w	DLE_SYZ3_Index(pc,d0.w),d0
+		jmp	DLE_SYZ3_Index(pc,d0.w)
 ; ===========================================================================
-off_71B2:	index *
+DLE_SYZ3_Index:	index *
 		ptr DLE_SYZ3_Main
 		ptr DLE_SYZ3_Boss
 		ptr DLE_SYZ3_End
@@ -539,40 +562,42 @@ off_71B2:	index *
 
 DLE_SYZ3_Main:
 		cmpi.w	#$2AC0,(v_camera_x_pos).w
-		bcs.s	locret_71CE
-		bsr.w	FindFreeObj
-		bne.s	locret_71CE
-		move.b	#id_BossBlock,(a1)			; load blocks that boss picks up
-		addq.b	#2,(v_dle_routine).w
+		bcs.s	@exit					; branch if camera is left of $2AC0
 
-locret_71CE:
+		bsr.w	FindFreeObj				; find free OST slot
+		bne.s	@exit					; branch if not found
+		move.b	#id_BossBlock,(a1)			; load blocks that boss picks up
+		addq.b	#2,(v_dle_routine).w			; goto DLE_SYZ3_Boss next
+
+	@exit:
 		rts	
 ; ===========================================================================
 
 DLE_SYZ3_Boss:
 		cmpi.w	#$2C00,(v_camera_x_pos).w
-		bcs.s	locret_7200
-		move.w	#$4CC,(v_boundary_bottom_next).w
-		bsr.w	FindFreeObj
-		bne.s	loc_71EC
-		move.b	#id_BossSpringYard,(a1)			; load SYZ boss	object
-		addq.b	#2,(v_dle_routine).w
+		bcs.s	@exit					; branch if camera is left of $2C00
 
-loc_71EC:
+		move.w	#$4CC,(v_boundary_bottom_next).w
+		bsr.w	FindFreeObj				; find free OST slot
+		bne.s	@fail					; branch if not found
+		move.b	#id_BossSpringYard,(a1)			; load SYZ boss	object
+		addq.b	#2,(v_dle_routine).w			; goto DLE_SYZ3_End next
+
+	@fail:
 		play.w	0, bsr.w, mus_Boss			; play boss music
 		move.b	#1,(f_boss_boundary).w			; lock screen
 		moveq	#id_PLC_Boss,d0
-		bra.w	AddPLC					; load boss patterns
+		bra.w	AddPLC					; load boss gfx
 ; ===========================================================================
 
-locret_7200:
+@exit:
 		rts	
 ; ===========================================================================
 
 DLE_SYZ3_End:
-		move.w	(v_camera_x_pos).w,(v_boundary_left).w
-		rts	
-; ===========================================================================
+		move.w	(v_camera_x_pos).w,(v_boundary_left).w	; set boundary to current position
+		rts
+
 ; ---------------------------------------------------------------------------
 ; Scrap	Brain Zone dynamic level events
 ; ---------------------------------------------------------------------------
@@ -593,137 +618,146 @@ DLE_SBZx:	index *
 DLE_SBZ1:
 		move.w	#$720,(v_boundary_bottom_next).w
 		cmpi.w	#$1880,(v_camera_x_pos).w
-		bcs.s	locret_7242
+		bcs.s	@exit					; branch if camera is left of $1880
+
 		move.w	#$620,(v_boundary_bottom_next).w
 		cmpi.w	#$2000,(v_camera_x_pos).w
-		bcs.s	locret_7242
+		bcs.s	@exit					; branch if camera is left of $2000
+
 		move.w	#$2A0,(v_boundary_bottom_next).w
 
-locret_7242:
+	@exit:
 		rts	
 ; ===========================================================================
 
 DLE_SBZ2:
 		moveq	#0,d0
 		move.b	(v_dle_routine).w,d0
-		move.w	off_7252(pc,d0.w),d0
-		jmp	off_7252(pc,d0.w)
+		move.w	DLE_SBZ2_Index(pc,d0.w),d0
+		jmp	DLE_SBZ2_Index(pc,d0.w)
 ; ===========================================================================
-off_7252:	index *
-		ptr DLE_SBZ2main
-		ptr DLE_SBZ2boss
-		ptr DLE_SBZ2boss2
-		ptr DLE_SBZ2end
+DLE_SBZ2_Index:	index *
+		ptr DLE_SBZ2_Main
+		ptr DLE_SBZ2_Blocks
+		ptr DLE_SBZ2_Eggman
+		ptr DLE_SBZ2_End
 ; ===========================================================================
 
-DLE_SBZ2main:
+DLE_SBZ2_Main:
 		move.w	#$800,(v_boundary_bottom_next).w
 		cmpi.w	#$1800,(v_camera_x_pos).w
-		bcs.s	locret_727A
+		bcs.s	@exit					; branch if camera is left of $1800
+
 		move.w	#$510,(v_boundary_bottom_next).w
 		cmpi.w	#$1E00,(v_camera_x_pos).w
-		bcs.s	locret_727A
-		addq.b	#2,(v_dle_routine).w
+		bcs.s	@exit					; branch if camera is left of $1E00
 
-locret_727A:
+		addq.b	#2,(v_dle_routine).w			; goto DLE_SBZ2_Blocks next
+
+	@exit:
 		rts	
 ; ===========================================================================
 
-DLE_SBZ2boss:
+DLE_SBZ2_Blocks:
 		cmpi.w	#$1EB0,(v_camera_x_pos).w
-		bcs.s	locret_7298
-		bsr.w	FindFreeObj
-		bne.s	locret_7298
+		bcs.s	@exit					; branch if camera is left of $1EB0
+
+		bsr.w	FindFreeObj				; find free OST slot
+		bne.s	@exit					; branch if not found
 		move.b	#id_FalseFloor,(a1)			; load collapsing block object
-		addq.b	#2,(v_dle_routine).w
+		addq.b	#2,(v_dle_routine).w			; goto DLE_SBZ2_Eggman next
 		moveq	#id_PLC_EggmanSBZ2,d0
-		bra.w	AddPLC					; load SBZ2 Eggman patterns
+		bra.w	AddPLC					; load SBZ2 Eggman gfx
 ; ===========================================================================
 
-locret_7298:
+@exit:
 		rts	
 ; ===========================================================================
 
-DLE_SBZ2boss2:
+DLE_SBZ2_Eggman:
 		cmpi.w	#$1F60,(v_camera_x_pos).w
-		bcs.s	loc_72B6
-		bsr.w	FindFreeObj
-		bne.s	loc_72B0
-		move.b	#id_ScrapEggman,(a1)			; load SBZ2 Eggman object
-		addq.b	#2,(v_dle_routine).w
+		bcs.s	@set_boundary				; branch if camera is left of $1F60
 
-loc_72B0:
+		bsr.w	FindFreeObj				; find free OST slot
+		bne.s	@fail					; branch if not found
+		move.b	#id_ScrapEggman,(a1)			; load SBZ2 Eggman object
+		addq.b	#2,(v_dle_routine).w			; goto DLE_SBZ2_End next
+
+	@fail:
 		move.b	#1,(f_boss_boundary).w			; lock screen
 
-loc_72B6:
-		bra.s	loc_72C2
+	@set_boundary:
+		bra.s	DLE_SBZ2_SetBoundary
 ; ===========================================================================
 
-DLE_SBZ2end:
+DLE_SBZ2_End:
 		cmpi.w	#$2050,(v_camera_x_pos).w
-		bcs.s	loc_72C2
+		bcs.s	DLE_SBZ2_SetBoundary			; branch if camera is left of $2050
 		rts	
 ; ===========================================================================
 
-loc_72C2:
-		move.w	(v_camera_x_pos).w,(v_boundary_left).w
+DLE_SBZ2_SetBoundary:
+		move.w	(v_camera_x_pos).w,(v_boundary_left).w	; set boundary to current position
 		rts	
 ; ===========================================================================
 
 DLE_FZ:
 		moveq	#0,d0
 		move.b	(v_dle_routine).w,d0
-		move.w	off_72D8(pc,d0.w),d0
-		jmp	off_72D8(pc,d0.w)
+		move.w	DLE_FZ_Index(pc,d0.w),d0
+		jmp	DLE_FZ_Index(pc,d0.w)
 ; ===========================================================================
-off_72D8:	index *
-		ptr DLE_FZmain
-		ptr DLE_FZboss
-		ptr DLE_FZend
-		ptr locret_7322
-		ptr DLE_FZend2
+DLE_FZ_Index:	index *
+		ptr DLE_FZ_Main
+		ptr DLE_FZ_Boss
+		ptr DLE_FZ_Arena
+		ptr DLE_FZ_Wait
+		ptr DLE_FZ_End
 ; ===========================================================================
 
-DLE_FZmain:
+DLE_FZ_Main:
 		cmpi.w	#$2148,(v_camera_x_pos).w
-		bcs.s	loc_72F4
-		addq.b	#2,(v_dle_routine).w
-		moveq	#id_PLC_FZBoss,d0
-		bsr.w	AddPLC					; load FZ boss patterns
+		bcs.s	@set_boundary				; branch if camera is left of $2148
 
-loc_72F4:
-		bra.s	loc_72C2
+		addq.b	#2,(v_dle_routine).w			; goto DLE_FZ_Boss next
+		moveq	#id_PLC_FZBoss,d0
+		bsr.w	AddPLC					; load FZ boss gfx
+
+	@set_boundary:
+		bra.s	DLE_SBZ2_SetBoundary
 ; ===========================================================================
 
-DLE_FZboss:
+DLE_FZ_Boss:
 		cmpi.w	#$2300,(v_camera_x_pos).w
-		bcs.s	loc_7312
-		bsr.w	FindFreeObj
-		bne.s	loc_7312
+		bcs.s	@set_boundary				; branch if camera is left of $2300
+
+		bsr.w	FindFreeObj				; find free OST slot
+		bne.s	@set_boundary				; branch if not found
 		move.b	#id_BossFinal,(a1)			; load FZ boss object
-		addq.b	#2,(v_dle_routine).w
+		addq.b	#2,(v_dle_routine).w			; goto DLE_FZ_Arena next
 		move.b	#1,(f_boss_boundary).w			; lock screen
 
-loc_7312:
-		bra.s	loc_72C2
+	@set_boundary:
+		bra.s	DLE_SBZ2_SetBoundary
 ; ===========================================================================
 
-DLE_FZend:
-		cmpi.w	#$2450,(v_camera_x_pos).w
-		bcs.s	loc_7320
-		addq.b	#2,(v_dle_routine).w
+DLE_FZ_Arena:
+		cmpi.w	#$2450,(v_camera_x_pos).w		; boss arena is here
+		bcs.s	@set_boundary				; branch if camera is left of $2450
 
-loc_7320:
-		bra.s	loc_72C2
+		addq.b	#2,(v_dle_routine).w			; goto DLE_FZ_Wait next
+
+	@set_boundary:
+		bra.s	DLE_SBZ2_SetBoundary
 ; ===========================================================================
 
-locret_7322:
-		rts	
+DLE_FZ_Wait:
+		rts						; wait until boss is beaten
 ; ===========================================================================
 
-DLE_FZend2:
-		bra.s	loc_72C2
-; ===========================================================================
+DLE_FZ_End:
+		bra.s	DLE_SBZ2_SetBoundary			; allow scrolling right
+
 ; ---------------------------------------------------------------------------
 ; Ending sequence dynamic level events (empty)
 ; ---------------------------------------------------------------------------

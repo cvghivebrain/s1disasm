@@ -1,8 +1,11 @@
 ; ---------------------------------------------------------------------------
 ; Object code execution subroutine
-; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+; output:
+;	d7 = OST index of last object (not changed by any object)
+;	a0 = address of OST of last object
+;	uses d0, a1 (objects may use other registers)
+; ---------------------------------------------------------------------------
 
 ExecuteObjects:
 		lea	(v_ost_all).w,a0			; set address for object RAM
@@ -27,9 +30,9 @@ ExecuteObjects:
 ; ===========================================================================
 
 @dead:
-		moveq	#$20-1,d7				; run first $20 objects normally
+		moveq	#countof_ost_inert-1,d7			; run first $20 objects normally
 		bsr.s	@run_object
-		moveq	#countof_ost-$20-1,d7			; remaining $60 objects are display only
+		moveq	#countof_ost_ert-1,d7			; remaining $60 objects are display only
 
 @display_object:
 		moveq	#0,d0
@@ -42,13 +45,12 @@ ExecuteObjects:
 	@no_object2:
 		lea	sizeof_ost(a0),a0			; next object
 		dbf	d7,@display_object
-		rts	
-; End of function ExecuteObjects
+		rts
 
-; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Object pointers
 ; ---------------------------------------------------------------------------
+
 Obj_Index:
 		index.l 0,1					; longword, absolute (relative to 0), start ids at 1
 		

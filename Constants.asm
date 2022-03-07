@@ -12,7 +12,8 @@ sizeof_priority:	equ $80					; size of one priority section in sprite queue
 
 level_max_width:	equ $40
 level_max_height:	equ 8
-sizeof_level:		equ level_max_width*level_max_height*2	; includes background in $40 byte alternating strips
+sizeof_levelrow:	equ level_max_width*2			; level row, followed by background row
+sizeof_level:		equ sizeof_levelrow*level_max_height	; includes background in $40 byte alternating strips
 
 ; VRAM data
 vram_window:	equ $A000	; window nametable - unused

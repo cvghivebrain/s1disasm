@@ -80,7 +80,7 @@ GM_Title:
 		move.w	#0,(v_title_unused).w			; unused variable
 		move.w	#(id_GHZ<<8),(v_zone).w			; set level to GHZ act 1 (0000)
 		move.w	#0,(v_palcycle_time).w			; disable palette cycling
-		bsr.w	LevelParameterLoad				; set level boundaries and Sonic's start position
+		bsr.w	LevelParameterLoad			; set level boundaries and Sonic's start position
 		bsr.w	DeformLayers
 		lea	(v_16x16_tiles).w,a1
 		lea	(Blk16_GHZ).l,a0			; load GHZ 16x16 mappings

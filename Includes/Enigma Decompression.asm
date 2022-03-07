@@ -6,6 +6,8 @@
 ;	a0 = source address
 ;	a1 = destination address
 
+;	uses a0
+
 ; usage:
 ;	lea	(source).l,a0
 ;	lea	(destination).l,a1
@@ -14,8 +16,6 @@
 
 ; See http://www.segaretro.org/Enigma_compression for format description
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 EniDec:
 		movem.l	d0-d7/a1-a5,-(sp)
@@ -33,7 +33,7 @@ EniDec:
 		asl.w	#8,d5
 		move.b	(a0)+,d5				; get first word in format list
 		moveq	#16,d6					; initial shift value
-; loc_173E:
+
 Eni_Loop:
 		moveq	#7,d0					; assume a format list entry is 7 bits
 		move.w	d6,d7
@@ -46,70 +46,68 @@ Eni_Loop:
 		bhs.s	@sevenbitentry
 		moveq	#6,d0					; if it isn't, the entry is actually 6 bits
 		lsr.w	#1,d2
-; loc_1758:
-@sevenbitentry:
+
+	@sevenbitentry:
 		bsr.w	EniDec_FetchByte
 		andi.w	#$F,d2					; get repeat count
 		lsr.w	#4,d1
 		add.w	d1,d1
 		jmp	EniDec_Index(pc,d1.w)
-; End of function EniDec
 
 ; ===========================================================================
-; loc_1768:
+
 EniDec_00:
-@loop:		move.w	a2,(a1)+				; copy incremental copy word
+	@loop:
+		move.w	a2,(a1)+				; copy incremental copy word
 		addq.w	#1,a2					; increment it
 		dbf	d2,@loop				; repeat
 		bra.s	Eni_Loop
 ; ===========================================================================
-; loc_1772:
+
 EniDec_01:
-@loop:		move.w	a4,(a1)+				; copy literal copy word
+	@loop:
+		move.w	a4,(a1)+				; copy literal copy word
 		dbf	d2,@loop				; repeat
 		bra.s	Eni_Loop
 ; ===========================================================================
-; loc_177A:
+
 EniDec_100:
 		bsr.w	EniDec_FetchInlineValue
-; loc_177E:
-@loop:		move.w	d1,(a1)+				; copy inline value
+	@loop:
+		move.w	d1,(a1)+				; copy inline value
 		dbf	d2,@loop				; repeat
 
 		bra.s	Eni_Loop
 ; ===========================================================================
-; loc_1786:
+
 EniDec_101:
 		bsr.w	EniDec_FetchInlineValue
-; loc_178A:
-@loop:		move.w	d1,(a1)+				; copy inline value
+	@loop:
+		move.w	d1,(a1)+				; copy inline value
 		addq.w	#1,d1					; increment
 		dbf	d2,@loop				; repeat
 
 		bra.s	Eni_Loop
 ; ===========================================================================
-; loc_1794:
 EniDec_110:
 		bsr.w	EniDec_FetchInlineValue
-; loc_1798:
-@loop:		move.w	d1,(a1)+				; copy inline value
+	@loop:
+		move.w	d1,(a1)+				; copy inline value
 		subq.w	#1,d1					; decrement
 		dbf	d2,@loop				; repeat
 
 		bra.s	Eni_Loop
 ; ===========================================================================
-; loc_17A2:
 EniDec_111:
 		cmpi.w	#$F,d2
 		beq.s	EniDec_Done
-; loc_17A8:
-@loop:		bsr.w	EniDec_FetchInlineValue			; fetch new inline value
+	@loop:
+		bsr.w	EniDec_FetchInlineValue			; fetch new inline value
 		move.w	d1,(a1)+				; copy it
 		dbf	d2,@loop				; and repeat
 
 		bra.s	Eni_Loop
 ; ===========================================================================
-; loc_17B4:
 EniDec_Index:
 		bra.s	EniDec_00
 		bra.s	EniDec_00
@@ -120,20 +118,20 @@ EniDec_Index:
 		bra.s	EniDec_110
 		bra.s	EniDec_111
 ; ===========================================================================
-; loc_17C4:
+
 EniDec_Done:
 		subq.w	#1,a0					; go back by one byte
 		cmpi.w	#16,d6					; were we going to start on a completely new byte?
 		bne.s	@notnewbyte				; if not, branch
 		subq.w	#1,a0					; and another one if needed
-; loc_17CE:
-@notnewbyte:
+
+	@notnewbyte:
 		move.w	a0,d0
 		lsr.w	#1,d0					; are we on an odd byte?
 		bcc.s	@evenbyte				; if not, branch
 		addq.w	#1,a0					; ensure we're on an even byte
-; loc_17D6:
-@evenbyte:
+
+	@evenbyte:
 		movem.l	(sp)+,d0-d7/a1-a5
 		rts	
 
@@ -142,9 +140,6 @@ EniDec_Done:
 ; Fetches an inline copy value and stores it in d1
 ; ---------------------------------------------------------------------------
 
-; =============== S U B R O U T I N E =======================================
-
-; loc_17DC:
 EniDec_FetchInlineValue:
 		move.w	a3,d3					; copy starting art tile
 		move.b	d4,d1					; copy PCCVH bitfield
@@ -154,40 +149,40 @@ EniDec_FetchInlineValue:
 		btst	d6,d5					; is the priority bit set in the inline render flags?
 		beq.s	@skippriority				; if not, branch
 		ori.w	#$8000,d3				; otherwise set priority bit in art tile
-; loc_17EE:
-@skippriority:
+
+	@skippriority:
 		add.b	d1,d1					; is the high palette line bit set?
 		bcc.s	@skiphighpal				; if not, branch
 		subq.w	#1,d6
 		btst	d6,d5
 		beq.s	@skiphighpal
 		addi.w	#$4000,d3				; set second palette line bit
-; loc_17FC:
-@skiphighpal:
+
+	@skiphighpal:
 		add.b	d1,d1					; is the low palette line bit set?
 		bcc.s	@skiplowpal				; if not, branch
 		subq.w	#1,d6
 		btst	d6,d5
 		beq.s	@skiplowpal
 		addi.w	#$2000,d3				; set first palette line bit
-; loc_180A:
-@skiplowpal:
+
+	@skiplowpal:
 		add.b	d1,d1					; is the vertical flip flag set?
 		bcc.s	@skipyflip				; if not, branch
 		subq.w	#1,d6
 		btst	d6,d5
 		beq.s	@skipyflip
-		ori.w	#$1000,d3				; set Y-flip bit
-; loc_1818:
-@skipyflip:
+		ori.w	#$1000,d3				; set yflip bit
+
+	@skipyflip:
 		add.b	d1,d1					; is the horizontal flip flag set?
 		bcc.s	@skipxflip				; if not, branch
 		subq.w	#1,d6
 		btst	d6,d5
 		beq.s	@skipxflip
-		ori.w	#$800,d3				; set X-flip bit
-; loc_1826:
-@skipxflip:
+		ori.w	#$800,d3				; set xflip bit
+
+	@skipxflip:
 		move.w	d5,d1
 		move.w	d6,d7
 		sub.w	a5,d7					; subtract length in bits of inline copy value
@@ -201,7 +196,7 @@ EniDec_FetchInlineValue:
 		add.w	d7,d7
 		and.w	EniDec_Masks-2(pc,d7.w),d5
 		add.w	d5,d1					; combine upper bits with lower bits
-; loc_1844:
+
 @maskvalue:
 		move.w	a5,d0					; get length in bits of inline copy value
 		add.w	d0,d0
@@ -212,7 +207,7 @@ EniDec_FetchInlineValue:
 		move.b	(a0)+,d5				; get next word
 		rts	
 ; ===========================================================================
-; loc_1856:
+
 @enoughbits:
 		beq.s	@justenough				; if the word has been exactly exhausted, branch
 		lsr.w	d7,d1					; get inline copy value
@@ -223,21 +218,19 @@ EniDec_FetchInlineValue:
 		move.w	a5,d0
 		bra.s	EniDec_FetchByte
 ; ===========================================================================
-; loc_1868:
+
 @justenough:
 		moveq	#16,d6					; reset shift value
 		bra.s	@maskvalue
 ; ===========================================================================
-; word_186C:
+
 EniDec_Masks:
 		dc.w	 1,    3,    7,   $F
 		dc.w   $1F,  $3F,  $7F,  $FF
 		dc.w  $1FF, $3FF, $7FF, $FFF
 		dc.w $1FFF,$3FFF,$7FFF,$FFFF
+; ===========================================================================
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-; sub_188C:
 EniDec_FetchByte:
 		sub.w	d0,d6					; subtract length of current entry from shift value so that next entry is read next time around
 		cmpi.w	#9,d6					; does a new byte need to be read?
@@ -245,6 +238,6 @@ EniDec_FetchByte:
 		addq.w	#8,d6
 		asl.w	#8,d5
 		move.b	(a0)+,d5
-@locret:
-		rts	
-; End of function EniDec_FetchByte
+
+	@locret:
+		rts
