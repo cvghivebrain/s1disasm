@@ -1,17 +1,19 @@
 ; ---------------------------------------------------------------------------
 ; Subroutine to	move Sonic in demo mode
+
+;	uses d0, d1, d2, a0, a1
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 MoveSonicInDemo:
 		tst.w	(v_demo_mode).w				; is demo mode on?
 		bne.s	MDemo_On				; if yes, branch
-		rts	
-; ===========================================================================
+		rts
 
-; This is an unused subroutine for recording a demo
+; ---------------------------------------------------------------------------
+; Unused subroutine for recording a demo
+
+;	uses d0, a1
+; ---------------------------------------------------------------------------
 
 DemoRecorder:
 		lea	($80000).l,a1				; memory address to record demo to
@@ -81,5 +83,4 @@ MDemo_On:
 		addq.w	#2,(v_demo_input_counter).w		; increment counter
 
 	@end:
-		rts	
-; End of function MoveSonicInDemo
+		rts

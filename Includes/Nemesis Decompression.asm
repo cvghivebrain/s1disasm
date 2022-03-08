@@ -1,26 +1,31 @@
 ; ---------------------------------------------------------------------------
 ; Nemesis decompression	subroutine, decompresses art directly to VRAM
-; Inputs:
-; a0 = art address
 
-; For format explanation see http://info.sonicretro.org/Nemesis_compression
+; input:
+;	a0 = art source address
+
+; usage:
+;	locVRAM	destination
+;	lea	(source).l,a0
+;	bsr.w	NemDec
+
+; See http://info.sonicretro.org/Nemesis_compression for format explanation
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
-; Nemesis decompression to VRAM
 NemDec:
 		movem.l	d0-a1/a3-a5,-(sp)
 		lea	(NemPCD_WriteRowToVDP).l,a3		; write all data to the same location
 		lea	(vdp_data_port).l,a4			; specifically, to the VDP data port
 		bra.s	NemDecMain
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; ---------------------------------------------------------------------------
+; Nemesis decompression subroutine, decompresses art to RAM (unused)
 
-; Nemesis decompression subroutine, decompresses art to RAM
-; Inputs:
-; a0 = art address
-; a4 = destination RAM address
+; input:
+;	a0 = art source address
+;	a4 = destination RAM address
+; ---------------------------------------------------------------------------
+
 NemDecToRAM:
 		movem.l	d0-a1/a3-a5,-(sp)
 		lea	(NemPCD_WriteRowToRAM).l,a3		; advance to the next location after each write
@@ -45,15 +50,11 @@ loc_146A:
 		move.w	#$10,d6					; set initial shift value
 		bsr.s	NemDec_ProcessCompressedData
 		movem.l	(sp)+,d0-a1/a3-a5
-		rts	
-; End of function NemDec
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Part of the Nemesis decompressor, processes the actual compressed data
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 NemDec_ProcessCompressedData:
 		move.w	d6,d7
@@ -68,12 +69,12 @@ NemDec_ProcessCompressedData:
 		ext.w	d0
 		sub.w	d0,d6					; subtract from shift value so that the next code is read next time around
 		cmpi.w	#9,d6					; does a new byte need to be read?
-		bcc.s	loc_14B2				; if not, branch
+		bcc.s	@skip_new_byte				; if not, branch
 		addq.w	#8,d6
 		asl.w	#8,d5
 		move.b	(a0)+,d5				; read next byte
 
-loc_14B2:
+	@skip_new_byte:
 		move.b	1(a1,d1.w),d1
 		move.w	d1,d0
 		andi.w	#$F,d1					; get palette index for pixel
@@ -88,11 +89,8 @@ NemPCD_WritePixel:
 		subq.w	#1,d3					; has an entire 8-pixel row been written?
 		bne.s	NemPCD_WritePixel_Loop			; if not, loop
 		jmp	(a3)					; otherwise, write the row to its destination, by doing a dynamic jump to NemPCD_WriteRowToVDP, NemDec_WriteAndAdvance, NemPCD_WriteRowToVDP_XOR, or NemDec_WriteAndAdvance_XOR
-; End of function NemDec_ProcessCompressedData
 
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
+; ===========================================================================
 
 NemPCD_NewRow:
 		moveq	#0,d4					; reset row
@@ -111,7 +109,7 @@ NemPCD_InlineData:
 		asl.w	#8,d5
 		move.b	(a0)+,d5
 
-loc_14E4:
+	loc_14E4:
 		subq.w	#7,d6					; and 7 bits needed for the inline data itself
 		move.w	d5,d1
 		lsr.w	d6,d1					; shift so that low bit of the code is in bit position 0
@@ -124,7 +122,6 @@ loc_14E4:
 		asl.w	#8,d5
 		move.b	(a0)+,d5
 		bra.s	NemPCD_ProcessCompressedData
-; End of function NemPCD_NewRow
 
 ; ===========================================================================
 
@@ -159,11 +156,9 @@ NemPCD_WriteRowToRAM_XOR:
 		bne.s	NemPCD_NewRow
 		rts	
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 ; ---------------------------------------------------------------------------
 ; Part of the Nemesis decompressor, builds the code table (in RAM)
 ; ---------------------------------------------------------------------------
-
 
 NemDec_BuildCodeTable:
 		move.b	(a0)+,d0				; read first byte
@@ -218,4 +213,3 @@ NemBCT_ShortCode_Loop:
 		addq.w	#2,d0					; increment index
 		dbf	d5,NemBCT_ShortCode_Loop		; repeat for required number of entries
 		bra.s	NemBCT_Loop
-; End of function NemDec_BuildCodeTable

@@ -1,7 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Subroutine to	load level boundaries and start	locations
+
+;	uses d0, d1, d2, a0, a1, a2
 ; ---------------------------------------------------------------------------
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 LevelParameterLoad:
 		moveq	#0,d0
@@ -34,8 +35,12 @@ LevelParameterLoad:
 		bra.w	LPL_StartPos
 
 ; ---------------------------------------------------------------------------
-; Level boundary list
+; Level boundary list - 6 values per act:
+
+; v_boundary_unused, v_boundary_left, v_boundary_right
+; v_boundary_top, v_boundary_bottom, v_camera_y_shift
 ; ---------------------------------------------------------------------------
+
 LevelBoundaryList:
 		; GHZ
 		dc.w $0004, $0000, $24BF, $0000, $0300, $0060
@@ -77,6 +82,7 @@ LevelBoundaryList:
 ; ---------------------------------------------------------------------------
 ; Sonic start position list, ending credits demo
 ; ---------------------------------------------------------------------------
+
 EndingStartPosList:
 		dc.l startpos_ghz1_end1				; GHZ act 1
 		dc.l startpos_mz2_end				; MZ act 2
@@ -161,6 +167,7 @@ LPL_Camera:
 ; Sonic start position list - each zone has four acts, of which the fourth is
 ; unused (except LZ4 = SBZ3)
 ; ---------------------------------------------------------------------------
+
 StartPosList:
 		dc.l startpos_ghz1
 		dc.l startpos_ghz2
@@ -203,6 +210,7 @@ StartPosList:
 ; ---------------------------------------------------------------------------
 ; Which	256x256	tiles contain loops or roll-tunnels
 ; ---------------------------------------------------------------------------
+
 LoopTunnelList:
 		;	loop	loop	tunnel	tunnel
 		dc.b	$B5,	$7F,	$1F,	$20		; Green Hill
@@ -226,8 +234,7 @@ LPL_ScrollBlockHeights:
 			lea	(v_scroll_block_1_height).w,a2
 			move.l	(a1)+,(a2)+
 			move.l	(a1)+,(a2)+
-			rts	
-; End of function LevelParameterLoad
+			rts
 
 ScrollBlockHeightList:
 ; Only the first value is used
@@ -248,8 +255,9 @@ ScrollBlockHeightList:
 ; input:
 ;	d0 = v_camera_y_pos
 ;	d1 = v_camera_x_pos
+
+;	uses d0, d1, d2, a2
 ; ---------------------------------------------------------------------------
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 LPL_InitBG:
 		tst.b	(v_last_lamppost).w			; have any lampposts been hit?
@@ -266,7 +274,6 @@ LPL_InitBG:
 		add.w	d2,d2
 		move.w	LPL_InitBG_Index(pc,d2.w),d2
 		jmp	LPL_InitBG_Index(pc,d2.w)
-; End of function LPL_InitBG
 
 ; ===========================================================================
 LPL_InitBG_Index:

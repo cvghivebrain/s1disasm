@@ -2,9 +2,6 @@
 ; Subroutine to load basic level data
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
 LevelDataLoad:
 		moveq	#0,d0
 		move.b	(v_zone).w,d0				; get zone number
@@ -47,8 +44,7 @@ LevelDataLoad:
 		bsr.w	AddPLC					; load pattern load cues
 
 	@skipPLC:
-		rts	
-; End of function LevelDataLoad
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Level	layout loading subroutine
@@ -56,9 +52,6 @@ LevelDataLoad:
 ; Levels are "cropped" in ROM. In RAM the level and background each comprise
 ; eight $40 byte rows, which are stored alternately.
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 LevelLayoutLoad:
 		lea	(v_level_layout).w,a3
@@ -74,12 +67,8 @@ LevelLayoutLoad:
 		bsr.w	LevelLayoutLoad2			; load level layout into RAM
 		lea	(v_level_layout+level_max_width).w,a3	; RAM address for background layout
 		moveq	#2,d1
-; End of function LevelLayoutLoad
 
 ; "LevelLayoutLoad2" is	run twice - for	the level and the background
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 LevelLayoutLoad2:
 		move.w	(v_zone).w,d0				; get zone & act numbers as word
@@ -104,10 +93,9 @@ LevelLayoutLoad2:
 	@loop_tile:
 		move.b	(a1)+,(a0)+
 		dbf	d0,@loop_tile				; load 1 row
-		lea	(level_max_width*2)(a3),a3		; do next row
+		lea	sizeof_levelrow(a3),a3			; do next row
 		dbf	d2,@loop_row				; repeat for number of rows
-		rts	
-; End of function LevelLayoutLoad2
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Level Headers

@@ -5,14 +5,13 @@
 ;	a0 = source address
 ;	a1 = destination address
 
+;	uses d0, d1, d2, d3, d4, d5, d6, a0, a1
+
 ; usage:
 ;	lea	(source).l,a0
 ;	lea	(destination).l,a1
 ;	bsr.w	KosDec
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 KosDec:
 		subq.l	#2,sp					; make space for 2 bytes on the stack
@@ -106,5 +105,4 @@ Kos_SeparateRLE2:
 
 Kos_Done:
 		addq.l	#2,sp					; restore stack pointer
-		rts	
-; End of function KosDec
+		rts
