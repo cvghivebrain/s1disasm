@@ -204,10 +204,10 @@ unused_f76b:			rs.b 1
 v_opl_routine:			rs.b 1 ; $FFFFF76C ; ObjPosLoad - routine counter
 unused_f76d:			rs.b 1
 v_opl_screen_x_pos:		rs.w 1 ; $FFFFF76E ; ObjPosLoad - screen x position, rounded down to nearest $80
-v_opl_ptr_right:		rs.l 1 ; $FFFFF770 ; ObjPosLoad - pointer to current objpos data
-v_opl_ptr_left:			rs.l 1 ; $FFFFF774 ; ObjPosLoad - pointer to leftmost objpos data
-v_opl_ptr_alt_right:		rs.l 1 ; $FFFFF778 ; ObjPosLoad - pointer to current secondary objpos data
-v_opl_ptr_alt_left:		rs.l 1 ; $FFFFF77C ; ObjPosLoad - pointer to leftmost secondary objpos data
+v_opl_ptr_right:		rs.l 1 ; $FFFFF770 ; ObjPosLoad - pointer to objpos data for 320px right of screen
+v_opl_ptr_left:			rs.l 1 ; $FFFFF774 ; ObjPosLoad - pointer to objpos data for 128px left of screen
+v_opl_ptr_alt_right:		rs.l 1 ; $FFFFF778 ; ObjPosLoad - pointer to secondary objpos data
+v_opl_ptr_alt_left:		rs.l 1 ; $FFFFF77C ; ObjPosLoad - pointer to secondary objpos data
 v_ss_angle:			rs.w 1 ; $FFFFF780 ; Special Stage angle
 v_ss_rotation_speed:		rs.w 1 ; $FFFFF782 ; Special Stage rotation speed
 unused_f784:			rs.b $C
