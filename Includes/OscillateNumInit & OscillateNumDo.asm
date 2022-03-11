@@ -1,15 +1,13 @@
 ; ---------------------------------------------------------------------------
-; Oscillating number subroutines
+; Subroutine to initialise oscillating numbers
+
+;	uses d1, a1, a2
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-; Initialise the values
 
 OscillateNumInit:
 		lea	(v_oscillating_direction).w,a1
 		lea	(@baselines).l,a2
-		moveq	#$20,d1
+		moveq	#((@end-@baselines)/2)-1,d1
 
 	@loop:
 		move.w	(a2)+,(a1)+				; copy baseline values to RAM
@@ -18,8 +16,8 @@ OscillateNumInit:
 
 
 ; ===========================================================================
-@baselines:	dc.w %0000000001111100				; oscillation direction bitfield
-		dc.w $80, 0
+@baselines:	dc.w %0000000001111100				; direction bitfield (0 = up; 1 = down)
+		dc.w $80, 0					; start value, start rate
 		dc.w $80, 0
 		dc.w $80, 0
 		dc.w $80, 0
@@ -35,11 +33,14 @@ OscillateNumInit:
 		dc.w $7080, $276
 		dc.w $80, 0
 		dc.w $80, 0
+	@end:
 		even
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+; ---------------------------------------------------------------------------
+; Subroutine to run oscillating numbers
 
-; Oscillate values
+;	uses d0, d1, d2, d3, d4, a1, a2
+; ---------------------------------------------------------------------------
 
 OscillateNumDo:
 		cmpi.b	#id_Sonic_Death,(v_ost_player+ost_routine).w ; has Sonic just died?
@@ -47,7 +48,7 @@ OscillateNumDo:
 		lea	(v_oscillating_direction).w,a1
 		lea	(@settings).l,a2
 		move.w	(a1)+,d3				; get oscillation direction bitfield
-		moveq	#$F,d1
+		moveq	#$F,d1					; bit to test/store direction
 
 @loop:
 		move.w	(a2)+,d2				; get frequency
@@ -58,30 +59,29 @@ OscillateNumDo:
 	@up:
 		move.w	2(a1),d0				; get current rate
 		add.w	d2,d0					; add frequency
-		move.w	d0,2(a1)
+		move.w	d0,2(a1)				; update rate
 		add.w	d0,0(a1)				; add rate to value
 		cmp.b	0(a1),d4
-		bhi.s	@next
-		bset	d1,d3
+		bhi.s	@next					; branch if value is below max
+		bset	d1,d3					; set direction to down
 		bra.s	@next
 
 	@down:
-		move.w	2(a1),d0
-		sub.w	d2,d0
-		move.w	d0,2(a1)
-		add.w	d0,0(a1)
+		move.w	2(a1),d0				; get current rate
+		sub.w	d2,d0					; subtract frequency
+		move.w	d0,2(a1)				; update rate
+		add.w	d0,0(a1)				; add rate to value
 		cmp.b	0(a1),d4
-		bls.s	@next
-		bclr	d1,d3
+		bls.s	@next					; branch if value is above min
+		bclr	d1,d3					; set direction to up
 
 	@next:
-		addq.w	#4,a1
-		dbf	d1,@loop
-		move.w	d3,(v_oscillating_direction).w
+		addq.w	#4,a1					; next value/rate
+		dbf	d1,@loop				; repeat for all bits in direction bitfield
+		move.w	d3,(v_oscillating_direction).w		; update direction bitfield
 
 @end:
-		rts	
-; End of function OscillateNumDo
+		rts
 
 ; ===========================================================================
 @settings:	; frequency, amplitude

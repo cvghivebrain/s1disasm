@@ -2,12 +2,15 @@
 ; Subroutine to	copy a tile map from RAM to VRAM fg/bg nametable
 
 ; input:
-;	a1 = tile map address
 ;	d0 = VRAM fg/bg nametable address (as VDP command)
 ;	d1 = width-1 (cells)
 ;	d2 = height-1 (cells)
+;	a1 = tile map address
+
+; output:
+;	a6 = vdp_data_port ($C00000)
+;	uses d0, d2, d3, d4, a1
 ; ---------------------------------------------------------------------------
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 TilemapToVRAM:
 		lea	(vdp_data_port).l,a6
@@ -22,5 +25,4 @@ TilemapToVRAM:
 		dbf	d3,@loop_cell				; next tile
 		add.l	d4,d0					; goto next line
 		dbf	d2,@loop_row				; next line
-		rts	
-; End of function TilemapToVRAM
+		rts

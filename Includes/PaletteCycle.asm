@@ -1,7 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Palette cycling routine loading subroutine
+
+;	uses d0, d1, d2, a0, a1, a2
 ; ---------------------------------------------------------------------------
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 PaletteCycle:
 		moveq	#0,d2
@@ -10,11 +11,7 @@ PaletteCycle:
 		add.w	d0,d0
 		move.w	PCycle_Index(pc,d0.w),d0
 		jmp	PCycle_Index(pc,d0.w)			; jump to relevant palette routine
-; End of function PaletteCycle
 
-; ---------------------------------------------------------------------------
-; Palette cycling routines
-; ---------------------------------------------------------------------------
 PCycle_Index:	index *
 		ptr PCycle_GHZ
 		ptr PCycle_LZ
@@ -28,8 +25,9 @@ PCycle_Index:	index *
 ; ---------------------------------------------------------------------------
 ; Title screen (referenced from GM_Title)
 ; ---------------------------------------------------------------------------
+
 PCycle_Title:
-		lea	(Pal_TitleCyc).l,a0
+		lea	(Pal_TitleCyc).l,a0			; use different water palette
 		bra.s	PCycle_GHZ_Run
 
 ; ---------------------------------------------------------------------------
@@ -52,12 +50,12 @@ PCycle_GHZ_Run:
 		move.l	4(a0,d0.w),(a1)				; copy 2 more colours
 
 	@exit:
-		rts	
-; End of function PCycle_GHZ
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Labyrinth Zone
 ; ---------------------------------------------------------------------------
+
 PCycle_LZ:
 ; Waterfalls
 		subq.w	#1,(v_palcycle_time).w			; decrement timer
@@ -119,21 +117,22 @@ PCycle_LZ_Conveyor:
 		move.l	(a0,d0.w),(a1)+
 		move.w	4(a0,d0.w),(a1)
 
-@exit:
-		rts	
-; End of function PCycle_LZ
+	@exit:
+		rts
 
 PCycLZ_Seq:	dc.b 1,	0, 0, 1, 0, 0, 1, 0
 
 ; ---------------------------------------------------------------------------
 ; Marble Zone
 ; ---------------------------------------------------------------------------
+
 PCycle_MZ:
 		rts	
 
 ; ---------------------------------------------------------------------------
 ; Star Light Zone
 ; ---------------------------------------------------------------------------
+
 PalCycle_SLZ:
 		subq.w	#1,(v_palcycle_time).w			; decrement timer
 		bpl.s	@exit					; if time remains, branch
@@ -156,13 +155,13 @@ PalCycle_SLZ:
 		move.w	(a0,d0.w),(a1)				; copy 1 colour
 		move.l	2(a0,d0.w),4(a1)			; copy 2 more colours
 
-@exit:
-		rts	
-; End of function PalCycle_SLZ
+	@exit:
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Spring Yard Zone
 ; ---------------------------------------------------------------------------
+
 PalCycle_SYZ:
 		subq.w	#1,(v_palcycle_time).w			; decrement timer
 		bpl.s	@exit					; if time remains, branch
@@ -183,13 +182,13 @@ PalCycle_SYZ:
 		move.w	(a0,d1.w),(a1)				; copy 1 colour
 		move.w	2(a0,d1.w),4(a1)			; copy 1 more colour, with a gap of 1 colour after the 1st
 
-@exit:
-		rts	
-; End of function PalCycle_SYZ
+	@exit:
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Scrap Brain Zone
 ; ---------------------------------------------------------------------------
+
 PalCycle_SBZ:
 		lea	(Pal_SBZCycList_Act1).l,a2
 		tst.b	(v_act).w				; is this act 1?
@@ -264,8 +263,7 @@ PalCycle_SBZ:
 		move.w	4(a0,d0.w),(a1)				; copy 1 more colour
 
 @exit:
-		rts	
-; End of function PalCycle_SBZ
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Scrap Brain Zone palette cycling script
@@ -280,27 +278,27 @@ mSBZp:		macro time,length,paladdress,ramaddress
 include_Pal_SBZCycList:	macro
 Pal_SBZCycList_Act1:
 		dc.w ((@end-Pal_SBZCycList_Act1-2)/6)-1
-		mSBZp	7,8,Pal_SBZCyc1,v_pal_dry+$50
-		mSBZp	$D,8,Pal_SBZCyc2,v_pal_dry+$52
-		mSBZp	$E,8,Pal_SBZCyc3,v_pal_dry+$6E
-		mSBZp	$B,8,Pal_SBZCyc5,v_pal_dry+$70
-		mSBZp	7,8,Pal_SBZCyc6,v_pal_dry+$72
-		mSBZp	$1C,$10,Pal_SBZCyc7,v_pal_dry+$7E
-		mSBZp	3,3,Pal_SBZCyc8,v_pal_dry+$78
-		mSBZp	3,3,Pal_SBZCyc8+2,v_pal_dry+$7A
-		mSBZp	3,3,Pal_SBZCyc8+4,v_pal_dry+$7C
+		mSBZp	7,8,Pal_SBZCyc1,v_pal_dry_line3+(8*2)
+		mSBZp	$D,8,Pal_SBZCyc2,v_pal_dry_line3+(9*2)
+		mSBZp	$E,8,Pal_SBZCyc3,v_pal_dry_line4+(7*2)
+		mSBZp	$B,8,Pal_SBZCyc5,v_pal_dry_line4+(8*2)
+		mSBZp	7,8,Pal_SBZCyc6,v_pal_dry_line4+(9*2)
+		mSBZp	$1C,$10,Pal_SBZCyc7,v_pal_dry_line4+(15*2)
+		mSBZp	3,3,Pal_SBZCyc8,v_pal_dry_line4+(12*2)
+		mSBZp	3,3,Pal_SBZCyc8+2,v_pal_dry_line4+(13*2)
+		mSBZp	3,3,Pal_SBZCyc8+4,v_pal_dry_line4+(14*2)
 	@end:
 		even
 
 Pal_SBZCycList_Act2:
 		dc.w ((@end-Pal_SBZCycList_Act2-2)/6)-1
-		mSBZp	7,8,Pal_SBZCyc1,v_pal_dry+$50
-		mSBZp	$D,8,Pal_SBZCyc2,v_pal_dry+$52
-		mSBZp	9,8,Pal_SBZCyc9,v_pal_dry+$70
-		mSBZp	7,8,Pal_SBZCyc6,v_pal_dry+$72
-		mSBZp	3,3,Pal_SBZCyc8,v_pal_dry+$78
-		mSBZp	3,3,Pal_SBZCyc8+2,v_pal_dry+$7A
-		mSBZp	3,3,Pal_SBZCyc8+4,v_pal_dry+$7C
+		mSBZp	7,8,Pal_SBZCyc1,v_pal_dry_line3+(8*2)
+		mSBZp	$D,8,Pal_SBZCyc2,v_pal_dry_line3+(9*2)
+		mSBZp	9,8,Pal_SBZCyc9,v_pal_dry_line4+(8*2)
+		mSBZp	7,8,Pal_SBZCyc6,v_pal_dry_line4+(9*2)
+		mSBZp	3,3,Pal_SBZCyc8,v_pal_dry_line4+(12*2)
+		mSBZp	3,3,Pal_SBZCyc8+2,v_pal_dry_line4+(13*2)
+		mSBZp	3,3,Pal_SBZCyc8+4,v_pal_dry_line4+(14*2)
 	@end:
 		even
 		endm

@@ -1,7 +1,6 @@
 ; ---------------------------------------------------------------------------
 ; Subroutine to	pause the game
 ; ---------------------------------------------------------------------------
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 PauseGame:
 		nop	
@@ -52,5 +51,4 @@ Pause_DoNothing:
 Pause_SlowMo:
 		move.w	#1,(f_pause).w
 		move.b	#$80,(v_snddriver_ram+f_pause_sound).w	; unpause the music
-		rts	
-; End of function PauseGame
+		rts

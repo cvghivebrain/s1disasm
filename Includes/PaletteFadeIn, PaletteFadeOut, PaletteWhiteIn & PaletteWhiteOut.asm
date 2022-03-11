@@ -1,9 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Subroutine to	fade in from black
+
+;	uses d0, d1, d2, d3, d4, a0, a1
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 PaletteFadeIn:
 		move.w	#palfade_all,(v_palfade_start).w	; set start position = 0; size = $40 ($3F)
@@ -20,32 +19,28 @@ PalFadeIn_Alt:							; start position and size are already set
 		move.w	d1,(a0)+
 		dbf	d0,@fill				; fill palette with black
 
-		move.w	#$15,d4
+		move.w	#(7*3),d4				; max number of colour changes needed (000 to $EEE)
 
 	@mainloop:
 		move.b	#id_VBlank_Fade,(v_vblank_routine).w
-		bsr.w	WaitForVBlank
-		bsr.s	FadeIn_FromBlack
-		bsr.w	RunPLC
+		bsr.w	WaitForVBlank				; wait for frame to end
+		bsr.s	FadeIn_FromBlack			; update palette
+		bsr.w	RunPLC					; decompress gfx if PLC contains anything
 		dbf	d4,@mainloop
-		rts	
-; End of function PaletteFadeIn
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
+		rts
+; ===========================================================================
 
 FadeIn_FromBlack:
 		moveq	#0,d0
-		lea	(v_pal_dry).w,a0
-		lea	(v_pal_dry_next).w,a1
+		lea	(v_pal_dry).w,a0			; current palette (starts as all black)
+		lea	(v_pal_dry_next).w,a1			; target palette
 		move.b	(v_palfade_start).w,d0
 		adda.w	d0,a0
 		adda.w	d0,a1
 		move.b	(v_palfade_size).w,d0
 
 	@addcolour:
-		bsr.s	FadeIn_AddColour			; increase colour
+		bsr.s	FadeIn_AddColour			; raise RGB levels (until they match target palette)
 		dbf	d0,@addcolour				; repeat for size of palette
 
 		cmpi.b	#id_LZ,(v_zone).w			; is level Labyrinth?
@@ -59,29 +54,26 @@ FadeIn_FromBlack:
 		adda.w	d0,a1
 		move.b	(v_palfade_size).w,d0
 
-	@addcolour2:
-		bsr.s	FadeIn_AddColour			; increase colour again
-		dbf	d0,@addcolour2				; repeat
+	@addcolour_water:
+		bsr.s	FadeIn_AddColour			; raise RGB levels for underwater palette
+		dbf	d0,@addcolour_water			; repeat for size of palette
 
-@exit:
-		rts	
-; End of function FadeIn_FromBlack
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
+	@exit:
+		rts
+; ===========================================================================
 
 FadeIn_AddColour:
 @addblue:
-		move.w	(a1)+,d2
-		move.w	(a0),d3
-		cmp.w	d2,d3					; is colour already at threshold level?
-		beq.s	@next					; if yes, branch
+		move.w	(a1)+,d2				; d2 = target colour
+		move.w	(a0),d3					; d3 = current colour
+		cmp.w	d2,d3
+		beq.s	@next					; branch if perfect match
+
 		move.w	d3,d1
 		addi.w	#$200,d1				; increase blue	value
-		cmp.w	d2,d1					; has blue reached threshold level?
-		bhi.s	@addgreen				; if yes, branch
-		move.w	d1,(a0)+				; update palette
+		cmp.w	d2,d1
+		bhi.s	@addgreen				; branch if blue already matched
+		move.w	d1,(a0)+				; update blue
 		rts	
 ; ===========================================================================
 
@@ -89,8 +81,8 @@ FadeIn_AddColour:
 		move.w	d3,d1
 		addi.w	#$20,d1					; increase green value
 		cmp.w	d2,d1
-		bhi.s	@addred
-		move.w	d1,(a0)+				; update palette
+		bhi.s	@addred					; branch if green already matched
+		move.w	d1,(a0)+				; update green
 		rts	
 ; ===========================================================================
 
@@ -101,44 +93,36 @@ FadeIn_AddColour:
 
 @next:
 		addq.w	#2,a0					; next colour
-		rts	
-; End of function FadeIn_AddColour
-
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to fade out to black
+
+;	uses d0, d1, d2, d4, a0
 ; ---------------------------------------------------------------------------
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 PaletteFadeOut:
 		move.w	#palfade_all,(v_palfade_start).w	; start position = 0; size = $40 ($3F)
-		move.w	#$15,d4
+		move.w	#(7*3),d4				; max number of colour changes needed ($EEE to 000)
 
 	@mainloop:
 		move.b	#id_VBlank_Fade,(v_vblank_routine).w
-		bsr.w	WaitForVBlank
-		bsr.s	FadeOut_ToBlack
-		bsr.w	RunPLC
+		bsr.w	WaitForVBlank				; wait for frame to end
+		bsr.s	FadeOut_ToBlack				; update palette
+		bsr.w	RunPLC					; decompress gfx if PLC contains anything
 		dbf	d4,@mainloop
-		rts	
-; End of function PaletteFadeOut
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
+		rts
+; ===========================================================================
 
 FadeOut_ToBlack:
 		moveq	#0,d0
-		lea	(v_pal_dry).w,a0
+		lea	(v_pal_dry).w,a0			; current palette
 		move.b	(v_palfade_start).w,d0
 		adda.w	d0,a0
 		move.b	(v_palfade_size).w,d0
 
 	@decolour:
-		bsr.s	FadeOut_DecColour			; decrease colour
+		bsr.s	FadeOut_DecColour			; lower RGB levels
 		dbf	d0,@decolour				; repeat for size of palette
 
 		moveq	#0,d0
@@ -147,54 +131,49 @@ FadeOut_ToBlack:
 		adda.w	d0,a0
 		move.b	(v_palfade_size).w,d0
 
-	@decolour2:
-		bsr.s	FadeOut_DecColour
-		dbf	d0,@decolour2
-		rts	
-; End of function FadeOut_ToBlack
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
+	@decolour_water:
+		bsr.s	FadeOut_DecColour			; lower RGB levels for underwater palette
+		dbf	d0,@decolour_water			; repeat for size of palette
+		rts
+; ===========================================================================
 
 FadeOut_DecColour:
 @dered:
-		move.w	(a0),d2
-		beq.s	@next
+		move.w	(a0),d2					; d2 = current colour
+		beq.s	@next					; branch if already black
+
 		move.w	d2,d1
-		andi.w	#$E,d1
-		beq.s	@degreen
+		andi.w	#$E,d1					; d1 = red value
+		beq.s	@degreen				; branch if 0
 		subq.w	#2,(a0)+				; decrease red value
 		rts	
 ; ===========================================================================
 
 @degreen:
 		move.w	d2,d1
-		andi.w	#$E0,d1
-		beq.s	@deblue
+		andi.w	#$E0,d1					; d1 = green value
+		beq.s	@deblue					; branch if 0
 		subi.w	#$20,(a0)+				; decrease green value
 		rts	
 ; ===========================================================================
 
 @deblue:
 		move.w	d2,d1
-		andi.w	#$E00,d1
-		beq.s	@next
+		andi.w	#$E00,d1				; d1 = blue value
+		beq.s	@next					; branch if 0
 		subi.w	#$200,(a0)+				; decrease blue	value
 		rts	
 ; ===========================================================================
 
 @next:
-		addq.w	#2,a0
-		rts	
-; End of function FadeOut_DecColour
+		addq.w	#2,a0					; next colour
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	fade in from white (Special Stage)
+
+;	uses d0, d1, d2, d3, d4, a0, a1
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 PaletteWhiteIn:
 		move.w	#palfade_all,(v_palfade_start).w	; start position = 0; size = $40
@@ -209,36 +188,33 @@ PaletteWhiteIn:
 		move.w	d1,(a0)+
 		dbf	d0,@fill				; fill palette with white
 
-		move.w	#$15,d4
+		move.w	#(7*3),d4				; max number of colour changes needed ($EEE to 0)
 
 	@mainloop:
 		move.b	#id_VBlank_Fade,(v_vblank_routine).w
-		bsr.w	WaitForVBlank
-		bsr.s	WhiteIn_FromWhite
-		bsr.w	RunPLC
+		bsr.w	WaitForVBlank				; wait for frame to end
+		bsr.s	WhiteIn_FromWhite			; update palette
+		bsr.w	RunPLC					; decompress gfx if PLC contains anything
 		dbf	d4,@mainloop
-		rts	
-; End of function PaletteWhiteIn
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
+		rts
+; ===========================================================================
 
 WhiteIn_FromWhite:
 		moveq	#0,d0
-		lea	(v_pal_dry).w,a0
-		lea	(v_pal_dry_next).w,a1
+		lea	(v_pal_dry).w,a0			; current palette (starts as all white)
+		lea	(v_pal_dry_next).w,a1			; target palette
 		move.b	(v_palfade_start).w,d0
 		adda.w	d0,a0
 		adda.w	d0,a1
 		move.b	(v_palfade_size).w,d0
 
 	@decolour:
-		bsr.s	WhiteIn_DecColour			; decrease colour
+		bsr.s	WhiteIn_DecColour			; lower RGB levels (until they match target palette)
 		dbf	d0,@decolour				; repeat for size of palette
 
 		cmpi.b	#id_LZ,(v_zone).w			; is level Labyrinth?
 		bne.s	@exit					; if not, branch
+
 		moveq	#0,d0
 		lea	(v_pal_water).w,a0
 		lea	(v_pal_water_next).w,a1
@@ -247,40 +223,37 @@ WhiteIn_FromWhite:
 		adda.w	d0,a1
 		move.b	(v_palfade_size).w,d0
 
-	@decolour2:
-		bsr.s	WhiteIn_DecColour
-		dbf	d0,@decolour2
+	@decolour_water:
+		bsr.s	WhiteIn_DecColour			; lower RGB levels for underwater palette
+		dbf	d0,@decolour_water			; repeat for size of palette
 
 	@exit:
-		rts	
-; End of function WhiteIn_FromWhite
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
+		rts
+; ===========================================================================
 
 WhiteIn_DecColour:
 @deblue:
-		move.w	(a1)+,d2
-		move.w	(a0),d3
+		move.w	(a1)+,d2				; d2 = target colour
+		move.w	(a0),d3					; d3 = current colour
 		cmp.w	d2,d3
-		beq.s	@next
+		beq.s	@next					; branch if perfect match
+
 		move.w	d3,d1
 		subi.w	#$200,d1				; decrease blue	value
-		blo.s	@degreen
+		bcs.s	@degreen				; branch if already 0
 		cmp.w	d2,d1
-		blo.s	@degreen
-		move.w	d1,(a0)+
+		blo.s	@degreen				; branch if blue already matched
+		move.w	d1,(a0)+				; update blue
 		rts	
 ; ===========================================================================
 
 @degreen:
 		move.w	d3,d1
 		subi.w	#$20,d1					; decrease green value
-		blo.s	@dered
+		bcs.s	@dered					; branch if already 0
 		cmp.w	d2,d1
-		blo.s	@dered
-		move.w	d1,(a0)+
+		blo.s	@dered					; branch if green already matched
+		move.w	d1,(a0)+				; update green
 		rts	
 ; ===========================================================================
 
@@ -290,44 +263,38 @@ WhiteIn_DecColour:
 ; ===========================================================================
 
 @next:
-		addq.w	#2,a0
-		rts	
-; End of function WhiteIn_DecColour
+		addq.w	#2,a0					; next colour
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to fade to white (Special Stage)
+
+;	uses d0, d1, d2, d4, a0
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 PaletteWhiteOut:
 		move.w	#palfade_all,(v_palfade_start).w	; start position = 0; size = $40 ($3F)
-		move.w	#$15,d4
+		move.w	#(7*3),d4				; max number of colour changes needed (000 to $EEE)
 
 	@mainloop:
 		move.b	#id_VBlank_Fade,(v_vblank_routine).w
-		bsr.w	WaitForVBlank
-		bsr.s	WhiteOut_ToWhite
-		bsr.w	RunPLC
+		bsr.w	WaitForVBlank				; wait for frame to end
+		bsr.s	WhiteOut_ToWhite			; update palette
+		bsr.w	RunPLC					; decompress gfx if PLC contains anything
 		dbf	d4,@mainloop
-		rts	
-; End of function PaletteWhiteOut
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
+		rts
+; ===========================================================================
 
 WhiteOut_ToWhite:
 		moveq	#0,d0
-		lea	(v_pal_dry).w,a0
+		lea	(v_pal_dry).w,a0			; current palette
 		move.b	(v_palfade_start).w,d0
 		adda.w	d0,a0
 		move.b	(v_palfade_size).w,d0
 
 	@addcolour:
-		bsr.s	WhiteOut_AddColour
-		dbf	d0,@addcolour
+		bsr.s	WhiteOut_AddColour			; raise RGB levels
+		dbf	d0,@addcolour				; repeat for size of palette
 
 		moveq	#0,d0
 		lea	(v_pal_water).w,a0
@@ -335,48 +302,44 @@ WhiteOut_ToWhite:
 		adda.w	d0,a0
 		move.b	(v_palfade_size).w,d0
 
-	@addcolour2:
-		bsr.s	WhiteOut_AddColour
-		dbf	d0,@addcolour2
-		rts	
-; End of function WhiteOut_ToWhite
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
+	@addcolour_water:
+		bsr.s	WhiteOut_AddColour			; raise RGB levels for underwater palette
+		dbf	d0,@addcolour_water			; repeat for size of palette
+		rts
+; ===========================================================================
 
 WhiteOut_AddColour:
 @addred:
-		move.w	(a0),d2
+		move.w	(a0),d2					; d2 = current colour
 		cmpi.w	#cWhite,d2
-		beq.s	@next
+		beq.s	@next					; branch if already white
+
 		move.w	d2,d1
-		andi.w	#$E,d1
+		andi.w	#$E,d1					; d1 = red value
 		cmpi.w	#cRed,d1
-		beq.s	@addgreen
+		beq.s	@addgreen				; branch if max value
 		addq.w	#2,(a0)+				; increase red value
 		rts	
 ; ===========================================================================
 
 @addgreen:
 		move.w	d2,d1
-		andi.w	#$E0,d1
+		andi.w	#$E0,d1					; d1 = green value
 		cmpi.w	#cGreen,d1
-		beq.s	@addblue
+		beq.s	@addblue				; branch if max value
 		addi.w	#$20,(a0)+				; increase green value
 		rts	
 ; ===========================================================================
 
 @addblue:
 		move.w	d2,d1
-		andi.w	#$E00,d1
+		andi.w	#$E00,d1				; d1 = blue value
 		cmpi.w	#cBlue,d1
-		beq.s	@next
+		beq.s	@next					; branch if max value
 		addi.w	#$200,(a0)+				; increase blue	value
 		rts	
 ; ===========================================================================
 
 @next:
-		addq.w	#2,a0
-		rts	
-; End of function WhiteOut_AddColour
+		addq.w	#2,a0					; next colour
+		rts

@@ -16,6 +16,9 @@ OPL_Index:	index *
 		ptr OPL_Main
 ; ===========================================================================
 
+; Spawn window is initially -256px to -128px (relative to v_camera_x_pos)
+; This is moved to -128px to 640px during OPL_Main so that all on-screen objects load at level start
+
 OPL_Init:
 		addq.b	#2,(v_opl_routine).w			; goto OPL_Main next
 		move.w	(v_zone).w,d0				; get zone/act numbers
@@ -23,14 +26,14 @@ OPL_Init:
 		lsr.w	#4,d0					; combine zone/act into single number, times 4
 		lea	(ObjPos_Index).l,a0
 		movea.l	a0,a1					; copy index pointer to a1
-		adda.w	(a0,d0.w),a0				; jump to objpos data
-		move.l	a0,(v_opl_ptr_right).w			; copy objpos data address
+		adda.w	(a0,d0.w),a0				; jump to objpos list for specified zone/act
+		move.l	a0,(v_opl_ptr_right).w			; copy objpos list address
 		move.l	a0,(v_opl_ptr_left).w
-		adda.w	2(a1,d0.w),a1				; jump to secondary objpos data (this is always blank)
-		move.l	a1,(v_opl_ptr_alt_right).w		; copy objpos data address
+		adda.w	2(a1,d0.w),a1				; jump to secondary objpos list (this is always blank)
+		move.l	a1,(v_opl_ptr_alt_right).w		; copy objpos list address
 		move.l	a1,(v_opl_ptr_alt_left).w
 		lea	(v_respawn_list).w,a2
-		move.w	#$101,(a2)+
+		move.w	#$101,(a2)+				; start respawn counter at 1
 		move.w	#($17C/4)-1,d0				; deletes half the stack as well; should be $100
 
 	@clear_respawn_list:
@@ -48,9 +51,9 @@ OPL_Init:
 		andi.w	#$FF80,d6				; round down to nearest $80
 		movea.l	(v_opl_ptr_right).w,a0			; get objpos data pointer
 
-@loop_find_first:
-		cmp.w	(a0),d6					; (a0) = x pos of object; d6 = edge of object window
-		bls.s	@found_near				; branch if object is within object window
+@loop_find_right_init:
+		cmp.w	(a0),d6					; (a0) = x pos of object; d6 = edge of spawn window
+		bls.s	@found_right				; branch if object is right of edge (1st object outside spawn window)
 		tst.b	4(a0)					; 4(a0) = object id and remember state flag
 		bpl.s	@no_respawn				; branch if no remember flag found
 		move.b	(a2),d2					; d2 = respawn state
@@ -58,30 +61,30 @@ OPL_Init:
 
 	@no_respawn:
 		addq.w	#6,a0					; goto next object in objpos list
-		bra.s	@loop_find_first			; loop until object is found within window
+		bra.s	@loop_find_right_init			; loop until object is found within window
 ; ===========================================================================
 
-@found_near:
+@found_right:
 		move.l	a0,(v_opl_ptr_right).w			; save pointer for objpos, 128px left of screen
-		movea.l	(v_opl_ptr_left).w,a0			; get first objpos again
+		movea.l	(v_opl_ptr_left).w,a0			; get first objpos in list again
 		subi.w	#128,d6					; d6 = 256px to left of screen
-		bcs.s	@found_far				; branch if camera is close to left boundary
+		bcs.s	@found_left				; branch if camera is close to left boundary
 
-@loop_find_far:
-		cmp.w	(a0),d6					; (a0) = x pos of object; d6 = edge of object window
-		bls.s	@found_far				; branch if object is within object window
+@loop_find_left_init:
+		cmp.w	(a0),d6					; (a0) = x pos of object; d6 = edge of spawn window
+		bls.s	@found_left				; branch if object is right of edge (1st object inside spawn window)
 		tst.b	4(a0)					; 4(a0) = object id and remember state flag
 		bpl.s	@no_respawn2				; branch if no remember flag found
 		addq.b	#1,1(a2)				; increment second respawn list counter
 
 	@no_respawn2:
 		addq.w	#6,a0					; goto next object in objpos list
-		bra.s	@loop_find_far				; loop until object is found within window
+		bra.s	@loop_find_left_init			; loop until object is found within window
 ; ===========================================================================
 
-@found_far:
+@found_left:
 		move.l	a0,(v_opl_ptr_left).w			; save pointer for objpos, 256px left of screen
-		move.w	#-1,(v_opl_screen_x_pos).w		; initial screen position
+		move.w	#-1,(v_opl_screen_x_pos).w		; start screen at -1 so OPL_Main thinks it's moving right
 
 OPL_Main:
 		lea	(v_respawn_list).w,a2
@@ -90,7 +93,7 @@ OPL_Main:
 		andi.w	#$FF80,d6				; d6 = camera x pos rounded down to nearest $80
 		cmp.w	(v_opl_screen_x_pos).w,d6		; compare to previous screen position
 		beq.w	OPL_NoMove				; branch if screen hasn't moved
-		bge.s	OPL_MovedRight				; branch if screen is right of previous position
+		bge.s	OPL_MovedRight				; branch if screen is right of previous position (or if level just started)
 
 OPL_MovedLeft:
 		move.w	d6,(v_opl_screen_x_pos).w		; update screen position
@@ -100,7 +103,7 @@ OPL_MovedLeft:
 
 @loop_find_left:
 		cmp.w	-6(a0),d6				; read objpos backwards
-		bge.s	@found_left				; branch if object is within object window
+		bge.s	@found_left				; branch if object is outside spawn window
 		subq.w	#6,a0					; update pointer
 		tst.b	4(a0)					; 4(a0) = object id and remember state flag
 		bpl.s	@no_respawn				; branch if no remember flag found
@@ -129,7 +132,7 @@ OPL_MovedLeft:
 
 @loop_find_right:
 		cmp.w	-6(a0),d6				; read objpos backwards
-		bgt.s	@found_right				; branch if object is within object window
+		bgt.s	@found_right				; branch if object is within spawn window
 		tst.b	-2(a0)					; -2(a0) = object id and remember state flag
 		bpl.s	@no_respawn3				; branch if no remember flag found
 		subq.b	#1,(a2)					; decrement respawn list counter
@@ -150,8 +153,8 @@ OPL_MovedRight:
 		addi.w	#320+320,d6				; d6 = 320px to right of screen
 
 @loop_find_right:
-		cmp.w	(a0),d6					; (a0) = x pos of object; d6 = right edge of object window
-		bls.s	@found_right				; branch if object is outside object window
+		cmp.w	(a0),d6					; (a0) = x pos of object; d6 = right edge of spawn window
+		bls.s	@found_right				; branch if object is outside spawn window
 		tst.b	4(a0)
 		bpl.s	@no_respawn
 		move.b	(a2),d2
@@ -168,8 +171,8 @@ OPL_MovedRight:
 		bcs.s	@found_left
 
 @loop_find_left:
-		cmp.w	(a0),d6					; (a0) = x pos of object; d6 = left edge of object window
-		bls.s	@found_left				; branch if object is inside object window
+		cmp.w	(a0),d6					; (a0) = x pos of object; d6 = left edge of spawn window
+		bls.s	@found_left				; branch if object is within spawn window
 		tst.b	4(a0)
 		bpl.s	@no_respawn2
 		addq.b	#1,1(a2)
