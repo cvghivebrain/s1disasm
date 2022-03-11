@@ -1329,7 +1329,7 @@ neg:		macro
 		if cpu_mode=1					; Z80
 		dc.w $ed44
 		else						; 68k
-		nxg
+		nxg.\0	\_
 		endc
 		endm
 
