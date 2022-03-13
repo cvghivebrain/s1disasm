@@ -17,7 +17,7 @@ FindNearestTile:
 		andi.w	#$380,d0				; read only high byte of y pos (because each level tile is 256px tall)
 		move.w	d3,d1					; get x pos of object
 		lsr.w	#8,d1
-		andi.w	#$7F,d1					; read only low byte of x pos
+		andi.w	#$7F,d1					; read only high byte of x pos
 		add.w	d1,d0					; combine for position within layout
 		moveq	#-1,d1					; d1 = $FFFFFFFF (used to make a RAM address)
 		lea	(v_level_layout).w,a1

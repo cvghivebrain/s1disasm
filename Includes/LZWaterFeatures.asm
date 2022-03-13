@@ -413,7 +413,7 @@ LZWaterSlides:
 		lsr.w	#1,d0					; divide y pos by 2 (because layout alternates between level and bg lines)
 		andi.w	#$380,d0				; read only high byte of y pos (because each level tile is 256px tall)
 		move.b	ost_x_pos(a1),d1
-		andi.w	#$7F,d1					; read only low byte of x pos
+		andi.w	#$7F,d1					; read only high byte of x pos
 		add.w	d1,d0					; combine for position within layout
 		lea	(v_level_layout).w,a2
 		move.b	(a2,d0.w),d0				; get 256x256 tile number

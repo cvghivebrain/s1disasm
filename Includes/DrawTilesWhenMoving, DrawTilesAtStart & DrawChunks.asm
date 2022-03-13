@@ -1,8 +1,11 @@
 ; ---------------------------------------------------------------------------
 ; Subroutine to	draw 16x16 tiles at the edge of the screen as the camera moves
-; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+; output:
+;	a5 = vdp_control_port ($C00004)
+;	a6 = vdp_data_port ($C00000)
+;	uses d0, d1, d2, d3, d4, d5, d6, d7, a1, a2, a3, a4
+; ---------------------------------------------------------------------------
 
 ; Background only - used by title screen
 DrawTilesWhenMoving_BGOnly:
@@ -10,15 +13,14 @@ DrawTilesWhenMoving_BGOnly:
 		lea	(vdp_data_port).l,a6
 		lea	(v_bg1_redraw_direction).w,a2
 		lea	(v_bg1_x_pos).w,a3
-		lea	(v_level_layout+level_max_width).w,a4
-		move.w	#draw_bg,d2
+		lea	(v_level_layout+level_max_width).w,a4	; first row of bg layout (fg/bg are stored in alternating rows)
+		move.w	#draw_bg,d2				; value added to base VRAM address to get bg nametable
 		bsr.w	DrawBGScrollBlock1
 		lea	(v_bg2_redraw_direction).w,a2
 		lea	(v_bg2_x_pos).w,a3
 		bra.w	DrawBGScrollBlock2
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
+; Foreground and background - used by levels
 DrawTilesWhenMoving:
 		lea	(vdp_control_port).l,a5
 		lea	(vdp_data_port).l,a6
@@ -26,8 +28,8 @@ DrawTilesWhenMoving:
 		; Background
 		lea	(v_bg1_redraw_direction_copy).w,a2
 		lea	(v_bg1_x_pos_copy).w,a3
-		lea	(v_level_layout+level_max_width).w,a4
-		move.w	#draw_bg,d2
+		lea	(v_level_layout+level_max_width).w,a4	; first row of bg layout
+		move.w	#draw_bg,d2				; value added to base VRAM address to get bg nametable
 		bsr.w	DrawBGScrollBlock1
 		lea	(v_bg2_redraw_direction_copy).w,a2
 		lea	(v_bg2_x_pos_copy).w,a3
@@ -43,25 +45,27 @@ DrawTilesWhenMoving:
 		lea	(v_fg_redraw_direction_copy).w,a2
 		lea	(v_camera_x_pos_copy).w,a3
 		lea	(v_level_layout).w,a4
-		move.w	#draw_fg,d2
+		move.w	#draw_fg,d2				; value added to base VRAM address to get fg nametable
 		tst.b	(a2)					; are any redraw flags set?
 		beq.s	@exit					; if not, branch
 		bclr	#redraw_top_bit,(a2)			; clear flag for redraw top
 		beq.s	@chk_bottom				; branch if already clear
+
 		; Draw new tiles at the top
 		moveq	#-16,d4					; y coordinate - 16px (size of block) above top
 		moveq	#-16,d5					; x coordinate - 16px outside left edge
 		bsr.w	Calc_VRAM_Pos				; d0 = VDP command for fg nametable
-		moveq	#-16,d4					; y coordinate
-		moveq	#-16,d5					; x coordinate
+		moveq	#-16,d4
+		moveq	#-16,d5
 		bsr.w	DrawRow
 
 	@chk_bottom:
 		bclr	#redraw_bottom_bit,(a2)			; clear flag for redraw bottom
 		beq.s	@chk_left				; branch if already clear
+
 		; Draw new tiles at the bottom
 		move.w	#224,d4					; y coordinate - bottom of screen
-		moveq	#-16,d5
+		moveq	#-16,d5					; x coordinate - 16px outside left edge
 		bsr.w	Calc_VRAM_Pos
 		move.w	#224,d4
 		moveq	#-16,d5
@@ -70,9 +74,10 @@ DrawTilesWhenMoving:
 	@chk_left:
 		bclr	#redraw_left_bit,(a2)			; clear flag for redraw left
 		beq.s	@chk_right				; branch if already clear
+
 		; Draw new tiles on the left
-		moveq	#-16,d4
-		moveq	#-16,d5
+		moveq	#-16,d4					; y coordinate - 16px (size of block) above top
+		moveq	#-16,d5					; x coordinate - 16px outside left edge
 		bsr.w	Calc_VRAM_Pos
 		moveq	#-16,d4
 		moveq	#-16,d5
@@ -81,8 +86,9 @@ DrawTilesWhenMoving:
 	@chk_right:
 		bclr	#redraw_right_bit,(a2)			; clear flag for redraw right
 		beq.s	@exit					; branch if already clear
+
 		; Draw new tiles on the right
-		moveq	#-16,d4
+		moveq	#-16,d4					; y coordinate - 16px (size of block) above top
 		move.w	#320,d5					; x coordinate - right edge of screen
 		bsr.w	Calc_VRAM_Pos
 		moveq	#-16,d4
@@ -90,35 +96,35 @@ DrawTilesWhenMoving:
 		bsr.w	DrawColumn
 
 @exit:
-		rts	
-; End of function DrawTilesWhenMoving
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Subroutines to draw 16x16 tiles on the background in sections
 
 ; input:
-;	d2 = VRAM something
-;	a5 = vdp_control_port
-;	a6 = vdp_data_port
+;	d2 = value added to base VRAM address to get bg nametable
 ;	(a2) = redraw direction flags
 ;	(a3) = bg x position
 ;	4(a3) = bg y position
 ;	a4 = address of bg layout
-; ---------------------------------------------------------------------------
+;	a5 = vdp_control_port
+;	a6 = vdp_data_port
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+;	uses d0, d1, d3, d4, d5, d6, d7, a1, a2, a4
+; ---------------------------------------------------------------------------
 
 DrawBGScrollBlock1:
 		tst.b	(a2)					; are any redraw flags set?
 		beq.w	@exit					; if not, branch
 		bclr	#redraw_top_bit,(a2)			; clear flag for redraw top
 		beq.s	@chk_bottom				; branch if already clear
+
 		; Draw new tiles at the top
 		moveq	#-16,d4					; y coordinate - 16px (size of block) above top
 		moveq	#-16,d5					; x coordinate - 16px outside left edge
 		bsr.w	Calc_VRAM_Pos				; d0 = VDP command for fg nametable
-		moveq	#-16,d4					; y coordinate
-		moveq	#-16,d5					; x coordinate
+		moveq	#-16,d4
+		moveq	#-16,d5
 		if Revision=0
 			moveq	#(512/16)-1,d6			; draw entire row of plane
 			bsr.w	DrawRow_Partial
@@ -129,6 +135,7 @@ DrawBGScrollBlock1:
 	@chk_bottom:
 		bclr	#redraw_bottom_bit,(a2)			; clear flag for redraw bottom
 		beq.s	@chk_left				; branch if already clear
+
 		; Draw new tiles at the bottom
 		move.w	#224,d4					; y coordinate - bottom of screen
 		moveq	#-16,d5
@@ -145,6 +152,7 @@ DrawBGScrollBlock1:
 	@chk_left:
 		bclr	#redraw_left_bit,(a2)			; clear flag for redraw left
 		beq.s	@chk_right				; branch if already clear
+
 		; Draw new tiles on the left
 		moveq	#-16,d4
 		moveq	#-16,d5
@@ -155,7 +163,7 @@ DrawBGScrollBlock1:
 		if Revision=0
 			move.w	(v_scroll_block_1_height).w,d6	; get bg block 1 height (GHZ = $70; others = $800)
 			move.w	4(a3),d1			; get bg y position
-			andi.w	#-16,d1				; round down to nearest 16
+			andi.w	#$FFF0,d1			; round down to nearest 16
 			sub.w	d1,d6
 			blt.s	@chk_right			; if bg block 1 is offscreen, skip loading its tiles
 			lsr.w	#4,d6				; d6 = number of rows not above the screen
@@ -173,19 +181,19 @@ DrawBGScrollBlock1:
 		if Revision=0
 			beq.s	@exit				; branch if already clear
 		else
-			beq.s	@chk_topall
+			beq.s	@chk_topall			; branch if already clear
 		endc
 		; Draw new tiles on the right
 		moveq	#-16,d4
-		move.w	#320,d5
+		move.w	#320,d5					; x coordinate - right edge of screen
 		bsr.w	Calc_VRAM_Pos
 		moveq	#-16,d4
 		move.w	#320,d5
 
 		if Revision=0
 			move.w	(v_scroll_block_1_height).w,d6
-			move.w	4(a3),d1
-			andi.w	#-16,d1
+			move.w	4(a3),d1			; get bg y position
+			andi.w	#$FFF0,d1			; round down to nearest 16
 			sub.w	d1,d6
 			blt.s	@exit
 			lsr.w	#4,d6
@@ -201,9 +209,9 @@ DrawBGScrollBlock1:
 			bclr	#redraw_topall_bit,(a2)
 			beq.s	@chk_bottomall
 		; Draw entire row at the top
-			moveq	#-16,d4
+			moveq	#-16,d4				; y coordinate - 16px (size of block) above top
 			moveq	#0,d5
-			bsr.w	Calc_VRAM_Pos_2
+			bsr.w	Calc_VRAM_Pos_IgnoreX
 			moveq	#-16,d4
 			moveq	#0,d5
 			moveq	#(512/16)-1,d6
@@ -212,9 +220,9 @@ DrawBGScrollBlock1:
 			bclr	#redraw_bottomall_bit,(a2)
 			beq.s	@exit
 		; Draw entire row at the bottom
-			move.w	#224,d4
+			move.w	#224,d4				; y coordinate - bottom of screen
 			moveq	#0,d5
-			bsr.w	Calc_VRAM_Pos_2
+			bsr.w	Calc_VRAM_Pos_IgnoreX
 			move.w	#224,d4
 			moveq	#0,d5
 			moveq	#(512/16)-1,d6
@@ -222,11 +230,8 @@ DrawBGScrollBlock1:
 		endc
 
 @exit:
-		rts	
-; End of function DrawBGScrollBlock1
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+		rts
+; ===========================================================================
 
 ; Essentially, this draws everything that isn't scroll block 1
 DrawBGScrollBlock2:
@@ -241,7 +246,7 @@ DrawBGScrollBlock2:
 
 			move.w	(v_scroll_block_1_height).w,d4	; get bg block 1 height (GHZ = $70; others = $800)
 			move.w	4(a3),d1			; get bg y position
-			andi.w	#-16,d1				; round down to nearest 16
+			andi.w	#$FFF0,d1			; round down to nearest 16
 			sub.w	d1,d4				; d4 = height of screen that isn't bg block 1
 			move.w	d4,-(sp)			; save to stack
 			moveq	#-16,d5				; x coordinate
@@ -250,7 +255,7 @@ DrawBGScrollBlock2:
 			moveq	#-16,d5
 			move.w	(v_scroll_block_1_height).w,d6
 			move.w	4(a3),d1
-			andi.w	#-16,d1
+			andi.w	#$FFF0,d1
 			sub.w	d1,d6				; d6 = height of screen that isn't bg block 1
 			blt.s	@chk_right			; branch if bg block 1 is completely off screen
 			lsr.w	#4,d6				; divide by 16
@@ -264,7 +269,7 @@ DrawBGScrollBlock2:
 		; Draw new tiles on the right
 			move.w	(v_scroll_block_1_height).w,d4
 			move.w	4(a3),d1
-			andi.w	#-16,d1
+			andi.w	#$FFF0,d1
 			sub.w	d1,d4
 			move.w	d4,-(sp)
 			move.w	#320,d5
@@ -273,7 +278,7 @@ DrawBGScrollBlock2:
 			move.w	#320,d5
 			move.w	(v_scroll_block_1_height).w,d6
 			move.w	4(a3),d1
-			andi.w	#-16,d1
+			andi.w	#$FFF0,d1
 			sub.w	d1,d6
 			blt.s	@exit
 			lsr.w	#4,d6
@@ -307,9 +312,7 @@ DrawBGScrollBlock2:
 			bsr.w	DrawColumn_Partial
 		endc
 @exit:
-		rts	
-; End of function DrawBGScrollBlock2
-
+		rts
 ; ===========================================================================
 
 ; Abandoned unused scroll block code.
@@ -324,7 +327,7 @@ DrawBGScrollBlock2_Unused:
 		; Draw new tiles on the left
 			move.w	#224-16,d4			; Note that full screen coverage is normally 224+16+16. This is exactly three blocks less.
 			move.w	4(a3),d1
-			andi.w	#-16,d1
+			andi.w	#$FFF0,d1
 			sub.w	d1,d4
 			move.w	d4,-(sp)
 			moveq	#-16,d5
@@ -340,7 +343,7 @@ DrawBGScrollBlock2_Unused:
 		; Draw new tiles on the right
 			move.w	#224-16,d4
 			move.w	4(a3),d1
-			andi.w	#-16,d1
+			andi.w	#$FFF0,d1
 			sub.w	d1,d4
 			move.w	d4,-(sp)
 			move.w	#320,d5
@@ -365,18 +368,18 @@ DrawBGScrollBlock2_Unused:
 DrawBGScrollBlock2_SBZ:
 			moveq	#-16,d4				; draw 16px above top of screen
 			bclr	#redraw_top_bit,(a2)		; clear flag for redraw top
-			bne.s	@top				; branch if it was set
+			bne.s	@top_bottom			; branch if it was set
 			bclr	#redraw_bottom_bit,(a2)		; clear flag for redraw bottom
 			beq.s	@chk_other			; branch if already clear
 			move.w	#224,d4				; draw at bottom of screen
-	@top:
+	@top_bottom:
 			lea	(locj_6DF4+1).l,a0
 			move.w	(v_bg1_y_pos).w,d0
 			add.w	d4,d0				; d0 = v_bg1_y_pos -16 or +224
 			andi.w	#$1F0,d0			; round down to nearest 16
 			lsr.w	#4,d0				; divide by 16
 			move.b	(a0,d0.w),d0
-			lea	(locj_6FE4).l,a3		; dc.w v_bg1_x_pos_copy, v_bg1_x_pos_copy, v_bg2_x_pos_copy, v_bg3_x_pos_copy
+			lea	(DrawBG_XPosCopy_Ptrs).l,a3	; dc.w v_bg1_x_pos_copy, v_bg1_x_pos_copy, v_bg2_x_pos_copy, v_bg3_x_pos_copy
 			movea.w	(a3,d0.w),a3			; get pointer to bg block 1/2/3 x pos
 			beq.s	@bg_x_pos_0			; branch if 0
 			moveq	#-16,d5				; x coordinate
@@ -389,7 +392,7 @@ DrawBGScrollBlock2_SBZ:
 	@bg_x_pos_0:
 			moveq	#0,d5
 			movem.l	d4/d5,-(sp)
-			bsr.w	Calc_VRAM_Pos_2
+			bsr.w	Calc_VRAM_Pos_IgnoreX
 			movem.l	(sp)+,d4/d5
 			moveq	#(512/16)-1,d6			; draw entire row
 			bsr.w	DrawRow_IgnoreX
@@ -473,7 +476,7 @@ DrawBGScrollBlock3_MZ:
 			andi.w	#$7F0,d0
 			lsr.w	#4,d0
 			move.b	(a0,d0.w),d0
-			movea.w	locj_6FE4(pc,d0.w),a3
+			movea.w	DrawBG_XPosCopy_Ptrs(pc,d0.w),a3
 			beq.s	locj_6F9A
 			moveq	#-16,d5
 			movem.l	d4/d5,-(sp)
@@ -485,7 +488,7 @@ DrawBGScrollBlock3_MZ:
 	locj_6F9A:
 			moveq	#0,d5
 			movem.l	d4/d5,-(sp)
-			bsr.w	Calc_VRAM_Pos_2
+			bsr.w	Calc_VRAM_Pos_IgnoreX
 			movem.l	(sp)+,d4/d5
 			moveq	#(512/16)-1,d6
 			bsr.w	DrawRow_IgnoreX
@@ -512,7 +515,7 @@ DrawBGScrollBlock3_MZ:
 			lea	(a0,d0.w),a0
 			bra.w	locj_6FEC
 ;===============================================================================			
-	locj_6FE4:
+	DrawBG_XPosCopy_Ptrs:
 			dc.w v_bg1_x_pos_copy, v_bg1_x_pos_copy, v_bg2_x_pos_copy, v_bg3_x_pos_copy
 	locj_6FEC:
 			moveq	#((224+16+16)/16)-1,d6
@@ -522,7 +525,7 @@ DrawBGScrollBlock3_MZ:
 			move.b	(a0)+,d0
 			btst	d0,(a2)
 			beq.s	locj_701C
-			move.w	locj_6FE4(pc,d0.w),a3
+			move.w	DrawBG_XPosCopy_Ptrs(pc,d0.w),a3
 			movem.l	d4/d5/a0,-(sp)
 			movem.l	d4/d5,-(sp)
 			bsr.w	GetBlockData
@@ -550,9 +553,9 @@ DrawBGScrollBlock3_MZ:
 ;	a4 = address of level/bg layout
 ;	a5 = vdp_control_port
 ;	a6 = vdp_data_port
-; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+;	uses d0, d1, d3, d5, d6, d7, a1
+; ---------------------------------------------------------------------------
 
 DrawRow:
 		moveq	#((320+16+16)/16)-1,d6			; draw the entire width of the screen + two extra columns
@@ -571,7 +574,6 @@ DrawRow_Partial:
 		addi.w	#16,d5					; x coordinate of next block
 		dbf	d6,@loop
 		rts
-; End of function DrawRow
 
 		if Revision=0
 		else
@@ -604,9 +606,9 @@ DrawRow_IgnoreX:
 ;	a4 = address of level/bg layout
 ;	a5 = vdp_control_port
 ;	a6 = vdp_data_port
-; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+;	uses d0, d1, d3, d4, d6, d7, a1
+; ---------------------------------------------------------------------------
 
 DrawColumn:
 		moveq	#((224+16+16)/16)-1,d6			; draw the entire height of the screen + two extra rows
@@ -624,8 +626,7 @@ DrawColumn_Partial:
 		movem.l	(sp)+,d4-d5
 		addi.w	#16,d4					; x coordinate of next block
 		dbf	d6,@loop
-		rts	
-; End of function DrawColumn_Partial
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to draw one 16x16 tile
@@ -638,9 +639,9 @@ DrawColumn_Partial:
 ;	a1 = address of 16x16 tile mappings
 ;	a5 = vdp_control_port
 ;	a6 = vdp_data_port
-; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+;	uses d0, d4, d5, a1
+; ---------------------------------------------------------------------------
 
 DrawBlock:
 		or.w	d2,d0					; integrate VRAM write and nametable specifier into VDP command
@@ -696,8 +697,7 @@ DrawFlipXY:
 		eori.l	#$18001800,d5
 		swap	d5
 		move.l	d5,(a6)
-		rts	
-; End of function DrawBlocks
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Unused subroutine. Draws a 16x16 tile with all its palette lines incremented
@@ -739,15 +739,14 @@ DrawFlipXY:
 ; output:
 ;	a0 = address of 16x16 tile id and x/y flip metadata from 256x256 mappings
 ;	a1 = address of 16x16 tile mappings
+;	uses d0, d3, d4, d5
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 GetBlockData:
 		if Revision=0
 			lea	(v_16x16_tiles).w,a1
-			add.w	4(a3),d4			; add camera y coordinate to relative coordinate
-			add.w	(a3),d5				; add camera x coordinate to relative coordinate
+			add.w	4(a3),d4			; add camera y pos to relative coordinate
+			add.w	(a3),d5				; add camera x pos to relative coordinate
 		else
 			add.w	(a3),d5
 	GetBlockData_IgnoreX:
@@ -756,16 +755,16 @@ GetBlockData:
 		endc
 		; Turn y coordinate into index into level layout
 		move.w	d4,d3
-		lsr.w	#1,d3
-		andi.w	#$380,d3
+		lsr.w	#1,d3					; divide y pos by 2 (because layout alternates between level and bg lines)
+		andi.w	#$380,d3				; read only high byte of y pos (because each level tile is 256px tall)
 		; Turn x coordinate into index into level layout
 		lsr.w	#3,d5
 		move.w	d5,d0
 		lsr.w	#5,d0
-		andi.w	#$7F,d0
+		andi.w	#$7F,d0					; read only high byte of x pos
 		; Get 256x256 tile id from level layout
-		add.w	d3,d0
-		moveq	#-1,d3
+		add.w	d3,d0					; combine for position within layout
+		moveq	#-1,d3					; d3 = $FFFFFFFF (used to make a RAM address)
 		move.b	(a4,d0.w),d3				; d3 = $FFFFFF00 + 256x256 tile id
 		beq.s	@exit					; if 0, just return a pointer to the first block (expected to be empty)
 		; Turn 256x256 tile id into address of 256x256 mappings
@@ -788,8 +787,7 @@ GetBlockData:
 		adda.w	d3,a1					; a1 = address of 16x16 tile mappings
 
 	@exit:
-		rts	
-; End of function GetBlockData
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	convert screen relative coordinates to VDP command for VRAM
@@ -798,14 +796,13 @@ GetBlockData:
 ; input:
 ;	d4 = y coordinate
 ;	d5 = x coordinate
-;	(a3) = camera x position
+;	(a3) = camera x position (Calc_VRAM_Pos only)
 ;	4(a3) = camera y position
 
 ; output:
 ;	d0 = VDP command (word swapped)
+;	uses d4, d5
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 Calc_VRAM_Pos:
 		if Revision=0
@@ -813,8 +810,8 @@ Calc_VRAM_Pos:
 			add.w	(a3),d5				; add camera x pos
 		else
 			add.w	(a3),d5
-	Calc_VRAM_Pos_2:
-			add.w	4(a3),d4
+	Calc_VRAM_Pos_IgnoreX:
+			add.w	4(a3),d4			; add camera y pos
 		endc
 		andi.w	#$F0,d4					; round down to 16 (size of block) and limit to $100 (height of plane, 32*8)
 		andi.w	#$1F0,d5				; round down to 16 (size of block) and limit to $200 (width of plane, 64*8)
@@ -825,8 +822,7 @@ Calc_VRAM_Pos:
 		moveq	#draw_base>>14,d0			; bits 15 & 14 of VRAM address ($C000)
 		swap	d0					; swap high/low words (swapped back later by DrawBlock)
 		move.w	d4,d0					; add offset for coordinate in fg/bg nametable
-		rts	
-; End of function Calc_VRAM_Pos
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Unused subroutine. Same as Calc_VRAM_Pos, except the base address for the
@@ -844,14 +840,15 @@ Calc_VRAM_Pos_Unknown:
 		moveq	#$8000>>14,d0
 		swap	d0
 		move.w	d4,d0
-		rts	
-; End of function Calc_VRAM_Pos_Unknown
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	load tiles as soon as the level	appears
-; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+; output:
+;	a5 = vdp_control_port
+;	a6 = vdp_data_port
+; ---------------------------------------------------------------------------
 
 DrawTilesAtStart:
 		lea	(vdp_control_port).l,a5
@@ -866,17 +863,16 @@ DrawTilesAtStart:
 		if Revision=0
 		; runs directly into DrawChunks
 		else
-			tst.b	(v_zone).w			; is current zone GHZ?
-			beq.w	DrawTilesAtStart_GHZ		; if yes, branch
-			cmpi.b	#id_MZ,(v_zone).w		; is current zone MZ?
-			beq.w	DrawTilesAtStart_MZ		; if yes, branch
-			cmpi.w	#(id_SBZ<<8)+0,(v_zone).w	; is current level SBZ act 1?
-			beq.w	DrawTilesAtStart_SBZ1		; if yes, branch
-			cmpi.b	#id_EndZ,(v_zone).w		; is ending sequence running?
-			beq.w	DrawTilesAtStart_GHZ		; if yes, branch
+			tst.b	(v_zone).w
+			beq.w	DrawTilesAtStart_GHZ		; branch if GHZ
+			cmpi.b	#id_MZ,(v_zone).w
+			beq.w	DrawTilesAtStart_MZ		; branch if  LZ
+			cmpi.w	#(id_SBZ<<8)+0,(v_zone).w
+			beq.w	DrawTilesAtStart_SBZ1		; branch if SBZ act 1
+			cmpi.b	#id_EndZ,(v_zone).w
+			beq.w	DrawTilesAtStart_GHZ		; branch if on ending
 		; else run directly into DrawChunks
 		endc
-; End of function DrawTilesAtStart
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to draw 16x16 tiles on whole screen
@@ -889,8 +885,6 @@ DrawTilesAtStart:
 ;	a5 = vdp_control_port
 ;	a6 = vdp_data_port
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 DrawChunks:
 		moveq	#-16,d4					; draw from 16px above top of screen
@@ -908,8 +902,8 @@ DrawChunks:
 		movem.l	(sp)+,d4-d6
 		addi.w	#16,d4					; next row
 		dbf	d6,@loop
-		rts	
-; End of function DrawChunks
+		rts
+;===============================================================================
 
 		if Revision=0
 		else
@@ -977,7 +971,7 @@ locj_72Ba:
 	locj_72da:
 			moveq	#0,d5
 			movem.l	d4/d5,-(sp)
-			bsr.w	Calc_VRAM_Pos_2
+			bsr.w	Calc_VRAM_Pos_IgnoreX
 			movem.l	(sp)+,d4/d5
 			moveq	#(512/16)-1,d6
 			bsr.w	DrawRow_IgnoreX

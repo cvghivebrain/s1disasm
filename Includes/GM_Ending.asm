@@ -57,7 +57,7 @@ GM_Ending:
 		moveq	#id_PLC_Ending,d0
 		bsr.w	QuickPLC				; load ending sequence graphics in 1 frame
 		jsr	(Hud_Base).l				; load uncompressed portion of HUD graphics
-		bsr.w	LevelParameterLoad				; load level boundaries and start positions
+		bsr.w	LevelParameterLoad			; load level boundaries and start positions
 		bsr.w	DeformLayers
 		bset	#redraw_left_bit,(v_fg_redraw_direction).w
 		bsr.w	LevelDataLoad				; load block mappings and palettes
@@ -79,7 +79,7 @@ GM_Ending:
 		bset	#status_xflip_bit,(v_ost_player+ost_status).w ; make Sonic face left
 		move.b	#1,(f_lock_controls).w			; lock controls
 		move.w	#(btnL<<8),(v_joypad_hold).w		; hold virtual left on d-pad
-		move.w	#$F800,(v_ost_player+ost_inertia).w	; set Sonic's speed
+		move.w	#-$800,(v_ost_player+ost_inertia).w	; set Sonic's speed
 		move.b	#id_HUD,(v_ost_hud).w			; load HUD object
 		jsr	(ObjPosLoad).l				; load objects for level
 		jsr	(ExecuteObjects).l			; run all objects
@@ -99,12 +99,12 @@ GM_Ending:
 		move.b	#1,(f_hud_score_update).w
 		move.b	#1,(v_hud_rings_update).w
 		move.b	#0,(f_hud_time_update).w
-		move.w	#1800,(v_countdown).w
+		move.w	#1800,(v_countdown).w			; set timer for 30 seconds
 		move.b	#id_VBlank_Ending,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		enable_display
-		move.w	#palfade_all,(v_palfade_start).w
-		bsr.w	PaletteFadeIn
+		move.w	#palfade_all,(v_palfade_start).w	; unused - this is already in PaletteFadeIn
+		bsr.w	PaletteFadeIn				; fade in from black
 
 ; ---------------------------------------------------------------------------
 ; Main ending sequence loop
@@ -116,11 +116,11 @@ End_MainLoop:
 		bsr.w	WaitForVBlank
 		addq.w	#1,(v_frame_counter).w
 		bsr.w	End_MoveSonic				; auto control Sonic
-		jsr	(ExecuteObjects).l
-		bsr.w	DeformLayers
-		jsr	(BuildSprites).l
-		jsr	(ObjPosLoad).l
-		bsr.w	PaletteCycle
+		jsr	(ExecuteObjects).l			; run all objects
+		bsr.w	DeformLayers				; scroll background
+		jsr	(BuildSprites).l			; create sprite table
+		jsr	(ObjPosLoad).l				; spawn objects
+		bsr.w	PaletteCycle				; animate water in background
 		bsr.w	OscillateNumDo
 		bsr.w	SynchroAnimate
 		cmpi.b	#id_Ending,(v_gamemode).w		; is gamemode $18 (ending)?
@@ -149,24 +149,24 @@ End_FlashLoop:
 		move.b	#id_VBlank_Ending,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		addq.w	#1,(v_frame_counter).w
-		bsr.w	End_MoveSonic
+		bsr.w	End_MoveSonic				; auto control Sonic
 		jsr	(ExecuteObjects).l
 		bsr.w	DeformLayers
 		jsr	(BuildSprites).l
 		jsr	(ObjPosLoad).l
 		bsr.w	OscillateNumDo
 		bsr.w	SynchroAnimate
-		subq.w	#1,(v_palfade_time).w
-		bpl.s	@wait
-		move.w	#2,(v_palfade_time).w
-		bsr.w	WhiteOut_ToWhite
+		subq.w	#1,(v_palfade_time).w			; decrement palette timer
+		bpl.s	@wait					; branch if time remains
+		move.w	#2,(v_palfade_time).w			; set timer
+		bsr.w	WhiteOut_ToWhite			; increase brightness of palette (up to max $EEE)
 
 	@wait:
 		tst.w	(f_restart).w				; is flash complete? (set by EndSonic object)
 		beq.w	End_FlashLoop				; if not, branch
 
 		clr.w	(f_restart).w
-		move.w	#$2E2F,(v_level_layout+$80).w		; modify level layout to include extra flowers
+		move.w	#$2E2F,(v_level_layout+(sizeof_levelrow*1)+0).w ; modify level layout to include extra flowers (row 1, columns 0/1)
 		lea	(vdp_control_port).l,a5
 		lea	(vdp_data_port).l,a6
 		lea	(v_camera_x_pos).w,a3
@@ -180,18 +180,17 @@ End_FlashLoop:
 
 ; ---------------------------------------------------------------------------
 ; Subroutine controlling Sonic on the ending sequence
+
+;	uses d0
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 End_MoveSonic:	; Routine 0
 		move.b	(v_end_sonic_routine).w,d0		; get routine counter for this subroutine
 		bne.s	End_Sonic_Stop				; branch if not 0
-		cmpi.w	#$90,(v_ost_player+ost_x_pos).w		; has Sonic passed $90 on x-axis?
+		cmpi.w	#$90,(v_ost_player+ost_x_pos).w		; has Sonic passed $90 on x axis?
 		bhs.s	End_Sonic_Exit				; if not, branch
 
-		addq.b	#2,(v_end_sonic_routine).w
+		addq.b	#2,(v_end_sonic_routine).w		; goto End_Sonic_Stop next
 		move.b	#1,(f_lock_controls).w			; lock player's controls
 		move.w	#(btnR<<8),(v_joypad_hold).w		; stop Sonic by virtual pressing right
 		rts	
@@ -200,10 +199,10 @@ End_MoveSonic:	; Routine 0
 End_Sonic_Stop:	; Routine 2
 		subq.b	#2,d0					; is routine counter 2?
 		bne.s	End_Sonic_Replace			; if not, branch
-		cmpi.w	#$A0,(v_ost_player+ost_x_pos).w		; has Sonic reached $A0 on x-axis?
+		cmpi.w	#$A0,(v_ost_player+ost_x_pos).w		; has Sonic reached $A0 on x axis?
 		blo.s	End_Sonic_Exit				; if not, branch
 
-		addq.b	#2,(v_end_sonic_routine).w
+		addq.b	#2,(v_end_sonic_routine).w		; goto End_Sonic_Replace next
 		moveq	#0,d0
 		move.b	d0,(f_lock_controls).w
 		move.w	d0,(v_joypad_hold).w			; stop Sonic moving
@@ -219,11 +218,10 @@ End_Sonic_Replace:
 		; Routine 4
 		subq.b	#2,d0					; is routine counter 4?
 		bne.s	End_Sonic_Exit				; if not, branch
-		addq.b	#2,(v_end_sonic_routine).w
-		move.w	#$A0,(v_ost_player+ost_x_pos).w
+		addq.b	#2,(v_end_sonic_routine).w		; goto End_Sonic_Exit next
+		move.w	#$A0,(v_ost_player+ost_x_pos).w		; centre Sonic on screen
 		move.b	#id_EndSonic,(v_ost_player).w		; load Sonic ending sequence object
 		clr.w	(v_ost_player+ost_routine).w		; clear Sonic object's routine counter
 
 End_Sonic_Exit:	; Routine 6
-		rts	
-; End of function End_MoveSonic
+		rts

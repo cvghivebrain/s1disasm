@@ -235,10 +235,10 @@ Level_Skip_TtlCard:
 		move.w	(v_credits_num).w,d0
 		subq.w	#1,d0
 		lsl.w	#2,d0
-		movea.l	(a1,d0.w),a1
+		movea.l	(a1,d0.w),a1				; jump to demo data
 
 	@skip_endingdemo:
-		move.b	1(a1),(v_demo_input_time).w		; load key press duration
+		move.b	1(a1),(v_demo_input_time).w		; load button press duration
 		subq.b	#1,(v_demo_input_time).w		; subtract 1 from duration
 		move.w	#1800,(v_countdown).w			; run demo for 30 seconds max
 		tst.w	(v_demo_mode).w				; is this an ending demo?
@@ -257,10 +257,10 @@ Level_Skip_TtlCard:
 		moveq	#id_Pal_SBZ3Water,d0			; palette $D (SBZ3 underwater)
 
 	@not_sbz3:
-		bsr.w	PalLoad_Water_Next
+		bsr.w	PalLoad_Water_Next			; load water palette that'll be shown after fading in
 
 	@not_lz:
-		move.w	#3,d1
+		move.w	#4-1,d1
 
 	@delayloop:
 		move.b	#id_VBlank_Level,(v_vblank_routine).w
@@ -268,10 +268,10 @@ Level_Skip_TtlCard:
 		dbf	d1,@delayloop				; wait 4 frames for things to process
 
 		move.w	#(palfade_line2+palfade_3),(v_palfade_start).w ; fade in 2nd, 3rd & 4th palette lines ($202F)
-		bsr.w	PalFadeIn_Alt
+		bsr.w	PalFadeIn_Alt				; fade in from black
 		tst.w	(v_demo_mode).w				; is this an ending demo?
 		bmi.s	@skip_titlecard				; if yes, branch
-		addq.b	#2,(v_ost_titlecard1+ost_routine).w	; make title card move
+		addq.b	#2,(v_ost_titlecard1+ost_routine).w	; make title card goto Card_Wait (move back and load explosion/animal gfx)
 		addq.b	#4,(v_ost_titlecard2+ost_routine).w
 		addq.b	#4,(v_ost_titlecard3+ost_routine).w
 		addq.b	#4,(v_ost_titlecard4+ost_routine).w

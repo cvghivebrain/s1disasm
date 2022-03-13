@@ -39,7 +39,7 @@ GM_Credits:
 		move.b	#id_CreditsText,(v_ost_credits).w	; load credits object
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
-		bsr.w	EndingDemoLoad				; setup for next mini-demo
+		bsr.w	EndDemoSetup				; setup for next mini-demo
 		moveq	#0,d0
 		move.b	(v_zone).w,d0				; get zone number
 		lsl.w	#4,d0					; multiply by $10 (size of each level header)
@@ -56,6 +56,10 @@ GM_Credits:
 		move.w	#120,(v_countdown).w			; display a credit for 2 seconds
 		bsr.w	PaletteFadeIn				; fade credits text in from black
 
+; ---------------------------------------------------------------------------
+; Credits loop - runs while a credit is being shown
+; ---------------------------------------------------------------------------
+
 Cred_WaitLoop:
 		move.b	#id_VBlank_Title,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
@@ -66,18 +70,17 @@ Cred_WaitLoop:
 		bne.s	Cred_WaitLoop				; if not, branch
 		cmpi.w	#(sizeof_EndDemoList/2)+1,(v_credits_num).w ; have the credits finished?
 		beq.w	TryAgainEnd				; if yes, branch
-		rts	
+		rts						; goto demo next
 
 ; ---------------------------------------------------------------------------
-; Ending sequence demo loading subroutine
+; Subroutine to setup an ending sequence demo
+
+;	uses d0, a1, a2
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-EndingDemoLoad:
+EndDemoSetup:
 		move.w	(v_credits_num).w,d0
-		andi.w	#$F,d0
+		andi.w	#$F,d0					; get credits id
 		add.w	d0,d0
 		move.w	EndDemoList(pc,d0.w),d0			; get zone/act number from list
 		move.w	d0,(v_zone).w				; set zone/act number
@@ -100,19 +103,18 @@ EndingDemoLoad:
 		move.w	#((EndDemo_LampVar_end-EndDemo_LampVar)/4)-1,d0
 
 	@lamppost_loop:
-		move.l	(a1)+,(a2)+
+		move.l	(a1)+,(a2)+				; copy lamppost variables to RAM
 		dbf	d0,@lamppost_loop
 
 @exit:
-		rts	
-; End of function EndingDemoLoad
+		rts
 
-; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Ending demo level array
 
 ; Lists levels used in ending demos
 ; ---------------------------------------------------------------------------
+
 EndDemoList:
 		dc.b id_GHZ, 0					; Green Hill Zone, act 1
 		dc.b id_MZ, 1					; Marble Zone, act 2
@@ -129,6 +131,7 @@ sizeof_EndDemoList:	equ EndDemoList_end-EndDemoList
 ; ---------------------------------------------------------------------------
 ; Lamppost variables in the end sequence demo (Labyrinth Zone)
 ; ---------------------------------------------------------------------------
+
 EndDemo_LampVar:
 		dc.b 1						; v_last_lamppost - id of last lamppost
 		dc.b 1						; v_last_lamppost_lampcopy - id of last lamppost
@@ -146,7 +149,7 @@ EndDemo_LampVar:
 		dc.b 1						; v_water_routine_lampcopy - water routine
 		dc.b 1						; f_water_pal_full_lampcopy - water covers whole screen flag (1 = yes)
 	EndDemo_LampVar_end:
-; ===========================================================================
+
 ; ---------------------------------------------------------------------------
 ; "TRY AGAIN" and "END"	screens
 ; ---------------------------------------------------------------------------
@@ -194,6 +197,7 @@ TryAgainEnd:
 ; ---------------------------------------------------------------------------
 ; "TRY AGAIN" and "END"	screen main loop
 ; ---------------------------------------------------------------------------
+
 TryAg_MainLoop:
 		bsr.w	PauseGame
 		move.b	#id_VBlank_Title,(v_vblank_routine).w

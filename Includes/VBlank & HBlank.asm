@@ -7,7 +7,7 @@ VBlank:
 		tst.b	(v_vblank_routine).w			; is routine number 0?
 		beq.s	VBlank_Lag				; if yes, branch
 		move.w	(vdp_control_port).l,d0
-		move.l	#$40000010+(0<<16),(vdp_control_port).l	; write to VSRAM address 0
+		move.l	#$40000010+(0<<16),(vdp_control_port).l	; set write destination to VSRAM address 0
 		move.l	(v_fg_y_pos_vsram).w,(vdp_data_port).l	; send screen y-axis pos. to VSRAM
 		btst	#6,(v_console_region).w			; is Mega Drive PAL?
 		beq.s	@notPAL					; if not, branch
@@ -30,7 +30,7 @@ VBlank_Music:
 VBlank_Exit:
 		addq.l	#1,(v_vblank_counter).w			; increment frame counter
 		movem.l	(sp)+,d0-a6				; restore all registers from stack
-		rte	
+		rte						; end of VBlank
 ; ===========================================================================
 VBlank_Index:	index *,,2
 		ptr VBlank_Lag					; 0
@@ -88,13 +88,13 @@ VBlank_Lag:
 
 ; 2 - GM_Sega> Sega_WaitPal, Sega_WaitEnd
 VBlank_Sega:
-		bsr.w	ReadPad_Palette_Sprites_HScroll
+		bsr.w	ReadPad_Palette_Sprites_HScroll		; read joypad, DMA palettes, sprites and hscroll
 
 ; $14 - GM_Sega> Sega_WaitPal (once)
 VBlank_Sega_SkipLoad:
 		tst.w	(v_countdown).w
 		beq.w	@end
-		subq.w	#1,(v_countdown).w
+		subq.w	#1,(v_countdown).w			; decrement timer
 
 	@end:
 		rts	
@@ -102,12 +102,12 @@ VBlank_Sega_SkipLoad:
 
 ; 4 - GM_Title> Tit_MainLoop, LevelSelect, GotoDemo; GM_Credits> Cred_WaitLoop, TryAg_MainLoop
 VBlank_Title:
-		bsr.w	ReadPad_Palette_Sprites_HScroll
-		bsr.w	DrawTilesWhenMoving_BGOnly
-		bsr.w	ProcessPLC				; decompress 9 cells of Nemesis graphics
+		bsr.w	ReadPad_Palette_Sprites_HScroll		; read joypad, DMA palettes, sprites and hscroll
+		bsr.w	DrawTilesWhenMoving_BGOnly		; update background
+		bsr.w	ProcessPLC				; decompress up to 9 cells of Nemesis gfx if needed
 		tst.w	(v_countdown).w
 		beq.w	@end
-		subq.w	#1,(v_countdown).w
+		subq.w	#1,(v_countdown).w			; decrement timer
 
 	@end:
 		rts	
@@ -115,14 +115,14 @@ VBlank_Title:
 
 ; 6 - unused
 VBlank_06:
-		bsr.w	ReadPad_Palette_Sprites_HScroll
+		bsr.w	ReadPad_Palette_Sprites_HScroll		; read joypad, DMA palettes, sprites and hscroll
 		rts	
 ; ===========================================================================
 
 ; $10 - PauseGame> Pause_Loop
 VBlank_Pause:
 		cmpi.b	#id_Special,(v_gamemode).w		; is game on special stage?
-		beq.w	VBlank_Special					; if yes, branch
+		beq.w	VBlank_Special				; if yes, branch
 
 ; 8 - GM_Level> Level_MainLoop, Level_FDLoop, Level_DelayLoop
 VBlank_Level:
@@ -162,24 +162,21 @@ VBlank_Level:
 		bra.w	VBlank_Exit
 
 ; ---------------------------------------------------------------------------
-; Subroutine to	run a demo for an amount of time
+; Subroutine to	update fg/bg, run tile animations, HUD and and decompress up
+; to 3 cells of Nemesis graphics
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 DrawTiles_LevelGfx_HUD_PLC:
 		bsr.w	DrawTilesWhenMoving			; display new tiles if camera has moved
 		jsr	(AnimateLevelGfx).l			; update animated level graphics
 		jsr	(HUD_Update).l				; update HUD graphics
-		bsr.w	ProcessPLC2				; decompress 3 cells of Nemesis graphics
-		tst.w	(v_countdown).w				; is there time left on the demo?
-		beq.w	@end					; if not, branch
-		subq.w	#1,(v_countdown).w			; subtract 1 from time left
+		bsr.w	ProcessPLC2				; decompress up to 3 cells of Nemesis gfx
+		tst.w	(v_countdown).w
+		beq.w	@end
+		subq.w	#1,(v_countdown).w			; decrement timer
 
 	@end:
-		rts	
-; End of function DrawTiles_LevelGfx_HUD_PLC
+		rts
 
 ; ===========================================================================
 
@@ -188,11 +185,11 @@ VBlank_Special:
 		stopZ80
 		waitZ80
 		bsr.w	ReadJoypads
-		dma	v_pal_dry,sizeof_pal_all,cram
+		dma	v_pal_dry,sizeof_pal_all,cram		; copy palette to CRAM
 		dma	v_sprite_buffer,sizeof_vram_sprites,vram_sprites
 		dma	v_hscroll_buffer,sizeof_vram_hscroll,vram_hscroll
 		startZ80
-		bsr.w	PalCycle_SS
+		bsr.w	PalCycle_SS				; update cycling palette
 		tst.b	(f_sonic_dma_gfx).w			; has Sonic's sprite changed?
 		beq.s	@nochg					; if not, branch
 
@@ -202,7 +199,7 @@ VBlank_Special:
 	@nochg:
 		tst.w	(v_countdown).w
 		beq.w	@end
-		subq.w	#1,(v_countdown).w
+		subq.w	#1,(v_countdown).w			; decrement timer
 
 	@end:
 		rts	
@@ -243,23 +240,23 @@ VBlank_Ending:
 		bsr.w	DrawTilesWhenMoving			; display new tiles if camera has moved
 		jsr	(AnimateLevelGfx).l			; update animated level graphics
 		jsr	(HUD_Update).l				; update HUD graphics
-		bsr.w	ProcessPLC				; decompress 9 cells of Nemesis graphics
+		bsr.w	ProcessPLC				; decompress up to 9 cells of Nemesis gfx
 		rts	
 ; ===========================================================================
 
 ; $E - unused
 VBlank_0E:
-		bsr.w	ReadPad_Palette_Sprites_HScroll
+		bsr.w	ReadPad_Palette_Sprites_HScroll		; read joypad, DMA palettes, sprites and hscroll
 		addq.b	#1,(v_vblank_0e_counter).w		; increment unused counter
-		move.b	#$E,(v_vblank_routine).w
+		move.b	#id_VBlank_0E,(v_vblank_routine).w
 		rts	
 ; ===========================================================================
 
 ; $12 - PaletteWhiteIn, PaletteWhiteOut, PaletteFadeIn, PaletteFadeOut
 VBlank_Fade:
-		bsr.w	ReadPad_Palette_Sprites_HScroll
+		bsr.w	ReadPad_Palette_Sprites_HScroll		; read joypad, DMA palettes, sprites and hscroll
 		move.w	(v_vdp_hint_counter).w,(a5)		; set water palette position by sending VDP register $8Axx to control port (vdp_control_port)
-		bra.w	ProcessPLC				; decompress 9 cells of Nemesis graphics
+		bra.w	ProcessPLC				; decompress up to 9 cells of Nemesis gfx
 ; ===========================================================================
 
 ; $16 - GM_Special> SS_FinLoop; GM_Continue> Cont_MainLoop
@@ -267,7 +264,7 @@ VBlank_Continue:
 		stopZ80
 		waitZ80
 		bsr.w	ReadJoypads
-		dma	v_pal_dry,sizeof_pal_all,cram
+		dma	v_pal_dry,sizeof_pal_all,cram		; copy palette to CRAM
 		dma	v_sprite_buffer,sizeof_vram_sprites,vram_sprites
 		dma	v_hscroll_buffer,sizeof_vram_hscroll,vram_hscroll
 		startZ80
@@ -280,13 +277,14 @@ VBlank_Continue:
 	@nochg:
 		tst.w	(v_countdown).w
 		beq.w	@end
-		subq.w	#1,(v_countdown).w
+		subq.w	#1,(v_countdown).w			; decrement timer
 
 	@end:
 		rts	
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
+; ---------------------------------------------------------------------------
+; Subroutine to read joypad and DMA palettes, sprite table and hscroll table
+; ---------------------------------------------------------------------------
 
 ReadPad_Palette_Sprites_HScroll:
 		stopZ80
@@ -304,15 +302,11 @@ ReadPad_Palette_Sprites_HScroll:
 		dma	v_sprite_buffer,sizeof_vram_sprites,vram_sprites
 		dma	v_hscroll_buffer,sizeof_vram_hscroll,vram_hscroll
 		startZ80
-		rts	
-; End of function ReadPad_Palette_Sprites_HScroll
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Horizontal interrupt
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 HBlank:
 		disable_ints
@@ -323,45 +317,16 @@ HBlank:
 		lea	(vdp_data_port).l,a1
 		lea	(v_pal_water).w,a0			; get palette from RAM
 		move.l	#$C0000000,4(a1)			; set VDP to CRAM write
-		move.l	(a0)+,(a1)				; move palette to CRAM
-		move.l	(a0)+,(a1)
-		move.l	(a0)+,(a1)
-		move.l	(a0)+,(a1)
-		move.l	(a0)+,(a1)
-		move.l	(a0)+,(a1)
-		move.l	(a0)+,(a1)
-		move.l	(a0)+,(a1)
-		move.l	(a0)+,(a1)
-		move.l	(a0)+,(a1)
-		move.l	(a0)+,(a1)
-		move.l	(a0)+,(a1)
-		move.l	(a0)+,(a1)
-		move.l	(a0)+,(a1)
-		move.l	(a0)+,(a1)
-		move.l	(a0)+,(a1)
-		move.l	(a0)+,(a1)
-		move.l	(a0)+,(a1)
-		move.l	(a0)+,(a1)
-		move.l	(a0)+,(a1)
-		move.l	(a0)+,(a1)
-		move.l	(a0)+,(a1)
-		move.l	(a0)+,(a1)
-		move.l	(a0)+,(a1)
-		move.l	(a0)+,(a1)
-		move.l	(a0)+,(a1)
-		move.l	(a0)+,(a1)
-		move.l	(a0)+,(a1)
-		move.l	(a0)+,(a1)
-		move.l	(a0)+,(a1)
-		move.l	(a0)+,(a1)
-		move.l	(a0)+,(a1)
+		rept sizeof_pal_all/4
+		move.l	(a0)+,(a1)				; copy palette to CRAM
+		endr
 		move.w	#$8A00+223,4(a1)			; reset HBlank register
 		movem.l	(sp)+,a0-a1				; restore a0-a1 from stack
 		tst.b	(f_hblank_run_snd).w			; is flag set to update sound & some graphics during HBlank?
 		bne.s	@update_hblank				; if yes, branch
 
 	@nochg:
-		rte	
+		rte						; end of HBlank
 ; ===========================================================================
 
 ; The following only runs during a level and HBlank is set to run on line 96 or below
@@ -371,5 +336,4 @@ HBlank:
 		bsr.w	DrawTiles_LevelGfx_HUD_PLC		; display new tiles, update animated gfx, update HUD, decompress 3 cells of Nemesis gfx
 		jsr	(UpdateSound).l				; update audio
 		movem.l	(sp)+,d0-a6				; restore registers from stack
-		rte	
-; End of function HBlank
+		rte						; end of HBlank
