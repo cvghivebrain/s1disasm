@@ -4,15 +4,15 @@
 
 include_Sega:	macro
 
-sega_bg_width:	equ $18
+sega_bg_width:	equ $18						; bg dimensions - striped pattern behind logo
 sega_bg_height:	equ 8
-sega_fg_width:	equ $28
+sega_fg_width:	equ $28						; fg dimensions - white box with logo cutout
 sega_fg_height:	equ $1C
 
 GM_Sega:
 		play.b	1, bsr.w, cmd_Stop			; stop music
 		bsr.w	ClearPLC
-		bsr.w	PaletteFadeOut
+		bsr.w	PaletteFadeOut				; fade out from previous gamemode
 		lea	(vdp_control_port).l,a6
 		move.w	#$8004,(a6)				; use normal colour mode
 		move.w	#$8200+(vram_fg>>10),(a6)		; set foreground nametable address
@@ -54,19 +54,19 @@ GM_Sega:
 Sega_PaletteLoop:
 		move.b	#id_VBlank_Sega,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
-		bsr.w	PalCycle_Sega
-		bne.s	Sega_PaletteLoop
+		bsr.w	PalCycle_Sega				; update palette
+		bne.s	Sega_PaletteLoop			; repeat until palette cycle is complete (d0 = 0)
 
 		play.b	1, bsr.w, cmd_Sega			; play "SEGA" sound
 		move.b	#id_VBlank_Sega_SkipLoad,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
-		move.w	#30,(v_countdown).w
+		move.w	#30,(v_countdown).w			; set timer to 0.5 seconds
 
 Sega_WaitLoop:
 		move.b	#id_VBlank_Sega,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		tst.w	(v_countdown).w
-		beq.s	@goto_title
+		beq.s	@goto_title				; branch if timer hits 0
 		andi.b	#btnStart,(v_joypad_press_actual).w	; is Start button pressed?
 		beq.s	Sega_WaitLoop				; if not, branch
 
@@ -80,15 +80,12 @@ Sega_WaitLoop:
 ; Palette cycling routine - Sega logo
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
 PalCycle_Sega:
 PalCycle_Sega_Gradient:
 		tst.b	(v_palcycle_time+1).w			; is low byte of timer 0?
 		bne.s	loc_206A				; if not, branch
-		lea	(v_pal_dry+$20).w,a1			; address for 2nd palette line
-		lea	(Pal_Sega1).l,a0
+		lea	(v_pal_dry_line2).w,a1			; address for 2nd palette line
+		lea	(Pal_Sega1).l,a0			; address of blue gradient palette source
 		moveq	#5,d1
 		move.w	(v_palcycle_num).w,d0			; d0 = -$A (initially)
 
@@ -150,11 +147,11 @@ PalCycle_Sega_Flash:
 		move.w	d0,(v_palcycle_num).w
 		lea	(Pal_Sega2).l,a0
 		lea	(a0,d0.w),a0
-		lea	(v_pal_dry+$04).w,a1
+		lea	(v_pal_dry_line1+(2*2)).w,a1
 		move.l	(a0)+,(a1)+
 		move.l	(a0)+,(a1)+
 		move.w	(a0)+,(a1)
-		lea	(v_pal_dry+$20).w,a1
+		lea	(v_pal_dry_line2).w,a1
 		moveq	#0,d0
 		moveq	#$2C,d1
 
@@ -171,5 +168,4 @@ loc_20B2:
 
 loc_20BC:
 		moveq	#1,d0
-		rts	
-; End of function PalCycle_Sega
+		rts

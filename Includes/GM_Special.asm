@@ -4,7 +4,7 @@
 
 GM_Special:
 		play.w	1, bsr.w, sfx_EnterSS			; play special stage entry sound
-		bsr.w	PaletteWhiteOut
+		bsr.w	PaletteWhiteOut				; fade to white from previous gamemode
 		disable_ints
 		lea	(vdp_control_port).l,a6
 		move.w	#$8B03,(a6)				; 1-pixel line scroll mode
@@ -24,7 +24,7 @@ GM_Special:
 		move.w	#$8F02,(a5)				; set VDP increment to 2 bytes
 		bsr.w	SS_BGLoad
 		moveq	#id_PLC_SpecialStage,d0
-		bsr.w	QuickPLC				; load special stage patterns
+		bsr.w	QuickPLC				; load special stage gfx
 
 		lea	(v_ost_all).w,a1
 		moveq	#0,d0
@@ -68,15 +68,15 @@ GM_Special:
 		play.w	0, bsr.w, mus_SpecialStage		; play special stage BG	music
 		move.w	#0,(v_demo_input_counter).w
 		lea	(DemoDataPtr).l,a1
-		moveq	#6,d0
+		moveq	#6,d0					; use demo #6
 		lsl.w	#2,d0
-		movea.l	(a1,d0.w),a1
-		move.b	1(a1),(v_demo_input_time).w
+		movea.l	(a1,d0.w),a1				; jump to SS demo data
+		move.b	1(a1),(v_demo_input_time).w		; load 1st button press duration
 		subq.b	#1,(v_demo_input_time).w
 		clr.w	(v_rings).w
 		clr.b	(v_ring_reward).w
 		move.w	#0,(v_debug_active).w
-		move.w	#1800,(v_countdown).w
+		move.w	#1800,(v_countdown).w			; set timer to 30 seconds (used for demo)
 		tst.b	(f_debug_cheat).w			; has debug cheat been entered?
 		beq.s	SS_NoDebug				; if not, branch
 		btst	#bitA,(v_joypad_hold_actual).w		; is A button pressed?
@@ -97,10 +97,10 @@ SS_MainLoop:
 		bsr.w	WaitForVBlank
 		bsr.w	MoveSonicInDemo
 		move.w	(v_joypad_hold_actual).w,(v_joypad_hold).w
-		jsr	(ExecuteObjects).l
+		jsr	(ExecuteObjects).l			; run objects (Sonic is the only one)
 		jsr	(BuildSprites).l
-		jsr	(SS_ShowLayout).l
-		bsr.w	SS_BGAnimate
+		jsr	(SS_ShowLayout).l			; display layout
+		bsr.w	SS_BGAnimate				; animate background
 		tst.w	(v_demo_mode).w				; is demo mode on?
 		beq.s	@not_demo				; if not, branch
 		tst.w	(v_countdown).w				; is there time left on the demo?
@@ -206,9 +206,9 @@ SS_ToSegaScreen:
 
 ; ---------------------------------------------------------------------------
 ; Special stage	background mappings loading subroutine
-; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+;	uses d0, d1, d2, d3, d4, d5, d6, d7, a0, a1, a2
+; ---------------------------------------------------------------------------
 
 ; Fish/bird dimensions in cells
 fish_width:	equ 8
@@ -218,77 +218,82 @@ sizeof_fish:	equ fish_width*fish_height*2
 SS_BGLoad:
 		lea	(v_ss_enidec_buffer).l,a1		; buffer
 		lea	(Eni_SSBg1).l,a0			; load mappings for the birds and fish
-		move.w	#tile_Nem_SSBgFish+tile_pal3,d0
-		bsr.w	EniDec
-		locVRAM	$5000,d3
+		move.w	#tile_Nem_SSBgFish+tile_pal3,d0		; add this to each tile
+		bsr.w	EniDec					; decompress fish/bird mappings to RAM
+
+		locVRAM	$5000,d3				; d3 = VDP address for $5000 in VRAM
 		lea	(v_ss_enidec_buffer+sizeof_fish).l,a2
-		moveq	#6,d7
+		moveq	#7-1,d7					; number of canvases for frames of bird/fish and in-between
 
-loc_48BE:
-		move.l	d3,d0
-		moveq	#3,d6
-		moveq	#0,d4
+; Each frame of bird/fish animation is stored as a canvas in VRAM. The game switches between them by changing the bg nametable register.
+@loop_canvas:
+		move.l	d3,d0					; copy VDP command
+		moveq	#4-1,d6					; number of rows visible
+		moveq	#0,d4					; first square is blank (i.e. blank-bird-blank-bird-etc.)
 		cmpi.w	#3,d7
-		bhs.s	loc_48CC
-		moveq	#1,d4
+		bhs.s	@loop_rows				; branch if canvas is bird
+		moveq	#1,d4					; first square is fish (i.e. fish-blank-fish-blank-etc.)
 
-loc_48CC:
-		moveq	#7,d5
+@loop_rows:
+		moveq	#8-1,d5					; number of squares in a row
 
-loc_48CE:
-		movea.l	a2,a1
-		eori.b	#1,d4
-		bne.s	loc_48E2
+@loop_birdfish:
+		movea.l	a2,a1					; get address of tilemap as stored in RAM
+		eori.b	#1,d4					; switch between blank square and bird/fish
+		bne.s	@is_birdfish				; branch if set to bird/fish
 		cmpi.w	#6,d7
-		bne.s	loc_48F2
-		lea	(v_ss_enidec_buffer).l,a1
+		bne.s	@skip_birdfish				; branch if not first frame
+		lea	(v_ss_enidec_buffer).l,a1		; use tilemap for checkerboard pattern
 
-loc_48E2:
+	@is_birdfish:
 		movem.l	d0-d4,-(sp)
 		moveq	#fish_width-1,d1
 		moveq	#fish_height-1,d2
-		bsr.w	TilemapToVRAM
+		bsr.w	TilemapToVRAM				; copy tilemap for 1 bird or fish from RAM to VRAM
 		movem.l	(sp)+,d0-d4
 
-loc_48F2:
+	@skip_birdfish:
 		addi.l	#(fish_width*2)<<16,d0			; skip 8 cells ($10 bytes)
-		dbf	d5,loc_48CE
+		dbf	d5,@loop_birdfish			; repeat for all squares in 1 row
+
 		addi.l	#((fish_height-1)*$80)<<16,d0		; skip 7 rows ($380 byes)
-		eori.b	#1,d4
-		dbf	d6,loc_48CC
-		addi.l	#$1000<<16,d3
-		bpl.s	loc_491C
+		eori.b	#1,d4					; stagger blank/birdfish pattern
+		dbf	d6,@loop_rows				; repeat for all rows (4 in total)
+
+		addi.l	#$1000<<16,d3				; add $1000 to VRAM address
+		bpl.s	@vdp_ok					; branch if valid VDP command
 		swap	d3
-		addi.l	#$C000,d3
+		addi.l	#$C000,d3				; fix VDP command
 		swap	d3
 
-loc_491C:
-		adda.w	#sizeof_fish,a2
-		dbf	d7,loc_48BE
+	@vdp_ok:
+		adda.w	#sizeof_fish,a2				; read from next tilemap
+		dbf	d7,@loop_canvas				; repeat for all canvases
 		
 		lea	(v_ss_enidec_buffer).l,a1
-		lea	(Eni_SSBg2).l,a0			; load mappings for the clouds
+		lea	(Eni_SSBg2).l,a0			; load mappings for clouds/bubbles
 		move.w	#0+tile_pal3,d0
-		bsr.w	EniDec
+		bsr.w	EniDec					; decompress to buffer in RAM
+
 		lea	(v_ss_enidec_buffer).l,a1
 		locVRAM	$C000,d0
 		moveq	#$3F,d1
 		moveq	#$1F,d2
-		bsr.w	TilemapToVRAM
+		bsr.w	TilemapToVRAM				; copy tilemap for bubbles to VRAM
 		lea	(v_ss_enidec_buffer).l,a1
 		locVRAM	$D000,d0
 		moveq	#$3F,d1
 		moveq	#$3F,d2
-		bsr.w	TilemapToVRAM
-		rts	
-; End of function SS_BGLoad
+		bsr.w	TilemapToVRAM				; copy tilemap for clouds to VRAM
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Palette cycling routine - special stage
+
+; output:
+;	a6 = vdp_control_port
+;	uses d0, d1, a0, a1, a2
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 PalCycle_SS:
 		tst.w	(f_pause).w				; is game paused?
@@ -369,8 +374,7 @@ PalCycle_SS_2:
 		adda.w	d0,a1
 		move.l	(a1)+,(a2)+
 		move.w	(a1)+,(a2)+				; write palette
-		rts	
-; End of function PalCycle_SS
+		rts
 
 ; ===========================================================================
 SS_Timing_Values:
@@ -427,10 +431,9 @@ include_Special_2:	macro
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	make the special stage background animated
+
+;	uses d0, d1, d2, d3, a1, a3
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 SS_BGAnimate:
 		move.w	(v_ss_bg_mode).w,d0			; get frame for fish/bird animation
@@ -518,8 +521,7 @@ SS_Scroll_CloudsBubbles:
 		andi.w	#$3FC,d2
 		dbf	d1,@loop_line
 		dbf	d3,@loop_block
-		rts	
-; End of function SS_BGAnimate
+		rts
 
 ; ===========================================================================
 SS_Bubble_ScrollBlocks:
@@ -555,21 +557,23 @@ include_Special_3:	macro
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	show the special stage layout
+
+; input:
+;	d5 = sprite count (from BuildSprites)
+
+;	uses d0, d2, d3, d4, d5, d1, d7, a0, a1
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
 SS_ShowLayout:
-		bsr.w	SS_AniWallsRings
+		bsr.w	SS_AniWallsRings			; animate walls and rings
 		bsr.w	SS_UpdateItems
 
 ; Calculate x/y positions of each cell in a 16x16 grid when rotated
-		move.w	d5,-(sp)
-		lea	(v_ss_sprite_grid_plot).w,a1
+		move.w	d5,-(sp)				; save sprite count to stack
+		lea	(v_ss_sprite_grid_plot).w,a1		; address to write grid coords
 		move.b	(v_ss_angle).w,d0
-		andi.b	#$FC,d0
-		jsr	(CalcSine).l
+		andi.b	#$FC,d0					; round down angle to nearest 4
+		jsr	(CalcSine).l				; convert to sine/cosine
 		move.w	d0,d4
 		move.w	d1,d5
 		muls.w	#$18,d4
@@ -684,15 +688,13 @@ SS_ShowLayout:
 
 @spritelimit:
 		move.b	#0,-5(a2)				; set last sprite link
-		rts	
-; End of function SS_ShowLayout
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	animate	walls and rings	in the special stage
+
+;	uses d0, d1, a0, a1
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 SS_AniWallsRings:
 		lea	(v_ss_sprite_info+$C).l,a1		; frame id of first wall
@@ -802,8 +804,7 @@ SS_AniWallsRings:
 		move.w	$E(a0),$38(a1)
 		adda.w	#$20,a0
 		adda.w	#$48,a1
-		rts	
-; End of function SS_AniWallsRings
+		rts
 
 ; ===========================================================================
 SS_Wall_Vram_Settings:
@@ -877,10 +878,8 @@ SS_Wall_Vram_Settings:
 
 ; output:
 ;	a2 = address of free slot in sprite update list
+;	uses d0
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 SS_FindFreeUpdate:
 		lea	(v_ss_sprite_update_list).l,a2		; address of sprite update list
@@ -893,14 +892,13 @@ SS_FindFreeUpdate:
 		dbf	d0,@loop
 
 	@free:
-		rts	
-; End of function SS_FindFreeUpdate
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	update special stage items after they've been touched
-; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+;	uses d0, d7, a0, a1
+; ---------------------------------------------------------------------------
 
 ss_update_id:		equ 0					; sprite id (1-6)
 ss_update_time:		equ 2					; time until next frame update
@@ -923,8 +921,7 @@ SS_UpdateItems:
 		addq.w	#8,a0					; next slot in list
 		dbf	d7,@loop
 
-		rts	
-; End of function SS_UpdateItems
+		rts
 
 ; ===========================================================================
 SS_UpdateIndex:	index.l 0,1
@@ -938,7 +935,7 @@ SS_UpdateIndex:	index.l 0,1
 
 SS_UpdateRing:
 		subq.b	#1,ss_update_time(a0)			; decrement timer
-		bpl.s	locret_1B530				; branch if positive
+		bpl.s	@wait					; branch if positive
 		move.b	#5,ss_update_time(a0)			; 5 frames until next update
 		moveq	#0,d0
 		move.b	ss_update_frame(a0),d0			; get current frame
@@ -946,11 +943,11 @@ SS_UpdateRing:
 		movea.l	ss_update_levelptr(a0),a1		; get pointer to level layout
 		move.b	SS_RingData(pc,d0.w),d0			; get new item id
 		move.b	d0,(a1)					; update level layout
-		bne.s	locret_1B530				; branch if id isn't 0
+		bne.s	@wait					; branch if id isn't 0
 		clr.l	(a0)					; free slot in update list
 		clr.l	ss_update_levelptr(a0)
 
-locret_1B530:
+	@wait:
 		rts	
 ; ===========================================================================
 SS_RingData:	dc.b id_SS_Item_Spark1, id_SS_Item_Spark2, id_SS_Item_Spark3, id_SS_Item_Spark4, 0
@@ -959,24 +956,24 @@ SS_RingData:	dc.b id_SS_Item_Spark1, id_SS_Item_Spark2, id_SS_Item_Spark3, id_SS
 
 SS_UpdateBumper:
 		subq.b	#1,ss_update_time(a0)
-		bpl.s	locret_1B566
+		bpl.s	@wait
 		move.b	#7,ss_update_time(a0)
 		moveq	#0,d0
 		move.b	ss_update_frame(a0),d0
 		addq.b	#1,ss_update_frame(a0)
 		movea.l	ss_update_levelptr(a0),a1
 		move.b	SS_BumperData(pc,d0.w),d0
-		bne.s	loc_1B564
+		bne.s	@update
 		clr.l	(a0)
 		clr.l	ss_update_levelptr(a0)
 		move.b	#id_SS_Item_Bumper,(a1)
 		rts	
 ; ===========================================================================
 
-loc_1B564:
+@update:
 		move.b	d0,(a1)
 
-locret_1B566:
+@wait:
 		rts	
 ; ===========================================================================
 SS_BumperData:	dc.b id_SS_Item_Bump1, id_SS_Item_Bump2, id_SS_Item_Bump1, id_SS_Item_Bump2, 0
@@ -1100,8 +1097,9 @@ SpecialStartPosList:
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	load special stage layout
+
+;	uses d0, d1, d2, a0, a1, a3
 ; ---------------------------------------------------------------------------
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 SS_Load:
 		moveq	#0,d0
@@ -1178,7 +1176,6 @@ SS_LoadData:
 		clr.l	(a1)+
 		dbf	d1,@loop_update_list			; clear RAM ($4400-$44FF)
 
-		rts	
-; End of function SS_Load
+		rts
 
 		endm
