@@ -204,6 +204,126 @@ v_creditsnum:		equ v_credits_num
 v_megadrive:		equ v_console_region
 f_debugmode:		equ f_debug_enable
 v_init:			equ v_checksum_pass
+;AddPoints
+;AnimateSprite
+;CalcSine
+;CalcAngle
+ChkObjectVisible:	equ CheckOffScreen
+ChkPartiallyVisible:	equ CheckOffScreen_Wide
+;CollectRing
+;DebugMode
+;DeleteObject
+;DeleteChild
+RememberState:		equ DespawnObject
+PlatformObject:		equ DetectPlatform
+;Plat_NoXCheck
+Platform3:		equ Plat_NoXCheck_AltY
+loc_74AE:		equ Plat_NoCheck
+;DisplaySprite
+DisplaySprite1:		equ DisplaySprite_a1
+;ExitPlatform
+;ExitPlatform2
+ObjFloorDist:		equ FindFloorObj
+ObjFloorDist2:		equ FindFloorObj2
+ObjHitWallRight:	equ FindWallRightObj
+ObjHitCeiling:		equ FindCeilingObj
+ObjHitWallLeft:		equ FindWallLeftObj
+;FindFreeObj
+;FindNextFreeObj
+;FindNearestTile
+;FindFloor
+;FindFloor2
+;FindWall
+;FindWall2
+MvSonicOnPtfm:		equ MoveWithPlatform
+MvSonicOnPtfm2:		equ MoveWithPlatform2
+;ObjectFall
+;SpeedToPos
+;RandomNumber
+;ReactToItem
+;HurtSonic
+;KillSonic
+;ResumeMusic
+;SlopeObject
+SlopeObject2:		equ SlopeObject_NoChk
+;SolidObject
+SolidObject71:		equ SolidObject_NoRenderChk
+SolidObject2F:		equ SolidObject_Heightmap
+;SmashObject
+;Sonic_Main
+;Sonic_Control
+;Sonic_Hurt
+;Sonic_Death
+;Sonic_ResetLevel
+Sonic_MdNormal:		equ Sonic_Mode_Normal
+Sonic_MdJump:		equ Sonic_Mode_Air
+Sonic_MdRoll:		equ Sonic_Mode_Roll
+Sonic_MdJump2:		equ Sonic_Mode_Jump
+;Sonic_Display
+;Sonic_RecordPosition
+;Sonic_Water
+;Sonic_Animate
+Sonic_Loops:		equ Sonic_LoopPlane
+;Sonic_LoadGfx
+;Sonic_Jump
+;Sonic_SlopeResist
+;Sonic_Move
+;Sonic_Roll
+;Sonic_LevelBound
+;Sonic_AnglePos
+;Sonic_SlopeRepel
+;Sonic_JumpHeight
+;Sonic_JumpDirection
+;Sonic_JumpAngle
+Sonic_Floor:		equ Sonic_JumpCollision
+;Sonic_RollRepel
+;Sonic_RollSpeed
+;Sonic_ResetOnFloor
+;Sonic_HurtStop
+;GameOver
+;Sonic_Angle
+;Sonic_WalkVertR
+;Sonic_WalkCeiling
+;Sonic_WalkVertL
+Sonic_WalkSpeed:	equ Sonic_CalcRoomAhead
+sub_14D48:		equ Sonic_CalcHeadroom
+Sonic_HitFloor:		equ Sonic_FindFloor
+loc_14DF0:		equ Sonic_FindFloor_Quick
+loc_14E0A:		equ Sonic_SnapAngle
+sub_14E50:		equ Sonic_FindWallRight
+sub_14EB4:		equ Sonic_FindWallRight_Quick_UsePos
+loc_14EBC:		equ Sonic_FindWallRight_Quick
+Sonic_DontRunOnWalls:	equ Sonic_FindCeiling
+loc_14F7C:		equ Sonic_FindCeiling_Quick
+loc_14FD6:		equ Sonic_FindWallLeft
+Sonic_HitWall:		equ Sonic_FindWallLeft_Quick_UsePos
+loc_1504A:		equ Sonic_FindWallLeft_Quick
+
+; Sonic 1 2005
+ChkObjOnScreen:		equ CheckOffScreen
+ChkObjOnScreen2:	equ CheckOffScreen_Wide
+DeleteObject2:		equ DeleteChild
+MarkObjGone:		equ DespawnObject
+Platform2:		equ Plat_NoXCheck
+DisplaySprite2:		equ DisplaySprite_a1
+ObjHitFloor:		equ FindFloorObj
+ObjHitFloor2:		equ FindFloorObj2
+SingleObjLoad:		equ FindFreeObj
+SingleObjLoad2:		equ FindNextFreeObj
+Floor_ChkTile:		equ FindNearestTile
+TouchResponse:		equ ReactToItem
+Obj01_Main:		equ Sonic_Main
+Obj01_Control:		equ Sonic_Control
+Obj01_Hurt:		equ Sonic_Hurt
+Obj01_Death:		equ Sonic_Death
+Obj01_ResetLevel:	equ Sonic_ResetLevel
+Obj01_MdNormal:		equ Sonic_Mode_Normal
+Obj01_MdJump:		equ Sonic_Mode_Air
+Obj01_MdRoll:		equ Sonic_Mode_Roll
+Obj01_MdJump2:		equ Sonic_Mode_Jump
+Sonic_RecordPos:	equ Sonic_RecordPosition
+LoadSonicDynPLC:	equ Sonic_LoadGfx
+Sonic_ChgJumpDir:	equ Sonic_JumpDirection
 
 ; Sonic 2 Github
 id:			equ ost_id

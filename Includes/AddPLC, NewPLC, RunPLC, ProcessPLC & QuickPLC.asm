@@ -78,7 +78,7 @@ ClearPLC:
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	check the PLC buffer and begin decompression if it contains
-; anything
+; anything. ProcessPLC handles the actual decompression during VBlank
 ; ---------------------------------------------------------------------------
 
 RunPLC:

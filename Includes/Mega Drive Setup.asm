@@ -88,6 +88,7 @@ SetupValues:	dc.w $8000					; VDP register start number
 		dc.l vdp_data_port				; VDP data
 		dc.l vdp_control_port				; VDP control
 
+; The following values are overwritten by VDPSetupGame (and later by game modes), so end up basically unused.
 SetupVDP:	dc.b 4						; VDP $80 - normal colour mode
 		dc.b $14					; VDP $81 - Mega Drive mode, DMA enable
 		dc.b ($C000>>10)				; VDP $82 - foreground nametable address

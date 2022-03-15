@@ -42,7 +42,7 @@ GM_Title:
 
 		lea	(v_pal_dry_next).w,a1
 		moveq	#cBlack,d0
-		move.w	#$1F,d1
+		move.w	#(sizeof_pal_all/4)-1,d1
 
 	@clear_pal:
 		move.l	d0,(a1)+
@@ -53,17 +53,17 @@ GM_Title:
 		move.b	#id_CreditsText,(v_ost_credits).w	; load "SONIC TEAM PRESENTS" object
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
-		bsr.w	PaletteFadeIn
+		bsr.w	PaletteFadeIn				; fade in to "SONIC TEAM PRESENTS" screen from black
 		disable_ints
 
 		locVRAM	vram_title
-		lea	(Nem_TitleFg).l,a0			; load title screen patterns
+		lea	(Nem_TitleFg).l,a0			; load title screen gfx
 		bsr.w	NemDec
 		locVRAM	vram_title_sonic
-		lea	(Nem_TitleSonic).l,a0			; load Sonic title screen patterns
+		lea	(Nem_TitleSonic).l,a0			; load Sonic title screen gfx
 		bsr.w	NemDec
 		locVRAM	vram_title_tm
-		lea	(Nem_TitleTM).l,a0			; load "TM" patterns
+		lea	(Nem_TitleTM).l,a0			; load "TM" gfx
 		bsr.w	NemDec
 		lea	(vdp_data_port).l,a6
 		locVRAM	vram_text,4(a6)
@@ -89,8 +89,8 @@ GM_Title:
 		lea	(Blk256_GHZ).l,a0			; load GHZ 256x256 mappings
 		lea	(v_256x256_tiles).l,a1
 		bsr.w	KosDec
-		bsr.w	LevelLayoutLoad
-		bsr.w	PaletteFadeOut
+		bsr.w	LevelLayoutLoad				; load GHZ1 level layout including background
+		bsr.w	PaletteFadeOut				; fade out "SONIC TEAM PRESENTS" screen to black
 		disable_ints
 		bsr.w	ClearScreen
 		lea	(vdp_control_port).l,a5
@@ -104,7 +104,7 @@ GM_Title:
 		move.w	#0,d0
 		bsr.w	EniDec
 
-		copyTilemap	$FF0000,vram_fg,3,4,$22,$16
+		copyTilemap	$FF0000,vram_fg,3,4,$22,$16	; copy title screen mappings to fg nametable in VRAM
 
 		locVRAM	0
 		lea	(Nem_GHZ_1st).l,a0			; load GHZ patterns
@@ -124,7 +124,7 @@ GM_Title:
 
 		move.b	#id_TitleSonic,(v_ost_titlesonic).w	; load big Sonic object
 		move.b	#id_PSBTM,(v_ost_psb).w			; load "PRESS START BUTTON" object
-		;clr.b	(v_ost_psb+ost_routine).w ; The 'Mega Games 10' version of Sonic 1 added this line, to fix the 'PRESS START BUTTON' object not appearing
+		;clr.b	(v_ost_psb+ost_routine).w		; The 'Mega Games 10' version of Sonic 1 added this line, to fix the "PRESS START BUTTON" object not appearing
 
 		if Revision=0
 		else
@@ -145,23 +145,27 @@ GM_Title:
 		move.w	#0,(v_title_d_count).w			; reset d-pad counter
 		move.w	#0,(v_title_c_count).w			; reset C button counter
 		enable_display
-		bsr.w	PaletteFadeIn
+		bsr.w	PaletteFadeIn				; fade in to title screen from black
+
+; ---------------------------------------------------------------------------
+; Title	screen main loop
+; ---------------------------------------------------------------------------
 
 Title_MainLoop:
 		move.b	#id_VBlank_Title,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
-		jsr	(ExecuteObjects).l
-		bsr.w	DeformLayers
-		jsr	(BuildSprites).l
-		bsr.w	PCycle_Title
-		bsr.w	RunPLC
-		move.w	(v_ost_player+ost_x_pos).w,d0
+		jsr	(ExecuteObjects).l			; run all objects
+		bsr.w	DeformLayers				; scroll background
+		jsr	(BuildSprites).l			; create sprite table
+		bsr.w	PCycle_Title				; animate water palette
+		bsr.w	RunPLC					; trigger decompression of items in PLC buffer
+		move.w	(v_ost_player+ost_x_pos).w,d0		; x pos of dummy object (there is no actual object loaded)
 		addq.w	#2,d0
-		move.w	d0,(v_ost_player+ost_x_pos).w		; move dummy to the right
-		cmpi.w	#$1C00,d0				; has dummy object passed $1C00 on x-axis?
-		blo.s	Title_Cheat				; if not, branch
+		move.w	d0,(v_ost_player+ost_x_pos).w		; move dummy 2px to the right
+		cmpi.w	#$1C00,d0
+		blo.s	Title_Cheat				; branch if dummy is still left of $1C00
 
-		move.b	#id_Sega,(v_gamemode).w			; go to Sega screen
+		move.b	#id_Sega,(v_gamemode).w			; go to Sega screen (takes approx. 1 min for dummy to reach $1C00)
 		rts	
 ; ===========================================================================
 
@@ -482,9 +486,6 @@ DemoLevelArray:
 ; Subroutine to	change what you're selecting in the level select
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
 LevSel_Navigate:
 		move.b	(v_joypad_press_actual).w,d1
 		andi.b	#btnUp+btnDn,d1				; is up/down currently pressed?
@@ -544,15 +545,11 @@ LevSel_SndTest:
 		bsr.w	LevSel_ShowText				; refresh text
 
 	@exit:
-		rts	
-; End of function LevSel_Navigate
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to load level select text
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 LevSel_ShowText:
 
@@ -564,7 +561,7 @@ soundtest_pos:	= (sizeof_vram_row*$18)+($18*2)
 		lea	(LevSel_Strings).l,a1
 		lea	(vdp_data_port).l,a6
 		locVRAM	vram_bg+text_pos,d4			; $E210
-		move.w	#(vram_text/$20)+tile_pal4+tile_hi,d3	; VRAM setting ($E680: 4th palette, $680th tile)
+		move.w	#(vram_text/sizeof_cell)+tile_pal4+tile_hi,d3 ; VRAM setting ($E680: 4th palette, $680th tile)
 		moveq	#$14,d1					; number of lines of text
 
 	@loop_lines:
@@ -586,14 +583,14 @@ soundtest_pos:	= (sizeof_vram_row*$18)+($18*2)
 		add.w	d1,d1
 		add.w	d0,d1					; d1 = line number * 24
 		adda.w	d1,a1					; jump to string for highlighted line
-		move.w	#(vram_text/$20)+tile_pal3+tile_hi,d3	; VRAM setting ($C680: 3rd palette, $680th tile)
+		move.w	#(vram_text/sizeof_cell)+tile_pal3+tile_hi,d3 ; VRAM setting ($C680: 3rd palette, $680th tile)
 		move.l	d4,4(a6)
 		bsr.w	LevSel_DrawLine				; recolour selected line
 
-		move.w	#(vram_text/$20)+tile_pal4+tile_hi,d3	; white text for sound test
+		move.w	#(vram_text/sizeof_cell)+tile_pal4+tile_hi,d3 ; white text for sound test
 		cmpi.w	#(LevSel_Ptr_ST-LevSel_Ptrs)/2,(v_levelselect_item).w ; is highlighted line the sound test? ($14)
 		bne.s	@soundtest				; if not, branch
-		move.w	#(vram_text/$20)+tile_pal3+tile_hi,d3	; yellow text for sound test
+		move.w	#(vram_text/sizeof_cell)+tile_pal3+tile_hi,d3 ; yellow text for sound test
 
 	@soundtest:
 		locVRAM	vram_bg+soundtest_pos			; $EC30	- sound test position on screen
@@ -604,12 +601,11 @@ soundtest_pos:	= (sizeof_vram_row*$18)+($18*2)
 		bsr.w	LevSel_DrawSound			; draw low digit
 		move.b	d2,d0					; retrieve from d2
 		bsr.w	LevSel_DrawSound			; draw high digit
-		rts	
-; End of function LevSel_ShowText
+		rts
 
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
+; ---------------------------------------------------------------------------
+; Subroutine to draw sound test number
+; ---------------------------------------------------------------------------
 
 LevSel_DrawSound:
 		andi.w	#$F,d0					; read only low nybble
@@ -620,12 +616,11 @@ LevSel_DrawSound:
 	@is_0_9:
 		add.w	d3,d0					; d0 = character + VRAM setting ($EC30)
 		move.w	d0,(a6)					; write to nametable in VRAM
-		rts	
-; End of function LevSel_DrawSound
+		rts
 
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
+; ---------------------------------------------------------------------------
+; Subroutine to draw a line of text
+; ---------------------------------------------------------------------------
 
 LevSel_DrawLine:
 		moveq	#$17,d2					; number of characters per line
@@ -643,8 +638,7 @@ LevSel_DrawLine:
 		add.w	d3,d0					; combine char with VRAM setting
 		move.w	d0,(a6)					; send to VRAM
 		dbf	d2,@loop
-		rts	
-; End of function LevSel_DrawLine
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Level	select menu text strings

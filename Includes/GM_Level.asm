@@ -174,7 +174,7 @@ Level_Skip_TtlCard:
 		bsr.w	LevelDataLoad				; load block mappings and palettes
 		bsr.w	DrawTilesAtStart
 		jsr	(ConvertCollisionArray).l
-		bsr.w	ColIndexLoad
+		bsr.w	SetColIndexPtr
 		bsr.w	LZWaterFeatures
 		move.b	#id_SonicPlayer,(v_ost_player).w	; load Sonic object
 		tst.w	(v_demo_mode).w				; is this an ending demo?
@@ -375,3 +375,59 @@ Level_Demo:
 		tst.w	(v_countdown).w				; has main timer hit 0?
 		bne.s	@fade_loop				; if not, branch
 		rts	
+
+; ---------------------------------------------------------------------------
+; Subroutine to set collision index pointer for current zone
+
+;	uses d0
+; ---------------------------------------------------------------------------
+
+include_Level_colptrs:	macro
+
+SetColIndexPtr:
+		moveq	#0,d0
+		move.b	(v_zone).w,d0
+		lsl.w	#2,d0
+		move.l	ColPointers(pc,d0.w),(v_collision_index_ptr).w
+		rts
+
+ColPointers:	dc.l Col_GHZ
+		dc.l Col_LZ
+		dc.l Col_MZ
+		dc.l Col_SLZ
+		dc.l Col_SYZ
+		dc.l Col_SBZ
+		zonewarning ColPointers,4
+;		dc.l Col_GHZ					; pointer for Ending is missing by default
+
+		endm
+
+; ---------------------------------------------------------------------------
+; Subroutine to check Sonic's position and load signpost graphics
+; ---------------------------------------------------------------------------
+
+include_Level_signpost:	macro
+
+SignpostArtLoad:
+		tst.w	(v_debug_active).w			; is debug mode	being used?
+		bne.w	@exit					; if yes, branch
+		cmpi.b	#2,(v_act).w				; is act number 02 (act 3)?
+		beq.s	@exit					; if yes, branch
+
+		move.w	(v_camera_x_pos).w,d0
+		move.w	(v_boundary_right).w,d1
+		subi.w	#$100,d1
+		cmp.w	d1,d0					; has Sonic reached the	edge of	the level?
+		blt.s	@exit					; if not, branch
+		tst.b	(f_hud_time_update).w
+		beq.s	@exit
+		cmp.w	(v_boundary_left).w,d1
+		beq.s	@exit
+		move.w	d1,(v_boundary_left).w			; move left boundary to current screen position
+		moveq	#id_PLC_Signpost,d0
+		bra.w	NewPLC					; load signpost	gfx
+
+	@exit:
+		rts
+
+		endm

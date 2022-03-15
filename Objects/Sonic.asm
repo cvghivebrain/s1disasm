@@ -168,8 +168,7 @@ Sonic_RecordPosition:
 		move.w	ost_x_pos(a0),(a1)+			; save x/y position
 		move.w	ost_y_pos(a0),(a1)+
 		addq.b	#4,(v_sonic_pos_tracker_num_low).w	; next index (wraps to 0 after $FC)
-		rts	
-; End of function Sonic_RecordPosition
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Subroutine for Sonic when he's underwater
@@ -221,9 +220,7 @@ Sonic_Water:
 
 	@belowmaxspeed:
 		play.w	1, jmp, sfx_Splash			; play splash sound
-; End of function Sonic_Water
 
-; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Modes	for controlling	Sonic
 ; ---------------------------------------------------------------------------

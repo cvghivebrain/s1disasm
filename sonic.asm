@@ -171,9 +171,9 @@ GameInit:
 		move.l	d7,(a6)+
 		dbf	d6,@clearRAM				; clear RAM ($0000-$FDFF)
 
-		bsr.w	VDPSetupGame
+		bsr.w	VDPSetupGame				; clear CRAM and set VDP registers
 		bsr.w	DacDriverLoad
-		bsr.w	JoypadInit
+		bsr.w	JoypadInit				; initialise joypads
 		move.b	#id_Sega,(v_gamemode).w			; set Game Mode to Sega Screen
 
 MainGameLoop:
@@ -225,124 +225,8 @@ Art_Text:	incbin	"Graphics\Level Select & Debug Text.bin" ; text used in level s
 		even
 
 		include	"Includes\VBlank & HBlank.asm"
-
-; ---------------------------------------------------------------------------
-; Subroutine to	initialise joypads
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-JoypadInit:
-		stopZ80
-		waitZ80
-		moveq	#$40,d0
-		move.b	d0,(port_1_control).l			; init port 1 (joypad 1)
-		move.b	d0,(port_2_control).l			; init port 2 (joypad 2)
-		move.b	d0,(port_e_control).l			; init port 3 (expansion/extra)
-		startZ80
-		rts	
-; End of function JoypadInit
-
-; ---------------------------------------------------------------------------
-; Subroutine to	read joypad input, and send it to the RAM
-
-; output:
-;	d0 = actual joypad input (SACBRLDU)
-;	d1 = actual joypad input, new since last frame only (SACBRLDU)
-;	a1 = port_1_data ($A10003)
-;	uses a0
-; ---------------------------------------------------------------------------
-
-ReadJoypads:
-		lea	(v_joypad_hold_actual).w,a0		; address where joypad states are written
-		lea	(port_1_data).l,a1			; first joypad port
-		bsr.s	@read					; do the first joypad
-		addq.w	#2,a1					; do the second	joypad
-
-	@read:
-		move.b	#0,(a1)					; set port to read 00SA00DU
-		nop	
-		nop	
-		move.b	(a1),d0					; d0 = 00SA00DU
-		lsl.b	#2,d0					; d0 = SA00DU00
-		andi.b	#$C0,d0					; d0 = SA000000
-		move.b	#$40,(a1)				; set port to read 00CBRLDU
-		nop	
-		nop	
-		move.b	(a1),d1					; d1 = 00CBRLDU
-		andi.b	#$3F,d1					; d1 = 00CBRLDU
-		or.b	d1,d0					; d0 = SACBRLDU
-		not.b	d0					; invert bits
-		move.b	(a0),d1					; d1 = previous joypad state
-		eor.b	d0,d1
-		move.b	d0,(a0)+				; v_joypad_hold_actual = SACBRLDU
-		and.b	d0,d1					; d1 = new joypad inputs only
-		move.b	d1,(a0)+				; v_joypad_press_actual = SACBRLDU (new only)
-		rts
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-VDPSetupGame:
-		lea	(vdp_control_port).l,a0
-		lea	(vdp_data_port).l,a1
-		lea	(VDPSetupArray).l,a2
-		moveq	#((VDPSetupArray_end-VDPSetupArray)/2)-1,d7
-	@setreg:
-		move.w	(a2)+,(a0)
-		dbf	d7,@setreg				; set the VDP registers
-
-		move.w	(VDPSetupArray+2).l,d0
-		move.w	d0,(v_vdp_mode_buffer).w		; save $8134 to buffer for later use
-		move.w	#$8A00+223,(v_vdp_hint_counter).w	; horizontal interrupt every 224th scanline
-
-		moveq	#0,d0
-		move.l	#$C0000000,(vdp_control_port).l		; set VDP to CRAM write
-		move.w	#$40-1,d7
-	@clrCRAM:
-		move.w	d0,(a1)
-		dbf	d7,@clrCRAM				; clear	the CRAM
-
-		clr.l	(v_fg_y_pos_vsram).w
-		clr.l	(v_fg_x_pos_hscroll).w
-		move.l	d1,-(sp)
-		dma_fill	0,$FFFF,0
-
-	@waitforDMA:
-		move.w	(a5),d1
-		btst	#1,d1					; is dma_fill still running?
-		bne.s	@waitforDMA				; if yes, branch
-
-		move.w	#$8F02,(a5)				; set VDP increment size
-		move.l	(sp)+,d1
-		rts	
-; End of function VDPSetupGame
-
-; ===========================================================================
-VDPSetupArray:	dc.w $8004					; normal colour mode
-		dc.w $8134					; enable V.interrupts, enable DMA
-		dc.w $8200+(vram_fg>>10)			; set foreground nametable address
-		dc.w $8300+(vram_window>>10)			; set window nametable address
-		dc.w $8400+(vram_bg>>13)			; set background nametable address
-		dc.w $8500+(vram_sprites>>9)			; set sprite table address
-		dc.w $8600					; unused
-		dc.w $8700					; set background colour (palette entry 0)
-		dc.w $8800					; unused
-		dc.w $8900					; unused
-		dc.w $8A00					; default H.interrupt register
-		dc.w $8B00					; full-screen vertical scrolling
-		dc.w $8C81					; 40-cell display mode
-		dc.w $8D00+(vram_hscroll>>10)			; set background hscroll address
-		dc.w $8E00					; unused
-		dc.w $8F02					; set VDP increment size
-		dc.w $9001					; 64x32 cell plane size
-		dc.w $9100					; window horizontal position
-		dc.w $9200					; window vertical position
-	VDPSetupArray_end:
-
-
+		include	"Includes\JoypadInit & ReadJoypads.asm"
+		include	"Includes\VDPSetupGame.asm"
 		include	"Includes\ClearScreen.asm"
 		include	"sound\PlaySound + DacDriverLoad.asm"
 		include	"Includes\PauseGame.asm"
@@ -420,7 +304,6 @@ Angle_Data:	incbin	"Misc Data\Angle Table.bin"
 
 		include "Includes\MoveSonicInDemo & DemoRecorder.asm"
 
-; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Demo sequence	pointers
 ; ---------------------------------------------------------------------------
@@ -448,73 +331,23 @@ DemoEndDataPtr:	dc.l Demo_EndGHZ1				; demos run during the credits
 		dc.b   0, $1A,   8, $FF,   8, $CA,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0
 		even
 
-; ---------------------------------------------------------------------------
-; Collision index pointer loading subroutine
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-ColIndexLoad:
-		moveq	#0,d0
-		move.b	(v_zone).w,d0
-		lsl.w	#2,d0
-		move.l	ColPointers(pc,d0.w),(v_collision_index_ptr).w
-		rts	
-; End of function ColIndexLoad
-
-; ===========================================================================
-; ---------------------------------------------------------------------------
-; Collision index pointers
-; ---------------------------------------------------------------------------
-ColPointers:	dc.l Col_GHZ
-		dc.l Col_LZ
-		dc.l Col_MZ
-		dc.l Col_SLZ
-		dc.l Col_SYZ
-		dc.l Col_SBZ
-		zonewarning ColPointers,4
-;		dc.l Col_GHZ ; Pointer for Ending is missing by default.
-
+		include_Level_colptrs				; Includes\GM_Level.asm
 		include "Includes\OscillateNumInit & OscillateNumDo.asm"
 		include "Includes\SynchroAnimate.asm"
+	
+		include_Level_signpost				; Includes\GM_Level.asm
 
 ; ---------------------------------------------------------------------------
-; End-of-act signpost pattern loading subroutine
+; Normal demo data
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-SignpostArtLoad:
-		tst.w	(v_debug_active).w			; is debug mode	being used?
-		bne.w	@exit					; if yes, branch
-		cmpi.b	#2,(v_act).w				; is act number 02 (act 3)?
-		beq.s	@exit					; if yes, branch
-
-		move.w	(v_camera_x_pos).w,d0
-		move.w	(v_boundary_right).w,d1
-		subi.w	#$100,d1
-		cmp.w	d1,d0					; has Sonic reached the	edge of	the level?
-		blt.s	@exit					; if not, branch
-		tst.b	(f_hud_time_update).w
-		beq.s	@exit
-		cmp.w	(v_boundary_left).w,d1
-		beq.s	@exit
-		move.w	d1,(v_boundary_left).w			; move left boundary to current screen position
-		moveq	#id_PLC_Signpost,d0
-		bra.w	NewPLC					; load signpost	patterns
-
-	@exit:
-		rts	
-; End of function SignpostArtLoad
-
-; ===========================================================================
 Demo_GHZ:	incbin	"demodata\Intro - GHZ.bin"
+		even
 Demo_MZ:	incbin	"demodata\Intro - MZ.bin"
+		even
 Demo_SYZ:	incbin	"demodata\Intro - SYZ.bin"
+		even
 Demo_SS:	incbin	"demodata\Intro - Special Stage.bin"
-; ===========================================================================
+		even
 
 		include "Includes\GM_Special.asm"
 
@@ -548,7 +381,7 @@ Pal_SSCyc2:	incbin	"Palettes\Cycle - Special Stage 2.bin"
 		include "Objects\Ending Eggman Try Again [Mappings].asm" ; Map_EEgg
 
 ; ---------------------------------------------------------------------------
-; Ending sequence demos
+; Ending demo data
 ; ---------------------------------------------------------------------------
 Demo_EndGHZ1:	incbin	"demodata\Ending - GHZ1.bin"
 		even
@@ -608,12 +441,8 @@ Demo_EndGHZ2:	incbin	"demodata\Ending - GHZ2.bin"
 		include "Objects\Platforms.asm"			; BasicPlatform
 		include "Objects\Platforms [Mappings].asm"	; Map_Plat_Unused, Map_Plat_GHZ, Map_Plat_SYZ, Map_Plat_SLZ
 
-; ---------------------------------------------------------------------------
-; Object 19 - blank
-; ---------------------------------------------------------------------------
-
 Obj19:
-		rts	
+		rts						; blank object
 		
 		include "Objects\GHZ Giant Ball [Mappings].asm"	; Map_GBall
 
@@ -625,12 +454,8 @@ Obj19:
 
 		include_SlopeObject_NoChk			; Objects\_SlopeObject.asm
 
-; ===========================================================================
-; ---------------------------------------------------------------------------
-; Collision data for GHZ collapsing ledge
-; ---------------------------------------------------------------------------
 Ledge_SlopeData:
-		incbin	"Collision\GHZ Collapsing Ledge Heightmap.bin"
+		incbin	"Collision\GHZ Collapsing Ledge Heightmap.bin" ; used by CollapseLedge
 		even
 
 		include "Objects\GHZ Collapsing Ledge [Mappings].asm" ; Map_Ledge
@@ -711,12 +536,15 @@ Ledge_SlopeData:
 		include "Objects\Burrobot [Mappings].asm"	; Map_Burro
 
 		include "Objects\MZ Grass Platforms.asm"	; LargeGrass
-LGrass_Coll_Wide:	incbin	"Collision\MZ Grass Platforms Heightmap (Wide).bin"
-			even
-LGrass_Coll_Narrow:	incbin	"Collision\MZ Grass Platforms Heightmap (Narrow).bin"
-			even
-LGrass_Coll_Sloped:	incbin	"Collision\MZ Grass Platforms Heightmap (Sloped).bin"
-			even
+LGrass_Coll_Wide:
+		incbin	"Collision\MZ Grass Platforms Heightmap (Wide).bin" ; used by LargeGrass
+		even
+LGrass_Coll_Narrow:
+		incbin	"Collision\MZ Grass Platforms Heightmap (Narrow).bin" ; used by LargeGrass
+		even
+LGrass_Coll_Sloped:
+		incbin	"Collision\MZ Grass Platforms Heightmap (Sloped).bin" ; used by LargeGrass
+		even
 		include "Objects\MZ Burning Grass.asm"		; GrassFire
 		include "Objects\MZ Grass Platforms [Mappings].asm" ; Map_LGrass
 		include "Objects\Fireballs [Mappings].asm"	; Map_Fire
@@ -819,12 +647,8 @@ NullObject:
 		include_MotoBug_1
 		include "Objects\Moto Bug [Mappings].asm"	; Map_Moto
 
-; ---------------------------------------------------------------------------
-; Object 4F - blank
-; ---------------------------------------------------------------------------
-
 Obj4F:
-		rts	
+		rts						; blank object
 
 		include "Objects\Yadrin.asm"			; Yadrin
 		include "Objects\Yadrin [Mappings].asm"		; Map_Yad
@@ -877,9 +701,9 @@ Obj4F:
 		include "Objects\SLZ Fans [Mappings].asm"	; Map_Fan
 
 		include "Objects\SLZ Seesaw.asm"		; Seesaw
-See_DataSlope:	incbin	"Collision\SLZ Seesaw Heightmap (Sloped).bin"
+See_DataSlope:	incbin	"Collision\SLZ Seesaw Heightmap (Sloped).bin" ; used by Seesaw
 		even
-See_DataFlat:	incbin	"Collision\SLZ Seesaw Heightmap (Flat).bin"
+See_DataFlat:	incbin	"Collision\SLZ Seesaw Heightmap (Flat).bin" ; used by Seesaw
 		even
 		include "Objects\SLZ Seesaw [Mappings].asm"	; Map_Seesaw
 		include "Objects\SLZ Seesaw Spike Ball [Mappings].asm" ; Map_SSawBall
@@ -965,8 +789,6 @@ See_DataFlat:	incbin	"Collision\SLZ Seesaw Heightmap (Flat).bin"
 		include "Objects\SBZ Electric Orb [Mappings].asm" ; Map_Elec
 
 		include "Objects\SBZ Conveyor Belt Platforms.asm" ; SpinConvey
-
-; ===========================================================================
 
 		include "Objects\SBZ Girder Block.asm"		; Girder
 		include "Objects\SBZ Girder Block [Mappings].asm" ; Map_Gird
@@ -1091,12 +913,12 @@ SS_Item_Glass4:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal3,0
 SS_Item_R2:	ss_sprite Map_SS_R,tile_Nem_SSRBlock,0		; $31 - R
 SS_Item_Bump1:	ss_sprite Map_Bump,tile_Nem_Bumper_SS,id_frame_bump_bumped1
 SS_Item_Bump2:	ss_sprite Map_Bump,tile_Nem_Bumper_SS,id_frame_bump_bumped2
-		ss_sprite Map_SS_R,tile_Nem_SSZone1,0		; ??34 - Zone 1
-		ss_sprite Map_SS_R,tile_Nem_SSZone2,0		; ??35 - Zone 2
-		ss_sprite Map_SS_R,tile_Nem_SSZone3,0		; ??36 - Zone 3
-		ss_sprite Map_SS_R,tile_Nem_SSZone1,0		; ??37 - Zone 4
-		ss_sprite Map_SS_R,tile_Nem_SSZone2,0		; ??38 - Zone 5
-		ss_sprite Map_SS_R,tile_Nem_SSZone3,0		; ??39 - Zone 6
+		ss_sprite Map_SS_R,tile_Nem_SSZone1,0		; $34 - Zone 1
+		ss_sprite Map_SS_R,tile_Nem_SSZone2,0		; $35 - Zone 2
+		ss_sprite Map_SS_R,tile_Nem_SSZone3,0		; $36 - Zone 3
+		ss_sprite Map_SS_R,tile_Nem_SSZone1,0		; $37 - Zone 4
+		ss_sprite Map_SS_R,tile_Nem_SSZone2,0		; $38 - Zone 5
+		ss_sprite Map_SS_R,tile_Nem_SSZone3,0		; $39 - Zone 6
 SS_Item_Ring:	ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,0	; $3A - ring
 SS_Item_Em1:	ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald,0	; $3B - emerald
 SS_Item_Em2:	ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald+tile_pal2,0 ; $3C - emerald
@@ -1127,12 +949,9 @@ SS_Item_Glass8:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal3,0 ; $4E
 		include "Objects\Special Stage Chaos Emeralds [Mappings].asm" ; Map_SS_Chaos1, Map_SS_Chaos2 & Map_SS_Chaos3
 
 		include "Objects\Special Stage Sonic.asm"	; SonicSpecial
-; ---------------------------------------------------------------------------
-; Object 10 - blank
-; ---------------------------------------------------------------------------
 
 Obj10:
-		rts	
+		rts						; blank object
 
 		include "Includes\AnimateLevelGfx.asm"
 
@@ -1143,6 +962,9 @@ Obj10:
 
 		include "Includes\HUD_Update, HUD_Base & ContScrCounter.asm"
 
+; ---------------------------------------------------------------------------
+; Uncompressed graphics	- HUD and lives counter
+; ---------------------------------------------------------------------------
 Art_Hud:	incbin	"Graphics\HUD Numbers.bin"		; 8x16 pixel numbers on HUD
 		even
 Art_LivesNums:	incbin	"Graphics\Lives Counter Numbers.bin"	; 8x8 pixel numbers on lives counter
@@ -1328,7 +1150,7 @@ Eni_SSBg2:	incbin	"tilemaps\SS Background 2.bin"		; special stage background (ma
 ; Compressed graphics - various
 ; ---------------------------------------------------------------------------
 		nemfile	Nem_TitleCard
-		nemfile	Nem_Hud,"HUD"				; HUD (rings, time
+		nemfile	Nem_Hud
 		nemfile	Nem_Lives
 		nemfile	Nem_Ring
 		nemfile	Nem_Monitors
@@ -1701,7 +1523,7 @@ Art_BigRing:	incbin	"Graphics\Giant Ring.bin"
 		align	$100,$FF
 
 ; ---------------------------------------------------------------------------
-; Sprite locations index
+; Object position index
 ; ---------------------------------------------------------------------------
 ObjPos_Index:	index *
 		; GHZ
@@ -1821,11 +1643,9 @@ ObjPos_Null:	endobj
 		endc
 		;dcb.b ($10000-(*%$10000))-(EndOfRom-SoundDriver),$FF
 
-; ===========================================================================
 ; ---------------------------------------------------------------------------
-; Include sound driver data
+; Sound driver data
 ; ---------------------------------------------------------------------------
-
 		include "sound/Sound Data.asm"
 
 EndOfRom:
