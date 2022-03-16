@@ -340,13 +340,13 @@ DemoEndDataPtr:	dc.l Demo_EndGHZ1				; demos run during the credits
 ; ---------------------------------------------------------------------------
 ; Normal demo data
 ; ---------------------------------------------------------------------------
-Demo_GHZ:	incbin	"demodata\Intro - GHZ.bin"
+Demo_GHZ:	incbin	"Demos\Intro - GHZ.bin"
 		even
-Demo_MZ:	incbin	"demodata\Intro - MZ.bin"
+Demo_MZ:	incbin	"Demos\Intro - MZ.bin"
 		even
-Demo_SYZ:	incbin	"demodata\Intro - SYZ.bin"
+Demo_SYZ:	incbin	"Demos\Intro - SYZ.bin"
 		even
-Demo_SS:	incbin	"demodata\Intro - Special Stage.bin"
+Demo_SS:	incbin	"Demos\Intro - Special Stage.bin"
 		even
 
 		include "Includes\GM_Special.asm"
@@ -383,21 +383,21 @@ Pal_SSCyc2:	incbin	"Palettes\Cycle - Special Stage 2.bin"
 ; ---------------------------------------------------------------------------
 ; Ending demo data
 ; ---------------------------------------------------------------------------
-Demo_EndGHZ1:	incbin	"demodata\Ending - GHZ1.bin"
+Demo_EndGHZ1:	incbin	"Demos\Ending - GHZ1.bin"
 		even
-Demo_EndMZ:	incbin	"demodata\Ending - MZ.bin"
+Demo_EndMZ:	incbin	"Demos\Ending - MZ.bin"
 		even
-Demo_EndSYZ:	incbin	"demodata\Ending - SYZ.bin"
+Demo_EndSYZ:	incbin	"Demos\Ending - SYZ.bin"
 		even
-Demo_EndLZ:	incbin	"demodata\Ending - LZ.bin"
+Demo_EndLZ:	incbin	"Demos\Ending - LZ.bin"
 		even
-Demo_EndSLZ:	incbin	"demodata\Ending - SLZ.bin"
+Demo_EndSLZ:	incbin	"Demos\Ending - SLZ.bin"
 		even
-Demo_EndSBZ1:	incbin	"demodata\Ending - SBZ1.bin"
+Demo_EndSBZ1:	incbin	"Demos\Ending - SBZ1.bin"
 		even
-Demo_EndSBZ2:	incbin	"demodata\Ending - SBZ2.bin"
+Demo_EndSBZ2:	incbin	"Demos\Ending - SBZ2.bin"
 		even
-Demo_EndGHZ2:	incbin	"demodata\Ending - GHZ2.bin"
+Demo_EndGHZ2:	incbin	"Demos\Ending - GHZ2.bin"
 		even
 
 		include	"Includes\LevelParameterLoad.asm"
@@ -978,20 +978,20 @@ Art_LivesNums:	incbin	"Graphics\Lives Counter Numbers.bin"	; 8x8 pixel numbers o
 		align	$200,$FF
 		if Revision=0
 			nemfile	Nem_SegaLogo
-	Eni_SegaLogo:	incbin	"tilemaps\Sega Logo.bin"	; large Sega logo (mappings)
+	Eni_SegaLogo:	incbin	"Tilemaps\Sega Logo.eni"	; large Sega logo (mappings)
 			even
 		else
 			dcb.b	$300,$FF
 			nemfile	Nem_SegaLogo
-	Eni_SegaLogo:	incbin	"tilemaps\Sega Logo (JP1).bin"	; large Sega logo (mappings)
+	Eni_SegaLogo:	incbin	"Tilemaps\Sega Logo (JP1).eni"	; large Sega logo (mappings)
 			even
 		endc
-Eni_Title:	incbin	"tilemaps\Title Screen.bin"		; title screen foreground (mappings)
+Eni_Title:	incbin	"Tilemaps\Title Screen.eni"		; title screen foreground (mappings)
 		even
 		nemfile	Nem_TitleFg
 		nemfile	Nem_TitleSonic
 		nemfile	Nem_TitleTM
-Eni_JapNames:	incbin	"tilemaps\Hidden Japanese Credits.bin"	; Japanese credits (mappings)
+Eni_JapNames:	incbin	"Tilemaps\Hidden Japanese Credits.eni"	; Japanese credits (mappings)
 		even
 		nemfile	Nem_JapNames
 
@@ -1025,10 +1025,10 @@ Art_Sonic:	incbin	"Graphics\Sonic.bin"			; Sonic
 ; Compressed graphics - special stage
 ; ---------------------------------------------------------------------------
 		nemfile	Nem_SSWalls
-Eni_SSBg1:	incbin	"tilemaps\SS Background 1.bin"		; special stage background (mappings)
+Eni_SSBg1:	incbin	"Tilemaps\SS Background 1.eni"		; special stage background (mappings)
 		even
 		nemfile	Nem_SSBgFish
-Eni_SSBg2:	incbin	"tilemaps\SS Background 2.bin"		; special stage background (mappings)
+Eni_SSBg2:	incbin	"Tilemaps\SS Background 2.eni"		; special stage background (mappings)
 		even
 		nemfile	Nem_SSBgCloud
 		nemfile	Nem_SSGOAL
@@ -1181,18 +1181,18 @@ Eni_SSBg2:	incbin	"tilemaps\SS Background 2.bin"		; special stage background (ma
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - primary patterns and block mappings
 ; ---------------------------------------------------------------------------
-Blk16_GHZ:	incbin	"map16\GHZ.bin"
+Blk16_GHZ:	incbin	"16x16 Mappings\GHZ.eni"
 		even
 		nemfile	Nem_GHZ_1st
 		nemfile	Nem_GHZ_2nd
 Blk256_GHZ:	incbin	"256x256 Mappings\GHZ.kos"
 		even
-Blk16_LZ:	incbin	"map16\LZ.bin"
+Blk16_LZ:	incbin	"16x16 Mappings\LZ.eni"
 		even
 		nemfile	Nem_LZ
 Blk256_LZ:	incbin	"256x256 Mappings\LZ.kos"
 		even
-Blk16_MZ:	incbin	"map16\MZ.bin"
+Blk16_MZ:	incbin	"16x16 Mappings\MZ.eni"
 		even
 		nemfile	Nem_MZ
 Blk256_MZ:	if Revision=0
@@ -1201,17 +1201,17 @@ Blk256_MZ:	if Revision=0
 			incbin	"256x256 Mappings\MZ (JP1).kos"
 		endc
 		even
-Blk16_SLZ:	incbin	"map16\SLZ.bin"
+Blk16_SLZ:	incbin	"16x16 Mappings\SLZ.eni"
 		even
 		nemfile	Nem_SLZ
 Blk256_SLZ:	incbin	"256x256 Mappings\SLZ.kos"
 		even
-Blk16_SYZ:	incbin	"map16\SYZ.bin"
+Blk16_SYZ:	incbin	"16x16 Mappings\SYZ.eni"
 		even
 		nemfile	Nem_SYZ
 Blk256_SYZ:	incbin	"256x256 Mappings\SYZ.kos"
 		even
-Blk16_SBZ:	incbin	"map16\SBZ.bin"
+Blk16_SBZ:	incbin	"16x16 Mappings\SBZ.eni"
 		even
 		nemfile	Nem_SBZ
 Blk256_SBZ:	if Revision=0
@@ -1271,22 +1271,22 @@ Col_SBZ:	incbin	"Collision\SBZ.bin"			; SBZ index
 ; ---------------------------------------------------------------------------
 ; Special Stage layouts
 ; ---------------------------------------------------------------------------
-SS_1:		incbin	"sslayout\1.bin"
+SS_1:		incbin	"Special Stage Layouts\1.eni"
 		even
-SS_2:		incbin	"sslayout\2.bin"
+SS_2:		incbin	"Special Stage Layouts\2.eni"
 		even
-SS_3:		incbin	"sslayout\3.bin"
+SS_3:		incbin	"Special Stage Layouts\3.eni"
 		even
-SS_4:		incbin	"sslayout\4.bin"
+SS_4:		incbin	"Special Stage Layouts\4.eni"
 		even
 		if Revision=0
-SS_5:		incbin	"sslayout\5.bin"
-		even
-SS_6:		incbin	"sslayout\6.bin"
-		else
-	SS_5:		incbin	"sslayout\5 (JP1).bin"
+	SS_5:		incbin	"Special Stage Layouts\5.eni"
 			even
-	SS_6:		incbin	"sslayout\6 (JP1).bin"
+	SS_6:		incbin	"Special Stage Layouts\6.eni"
+		else
+	SS_5:		incbin	"Special Stage Layouts\5 (JP1).eni"
+			even
+	SS_6:		incbin	"Special Stage Layouts\6 (JP1).eni"
 		endc
 		even
 ; ---------------------------------------------------------------------------
@@ -1431,88 +1431,88 @@ Level_Index:	index *
 		ptr byte_6A320
 		ptr byte_6A320
 
-Level_GHZ1:	incbin	"levels\ghz1.bin"
+Level_GHZ1:	incbin	"Level Layouts\ghz1.bin"
 		even
 byte_68D70:	dc.b 0,	0, 0, 0
-Level_GHZ2:	incbin	"levels\ghz2.bin"
+Level_GHZ2:	incbin	"Level Layouts\ghz2.bin"
 		even
 byte_68E3C:	dc.b 0,	0, 0, 0
-Level_GHZ3:	incbin	"levels\ghz3.bin"
+Level_GHZ3:	incbin	"Level Layouts\ghz3.bin"
 		even
-Level_GHZbg:	incbin	"levels\ghzbg.bin"
+Level_GHZbg:	incbin	"Level Layouts\ghzbg.bin"
 		even
 byte_68F84:	dc.b 0,	0, 0, 0
 byte_68F88:	dc.b 0,	0, 0, 0
 
-Level_LZ1:	incbin	"levels\lz1.bin"
+Level_LZ1:	incbin	"Level Layouts\lz1.bin"
 		even
-Level_LZbg:	incbin	"levels\lzbg.bin"
+Level_LZbg:	incbin	"Level Layouts\lzbg.bin"
 		even
 byte_69190:	dc.b 0,	0, 0, 0
-Level_LZ2:	incbin	"levels\lz2.bin"
+Level_LZ2:	incbin	"Level Layouts\lz2.bin"
 		even
 byte_6922E:	dc.b 0,	0, 0, 0
-Level_LZ3:	incbin	"levels\lz3.bin"
+Level_LZ3:	incbin	"Level Layouts\lz3.bin"
 		even
 byte_6934C:	dc.b 0,	0, 0, 0
-Level_SBZ3:	incbin	"levels\sbz3.bin"
+Level_SBZ3:	incbin	"Level Layouts\sbz3.bin"
 		even
 byte_6940A:	dc.b 0,	0, 0, 0
 
-Level_MZ1:	incbin	"levels\mz1.bin"
+Level_MZ1:	incbin	"Level Layouts\mz1.bin"
 		even
-Level_MZ1bg:	incbin	"levels\mz1bg.bin"
+Level_MZ1bg:	incbin	"Level Layouts\mz1bg.bin"
 		even
-Level_MZ2:	incbin	"levels\mz2.bin"
+Level_MZ2:	incbin	"Level Layouts\mz2.bin"
 		even
-Level_MZ2bg:	incbin	"levels\mz2bg.bin"
+Level_MZ2bg:	incbin	"Level Layouts\mz2bg.bin"
 		even
 byte_6965C:	dc.b 0,	0, 0, 0
-Level_MZ3:	incbin	"levels\mz3.bin"
+Level_MZ3:	incbin	"Level Layouts\mz3.bin"
 		even
-Level_MZ3bg:	incbin	"levels\mz3bg.bin"
+Level_MZ3bg:	incbin	"Level Layouts\mz3bg.bin"
 		even
 byte_697E6:	dc.b 0,	0, 0, 0
 byte_697EA:	dc.b 0,	0, 0, 0
 
-Level_SLZ1:	incbin	"levels\slz1.bin"
+Level_SLZ1:	incbin	"Level Layouts\slz1.bin"
 		even
-Level_SLZbg:	incbin	"levels\slzbg.bin"
+Level_SLZbg:	incbin	"Level Layouts\slzbg.bin"
 		even
-Level_SLZ2:	incbin	"levels\slz2.bin"
+Level_SLZ2:	incbin	"Level Layouts\slz2.bin"
 		even
-Level_SLZ3:	incbin	"levels\slz3.bin"
+Level_SLZ3:	incbin	"Level Layouts\slz3.bin"
 		even
 byte_69B84:	dc.b 0,	0, 0, 0
 
-Level_SYZ1:	incbin	"levels\syz1.bin"
+Level_SYZ1:	incbin	"Level Layouts\syz1.bin"
 		even
 Level_SYZbg:	if Revision=0
-			incbin	"levels\syzbg.bin"
+			incbin	"Level Layouts\syzbg.bin"
 		else
-			incbin	"levels\syzbg (JP1).bin"
+			incbin	"Level Layouts\syzbg (JP1).bin"
 		endc
 		even
 byte_69C7E:	dc.b 0,	0, 0, 0
-Level_SYZ2:	incbin	"levels\syz2.bin"
+Level_SYZ2:	incbin	"Level Layouts\syz2.bin"
 		even
 byte_69D86:	dc.b 0,	0, 0, 0
-Level_SYZ3:	incbin	"levels\syz3.bin"
+Level_SYZ3:	incbin	"Level Layouts\syz3.bin"
 		even
 byte_69EE4:	dc.b 0,	0, 0, 0
 byte_69EE8:	dc.b 0,	0, 0, 0
 
-Level_SBZ1:	incbin	"levels\sbz1.bin"
+Level_SBZ1:	incbin	"Level Layouts\sbz1.bin"
 		even
-Level_SBZ1bg:	incbin	"levels\sbz1bg.bin"
+Level_SBZ1bg:	incbin	"Level Layouts\sbz1bg.bin"
 		even
-Level_SBZ2:	incbin	"levels\sbz2.bin"
+Level_SBZ2:	incbin	"Level Layouts\sbz2.bin"
 		even
-Level_SBZ2bg:	incbin	"levels\sbz2bg.bin"
+Level_SBZ2bg:	incbin	"Level Layouts\sbz2bg.bin"
 		even
 byte_6A2F8:	dc.b 0,	0, 0, 0
 byte_6A2FC:	dc.b 0,	0, 0, 0
-Level_End:	incbin	"levels\ending.bin"
+Level_End:	incbin	"Level Layouts\ending.bin"
 		even
 byte_6A320:	dc.b 0,	0, 0, 0
 

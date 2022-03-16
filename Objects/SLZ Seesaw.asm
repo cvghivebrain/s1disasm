@@ -33,7 +33,8 @@ See_Index:	index *,,2
 ost_seesaw_x_start:	equ $30					; original x-axis position (2 bytes)
 ost_seesaw_y_start:	equ $34					; original y-axis position (2 bytes)
 ost_seesaw_impact:	equ $38					; speed Sonic hits the seesaw (2 bytes)
-ost_seesaw_state:	equ $3A					; 0 = left raised; 2 = right raised; 1/3 = flat
+ost_seesaw_state:	equ $3A					; seesaw: 0 = left raised; 2 = right raised; 1 = flat
+								; spikeball: 0 = on/launched from right side; 2 = on/launched from left side
 ost_seesaw_parent:	equ $3C					; address of OST of parent object (4 bytes)
 ; ===========================================================================
 
@@ -52,7 +53,7 @@ See_Main:	; Routine 0
 		bne.s	@noball					; branch if not found
 		move.b	#id_Seesaw,ost_id(a1)			; load spikeball object
 		addq.b	#id_See_Spikeball,ost_routine(a1)	; goto See_Spikeball next
-		move.w	ost_x_pos(a0),ost_x_pos(a1)
+		move.w	ost_x_pos(a0),ost_x_pos(a1)		; spikeball position is updated later
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	ost_status(a0),ost_status(a1)
 		move.l	a0,ost_seesaw_parent(a1)		; save address of OST of parent (seesaw)
@@ -63,10 +64,10 @@ See_Main:	; Routine 0
 		move.b	#id_frame_seesaw_sloping_rightup,ost_frame(a0) ; use different frame
 
 	@noflip:
-		move.b	ost_frame(a0),ost_seesaw_state(a0)
+		move.b	ost_frame(a0),ost_seesaw_state(a0)	; set state to 0 or 2
 
 See_Slope:	; Routine 2
-		move.b	ost_seesaw_state(a0),d1			; get current seesaw orientation
+		move.b	ost_seesaw_state(a0),d1			; get state
 		bsr.w	See_ChgFrame				; update frame if needed
 		lea	(See_DataSlope).l,a2			; heightmap for sloped seesaw
 		btst	#0,ost_frame(a0)			; is seesaw flat?
@@ -98,6 +99,13 @@ See_StoodOn:	; Routine 4
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to check which side Sonic is on, and update its frame
+
+; input:
+;	d1 = ost_seesaw_state (See_ChgFrame only)
+
+; output:
+;	d1 = ost_seesaw_state
+;	uses d0
 ; ---------------------------------------------------------------------------
 
 See_ChkSide:
@@ -118,10 +126,10 @@ See_ChgFrame:
 		move.b	ost_frame(a0),d0
 		cmp.b	d1,d0					; does frame need to change?
 		beq.s	@noflip					; if not, branch
-		bcc.s	@loc_11772				; branch if previous frame is >= new frame
+		bcc.s	@reduce_frame				; branch if previous frame is > new frame
 		addq.b	#2,d0
 
-	@loc_11772:
+	@reduce_frame:
 		subq.b	#1,d0
 		move.b	d0,ost_frame(a0)			; update frame
 		move.b	d1,ost_seesaw_state(a0)
@@ -143,12 +151,12 @@ See_Spikeball:	; Routine 6
 		move.b	#id_col_8x8+id_col_hurt,ost_col_type(a0)
 		move.b	#$C,ost_actwidth(a0)
 		move.w	ost_x_pos(a0),ost_seesaw_x_start(a0)
-		addi.w	#$28,ost_x_pos(a0)
+		addi.w	#$28,ost_x_pos(a0)			; move spikeball to right side
 		move.w	ost_y_pos(a0),ost_seesaw_y_start(a0)
 		move.b	#id_frame_seesaw_silver,ost_frame(a0)
 		btst	#status_xflip_bit,ost_status(a0)	; is seesaw flipped?
 		beq.s	See_SpikeAction				; if not, branch
-		subi.w	#$50,ost_x_pos(a0)			; move spikeball to the other side
+		subi.w	#$50,ost_x_pos(a0)			; move spikeball to left side
 		move.b	#2,ost_seesaw_state(a0)			; spikeball is on left side
 
 See_SpikeAction:
@@ -158,15 +166,15 @@ See_SpikeAction:
 		move.b	ost_seesaw_state(a0),d0
 		sub.b	ost_seesaw_state(a1),d0			; d0 = seesaw/spikeball state difference
 		beq.s	@align_spike				; branch if same
-		bcc.s	@left_raised				; branch if spikeball state > seesaw state
+		bcc.s	@spike_from_left			; branch if spikeball is launched from left
 		neg.b	d0
 
-	@left_raised:
-		move.w	#-$818,d1
+	@spike_from_left:
+		move.w	#-$818,d1				; spikeball speed from flat seesaw
 		move.w	#-$114,d2
 		cmpi.b	#1,d0					; is seesaw flat?
 		beq.s	@launch_spikeball			; if yes, branch
-		move.w	#-$AF0,d1
+		move.w	#-$AF0,d1				; moderate spikeball speed
 		move.w	#-$CC,d2
 		cmpi.w	#$A00,ost_seesaw_impact(a1)		; has Sonic landed on seesaw with > $A00 force?
 		blt.s	@launch_spikeball			; if yes, branch
@@ -193,11 +201,11 @@ See_SpikeAction:
 		move.w	#$28,d2					; x distance from centre
 		move.w	ost_x_pos(a0),d1
 		sub.w	ost_seesaw_x_start(a0),d1
-		bcc.s	@spike_left				; branch if spikeball is left of its start position
+		bcc.s	@spike_from_left2			; branch if spikeball is left of its start position
 		neg.w	d2
 		addq.w	#2,d0
 
-	@spike_left:
+	@spike_from_left2:
 		add.w	d0,d0
 		move.w	ost_seesaw_y_start(a0),d1		; get initial y position
 		add.w	(a2,d0.w),d1				; add relative position
@@ -231,10 +239,10 @@ See_SpikeFall:	; Routine $A
 		move.b	ost_frame(a1),d0			; get frame of parent seesaw
 		move.w	ost_x_pos(a0),d1
 		sub.w	ost_seesaw_x_start(a0),d1
-		bcc.s	@spike_left				; branch if spikeball is left of its start position
+		bcc.s	@spike_from_left			; branch if spikeball is left of its start position
 		addq.w	#2,d0
 
-	@spike_left:
+	@spike_from_left:
 		add.w	d0,d0
 		move.w	ost_seesaw_y_start(a0),d1		; get initial y position
 		add.w	(a2,d0.w),d1				; add relative position

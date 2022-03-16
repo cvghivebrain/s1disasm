@@ -112,8 +112,7 @@ Plat_Nudge:
 		swap	d0
 		add.w	ost_plat_y_pos(a0),d0			; add to y position sans nudge
 		move.w	d0,ost_y_pos(a0)			; update position
-		rts	
-; End of function Plat_Nudge
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	move platforms
@@ -126,7 +125,6 @@ Plat_Move:
 		add.w	d0,d0
 		move.w	@index(pc,d0.w),d1
 		jmp	@index(pc,d1.w)
-; End of function Plat_Move
 
 ; ===========================================================================
 @index:		index *
@@ -224,8 +222,8 @@ Plat_Type_Falls:
 		rts	
 
 	@type03_wait:
-		subq.w	#1,ost_plat_wait_time(a0)		; subtract 1 from time
-		bne.s	@type03_nomove				; if time is > 0, branch
+		subq.w	#1,ost_plat_wait_time(a0)		; decrement timer
+		bne.s	@type03_nomove				; brainch if time remains
 		move.w	#32,ost_plat_wait_time(a0)
 		addq.b	#1,ost_subtype(a0)			; change to type 04 (falling)
 		rts	
@@ -234,36 +232,36 @@ Plat_Type_Falls:
 ; Type 4
 Plat_Type_Falls_Now:
 		tst.w	ost_plat_wait_time(a0)
-		beq.s	@loc_8048
-		subq.w	#1,ost_plat_wait_time(a0)
-		bne.s	@loc_8048
+		beq.s	@wait					; branch if time is 0
+		subq.w	#1,ost_plat_wait_time(a0)		; decrement timer
+		bne.s	@wait					; branch if time remains
 		btst	#status_platform_bit,ost_status(a0)
-		beq.s	@loc_8042
+		beq.s	@skip_sonic				; branch if Sonic isn't on platform
 		bset	#status_air_bit,ost_status(a1)
 		bclr	#status_platform_bit,ost_status(a1)
 		move.b	#id_Sonic_Control,ost_routine(a1)
 		bclr	#status_platform_bit,ost_status(a0)
 		clr.b	ost_routine2(a0)
-		move.w	ost_y_vel(a0),ost_y_vel(a1)
+		move.w	ost_y_vel(a0),ost_y_vel(a1)		; pull Sonic down with platform
 
-	@loc_8042:
-		move.b	#id_Plat_Action,ost_routine(a0)
+	@skip_sonic:
+		move.b	#id_Plat_Action,ost_routine(a0)		; goto Plat_Action next (same as Plat_Solid without platform detection)
 
-	@loc_8048:
+	@wait:
 		move.l	ost_plat_y_pos(a0),d3
 		move.w	ost_y_vel(a0),d0
 		ext.l	d0
 		asl.l	#8,d0
-		add.l	d0,d3
-		move.l	d3,ost_plat_y_pos(a0)
-		addi.w	#ost_plat_y_nudge,ost_y_vel(a0)
+		add.l	d0,d3					; add falling speed to y pos
+		move.l	d3,ost_plat_y_pos(a0)			; update y pos
+		addi.w	#ost_plat_y_nudge,ost_y_vel(a0)		; apply gravity
 		move.w	(v_boundary_bottom).w,d0
-		addi.w	#$E0,d0
+		addi.w	#224,d0					; d0 = y pos of bottom edge of level
 		cmp.w	ost_plat_y_pos(a0),d0
-		bcc.s	@locret_8074
-		move.b	#id_Plat_Delete,ost_routine(a0)
+		bcc.s	@within_level				; branch if platform is inside level
+		move.b	#id_Plat_Delete,ost_routine(a0)		; goto Plat_Delete next
 
-	@locret_8074:
+	@within_level:
 		rts	
 ; ===========================================================================
 
