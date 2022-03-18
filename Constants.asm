@@ -184,7 +184,7 @@ ost_inertia:		rs.w 1	; $14 ; potential speed (2 bytes)
 ost_height:		rs.b 1	; $16 ; height/2
 ost_width:		rs.b 1	; $17 ; width/2
 ost_priority:		rs.b 1	; $18 ; sprite stack priority - 0 is highest, 7 is lowest
-ost_actwidth:		rs.b 1	; $19 ; action width/2
+ost_displaywidth:		rs.b 1	; $19 ; action width/2
 ost_frame:		rs.b 1	; $1A ; current frame displayed
 ost_anim_frame:		rs.b 1	; $1B ; current frame in animation script
 ost_anim:		rs.b 1	; $1C ; current animation

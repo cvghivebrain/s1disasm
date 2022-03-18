@@ -14,7 +14,7 @@ Yad_ChkWall:
 		andi.w	#3,d0					; read only bits 0-1
 		bne.s	@no_collision				; branch if either are set
 		moveq	#0,d3
-		move.b	ost_actwidth(a0),d3
+		move.b	ost_displaywidth(a0),d3
 		tst.w	ost_x_vel(a0)				; is yadrin moving to the left?
 		bmi.s	@moving_left				; if yes, branch
 		bsr.w	FindWallRightObj
@@ -62,7 +62,7 @@ Yad_Main:	; Routine 0
 		move.w	#tile_Nem_Yadrin+tile_pal2,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)
-		move.b	#$14,ost_actwidth(a0)
+		move.b	#$14,ost_displaywidth(a0)
 		move.b	#$11,ost_height(a0)
 		move.b	#8,ost_width(a0)
 		move.b	#id_col_20x16+id_col_custom,ost_col_type(a0)

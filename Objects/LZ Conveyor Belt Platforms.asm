@@ -57,7 +57,7 @@ LCon_Main:	; Routine 0
 		move.l	#Map_LConv,ost_mappings(a0)
 		move.w	#tile_Nem_LzWheel+tile_pal3,ost_tile(a0)
 		ori.b	#render_rel,ost_render(a0)
-		move.b	#$10,ost_actwidth(a0)
+		move.b	#$10,ost_displaywidth(a0)
 		move.b	#4,ost_priority(a0)
 		cmpi.b	#type_lcon_wheel,ost_subtype(a0)	; is object a wheel? ($7F)
 		bne.s	LCon_Platform_Init			; if not, branch
@@ -147,7 +147,7 @@ LCon_LoadPlatforms:
 
 LCon_Platform:	; Routine 2
 		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
+		move.b	ost_displaywidth(a0),d1
 		jsr	(DetectPlatform).l			; goto LCon_OnPlatform next if Sonic stands on platform
 		bra.w	LCon_Platform_Update
 ; ===========================================================================
@@ -155,7 +155,7 @@ LCon_Platform:	; Routine 2
 LCon_OnPlatform:
 		; Routine 4
 		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
+		move.b	ost_displaywidth(a0),d1
 		jsr	(ExitPlatform).l
 		move.w	ost_x_pos(a0),-(sp)
 		bsr.w	LCon_Platform_Update

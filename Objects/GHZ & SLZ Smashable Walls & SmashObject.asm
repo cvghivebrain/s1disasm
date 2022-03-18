@@ -26,7 +26,7 @@ Smash_Main:	; Routine 0
 		move.l	#Map_Smash,ost_mappings(a0)
 		move.w	#tile_Nem_GhzWall1+tile_pal3,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
-		move.b	#$10,ost_actwidth(a0)
+		move.b	#$10,ost_displaywidth(a0)
 		move.b	#4,ost_priority(a0)
 		move.b	ost_subtype(a0),ost_frame(a0)
 
@@ -115,7 +115,7 @@ SmashObject:
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.w	ost_tile(a0),ost_tile(a1)
 		move.b	ost_priority(a0),ost_priority(a1)
-		move.b	ost_actwidth(a0),ost_actwidth(a1)
+		move.b	ost_displaywidth(a0),ost_displaywidth(a1)
 		move.w	(a4)+,ost_x_vel(a1)
 		move.w	(a4)+,ost_y_vel(a1)
 		cmpa.l	a0,a1					; is parent OST before fragment OST in RAM?

@@ -33,7 +33,7 @@ BFire_Main:	; Routine 0
 		move.b	#render_rel,ost_render(a0)
 		move.b	#5,ost_priority(a0)
 		move.w	ost_y_pos(a0),ost_bfire_y_start(a0)
-		move.b	#8,ost_actwidth(a0)
+		move.b	#8,ost_displaywidth(a0)
 		addq.b	#2,ost_routine(a0)			; goto BFire_Action next
 		tst.b	ost_subtype(a0)				; is subtype 0?
 		bne.s	BFire_First				; if not, branch

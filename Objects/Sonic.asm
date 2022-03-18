@@ -32,7 +32,7 @@ Sonic_Main:	; Routine 0
 		move.l	#Map_Sonic,ost_mappings(a0)
 		move.w	#vram_sonic/sizeof_cell,ost_tile(a0)
 		move.b	#2,ost_priority(a0)
-		move.b	#$18,ost_actwidth(a0)
+		move.b	#$18,ost_displaywidth(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.w	#sonic_max_speed,(v_sonic_max_speed).w	; Sonic's top speed
 		move.w	#sonic_acceleration,(v_sonic_acceleration).w ; Sonic's acceleration
@@ -319,7 +319,7 @@ Sonic_Move:
 		bmi.s	Sonic_LookUp				; if yes, branch
 
 		moveq	#0,d1
-		move.b	ost_actwidth(a1),d1
+		move.b	ost_displaywidth(a1),d1
 		move.w	d1,d2
 		add.w	d2,d2
 		subq.w	#4,d2					; d2 = width of platform -4

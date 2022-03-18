@@ -21,7 +21,7 @@ ADoor_Main:	; Routine 0
 		move.l	#Map_ADoor,ost_mappings(a0)
 		move.w	#tile_Nem_SbzDoor1+tile_pal3,ost_tile(a0)
 		ori.b	#render_rel,ost_render(a0)
-		move.b	#8,ost_actwidth(a0)
+		move.b	#8,ost_displaywidth(a0)
 		move.b	#4,ost_priority(a0)
 
 ADoor_OpenShut:	; Routine 2

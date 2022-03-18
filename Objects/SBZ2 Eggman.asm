@@ -39,7 +39,7 @@ SEgg_Main:	; Routine 0
 		move.w	#tile_Nem_Sbz2Eggman,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
 		bset	#render_onscreen_bit,ost_render(a0)
-		move.b	#$20,ost_actwidth(a0)
+		move.b	#$20,ost_displaywidth(a0)
 
 		jsr	(FindNextFreeObj).l			; find free OST slot
 		bne.s	SEgg_Eggman				; branch if not found
@@ -55,7 +55,7 @@ SEgg_Main:	; Routine 0
 		move.w	#tile_Nem_LzSwitch_SBZ2+4,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)
 		bset	#render_onscreen_bit,ost_render(a1)
-		move.b	#$10,ost_actwidth(a1)
+		move.b	#$10,ost_displaywidth(a1)
 		move.b	#id_frame_button_up,ost_frame(a1)	; use unpressed frame
 
 SEgg_Eggman:	; Routine 2

@@ -42,7 +42,7 @@ BSpike_Main:	; Routine 0
 		ori.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)
 		move.b	#id_col_8x8+id_col_hurt,ost_col_type(a0)
-		move.b	#$C,ost_actwidth(a0)
+		move.b	#$C,ost_displaywidth(a0)
 		movea.l	ost_bspike_seesaw(a0),a1		; get address of OST of seesaw below
 		move.w	ost_x_pos(a1),ost_bspike_x_start(a0)
 		move.w	ost_y_pos(a1),ost_bspike_y_start(a0)
@@ -355,7 +355,7 @@ BSpike_Explode:	; Routine 8
 		move.b	#id_col_4x4+id_col_hurt,ost_col_type(a1)
 		ori.b	#render_rel,ost_render(a1)
 		bset	#render_onscreen_bit,ost_render(a1)
-		move.b	#$C,ost_actwidth(a1)
+		move.b	#$C,ost_displaywidth(a1)
 
 	@fail:
 		dbf	d1,@loop				; repeat sequence 3 more times

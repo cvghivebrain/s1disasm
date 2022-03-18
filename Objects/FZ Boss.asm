@@ -80,7 +80,7 @@ BFZ_Main:	; Routine 0
 		if Revision=0
 			move.b	(a3)+,ost_width(a1)
 		else
-			move.b	(a3)+,ost_actwidth(a1)
+			move.b	(a3)+,ost_displaywidth(a1)
 		endc
 		move.b	(a3)+,ost_height(a1)
 		move.b	#render_rel,ost_render(a1)
@@ -299,7 +299,7 @@ BFZ_Eggman_Fall:
 		if Revision=0
 			move.b	#$30,ost_width(a0)
 		else
-			move.b	#$30,ost_actwidth(a0)
+			move.b	#$30,ost_displaywidth(a0)
 		endc
 		bset	#status_xflip_bit,ost_status(a0)	; Eggman faces right
 		jsr	(SpeedToPos).l				; update position
@@ -312,7 +312,7 @@ BFZ_Eggman_Fall:
 		if Revision=0
 			move.b	#$20,ost_width(a0)
 		else
-			move.b	#$20,ost_actwidth(a0)
+			move.b	#$20,ost_displaywidth(a0)
 		endc
 		move.w	#$100,ost_x_vel(a0)			; move right
 		move.w	#-$100,ost_y_vel(a0)			; bounce up

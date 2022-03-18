@@ -25,7 +25,7 @@ Flash_Main:	; Routine 0
 		move.w	#((vram_giantring+sizeof_art_giantring)/sizeof_cell)+tile_pal2,ost_tile(a0)
 		ori.b	#render_rel,ost_render(a0)
 		move.b	#0,ost_priority(a0)
-		move.b	#$20,ost_actwidth(a0)
+		move.b	#$20,ost_displaywidth(a0)
 		move.b	#-1,ost_frame(a0)			; start at -1 because 1 is added to get the first frame
 
 Flash_ChkDel:	; Routine 2

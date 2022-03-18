@@ -23,7 +23,7 @@ Poi_Main:	; Routine 0
 		move.w	#tile_Nem_Points+tile_pal2,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#1,ost_priority(a0)
-		move.b	#8,ost_actwidth(a0)
+		move.b	#8,ost_displaywidth(a0)
 		move.w	#-$300,ost_y_vel(a0)			; move object upwards
 
 Poi_Slower:	; Routine 2

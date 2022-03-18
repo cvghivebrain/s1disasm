@@ -30,7 +30,7 @@ Ledge_Main:	; Routine 0
 		ori.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)
 		move.b	#7,ost_ledge_wait_time(a0)		; set time delay for collapse
-		move.b	#$64,ost_actwidth(a0)
+		move.b	#$64,ost_displaywidth(a0)
 		move.b	ost_subtype(a0),ost_frame(a0)
 		move.b	#$38,ost_height(a0)
 		bset	#render_useheight_bit,ost_render(a0)
@@ -162,7 +162,7 @@ FragmentObject:
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.w	ost_tile(a0),ost_tile(a1)
 		move.b	ost_priority(a0),ost_priority(a1)
-		move.b	ost_actwidth(a0),ost_actwidth(a1)
+		move.b	ost_displaywidth(a0),ost_displaywidth(a1)
 		move.b	(a4)+,ost_ledge_wait_time(a1)		; each fragment has different timing
 		cmpa.l	a0,a1					; is this fragment the first? (i.e. parent object)
 		bhs.s	@firstfrag				; if yes, branch

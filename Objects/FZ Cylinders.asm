@@ -48,7 +48,7 @@ Cyl_Main:	; Routine 0
 		move.w	(a1)+,ost_cylinder_y_start(a0)
 		move.b	#$20,ost_height(a0)
 		move.b	#$60,ost_width(a0)
-		move.b	#$20,ost_actwidth(a0)
+		move.b	#$20,ost_displaywidth(a0)
 		move.b	#$60,ost_height(a0)
 		move.b	#3,ost_priority(a0)
 		addq.b	#2,ost_routine(a0)			; goto Cyl_Action next

@@ -61,11 +61,11 @@ FBall_Main:	; Routine 0
 		move.b	ost_subtype(a0),d0
 		add.w	d0,d0
 		move.w	FBall_Speeds(pc,d0.w),ost_y_vel(a0)	; load object speed (vertical)
-		move.b	#8,ost_actwidth(a0)
+		move.b	#8,ost_displaywidth(a0)
 		cmpi.b	#6,ost_subtype(a0)			; is object type 0-5?
 		bcs.s	@sound					; if yes, branch
 
-		move.b	#$10,ost_actwidth(a0)
+		move.b	#$10,ost_displaywidth(a0)
 		move.b	#id_ani_fire_horizontal,ost_anim(a0)	; use horizontal animation
 		move.w	ost_y_vel(a0),ost_x_vel(a0)		; set horizontal speed
 		move.w	#0,ost_y_vel(a0)			; delete vertical speed

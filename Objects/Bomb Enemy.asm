@@ -29,7 +29,7 @@ Bom_Main:	; Routine 0
 		move.w	#tile_Nem_Bomb,ost_tile(a0)
 		ori.b	#render_rel,ost_render(a0)
 		move.b	#3,ost_priority(a0)
-		move.b	#$C,ost_actwidth(a0)
+		move.b	#$C,ost_displaywidth(a0)
 		move.b	ost_subtype(a0),d0
 		beq.s	@type0					; branch if subtype = 0
 		move.b	d0,ost_routine(a0)			; copy subtype to routine (4 = Bom_Fuse; 6 = Bom_Shrapnel)

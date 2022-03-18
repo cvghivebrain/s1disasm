@@ -39,7 +39,7 @@ Drown_Main:	; Routine 0
 		move.l	#Map_Bub,ost_mappings(a0)
 		move.w	#tile_Nem_Bubbles+tile_hi,ost_tile(a0)
 		move.b	#render_onscreen+render_rel,ost_render(a0)
-		move.b	#$10,ost_actwidth(a0)
+		move.b	#$10,ost_displaywidth(a0)
 		move.b	#1,ost_priority(a0)
 		move.b	ost_subtype(a0),d0			; get bubble type (first bubble is $81)
 		bpl.s	@bubble_or_num				; branch if $00-$7F
@@ -349,15 +349,15 @@ Ani_Drown:	index *
 		ptr ani_drown_threeappear
 		ptr ani_drown_fourappear
 		ptr ani_drown_fiveappear
-		ptr ani_drown_smallbubble	; 6
-		ptr ani_drown_zeroflash		; 7
-		ptr ani_drown_oneflash		; 8
-		ptr ani_drown_twoflash		; 9
-		ptr ani_drown_threeflash	; $A
-		ptr ani_drown_fourflash		; $B
-		ptr ani_drown_fiveflash		; $C
-		ptr ani_drown_blank		; $D
-		ptr ani_drown_mediumbubble	; $E
+		ptr ani_drown_smallbubble			; 6
+		ptr ani_drown_zeroflash				; 7
+		ptr ani_drown_oneflash				; 8
+		ptr ani_drown_twoflash				; 9
+		ptr ani_drown_threeflash			; $A
+		ptr ani_drown_fourflash				; $B
+		ptr ani_drown_fiveflash				; $C
+		ptr ani_drown_blank				; $D
+		ptr ani_drown_mediumbubble			; $E
 		
 ani_drown_zeroappear:
 		dc.b 5

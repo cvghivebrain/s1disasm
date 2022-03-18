@@ -122,7 +122,7 @@ Anml_Main:	; Routine 0
 		move.b	#render_rel,ost_render(a0)
 		bset	#render_xflip_bit,ost_render(a0)
 		move.b	#6,ost_priority(a0)
-		move.b	#8,ost_actwidth(a0)
+		move.b	#8,ost_displaywidth(a0)
 		move.b	#7,ost_anim_time(a0)
 		bra.w	DisplaySprite
 ; ===========================================================================
@@ -154,7 +154,7 @@ Anml_FromEnemy:
 		move.b	#render_rel,ost_render(a0)
 		bset	#render_xflip_bit,ost_render(a0)
 		move.b	#6,ost_priority(a0)
-		move.b	#8,ost_actwidth(a0)
+		move.b	#8,ost_displaywidth(a0)
 		move.b	#7,ost_anim_time(a0)
 		move.b	#id_frame_animal1_drop,ost_frame(a0)	; use "dropping" frame
 		move.w	#-$400,ost_y_vel(a0)
@@ -278,7 +278,7 @@ Anml_End_ChkDel:
 		bra.w	DisplaySprite
 ; ===========================================================================
 
-Anml_FromPrison:	; Routine $14
+Anml_FromPrison:						; Routine $14
 		tst.b	ost_render(a0)				; is object on-screen?
 		bpl.w	DeleteObject				; if not, branch
 		subq.w	#1,ost_animal_prison_num(a0)		; decrement prison queue ticket

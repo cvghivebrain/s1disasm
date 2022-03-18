@@ -23,7 +23,7 @@ Swi_Main:	; Routine 0
 		move.w	#0+tile_pal3,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.w	ost_y_pos(a0),ost_switch_y_start(a0)	; save position on y-axis
-		move.b	#$10,ost_actwidth(a0)
+		move.b	#$10,ost_displaywidth(a0)
 		move.b	#5,ost_priority(a0)
 
 Swi_Action:	; Routine 2

@@ -37,7 +37,7 @@ CheckOffScreen:
 
 CheckOffScreen_Wide:
 		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
+		move.b	ost_displaywidth(a0),d1
 		move.w	ost_x_pos(a0),d0			; get object x position
 		sub.w	(v_camera_x_pos).w,d0			; subtract screen x position
 		add.w	d1,d0					; d0 = x pos of object's right edge relative to screen

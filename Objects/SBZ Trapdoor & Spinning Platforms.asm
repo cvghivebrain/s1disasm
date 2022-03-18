@@ -27,7 +27,7 @@ Spin_Main:	; Routine 0
 		move.l	#Map_Trap,ost_mappings(a0)
 		move.w	#tile_Nem_TrapDoor+tile_pal3,ost_tile(a0)
 		ori.b	#render_rel,ost_render(a0)
-		move.b	#$80,ost_actwidth(a0)
+		move.b	#$80,ost_displaywidth(a0)
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0			; get subtype
 		andi.w	#$F,d0					; read only low nybble
@@ -39,7 +39,7 @@ Spin_Main:	; Routine 0
 		addq.b	#2,ost_routine(a0)			; goto Spin_Spinner next
 		move.l	#Map_Spin,ost_mappings(a0)
 		move.w	#tile_Nem_SpinPform,ost_tile(a0)
-		move.b	#$10,ost_actwidth(a0)
+		move.b	#$10,ost_displaywidth(a0)
 		move.b	#id_ani_spin_1,ost_anim(a0)
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0			; get object type

@@ -26,7 +26,7 @@ Smab_Main:	; Routine 0
 		move.l	#Map_Smab,ost_mappings(a0)
 		move.w	#tile_Nem_MzBlock+tile_pal3,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
-		move.b	#$10,ost_actwidth(a0)
+		move.b	#$10,ost_displaywidth(a0)
 		move.b	#4,ost_priority(a0)
 		move.b	ost_subtype(a0),ost_frame(a0)
 

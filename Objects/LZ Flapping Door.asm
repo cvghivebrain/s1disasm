@@ -24,7 +24,7 @@ Flap_Main:	; Routine 0
 		move.l	#Map_Flap,ost_mappings(a0)
 		move.w	#tile_Nem_FlapDoor+tile_pal3,ost_tile(a0)
 		ori.b	#render_rel,ost_render(a0)
-		move.b	#$28,ost_actwidth(a0)
+		move.b	#$28,ost_displaywidth(a0)
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0			; get object type
 		mulu.w	#60,d0					; multiply by 60 (1 second)

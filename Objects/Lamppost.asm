@@ -33,7 +33,7 @@ Lamp_Main:	; Routine 0
 		move.l	#Map_Lamp,ost_mappings(a0)
 		move.w	#tile_Nem_Lamp,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
-		move.b	#8,ost_actwidth(a0)
+		move.b	#8,ost_displaywidth(a0)
 		move.b	#5,ost_priority(a0)
 		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
@@ -101,7 +101,7 @@ Lamp_Blue:	; Routine 2
 		move.l	#Map_Lamp,ost_mappings(a1)
 		move.w	#tile_Nem_Lamp,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)
-		move.b	#8,ost_actwidth(a1)
+		move.b	#8,ost_displaywidth(a1)
 		move.b	#4,ost_priority(a1)
 		move.b	#id_frame_lamp_redballonly,ost_frame(a1) ; use "ball only" frame
 		move.w	#32,ost_lamp_twirl_time(a1)

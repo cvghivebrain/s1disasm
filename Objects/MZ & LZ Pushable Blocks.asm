@@ -48,7 +48,7 @@ PushB_Main:	; Routine 0
 		add.w	d0,d0
 		andi.w	#$E,d0					; read low nybble
 		lea	PushB_Var(pc,d0.w),a2			; get width & frame values from array
-		move.b	(a2)+,ost_actwidth(a0)
+		move.b	(a2)+,ost_displaywidth(a0)
 		move.b	(a2)+,ost_frame(a0)
 		tst.b	ost_subtype(a0)				; is subtype 0?
 		beq.s	@chkgone				; if yes, branch
@@ -67,7 +67,7 @@ PushB_Action:	; Routine 2
 		tst.b	ost_pblock_lava_flag(a0)		; is block on lava?
 		bne.w	PushB_OnLava				; if yes, branch
 		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
+		move.b	ost_displaywidth(a0),d1
 		addi.w	#$B,d1
 		move.w	#$10,d2
 		move.w	#$11,d3
@@ -162,7 +162,7 @@ PushB_OnLava_ChkWall:
 	
 	@wall_right:
 		moveq	#0,d3
-		move.b	ost_actwidth(a0),d3
+		move.b	ost_displaywidth(a0),d3
 		jsr	(FindWallRightObj).l
 		tst.w	d1					; has block touched a wall?
 		bmi.s	PushB_Stop				; if yes, branch
@@ -171,7 +171,7 @@ PushB_OnLava_ChkWall:
 
 	@wall_left:
 		moveq	#0,d3
-		move.b	ost_actwidth(a0),d3
+		move.b	ost_displaywidth(a0),d3
 		not.w	d3
 		jsr	(FindWallLeftObj).l
 		tst.w	d1					; has block touched a wall?
@@ -191,7 +191,7 @@ PushB_OnLava_Sink:
 
 PushB_OnLava_Solid:
 		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
+		move.b	ost_displaywidth(a0),d1
 		addi.w	#$B,d1
 		move.w	#$10,d2
 		move.w	#$11,d3
@@ -333,7 +333,7 @@ PushB_Solid_Side:
 		bne.w	PushB_Solid_Exit			; if yes, branch
 		move.w	d0,-(sp)
 		moveq	#0,d3
-		move.b	ost_actwidth(a0),d3
+		move.b	ost_displaywidth(a0),d3
 		jsr	(FindWallRightObj).l
 		move.w	(sp)+,d0
 		tst.w	d1					; has object hit right wall?
@@ -349,7 +349,7 @@ PushB_Solid_Left:
 		beq.s	PushB_Solid_Exit			; if yes, branch
 		move.w	d0,-(sp)
 		moveq	#0,d3
-		move.b	ost_actwidth(a0),d3
+		move.b	ost_displaywidth(a0),d3
 		not.w	d3
 		jsr	(FindWallLeftObj).l
 		move.w	(sp)+,d0

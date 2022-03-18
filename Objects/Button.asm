@@ -30,7 +30,7 @@ But_Main:	; Routine 0
 
 	@is_marble:
 		move.b	#render_rel,ost_render(a0)
-		move.b	#$10,ost_actwidth(a0)
+		move.b	#$10,ost_displaywidth(a0)
 		move.b	#4,ost_priority(a0)
 		addq.w	#3,ost_y_pos(a0)
 

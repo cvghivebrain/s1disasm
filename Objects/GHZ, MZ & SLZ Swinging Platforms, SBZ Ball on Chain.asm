@@ -63,7 +63,7 @@ Swing_Main:	; Routine 0
 		move.w	#tile_Nem_Swing+tile_pal3,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#3,ost_priority(a0)
-		move.b	#$18,ost_actwidth(a0)
+		move.b	#$18,ost_displaywidth(a0)
 		move.b	#8,ost_height(a0)
 		move.w	ost_y_pos(a0),ost_swing_y_start(a0)
 		move.w	ost_x_pos(a0),ost_swing_x_start(a0)
@@ -72,7 +72,7 @@ Swing_Main:	; Routine 0
 
 		move.l	#Map_Swing_SLZ,ost_mappings(a0)		; SLZ specific code
 		move.w	#tile_Nem_SlzSwing+tile_pal3,ost_tile(a0)
-		move.b	#$20,ost_actwidth(a0)
+		move.b	#$20,ost_displaywidth(a0)
 		move.b	#$10,ost_height(a0)
 		move.b	#id_col_32x8+id_col_hurt,ost_col_type(a0)
 
@@ -82,7 +82,7 @@ Swing_Main:	; Routine 0
 
 		move.l	#Map_BBall,ost_mappings(a0)		; SBZ specific code
 		move.w	#tile_Nem_BigSpike_SBZ,ost_tile(a0)
-		move.b	#$18,ost_actwidth(a0)
+		move.b	#$18,ost_displaywidth(a0)
 		move.b	#$18,ost_height(a0)
 		move.b	#id_col_16x16+id_col_hurt,ost_col_type(a0)
 		move.b	#id_Swing_Action,ost_routine(a0)	; goto Swing_Action next
@@ -121,7 +121,7 @@ Swing_Main:	; Routine 0
 		bclr	#tile_pal34_bit,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)
 		move.b	#4,ost_priority(a1)
-		move.b	#8,ost_actwidth(a1)
+		move.b	#8,ost_displaywidth(a1)
 		move.b	#id_frame_swing_chain,ost_frame(a1)	; use chain sprite
 		move.b	d3,ost_swing_radius(a1)			; radius is smaller for chainlinks closer to top
 		subi.b	#$10,d3					; each one is 16px higher
@@ -157,7 +157,7 @@ Swing_Main:	; Routine 0
 
 Swing_SetSolid:	; Routine 2
 		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
+		move.b	ost_displaywidth(a0),d1
 		moveq	#0,d3
 		move.b	ost_height(a0),d3
 		bsr.w	Swing_Solid				; detect collision with Sonic, goto Swing_Action2 in that case
@@ -170,7 +170,7 @@ Swing_Action:	; Routine $C
 
 Swing_Action2:	; Routine 4
 		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
+		move.b	ost_displaywidth(a0),d1
 		bsr.w	ExitPlatform
 		move.w	ost_x_pos(a0),-(sp)
 		bsr.w	Swing_Move				; update positions of chainlinks and platform

@@ -33,7 +33,7 @@ GFire_Main:	; Routine 0
 		move.b	#render_rel,ost_render(a0)
 		move.b	#1,ost_priority(a0)
 		move.b	#id_col_8x8+id_col_hurt,ost_col_type(a0)
-		move.b	#8,ost_actwidth(a0)
+		move.b	#8,ost_displaywidth(a0)
 		play.w	1, jsr, sfx_Burning			; play burning sound
 		tst.b	ost_subtype(a0)				; is this the first fireball?
 		beq.s	GFire_Spread				; if yes, branch

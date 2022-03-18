@@ -21,7 +21,7 @@ Bump_Main:	; Routine 0
 		move.l	#Map_Bump,ost_mappings(a0)
 		move.w	#tile_Nem_Bumper,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
-		move.b	#$10,ost_actwidth(a0)
+		move.b	#$10,ost_displaywidth(a0)
 		move.b	#1,ost_priority(a0)
 		move.b	#id_col_8x8_2+id_col_custom,ost_col_type(a0)
 

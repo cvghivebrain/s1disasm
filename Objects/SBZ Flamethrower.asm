@@ -28,7 +28,7 @@ Flame_Main:	; Routine 0
 		ori.b	#render_rel,ost_render(a0)
 		move.b	#1,ost_priority(a0)
 		move.w	ost_y_pos(a0),ost_flame_time(a0)	; store ost_y_pos (gets overwritten later though)
-		move.b	#$C,ost_actwidth(a0)
+		move.b	#$C,ost_displaywidth(a0)
 		move.b	ost_subtype(a0),d0
 		andi.w	#$F0,d0					; read 1st digit of object type
 		add.w	d0,d0					; multiply by 2

@@ -38,7 +38,7 @@ BBlock_Main:	; Routine 0
 		move.l	#Map_BossBlock,ost_mappings(a1)
 		move.w	#0+tile_pal3,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)
-		move.b	#$10,ost_actwidth(a1)
+		move.b	#$10,ost_displaywidth(a1)
 		move.b	#$10,ost_height(a1)
 		move.b	#3,ost_priority(a1)
 		move.w	d5,ost_x_pos(a1)			; set x position
@@ -114,7 +114,7 @@ BBlock_Break:
 		moveq	#3,d1
 		moveq	#$38,d2
 		addq.b	#2,ost_routine(a0)			; goto BBlock_Frag next
-		move.b	#8,ost_actwidth(a0)
+		move.b	#8,ost_displaywidth(a0)
 		move.b	#8,ost_height(a0)
 		lea	(a0),a1					; replace block with first fragment
 		bra.s	@load_frag

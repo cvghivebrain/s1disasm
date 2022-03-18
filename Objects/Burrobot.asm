@@ -28,7 +28,7 @@ Burro_Main:	; Routine 0
 		ori.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)
 		move.b	#id_col_12x18,ost_col_type(a0)
-		move.b	#$C,ost_actwidth(a0)
+		move.b	#$C,ost_displaywidth(a0)
 		addq.b	#id_Burro_ChkSonic,ost_routine2(a0)	; goto Burro_ChkSonic after Burro_Action
 		move.b	#id_ani_burro_digging,ost_anim(a0)
 

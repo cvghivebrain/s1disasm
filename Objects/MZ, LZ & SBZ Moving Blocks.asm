@@ -62,7 +62,7 @@ MBlock_Main:	; Routine 0
 		lsr.w	#3,d0
 		andi.w	#$1E,d0					; read only high nybble
 		lea	MBlock_Var(pc,d0.w),a2			; get variables
-		move.b	(a2)+,ost_actwidth(a0)
+		move.b	(a2)+,ost_displaywidth(a0)
 		move.b	(a2)+,ost_frame(a0)
 		move.b	#4,ost_priority(a0)
 		move.w	ost_x_pos(a0),ost_mblock_x_start(a0)
@@ -72,14 +72,14 @@ MBlock_Main:	; Routine 0
 MBlock_Platform: ; Routine 2
 		bsr.w	MBlock_Move				; move & update position
 		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
+		move.b	ost_displaywidth(a0),d1
 		jsr	(DetectPlatform).l			; check for collision & goto MBlock_StandOn next if stood on
 		bra.s	MBlock_ChkDel
 ; ===========================================================================
 
 MBlock_StandOn:	; Routine 4
 		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
+		move.b	ost_displaywidth(a0),d1
 		jsr	(ExitPlatform).l
 		move.w	ost_x_pos(a0),-(sp)
 		bsr.w	MBlock_Move
@@ -151,7 +151,7 @@ MBlock_Slide:
 ; Type 3
 MBlock_Right_Now:
 		moveq	#0,d3
-		move.b	ost_actwidth(a0),d3
+		move.b	ost_displaywidth(a0),d3
 		bsr.w	FindWallRightObj
 		tst.w	d1					; has the platform hit a wall?
 		bmi.s	@hit_wall				; if yes, branch
@@ -167,7 +167,7 @@ MBlock_Right_Now:
 ; Type 5
 MBlock_RightDrop_Now:
 		moveq	#0,d3
-		move.b	ost_actwidth(a0),d3
+		move.b	ost_displaywidth(a0),d3
 		bsr.w	FindWallRightObj
 		tst.w	d1					; has the platform hit a wall?
 		bmi.s	@hit_wall				; if yes, branch
@@ -226,7 +226,7 @@ MBlock_UpDown:
 ; Type $A
 MBlock_Slide_Now:
 		moveq	#0,d3
-		move.b	ost_actwidth(a0),d3
+		move.b	ost_displaywidth(a0),d3
 		add.w	d3,d3
 		moveq	#8,d1
 		btst	#status_xflip_bit,ost_status(a0)

@@ -31,7 +31,7 @@ ost_ffloor_children:	equ $30					; addresses of OSTs of child objects (2 bytes *
 FFloor_Main:	; Routine 0
 		move.w	#$2080,ost_x_pos(a0)
 		move.w	#$5D0,ost_y_pos(a0)
-		move.b	#$80,ost_actwidth(a0)
+		move.b	#$80,ost_displaywidth(a0)
 		move.b	#$10,ost_height(a0)
 		move.b	#render_rel,ost_render(a0)
 		bset	#render_onscreen_bit,ost_render(a0)
@@ -48,13 +48,13 @@ FFloor_Main:	; Routine 0
 		move.l	#Map_FFloor,ost_mappings(a1)
 		move.w	#tile_Nem_SbzBlock_SBZ2+tile_pal3,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)
-		move.b	#$10,ost_actwidth(a1)
+		move.b	#$10,ost_displaywidth(a1)
 		move.b	#$10,ost_height(a1)
 		move.b	#3,ost_priority(a1)
 		move.w	d5,ost_x_pos(a1)			; set x position
 		move.w	#$5D0,ost_y_pos(a1)
 		addi.w	#$20,d5					; add $20 for next x position
-		move.b	#id_FFloor_Block,ost_routine(a1)		; goto FFloor_Block next
+		move.b	#id_FFloor_Block,ost_routine(a1)	; goto FFloor_Block next
 		dbf	d6,@loop				; repeat sequence 7 more times
 
 	@fail:
@@ -77,7 +77,7 @@ FFloor_Solid:
 		asl.w	#4,d0					; multiply by 16
 		move.w	#$2100,d4				; initial x position
 		sub.w	d0,d4					; move right as the block shrinks
-		move.b	d0,ost_actwidth(a0)
+		move.b	d0,ost_displaywidth(a0)
 		move.w	d4,ost_x_pos(a0)			; set x position
 		moveq	#$B,d1
 		add.w	d0,d1					; set width
@@ -130,7 +130,7 @@ FFloor_BlockBreak:
 		moveq	#4-1,d1					; number of fragments
 		moveq	#$38,d2
 		addq.b	#2,ost_routine(a0)			; goto FFloor_Frag next
-		move.b	#8,ost_actwidth(a0)
+		move.b	#8,ost_displaywidth(a0)
 		move.b	#8,ost_height(a0)
 		lea	(a0),a1					; replace block with first fragment
 		bra.s	@first_frag

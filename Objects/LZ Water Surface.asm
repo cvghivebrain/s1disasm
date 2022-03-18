@@ -24,7 +24,7 @@ Surf_Main:	; Routine 0
 		move.l	#Map_Surf,ost_mappings(a0)
 		move.w	#tile_Nem_Water+tile_pal3+tile_hi,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
-		move.b	#$80,ost_actwidth(a0)
+		move.b	#$80,ost_displaywidth(a0)
 		move.w	ost_x_pos(a0),ost_surf_x_start(a0)	; save initial x position ($60 or $120)
 
 Surf_Action:	; Routine 2

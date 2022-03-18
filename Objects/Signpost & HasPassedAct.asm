@@ -35,7 +35,7 @@ Sign_Main:	; Routine 0
 		move.l	#Map_Sign,ost_mappings(a0)
 		move.w	#tile_Nem_SignPost,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
-		move.b	#$18,ost_actwidth(a0)
+		move.b	#$18,ost_displaywidth(a0)
 		move.b	#4,ost_priority(a0)
 
 Sign_Touch:	; Routine 2
@@ -88,7 +88,7 @@ Sign_Spin:	; Routine 4
 		move.w	#tile_Nem_Ring+tile_pal2,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)
 		move.b	#2,ost_priority(a1)
-		move.b	#8,ost_actwidth(a1)
+		move.b	#8,ost_displaywidth(a1)
 
 	@fail:
 		rts	

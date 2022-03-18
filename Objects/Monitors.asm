@@ -32,7 +32,7 @@ Mon_Main:	; Routine 0
 		move.w	#tile_Nem_Monitors,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#3,ost_priority(a0)
-		move.b	#$F,ost_actwidth(a0)
+		move.b	#$F,ost_displaywidth(a0)
 		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
@@ -56,7 +56,7 @@ Mon_Solid:	; Routine 2
 
 		; ost_routine2 = 2
 		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
+		move.b	ost_displaywidth(a0),d1
 		addi.w	#$B,d1
 		bsr.w	ExitPlatform				; clear platform flags if Sonic walks off the monitor
 		btst	#status_platform_bit,ost_status(a1)	; is Sonic on top of the monitor?
@@ -242,7 +242,7 @@ Mon_Solid_Detect:
 
 @top_hit:
 		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
+		move.b	ost_displaywidth(a0),d1
 		addq.w	#4,d1
 		move.w	d1,d2
 		add.w	d2,d2
@@ -264,16 +264,16 @@ Mon_Solid_Detect:
 include_Monitor_animation:	macro
 
 Ani_Monitor:	index *
-		ptr ani_monitor_static		; 0
-		ptr ani_monitor_eggman		; 1
-		ptr ani_monitor_sonic		; 2
-		ptr ani_monitor_shoes		; 3
-		ptr ani_monitor_shield		; 4
-		ptr ani_monitor_invincible	; 5
-		ptr ani_monitor_rings		; 6
-		ptr ani_monitor_s		; 7
-		ptr ani_monitor_goggles		; 8
-		ptr ani_monitor_breaking	; 9
+		ptr ani_monitor_static				; 0
+		ptr ani_monitor_eggman				; 1
+		ptr ani_monitor_sonic				; 2
+		ptr ani_monitor_shoes				; 3
+		ptr ani_monitor_shield				; 4
+		ptr ani_monitor_invincible			; 5
+		ptr ani_monitor_rings				; 6
+		ptr ani_monitor_s				; 7
+		ptr ani_monitor_goggles				; 8
+		ptr ani_monitor_breaking			; 9
 		
 ani_monitor_static:
 		dc.b 1

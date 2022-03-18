@@ -28,7 +28,7 @@ Gird_Main:	; Routine 0
 		move.w	#tile_Nem_Girder+tile_pal3,ost_tile(a0)
 		ori.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)
-		move.b	#$60,ost_actwidth(a0)
+		move.b	#$60,ost_displaywidth(a0)
 		move.b	#$18,ost_height(a0)
 		move.w	ost_x_pos(a0),ost_girder_x_start(a0)
 		move.w	ost_y_pos(a0),ost_girder_y_start(a0)
@@ -53,7 +53,7 @@ Gird_Action:	; Routine 2
 		tst.b	ost_render(a0)				; is object on-screen?
 		bpl.s	@chkdel					; if not, branch
 		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
+		move.b	ost_displaywidth(a0),d1
 		addi.w	#$B,d1
 		moveq	#0,d2
 		move.b	ost_height(a0),d2

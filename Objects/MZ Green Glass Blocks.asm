@@ -72,13 +72,13 @@ Glass_Main:	; Routine 0
 		move.b	#render_rel,ost_render(a1)
 		move.w	ost_y_pos(a1),ost_glass_y_start(a1)
 		move.b	ost_subtype(a0),ost_subtype(a1)
-		move.b	#$20,ost_actwidth(a1)
+		move.b	#$20,ost_displaywidth(a1)
 		move.b	#4,ost_priority(a1)
 		move.b	(a2)+,ost_frame(a1)			; get frame
 		move.l	a0,ost_glass_parent(a1)			; save address of OST of parent object
 		dbf	d1,@repeat				; repeat once to load "reflection object"
 
-		move.b	#$10,ost_actwidth(a1)
+		move.b	#$10,ost_displaywidth(a1)
 		move.b	#3,ost_priority(a1)
 		addq.b	#8,ost_subtype(a1)			; +8 to reflection object subtype
 		andi.b	#$F,ost_subtype(a1)			; clear high nybble of subtype

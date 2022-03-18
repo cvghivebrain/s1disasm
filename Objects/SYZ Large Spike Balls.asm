@@ -27,7 +27,7 @@ BBall_Main:	; Routine 0
 		move.w	#tile_Nem_BigSpike,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)
-		move.b	#$18,ost_actwidth(a0)
+		move.b	#$18,ost_displaywidth(a0)
 		move.w	ost_x_pos(a0),ost_bball_x_start(a0)
 		move.w	ost_y_pos(a0),ost_bball_y_start(a0)
 		move.b	#id_col_16x16+id_col_hurt,ost_col_type(a0)

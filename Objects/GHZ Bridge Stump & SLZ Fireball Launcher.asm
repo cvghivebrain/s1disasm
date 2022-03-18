@@ -29,7 +29,7 @@ Scen_Main:	; Routine 0
 		move.w	(a1)+,ost_tile(a0)
 		ori.b	#render_rel,ost_render(a0)
 		move.b	(a1)+,ost_frame(a0)
-		move.b	(a1)+,ost_actwidth(a0)
+		move.b	(a1)+,ost_displaywidth(a0)
 		move.b	(a1)+,ost_priority(a0)
 		move.b	(a1)+,ost_col_type(a0)
 

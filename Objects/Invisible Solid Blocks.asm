@@ -29,7 +29,7 @@ Invis_Main:	; Routine 0
 		andi.w	#$F0,d0					; read only the	high nybble
 		addi.w	#$10,d0					; add $10
 		lsr.w	#1,d0					; divide by 2
-		move.b	d0,ost_actwidth(a0)			; set object width
+		move.b	d0,ost_displaywidth(a0)			; set object width
 		andi.w	#$F,d1					; read only the	low nybble
 		addq.w	#1,d1					; add 1
 		lsl.w	#3,d1					; multiply by 8
@@ -39,7 +39,7 @@ Invis_Solid:	; Routine 2
 		bsr.w	CheckOffScreen				; is object off screen?
 		bne.s	@chkdel					; if yes, branch
 		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
+		move.b	ost_displaywidth(a0),d1
 		addi.w	#$B,d1
 		moveq	#0,d2
 		move.b	ost_height(a0),d2

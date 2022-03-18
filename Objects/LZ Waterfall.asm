@@ -24,7 +24,7 @@ WFall_Main:	; Routine 0
 		move.l	#Map_WFall,ost_mappings(a0)
 		move.w	#tile_Nem_Splash+tile_pal3,ost_tile(a0)
 		ori.b	#render_rel,ost_render(a0)
-		move.b	#$18,ost_actwidth(a0)
+		move.b	#$18,ost_displaywidth(a0)
 		move.b	#1,ost_priority(a0)
 		move.b	ost_subtype(a0),d0			; get object type
 		bpl.s	@under80				; branch if $00-$7F

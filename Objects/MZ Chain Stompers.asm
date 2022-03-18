@@ -88,7 +88,7 @@ CStom_MakeStomper:
 		move.b	#render_rel,ost_render(a1)
 		move.w	ost_y_pos(a1),ost_cstomp_y_start(a1)
 		move.b	ost_subtype(a0),ost_subtype(a1)
-		move.b	#$10,ost_actwidth(a1)
+		move.b	#$10,ost_displaywidth(a1)
 		move.w	d2,ost_cstomp_chain_max(a1)
 		move.b	#4,ost_priority(a1)
 		move.b	(a2)+,ost_frame(a1)
@@ -99,7 +99,7 @@ CStom_MakeStomper:
 		andi.w	#$F0,d0					; read high nybble of subtype
 		cmpi.w	#$20,d0					; is subtype $2x (no spikes)?
 		beq.s	CStom_MakeStomper			; if yes, branch
-		move.b	#$38,ost_actwidth(a1)
+		move.b	#$38,ost_displaywidth(a1)
 		move.b	#id_col_40x16+id_col_hurt,ost_col_type(a1) ; make spikes harmful
 		addq.w	#1,d1
 
@@ -115,7 +115,7 @@ CStom_SetSize:
 		lsr.w	#3,d0
 		andi.b	#$E,d0					; read only high nybble
 		lea	CStom_Var2(pc,d0.w),a2
-		move.b	(a2)+,ost_actwidth(a0)
+		move.b	(a2)+,ost_displaywidth(a0)
 		move.b	(a2)+,ost_frame(a0)
 		bra.s	CStom_Block
 ; ===========================================================================
@@ -131,7 +131,7 @@ CStom_Block:	; Routine 2
 		bsr.w	CStom_Types				; update speed & position
 		move.w	ost_y_pos(a0),(v_cstomp_y_pos).w	; store y position for pushable green block interaction
 		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
+		move.b	ost_displaywidth(a0),d1
 		addi.w	#$B,d1
 		move.w	#$C,d2
 		move.w	#$D,d3

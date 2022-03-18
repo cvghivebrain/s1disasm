@@ -62,7 +62,7 @@ GBall_Main:	; Routine 0
 		andi.w	#$7F,d5					; convert address to OST index
 		move.b	d5,(a2)+				; add to list in parent OST
 		move.b	#render_rel,ost_render(a1)
-		move.b	#8,ost_actwidth(a1)
+		move.b	#8,ost_displaywidth(a1)
 		move.b	#6,ost_priority(a1)
 		move.l	ost_ball_parent(a0),ost_ball_parent(a1)
 		dbf	d1,@loop				; repeat sequence 5 more times

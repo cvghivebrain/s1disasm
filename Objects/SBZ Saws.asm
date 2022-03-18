@@ -26,7 +26,7 @@ Saw_Main:	; Routine 0
 		move.w	#tile_Nem_Cutter+tile_pal3,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)
-		move.b	#$20,ost_actwidth(a0)
+		move.b	#$20,ost_displaywidth(a0)
 		move.w	ost_x_pos(a0),ost_saw_x_start(a0)
 		move.w	ost_y_pos(a0),ost_saw_y_start(a0)
 		cmpi.b	#id_Saw_Ground_Right,ost_subtype(a0)	; is object a ground saw?

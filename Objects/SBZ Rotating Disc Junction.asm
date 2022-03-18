@@ -45,12 +45,12 @@ Jun_Main:	; Routine 0
 		move.l	#Map_Jun,ost_mappings(a1)
 		move.w	#tile_Nem_SbzWheel2+tile_pal3,ost_tile(a1)
 		ori.b	#render_rel,ost_render(a1)
-		move.b	#$38,ost_actwidth(a1)
+		move.b	#$38,ost_displaywidth(a1)
 
 	@fail:
 		dbf	d1,@loop				; repeat once for large background circle
 
-		move.b	#$30,ost_actwidth(a0)
+		move.b	#$30,ost_displaywidth(a0)
 		move.b	#4,ost_priority(a0)
 		move.w	#$3C,$30(a0)
 		move.b	#1,ost_junc_direction(a0)		; set default direction (anticlockwise)

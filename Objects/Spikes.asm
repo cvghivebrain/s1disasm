@@ -46,7 +46,7 @@ Spike_Main:	; Routine 0
 		lsr.w	#3,d0
 		adda.w	d0,a1					; use high nybble of subtype to get frame & width info
 		move.b	(a1)+,ost_frame(a0)
-		move.b	(a1)+,ost_actwidth(a0)
+		move.b	(a1)+,ost_displaywidth(a0)
 		move.w	ost_x_pos(a0),ost_spike_x_start(a0)
 		move.w	ost_y_pos(a0),ost_spike_y_start(a0)
 
@@ -78,7 +78,7 @@ Spike_SideWays:
 
 Spike_Upright:
 		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
+		move.b	ost_displaywidth(a0),d1
 		addi.w	#$B,d1
 		move.w	#$10,d2					; height
 		move.w	#$11,d3

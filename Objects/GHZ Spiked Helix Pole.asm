@@ -29,7 +29,7 @@ Hel_Main:	; Routine 0
 		move.b	#status_xflip+status_yflip+status_jump,ost_status(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#3,ost_priority(a0)
-		move.b	#8,ost_actwidth(a0)
+		move.b	#8,ost_displaywidth(a0)
 		move.w	ost_y_pos(a0),d2
 		move.w	ost_x_pos(a0),d3
 		move.b	ost_id(a0),d4
@@ -62,7 +62,7 @@ Hel_Main:	; Routine 0
 		move.w	#tile_Nem_SpikePole+tile_pal3,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)
 		move.b	#3,ost_priority(a1)
-		move.b	#8,ost_actwidth(a1)
+		move.b	#8,ost_displaywidth(a1)
 		move.b	d6,ost_helix_frame(a1)			; set frame for current spike
 		addq.b	#1,d6					; use next frame on next spike
 		andi.b	#7,d6					; there are only 8 frames

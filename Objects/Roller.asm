@@ -33,7 +33,7 @@ Roll_Main:	; Routine 0
 		move.w	#tile_Nem_Roller,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)
-		move.b	#$10,ost_actwidth(a0)
+		move.b	#$10,ost_displaywidth(a0)
 
 	@no_floor:
 		rts	

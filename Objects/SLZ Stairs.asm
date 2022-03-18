@@ -55,7 +55,7 @@ Stair_Main:	; Routine 0
 		move.w	#0+tile_pal3,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)
 		move.b	#3,ost_priority(a1)
-		move.b	#$10,ost_actwidth(a1)
+		move.b	#$10,ost_displaywidth(a1)
 		move.b	ost_subtype(a0),ost_subtype(a1)
 		move.w	d2,ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
@@ -85,7 +85,7 @@ Stair_Solid:	; Routine 4
 		add.w	ost_stair_y_start(a0),d0		; add to initial y position
 		move.w	d0,ost_y_pos(a0)			; update position
 		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
+		move.b	ost_displaywidth(a0),d1
 		addi.w	#$B,d1
 		move.w	#$10,d2
 		move.w	#$11,d3

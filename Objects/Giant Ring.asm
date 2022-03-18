@@ -24,7 +24,7 @@ GRing_Main:	; Routine 0
 		move.l	#Map_GRing,ost_mappings(a0)
 		move.w	#(vram_giantring/sizeof_cell)+tile_pal2,ost_tile(a0)
 		ori.b	#render_rel,ost_render(a0)
-		move.b	#$40,ost_actwidth(a0)
+		move.b	#$40,ost_displaywidth(a0)
 		tst.b	ost_render(a0)
 		bpl.s	GRing_Animate
 		cmpi.b	#6,(v_emeralds).w			; do you have 6 emeralds?

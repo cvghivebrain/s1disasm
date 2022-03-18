@@ -36,7 +36,7 @@ Gar_Main:	; Routine 0
 		move.w	#tile_Nem_Gargoyle+tile_pal3,ost_tile(a0)
 		ori.b	#render_rel,ost_render(a0)
 		move.b	#3,ost_priority(a0)
-		move.b	#$10,ost_actwidth(a0)
+		move.b	#$10,ost_displaywidth(a0)
 		move.b	ost_subtype(a0),d0			; get object type
 		andi.w	#$F,d0					; read only the	low nybble
 		move.b	Gar_SpitRate(pc,d0.w),ost_anim_delay(a0) ; set fireball spit rate
@@ -72,7 +72,7 @@ Gar_FireBall:	; Routine 4
 		ori.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)
 		move.b	#id_col_4x4+id_col_hurt,ost_col_type(a0)
-		move.b	#8,ost_actwidth(a0)
+		move.b	#8,ost_displaywidth(a0)
 		move.b	#id_frame_gargoyle_fireball1,ost_frame(a0)
 		addq.w	#8,ost_y_pos(a0)
 		move.w	#$200,ost_x_vel(a0)			; move fireball right

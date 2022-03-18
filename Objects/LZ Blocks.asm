@@ -40,7 +40,7 @@ LBlk_Main:	; Routine 0
 		lsr.w	#3,d0					; read only the high nybble
 		andi.w	#$E,d0
 		lea	LBlk_Var(pc,d0.w),a2
-		move.b	(a2)+,ost_actwidth(a0)			; set width
+		move.b	(a2)+,ost_displaywidth(a0)		; set width
 		move.b	(a2),ost_height(a0)			; set height
 		lsr.w	#1,d0
 		move.b	d0,ost_frame(a0)
@@ -65,7 +65,7 @@ LBlk_Action:	; Routine 2
 		tst.b	ost_render(a0)				; is block on-screen?
 		bpl.s	@chkdel					; if not, branch
 		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
+		move.b	ost_displaywidth(a0),d1
 		addi.w	#$B,d1
 		moveq	#0,d2
 		move.b	ost_height(a0),d2

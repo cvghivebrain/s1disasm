@@ -54,7 +54,7 @@ Cat_Main:	; Routine 0
 		ori.b	#render_rel,ost_render(a0)
 		move.b	ost_render(a0),ost_status(a0)
 		move.b	#4,ost_priority(a0)
-		move.b	#8,ost_actwidth(a0)
+		move.b	#8,ost_displaywidth(a0)
 		move.b	#id_col_8x8,ost_col_type(a0)
 		move.w	ost_x_pos(a0),d2			; head x position
 		moveq	#12,d5					; distance between segments (12px)
@@ -82,7 +82,7 @@ Cat_Loop:
 		move.l	ost_mappings(a0),ost_mappings(a1)
 		move.w	ost_tile(a0),ost_tile(a1)
 		move.b	#5,ost_priority(a1)
-		move.b	#8,ost_actwidth(a1)
+		move.b	#8,ost_displaywidth(a1)
 		move.b	#id_col_8x8+id_col_custom,ost_col_type(a1)
 		add.w	d5,d2
 		move.w	d2,ost_x_pos(a1)			; body segment x pos = previous segment x pos +12

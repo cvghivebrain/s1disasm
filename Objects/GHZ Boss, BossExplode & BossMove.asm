@@ -49,7 +49,7 @@ BGHZ_Main:	; Routine 0
 		move.l	#Map_Bosses,ost_mappings(a1)
 		move.w	#tile_Nem_Eggman,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)
-		move.b	#$20,ost_actwidth(a1)
+		move.b	#$20,ost_displaywidth(a1)
 		move.b	#3,ost_priority(a1)
 		move.b	(a2)+,ost_anim(a1)
 		move.l	a0,ost_bghz_parent(a1)			; save address of OST of parent

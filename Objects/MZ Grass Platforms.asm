@@ -50,7 +50,7 @@ LGrass_Main:	; Routine 0
 		lea	LGrass_Data(pc,d0.w),a2
 		move.l	a2,ost_grass_coll_ptr(a0)		; get pointer to heightmap data again
 		move.b	(a1)+,ost_frame(a0)
-		move.b	(a1),ost_actwidth(a0)
+		move.b	(a1),ost_displaywidth(a0)
 		andi.b	#$F,ost_subtype(a0)			; clear high nybble of subtype
 		move.b	#$40,ost_height(a0)
 		bset	#render_useheight_bit,ost_render(a0)
@@ -60,7 +60,7 @@ LGrass_Action:	; Routine 2
 		tst.b	ost_solid(a0)				; is platform being stood on?
 		beq.s	LGrass_Solid				; if not, branch
 		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
+		move.b	ost_displaywidth(a0),d1
 		addi.w	#$B,d1
 		bsr.w	ExitPlatform				; update flags if Sonic leaves plaform
 		btst	#status_platform_bit,ost_status(a1)	; is Sonic still on platform?
@@ -71,7 +71,7 @@ LGrass_Action:	; Routine 2
 
 LGrass_Slope:
 		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
+		move.b	ost_displaywidth(a0),d1
 		addi.w	#$B,d1
 		movea.l	ost_grass_coll_ptr(a0),a2
 		move.w	ost_x_pos(a0),d2
@@ -81,7 +81,7 @@ LGrass_Slope:
 
 LGrass_Solid:
 		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
+		move.b	ost_displaywidth(a0),d1
 		addi.w	#$B,d1					; width
 		move.w	#$20,d2					; height
 		cmpi.b	#id_frame_grass_narrow,ost_frame(a0)	; is this a narrow platform?

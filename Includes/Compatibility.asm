@@ -11,7 +11,7 @@ obInertia:		equ ost_inertia
 obWidth:		equ ost_width
 obHeight:		equ ost_height
 obPriority:		equ ost_priority
-obActWid:		equ ost_actwidth
+obActWid:		equ ost_displaywidth
 obFrame:		equ ost_frame
 obAniFrame:		equ ost_anim_frame
 obAnim:			equ ost_anim
@@ -325,6 +325,9 @@ Sonic_RecordPos:	equ Sonic_RecordPosition
 LoadSonicDynPLC:	equ Sonic_LoadGfx
 Sonic_ChgJumpDir:	equ Sonic_JumpDirection
 
+; Sonic 1 2021
+ost_actwidth:		equ ost_displaywidth
+
 ; Sonic 2 Github
 id:			equ ost_id
 render_flags:		equ ost_render
@@ -335,7 +338,7 @@ x_sub:			equ ost_x_sub
 y_pos:			equ ost_y_pos
 y_sub:			equ ost_y_sub
 priority:		equ ost_priority
-width_pixels:		equ ost_actwidth
+width_pixels:		equ ost_displaywidth
 mapping_frame:		equ ost_frame
 x_vel:			equ ost_x_vel
 y_vel:			equ ost_y_vel

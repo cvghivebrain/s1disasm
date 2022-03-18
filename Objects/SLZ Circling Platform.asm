@@ -28,20 +28,20 @@ Circ_Main:	; Routine 0
 		move.w	#0+tile_pal3,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)
-		move.b	#$18,ost_actwidth(a0)
+		move.b	#$18,ost_displaywidth(a0)
 		move.w	ost_x_pos(a0),ost_circ_x_start(a0)
 		move.w	ost_y_pos(a0),ost_circ_y_start(a0)
 
 Circ_Platform:	; Routine 2
 		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
+		move.b	ost_displaywidth(a0),d1
 		jsr	(DetectPlatform).l			; detect collision and goto Circ_StoodOn next if true
 		bra.w	Circ_Types
 ; ===========================================================================
 
 Circ_StoodOn:	; Routine 4
 		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
+		move.b	ost_displaywidth(a0),d1
 		jsr	(ExitPlatform).l			; goto Circ_Platform next if Sonic leaves platform
 		move.w	ost_x_pos(a0),-(sp)
 		bsr.w	Circ_Types

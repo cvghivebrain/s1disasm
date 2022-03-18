@@ -23,7 +23,7 @@ CSI_Main:	; Routine 0
 		move.l	#Map_ContScr,ost_mappings(a0)
 		move.w	#(vram_cont_sonic/sizeof_cell)+tile_hi,ost_tile(a0)
 		move.b	#render_abs,ost_render(a0)
-		move.b	#$3C,ost_actwidth(a0)
+		move.b	#$3C,ost_displaywidth(a0)
 		move.w	#$120,ost_x_pos(a0)
 		move.w	#$C0,ost_y_screen(a0)
 		move.w	#0,(v_rings).w				; clear rings

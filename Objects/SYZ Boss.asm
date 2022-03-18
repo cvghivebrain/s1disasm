@@ -64,7 +64,7 @@ BSYZ_Main:	; Routine 0
 		move.l	#Map_Bosses,ost_mappings(a1)
 		move.w	#tile_Nem_Eggman,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)
-		move.b	#$20,ost_actwidth(a1)
+		move.b	#$20,ost_displaywidth(a1)
 		move.l	a0,ost_bsyz_parent(a1)			; save address of OST of parent
 		dbf	d1,@loop				; repeat sequence 3 more times
 
@@ -620,7 +620,7 @@ BSYZ_SpikeMain:; Routine 8
 		move.w	d0,ost_bsyz_wait_time(a0)		; set timer
 		asr.w	#2,d0
 		add.w	d0,ost_y_pos(a0)			; extend or retract spike
-		move.b	#8,ost_actwidth(a0)
+		move.b	#8,ost_displaywidth(a0)
 		move.b	#$C,ost_height(a0)
 		clr.b	ost_col_type(a0)
 		movea.l	ost_bsyz_parent(a0),a1			; get address of OST of parent object

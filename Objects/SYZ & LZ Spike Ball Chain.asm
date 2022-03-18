@@ -32,7 +32,7 @@ SBall_Main:	; Routine 0
 		move.w	#tile_Nem_SmallSpike,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)
-		move.b	#8,ost_actwidth(a0)
+		move.b	#8,ost_displaywidth(a0)
 		move.w	ost_x_pos(a0),ost_sball_x_start(a0)
 		move.w	ost_y_pos(a0),ost_sball_y_start(a0)
 		move.b	#id_col_4x4+id_col_hurt,ost_col_type(a0) ; SYZ specific code (chain hurts Sonic)
@@ -82,7 +82,7 @@ SBall_Main:	; Routine 0
 		move.w	ost_tile(a0),ost_tile(a1)
 		move.b	ost_render(a0),ost_render(a1)
 		move.b	ost_priority(a0),ost_priority(a1)
-		move.b	ost_actwidth(a0),ost_actwidth(a1)
+		move.b	ost_displaywidth(a0),ost_displaywidth(a1)
 		move.b	ost_col_type(a0),ost_col_type(a1)
 		subi.b	#$10,d3					; subtract $10 for radius, each object closer to centre
 		move.b	d3,ost_sball_radius(a1)

@@ -24,7 +24,7 @@ Shi_Main:	; Routine 0
 		move.l	#Map_Shield,ost_mappings(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#1,ost_priority(a0)
-		move.b	#$10,ost_actwidth(a0)
+		move.b	#$10,ost_displaywidth(a0)
 		tst.b	ost_anim(a0)				; is object a shield?
 		bne.s	@stars					; if not, branch
 		move.w	#tile_Nem_Shield,ost_tile(a0)		; shield specific code

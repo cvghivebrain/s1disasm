@@ -28,7 +28,7 @@ VanP_Main:	; Routine 0
 		move.l	#Map_VanP,ost_mappings(a0)
 		move.w	#tile_Nem_SbzBlock+tile_pal3,ost_tile(a0)
 		ori.b	#render_rel,ost_render(a0)
-		move.b	#$10,ost_actwidth(a0)
+		move.b	#$10,ost_displaywidth(a0)
 		move.b	#4,ost_priority(a0)
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0			; get object type
@@ -85,14 +85,14 @@ VanP_StoodOn:	; Routine 4
 		bne.s	@stood_on				; if yes, branch
 
 		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
+		move.b	ost_displaywidth(a0),d1
 		jsr	(DetectPlatform).l			; detect collision and goto VanP_StoodOn next if true
 		bra.w	DespawnObject
 ; ===========================================================================
 
 @stood_on:
 		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
+		move.b	ost_displaywidth(a0),d1
 		jsr	(ExitPlatform).l			; goto VanP_Detect next if Sonic leaves platform
 		move.w	ost_x_pos(a0),d2
 		jsr	(MoveWithPlatform2).l

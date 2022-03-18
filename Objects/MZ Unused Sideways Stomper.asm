@@ -65,7 +65,7 @@ SStom_Main:	; Routine 0
 		move.w	ost_x_pos(a1),ost_mash_x_start(a1)
 		move.w	ost_x_pos(a0),ost_mash_y_start(a1)
 		move.b	ost_subtype(a0),ost_subtype(a1)
-		move.b	#$20,ost_actwidth(a1)
+		move.b	#$20,ost_displaywidth(a1)
 		move.w	d2,ost_mash_max_length(a1)		; set max pole length from subtype
 		move.b	#4,ost_priority(a1)
 		cmpi.b	#id_frame_mash_spikes,(a2)		; is subobject spikes?
@@ -80,7 +80,7 @@ SStom_Main:	; Routine 0
 		move.b	#3,ost_priority(a1)
 
 	@fail:
-		move.b	#$10,ost_actwidth(a0)
+		move.b	#$10,ost_displaywidth(a0)
 
 SStom_Solid:	; Routine 2
 		move.w	ost_x_pos(a0),-(sp)

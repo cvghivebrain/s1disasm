@@ -31,19 +31,19 @@ Plat_Main:	; Routine 0
 		addq.b	#2,ost_routine(a0)			; goto Plat_Solid next
 		move.w	#0+tile_pal3,ost_tile(a0)
 		move.l	#Map_Plat_GHZ,ost_mappings(a0)
-		move.b	#$20,ost_actwidth(a0)
+		move.b	#$20,ost_displaywidth(a0)
 		cmpi.b	#id_SYZ,(v_zone).w			; check if level is SYZ
 		bne.s	@notSYZ
 
 		move.l	#Map_Plat_SYZ,ost_mappings(a0)		; SYZ specific code
-		move.b	#$20,ost_actwidth(a0)
+		move.b	#$20,ost_displaywidth(a0)
 
 	@notSYZ:
 		cmpi.b	#id_SLZ,(v_zone).w			; check if level is SLZ
 		bne.s	@notSLZ
 
 		move.l	#Map_Plat_SLZ,ost_mappings(a0)		; SLZ specific code
-		move.b	#$20,ost_actwidth(a0)
+		move.b	#$20,ost_displaywidth(a0)
 		move.w	#0+tile_pal3,ost_tile(a0)
 		move.b	#id_Plat_Type_Falls,ost_subtype(a0)	; force subtype 3
 
@@ -59,7 +59,7 @@ Plat_Main:	; Routine 0
 		cmpi.b	#id_Plat_Type_UpDown_Large,d0		; is object type $A (large platform)?
 		bne.s	@setframe				; if not, branch
 		addq.b	#id_frame_plat_large,d1			; use frame #1
-		move.b	#$20,ost_actwidth(a0)			; set width
+		move.b	#$20,ost_displaywidth(a0)		; set width
 
 	@setframe:
 		move.b	d1,ost_frame(a0)			; set frame to d1
@@ -71,7 +71,7 @@ Plat_Solid:	; Routine 2
 
 	@no_dip:
 		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
+		move.b	ost_displaywidth(a0),d1
 		bsr.w	DetectPlatform				; detect collision, update flags, goto Plat_StoodOn next if stood on
 
 Plat_Action:	; Routine 8
@@ -88,7 +88,7 @@ Plat_StoodOn:	; Routine 4
 
 	@max_dip:
 		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
+		move.b	ost_displaywidth(a0),d1
 		bsr.w	ExitPlatform				; detect Sonic leaving platform, goto Plat_Solid next if he does
 		move.w	ost_x_pos(a0),-(sp)
 		bsr.w	Plat_Move

@@ -26,7 +26,7 @@ Van_Main:	; Routine 0
 		move.l	#Map_Vanish,ost_mappings(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#1,ost_priority(a0)
-		move.b	#$38,ost_actwidth(a0)
+		move.b	#$38,ost_displaywidth(a0)
 		move.w	#tile_Nem_Shield,ost_tile(a0)
 		move.w	#120,ost_vanish_time(a0)		; set time for Sonic's disappearance to 2 seconds
 

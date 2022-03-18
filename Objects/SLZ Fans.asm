@@ -24,7 +24,7 @@ Fan_Main:	; Routine 0
 		move.l	#Map_Fan,ost_mappings(a0)
 		move.w	#tile_Nem_Fan+tile_pal3,ost_tile(a0)
 		ori.b	#render_rel,ost_render(a0)
-		move.b	#$10,ost_actwidth(a0)
+		move.b	#$10,ost_displaywidth(a0)
 		move.b	#4,ost_priority(a0)
 
 Fan_Delay:	; Routine 2

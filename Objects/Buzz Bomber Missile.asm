@@ -31,7 +31,7 @@ Msl_Main:	; Routine 0
 		move.w	#tile_Nem_Buzz+tile_pal2,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#3,ost_priority(a0)
-		move.b	#8,ost_actwidth(a0)
+		move.b	#8,ost_displaywidth(a0)
 		andi.b	#status_xflip+status_yflip,ost_status(a0)
 		tst.b	ost_subtype(a0)				; was object created by	a Newtron?
 		beq.s	Msl_Animate				; if not, branch

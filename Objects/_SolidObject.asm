@@ -276,7 +276,7 @@ Solid_Squash:
 Solid_Landed:
 		subq.w	#4,d3
 		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
+		move.b	ost_displaywidth(a0),d1
 		move.w	d1,d2
 		add.w	d2,d2					; d2 = full width of object
 		add.w	ost_x_pos(a1),d1

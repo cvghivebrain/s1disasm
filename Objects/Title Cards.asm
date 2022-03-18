@@ -108,7 +108,7 @@ Card_Main:	; Routine 0
 		move.b	d0,ost_frame(a1)			; display frame number d0
 		move.l	#Map_Card,ost_mappings(a1)
 		move.w	#tile_Nem_TitleCard+tile_hi,ost_tile(a1)
-		move.b	#$78,ost_actwidth(a1)
+		move.b	#$78,ost_displaywidth(a1)
 		move.b	#render_abs,ost_render(a1)
 		move.b	#0,ost_priority(a1)
 		move.w	#60,ost_anim_time(a1)			; set time delay to 1 second

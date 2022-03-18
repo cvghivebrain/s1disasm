@@ -42,7 +42,7 @@ Spring_Main:	; Routine 0
 		move.l	#Map_Spring,ost_mappings(a0)
 		move.w	#tile_Nem_HSpring,ost_tile(a0)
 		ori.b	#render_rel,ost_render(a0)
-		move.b	#$10,ost_actwidth(a0)
+		move.b	#$10,ost_displaywidth(a0)
 		move.b	#4,ost_priority(a0)
 		move.b	ost_subtype(a0),d0
 		btst	#4,d0					; is spring type $1x? (horizontal)
@@ -52,7 +52,7 @@ Spring_Main:	; Routine 0
 		move.b	#id_ani_spring_left,ost_anim(a0)
 		move.b	#id_frame_spring_left,ost_frame(a0)
 		move.w	#tile_Nem_VSpring,ost_tile(a0)
-		move.b	#8,ost_actwidth(a0)
+		move.b	#8,ost_displaywidth(a0)
 
 	@not_horizontal:
 		btst	#5,d0					; is spring type $2x? (downwards)

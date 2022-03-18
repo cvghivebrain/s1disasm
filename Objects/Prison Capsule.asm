@@ -45,7 +45,7 @@ Pri_Main:	; Routine 0
 		lsl.w	#2,d0					; multiply by 4
 		lea	Pri_Var(pc,d0.w),a1
 		move.b	(a1)+,ost_routine(a0)			; goto Pri_Body/Pri_Switch next
-		move.b	(a1)+,ost_actwidth(a0)
+		move.b	(a1)+,ost_displaywidth(a0)
 		move.b	(a1)+,ost_priority(a0)
 		move.b	(a1)+,ost_frame(a0)
 		cmpi.w	#8,d0					; is subtype = 2 ?

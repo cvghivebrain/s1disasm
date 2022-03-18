@@ -26,7 +26,7 @@ Harp_Main:	; Routine 0
 		ori.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)
 		move.b	ost_subtype(a0),ost_anim(a0)		; get type (vert/horiz)
-		move.b	#$14,ost_actwidth(a0)
+		move.b	#$14,ost_displaywidth(a0)
 		move.w	#60,ost_harp_time(a0)			; set time to 1 second
 
 Harp_Move:	; Routine 2

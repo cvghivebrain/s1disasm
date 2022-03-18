@@ -31,7 +31,7 @@ Bri_Main:	; Routine 0
 		move.w	#tile_Nem_Bridge+tile_pal3,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#3,ost_priority(a0)
-		move.b	#$80,ost_actwidth(a0)
+		move.b	#$80,ost_displaywidth(a0)
 		move.w	ost_y_pos(a0),d2
 		move.w	ost_x_pos(a0),d3
 		move.b	ost_id(a0),d4				; copy object id ($11) to d4
@@ -79,7 +79,7 @@ Bri_Main:	; Routine 0
 		move.w	#tile_Nem_Bridge+tile_pal3,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)
 		move.b	#3,ost_priority(a1)
-		move.b	#8,ost_actwidth(a1)
+		move.b	#8,ost_displaywidth(a1)
 		addi.w	#$10,d3					; x pos. of next log
 		dbf	d1,@buildloop				; repeat d1 times (length of bridge)
 

@@ -50,7 +50,7 @@ FBlock_Main:	; Routine 0
 		lsr.w	#3,d0
 		andi.w	#$E,d0					; read only bits 4-6 (high nybble sans high bit)
 		lea	FBlock_Var(pc,d0.w),a2			; get size data
-		move.b	(a2)+,ost_actwidth(a0)
+		move.b	(a2)+,ost_displaywidth(a0)
 		move.b	(a2),ost_height(a0)
 		lsr.w	#1,d0
 		move.b	d0,ost_frame(a0)			; set frame as high nybble of subtype
@@ -124,7 +124,7 @@ FBlock_Action:	; Routine 2
 		tst.b	ost_render(a0)
 		bpl.s	@chkdel
 		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
+		move.b	ost_displaywidth(a0),d1
 		addi.w	#$B,d1
 		moveq	#0,d2
 		move.b	ost_height(a0),d2

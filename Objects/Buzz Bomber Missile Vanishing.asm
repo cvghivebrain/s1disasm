@@ -17,13 +17,13 @@ MDis_Index:	index *,,2
 ; ===========================================================================
 
 MDis_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
+		addq.b	#2,ost_routine(a0)			; goto MDis_Animate next
 		move.l	#Map_MisDissolve,ost_mappings(a0)
 		move.w	#$41C,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#1,ost_priority(a0)
 		move.b	#0,ost_col_type(a0)
-		move.b	#$C,ost_actwidth(a0)
+		move.b	#$C,ost_displaywidth(a0)
 		move.b	#9,ost_anim_time(a0)
 		move.b	#0,ost_frame(a0)
 		play.w	1, jsr, sfx_BuzzExplode			; play missile explosion sound

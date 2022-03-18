@@ -32,7 +32,7 @@ GMake_Main:	; Routine 0
 		move.w	#tile_Nem_Lava+tile_pal4+tile_hi,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#1,ost_priority(a0)
-		move.b	#$38,ost_actwidth(a0)
+		move.b	#$38,ost_displaywidth(a0)
 		move.w	#120,ost_gmake_wait_total(a0)		; set time delay to 2 seconds
 
 GMake_Wait:	; Routine 2

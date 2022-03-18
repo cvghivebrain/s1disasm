@@ -20,7 +20,7 @@ Pyl_Main:	; Routine 0
 		addq.b	#2,ost_routine(a0)			; goto Pyl_Display next
 		move.l	#Map_Pylon,ost_mappings(a0)
 		move.w	#tile_Nem_Pylon+tile_hi,ost_tile(a0)
-		move.b	#$10,ost_actwidth(a0)
+		move.b	#$10,ost_displaywidth(a0)
 
 Pyl_Display:	; Routine 2
 		move.l	(v_camera_x_pos).w,d1			; get camera x pos (in high word)

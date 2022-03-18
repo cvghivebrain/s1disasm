@@ -69,7 +69,7 @@ Elev_Main:	; Routine 0
 		lsr.w	#3,d0
 		andi.w	#$1E,d0					; read only high nybble
 		lea	Elev_Var1(pc,d0.w),a2
-		move.b	(a2)+,ost_actwidth(a0)			; set width
+		move.b	(a2)+,ost_displaywidth(a0)		; set width
 		move.b	(a2)+,ost_frame(a0)			; set frame
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0			; get subtype
@@ -89,14 +89,14 @@ Elev_Main:	; Routine 0
 
 Elev_Platform:	; Routine 2
 		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
+		move.b	ost_displaywidth(a0),d1
 		jsr	(DetectPlatform).l			; detect collision and goto Elev_StoodOn next if true
 		bra.w	Elev_Types
 ; ===========================================================================
 
 Elev_StoodOn:	; Routine 4
 		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
+		move.b	ost_displaywidth(a0),d1
 		jsr	(ExitPlatform).l			; goto Elev_Platform next if Sonic leaves platform
 		move.w	ost_x_pos(a0),-(sp)
 		bsr.w	Elev_Types

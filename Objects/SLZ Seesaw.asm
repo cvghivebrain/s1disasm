@@ -44,7 +44,7 @@ See_Main:	; Routine 0
 		move.w	#tile_Nem_Seesaw,ost_tile(a0)
 		ori.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)
-		move.b	#$30,ost_actwidth(a0)
+		move.b	#$30,ost_displaywidth(a0)
 		move.w	ost_x_pos(a0),ost_seesaw_x_start(a0)
 		tst.b	ost_subtype(a0)				; is object type 0?
 		bne.s	@noball					; if not, branch
@@ -149,7 +149,7 @@ See_Spikeball:	; Routine 6
 		ori.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)
 		move.b	#id_col_8x8+id_col_hurt,ost_col_type(a0)
-		move.b	#$C,ost_actwidth(a0)
+		move.b	#$C,ost_displaywidth(a0)
 		move.w	ost_x_pos(a0),ost_seesaw_x_start(a0)
 		addi.w	#$28,ost_x_pos(a0)			; move spikeball to right side
 		move.w	ost_y_pos(a0),ost_seesaw_y_start(a0)

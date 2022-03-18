@@ -52,7 +52,7 @@ Geyser_Main:	; Routine 0
 		move.l	#Map_Geyser,ost_mappings(a1)
 		move.w	#tile_Nem_Lava+tile_pal4,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)
-		move.b	#$20,ost_actwidth(a1)
+		move.b	#$20,ost_displaywidth(a1)
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	ost_subtype(a0),ost_subtype(a1)
@@ -74,7 +74,7 @@ Geyser_Main:	; Routine 0
 		move.b	#id_col_32x112+id_col_hurt,ost_col_type(a1)
 		move.b	#$80,ost_height(a1)
 		bset	#render_useheight_bit,ost_render(a1)
-		addq.b	#id_Geyser_Middle,ost_routine(a1)		; goto Geyser_Middle next
+		addq.b	#id_Geyser_Middle,ost_routine(a1)	; goto Geyser_Middle next
 		move.l	a0,ost_geyser_parent(a1)
 		tst.b	ost_subtype(a0)
 		beq.s	@sound					; branch if geyser

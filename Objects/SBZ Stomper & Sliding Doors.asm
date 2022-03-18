@@ -41,7 +41,7 @@ Sto_Main:	; Routine 0
 		lsr.w	#2,d0
 		andi.w	#$1C,d0					; read only high nybble without bit 7
 		lea	Sto_Var(pc,d0.w),a3			; get variables from list
-		move.b	(a3)+,ost_actwidth(a0)
+		move.b	(a3)+,ost_displaywidth(a0)
 		move.b	(a3)+,ost_height(a0)
 		lsr.w	#2,d0
 		move.b	d0,ost_frame(a0)			; high nybble without bit 7 = frame
@@ -115,7 +115,7 @@ Sto_Action:	; Routine 2
 		tst.b	ost_render(a0)
 		bpl.s	@chkdel
 		moveq	#0,d1
-		move.b	ost_actwidth(a0),d1
+		move.b	ost_displaywidth(a0),d1
 		addi.w	#$B,d1
 		moveq	#0,d2
 		move.b	ost_height(a0),d2

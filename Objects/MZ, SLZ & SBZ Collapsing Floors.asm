@@ -44,7 +44,7 @@ CFlo_Main:	; Routine 0
 		ori.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)
 		move.b	#7,ost_cfloor_wait_time(a0)
-		move.b	#$44,ost_actwidth(a0)
+		move.b	#$44,ost_displaywidth(a0)
 
 CFlo_Touch:	; Routine 2
 		tst.b	ost_cfloor_flag(a0)			; has Sonic touched the object?

@@ -37,7 +37,7 @@ BuildSprites:
 
 		; check object is visible
 		moveq	#0,d0
-		move.b	ost_actwidth(a0),d0
+		move.b	ost_displaywidth(a0),d0
 		move.w	ost_x_pos(a0),d3
 		sub.w	(a1),d3
 		move.w	d3,d1

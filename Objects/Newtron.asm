@@ -25,7 +25,7 @@ Newt_Main:	; Routine 0
 		move.w	#tile_Nem_Newtron,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)
-		move.b	#$14,ost_actwidth(a0)
+		move.b	#$14,ost_displaywidth(a0)
 		move.b	#$10,ost_height(a0)
 		move.b	#8,ost_width(a0)
 

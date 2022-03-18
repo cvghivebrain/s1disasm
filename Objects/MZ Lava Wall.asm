@@ -39,7 +39,7 @@ LWall_Main:	; Routine 0
 		move.l	#Map_LWall,ost_mappings(a1)
 		move.w	#tile_Nem_Lava+tile_pal4,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)
-		move.b	#$50,ost_actwidth(a1)
+		move.b	#$50,ost_displaywidth(a1)
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	#1,ost_priority(a1)

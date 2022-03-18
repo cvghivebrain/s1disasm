@@ -27,7 +27,7 @@ Moto_Main:	; Routine 0
 		move.w	#tile_Nem_Motobug,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)
-		move.b	#$14,ost_actwidth(a0)
+		move.b	#$14,ost_displaywidth(a0)
 		tst.b	ost_anim(a0)				; is object a smoke trail?
 		bne.s	@smoke					; if yes, branch
 		move.b	#$E,ost_height(a0)

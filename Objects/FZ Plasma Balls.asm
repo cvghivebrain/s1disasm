@@ -119,7 +119,7 @@ Plasma_MakeBalls:
 		dbf	d2,@loop				; repeat sequence 3 more times
 
 	@skip_balls:
-		tst.w	ost_plasma_count_top(a0)			; are plasma balls still loaded?
+		tst.w	ost_plasma_count_top(a0)		; are plasma balls still loaded?
 		bne.s	@update					; if yes, branch
 		addq.b	#2,ost_routine(a0)			; goto Plasma_Finish next
 
