@@ -41,7 +41,7 @@ BSYZ_Main:	; Routine 0
 		move.w	ost_x_pos(a0),ost_bsyz_parent_x_pos(a0)
 		move.w	ost_y_pos(a0),ost_bsyz_parent_y_pos(a0)
 		move.b	#id_col_24x24,ost_col_type(a0)
-		move.b	#8,ost_col_property(a0)			; set number of hits to 8
+		move.b	#hitcount_syz,ost_col_property(a0)	; set number of hits to 8
 		lea	BSYZ_ObjData(pc),a2			; get routine number, animation & priority
 		movea.l	a0,a1					; replace current object with 1st in list
 		moveq	#3,d1					; 3 additional objects

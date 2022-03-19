@@ -72,10 +72,10 @@ CSI_MiniSonicLoop:
 		move.l	#Map_ContScr,ost_mappings(a1)
 		move.w	#(vram_cont_minisonic/sizeof_cell)+tile_hi,ost_tile(a1)
 		move.b	#render_abs,ost_render(a1)
-		lea	$40(a1),a1
+		lea	sizeof_ost(a1),a1
 		dbf	d1,CSI_MiniSonicLoop			; repeat for number of continues
 
-		lea	-$40(a1),a1
+		lea	-sizeof_ost(a1),a1
 		move.b	d3,ost_subtype(a1)
 
 CSI_ChkDel:	; Routine 6

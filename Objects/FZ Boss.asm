@@ -112,7 +112,7 @@ BFZ_Main:	; Routine 0
 
 	@fail2:
 		move.w	#id_BFZ_Eggman_Wait,ost_fz_mode(a0)	; goto BFZ_Eggman_Wait next
-		move.b	#8,ost_col_property(a0)			; set number of hits to 8
+		move.b	#hitcount_fz,ost_col_property(a0)	; set number of hits to 8
 		move.w	#-1,ost_fz_cylinder_flag(a0)		; set crushers to activate
 
 BFZ_Eggman:	; Routine 2

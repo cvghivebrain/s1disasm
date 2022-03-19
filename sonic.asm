@@ -1085,7 +1085,7 @@ Eni_SSBg2:	incbin	"Tilemaps\SS Background 2.eni"		; special stage background (ma
 ; Compressed graphics - MZ stuff
 ; ---------------------------------------------------------------------------
 		nemfile	Nem_MzMetal
-		nemfile	Nem_MzSwitch
+		nemfile	Nem_MzButton
 		nemfile	Nem_MzGlass
 		nemfile	Nem_UnkGrass
 		nemfile	Nem_Fireball
@@ -1108,7 +1108,7 @@ Eni_SSBg2:	incbin	"Tilemaps\SS Background 2.eni"		; special stage background (ma
 ; ---------------------------------------------------------------------------
 		nemfile	Nem_Bumper
 		nemfile	Nem_SmallSpike
-		nemfile	Nem_LzSwitch
+		nemfile	Nem_Button
 		nemfile	Nem_BigSpike
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - SBZ stuff

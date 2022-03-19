@@ -59,7 +59,7 @@ BGHZ_Main:	; Routine 0
 		move.w	ost_x_pos(a0),ost_bghz_parent_x_pos(a0)
 		move.w	ost_y_pos(a0),ost_bghz_parent_y_pos(a0)
 		move.b	#id_col_24x24,ost_col_type(a0)
-		move.b	#8,ost_col_property(a0)			; set number of hits to 8
+		move.b	#hitcount_ghz,ost_col_property(a0)	; set number of hits to 8
 
 BGHZ_ShipMain:	; Routine 2
 		moveq	#0,d0

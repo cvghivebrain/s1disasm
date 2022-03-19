@@ -233,6 +233,15 @@ ost_sonic_jump:		equ $3C ; 1 if Sonic is jumping
 ost_sonic_on_obj:	equ $3D	; OST index of object Sonic stands on
 ost_sonic_lock_time:	equ $3E	; time left for locked controls, e.g. after hitting a spring (2 bytes)
 
+; Boss variables
+hitcount_all:		equ 8
+hitcount_ghz:		equ hitcount_all
+hitcount_mz:		equ hitcount_all
+hitcount_syz:		equ hitcount_all
+hitcount_lz:		equ hitcount_all
+hitcount_slz:		equ hitcount_all
+hitcount_fz:		equ hitcount_all
+
 ; Animation flags
 afEnd:		equ $FF	; return to beginning of animation
 afBack:		equ $FE	; go back (specified number) bytes

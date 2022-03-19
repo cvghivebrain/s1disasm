@@ -52,7 +52,7 @@ SEgg_Main:	; Routine 0
 		move.b	(a2)+,ost_anim(a1)
 		move.b	(a2)+,ost_priority(a1)
 		move.l	#Map_But,ost_mappings(a1)
-		move.w	#tile_Nem_LzSwitch_SBZ2+4,ost_tile(a1)
+		move.w	#tile_Nem_Button_SBZ2+4,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)
 		bset	#render_onscreen_bit,ost_render(a1)
 		move.b	#$10,ost_displaywidth(a1)

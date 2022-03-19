@@ -151,7 +151,7 @@ PLC_LZ2:	plcheader
 		plcm	Nem_LzPlatfm, $89E0			; rising platform
 		plcm	Nem_Orbinaut,,LZ			; orbinaut enemy ($8CE0)
 		plcm	Nem_Jaws				; jaws enemy ($90C0)
-		plcm	Nem_LzSwitch, vram_button		; button ($A1E0)
+		plcm	Nem_Button, vram_button		; button ($A1E0)
 		plcm	Nem_Cork, $A000				; cork block
 		plcm	Nem_Spikes, vram_spikes			; spikes ($A360)
 		plcm	Nem_HSpring, vram_hspring		; horizontal spring ($A460)
@@ -174,7 +174,7 @@ PLC_MZ:		plcheader
 	PLC_MZ_end:
 
 PLC_MZ2:	plcheader
-		plcm	Nem_MzSwitch, $A260			; button
+		plcm	Nem_MzButton, $A260			; button
 		plcm	Nem_Spikes, vram_spikes			; spikes ($A360)
 		plcm	Nem_HSpring, vram_hspring		; horizontal spring ($A460)
 		plcm	Nem_VSpring, vram_vspring		; vertical spring ($A660)
@@ -219,7 +219,7 @@ PLC_SYZ2:	plcheader
 		plcm	Nem_BigSpike				; large	spikeball ($72C0)
 		plcm	Nem_SmallSpike				; small	spikeball ($7740)
 		plcm	Nem_Cater, vram_cater			; caterkiller enemy ($9FE0)
-		plcm	Nem_LzSwitch, vram_button		; button ($A1E0)
+		plcm	Nem_Button, vram_button		; button ($A1E0)
 		plcm	Nem_Spikes, vram_spikes			; spikes ($A360)
 		plcm	Nem_HSpring, vram_hspring		; horizontal spring ($A460)
 		plcm	Nem_VSpring, vram_vspring		; vertical spring ($A660)
@@ -252,7 +252,7 @@ PLC_SBZ2:	plcheader
 		plcm	Nem_TrapDoor				; trapdoor ($9240)
 		plcm	Nem_SbzFloor, $7F20			; collapsing floor
 		plcm	Nem_SpinPform, $9BE0			; small	spinning platform
-		plcm	Nem_LzSwitch, vram_button		; button ($A1E0)
+		plcm	Nem_Button, vram_button		; button ($A1E0)
 		plcm	Nem_Spikes, vram_spikes			; spikes ($A360)
 		plcm	Nem_HSpring, vram_hspring		; horizontal spring ($A460)
 		plcm	Nem_VSpring, vram_vspring		; vertical spring ($A660)
@@ -402,7 +402,7 @@ PLC_TryAgain:	plcheader
 PLC_EggmanSBZ2:	plcheader
 		plcm	Nem_SbzBlock, $A300, SBZ2		; block
 		plcm	Nem_Sbz2Eggman, $8000			; Eggman
-		plcm	Nem_LzSwitch, $9400, SBZ2		; button
+		plcm	Nem_Button, $9400, SBZ2		; button
 	PLC_EggmanSBZ2_end:
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - final boss

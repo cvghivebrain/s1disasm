@@ -79,7 +79,7 @@
 		
 		; MZ
 		nemesis Nem_MzMetal,"MZ Metal Blocks"
-		nemesis Nem_MzSwitch,"MZ Switch"
+		nemesis Nem_MzButton,"MZ Button"
 		nemesis Nem_MzGlass,"MZ Green Glass Block"
 		nemesis Nem_UnkGrass,"Unused - MZ Grass"
 		nemesis Nem_Fireball,"Fireballs"
@@ -100,7 +100,7 @@
 		; SYZ
 		nemesis Nem_Bumper,"SYZ Bumper"
 		nemesis Nem_SmallSpike,"SYZ Small Spikeball"
-		nemesis Nem_LzSwitch,"Switch"
+		nemesis Nem_Button,"Button"
 		nemesis Nem_BigSpike,"SYZ Large Spikeball"
 		
 		; SBZ

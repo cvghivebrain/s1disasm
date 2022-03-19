@@ -275,7 +275,7 @@ DebugList_LZ:
 		dbug	Map_Harp,	Harpoon,	type_harp_h,	id_frame_harp_h_retracted,	tile_Nem_Harpoon
 		dbug	Map_Harp,	Harpoon,	type_harp_v,	id_frame_harp_v_retracted,	tile_Nem_Harpoon
 		dbug	Map_Push,	PushBlock,	0,	0,	tile_Nem_LzPole+tile_pal3
-		dbug	Map_But,	Button,		0,	0,	tile_Nem_LzSwitch+4
+		dbug	Map_But,	Button,		0,	0,	tile_Nem_Button+4
 		dbug	Map_Spike,	Spikes,		type_spike_3up+type_spike_still,	0,	tile_Nem_Spikes
 		dbug	Map_MBlockLZ,	MovingBlock,	type_mblock_1+type_mblock_rightdrop,	0,	tile_Nem_LzBlock3+tile_pal3
 		dbug	Map_LBlock,	LabyrinthBlock, type_lblock_sink,	id_frame_lblock_sinkblock,	tile_Nem_LzDoor2+tile_pal3
@@ -355,7 +355,7 @@ DebugList_SYZ:
 		dbug	Map_Yad,	Yadrin,		0,	0,	tile_Nem_Yadrin+tile_pal2
 		dbug	Map_Plat_SYZ,	BasicPlatform,	type_plat_still,	0,	0+tile_pal3
 		dbug	Map_FBlock,	FloatingBlock,	type_fblock_syz1x1+type_fblock_still,	0,	0+tile_pal3
-		dbug	Map_But,	Button,		0,	0,	tile_Nem_LzSwitch+4
+		dbug	Map_But,	Button,		0,	0,	tile_Nem_Button+4
 		dbug	Map_Cat,	Caterkiller,	0,	0,	tile_Nem_Cater+tile_pal2
 		dbug	Map_Lamp,	Lamppost,	1,	0,	tile_Nem_Lamp
 	DebugList_SYZ_end:
@@ -372,7 +372,7 @@ DebugList_SBZ:
 		dbug	Map_BBall,	SwingingPlatform, 7,	id_frame_bball_anchor,	tile_Nem_BigSpike_SBZ+tile_pal3
 		dbug	Map_Disc,	RunningDisc,	$E0,	0,	tile_Nem_SbzWheel1+tile_pal3+tile_hi
 		dbug	Map_MBlock,	MovingBlock,	type_mblock_sbz+type_mblock_updown,	id_frame_mblock_sbz,	tile_Nem_Stomper+tile_pal2
-		dbug	Map_But,	Button,		0,	0,	tile_Nem_LzSwitch+4
+		dbug	Map_But,	Button,		0,	0,	tile_Nem_Button+4
 		dbug	Map_Trap,	SpinPlatform,	3,	0,	tile_Nem_TrapDoor+tile_pal3
 		dbug	Map_Spin,	SpinPlatform,	$83,	0,	tile_Nem_SpinPform
 		dbug	Map_Saw,	Saws,		type_saw_pizza_updown,	0,	tile_Nem_Cutter+tile_pal3
