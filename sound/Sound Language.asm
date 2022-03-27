@@ -244,11 +244,11 @@ sHeaderFinish		macro
 	if def(_p\_songName)
 _px\_songName =		_p\_songName			; finished counting channels
 _fx\_songName =		1 + _f\_songName		; +1 for DAC
-	endif
+	endc
 
 	if def(_c\_songName)
 _cx\_songName =		_c\_songName			; finished counting channels
-	endif
+	endc
 	endm
 
 ; ===========================================================================

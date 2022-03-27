@@ -286,11 +286,11 @@ Deform_LZ:
 
 		; apply ripple effects when underwater
 	@underwaterLoop:
-			move.b	(a3,d3),d4			; get fg ripple value from LZ_FG_Ripple_Data
+			move.b	(a3,d3.w),d4			; get fg ripple value from LZ_FG_Ripple_Data
 			ext.w	d4
 			add.w	d6,d4
 			move.w	d4,(a1)+			; write to v_hscroll_buffer
-			move.b	(a2,d2),d4			; get bg ripple value from Drown_WobbleData
+			move.b	(a2,d2.w),d4			; get bg ripple value from Drown_WobbleData
 			ext.w	d4
 			add.w	d0,d4
 			move.w	d4,(a1)+			; write to v_hscroll_buffer
@@ -440,7 +440,7 @@ Deform_MZ:
 	@limitY:
 			andi.w	#$1F0,d0
 			lsr.w	#3,d0
-			lea	(a2,d0),a2
+			lea	(a2,d0.w),a2
 			bra.w	UpdateHscrollBuffer
 
 		endc
@@ -533,7 +533,7 @@ Deform_SLZ_2:
 		subi.w	#$C0,d0
 		andi.w	#$3F0,d0
 		lsr.w	#3,d0					; d0 = (v_bg1_y_pos-$C0)/8
-		lea	(a2,d0),a2				; jump to relevant part of bg scroll buffer
+		lea	(a2,d0.w),a2				; jump to relevant part of bg scroll buffer
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to update the hscroll buffer with contents of bg scroll buffer
@@ -674,7 +674,7 @@ Deform_SYZ:
 			move.w	d0,d2
 			andi.w	#$1F0,d0
 			lsr.w	#3,d0
-			lea	(a2,d0),a2
+			lea	(a2,d0.w),a2
 			bra.w	UpdateHscrollBuffer
 		endc
 
@@ -780,7 +780,7 @@ Deform_SBZ:
 		move.w	d0,d2
 		andi.w	#$1F0,d0
 		lsr.w	#3,d0
-		lea	(a2,d0),a2
+		lea	(a2,d0.w),a2
 		bra.w	UpdateHscrollBuffer
 
 		endc

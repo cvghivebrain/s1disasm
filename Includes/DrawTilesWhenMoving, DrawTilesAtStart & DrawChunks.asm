@@ -525,7 +525,7 @@ DrawBGScrollBlock3_MZ:
 			move.b	(a0)+,d0
 			btst	d0,(a2)
 			beq.s	locj_701C
-			move.w	DrawBG_XPosCopy_Ptrs(pc,d0.w),a3
+			movea.w	DrawBG_XPosCopy_Ptrs(pc,d0.w),a3
 			movem.l	d4/d5/a0,-(sp)
 			movem.l	d4/d5,-(sp)
 			bsr.w	GetBlockData

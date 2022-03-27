@@ -244,7 +244,7 @@ Cat_Floor:
 		else
 			moveq	#0,d0
 			move.b	ost_cat_segment_pos(a0),d0	; get pos counter for head
-			move.b	#$80,ost_cat_floormap(a0,d0)	; save stop position in floor map array
+			move.b	#$80,ost_cat_floormap(a0,d0.w)	; save stop position in floor map array
 			neg.w	ost_x_sub(a0)
 			beq.s	@face_left			; branch if x subpixel is 0
 			btst	#status_xflip_bit,ost_status(a0)
@@ -253,7 +253,7 @@ Cat_Floor:
 			addq.b	#1,ost_cat_segment_pos(a0)	; increment pos counter
 			moveq	#0,d0
 			move.b	ost_cat_segment_pos(a0),d0
-			clr.b	ost_cat_floormap(a0,d0)
+			clr.b	ost_cat_floormap(a0,d0.w)
 	@face_left:
 			bchg	#status_xflip_bit,ost_status(a0)
 			move.b	ost_status(a0),ost_render(a0)
@@ -321,7 +321,7 @@ Cat_BodySeg1:	; Routine 4, 8
 			move.l	d3,ost_x_pos(a0)		; restore previous x pos (i.e. don't move)
 			move.b	d1,ost_cat_floormap(a0,d0.w)	; write $80 to current floor array (for next segment to read)
 		else
-			move.b	d1,ost_cat_floormap(a0,d0)
+			move.b	d1,ost_cat_floormap(a0,d0.w)
 			neg.w	ost_x_sub(a0)
 			beq.s	@face_left
 			btst	#status_xflip_bit,ost_status(a0)
@@ -332,7 +332,7 @@ Cat_BodySeg1:	; Routine 4, 8
 			addq.b	#1,ost_cat_segment_pos(a0)
 			moveq	#0,d0
 			move.b	ost_cat_segment_pos(a0),d0
-			clr.b	ost_cat_floormap(a0,d0)
+			clr.b	ost_cat_floormap(a0,d0.w)
 	@face_left:
 		endc
 		bchg	#status_xflip_bit,ost_status(a0)	; change direction

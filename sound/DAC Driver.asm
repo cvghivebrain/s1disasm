@@ -66,7 +66,7 @@ zDACDecodeTbl:
 
 	if (*&$FF00)<>(zDACDecodeTbl&$FF00)
 		inform 2,"zDACDecodeTbl was not properly aligned!"
-	endif
+	endc
 ; ---------------------------------------------------------------------------
 
 CheckForSamples:
@@ -253,5 +253,5 @@ dTimpani_End:
 EndOfDriver:
 	if *>z80_stack
 		inform 2,"The sound driver, including samples, may at most be $\$z80_stack bytes, but is currently $\$* bytes in size."
-	endif
+	endc
 	END
