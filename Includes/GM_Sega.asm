@@ -18,7 +18,7 @@ GM_Sega:
 		move.w	#$8200+(vram_fg>>10),(a6)		; set foreground nametable address
 		move.w	#$8400+(vram_bg>>13),(a6)		; set background nametable address
 		move.w	#$8700,(a6)				; set background colour (palette entry 0)
-		move.w	#$8B00,(a6)				; full-screen vertical scrolling
+		move.w	#$8B00,(a6)				; full-screen horizontal scrolling
 		clr.b	(f_water_pal_full).w
 		disable_ints
 		disable_display

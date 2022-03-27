@@ -26,22 +26,22 @@ Ring_Index:	index *,,2
 		ptr Ring_Delete
 
 		; x, y
-Ring_Spacing:	dc.b $10, 0					; horizontal tight
-		dc.b $18, 0					; horizontal normal
-		dc.b $20, 0					; horizontal wide
-		dc.b 0,	$10					; vertical tight
-		dc.b 0,	$18					; vertical normal
-		dc.b 0,	$20					; vertical wide
-		dc.b $10, $10					; diagonal
-		dc.b $18, $18
-		dc.b $20, $20
-		dc.b $F0, $10
-		dc.b $E8, $18
-		dc.b $E0, $20
-		dc.b $10, 8
-		dc.b $18, $10
-		dc.b $F0, 8
-		dc.b $E8, $10
+Ring_Spacing:	dc.b $10, 0					; $0x - horizontal tight
+		dc.b $18, 0					; $1x - horizontal normal
+		dc.b $20, 0					; $2x - horizontal wide
+		dc.b 0,	$10					; $3x - vertical tight
+		dc.b 0,	$18					; $4x - vertical normal
+		dc.b 0,	$20					; $5x - vertical wide
+		dc.b $10, $10					; $6x - diagonal
+		dc.b $18, $18					; $7x - unused
+		dc.b $20, $20					; $8x - diagonal wide
+		dc.b -$10, $10					; $9x - diagonal flipped
+		dc.b -$18, $18					; $Ax - unused
+		dc.b -$20, $20					; $Bx - unused
+		dc.b $10, 8					; $Cx - unused
+		dc.b $18, $10					; $Dx - unused
+		dc.b -$10, 8					; $Ex - unused
+		dc.b -$18, $10					; $Fx - unused
 
 ost_ring_x_main:	equ $32					; x position of primary ring (2 bytes)
 ost_ring_num:		equ $34					; which ring in the group of 1-7 rings it is

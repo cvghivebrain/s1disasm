@@ -49,7 +49,7 @@ LBlk_Main:	; Routine 0
 		move.b	ost_subtype(a0),d0			; get block type
 		andi.b	#$F,d0					; read only the low nybble
 		beq.s	LBlk_Action				; branch if 0
-		cmpi.b	#7,d0
+		cmpi.b	#id_LBlk_Type_Floats,d0
 		beq.s	LBlk_Action				; branch if 7 (floats on water)
 		move.b	#1,ost_lblock_flag(a0)			; for types 1/3, set "untouched" flag
 
