@@ -50,11 +50,11 @@ plcm:		macro gfx,vram,suffix
 		last_vram: = plcm_vram+sizeof_\gfx
 		dc.w plcm_vram
 		if strlen("\suffix")>0
-			tile_\gfx\_\suffix: equ plcm_vram/$20
+			tile_\gfx\_\suffix: equ plcm_vram/sizeof_cell
 			vram_\gfx\_\suffix: equ plcm_vram
 		else
 			if ~def(tile_\gfx)
-			tile_\gfx: equ plcm_vram/$20
+			tile_\gfx: equ plcm_vram/sizeof_cell
 			vram_\gfx: equ plcm_vram
 			endc
 		endc
