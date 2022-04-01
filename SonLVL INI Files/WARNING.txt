@@ -1,0 +1,13 @@
+Because several file formats used in the disassembly are incompatible with SonLVL, some data may be stored locally within this folder.
+
+The following data is pulled from the disassembly itself. Any changes made to the disassembly or by SonLVL will be reflected in both.
+* Level layouts
+* 256x256 mappings
+* 16x16 mappings
+* Level graphics
+* Sprite graphics
+
+The following data is stored locally in this folder. Any changes made to the disassembly will not be reflected in SonLVL, and likewise changes made by SonLVL will not appear in the disassembly.
+* Object positions
+* Start positions
+* Sprite mappings
