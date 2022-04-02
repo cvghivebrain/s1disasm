@@ -1,0 +1,383 @@
+<?xml version="1.0"?>
+<ObjDef xmlns="http://www.sonicretro.org" Name="Chain Stomper" Image="wideblock" RememberState="false">
+  <Images>
+    <ImageFromMappings id="wideblock">
+      <ArtFile filename="../Graphics - Compressed/MZ Metal Blocks.nem"/>
+      <MapFile type="ASM" filename="mappings/Chained Stompers.asm" frame="0" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="mediumblock">
+      <ArtFile filename="../Graphics - Compressed/MZ Metal Blocks.nem"/>
+      <MapFile type="ASM" filename="mappings/Chained Stompers.asm" frame="9" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="smallblock">
+      <ArtFile filename="../Graphics - Compressed/MZ Metal Blocks.nem"/>
+      <MapFile type="ASM" filename="mappings/Chained Stompers.asm" frame="10" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="ceiling">
+      <ArtFile filename="../Graphics - Compressed/MZ Metal Blocks.nem"/>
+      <MapFile type="ASM" filename="mappings/Chained Stompers.asm" frame="2" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="chain2">
+      <ArtFile filename="../Graphics - Compressed/MZ Metal Blocks.nem"/>
+      <MapFile type="ASM" filename="mappings/Chained Stompers.asm" frame="4" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="chain3">
+      <ArtFile filename="../Graphics - Compressed/MZ Metal Blocks.nem"/>
+      <MapFile type="ASM" filename="mappings/Chained Stompers.asm" frame="5" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="chain4">
+      <ArtFile filename="../Graphics - Compressed/MZ Metal Blocks.nem"/>
+      <MapFile type="ASM" filename="mappings/Chained Stompers.asm" frame="6" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="chain5">
+      <ArtFile filename="../Graphics - Compressed/MZ Metal Blocks.nem"/>
+      <MapFile type="ASM" filename="mappings/Chained Stompers.asm" frame="7" startpal="0"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="spikes">
+      <ArtFile filename="../Graphics - Compressed/Spikes.nem"/>
+      <MapFile type="ASM" filename="mappings/Chained Stompers.asm" frame="1" startpal="0"/>
+    </ImageFromMappings>
+  </Images>
+  <Subtypes>
+    <Subtype id="00" name="Wide" image="wideblock"/>
+    <Subtype id="10" name="Medium" image="mediumblock"/>
+    <Subtype id="20" name="Small" image="smallblock"/>
+  </Subtypes>
+  <Properties>
+    <BitsProperty name="Type" type="Lengths" startbit="0" length="4" />
+    <BitsProperty name="BlockType" type="BlockType" startbit="4" length="3" />
+  </Properties>
+  <Enums>
+    <Enum name="Lengths">
+      <EnumMember name="112px long" />
+      <EnumMember name="160px long" />
+      <EnumMember name="80px long" />
+      <EnumMember name="120px long" />
+      <EnumMember name="56px long" />
+      <EnumMember name="88px long" />
+      <EnumMember name="184px long" />
+    </Enum>
+    <Enum name="BlockType">
+      <EnumMember name="Wide" />
+      <EnumMember name="Medium" />
+      <EnumMember name="Small" />
+    </Enum>
+  </Enums>
+  <Display>
+    <DisplayOption>
+      <Condition property="BlockType" value="Wide" />
+      <Condition property="Type" value="112px long" />
+      <ImageRef image="wideblock">
+        <Offset X="0" Y="112" />
+      </ImageRef>
+      <ImageRef image="spikes">
+        <Offset X="0" Y="140" />
+      </ImageRef>
+      <ImageRef image="chain4">
+        <Offset X="0" Y="60" />
+      </ImageRef>
+      <ImageRef image="ceiling">
+        <Offset X="0" Y="-16" />
+      </ImageRef>
+    </DisplayOption>
+    <DisplayOption>
+      <Condition property="BlockType" value="Wide" />
+      <Condition property="Type" value="160px long" />
+      <ImageRef image="wideblock">
+        <Offset X="0" Y="160" />
+      </ImageRef>
+      <ImageRef image="spikes">
+        <Offset X="0" Y="188" />
+      </ImageRef>
+      <ImageRef image="chain5">
+        <Offset X="0" Y="108" />
+      </ImageRef>
+      <ImageRef image="ceiling">
+        <Offset X="0" Y="-16" />
+      </ImageRef>
+    </DisplayOption>
+    <DisplayOption>
+      <Condition property="BlockType" value="Wide" />
+      <Condition property="Type" value="80px long" />
+      <ImageRef image="wideblock">
+        <Offset X="0" Y="80" />
+      </ImageRef>
+      <ImageRef image="spikes">
+        <Offset X="0" Y="108" />
+      </ImageRef>
+      <ImageRef image="chain3">
+        <Offset X="0" Y="28" />
+      </ImageRef>
+      <ImageRef image="ceiling">
+        <Offset X="0" Y="-16" />
+      </ImageRef>
+    </DisplayOption>
+    <DisplayOption>
+      <Condition property="BlockType" value="Wide" />
+      <Condition property="Type" value="120px long" />
+      <ImageRef image="wideblock">
+        <Offset X="0" Y="120" />
+      </ImageRef>
+      <ImageRef image="spikes">
+        <Offset X="0" Y="148" />
+      </ImageRef>
+      <ImageRef image="chain4">
+        <Offset X="0" Y="68" />
+      </ImageRef>
+      <ImageRef image="ceiling">
+        <Offset X="0" Y="-16" />
+      </ImageRef>
+    </DisplayOption>
+    <DisplayOption>
+      <Condition property="BlockType" value="Wide" />
+      <Condition property="Type" value="56px long" />
+      <ImageRef image="wideblock">
+        <Offset X="0" Y="56" />
+      </ImageRef>
+      <ImageRef image="spikes">
+        <Offset X="0" Y="84" />
+      </ImageRef>
+      <ImageRef image="chain2">
+        <Offset X="0" Y="4" />
+      </ImageRef>
+      <ImageRef image="ceiling">
+        <Offset X="0" Y="-16" />
+      </ImageRef>
+    </DisplayOption>
+    <DisplayOption>
+      <Condition property="BlockType" value="Wide" />
+      <Condition property="Type" value="88px long" />
+      <ImageRef image="wideblock">
+        <Offset X="0" Y="88" />
+      </ImageRef>
+      <ImageRef image="spikes">
+        <Offset X="0" Y="116" />
+      </ImageRef>
+      <ImageRef image="chain3">
+        <Offset X="0" Y="36" />
+      </ImageRef>
+      <ImageRef image="ceiling">
+        <Offset X="0" Y="-16" />
+      </ImageRef>
+    </DisplayOption>
+    <DisplayOption>
+      <Condition property="BlockType" value="Wide" />
+      <Condition property="Type" value="184px long" />
+      <ImageRef image="wideblock">
+        <Offset X="0" Y="184" />
+      </ImageRef>
+      <ImageRef image="spikes">
+        <Offset X="0" Y="212" />
+      </ImageRef>
+      <ImageRef image="chain5">
+        <Offset X="0" Y="132" />
+      </ImageRef>
+      <ImageRef image="ceiling">
+        <Offset X="0" Y="-16" />
+      </ImageRef>
+    </DisplayOption>
+    <DisplayOption>
+      <Condition property="BlockType" value="Medium" />
+      <Condition property="Type" value="112px long" />
+      <ImageRef image="mediumblock">
+        <Offset X="0" Y="112" />
+      </ImageRef>
+      <ImageRef image="spikes">
+        <Offset X="0" Y="140" />
+      </ImageRef>
+      <ImageRef image="chain4">
+        <Offset X="0" Y="60" />
+      </ImageRef>
+      <ImageRef image="ceiling">
+        <Offset X="0" Y="-16" />
+      </ImageRef>
+    </DisplayOption>
+    <DisplayOption>
+      <Condition property="BlockType" value="Medium" />
+      <Condition property="Type" value="160px long" />
+      <ImageRef image="mediumblock">
+        <Offset X="0" Y="160" />
+      </ImageRef>
+      <ImageRef image="spikes">
+        <Offset X="0" Y="188" />
+      </ImageRef>
+      <ImageRef image="chain5">
+        <Offset X="0" Y="108" />
+      </ImageRef>
+      <ImageRef image="ceiling">
+        <Offset X="0" Y="-16" />
+      </ImageRef>
+    </DisplayOption>
+    <DisplayOption>
+      <Condition property="BlockType" value="Medium" />
+      <Condition property="Type" value="80px long" />
+      <ImageRef image="mediumblock">
+        <Offset X="0" Y="80" />
+      </ImageRef>
+      <ImageRef image="spikes">
+        <Offset X="0" Y="108" />
+      </ImageRef>
+      <ImageRef image="chain3">
+        <Offset X="0" Y="28" />
+      </ImageRef>
+      <ImageRef image="ceiling">
+        <Offset X="0" Y="-16" />
+      </ImageRef>
+    </DisplayOption>
+    <DisplayOption>
+      <Condition property="BlockType" value="Medium" />
+      <Condition property="Type" value="120px long" />
+      <ImageRef image="mediumblock">
+        <Offset X="0" Y="120" />
+      </ImageRef>
+      <ImageRef image="spikes">
+        <Offset X="0" Y="148" />
+      </ImageRef>
+      <ImageRef image="chain4">
+        <Offset X="0" Y="68" />
+      </ImageRef>
+      <ImageRef image="ceiling">
+        <Offset X="0" Y="-16" />
+      </ImageRef>
+    </DisplayOption>
+    <DisplayOption>
+      <Condition property="BlockType" value="Medium" />
+      <Condition property="Type" value="56px long" />
+      <ImageRef image="mediumblock">
+        <Offset X="0" Y="56" />
+      </ImageRef>
+      <ImageRef image="spikes">
+        <Offset X="0" Y="84" />
+      </ImageRef>
+      <ImageRef image="chain2">
+        <Offset X="0" Y="4" />
+      </ImageRef>
+      <ImageRef image="ceiling">
+        <Offset X="0" Y="-16" />
+      </ImageRef>
+    </DisplayOption>
+    <DisplayOption>
+      <Condition property="BlockType" value="Medium" />
+      <Condition property="Type" value="88px long" />
+      <ImageRef image="mediumblock">
+        <Offset X="0" Y="88" />
+      </ImageRef>
+      <ImageRef image="spikes">
+        <Offset X="0" Y="116" />
+      </ImageRef>
+      <ImageRef image="chain3">
+        <Offset X="0" Y="36" />
+      </ImageRef>
+      <ImageRef image="ceiling">
+        <Offset X="0" Y="-16" />
+      </ImageRef>
+    </DisplayOption>
+    <DisplayOption>
+      <Condition property="BlockType" value="Medium" />
+      <Condition property="Type" value="184px long" />
+      <ImageRef image="mediumblock">
+        <Offset X="0" Y="184" />
+      </ImageRef>
+      <ImageRef image="spikes">
+        <Offset X="0" Y="212" />
+      </ImageRef>
+      <ImageRef image="chain5">
+        <Offset X="0" Y="132" />
+      </ImageRef>
+      <ImageRef image="ceiling">
+        <Offset X="0" Y="-16" />
+      </ImageRef>
+    </DisplayOption>
+    <DisplayOption>
+      <Condition property="BlockType" value="Small" />
+      <Condition property="Type" value="112px long" />
+      <ImageRef image="smallblock">
+        <Offset X="0" Y="112" />
+      </ImageRef>
+      <ImageRef image="chain4">
+        <Offset X="0" Y="60" />
+      </ImageRef>
+      <ImageRef image="ceiling">
+        <Offset X="0" Y="-16" />
+      </ImageRef>
+    </DisplayOption>
+    <DisplayOption>
+      <Condition property="BlockType" value="Small" />
+      <Condition property="Type" value="160px long" />
+      <ImageRef image="smallblock">
+        <Offset X="0" Y="160" />
+      </ImageRef>
+      <ImageRef image="chain5">
+        <Offset X="0" Y="108" />
+      </ImageRef>
+      <ImageRef image="ceiling">
+        <Offset X="0" Y="-16" />
+      </ImageRef>
+    </DisplayOption>
+    <DisplayOption>
+      <Condition property="BlockType" value="Small" />
+      <Condition property="Type" value="80px long" />
+      <ImageRef image="smallblock">
+        <Offset X="0" Y="80" />
+      </ImageRef>
+      <ImageRef image="chain3">
+        <Offset X="0" Y="28" />
+      </ImageRef>
+      <ImageRef image="ceiling">
+        <Offset X="0" Y="-16" />
+      </ImageRef>
+    </DisplayOption>
+    <DisplayOption>
+      <Condition property="BlockType" value="Small" />
+      <Condition property="Type" value="120px long" />
+      <ImageRef image="smallblock">
+        <Offset X="0" Y="120" />
+      </ImageRef>
+      <ImageRef image="chain4">
+        <Offset X="0" Y="68" />
+      </ImageRef>
+      <ImageRef image="ceiling">
+        <Offset X="0" Y="-16" />
+      </ImageRef>
+    </DisplayOption>
+    <DisplayOption>
+      <Condition property="BlockType" value="Small" />
+      <Condition property="Type" value="56px long" />
+      <ImageRef image="smallblock">
+        <Offset X="0" Y="56" />
+      </ImageRef>
+      <ImageRef image="chain2">
+        <Offset X="0" Y="4" />
+      </ImageRef>
+      <ImageRef image="ceiling">
+        <Offset X="0" Y="-16" />
+      </ImageRef>
+    </DisplayOption>
+    <DisplayOption>
+      <Condition property="BlockType" value="Small" />
+      <Condition property="Type" value="88px long" />
+      <ImageRef image="smallblock">
+        <Offset X="0" Y="88" />
+      </ImageRef>
+      <ImageRef image="chain3">
+        <Offset X="0" Y="36" />
+      </ImageRef>
+      <ImageRef image="ceiling">
+        <Offset X="0" Y="-16" />
+      </ImageRef>
+    </DisplayOption>
+    <DisplayOption>
+      <Condition property="BlockType" value="Small" />
+      <Condition property="Type" value="184px long" />
+      <ImageRef image="smallblock">
+        <Offset X="0" Y="184" />
+      </ImageRef>
+      <ImageRef image="chain5">
+        <Offset X="0" Y="132" />
+      </ImageRef>
+      <ImageRef image="ceiling">
+        <Offset X="0" Y="-16" />
+      </ImageRef>
+    </DisplayOption>
+  </Display>
+</ObjDef>

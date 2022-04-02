@@ -24,8 +24,8 @@ CStom_BtnNums:	dc.b 0,	0					; button number, replacement subtype
 
 CStom_Var:	dc.b id_CStom_Block, 0, id_frame_cstomp_wideblock ; routine number, y position, frame number
 		dc.b id_CStom_Spikes, $1C, id_frame_cstomp_spikes
-		dc.b id_CStom_Chain, $CC, id_frame_cstomp_chain1
-		dc.b id_CStom_Ceiling, $F0, id_frame_cstomp_ceiling
+		dc.b id_CStom_Chain, -$34, id_frame_cstomp_chain1
+		dc.b id_CStom_Ceiling, -$10, id_frame_cstomp_ceiling
 
 CStom_Lengths:
 CStom_Length_0:	dc.w $7000					; 0
@@ -156,8 +156,8 @@ CStom_Chain:	; Routine 8
 		bset	#render_useheight_bit,ost_render(a0)
 		movea.l	ost_cstomp_parent(a0),a1		; get address of parent OST
 		move.b	ost_cstomp_chain_length(a1),d0		; get current chain length
-		lsr.b	#5,d0
-		addq.b	#3,d0					; convert to frame number
+		lsr.b	#5,d0					; divide by $20
+		addq.b	#id_frame_cstomp_chain1,d0		; convert to frame number
 		move.b	d0,ost_frame(a0)			; update frame
 
 CStom_Spikes:	; Routine 4

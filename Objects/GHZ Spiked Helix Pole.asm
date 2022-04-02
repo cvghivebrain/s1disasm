@@ -19,7 +19,7 @@ Hel_Index:	index *,,2
 		ptr Hel_Display
 
 ost_helix_frame:	equ $3E					; start frame (different for each spike)
-ost_helix_child_list:	equ $29					; list of child OST indices (up to 15 bytes)
+ost_helix_child_list:	equ $29					; list of child OST indices (up to 21 bytes)
 ; ===========================================================================
 
 Hel_Main:	; Routine 0

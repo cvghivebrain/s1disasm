@@ -6,6 +6,7 @@ The following data is pulled from the disassembly itself. Any changes made to th
 * 16x16 mappings
 * Level graphics
 * Sprite graphics
+* Collision
 
 The following data is stored locally in this folder. Any changes made to the disassembly will not be reflected in SonLVL, and likewise changes made by SonLVL will not appear in the disassembly.
 * Object positions

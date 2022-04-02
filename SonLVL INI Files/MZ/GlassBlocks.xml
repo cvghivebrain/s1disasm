@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<ObjDef xmlns="http://www.sonicretro.org" Name="Large Glass Pillar" Image="tall" RememberState="false">
+  <Images>
+    <ImageFromMappings id="tall">
+      <ArtFile filename="../Graphics - Compressed/MZ Green Glass Block.nem"/>
+      <MapFile type="ASM" filename="mappings/MZ Large Green Glass Blocks.asm" frame="0" startpal="2"/>
+    </ImageFromMappings>
+    <ImageFromMappings id="short">
+      <ArtFile filename="../Graphics - Compressed/MZ Green Glass Block.nem"/>
+      <MapFile type="ASM" filename="mappings/MZ Large Green Glass Blocks.asm" frame="2" startpal="2"/>
+    </ImageFromMappings>
+  </Images>
+  <Subtypes>
+    <Subtype id="00" name="Still" image="tall"/>
+    <Subtype id="01" name="Up -> Down" image="tall"/>
+    <Subtype id="02" name="Down -> Up" image="tall"/>
+    <Subtype id="03" name="Drops when jumped on" image="short"/>
+    <Subtype id="04" name="Drops when button is pressed" image="short"/>
+  </Subtypes>
+  <Properties>
+    <BitsProperty name="Type" type="BlockType" startbit="0" length="4" />
+    <BitsProperty name="SwitchID" displayname="Switch ID" type="SwitchID" startbit="4" length="4" />
+  </Properties>
+  <Enums>
+    <Enum name="BlockType">
+      <EnumMember name="Still" />
+      <EnumMember name="Up -> Down" />
+      <EnumMember name="Down -> Up" />
+      <EnumMember name="Drops when jumped on" />
+      <EnumMember name="Drops when button is pressed" />
+    </Enum>
+    <Enum name="SwitchID">
+      <EnumMember name="Switch 00" />
+      <EnumMember name="Switch 01" />
+      <EnumMember name="Switch 02" />
+      <EnumMember name="Switch 03" />
+      <EnumMember name="Switch 04" />
+      <EnumMember name="Switch 05" />
+      <EnumMember name="Switch 06" />
+      <EnumMember name="Switch 07" />
+      <EnumMember name="Switch 08" />
+      <EnumMember name="Switch 09" />
+      <EnumMember name="Switch 0A" />
+      <EnumMember name="Switch 0B" />
+      <EnumMember name="Switch 0C" />
+      <EnumMember name="Switch 0D" />
+      <EnumMember name="Switch 0E" />
+      <EnumMember name="Switch 0F" />
+    </Enum>
+  </Enums>
+  <Display>
+    <DisplayOption>
+      <Condition property="Type" value="Still" />
+      <ImageRef image="tall" />
+    </DisplayOption>
+    <DisplayOption>
+      <Condition property="Type" value="Up -> Down" />
+      <ImageRef image="tall" />
+    </DisplayOption>
+    <DisplayOption>
+      <Condition property="Type" value="Down -> Up" />
+      <ImageRef image="tall" />
+    </DisplayOption>
+    <DisplayOption>
+      <ImageRef image="short" />
+    </DisplayOption>
+  </Display>
+</ObjDef>
