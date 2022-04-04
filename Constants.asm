@@ -137,6 +137,7 @@ sonic_width:			equ 9				; half width while standing
 sonic_height:			equ $13				; half height while standing
 sonic_width_roll:		equ 7				; half width while rolling
 sonic_height_roll:		equ $E				; half height while rolling
+sonic_average_radius:		equ $A				; half width/height used for quick collision checks
 
 ; Object variables
 			rsset 0

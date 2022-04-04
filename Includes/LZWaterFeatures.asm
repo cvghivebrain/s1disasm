@@ -22,7 +22,7 @@ LZWaterFeatures:
 	@set_height:
 		clr.b	(f_water_pal_full).w
 		moveq	#0,d0
-		move.b	(v_oscillating_table).w,d0		; get oscillating value
+		move.b	(v_oscillating_0_to_20).w,d0		; get oscillating value
 		lsr.w	#1,d0
 		add.w	(v_water_height_normal).w,d0		; add to normal water height
 		move.w	d0,(v_water_height_actual).w		; set actual water height

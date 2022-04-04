@@ -64,10 +64,10 @@ Circ_Type_Index:
 ; ===========================================================================
 
 Circ_Anticlockwise:
-		move.b	(v_oscillating_table+$20).w,d1
+		move.b	(v_oscillating_0_to_A0).w,d1
 		subi.b	#$50,d1
 		ext.w	d1
-		move.b	(v_oscillating_table+$24).w,d2
+		move.b	(v_oscillating_0_to_A0_alt).w,d2
 		subi.b	#$50,d2
 		ext.w	d2
 		btst	#0,ost_subtype(a0)			; is type 1 or 3?
@@ -90,10 +90,10 @@ Circ_Anticlockwise:
 ; ===========================================================================
 
 Circ_Clockwise:
-		move.b	(v_oscillating_table+$20).w,d1
+		move.b	(v_oscillating_0_to_A0).w,d1
 		subi.b	#$50,d1
 		ext.w	d1
-		move.b	(v_oscillating_table+$24).w,d2
+		move.b	(v_oscillating_0_to_A0_alt).w,d2
 		subi.b	#$50,d2
 		ext.w	d2
 		btst	#0,ost_subtype(a0)

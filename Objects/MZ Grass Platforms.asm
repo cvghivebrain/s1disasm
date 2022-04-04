@@ -127,28 +127,28 @@ LGrass_Type00:
 
 ; Type 1 - moves up and down 32 pixels
 LGrass_Type01:
-		move.b	(v_oscillating_table).w,d0
+		move.b	(v_oscillating_0_to_20).w,d0
 		move.w	#$20,d1
 		bra.s	LGrass_Move
 ; ===========================================================================
 
 ; Type 2 - moves up and down 48 pixels
 LGrass_Type02:
-		move.b	(v_oscillating_table+4).w,d0
+		move.b	(v_oscillating_0_to_30).w,d0
 		move.w	#$30,d1
 		bra.s	LGrass_Move
 ; ===========================================================================
 
 ; Type 3 - moves up and down 64 pixels
 LGrass_Type03:
-		move.b	(v_oscillating_table+8).w,d0
+		move.b	(v_oscillating_0_to_40).w,d0
 		move.w	#$40,d1
 		bra.s	LGrass_Move
 ; ===========================================================================
 
 ; Type 4 - moves up and down 96 pixels (unused)
 LGrass_Type04:
-		move.b	(v_oscillating_table+$C).w,d0
+		move.b	(v_oscillating_0_to_60).w,d0
 		move.w	#$60,d1
 
 LGrass_Move:

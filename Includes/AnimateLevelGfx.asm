@@ -158,7 +158,7 @@ tilecount:	= 4						; 4 per column, 16 total
 		moveq	#0,d3
 		move.b	(v_levelani_1_frame).w,d3
 		addq.b	#1,(v_levelani_1_frame).w		; increment frame counter (unused)
-		move.b	(v_oscillating_table+8).w,d3		; get oscillating value
+		move.b	(v_oscillating_0_to_40).w,d3		; get oscillating value
 		move.w	#4-1,d2					; number of columns of tiles
 
 	@loop:

@@ -64,7 +64,7 @@ Saw_Pizza_Still:
 Saw_Pizza_Sideways:
 		move.w	#$60,d1
 		moveq	#0,d0
-		move.b	(v_oscillating_table+$C).w,d0
+		move.b	(v_oscillating_0_to_60).w,d0
 		btst	#status_xflip_bit,ost_status(a0)
 		beq.s	@noflip01
 		neg.w	d0
@@ -96,7 +96,7 @@ Saw_Pizza_Sideways:
 Saw_Pizza_UpDown:
 		move.w	#$30,d1
 		moveq	#0,d0
-		move.b	(v_oscillating_table+4).w,d0
+		move.b	(v_oscillating_0_to_30).w,d0
 		btst	#status_xflip_bit,ost_status(a0)
 		beq.s	@noflip02
 		neg.w	d0
@@ -114,7 +114,7 @@ Saw_Pizza_UpDown:
 	@sameframe02:
 		tst.b	ost_render(a0)
 		bpl.s	@nosound02
-		move.b	(v_oscillating_table+4).w,d0
+		move.b	(v_oscillating_0_to_30).w,d0
 		cmpi.b	#$18,d0
 		bne.s	@nosound02
 		play.w	1, jsr, sfx_Saw				; play saw sound

@@ -83,7 +83,7 @@ Brick_Falls:
 ; Type 1
 Brick_Wobbles:
 		moveq	#0,d0
-		move.b	(v_oscillating_table+$14).w,d0
+		move.b	(v_oscillating_0_to_10).w,d0
 		btst	#3,ost_subtype(a0)			; is subtype 8 or above?
 		beq.s	@no_rev					; if not, branch
 		neg.w	d0					; wobble the opposite way
@@ -124,7 +124,7 @@ Brick_FallNow:
 ; Type 4
 Brick_FallLava:
 		moveq	#0,d0
-		move.b	(v_oscillating_table+$10).w,d0
+		move.b	(v_oscillating_0_to_40_fast).w,d0
 		lsr.w	#3,d0
 		move.w	ost_brick_y_start(a0),d1
 		sub.w	d0,d1

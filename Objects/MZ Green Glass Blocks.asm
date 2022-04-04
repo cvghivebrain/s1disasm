@@ -148,14 +148,14 @@ Glass_Still:
 
 ; Type 1 - moves up and down
 Glass_UpDown:
-		move.b	(v_oscillating_table+$10).w,d0
+		move.b	(v_oscillating_0_to_40_fast).w,d0
 		move.w	#$40,d1
 		bra.s	Glass_UpDown_Reflect
 ; ===========================================================================
 
 ; Type 2 - moves up and down, reversed
 Glass_UpDown_Rev:
-		move.b	(v_oscillating_table+$10).w,d0
+		move.b	(v_oscillating_0_to_40_fast).w,d0
 		move.w	#$40,d1
 		neg.w	d0					; reverse direction of movement
 		add.w	d1,d0
@@ -176,7 +176,7 @@ Glass_UpDown_Reflect:
 Glass_Drop_Jump:
 		btst	#3,ost_subtype(a0)			; is object a reflection?
 		beq.s	@not_reflection				; if not, branch
-		move.b	(v_oscillating_table+$10).w,d0
+		move.b	(v_oscillating_0_to_40_fast).w,d0
 		subi.w	#$10,d0
 		bra.w	Glass_Move
 
@@ -227,7 +227,7 @@ Glass_Drop_Jump:
 Glass_Drop_Button:
 		btst	#3,ost_subtype(a0)			; is object a reflection?
 		beq.s	Glass_ChkBtn				; if not, branch
-		move.b	(v_oscillating_table+$10).w,d0
+		move.b	(v_oscillating_0_to_40_fast).w,d0
 		subi.w	#$10,d0
 		bra.s	Glass_Move
 ; ===========================================================================

@@ -2329,7 +2329,7 @@ Sonic_FindSmaller:
 		move.w	ost_x_pos(a0),d3			; unused
 
 Sonic_FindFloor_Quick:
-		addi.w	#$A,d2
+		addi.w	#sonic_average_radius,d2
 		lea	(v_angle_right).w,a4			; write angle here
 		movea.w	#$10,a3					; tile height
 		move.w	#0,d6
@@ -2422,7 +2422,7 @@ Sonic_FindWallRight_Quick_UsePos:
 		move.w	ost_x_pos(a0),d3
 
 Sonic_FindWallRight_Quick:
-		addi.w	#$A,d3
+		addi.w	#sonic_average_radius,d3
 		lea	(v_angle_right).w,a4			; write angle here
 		movea.w	#$10,a3					; tile height
 		move.w	#0,d6
@@ -2507,7 +2507,7 @@ Sonic_FindCeiling:
 		move.w	ost_x_pos(a0),d3			; unused
 
 Sonic_FindCeiling_Quick:
-		subi.w	#$A,d2
+		subi.w	#sonic_average_radius,d2
 		eori.w	#$F,d2
 		lea	(v_angle_right).w,a4			; write angle here
 		movea.w	#-$10,a3				; tile height
@@ -2593,7 +2593,7 @@ Sonic_FindWallLeft_Quick_UsePos:
 		move.w	ost_x_pos(a0),d3
 
 Sonic_FindWallLeft_Quick:
-		subi.w	#$A,d3
+		subi.w	#sonic_average_radius,d3
 		eori.w	#$F,d3
 		lea	(v_angle_right).w,a4			; write angle here
 		movea.w	#-$10,a3				; tile height

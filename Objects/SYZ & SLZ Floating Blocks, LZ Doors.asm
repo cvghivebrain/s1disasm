@@ -84,7 +84,7 @@ FBlock_Main:	; Routine 0
 		subq.w	#8,d0					; subtract 8
 		bcs.s	@not_syzslz				; branch if low nybble was > 8
 		lsl.w	#2,d0					; multiply by 4
-		lea	(v_oscillating_table+$2A).w,a2
+		lea	(v_oscillating_0_to_40_alt+2).w,a2
 		lea	(a2,d0.w),a2				; read oscillating value
 		tst.w	(a2)
 		bpl.s	@not_syzslz				; branch if not -ve
@@ -175,7 +175,7 @@ FBlock_Still:
 FBlock_LeftRight:
 		move.w	#$40,d1					; set move distance
 		moveq	#0,d0
-		move.b	(v_oscillating_table+8).w,d0
+		move.b	(v_oscillating_0_to_40).w,d0
 		bra.s	FBlock_LeftRight_Move
 ; ===========================================================================
 
@@ -183,7 +183,7 @@ FBlock_LeftRight:
 FBlock_LeftRightWide:
 		move.w	#$80,d1					; set move distance
 		moveq	#0,d0
-		move.b	(v_oscillating_table+$1C).w,d0
+		move.b	(v_oscillating_0_to_80).w,d0
 
 FBlock_LeftRight_Move:
 		btst	#status_xflip_bit,ost_status(a0)
@@ -202,7 +202,7 @@ FBlock_LeftRight_Move:
 FBlock_UpDown:
 		move.w	#$40,d1					; set move distance
 		moveq	#0,d0
-		move.b	(v_oscillating_table+8).w,d0
+		move.b	(v_oscillating_0_to_40).w,d0
 		bra.s	FBlock_UpDown_Move
 ; ===========================================================================
 
@@ -210,7 +210,7 @@ FBlock_UpDown:
 FBlock_UpDownWide:
 		move.w	#$80,d1					; set move distance
 		moveq	#0,d0
-		move.b	(v_oscillating_table+$1C).w,d0
+		move.b	(v_oscillating_0_to_80).w,d0
 
 FBlock_UpDown_Move:
 		btst	#status_xflip_bit,ost_status(a0)
@@ -439,9 +439,9 @@ FBlock_RightButton:
 FBlock_SquareSmall:
 		move.w	#$10,d1
 		moveq	#0,d0
-		move.b	(v_oscillating_table+$28).w,d0
+		move.b	(v_oscillating_0_to_40_alt).w,d0
 		lsr.w	#1,d0
-		move.w	(v_oscillating_table+$2A).w,d3
+		move.w	(v_oscillating_0_to_40_alt+2).w,d3
 		bra.s	FBlock_Square_Move
 ; ===========================================================================
 
@@ -449,8 +449,8 @@ FBlock_SquareSmall:
 FBlock_SquareMedium:
 		move.w	#$30,d1
 		moveq	#0,d0
-		move.b	(v_oscillating_table+$2C).w,d0
-		move.w	(v_oscillating_table+$2E).w,d3
+		move.b	(v_oscillating_0_to_60_alt).w,d0
+		move.w	(v_oscillating_0_to_60_alt+2).w,d3
 		bra.s	FBlock_Square_Move
 ; ===========================================================================
 
@@ -458,8 +458,8 @@ FBlock_SquareMedium:
 FBlock_SquareBig:
 		move.w	#$50,d1
 		moveq	#0,d0
-		move.b	(v_oscillating_table+$30).w,d0
-		move.w	(v_oscillating_table+$32).w,d3
+		move.b	(v_oscillating_0_to_A0_fast).w,d0
+		move.w	(v_oscillating_0_to_A0_fast+2).w,d3
 		bra.s	FBlock_Square_Move
 ; ===========================================================================
 
@@ -467,11 +467,11 @@ FBlock_SquareBig:
 FBlock_SquareBiggest:
 		move.w	#$70,d1
 		moveq	#0,d0
-		move.b	(v_oscillating_table+$34).w,d0
-		move.w	(v_oscillating_table+$36).w,d3
+		move.b	(v_oscillating_0_to_E0).w,d0
+		move.w	(v_oscillating_0_to_E0+2).w,d3
 
 FBlock_Square_Move:
-		tst.w	d3					; is oscillating value currently 0?
+		tst.w	d3					; is oscillating value rate currently 0? (i.e. at peak or nadir of oscillation)
 		bne.s	@keep_going				; if not, branch
 		addq.b	#status_xflip,ost_status(a0)		; change direction
 		andi.b	#status_xflip+status_yflip,ost_status(a0) ; prevent bit overflow

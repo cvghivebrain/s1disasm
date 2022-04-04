@@ -17,22 +17,24 @@ OscillateNumInit:
 
 ; ===========================================================================
 @baselines:	dc.w %0000000001111100				; direction bitfield (0 = up; 1 = down)
-		dc.w $80, 0					; start value, start rate
-		dc.w $80, 0
-		dc.w $80, 0
-		dc.w $80, 0
-		dc.w $80, 0
-		dc.w $80, 0
-		dc.w $80, 0
-		dc.w $80, 0
-		dc.w $80, 0
-		dc.w $50F0, $11E
-		dc.w $2080, $B4
-		dc.w $3080, $10E
-		dc.w $5080, $1C2
-		dc.w $7080, $276
-		dc.w $80, 0
-		dc.w $80, 0
+
+		; start value, start rate
+		dc.w $80, 0					; 0 - LZ water height, MZ grass platforms
+		dc.w $80, 0					; 4 - MZ grass platforms, SBZ saws
+		dc.w $80, 0					; 8 - MZ magma animation, MZ grass platforms, SYZ/SLZ floating blocks
+		dc.w $80, 0					; $C - MZ grass platforms, MZ/LZ moving blocks, GHZ/SYZ/SLZ platforms, SBZ saws, SYZ large spikeball
+		dc.w $80, 0					; $10 - MZ glass block, MZ purple block
+		dc.w $80, 0					; $14 - MZ purple block
+		dc.w $80, 0					; $18 - GHZ/MZ/SLZ/SBZ swinging platforms, GHZ/SYZ/SLZ platforms
+		dc.w $80, 0					; $1C - MZ/LZ moving blocks, SYZ/SLZ floating blocks
+		dc.w $80, 0					; $20 - SLZ circling platforms
+		dc.w $50F0, $11E				; $24 - SLZ circling platforms
+		dc.w $2080, $B4					; $28 - SYZ/SLZ floating blocks
+		dc.w $3080, $10E				; $2C - SYZ/SLZ floating blocks
+		dc.w $5080, $1C2				; $30 - SYZ/SLZ floating blocks
+		dc.w $7080, $276				; $34 - SYZ/SLZ floating blocks
+		dc.w $80, 0					; $38 - unused
+		dc.w $80, 0					; $3C - unused
 	@end:
 		even
 
@@ -62,7 +64,7 @@ OscillateNumDo:
 		move.w	d0,2(a1)				; update rate
 		add.w	d0,0(a1)				; add rate to value
 		cmp.b	0(a1),d4
-		bhi.s	@next					; branch if value is below max
+		bhi.s	@next					; branch if value is below middle value
 		bset	d1,d3					; set direction to down
 		bra.s	@next
 
@@ -72,7 +74,7 @@ OscillateNumDo:
 		move.w	d0,2(a1)				; update rate
 		add.w	d0,0(a1)				; add rate to value
 		cmp.b	0(a1),d4
-		bls.s	@next					; branch if value is above min
+		bls.s	@next					; branch if value is above middle value
 		bclr	d1,d3					; set direction to up
 
 	@next:
@@ -84,7 +86,7 @@ OscillateNumDo:
 		rts
 
 ; ===========================================================================
-@settings:	; frequency, amplitude
+@settings:	; frequency, middle value
 		dc.w 2,	$10					; 0 - LZ water height, MZ grass platforms
 		dc.w 2,	$18					; 4 - MZ grass platforms, SBZ saws
 		dc.w 2,	$20					; 8 - MZ magma animation, MZ grass platforms, SYZ/SLZ floating blocks

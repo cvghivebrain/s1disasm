@@ -68,7 +68,7 @@ BBall_Still:
 BBall_Sideways:
 		move.w	#$60,d1
 		moveq	#0,d0
-		move.b	(v_oscillating_table+$C).w,d0		; get oscillating value
+		move.b	(v_oscillating_0_to_60).w,d0		; get oscillating value
 		btst	#status_xflip_bit,ost_status(a0)
 		beq.s	@noflip
 		neg.w	d0					; invert if xflipped
@@ -85,7 +85,7 @@ BBall_Sideways:
 BBall_UpDown:
 		move.w	#$60,d1
 		moveq	#0,d0
-		move.b	(v_oscillating_table+$C).w,d0		; get oscillating value
+		move.b	(v_oscillating_0_to_60).w,d0		; get oscillating value
 		btst	#status_xflip_bit,ost_status(a0)
 		beq.s	@noflip
 		neg.w	d0					; invert if xflipped

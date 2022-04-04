@@ -359,7 +359,21 @@ unused_fe55:			rs.b 2
 v_emeralds:			rs.b 1 ; $FFFFFE57 ; number of chaos emeralds
 v_emerald_list:			rs.b 6 ; $FFFFFE58 ; which individual emeralds you have, 1 byte per emerald numbered 0 to 5
 v_oscillating_direction:	rs.w 1 ; $FFFFFE5E ; bitfield for the direction values in the table below are moving - 0 = up; 1 = down
-v_oscillating_table:		rs.l $10 ; $FFFFFE60 ; table of 16 oscillating values, for platform movement - 1 word for rate, 1 word for current value
+v_oscillating_table:		rs.l $10 ; $FFFFFE60 ; table of 16 oscillating values, for platform movement - 1 word for current value, 1 word for rate
+v_oscillating_0_to_20:		equ v_oscillating_table
+v_oscillating_0_to_30:		equ v_oscillating_table+4
+v_oscillating_0_to_40:		equ v_oscillating_table+8
+v_oscillating_0_to_60:		equ v_oscillating_table+$C
+v_oscillating_0_to_40_fast:	equ v_oscillating_table+$10
+v_oscillating_0_to_10:		equ v_oscillating_table+$14
+v_oscillating_0_to_80_fast:	equ v_oscillating_table+$18
+v_oscillating_0_to_80:		equ v_oscillating_table+$1C
+v_oscillating_0_to_A0:		equ v_oscillating_table+$20
+v_oscillating_0_to_A0_alt:	equ v_oscillating_table+$24
+v_oscillating_0_to_40_alt:	equ v_oscillating_table+$28
+v_oscillating_0_to_60_alt:	equ v_oscillating_table+$2C
+v_oscillating_0_to_A0_fast:	equ v_oscillating_table+$30
+v_oscillating_0_to_E0:		equ v_oscillating_table+$34
 unused_fea0:			rs.b $20
 v_syncani_0_time:		rs.b 1 ; $FFFFFEC0 ; synchronised sprite animation 0 - time until next frame
 v_syncani_0_frame:		rs.b 1 ; $FFFFFEC1 ; synchronised sprite animation 0 - current frame

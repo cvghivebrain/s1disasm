@@ -51,8 +51,8 @@ Smab_Solid:	; Routine 2
 		bne.s	@notspinning				; if not, branch
 		move.w	ost_smash_count(a0),(v_enemy_combo).w
 		bset	#status_jump_bit,ost_status(a1)
-		move.b	#$E,ost_height(a1)
-		move.b	#7,ost_width(a1)
+		move.b	#sonic_height_roll,ost_height(a1)
+		move.b	#sonic_width_roll,ost_width(a1)
 		move.b	#id_Roll,ost_anim(a1)			; make Sonic roll
 		move.w	#-$300,ost_y_vel(a1)			; rebound Sonic
 		bset	#status_air_bit,ost_status(a1)
