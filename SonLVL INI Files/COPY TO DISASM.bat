@@ -1,0 +1,1 @@
+for %%f in (objpos\*.bin) do objpos "%%f" "..\Object Placement\%%~nf.asm"

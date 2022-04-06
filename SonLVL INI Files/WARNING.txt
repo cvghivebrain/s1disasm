@@ -12,3 +12,5 @@ The following data is stored locally in this folder. Any changes made to the dis
 * Object positions
 * Start positions
 * Sprite mappings
+
+In order to get object position data edited by SonLVL to show up in the disassembly, run the "COPY TO DISASM" batch file in this folder. This will overwrite files in the "Object Placement" folder with data from SonLVL.
