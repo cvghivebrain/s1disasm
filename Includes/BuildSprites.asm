@@ -109,7 +109,7 @@ BuildSprites:
 		lea	sizeof_priority(a4),a4			; next priority section ($80)
 		dbf	d7,@priority_loop			; repeat for all sections
 		move.b	d5,(v_spritecount).w			; set sprite count
-		cmpi.b	#$50,d5
+		cmpi.b	#countof_max_sprites,d5			; max displayable sprites ($50)
 		beq.s	@max_sprites				; branch if at max
 		move.l	#0,(a2)					; set next sprite to link to first
 		rts	

@@ -2,6 +2,12 @@
 ; Constants
 ; ---------------------------------------------------------------------------
 
+sizeof_256x256:		equ $200				; size of one 256x256 tile
+countof_256x256:	equ $52					; max number of 256x256 tiles
+sizeof_256x256_all:	equ sizeof_256x256*countof_256x256	; size of all 256x256 tiles ($A400 bytes)
+sizeof_16x16:		equ 8					; size of one 16x16 tile
+countof_16x16:		equ $300				; max number of 16x16 tiles
+sizeof_16x16_all:	equ sizeof_16x16*countof_16x16		; size of all 16x16 tiles ($1800 bytes)
 sizeof_ost:		equ $40					; size of one OST in bytes
 countof_ost:		equ $80					; number of OSTs in RAM
 countof_ost_inert:	equ $20					; number of OSTs that don't interact with Sonic (including Sonic himself)
@@ -51,11 +57,13 @@ vram_cont_sonic:	equ $A000	; oval & Sonic continue screen graphics
 vram_cont_minisonic:	equ $AA20	; mini Sonic continue screen graphics
 vram_error:		equ $F800	; error text graphics
 
-sizeof_cell:		equ $20
+sizeof_cell:		equ $20			; single 8x8 tile
 sizeof_vram_fg:		equ sizeof_vram_row*32	; fg nametable, assuming 64x32 ($1000 bytes)
 sizeof_vram_bg:		equ sizeof_vram_row*32	; bg nametable, assuming 64x32 ($1000 bytes)
 sizeof_vram_sonic:	equ $17*sizeof_cell	; Sonic's graphics ($2E0 bytes)
-sizeof_vram_sprites:	equ $280
+sizeof_sprite:		equ 8			; one sprite in sprite table
+countof_max_sprites:	equ $50			; max number of sprites that can be displayed
+sizeof_vram_sprites:	equ sizeof_sprite*countof_max_sprites ; sprite table ($280 bytes)
 sizeof_vram_hscroll:	equ $380
 sizeof_vram_hscroll_padded:	equ $400
 sizeof_vram_row:	equ 64*2		; single row of fg/bg nametable, assuming 64 wide

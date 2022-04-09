@@ -14,17 +14,18 @@ v_error_type:			equ $FFFFFC44 ; error type - v_respawn_list uses same space
 ; Major data blocks:
 
 v_256x256_tiles:		equ   $FF0000 ; 256x256 tile mappings ($A400 bytes)
-				rsset $FFFFA400
+				rsset $FFFF0000+sizeof_256x256_all
 v_level_layout:			rs.b sizeof_level ; $FFFFA400 ; level and background layouts ($400 bytes)
 v_ghz_flower_buffer:		equ v_level_layout-sizeof_art_flowers ; $FFFF9400 ; graphics buffer for GHZ flowers in ending ($1000 bytes)
 v_bgscroll_buffer:		rs.b $200 ; $FFFFA800 ; background scroll buffer
 v_nem_gfx_buffer:		rs.b $200 ; $FFFFAA00 ; Nemesis graphics decompression buffer
 v_sprite_queue:			rs.b sizeof_priority*8 ; $FFFFAC00 ; sprite display queue, first section is highest priority ($400 bytes; 8 sections of $80 bytes)
-v_16x16_tiles:			equ $FFFFB000 ; 16x16 tile mappings
-v_sonic_gfx_buffer:		equ $FFFFC800 ; buffered Sonic graphics ($17 cells) ($2E0 bytes)
-v_sonic_pos_tracker:		equ $FFFFCB00 ; earlier position tracking list for Sonic, used by invinciblity stars ($100 bytes)
-v_hscroll_buffer:		equ $FFFFCC00 ; scrolling table data (actually $380 bytes, but $400 is reserved for it)
-				rsset $FFFFD000
+v_16x16_tiles:			rs.b sizeof_16x16_all ; $FFFFB000 ; 16x16 tile mappings ($1800 bytes)
+v_sonic_gfx_buffer:		rs.b sizeof_vram_sonic ; $FFFFC800 ; buffered Sonic graphics ($17 cells) ($2E0 bytes)
+unused_cae0:			rs.b $20
+v_sonic_pos_tracker:		rs.b $100 ; $FFFFCB00 ; earlier position tracking list for Sonic, used by invinciblity stars ($100 bytes)
+v_hscroll_buffer:		rs.b sizeof_vram_hscroll ; $FFFFCC00 ; scrolling table data ($380 bytes)
+unused_cf80:			rs.b $80
 v_ost_all:			rs.b sizeof_ost*countof_ost ; $FFFFD000 ; object variable space ($40 bytes per object; $80 objects) ($2000 bytes)
 	v_ost_player:		equ v_ost_all ; object variable space for Sonic ($40 bytes)
 	; Title screen and intro
@@ -269,9 +270,9 @@ v_scroll_block_1_height:	rs.w 1 ; $FFFFF7F0 ; scroll block height - $70 for GHZ;
 v_scroll_block_2_height:	rs.w 1 ; $FFFFF7F2 ; scroll block height - always $100, unused
 v_scroll_block_3_height:	rs.w 1 ; $FFFFF7F4 ; scroll block height - always $100, unused
 v_scroll_block_4_height:	rs.w 1 ; $FFFFF7F6 ; scroll block height - $100 for GHZ; 0 for all others, unused
+unused_f7f8:			rs.b 8
 
-v_sprite_buffer:		equ $FFFFF800 ; sprite table ($280 bytes, last $80 bytes are overwritten by v_pal_water_next)
-				rsset $FFFFFA00
+v_sprite_buffer:		rs.b sizeof_vram_sprites-$80 ; $FFFFF800 ; sprite table ($280 bytes, last $80 bytes are overwritten by v_pal_water_next)
 v_pal_water_next:		rs.w countof_color*4 ; $FFFFFA00 ; target underwater palette, used for transitions
 v_pal_water:			rs.w countof_color*4 ; $FFFFFA80 ; main underwater palette
 v_pal_water_line1:		equ v_pal_water
@@ -284,14 +285,13 @@ v_pal_dry_line2:		equ v_pal_dry+sizeof_pal ; $FFFFFB20 ; 2nd palette line
 v_pal_dry_line3:		equ v_pal_dry+(sizeof_pal*2) ; $FFFFFB40 ; 3rd palette line
 v_pal_dry_line4:		equ v_pal_dry+(sizeof_pal*3) ; $FFFFFB60 ; 4th palette line
 v_pal_dry_next:			rs.w countof_color*4 ; $FFFFFB80 ; target palette, used for transitions
-v_respawn_list:			rs.w $100 ; $FFFFFC00 ; object state list (2 bytes for counter; 1 byte each for up to $FE objects)
+v_respawn_list:			rs.b $100 ; $FFFFFC00 ; object state list (2 bytes for counter; 1 byte each for up to $FE objects)
 
-v_stack:			equ $FFFFFD00 ; stack
-v_stack_pointer:		equ $FFFFFE00 ; initial stack pointer - items are added to the stack backwards from this address
+v_stack:			rs.l $40 ; $FFFFFD00 ; stack ($100 bytes)
+v_stack_pointer:		rs.w 1 ; $FFFFFE00 ; initial stack pointer - items are added to the stack backwards from this address
 
-v_keep_after_reset:		equ $FFFFFE00 ; everything after this address is kept in RAM after a soft reset
+v_keep_after_reset:		equ v_stack_pointer ; $FFFFFE00 ; everything after this address is kept in RAM after a soft reset
 
-				rsset $FFFFFE02
 f_restart:			rs.w 1 ; $FFFFFE02 ; flag set to end/restart level
 v_frame_counter:		rs.w 1 ; $FFFFFE04 ; frame counter, increments every frame
 v_frame_counter_low:		equ v_frame_counter+1 ; low byte for frame counter
@@ -432,6 +432,16 @@ v_console_region:		rs.b 1 ; $FFFFFFF8 ; Mega Drive console type - 0 = JP; $80 = 
 unused_fff9:			rs.b 1
 f_debug_enable:			rs.w 1 ; $FFFFFFFA ; flag set when debug mode is enabled (high byte is set to 1, but it's read as a word)
 v_checksum_pass:		rs.l 1 ; $FFFFFFFC ; set to the text string "init" when checksum is passed
+
+; Show RAM usage and stop compilation if it overflows.
+
+ram_used:			equ __rs
+ram_final:			equ (ram_used-1)&$FFFF
+		if ram_used > 0
+		inform	3,"RAM usage exceeds maximum by $%h bytes.",ram_used
+		else
+		inform	0,"$%h bytes of RAM used with $%h bytes to spare.",ram_final,$FFFF-ram_final
+		endc
 
 ; Special Stages
 
