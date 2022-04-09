@@ -103,7 +103,7 @@ PLC_GHZ:	plcheader
 		plcm	Nem_GHZ_1st, 0				; GHZ main patterns
 		plcm	Nem_GHZ_2nd, $39A0			; GHZ secondary	patterns
 		plcm	Nem_Stalk, $6B00			; flower stalk
-		plcm	Nem_PplRock, $7A00			; purple rock
+		plcm	Nem_PurpleRock, $7A00			; purple rock
 		plcm	Nem_Crabmeat, vram_crabmeat		; crabmeat enemy ($8000)
 		plcm	Nem_Buzz, vram_buzz			; buzz bomber enemy ($8880)
 		plcm	Nem_Chopper				; chopper enemy ($8F60)
@@ -119,36 +119,36 @@ PLC_GHZ2:	plcheader
 		plcm	Nem_Bridge				; bridge ($71C0)
 		plcm	Nem_SpikePole				; spiked pole ($7300)
 		plcm	Nem_Ball				; giant	ball ($7540)
-		plcm	Nem_GhzWall1, $A1E0			; breakable wall
-		plcm	Nem_GhzWall2, $6980			; normal wall
+		plcm	Nem_GhzSmashWall, $A1E0			; breakable wall
+		plcm	Nem_GhzEdgeWall, $6980			; normal wall
 	PLC_GHZ2_end:
 ; ---------------------------------------------------------------------------
 ; Pattern load cues - Labyrinth
 ; ---------------------------------------------------------------------------
 PLC_LZ:		plcheader
 		plcm	Nem_LZ,0				; LZ main patterns
-		plcm	Nem_LzBlock1, $3C00			; block
-		plcm	Nem_LzBlock2				; blocks ($3E00)
+		plcm	Nem_LzBlock, $3C00			; block
+		plcm	Nem_Sbz3HugeDoor				; blocks ($3E00)
 		plcm	Nem_Splash, $4B20			; waterfalls and splash
 		plcm	Nem_Water, $6000			; water	surface
 		plcm	Nem_LzSpikeBall				; spiked ball ($6200)
 		plcm	Nem_FlapDoor				; flapping door ($6500)
 		plcm	Nem_Bubbles				; bubbles and numbers ($6900)
-		plcm	Nem_LzBlock3				; block ($7780)
-		plcm	Nem_LzDoor1				; vertical door ($7880)
+		plcm	Nem_LzHalfBlock				; block ($7780)
+		plcm	Nem_LzDoorV				; vertical door ($7880)
 		plcm	Nem_Harpoon				; harpoon ($7980)
 		plcm	Nem_Burrobot, $94C0			; burrobot enemy
 	PLC_LZ_end:
 
 PLC_LZ2:	plcheader
 		plcm	Nem_LzPole, $7BC0			; pole that breaks
-		plcm	Nem_LzDoor2				; large	horizontal door ($7CC0)
+		plcm	Nem_LzDoorH				; large	horizontal door ($7CC0)
 		plcm	Nem_LzWheel				; wheel ($7EC0)
 		plcm	Nem_Gargoyle, $5D20			; gargoyle head
 		if Revision=0
 		plcm	Nem_LzSonic, $8800			; Sonic	holding	his breath
 		endc
-		plcm	Nem_LzPlatfm, $89E0			; rising platform
+		plcm	Nem_LzPlatform, $89E0			; rising platform
 		plcm	Nem_Orbinaut,,LZ			; orbinaut enemy ($8CE0)
 		plcm	Nem_Jaws				; jaws enemy ($90C0)
 		plcm	Nem_Button, vram_button		; button ($A1E0)
@@ -230,11 +230,11 @@ PLC_SYZ2:	plcheader
 PLC_SBZ:	plcheader
 		plcm	Nem_SBZ,0				; SBZ main patterns
 		plcm	Nem_Stomper, $5800			; moving platform and stomper
-		plcm	Nem_SbzDoor1				; door ($5D00)
+		plcm	Nem_SbzDoorV				; door ($5D00)
 		plcm	Nem_Girder				; girder ($5E00)
 		plcm	Nem_BallHog				; ball hog enemy ($6040)
-		plcm	Nem_SbzWheel1, $6880			; spot on large	wheel
-		plcm	Nem_SbzWheel2				; wheel	that grabs Sonic ($6900)
+		plcm	Nem_SbzDisc, $6880			; spot on large	wheel
+		plcm	Nem_SbzJunction				; wheel	that grabs Sonic ($6900)
 		plcm	Nem_BigSpike,,SBZ			; large	spikeball ($7220)
 		plcm	Nem_Cutter				; pizza	cutter ($76A0)
 		plcm	Nem_FlamePipe				; flaming pipe ($7B20)
@@ -247,11 +247,11 @@ PLC_SBZ2:	plcheader
 		plcm	Nem_Bomb, vram_bomb			; bomb enemy ($8000)
 		plcm	Nem_Orbinaut, vram_orbinaut		; orbinaut enemy ($8520)
 		plcm	Nem_SlideFloor, $8C00			; floor	that slides away
-		plcm	Nem_SbzDoor2				; horizontal door ($8DE0)
+		plcm	Nem_SbzDoorH				; horizontal door ($8DE0)
 		plcm	Nem_Electric				; electric orb ($8FC0)
 		plcm	Nem_TrapDoor				; trapdoor ($9240)
 		plcm	Nem_SbzFloor, $7F20			; collapsing floor
-		plcm	Nem_SpinPform, $9BE0			; small	spinning platform
+		plcm	Nem_SpinPlatform, $9BE0			; small	spinning platform
 		plcm	Nem_Button, vram_button		; button ($A1E0)
 		plcm	Nem_Spikes, vram_spikes			; spikes ($A360)
 		plcm	Nem_HSpring, vram_hspring		; horizontal spring ($A460)

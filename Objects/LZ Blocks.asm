@@ -32,7 +32,7 @@ ost_lblock_coll_flag:	equ $3F					; 0 = none; 1 = side collision; -1 = top/botto
 LBlk_Main:	; Routine 0
 		addq.b	#2,ost_routine(a0)			; goto LBlk_Action next
 		move.l	#Map_LBlock,ost_mappings(a0)
-		move.w	#tile_Nem_LzDoor2+tile_pal3,ost_tile(a0)
+		move.w	#tile_Nem_LzDoorH+tile_pal3,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#3,ost_priority(a0)
 		moveq	#0,d0

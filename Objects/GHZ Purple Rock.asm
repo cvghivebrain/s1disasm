@@ -19,7 +19,7 @@ Rock_Index:	index *,,2
 Rock_Main:	; Routine 0
 		addq.b	#2,ost_routine(a0)			; goto Rock_Solid next
 		move.l	#Map_PRock,ost_mappings(a0)
-		move.w	#tile_Nem_PplRock+tile_pal4,ost_tile(a0)
+		move.w	#tile_Nem_PurpleRock+tile_pal4,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#$13,ost_displaywidth(a0)
 		move.b	#4,ost_priority(a0)

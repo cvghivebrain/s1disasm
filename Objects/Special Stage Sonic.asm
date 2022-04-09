@@ -5,7 +5,7 @@
 SonicSpecial:
 		tst.w	(v_debug_active).w			; is debug mode	being used?
 		beq.s	SSS_Normal				; if not, branch
-		bsr.w	SS_FixCamera
+		bsr.w	SS_FixCamera				; centre camera on Sonic
 		bra.w	DebugMode
 ; ===========================================================================
 
@@ -17,9 +17,9 @@ SSS_Normal:
 ; ===========================================================================
 SSS_Index:	index *,,2
 		ptr SSS_Main
-		ptr SSS_ChkDebug
+		ptr SSS_Action
 		ptr SSS_ExitStage
-		ptr SSS_Exit2
+		ptr SSS_ExitWait
 
 ost_ss_item:		equ $30					; item id Sonic is touching
 ost_ss_item_address:	equ $32					; RAM address of item in layout Sonic is touching (4 bytes)
@@ -30,9 +30,9 @@ ost_ss_ghost:		equ $3A					; status of ghost blocks - 0 = ghost; 1 = passed; 2 =
 ; ===========================================================================
 
 SSS_Main:	; Routine 0
-		addq.b	#2,ost_routine(a0)
-		move.b	#$E,ost_height(a0)
-		move.b	#7,ost_width(a0)
+		addq.b	#2,ost_routine(a0)			; goto SSS_Action next
+		move.b	#sonic_height_roll,ost_height(a0)
+		move.b	#sonic_width_roll,ost_width(a0)
 		move.l	#Map_Sonic,ost_mappings(a0)
 		move.w	#vram_sonic/sizeof_cell,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
@@ -41,7 +41,7 @@ SSS_Main:	; Routine 0
 		bset	#status_jump_bit,ost_status(a0)
 		bset	#status_air_bit,ost_status(a0)
 
-SSS_ChkDebug:	; Routine 2
+SSS_Action:	; Routine 2
 		tst.w	(f_debug_enable).w			; is debug mode	cheat enabled?
 		beq.s	@not_debug				; if not, branch
 		btst	#bitB,(v_joypad_press_actual).w		; is button B pressed?
@@ -52,13 +52,13 @@ SSS_ChkDebug:	; Routine 2
 		move.b	#0,ost_ss_item(a0)
 		moveq	#0,d0
 		move.b	ost_status(a0),d0
-		andi.w	#status_air,d0				; read air bit of status
+		andi.w	#status_air,d0				; read air bit of status (d0 = 0 or 2)
 		move.w	SSS_Modes(pc,d0.w),d1
 		jsr	SSS_Modes(pc,d1.w)
-		jsr	(Sonic_LoadGfx).l
+		jsr	(Sonic_LoadGfx).l			; update Sonic's gfx
 		jmp	(DisplaySprite).l
 ; ===========================================================================
-SSS_Modes:	index *
+SSS_Modes:	index *,,2
 		ptr SSS_OnWall
 		ptr SSS_InAir
 ; ===========================================================================
@@ -78,16 +78,17 @@ SSS_InAir:
 SSS_Display:
 		bsr.w	SSS_ChkItems
 		bsr.w	SSS_ChkItems2
-		jsr	(SpeedToPos).l
-		bsr.w	SS_FixCamera
+		jsr	(SpeedToPos).l				; update position
+		bsr.w	SS_FixCamera				; centre camera on Sonic
 		move.w	(v_ss_angle).w,d0
-		add.w	(v_ss_rotation_speed).w,d0
-		move.w	d0,(v_ss_angle).w
+		add.w	(v_ss_rotation_speed).w,d0		; add rotation speed to angle
+		move.w	d0,(v_ss_angle).w			; update angle
 		jsr	(Sonic_Animate).l
 		rts	
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
+; ---------------------------------------------------------------------------
+; Subroutine to move Sonic by pressing left/right
+; ---------------------------------------------------------------------------
 
 SSS_Move:
 		btst	#bitL,(v_joypad_hold).w			; is left being pressed?
@@ -125,10 +126,10 @@ SSS_Move:
 
 SSS_UpdatePos:
 		move.b	(v_ss_angle).w,d0			; get stage angle
-		addi.b	#$20,d0
+		addi.b	#$20,d0					; rotate angle 45 degrees (for wall/floor/ceiling detection)
 		andi.b	#$C0,d0					; read only bits 7 and 6
 		neg.b	d0
-		jsr	(CalcSine).l				; convert to sine
+		jsr	(CalcSine).l				; convert to sine/cosine
 		muls.w	ost_inertia(a0),d1
 		add.l	d1,ost_x_pos(a0)			; add (inertia*cosine) to x pos
 		muls.w	ost_inertia(a0),d0
@@ -147,12 +148,9 @@ SSS_UpdatePos:
 
 @no_collide:
 		movem.l	(sp)+,d0-d1
-		rts	
-; End of function SSS_Move
+		rts
 
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
+; ===========================================================================
 
 SSS_MoveLeft:
 		bset	#status_xflip_bit,ost_status(a0)
@@ -178,12 +176,9 @@ SSS_MoveLeft:
 
 	@wait:
 		move.w	d0,ost_inertia(a0)
-		rts	
-; End of function SSS_MoveLeft
+		rts
 
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
+; ===========================================================================
 
 SSS_MoveRight:
 		bclr	#status_xflip_bit,ost_status(a0)
@@ -208,19 +203,18 @@ SSS_MoveRight:
 		move.w	d0,ost_inertia(a0)
 
 	@exit:
-		rts	
-; End of function SSS_MoveRight
+		rts
 
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
+; ---------------------------------------------------------------------------
+; Subroutine to make Sonic jump
+; ---------------------------------------------------------------------------
 
 SSS_Jump:
 		move.b	(v_joypad_press).w,d0
 		andi.b	#btnABC,d0				; is A,	B or C pressed?
 		beq.s	@exit					; if not, branch
 		move.b	(v_ss_angle).w,d0			; get SS angle
-		andi.b	#$FC,d0					; round down to 4
+		andi.b	#$FC,d0					; round down to nearest 4
 		neg.b	d0
 		subi.b	#$40,d0
 		jsr	(CalcSine).l				; convert to sine/cosine
@@ -234,35 +228,29 @@ SSS_Jump:
 		play.w	1, jsr, sfx_Jump			; play jumping sound
 
 	@exit:
-		rts	
-; End of function SSS_Jump
-
+		rts
 
 ; ---------------------------------------------------------------------------
 ; unused subroutine to limit Sonic's upward vertical speed
 ; ---------------------------------------------------------------------------
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 nullsub_2:
-		rts
+		rts						; subroutine disabled
 		
 		move.w	#-$400,d1
 		cmp.w	ost_y_vel(a0),d1
-		ble.s	locret_1BBB4
+		ble.s	@exit					; branch if Sonic isn't moving up faster than -$400
 		move.b	(v_joypad_hold).w,d0
 		andi.b	#btnABC,d0
-		bne.s	locret_1BBB4
-		move.w	d1,ost_y_vel(a0)
+		bne.s	@exit					; branch if A/B/C are pressed
+		move.w	d1,ost_y_vel(a0)			; fix speed to -$400
 
-locret_1BBB4:
-		rts	
+	@exit:
+		rts
+
 ; ---------------------------------------------------------------------------
 ; Subroutine to	fix the	camera on Sonic's position (special stage)
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 SS_FixCamera:
 		move.w	ost_y_pos(a0),d2
@@ -271,22 +259,21 @@ SS_FixCamera:
 		subi.w	#160,d3
 		bcs.s	@ignore_x				; branch if Sonic is within 160px of left edge
 		sub.w	d3,d0
-		sub.w	d0,(v_camera_x_pos).w
+		sub.w	d0,(v_camera_x_pos).w			; fix camera 160px (half screen) left of Sonic
 
 	@ignore_x:
 		move.w	(v_camera_y_pos).w,d0
 		subi.w	#112,d2
 		bcs.s	@ignore_y				; branch if Sonic is within 112px of top edge
 		sub.w	d2,d0
-		sub.w	d0,(v_camera_y_pos).w
+		sub.w	d0,(v_camera_y_pos).w			; fix camera 112px (half screen) above Sonic
 
 	@ignore_y:
-		rts	
-; End of function SS_FixCamera
+		rts
 
 ; ===========================================================================
 
-SSS_ExitStage:
+SSS_ExitStage:	; Routine 4
 		addi.w	#$40,(v_ss_rotation_speed).w		; increase stage rotation
 		cmpi.w	#$1800,(v_ss_rotation_speed).w		; check if it's up to $1800
 		bne.s	@not1800				; if not, branch
@@ -297,7 +284,7 @@ SSS_ExitStage:
 		blt.s	@not3000				; if not, branch
 		move.w	#0,(v_ss_rotation_speed).w		; stop rotation
 		move.w	#$4000,(v_ss_angle).w
-		addq.b	#2,ost_routine(a0)			; goto SSS_Exit2 next
+		addq.b	#2,ost_routine(a0)			; goto SSS_ExitWait next
 		move.w	#60,ost_ss_restart_time(a0)
 
 	@not3000:
@@ -310,9 +297,9 @@ SSS_ExitStage:
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 
-SSS_Exit2:
-		subq.w	#1,ost_ss_restart_time(a0)
-		bne.s	@wait
+SSS_ExitWait:	; Routine 6
+		subq.w	#1,ost_ss_restart_time(a0)		; decrement timer
+		bne.s	@wait					; branch if time remains
 		move.b	#id_Level,(v_gamemode).w
 
 	@wait:
@@ -321,14 +308,15 @@ SSS_Exit2:
 		bsr.w	SS_FixCamera
 		jmp	(DisplaySprite).l
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
+; ---------------------------------------------------------------------------
+; Subroutine to	make Sonic fall
+; ---------------------------------------------------------------------------
 
 SSS_Fall:
 		move.l	ost_y_pos(a0),d2
 		move.l	ost_x_pos(a0),d3
 		move.b	(v_ss_angle).w,d0			; get special stage angle
-		andi.b	#$FC,d0					; round down to multiple of 4
+		andi.b	#$FC,d0					; round down to nearest 4
 		jsr	(CalcSine).l				; convert to sine/cosine
 		move.w	ost_x_vel(a0),d4
 		ext.l	d4
@@ -341,31 +329,34 @@ SSS_Fall:
 		muls.w	#$2A,d1
 		add.l	d4,d1					; d1 = (ost_y_vel*$100)+(cosine*$2A)
 		add.l	d0,d3					; d3 = ost_x_pos+d0
-		bsr.w	SSS_FindWall				; detect wall to right
-		beq.s	loc_1BCB0				; branch if not found
+		bsr.w	SSS_FindWall				; detect wall to left/right
+		beq.s	SSS_Fall_NoWall				; branch if not found
+
 		sub.l	d0,d3					; d3 = ost_x_pos
 		moveq	#0,d0
-		move.w	d0,ost_x_vel(a0)			; stop moving right
+		move.w	d0,ost_x_vel(a0)			; stop moving left/right
 		bclr	#status_air_bit,ost_status(a0)
 		add.l	d1,d2					; d2 = ost_y_pos+d1
 		bsr.w	SSS_FindWall				; detect wall below
-		beq.s	loc_1BCC6				; branch if not found
+		beq.s	SSS_Fall_NoFloor			; branch if not found
+
 		sub.l	d1,d2
 		moveq	#0,d1
 		move.w	d1,ost_y_vel(a0)			; stop moving down
 		rts	
 ; ===========================================================================
 
-loc_1BCB0:
+SSS_Fall_NoWall:
 		add.l	d1,d2
 		bsr.w	SSS_FindWall				; detect wall below
-		beq.s	SSS_Fall_NoWall				; branch if not found
+		beq.s	SSS_Fall_Air				; branch if not found
+
 		sub.l	d1,d2
 		moveq	#0,d1
 		move.w	d1,ost_y_vel(a0)			; stop moving down
 		bclr	#status_air_bit,ost_status(a0)
 
-loc_1BCC6:
+SSS_Fall_NoFloor:
 		asr.l	#8,d0
 		asr.l	#8,d1
 		move.w	d0,ost_x_vel(a0)
@@ -373,18 +364,16 @@ loc_1BCC6:
 		rts	
 ; ===========================================================================
 
-SSS_Fall_NoWall:
+SSS_Fall_Air:
 		asr.l	#8,d0
 		asr.l	#8,d1
 		move.w	d0,ost_x_vel(a0)
 		move.w	d1,ost_y_vel(a0)
 		bset	#status_air_bit,ost_status(a0)		; Sonic is in the air, touching no walls
-		rts	
-; End of function SSS_Fall
-
+		rts
 
 ; ---------------------------------------------------------------------------
-; Wall detection subroutine
+; Subroutine to detect a wall at a given position
 
 ; input:
 ;	d2 = y position
@@ -393,8 +382,6 @@ SSS_Fall_NoWall:
 ; output:
 ;	d5 = flag: 0 = no collision (e.g. rings); -1 = collision with solid wall
 ; ---------------------------------------------------------------------------
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
 
 SSS_FindWall:
 		lea	(v_ss_layout).l,a1
@@ -403,7 +390,7 @@ SSS_FindWall:
 		move.w	d2,d4					; d4 = y pos
 		swap	d2
 		addi.w	#$44,d4
-		divu.w	#$18,d4					; divide by width of SS blocks (24 pixels)
+		divu.w	#$18,d4					; divide by height of SS blocks (24 pixels)
 		mulu.w	#$80,d4					; multiply by bytes per SS row
 		adda.l	d4,a1					; jump to position in layout
 		moveq	#0,d4
@@ -424,12 +411,8 @@ SSS_FindWall:
 		move.b	(a1)+,d4				; get id of adjacent wall/item
 		bsr.s	SSS_FindWall_Chk
 		tst.b	d5
-		rts	
-; End of function SSS_FindWall
-
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
+		rts
+; ===========================================================================
 
 SSS_FindWall_Chk:
 		beq.s	@no_collide				; branch if 0
@@ -445,8 +428,8 @@ SSS_FindWall_Chk:
 ; ===========================================================================
 
 @collide:
-		move.b	d4,ost_ss_item(a0)
-		move.l	a1,ost_ss_item_address(a0)
+		move.b	d4,ost_ss_item(a0)			; get id of wall item
+		move.l	a1,ost_ss_item_address(a0)		; get address within layout
 		moveq	#-1,d5					; set flag for collision
 		rts	
 ; End of function SSS_FindWall_Chk

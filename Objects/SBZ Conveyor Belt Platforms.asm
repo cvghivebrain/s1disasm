@@ -53,7 +53,7 @@ SpinC_Main:	; Routine 0
 		bmi.w	SpinC_LoadPlatforms			; branch if subtype is $80+
 		addq.b	#2,ost_routine(a0)			; goto SpinC_Solid next
 		move.l	#Map_Spin,ost_mappings(a0)
-		move.w	#tile_Nem_SpinPform,ost_tile(a0)
+		move.w	#tile_Nem_SpinPlatform,ost_tile(a0)
 		move.b	#$10,ost_displaywidth(a0)
 		ori.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)

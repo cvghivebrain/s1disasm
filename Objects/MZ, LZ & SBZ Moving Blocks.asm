@@ -42,7 +42,7 @@ MBlock_Main:	; Routine 0
 		bne.s	@not_lz
 
 		move.l	#Map_MBlockLZ,ost_mappings(a0)		; LZ specific code
-		move.w	#tile_Nem_LzBlock3+tile_pal3,ost_tile(a0)
+		move.w	#tile_Nem_LzHalfBlock+tile_pal3,ost_tile(a0)
 		move.b	#7,ost_height(a0)
 
 	@not_lz:
@@ -50,12 +50,12 @@ MBlock_Main:	; Routine 0
 		bne.s	@not_sbz
 
 		move.w	#tile_Nem_Stomper+tile_pal2,ost_tile(a0) ; SBZ specific code (object 5228)
-		cmpi.b	#$28,ost_subtype(a0)			; is object 5228 ?
-		beq.s	@not_sbz_28				; if yes, branch
+		cmpi.b	#type_mblock_sbz+type_mblock_updown,ost_subtype(a0) ; is object 5228 ?
+		beq.s	@is_sbz_28				; if yes, branch
 		move.w	#tile_Nem_SlideFloor+tile_pal3,ost_tile(a0) ; SBZ specific code (object 523x)
 
 	@not_sbz:
-	@not_sbz_28:
+	@is_sbz_28:
 		move.b	#render_rel,ost_render(a0)
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0			; get subtype

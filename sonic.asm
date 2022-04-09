@@ -1057,11 +1057,11 @@ Eni_SSBg2:	incbin	"Tilemaps\SS Background 2.eni"		; special stage background (ma
 		nemfile	Nem_GhzUnkBlock
 		nemfile	Nem_Ball
 		nemfile	Nem_Spikes
-		nemfile	Nem_GhzLog
+		nemfile	Nem_GhzUnkLog
 		nemfile	Nem_SpikePole
-		nemfile	Nem_PplRock
-		nemfile	Nem_GhzWall1
-		nemfile	Nem_GhzWall2
+		nemfile	Nem_PurpleRock
+		nemfile	Nem_GhzSmashWall
+		nemfile	Nem_GhzEdgeWall
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - LZ stuff
 ; ---------------------------------------------------------------------------
@@ -1070,24 +1070,24 @@ Eni_SSBg2:	incbin	"Tilemaps\SS Background 2.eni"		; special stage background (ma
 		nemfile	Nem_LzSpikeBall
 		nemfile	Nem_FlapDoor
 		nemfile	Nem_Bubbles
-		nemfile	Nem_LzBlock3
-		nemfile	Nem_LzDoor1
+		nemfile	Nem_LzHalfBlock
+		nemfile	Nem_LzDoorV
 		nemfile	Nem_Harpoon
 		nemfile	Nem_LzPole
-		nemfile	Nem_LzDoor2
+		nemfile	Nem_LzDoorH
 		nemfile	Nem_LzWheel
 		nemfile	Nem_Gargoyle
-		nemfile	Nem_LzBlock2
-		nemfile	Nem_LzPlatfm
+		nemfile	Nem_Sbz3HugeDoor
+		nemfile	Nem_LzPlatform
 		nemfile	Nem_Cork
-		nemfile	Nem_LzBlock1
+		nemfile	Nem_LzBlock
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - MZ stuff
 ; ---------------------------------------------------------------------------
 		nemfile	Nem_MzMetal
 		nemfile	Nem_MzButton
 		nemfile	Nem_MzGlass
-		nemfile	Nem_UnkGrass
+		nemfile	Nem_MzUnkGrass
 		nemfile	Nem_Fireball
 		nemfile	Nem_Lava
 		nemfile	Nem_MzBlock
@@ -1113,19 +1113,19 @@ Eni_SSBg2:	incbin	"Tilemaps\SS Background 2.eni"		; special stage background (ma
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - SBZ stuff
 ; ---------------------------------------------------------------------------
-		nemfile	Nem_SbzWheel1
-		nemfile	Nem_SbzWheel2
+		nemfile	Nem_SbzDisc
+		nemfile	Nem_SbzJunction
 		nemfile	Nem_Cutter
 		nemfile	Nem_Stomper
-		nemfile	Nem_SpinPform
+		nemfile	Nem_SpinPlatform
 		nemfile	Nem_TrapDoor
 		nemfile	Nem_SbzFloor
 		nemfile	Nem_Electric
 		nemfile	Nem_SbzBlock
 		nemfile	Nem_FlamePipe
-		nemfile	Nem_SbzDoor1
+		nemfile	Nem_SbzDoorV
 		nemfile	Nem_SlideFloor
-		nemfile	Nem_SbzDoor2
+		nemfile	Nem_SbzDoorH
 		nemfile	Nem_Girder
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - enemies

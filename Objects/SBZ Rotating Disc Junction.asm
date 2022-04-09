@@ -43,7 +43,7 @@ Jun_Main:	; Routine 0
 
 @makeitem:
 		move.l	#Map_Jun,ost_mappings(a1)
-		move.w	#tile_Nem_SbzWheel2+tile_pal3,ost_tile(a1)
+		move.w	#tile_Nem_SbzJunction+tile_pal3,ost_tile(a1)
 		ori.b	#render_rel,ost_render(a1)
 		move.b	#$38,ost_displaywidth(a1)
 

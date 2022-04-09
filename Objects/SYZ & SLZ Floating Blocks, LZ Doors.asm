@@ -40,7 +40,7 @@ FBlock_Main:	; Routine 0
 		move.w	#0+tile_pal3,ost_tile(a0)
 		cmpi.b	#id_LZ,(v_zone).w			; check if level is LZ
 		bne.s	@not_lz					; if not, branch
-		move.w	#tile_Nem_LzDoor1+tile_pal3,ost_tile(a0) ; LZ specific code
+		move.w	#tile_Nem_LzDoorV+tile_pal3,ost_tile(a0) ; LZ specific code
 
 	@not_lz:
 		move.b	#render_rel,ost_render(a0)

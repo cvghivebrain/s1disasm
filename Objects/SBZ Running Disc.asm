@@ -26,7 +26,7 @@ ost_disc_init_flag:	equ $3A					; set when Sonic lands on the disc
 Disc_Main:	; Routine 0
 		addq.b	#2,ost_routine(a0)			; goto Disc_Action next
 		move.l	#Map_Disc,ost_mappings(a0)
-		move.w	#tile_Nem_SbzWheel1+tile_pal3+tile_hi,ost_tile(a0)
+		move.w	#tile_Nem_SbzDisc+tile_pal3+tile_hi,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)
 		move.b	#8,ost_displaywidth(a0)

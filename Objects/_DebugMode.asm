@@ -252,11 +252,11 @@ DebugList_GHZ:
 		dbug	Map_Chop,	Chopper,	0,	0,	tile_Nem_Chopper
 		dbug	Map_Spike,	Spikes,		type_spike_3up+type_spike_still,	0,	tile_Nem_Spikes
 		dbug	Map_Plat_GHZ,	BasicPlatform,	type_plat_still,	0,	0+tile_pal3
-		dbug	Map_PRock,	PurpleRock,	0,	0,	tile_Nem_PplRock+tile_pal4
+		dbug	Map_PRock,	PurpleRock,	0,	0,	tile_Nem_PurpleRock+tile_pal4
 		dbug	Map_Moto,	MotoBug,	0,	0,	tile_Nem_Motobug
 		dbug	Map_Spring,	Springs,	type_spring_red+type_spring_up,	0,	tile_Nem_HSpring
 		dbug	Map_Newt,	Newtron,	0,	0,	tile_Nem_Newtron+tile_pal2
-		dbug	Map_Edge,	EdgeWalls,	type_edge_shadow,	0,	tile_Nem_GhzWall2+tile_pal3
+		dbug	Map_Edge,	EdgeWalls,	type_edge_shadow,	0,	tile_Nem_GhzEdgeWall+tile_pal3
 		dbug	Map_GBall,	Obj19,		0,	0,	tile_Nem_Ball+tile_pal3
 		dbug	Map_Lamp,	Lamppost,	1,	0,	tile_Nem_Lamp
 		dbug	Map_GRing,	GiantRing,	0,	0,	(vram_giantring/sizeof_cell)+tile_pal2
@@ -277,13 +277,13 @@ DebugList_LZ:
 		dbug	Map_Push,	PushBlock,	0,	0,	tile_Nem_LzPole+tile_pal3
 		dbug	Map_But,	Button,		0,	0,	tile_Nem_Button+4
 		dbug	Map_Spike,	Spikes,		type_spike_3up+type_spike_still,	0,	tile_Nem_Spikes
-		dbug	Map_MBlockLZ,	MovingBlock,	type_mblock_1+type_mblock_rightdrop,	0,	tile_Nem_LzBlock3+tile_pal3
-		dbug	Map_LBlock,	LabyrinthBlock, type_lblock_sink,	id_frame_lblock_sinkblock,	tile_Nem_LzDoor2+tile_pal3
-		dbug	Map_LBlock,	LabyrinthBlock, type_lblock_rise,	id_frame_lblock_riseplatform,	tile_Nem_LzDoor2+tile_pal3
-		dbug	Map_LBlock,	LabyrinthBlock, 5,	id_frame_lblock_sinkblock,	tile_Nem_LzDoor2+tile_pal3
+		dbug	Map_MBlockLZ,	MovingBlock,	type_mblock_1+type_mblock_rightdrop,	0,	tile_Nem_LzHalfBlock+tile_pal3
+		dbug	Map_LBlock,	LabyrinthBlock, type_lblock_sink,	id_frame_lblock_sinkblock,	tile_Nem_LzDoorH+tile_pal3
+		dbug	Map_LBlock,	LabyrinthBlock, type_lblock_rise,	id_frame_lblock_riseplatform,	tile_Nem_LzDoorH+tile_pal3
+		dbug	Map_LBlock,	LabyrinthBlock, 5,	id_frame_lblock_sinkblock,	tile_Nem_LzDoorH+tile_pal3
 		dbug	Map_Gar,	Gargoyle,	0,	0,	$43E+tile_pal3
-		dbug	Map_LBlock,	LabyrinthBlock, type_lblock_cork,	id_frame_lblock_cork,	tile_Nem_LzDoor2+tile_pal3
-		dbug	Map_LBlock,	LabyrinthBlock, type_lblock_solid,	id_frame_lblock_block,	tile_Nem_LzDoor2+tile_pal3
+		dbug	Map_LBlock,	LabyrinthBlock, type_lblock_cork,	id_frame_lblock_cork,	tile_Nem_LzDoorH+tile_pal3
+		dbug	Map_LBlock,	LabyrinthBlock, type_lblock_solid,	id_frame_lblock_block,	tile_Nem_LzDoorH+tile_pal3
 		dbug	Map_LConv,	LabyrinthConvey, type_lcon_wheel,	0,	tile_Nem_LzWheel
 		dbug	Map_Orb,	Orbinaut,	0,	0,	tile_Nem_Orbinaut_LZ
 		dbug	Map_Bub,	Bubble,		$84,	id_frame_bubble_bubmaker1,	tile_Nem_Bubbles+tile_hi
@@ -370,16 +370,16 @@ DebugList_SBZ:
 		dbug	Map_Orb,	Orbinaut,	0,	0,	tile_Nem_Orbinaut
 		dbug	Map_Cat,	Caterkiller,	0,	0,	tile_Nem_Cater_SBZ+tile_pal2
 		dbug	Map_BBall,	SwingingPlatform, 7,	id_frame_bball_anchor,	tile_Nem_BigSpike_SBZ+tile_pal3
-		dbug	Map_Disc,	RunningDisc,	$E0,	0,	tile_Nem_SbzWheel1+tile_pal3+tile_hi
+		dbug	Map_Disc,	RunningDisc,	$E0,	0,	tile_Nem_SbzDisc+tile_pal3+tile_hi
 		dbug	Map_MBlock,	MovingBlock,	type_mblock_sbz+type_mblock_updown,	id_frame_mblock_sbz,	tile_Nem_Stomper+tile_pal2
 		dbug	Map_But,	Button,		0,	0,	tile_Nem_Button+4
 		dbug	Map_Trap,	SpinPlatform,	3,	0,	tile_Nem_TrapDoor+tile_pal3
-		dbug	Map_Spin,	SpinPlatform,	$83,	0,	tile_Nem_SpinPform
+		dbug	Map_Spin,	SpinPlatform,	$83,	0,	tile_Nem_SpinPlatform
 		dbug	Map_Saw,	Saws,		type_saw_pizza_updown,	0,	tile_Nem_Cutter+tile_pal3
 		dbug	Map_CFlo,	CollapseFloor,	0,	0,	tile_Nem_SbzFloor+tile_pal3
 		dbug	Map_MBlock,	MovingBlock,	type_mblock_sbzwide+type_mblock_slide,	id_frame_mblock_sbzwide,	tile_Nem_SlideFloor+tile_pal3
 		dbug	Map_Stomp,	ScrapStomp,	0,	id_frame_stomp_door,	tile_Nem_Stomper+tile_pal2
-		dbug	Map_ADoor,	AutoDoor,	0,	0,	tile_Nem_SbzDoor1+tile_pal3
+		dbug	Map_ADoor,	AutoDoor,	0,	0,	tile_Nem_SbzDoorV+tile_pal3
 		dbug	Map_Stomp,	ScrapStomp,	type_stomp_slow,	id_frame_stomp_stomper,	tile_Nem_Stomper+tile_pal2
 		dbug	Map_Saw,	Saws,		type_saw_pizza_sideways,	id_frame_saw_pizzacutter1,	tile_Nem_Cutter+tile_pal3
 		dbug	Map_Stomp,	ScrapStomp,	type_stomp_fast_short,	id_frame_stomp_stomper,	tile_Nem_Stomper+tile_pal2

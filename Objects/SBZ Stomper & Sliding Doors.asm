@@ -64,7 +64,7 @@ Sto_Main:	; Routine 0
 ; ===========================================================================
 
 @sbz3_init:
-		move.w	#tile_Nem_LzBlock2+tile_pal3,ost_tile(a0)
+		move.w	#tile_Nem_Sbz3HugeDoor+tile_pal3,ost_tile(a0)
 		cmpi.w	#$A80,ost_x_pos(a0)			; is object in its starting position?
 		bne.s	@skip_sbz3_init				; if not, branch
 		lea	(v_respawn_list).w,a2

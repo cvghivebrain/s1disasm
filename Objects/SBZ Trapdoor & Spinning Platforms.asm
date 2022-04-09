@@ -38,7 +38,7 @@ Spin_Main:	; Routine 0
 
 		addq.b	#2,ost_routine(a0)			; goto Spin_Spinner next
 		move.l	#Map_Spin,ost_mappings(a0)
-		move.w	#tile_Nem_SpinPform,ost_tile(a0)
+		move.w	#tile_Nem_SpinPlatform,ost_tile(a0)
 		move.b	#$10,ost_displaywidth(a0)
 		move.b	#id_ani_spin_1,ost_anim(a0)
 		moveq	#0,d0
