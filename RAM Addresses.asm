@@ -271,7 +271,7 @@ v_scroll_block_2_height:	rs.w 1 ; $FFFFF7F2 ; scroll block height - always $100,
 v_scroll_block_3_height:	rs.w 1 ; $FFFFF7F4 ; scroll block height - always $100, unused
 v_scroll_block_4_height:	rs.w 1 ; $FFFFF7F6 ; scroll block height - $100 for GHZ; 0 for all others, unused
 unused_f7f8:			rs.b 8
-
+				rsalign 4
 v_sprite_buffer:		rs.b sizeof_vram_sprites-$80 ; $FFFFF800 ; sprite table ($280 bytes, last $80 bytes are overwritten by v_pal_water_next)
 v_pal_water_next:		rs.w countof_color*4 ; $FFFFFA00 ; target underwater palette, used for transitions
 v_pal_water:			rs.w countof_color*4 ; $FFFFFA80 ; main underwater palette
@@ -387,7 +387,9 @@ v_syncani_3_accumulator:	rs.w 1 ; $FFFFFEC8 ; synchronised sprite animation 3 - 
 unused_feca:			rs.b $26
 v_boundary_top_debugcopy:	rs.w 1 ; $FFFFFEF0 ; top level boundary, buffered while debug mode is in use
 v_boundary_bottom_debugcopy:	rs.w 1 ; $FFFFFEF2 ; bottom level boundary, buffered while debug mode is in use
-unused_fef4:			rs.b $1C
+unused_fef4:			rs.b $C
+				rsalign 4
+unused_ff00:			rs.b $10
 
 ; Variables copied during VBlank and used by DrawTilesWhenMoving:
 
@@ -440,7 +442,7 @@ ram_final:			equ (ram_used-1)&$FFFF
 		if ram_used > 0
 		inform	3,"RAM usage exceeds maximum by $%h bytes.",ram_used
 		else
-		inform	0,"$%h bytes of RAM used with $%h bytes to spare.",ram_final,$FFFF-ram_final
+		inform	0,"0-$%h bytes of RAM used with $%h bytes to spare.",ram_final,$FFFF-ram_final
 		endc
 
 ; Special Stages

@@ -380,6 +380,7 @@ SSS_Fall_Air:
 ;	d3 = x position
 
 ; output:
+;	d4 = id of wall or item
 ;	d5 = flag: 0 = no collision (e.g. rings); -1 = collision with solid wall
 ; ---------------------------------------------------------------------------
 
@@ -392,14 +393,14 @@ SSS_FindWall:
 		addi.w	#$44,d4
 		divu.w	#$18,d4					; divide by height of SS blocks (24 pixels)
 		mulu.w	#$80,d4					; multiply by bytes per SS row
-		adda.l	d4,a1					; jump to position in layout
+		adda.l	d4,a1					; jump to row in layout
 		moveq	#0,d4
 		swap	d3
 		move.w	d3,d4					; d4 = x pos
 		swap	d3
 		addi.w	#$14,d4
 		divu.w	#$18,d4					; divide by width of SS blocks (24 pixels)
-		adda.w	d4,a1					; jump to position in layout
+		adda.w	d4,a1					; jump to exact position in layout
 		moveq	#0,d5
 		move.b	(a1)+,d4				; get id of wall/item
 		bsr.s	SSS_FindWall_Chk
@@ -431,26 +432,28 @@ SSS_FindWall_Chk:
 		move.b	d4,ost_ss_item(a0)			; get id of wall item
 		move.l	a1,ost_ss_item_address(a0)		; get address within layout
 		moveq	#-1,d5					; set flag for collision
-		rts	
-; End of function SSS_FindWall_Chk
+		rts
 
+; ---------------------------------------------------------------------------
+; Subroutine to check for collision with rings/1UPs/emerald/ghost blocks
 
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
+; output:
+;	d4 = -1 if item is a ghost block; 0 otherwise
+; ---------------------------------------------------------------------------
 
 SSS_ChkItems:
 		lea	(v_ss_layout).l,a1			; get layout address
 		moveq	#0,d4
-		move.w	ost_y_pos(a0),d4			; d4 = y pos
+		move.w	ost_y_pos(a0),d4			; d4 = Sonic's y pos
 		addi.w	#$50,d4
-		divu.w	#$18,d4					; divide by width of SS blocks (24 pixels)
+		divu.w	#$18,d4					; divide by height of SS blocks (24 pixels)
 		mulu.w	#$80,d4					; multiply by bytes per SS row
-		adda.l	d4,a1					; jump to position in layout
+		adda.l	d4,a1					; jump to row in layout
 		moveq	#0,d4
-		move.w	ost_x_pos(a0),d4			; d4 = x pos
+		move.w	ost_x_pos(a0),d4			; d4 = Sonic's x pos
 		addi.w	#$20,d4
 		divu.w	#$18,d4					; divide by width of SS blocks (24 pixels)
-		adda.w	d4,a1					; jump to position in layout
+		adda.w	d4,a1					; jump to exact position in layout
 		move.b	(a1),d4					; get id of wall/item
 		bne.s	SSS_ChkRing				; branch if not 0
 		tst.b	ost_ss_ghost(a0)			; check ghost block status
@@ -465,7 +468,7 @@ SSS_ChkRing:
 		bsr.w	SS_FindFreeUpdate			; find free item update slot
 		bne.s	@noslot
 		move.b	#id_SS_UpdateRing,(a2)			; item sparkles and vanishes
-		move.l	a1,4(a2)
+		move.l	a1,4(a2)				; address within layout to be updated
 
 	@noslot:
 		jsr	(CollectRing).l				; get a ring
@@ -529,7 +532,7 @@ SSS_ChkGhost:
 		move.b	#1,ost_ss_ghost(a0)			; mark the ghost block as "passed"
 
 SSS_ChkGhostTag:
-		cmpi.b	#id_SS_Item_Ghost2,d4			; is the item a	switch for ghost blocks?
+		cmpi.b	#id_SS_Item_Switch,d4			; is the item a	switch for ghost blocks?
 		bne.s	@noghost				; if not, branch
 		cmpi.b	#1,ost_ss_ghost(a0)			; have the ghost blocks been passed?
 		bne.s	@noghost				; if not, branch
@@ -563,24 +566,23 @@ SSS_MakeGhostSolid:
 @notsolid:
 		clr.b	ost_ss_ghost(a0)
 		moveq	#0,d4
-		rts	
-; End of function SSS_ChkItems
+		rts
 
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
+; ---------------------------------------------------------------------------
+; Subroutine to check for collision with bumper/GOAL/UP/DOWN/R/glass blocks
+; ---------------------------------------------------------------------------
 
 SSS_ChkItems2:
 		move.b	ost_ss_item(a0),d0			; get item id
 		bne.s	SSS_ChkBumper				; branch if not 0
-		subq.b	#1,ost_ss_updown_time(a0)		; decrement timer for UP/DOWN usage
+		subq.b	#1,ost_ss_updown_time(a0)		; decrement UP/DOWN cooldown timer
 		bpl.s	@updown_off				; branch if positive
 		move.b	#0,ost_ss_updown_time(a0)		; set to 0
 
 	@updown_off:
-		subq.b	#1,ost_ss_r_time(a0)
-		bpl.s	@r_off
-		move.b	#0,ost_ss_r_time(a0)
+		subq.b	#1,ost_ss_r_time(a0)			; decrement R cooldown timer
+		bpl.s	@r_off					; branch if positive
+		move.b	#0,ost_ss_r_time(a0)			; set to 0
 
 	@r_off:
 		rts	
@@ -712,5 +714,4 @@ SSS_ChkGlass:
 ; ===========================================================================
 
 SSS_ChkItems_End:
-		rts	
-; End of function SSS_ChkItems2
+		rts

@@ -287,3 +287,14 @@ tilemap_xflip_bit:	equ $B
 tilemap_yflip_bit:	equ $C
 tilemap_solid_top_bit:	equ $D
 tilemap_solid_lrb_bit:	equ $E
+
+; Special Stages
+ss_block_width:		equ $18		; width of grid cells (walls, items, et al)
+ss_width:		equ $80		; width of level in cells
+ss_visible_width:	equ $10		; width of area in cells that are actually drawncells
+ss_visible_height:	equ ss_visible_width
+ss_sprite_mappings:	equ 0		; mappings pointer in v_ss_sprite_info
+ss_sprite_frame:	equ 4		; frame id in v_ss_sprite_info
+ss_sprite_frame_low:	equ ss_sprite_frame+1
+ss_sprite_tile:		equ 6		; tile id in v_ss_sprite_info
+sizeof_ss_sprite_info:	equ 8		; size of each entry in v_ss_sprite_info (8 bytes)

@@ -906,26 +906,26 @@ SS_Item_Up:	ss_sprite Map_SS_Up,tile_Nem_SSUpDown,0		; $29 - Up
 SS_Item_Down:	ss_sprite Map_SS_Down,tile_Nem_SSUpDown,0	; $2A - Down
 SS_Item_R:	ss_sprite Map_SS_R,tile_Nem_SSRBlock+tile_pal2,0 ; $2B - R
 SS_Item_RedWhi:	ss_sprite Map_SS_Glass,tile_Nem_SSRedWhite,0	; $2C - red/white
-SS_Item_Glass1:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass,0	; $2D - breakable glass gem
-SS_Item_Glass2:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal4,0
-SS_Item_Glass3:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal2,0
-SS_Item_Glass4:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal3,0
+SS_Item_Glass1:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass,0	; $2D - breakable glass gem (blue)
+SS_Item_Glass2:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal4,0 ; $2E - breakable glass gem (green)
+SS_Item_Glass3:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal2,0 ; $2F - breakable glass gem (yellow)
+SS_Item_Glass4:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal3,0 ; $30 - breakable glass gem (pink)
 SS_Item_R2:	ss_sprite Map_SS_R,tile_Nem_SSRBlock,0		; $31 - R
 SS_Item_Bump1:	ss_sprite Map_Bump,tile_Nem_Bumper_SS,id_frame_bump_bumped1
 SS_Item_Bump2:	ss_sprite Map_Bump,tile_Nem_Bumper_SS,id_frame_bump_bumped2
-		ss_sprite Map_SS_R,tile_Nem_SSZone1,0		; $34 - Zone 1
-		ss_sprite Map_SS_R,tile_Nem_SSZone2,0		; $35 - Zone 2
-		ss_sprite Map_SS_R,tile_Nem_SSZone3,0		; $36 - Zone 3
-		ss_sprite Map_SS_R,tile_Nem_SSZone1,0		; $37 - Zone 4
-		ss_sprite Map_SS_R,tile_Nem_SSZone2,0		; $38 - Zone 5
-		ss_sprite Map_SS_R,tile_Nem_SSZone3,0		; $39 - Zone 6
+SS_Item_Zone1:	ss_sprite Map_SS_R,tile_Nem_SSZone1,0		; $34 - Zone 1
+SS_Item_Zone2:	ss_sprite Map_SS_R,tile_Nem_SSZone2,0		; $35 - Zone 2
+SS_Item_Zone3:	ss_sprite Map_SS_R,tile_Nem_SSZone3,0		; $36 - Zone 3
+SS_Item_Zone4:	ss_sprite Map_SS_R,tile_Nem_SSZone1,0		; $37 - Zone 4
+SS_Item_Zone5:	ss_sprite Map_SS_R,tile_Nem_SSZone2,0		; $38 - Zone 5
+SS_Item_Zone6:	ss_sprite Map_SS_R,tile_Nem_SSZone3,0		; $39 - Zone 6
 SS_Item_Ring:	ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,0	; $3A - ring
-SS_Item_Em1:	ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald,0	; $3B - emerald
-SS_Item_Em2:	ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald+tile_pal2,0 ; $3C - emerald
-SS_Item_Em3:	ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald+tile_pal3,0 ; $3D - emerald
-SS_Item_Em4:	ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald+tile_pal4,0 ; $3E - emerald
-SS_Item_Em5:	ss_sprite Map_SS_Chaos1,tile_Nem_SSEmerald,0	; $3F - emerald
-SS_Item_Em6:	ss_sprite Map_SS_Chaos2,tile_Nem_SSEmerald,0	; $40 - emerald
+SS_Item_Em1:	ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald,0	; $3B - emerald (blue)
+SS_Item_Em2:	ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald+tile_pal2,0 ; $3C - emerald (yellow)
+SS_Item_Em3:	ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald+tile_pal3,0 ; $3D - emerald (pink)
+SS_Item_Em4:	ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald+tile_pal4,0 ; $3E - emerald (green)
+SS_Item_Em5:	ss_sprite Map_SS_Chaos1,tile_Nem_SSEmerald,0	; $3F - emerald (red)
+SS_Item_Em6:	ss_sprite Map_SS_Chaos2,tile_Nem_SSEmerald,0	; $40 - emerald (grey)
 SS_Item_Ghost:	ss_sprite Map_SS_R,tile_Nem_SSGhost,0		; $41 - ghost block
 SS_Item_Spark1:	ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,id_frame_ring_sparkle1 ; $42 - sparkle
 SS_Item_Spark2:	ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,id_frame_ring_sparkle2 ; $43 - sparkle
@@ -935,7 +935,7 @@ SS_Item_EmSp1:	ss_sprite Map_SS_Glass,tile_Nem_SSEmStars+tile_pal2,0 ; $46 - eme
 SS_Item_EmSp2:	ss_sprite Map_SS_Glass,tile_Nem_SSEmStars+tile_pal2,1 ; $47 - emerald sparkle
 SS_Item_EmSp3:	ss_sprite Map_SS_Glass,tile_Nem_SSEmStars+tile_pal2,2 ; $48 - emerald sparkle
 SS_Item_EmSp4:	ss_sprite Map_SS_Glass,tile_Nem_SSEmStars+tile_pal2,3 ; $49 - emerald sparkle
-SS_Item_Ghost2:	ss_sprite Map_SS_R,tile_Nem_SSGhost,2
+SS_Item_Switch:	ss_sprite Map_SS_R,tile_Nem_SSGhost,id_frame_ss_ghost_switch ; $4A - switch that makes ghost blocks solid
 SS_Item_Glass5:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass,0	; $4B
 SS_Item_Glass6:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal4,0 ; $4C
 SS_Item_Glass7:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal2,0 ; $4D

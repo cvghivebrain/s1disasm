@@ -35,14 +35,14 @@ GM_Special:
 
 		lea	(v_camera_x_pos).w,a1
 		moveq	#0,d0
-		move.w	#($100/4)-1,d1
+		move.w	#((v_sprite_buffer-v_camera_x_pos)/4)-1,d1
 	@clear_ram1:
 		move.l	d0,(a1)+
 		dbf	d1,@clear_ram1				; clear	variables $FFFFF700-$FFFFF800
 
 		lea	(v_oscillating_table).w,a1
 		moveq	#0,d0
-		move.w	#($A0/4)-1,d1
+		move.w	#((unused_ff00-v_oscillating_table)/4)-1,d1
 	@clear_ram2:
 		move.l	d0,(a1)+
 		dbf	d1,@clear_ram2				; clear	variables $FFFFFE60-$FFFFFF00
@@ -332,7 +332,7 @@ PalCycle_SS:
 		bmi.s	PalCycle_SS_2				; branch if $80+
 		lea	(Pal_SSCyc1).l,a1			; use palette cycle set 1
 		adda.w	d0,a1
-		lea	(v_pal_dry+$4E).w,a2
+		lea	(v_pal_dry_line3+$E).w,a2
 		move.l	(a1)+,(a2)+
 		move.l	(a1)+,(a2)+
 		move.l	(a1)+,(a2)+				; write palette
@@ -354,18 +354,18 @@ PalCycle_SS_2:
 		andi.w	#$7F,d0					; ignore bit 7
 		bclr	#0,d0					; clear bit 0
 		beq.s	@offset_even				; branch if already clear
-		lea	(v_pal_dry+$6E).w,a2
+		lea	(v_pal_dry_line4+$E).w,a2
 		move.l	(a1),(a2)+
 		move.l	4(a1),(a2)+
 		move.l	8(a1),(a2)+				; write palette
 
 	@offset_even:
 		adda.w	#$C,a1
-		lea	(v_pal_dry+$5A).w,a2
+		lea	(v_pal_dry_line3+$1A).w,a2
 		cmpi.w	#$A,d0					; is offset 0-8?
 		blo.s	@offset_0_8				; if yes, branch
 		subi.w	#$A,d0
-		lea	(v_pal_dry+$7A).w,a2
+		lea	(v_pal_dry_line4+$1A).w,a2
 
 	@offset_0_8:
 		move.w	d0,d1
@@ -572,25 +572,25 @@ SS_ShowLayout:
 		move.w	d5,-(sp)				; save sprite count to stack
 		lea	(v_ss_sprite_grid_plot).w,a1		; address to write grid coords
 		move.b	(v_ss_angle).w,d0
-		andi.b	#$FC,d0					; round down angle to nearest 4
+		andi.b	#$FC,d0					; round down angle to nearest 4 (disable this line for smoother rotation)
 		jsr	(CalcSine).l				; convert to sine/cosine
 		move.w	d0,d4
 		move.w	d1,d5
-		muls.w	#$18,d4
-		muls.w	#$18,d5
+		muls.w	#ss_block_width,d4
+		muls.w	#ss_block_width,d5
 		moveq	#0,d2
 		move.w	(v_camera_x_pos).w,d2
-		divu.w	#$18,d2
+		divu.w	#ss_block_width,d2
 		swap	d2
 		neg.w	d2
 		addi.w	#-$B4,d2
 		moveq	#0,d3
 		move.w	(v_camera_y_pos).w,d3
-		divu.w	#$18,d3
+		divu.w	#ss_block_width,d3
 		swap	d3
 		neg.w	d3
 		addi.w	#-$B4,d3
-		move.w	#$F,d7
+		move.w	#ss_visible_height-1,d7			; grid is 16 cells high
 
 	@loop_gridrow:
 		movem.w	d0-d2,-(sp)
@@ -605,7 +605,7 @@ SS_ShowLayout:
 		muls.w	d3,d1
 		add.l	d0,d1
 		move.l	d6,d2
-		move.w	#$F,d6
+		move.w	#ss_visible_width-1,d6			; grid is 16 cells wide
 
 	@loop_gridcell:
 		move.l	d2,d0
@@ -616,29 +616,29 @@ SS_ShowLayout:
 		move.w	d0,(a1)+
 		add.l	d5,d2
 		add.l	d4,d1
-		dbf	d6,@loop_gridcell
+		dbf	d6,@loop_gridcell			; repeat for all cells in row
 
 		movem.w	(sp)+,d0-d2
-		addi.w	#$18,d3
-		dbf	d7,@loop_gridrow
+		addi.w	#ss_block_width,d3
+		dbf	d7,@loop_gridrow			; repeat for all rows
 
 ; Populate the 16x16 grid with sprites based on the level layout
 		move.w	(sp)+,d5
 		lea	(v_ss_layout).l,a0
 		moveq	#0,d0
 		move.w	(v_camera_y_pos).w,d0			; get camera y pos
-		divu.w	#$18,d0					; divide by size of wall sprite (24 pixels)
-		mulu.w	#$80,d0					; muliply by width of level
+		divu.w	#ss_block_width,d0			; divide by size of wall sprite (24 pixels)
+		mulu.w	#ss_width,d0				; multiply by width of level ($80)
 		adda.l	d0,a0					; jump to correct row in level
 		moveq	#0,d0
 		move.w	(v_camera_x_pos).w,d0			; get camera x pos
-		divu.w	#$18,d0					; divide by size of wall sprite (24 pixels)
+		divu.w	#ss_block_width,d0			; divide by size of wall sprite (24 pixels)
 		adda.w	d0,a0					; jump to correct block in level
 		lea	(v_ss_sprite_grid_plot).w,a4		; transformation grid
-		move.w	#$F,d7
+		move.w	#ss_visible_height-1,d7
 
 	@loop_spriterow:
-		move.w	#$F,d6
+		move.w	#ss_visible_width-1,d6
 
 	@loop_sprite:
 		moveq	#0,d0
@@ -647,17 +647,18 @@ SS_ShowLayout:
 		cmpi.b	#(SS_ItemIndex_end-SS_ItemIndex)/6,d0
 		bhi.s	@skip					; branch if above $4E (invalid)
 		move.w	(a4),d3					; get grid x pos
-		addi.w	#$120,d3				
-		cmpi.w	#$70,d3
+		addi.w	#288,d3				
+		cmpi.w	#112,d3
 		blo.s	@skip					; branch if off screen
-		cmpi.w	#$1D0,d3
+		cmpi.w	#464,d3
 		bhs.s	@skip
 		move.w	2(a4),d2				; get grid y pos
-		addi.w	#$F0,d2
-		cmpi.w	#$70,d2
+		addi.w	#240,d2
+		cmpi.w	#112,d2
 		blo.s	@skip
-		cmpi.w	#$170,d2
+		cmpi.w	#368,d2
 		bhs.s	@skip
+
 		lea	(v_ss_sprite_info).l,a5
 		lsl.w	#3,d0
 		lea	(a5,d0.w),a5
@@ -676,12 +677,12 @@ SS_ShowLayout:
 		addq.w	#4,a4					; next sprite
 		dbf	d6,@loop_sprite
 
-		lea	$70(a0),a0				; next row
+		lea	ss_width-ss_visible_width(a0),a0	; next row
 		dbf	d7,@loop_spriterow
 
 		move.b	d5,(v_spritecount).w
-		cmpi.b	#$50,d5
-		beq.s	@spritelimit
+		cmpi.b	#countof_max_sprites,d5			; max number of sprites ($50)
+		beq.s	@spritelimit				; branch if at limit
 		move.l	#0,(a2)
 		rts	
 ; ===========================================================================
@@ -697,7 +698,7 @@ SS_ShowLayout:
 ; ---------------------------------------------------------------------------
 
 SS_AniWallsRings:
-		lea	(v_ss_sprite_info+$C).l,a1		; frame id of first wall
+		lea	(v_ss_sprite_info+sizeof_ss_sprite_info+ss_sprite_frame).l,a1 ; frame id of first wall
 		moveq	#0,d0
 		move.b	(v_ss_angle).w,d0			; get angle
 		lsr.b	#2,d0					; divide by 4
@@ -706,104 +707,76 @@ SS_AniWallsRings:
 
 	@wall_loop:
 		move.w	d0,(a1)					; change frame id to appropriately rotated wall
-		addq.w	#8,a1
-		dbf	d1,@wall_loop
+		addq.w	#sizeof_ss_sprite_info,a1		; jump to frame id for next wall block
+		dbf	d1,@wall_loop				; repeat for every wall block
 
-		lea	(v_ss_sprite_info+5).l,a1		; frame id of first sprite (it's blank, but that doesn't matter)
+		lea	(v_ss_sprite_info+ss_sprite_frame_low).l,a1 ; frame id of first sprite (it's blank, but that doesn't matter)
 		subq.b	#1,(v_syncani_1_time).w			; decrement animation timer
 		bpl.s	@not0_1					; branch if time remains
-		move.b	#7,(v_syncani_1_time).w			; reset to 7
+		move.b	#7,(v_syncani_1_time).w			; reset timer
 		addq.b	#1,(v_syncani_1_frame).w		; increment frame
-		andi.b	#3,(v_syncani_1_frame).w		; there are 4 frames max
+		andi.b	#3,(v_syncani_1_frame).w		; there are 4 frames max (0/1/2/3)
 
 	@not0_1:
-		move.b	(v_syncani_1_frame).w,(id_SS_Item_Ring*8)(a1) ; $1D0(a1) ; update ring frame
+		move.b	(v_syncani_1_frame).w,(id_SS_Item_Ring*sizeof_ss_sprite_info)(a1) ; $1D0(a1) ; update ring frame
 		
-		subq.b	#1,(v_syncani_2_time).w
-		bpl.s	@not0_2
-		move.b	#7,(v_syncani_2_time).w
-		addq.b	#1,(v_syncani_2_frame).w
-		andi.b	#1,(v_syncani_2_frame).w
+		subq.b	#1,(v_syncani_2_time).w			; decrement timer
+		bpl.s	@not0_2					; branch if time remains
+		move.b	#7,(v_syncani_2_time).w			; reset timer
+		addq.b	#1,(v_syncani_2_frame).w		; increment frame
+		andi.b	#1,(v_syncani_2_frame).w		; there are 2 frames only (0/1)
 
 	@not0_2:
 		move.b	(v_syncani_2_frame).w,d0
-		move.b	d0,(id_SS_Item_GOAL*8)(a1)		; $138(a1)
-		move.b	d0,(id_SS_Item_RedWhi*8)(a1)		; $160(a1)
-		move.b	d0,(id_SS_Item_Up*8)(a1)		; $148(a1)
-		move.b	d0,(id_SS_Item_Down*8)(a1)		; $150(a1)
-		move.b	d0,(id_SS_Item_Em1*8)(a1)		; $1D8(a1)
-		move.b	d0,(id_SS_Item_Em2*8)(a1)		; $1E0(a1)
-		move.b	d0,(id_SS_Item_Em3*8)(a1)		; $1E8(a1)
-		move.b	d0,(id_SS_Item_Em4*8)(a1)		; $1F0(a1)
-		move.b	d0,(id_SS_Item_Em5*8)(a1)		; $1F8(a1)
-		move.b	d0,(id_SS_Item_Em6*8)(a1)		; $200(a1)
+		move.b	d0,(id_SS_Item_GOAL*sizeof_ss_sprite_info)(a1) ; $138(a1)
+		move.b	d0,(id_SS_Item_RedWhi*sizeof_ss_sprite_info)(a1) ; $160(a1)
+		move.b	d0,(id_SS_Item_Up*sizeof_ss_sprite_info)(a1) ; $148(a1)
+		move.b	d0,(id_SS_Item_Down*sizeof_ss_sprite_info)(a1) ; $150(a1)
+		move.b	d0,(id_SS_Item_Em1*sizeof_ss_sprite_info)(a1) ; $1D8(a1)
+		move.b	d0,(id_SS_Item_Em2*sizeof_ss_sprite_info)(a1) ; $1E0(a1)
+		move.b	d0,(id_SS_Item_Em3*sizeof_ss_sprite_info)(a1) ; $1E8(a1)
+		move.b	d0,(id_SS_Item_Em4*sizeof_ss_sprite_info)(a1) ; $1F0(a1)
+		move.b	d0,(id_SS_Item_Em5*sizeof_ss_sprite_info)(a1) ; $1F8(a1)
+		move.b	d0,(id_SS_Item_Em6*sizeof_ss_sprite_info)(a1) ; $200(a1)
 		
 		subq.b	#1,(v_syncani_3_time).w
 		bpl.s	@not0_3
 		move.b	#4,(v_syncani_3_time).w
 		addq.b	#1,(v_syncani_3_frame).w
-		andi.b	#3,(v_syncani_3_frame).w
+		andi.b	#3,(v_syncani_3_frame).w		; there are 4 frames (0/1/2/3)
 
 	@not0_3:
 		move.b	(v_syncani_3_frame).w,d0
-		move.b	d0,(id_SS_Item_Glass1*8)(a1)		; $168(a1)
-		move.b	d0,(id_SS_Item_Glass2*8)(a1)		; $170(a1)
-		move.b	d0,(id_SS_Item_Glass3*8)(a1)		; $178(a1)
-		move.b	d0,(id_SS_Item_Glass4*8)(a1)		; $180(a1)
+		move.b	d0,(id_SS_Item_Glass1*sizeof_ss_sprite_info)(a1) ; $168(a1)
+		move.b	d0,(id_SS_Item_Glass2*sizeof_ss_sprite_info)(a1) ; $170(a1)
+		move.b	d0,(id_SS_Item_Glass3*sizeof_ss_sprite_info)(a1) ; $178(a1)
+		move.b	d0,(id_SS_Item_Glass4*sizeof_ss_sprite_info)(a1) ; $180(a1)
 		
 		subq.b	#1,(v_syncani_0_time).w
 		bpl.s	@not0_0
 		move.b	#7,(v_syncani_0_time).w
 		subq.b	#1,(v_syncani_0_frame).w
-		andi.b	#7,(v_syncani_0_frame).w
+		andi.b	#7,(v_syncani_0_frame).w		; there are 8 frames (0-7)
 
 	@not0_0:
-		lea	(v_ss_sprite_info+$16).l,a1
-		lea	(SS_Wall_Vram_Settings).l,a0
+		lea	(v_ss_sprite_info+(sizeof_ss_sprite_info*2)+ss_sprite_tile).l,a1 ; start with tile id of 2nd wall sprite
+		lea	(SS_Wall_Vram_Settings).l,a0		; new tile ids
 		moveq	#0,d0
-		move.b	(v_syncani_0_frame).w,d0
+		move.b	(v_syncani_0_frame).w,d0		; get current frame in animation
 		add.w	d0,d0
-		lea	(a0,d0.w),a0
+		lea	(a0,d0.w),a0				; jump ahead in sequence
+		rept 4
 		move.w	(a0),(a1)
-		move.w	2(a0),8(a1)
-		move.w	4(a0),$10(a1)
-		move.w	6(a0),$18(a1)
-		move.w	8(a0),$20(a1)
-		move.w	$A(a0),$28(a1)
-		move.w	$C(a0),$30(a1)
-		move.w	$E(a0),$38(a1)
+		move.w	2(a0),sizeof_ss_sprite_info(a1)
+		move.w	4(a0),(sizeof_ss_sprite_info*2)(a1)
+		move.w	6(a0),(sizeof_ss_sprite_info*3)(a1)
+		move.w	8(a0),(sizeof_ss_sprite_info*4)(a1)
+		move.w	$A(a0),(sizeof_ss_sprite_info*5)(a1)
+		move.w	$C(a0),(sizeof_ss_sprite_info*6)(a1)
+		move.w	$E(a0),(sizeof_ss_sprite_info*7)(a1)	; update tile ids for 8 sprites
 		adda.w	#$20,a0
-		adda.w	#$48,a1
-		move.w	(a0),(a1)
-		move.w	2(a0),8(a1)
-		move.w	4(a0),$10(a1)
-		move.w	6(a0),$18(a1)
-		move.w	8(a0),$20(a1)
-		move.w	$A(a0),$28(a1)
-		move.w	$C(a0),$30(a1)
-		move.w	$E(a0),$38(a1)
-		adda.w	#$20,a0
-		adda.w	#$48,a1
-		move.w	(a0),(a1)
-		move.w	2(a0),8(a1)
-		move.w	4(a0),$10(a1)
-		move.w	6(a0),$18(a1)
-		move.w	8(a0),$20(a1)
-		move.w	$A(a0),$28(a1)
-		move.w	$C(a0),$30(a1)
-		move.w	$E(a0),$38(a1)
-		adda.w	#$20,a0
-		adda.w	#$48,a1
-		move.w	(a0),(a1)
-		move.w	2(a0),8(a1)
-		move.w	4(a0),$10(a1)
-		move.w	6(a0),$18(a1)
-		move.w	8(a0),$20(a1)
-		move.w	$A(a0),$28(a1)
-		move.w	$C(a0),$30(a1)
-		move.w	$E(a0),$38(a1)
-		adda.w	#$20,a0
-		adda.w	#$48,a1
+		adda.w	#sizeof_ss_sprite_info*9,a1		; next batch of 8 sprites
+		endr
 		rts
 
 ; ===========================================================================
