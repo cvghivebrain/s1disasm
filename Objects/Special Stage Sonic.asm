@@ -376,8 +376,8 @@ SSS_Fall_Air:
 ; Subroutine to detect a wall at a given position
 
 ; input:
-;	d2 = y position
-;	d3 = x position
+;	d2 = y position (including subpixel)
+;	d3 = x position (including subpixel)
 
 ; output:
 ;	d4 = id of wall or item
@@ -391,27 +391,27 @@ SSS_FindWall:
 		move.w	d2,d4					; d4 = y pos
 		swap	d2
 		addi.w	#$44,d4
-		divu.w	#$18,d4					; divide by height of SS blocks (24 pixels)
-		mulu.w	#$80,d4					; multiply by bytes per SS row
+		divu.w	#ss_block_width,d4			; divide by height of SS blocks (24 pixels)
+		mulu.w	#ss_width,d4				; multiply by bytes per SS row ($80)
 		adda.l	d4,a1					; jump to row in layout
 		moveq	#0,d4
 		swap	d3
 		move.w	d3,d4					; d4 = x pos
 		swap	d3
 		addi.w	#$14,d4
-		divu.w	#$18,d4					; divide by width of SS blocks (24 pixels)
+		divu.w	#ss_block_width,d4			; divide by width of SS blocks (24 pixels)
 		adda.w	d4,a1					; jump to exact position in layout
 		moveq	#0,d5
 		move.b	(a1)+,d4				; get id of wall/item
 		bsr.s	SSS_FindWall_Chk
 		move.b	(a1)+,d4				; get id of adjacent wall/item
 		bsr.s	SSS_FindWall_Chk
-		adda.w	#$7E,a1					; next row
+		adda.w	#ss_width-2,a1				; next row
 		move.b	(a1)+,d4				; get id of adjacent wall/item
 		bsr.s	SSS_FindWall_Chk
 		move.b	(a1)+,d4				; get id of adjacent wall/item
 		bsr.s	SSS_FindWall_Chk
-		tst.b	d5
+		tst.b	d5					; test for collision (assumes next instruction will be a conditional branch)
 		rts
 ; ===========================================================================
 
@@ -446,13 +446,13 @@ SSS_ChkItems:
 		moveq	#0,d4
 		move.w	ost_y_pos(a0),d4			; d4 = Sonic's y pos
 		addi.w	#$50,d4
-		divu.w	#$18,d4					; divide by height of SS blocks (24 pixels)
-		mulu.w	#$80,d4					; multiply by bytes per SS row
+		divu.w	#ss_block_width,d4			; divide by height of SS blocks (24 pixels)
+		mulu.w	#ss_width,d4				; multiply by bytes per SS row ($80)
 		adda.l	d4,a1					; jump to row in layout
 		moveq	#0,d4
 		move.w	ost_x_pos(a0),d4			; d4 = Sonic's x pos
 		addi.w	#$20,d4
-		divu.w	#$18,d4					; divide by width of SS blocks (24 pixels)
+		divu.w	#ss_block_width,d4			; divide by width of SS blocks (24 pixels)
 		adda.w	d4,a1					; jump to exact position in layout
 		move.b	(a1),d4					; get id of wall/item
 		bne.s	SSS_ChkRing				; branch if not 0
@@ -468,7 +468,7 @@ SSS_ChkRing:
 		bsr.w	SS_FindFreeUpdate			; find free item update slot
 		bne.s	@noslot
 		move.b	#id_SS_UpdateRing,(a2)			; item sparkles and vanishes
-		move.l	a1,4(a2)				; address within layout to be updated
+		move.l	a1,ss_update_levelptr(a2)		; address within layout to be updated
 
 	@noslot:
 		jsr	(CollectRing).l				; get a ring
@@ -490,7 +490,7 @@ SSS_Chk1Up:
 		bsr.w	SS_FindFreeUpdate
 		bne.s	@noslot
 		move.b	#id_SS_Update1Up,(a2)
-		move.l	a1,4(a2)
+		move.l	a1,ss_update_levelptr(a2)
 
 	@noslot:
 		addq.b	#1,(v_lives).w				; add 1 to number of lives
@@ -508,7 +508,7 @@ SSS_ChkEmerald:
 		bsr.w	SS_FindFreeUpdate
 		bne.s	@noslot
 		move.b	#id_SS_UpdateEmerald,(a2)
-		move.l	a1,4(a2)
+		move.l	a1,ss_update_levelptr(a2)
 
 	@noslot:
 		cmpi.b	#6,(v_emeralds).w			; do you have all the emeralds?
@@ -546,11 +546,11 @@ SSS_ChkGhostTag:
 SSS_MakeGhostSolid:
 		cmpi.b	#2,ost_ss_ghost(a0)			; is the ghost marked as "solid"?
 		bne.s	@notsolid				; if not, branch
-		lea	(v_ss_layout+$1020).l,a1		; get layout address (blocks before $1020 are blank)
-		moveq	#$40-1,d1
+		lea	(v_ss_layout_start).l,a1		; get layout address (blocks before $1020 are blank)
+		moveq	#ss_height_actual-1,d1			; $40
 
 	@looprow:
-		moveq	#$40-1,d2
+		moveq	#ss_width_actual-1,d2			; $40
 
 	@loopitem:
 		cmpi.b	#id_SS_Item_Ghost,(a1)			; is the item a	ghost block?
@@ -558,9 +558,9 @@ SSS_MakeGhostSolid:
 		move.b	#id_SS_Item_RedWhi,(a1)			; replace ghost	block with a solid block
 
 	@noreplace:
-		addq.w	#1,a1
+		addq.w	#1,a1					; next block
 		dbf	d2,@loopitem
-		lea	$40(a1),a1
+		lea	ss_width-ss_width_actual(a1),a1		; jump to next row (i.e. skip $40 bytes of padding)
 		dbf	d1,@looprow
 
 @notsolid:
@@ -595,11 +595,11 @@ SSS_ChkBumper:
 		subi.l	#v_ss_layout+1,d1
 		move.w	d1,d2
 		andi.w	#$7F,d1
-		mulu.w	#$18,d1
+		mulu.w	#ss_block_width,d1
 		subi.w	#$14,d1					; d1 = x position of bumper
 		lsr.w	#7,d2
 		andi.w	#$7F,d2
-		mulu.w	#$18,d2
+		mulu.w	#ss_block_width,d2
 		subi.w	#$44,d2					; d2 = y position of bumper
 		sub.w	ost_x_pos(a0),d1
 		sub.w	ost_y_pos(a0),d2
@@ -614,10 +614,10 @@ SSS_ChkBumper:
 		bset	#status_air_bit,ost_status(a0)		; set Sonic's air flag
 		bsr.w	SS_FindFreeUpdate			; find free item update slot
 		bne.s	@noslot					; branch if not found
-		move.b	#id_SS_UpdateBumper,(a2)
+		move.b	#id_SS_UpdateBumper,(a2)		; set update type
 		move.l	ost_ss_item_address(a0),d0
 		subq.l	#1,d0
-		move.l	d0,4(a2)
+		move.l	d0,ss_update_levelptr(a2)		; set address within layout to update
 
 	@noslot:
 		play.w	1, jmp, sfx_Bumper			; play bumper sound
@@ -626,7 +626,7 @@ SSS_ChkBumper:
 SSS_GOAL:
 		cmpi.b	#id_SS_Item_GOAL,d0			; is the item a	"GOAL"?
 		bne.s	SSS_UPblock				; if not, branch
-		addq.b	#2,ost_routine(a0)			; run routine "SSS_ExitStage"
+		addq.b	#2,ost_routine(a0)			; goto SSS_ExitStage next
 		play.w	1, jsr, sfx_Goal			; play "GOAL" sound
 		rts	
 ; ===========================================================================
@@ -676,7 +676,7 @@ SSS_Rblock:
 		move.b	#id_SS_UpdateR,(a2)
 		move.l	ost_ss_item_address(a0),d0
 		subq.l	#1,d0
-		move.l	d0,4(a2)
+		move.l	d0,ss_update_levelptr(a2)
 
 	@noslot:
 		neg.w	(v_ss_rotation_speed).w			; reverse stage rotation
@@ -699,7 +699,7 @@ SSS_ChkGlass:
 		move.b	#id_SS_UpdateGlass,(a2)
 		movea.l	ost_ss_item_address(a0),a1
 		subq.l	#1,a1
-		move.l	a1,4(a2)
+		move.l	a1,ss_update_levelptr(a2)
 		move.b	(a1),d0
 		addq.b	#1,d0					; change glass type when touched
 		cmpi.b	#id_SS_Item_Glass4,d0
@@ -707,7 +707,7 @@ SSS_ChkGlass:
 		clr.b	d0					; remove the glass block when it's destroyed
 
 	@update:
-		move.b	d0,4(a2)				; update the stage layout
+		move.b	d0,ss_update_levelptr(a2)		; update the stage layout
 
 	@noslot:
 		play.w	1, jmp, sfx_Diamonds			; play diamond block sound

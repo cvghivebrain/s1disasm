@@ -873,14 +873,9 @@ SS_FindFreeUpdate:
 ;	uses d0, d7, a0, a1
 ; ---------------------------------------------------------------------------
 
-ss_update_id:		equ 0					; sprite id (1-6)
-ss_update_time:		equ 2					; time until next frame update
-ss_update_frame:	equ 3					; frame within update data
-ss_update_levelptr:	equ 4					; pointer to item in level layout being updated
-
 SS_UpdateItems:
 		lea	(v_ss_sprite_update_list).l,a0		; sprite update list
-		move.w	#$20-1,d7
+		move.w	#countof_ss_update-1,d7			; $20
 
 	@loop:
 		moveq	#0,d0
@@ -891,7 +886,7 @@ SS_UpdateItems:
 		jsr	(a1)					; run appropriate routine
 
 	@no_update:
-		addq.w	#8,a0					; next slot in list
+		addq.w	#sizeof_ss_update,a0			; next slot in list
 		dbf	d7,@loop
 
 		rts
@@ -955,7 +950,7 @@ SS_BumperData:	dc.b id_SS_Item_Bump1, id_SS_Item_Bump2, id_SS_Item_Bump1, id_SS_
 
 SS_Update1Up:
 		subq.b	#1,ss_update_time(a0)
-		bpl.s	locret_1B596
+		bpl.s	@wait
 		move.b	#5,ss_update_time(a0)
 		moveq	#0,d0
 		move.b	ss_update_frame(a0),d0
@@ -963,11 +958,11 @@ SS_Update1Up:
 		movea.l	ss_update_levelptr(a0),a1
 		move.b	SS_1UpData(pc,d0.w),d0
 		move.b	d0,(a1)
-		bne.s	locret_1B596
+		bne.s	@wait
 		clr.l	(a0)
 		clr.l	ss_update_levelptr(a0)
 
-locret_1B596:
+	@wait:
 		rts	
 ; ===========================================================================
 SS_1UpData:	dc.b id_SS_Item_EmSp1, id_SS_Item_EmSp2, id_SS_Item_EmSp3, id_SS_Item_EmSp4, 0
@@ -976,24 +971,24 @@ SS_1UpData:	dc.b id_SS_Item_EmSp1, id_SS_Item_EmSp2, id_SS_Item_EmSp3, id_SS_Ite
 
 SS_UpdateR:
 		subq.b	#1,ss_update_time(a0)
-		bpl.s	locret_1B5CC
+		bpl.s	@wait
 		move.b	#7,ss_update_time(a0)
 		moveq	#0,d0
 		move.b	ss_update_frame(a0),d0
 		addq.b	#1,ss_update_frame(a0)
 		movea.l	ss_update_levelptr(a0),a1
 		move.b	SS_RData(pc,d0.w),d0
-		bne.s	loc_1B5CA
+		bne.s	@update
 		clr.l	(a0)
 		clr.l	ss_update_levelptr(a0)
 		move.b	#id_SS_Item_R,(a1)
 		rts	
 ; ===========================================================================
 
-loc_1B5CA:
+@update:
 		move.b	d0,(a1)
 
-locret_1B5CC:
+@wait:
 		rts	
 ; ===========================================================================
 SS_RData:	dc.b id_SS_Item_R, id_SS_Item_R2, id_SS_Item_R, id_SS_Item_R2, 0
@@ -1002,7 +997,7 @@ SS_RData:	dc.b id_SS_Item_R, id_SS_Item_R2, id_SS_Item_R, id_SS_Item_R2, 0
 
 SS_UpdateEmerald:
 		subq.b	#1,ss_update_time(a0)
-		bpl.s	locret_1B60C
+		bpl.s	@wait
 		move.b	#5,ss_update_time(a0)
 		moveq	#0,d0
 		move.b	ss_update_frame(a0),d0
@@ -1010,13 +1005,13 @@ SS_UpdateEmerald:
 		movea.l	ss_update_levelptr(a0),a1
 		move.b	SS_EmeraldData(pc,d0.w),d0
 		move.b	d0,(a1)
-		bne.s	locret_1B60C
+		bne.s	@wait
 		clr.l	(a0)
 		clr.l	ss_update_levelptr(a0)
 		move.b	#id_SSS_ExitStage,(v_ost_player+ost_routine).w
 		play.w	1, jsr, sfx_Goal			; play special stage GOAL sound
 
-locret_1B60C:
+	@wait:
 		rts	
 ; ===========================================================================
 SS_EmeraldData:	dc.b id_SS_Item_EmSp1, id_SS_Item_EmSp2, id_SS_Item_EmSp3, id_SS_Item_EmSp4, 0
@@ -1025,7 +1020,7 @@ SS_EmeraldData:	dc.b id_SS_Item_EmSp1, id_SS_Item_EmSp2, id_SS_Item_EmSp3, id_SS
 
 SS_UpdateGlass:
 		subq.b	#1,ss_update_time(a0)			; decrement timer
-		bpl.s	locret_1B640				; branch if time is positive
+		bpl.s	@wait					; branch if time is positive
 		move.b	#1,ss_update_time(a0)			; set timer to 1 frame
 		moveq	#0,d0
 		move.b	ss_update_frame(a0),d0			; get current frame
@@ -1033,12 +1028,12 @@ SS_UpdateGlass:
 		movea.l	ss_update_levelptr(a0),a1		; get pointer to level layout
 		move.b	SS_GlassData(pc,d0.w),d0		; read new frame id
 		move.b	d0,(a1)					; update level layout
-		bne.s	locret_1B640				; branch if frame id isn't 0
-		move.b	4(a0),(a1)				; change id to weakened glass
+		bne.s	@wait					; branch if frame id isn't 0
+		move.b	ss_update_levelptr(a0),(a1)		; remove glass from layout
 		clr.l	(a0)					; free update slot
 		clr.l	ss_update_levelptr(a0)
 
-locret_1B640:
+	@wait:
 		rts	
 ; ===========================================================================
 SS_GlassData:	dc.b id_SS_Item_Glass5, id_SS_Item_Glass6, id_SS_Item_Glass7, id_SS_Item_Glass8, id_SS_Item_Glass5, id_SS_Item_Glass6, id_SS_Item_Glass7, id_SS_Item_Glass8, 0
@@ -1109,28 +1104,28 @@ SS_LoadData:
 		lea	(v_ss_layout_buffer).l,a1		; load level layout ($FF4000)
 		move.w	#0,d0
 		jsr	(EniDec).l
+
 		lea	(v_ss_layout).l,a1
 		move.w	#($4000/4)-1,d0
-
 	@clear_layout:
 		clr.l	(a1)+
 		dbf	d0,@clear_layout			; clear RAM (0-$3FFF)
 
-		lea	(v_ss_layout+$1020).l,a1
+		lea	(v_ss_layout_start).l,a1		; start of actual data ($FF1020)
 		lea	(v_ss_layout_buffer).l,a0
-		moveq	#$40-1,d1
+		moveq	#ss_height_actual-1,d1			; $40
 
 	@loop_row:
-		moveq	#$40-1,d2
+		moveq	#ss_width_actual-1,d2			; $40
 
 	@loop_bytes:
 		move.b	(a0)+,(a1)+
-		dbf	d2,@loop_bytes
+		dbf	d2,@loop_bytes				; copy one row
 
-		lea	$40(a1),a1
-		dbf	d1,@loop_row				; copy layout to RAM in blocks of $40 bytes, with $40 blank between each block
+		lea	ss_width-ss_width_actual(a1),a1		; jump to next row (i.e. skip $40 bytes of padding)
+		dbf	d1,@loop_row				; copy all rows
 
-		lea	(v_ss_sprite_info+8).l,a1
+		lea	(v_ss_sprite_info+sizeof_ss_sprite_info).l,a1 ; start with sprite type 1 (0 is blank)
 		lea	(SS_ItemIndex).l,a0
 		moveq	#((SS_ItemIndex_end-SS_ItemIndex)/6)-1,d1
 
@@ -1142,13 +1137,110 @@ SS_LoadData:
 		dbf	d1,@loop_map_ptrs			; copy mappings pointers & VRAM settings to RAM
 
 		lea	(v_ss_sprite_update_list).l,a1
-		move.w	#($100/4)-1,d1
-
+		move.w	#((sizeof_ss_update*countof_ss_update)/4)-1,d1
 	@loop_update_list:
-
 		clr.l	(a1)+
 		dbf	d1,@loop_update_list			; clear RAM ($4400-$44FF)
 
 		rts
+
+		endm
+
+; ---------------------------------------------------------------------------
+; Special Stage sprite settings
+; ---------------------------------------------------------------------------
+
+ss_sprite:	macro *,map,tile,frame
+		if strlen("\*")>0
+		\*: equ *
+		id_\*: equ ((*-SS_ItemIndex)/6)+1
+		endc
+		dc.l map+(frame*$1000000)
+		dc.w tile
+		endm
+
+include_Special_4:	macro
+
+SS_ItemIndex:
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls,0	; 1 - walls
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal2,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal2,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal2,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal2,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal2,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal2,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal2,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal2,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal2,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal3,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal3,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal3,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal3,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal3,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal3,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal3,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal3,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal3,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal4,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal4,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal4,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal4,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal4,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal4,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal4,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal4,0
+		ss_sprite Map_SSWalls,tile_Nem_SSWalls+tile_pal4,0
+	SS_ItemIndex_wall_end:
+SS_Item_Bumper:	ss_sprite Map_Bump,tile_Nem_Bumper_SS,0		; $25 - bumper
+SS_Item_W:	ss_sprite Map_SS_R,tile_Nem_SSWBlock,0		; $26 - W
+SS_Item_GOAL:	ss_sprite Map_SS_R,tile_Nem_SSGOAL,0		; $27 - GOAL
+SS_Item_1Up:	ss_sprite Map_SS_R,tile_Nem_SS1UpBlock,0	; $28 - 1UP
+SS_Item_Up:	ss_sprite Map_SS_Up,tile_Nem_SSUpDown,0		; $29 - Up
+SS_Item_Down:	ss_sprite Map_SS_Down,tile_Nem_SSUpDown,0	; $2A - Down
+SS_Item_R:	ss_sprite Map_SS_R,tile_Nem_SSRBlock+tile_pal2,0 ; $2B - R
+SS_Item_RedWhi:	ss_sprite Map_SS_Glass,tile_Nem_SSRedWhite,0	; $2C - red/white
+SS_Item_Glass1:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass,0	; $2D - breakable glass gem (blue)
+SS_Item_Glass2:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal4,0 ; $2E - breakable glass gem (green)
+SS_Item_Glass3:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal2,0 ; $2F - breakable glass gem (yellow)
+SS_Item_Glass4:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal3,0 ; $30 - breakable glass gem (pink)
+SS_Item_R2:	ss_sprite Map_SS_R,tile_Nem_SSRBlock,0		; $31 - R
+SS_Item_Bump1:	ss_sprite Map_Bump,tile_Nem_Bumper_SS,id_frame_bump_bumped1
+SS_Item_Bump2:	ss_sprite Map_Bump,tile_Nem_Bumper_SS,id_frame_bump_bumped2
+SS_Item_Zone1:	ss_sprite Map_SS_R,tile_Nem_SSZone1,0		; $34 - Zone 1
+SS_Item_Zone2:	ss_sprite Map_SS_R,tile_Nem_SSZone2,0		; $35 - Zone 2
+SS_Item_Zone3:	ss_sprite Map_SS_R,tile_Nem_SSZone3,0		; $36 - Zone 3
+SS_Item_Zone4:	ss_sprite Map_SS_R,tile_Nem_SSZone1,0		; $37 - Zone 4
+SS_Item_Zone5:	ss_sprite Map_SS_R,tile_Nem_SSZone2,0		; $38 - Zone 5
+SS_Item_Zone6:	ss_sprite Map_SS_R,tile_Nem_SSZone3,0		; $39 - Zone 6
+SS_Item_Ring:	ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,0	; $3A - ring
+SS_Item_Em1:	ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald,0	; $3B - emerald (blue)
+SS_Item_Em2:	ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald+tile_pal2,0 ; $3C - emerald (yellow)
+SS_Item_Em3:	ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald+tile_pal3,0 ; $3D - emerald (pink)
+SS_Item_Em4:	ss_sprite Map_SS_Chaos3,tile_Nem_SSEmerald+tile_pal4,0 ; $3E - emerald (green)
+SS_Item_Em5:	ss_sprite Map_SS_Chaos1,tile_Nem_SSEmerald,0	; $3F - emerald (red)
+SS_Item_Em6:	ss_sprite Map_SS_Chaos2,tile_Nem_SSEmerald,0	; $40 - emerald (grey)
+SS_Item_Ghost:	ss_sprite Map_SS_R,tile_Nem_SSGhost,0		; $41 - ghost block
+SS_Item_Spark1:	ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,id_frame_ring_sparkle1 ; $42 - sparkle
+SS_Item_Spark2:	ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,id_frame_ring_sparkle2 ; $43 - sparkle
+SS_Item_Spark3:	ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,id_frame_ring_sparkle3 ; $44 - sparkle
+SS_Item_Spark4:	ss_sprite Map_Ring,tile_Nem_Ring+tile_pal2,id_frame_ring_sparkle4 ; $45 - sparkle
+SS_Item_EmSp1:	ss_sprite Map_SS_Glass,tile_Nem_SSEmStars+tile_pal2,0 ; $46 - emerald sparkle
+SS_Item_EmSp2:	ss_sprite Map_SS_Glass,tile_Nem_SSEmStars+tile_pal2,1 ; $47 - emerald sparkle
+SS_Item_EmSp3:	ss_sprite Map_SS_Glass,tile_Nem_SSEmStars+tile_pal2,2 ; $48 - emerald sparkle
+SS_Item_EmSp4:	ss_sprite Map_SS_Glass,tile_Nem_SSEmStars+tile_pal2,3 ; $49 - emerald sparkle
+SS_Item_Switch:	ss_sprite Map_SS_R,tile_Nem_SSGhost,id_frame_ss_ghost_switch ; $4A - switch that makes ghost blocks solid
+SS_Item_Glass5:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass,0	; $4B
+SS_Item_Glass6:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal4,0 ; $4C
+SS_Item_Glass7:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal2,0 ; $4D
+SS_Item_Glass8:	ss_sprite Map_SS_Glass,tile_Nem_SSGlass+tile_pal3,0 ; $4E
+	SS_ItemIndex_end:
 
 		endm
