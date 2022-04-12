@@ -38,14 +38,14 @@ GM_Special:
 		move.w	#((v_sprite_buffer-v_camera_x_pos)/4)-1,d1
 	@clear_ram1:
 		move.l	d0,(a1)+
-		dbf	d1,@clear_ram1				; clear	variables $FFFFF700-$FFFFF800
+		dbf	d1,@clear_ram1				; clear	variables $FFFFF700-$FFFFF7FF
 
 		lea	(v_oscillating_table).w,a1
 		moveq	#0,d0
 		move.w	#((unused_ff00-v_oscillating_table)/4)-1,d1
 	@clear_ram2:
 		move.l	d0,(a1)+
-		dbf	d1,@clear_ram2				; clear	variables $FFFFFE60-$FFFFFF00
+		dbf	d1,@clear_ram2				; clear	variables $FFFFFE60-$FFFFFEFF
 
 		lea	(v_ss_bubble_x_pos).w,a1
 		moveq	#0,d0
@@ -1029,7 +1029,7 @@ SS_UpdateGlass:
 		move.b	SS_GlassData(pc,d0.w),d0		; read new frame id
 		move.b	d0,(a1)					; update level layout
 		bne.s	@wait					; branch if frame id isn't 0
-		move.b	ss_update_levelptr(a0),(a1)		; remove glass from layout
+		move.b	ss_update_levelptr(a0),(a1)		; replace glass with weaker glass
 		clr.l	(a0)					; free update slot
 		clr.l	ss_update_levelptr(a0)
 

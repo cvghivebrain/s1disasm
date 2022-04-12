@@ -23,9 +23,10 @@ v_sprite_queue:			rs.b sizeof_priority*8 ; $FFFFAC00 ; sprite display queue, fir
 v_16x16_tiles:			rs.b sizeof_16x16_all ; $FFFFB000 ; 16x16 tile mappings ($1800 bytes)
 v_sonic_gfx_buffer:		rs.b sizeof_vram_sonic ; $FFFFC800 ; buffered Sonic graphics ($17 cells) ($2E0 bytes)
 unused_cae0:			rs.b $20
-v_sonic_pos_tracker:		rs.b $100 ; $FFFFCB00 ; earlier position tracking list for Sonic, used by invinciblity stars ($100 bytes)
+v_sonic_pos_tracker:		rs.l $40 ; $FFFFCB00 ; earlier position tracking list for Sonic, used by invinciblity stars ($100 bytes)
 v_hscroll_buffer:		rs.b sizeof_vram_hscroll ; $FFFFCC00 ; scrolling table data ($380 bytes)
 unused_cf80:			rs.b $80
+				rsblock ; $D000-$EFFF cleared by GM_Title, GM_Level, GM_Special, GM_Continue, GM_Credits, GM_Ending
 v_ost_all:			rs.b sizeof_ost*countof_ost ; $FFFFD000 ; object variable space ($40 bytes per object; $80 objects) ($2000 bytes)
 	v_ost_player:		equ v_ost_all ; object variable space for Sonic ($40 bytes)
 	; Title screen and intro
@@ -78,6 +79,7 @@ v_ost_all:			rs.b sizeof_ost*countof_ost ; $FFFFD000 ; object variable space ($4
 	; Level - can interact with Sonic
 	v_ost_level_obj:	equ v_ost_all+(sizeof_ost*countof_ost_inert) ; level object variable space ($1800 bytes)
 v_ost_end:			equ v_ost_all+(sizeof_ost*countof_ost) ; $FFFFF000
+				rsblockend
 
 v_snddriver_ram:		rs.b v_snddriver_size ; $FFFFF000 ; start of RAM for the sound driver data ($5C0 bytes)
 								; sound driver equates are now defined in "sound/Sound Equates.asm"
@@ -109,6 +111,7 @@ v_vdp_hint_counter:		rs.w 1 ; $FFFFF624 ; VDP register $8A buffer - horizontal i
 v_vdp_hint_line:		equ v_vdp_hint_counter+1 ; screen line where water starts and palette is changed by HBlank
 v_palfade_start:		rs.b 1 ; $FFFFF626 ; palette fading - start position in bytes
 v_palfade_size:			rs.b 1 ; $FFFFF627 ; palette fading - number of colours
+				rsblock ; $F628-$F67F cleared by GM_Level, GM_Ending
 v_vblank_0e_counter:		rs.b 1 ; $FFFFF628 ; counter that increments when VBlank routine $E is run - unused
 unused_f629:			rs.b 1
 v_vblank_routine:		rs.b 1 ; $FFFFF62A ; VBlank routine counter
@@ -131,6 +134,7 @@ v_water_routine:		rs.b 1 ; $FFFFF64D ; water event routine counter
 f_water_pal_full:		rs.b 1 ; $FFFFF64E ; flag set when water covers the entire screen (00 = partly/all dry; 01 = all underwater)
 f_hblank_run_snd:		rs.b 1 ; $FFFFF64F ; flag set when sound driver should be run from HBlank
 v_palcycle_buffer:		rs.b $30 ; $FFFFF650 ; palette data buffer (used for palette cycling)
+				rsblockend
 v_plc_buffer:			rs.b sizeof_plc*countof_plc ; $FFFFF680 ; pattern load cues buffer (maximum $10 PLCs) ($60 bytes)
 v_plc_buffer_dest:		equ v_plc_buffer+4 ; VRAM destination for 1st item in PLC buffer (2 bytes)
 v_nem_mode_ptr:			rs.l 1 ; $FFFFF6E0 ; pointer for nemesis decompression code ($1502 or $150C)
@@ -142,6 +146,7 @@ v_nem_shift:			rs.l 1 ; $FFFFF6F4 ; Nemesis register buffer - d6: shift value
 v_nem_tile_count:		rs.w 1 ; $FFFFF6F8 ; number of 8x8 tiles in a Nemesis archive
 v_nem_tile_count_frame:		rs.w 1 ; $FFFFF6FA ; number of 8x8 tiles to process in 1 frame
 unused_f6fc:			rs.b 4
+				rsblock ; $F700-$F7FF cleared by GM_Level, GM_Special, GM_Ending
 v_camera_x_pos:			rs.l 1 ; $FFFFF700 ; foreground camera x position
 v_camera_y_pos:			rs.l 1 ; $FFFFF704 ; foreground camera y position
 v_bg1_x_pos:			rs.l 1 ; $FFFFF708 ; background x position
@@ -271,7 +276,7 @@ v_scroll_block_2_height:	rs.w 1 ; $FFFFF7F2 ; scroll block height - always $100,
 v_scroll_block_3_height:	rs.w 1 ; $FFFFF7F4 ; scroll block height - always $100, unused
 v_scroll_block_4_height:	rs.w 1 ; $FFFFF7F6 ; scroll block height - $100 for GHZ; 0 for all others, unused
 unused_f7f8:			rs.b 8
-				rsalign 4
+				rsblockend
 v_sprite_buffer:		rs.b sizeof_vram_sprites-$80 ; $FFFFF800 ; sprite table ($280 bytes, last $80 bytes are overwritten by v_pal_water_next)
 v_pal_water_next:		rs.w countof_color*4 ; $FFFFFA00 ; target underwater palette, used for transitions
 v_pal_water:			rs.w countof_color*4 ; $FFFFFA80 ; main underwater palette
@@ -287,6 +292,7 @@ v_pal_dry_line4:		equ v_pal_dry+(sizeof_pal*3) ; $FFFFFB60 ; 4th palette line
 v_pal_dry_next:			rs.w countof_color*4 ; $FFFFFB80 ; target palette, used for transitions
 v_respawn_list:			rs.b $100 ; $FFFFFC00 ; object state list (2 bytes for counter; 1 byte each for up to $FE objects)
 
+				rsalign 4
 v_stack:			rs.l $40 ; $FFFFFD00 ; stack ($100 bytes)
 v_stack_pointer:		rs.w 1 ; $FFFFFE00 ; initial stack pointer - items are added to the stack backwards from this address
 
@@ -359,6 +365,7 @@ unused_fe55:			rs.b 2
 v_emeralds:			rs.b 1 ; $FFFFFE57 ; number of chaos emeralds
 v_emerald_list:			rs.b 6 ; $FFFFFE58 ; which individual emeralds you have, 1 byte per emerald numbered 0 to 5
 v_oscillating_direction:	rs.w 1 ; $FFFFFE5E ; bitfield for the direction values in the table below are moving - 0 = up; 1 = down
+				rsblock ; $FE60-$FEFF cleared by GM_Special; $FE60-$FF7F cleared by GM_Level, GM_Ending
 v_oscillating_table:		rs.l $10 ; $FFFFFE60 ; table of 16 oscillating values, for platform movement - 1 word for current value, 1 word for rate
 v_oscillating_0_to_20:		equ v_oscillating_table
 v_oscillating_0_to_30:		equ v_oscillating_table+4
@@ -388,7 +395,7 @@ unused_feca:			rs.b $26
 v_boundary_top_debugcopy:	rs.w 1 ; $FFFFFEF0 ; top level boundary, buffered while debug mode is in use
 v_boundary_bottom_debugcopy:	rs.w 1 ; $FFFFFEF2 ; bottom level boundary, buffered while debug mode is in use
 unused_fef4:			rs.b $C
-				rsalign 4
+				rsblockend
 unused_ff00:			rs.b $10
 
 ; Variables copied during VBlank and used by DrawTilesWhenMoving:
@@ -406,6 +413,7 @@ v_bg1_redraw_direction_copy:	rs.w 1 ; $FFFFFF32 ; copy of v_bg1_redraw_direction
 v_bg2_redraw_direction_copy:	rs.w 1 ; $FFFFFF34 ; copy of v_bg2_redraw_direction
 v_bg3_redraw_direction_copy:	rs.w 1 ; $FFFFFF36 ; copy of v_bg3_redraw_direction
 unused_ff38:			rs.b $48
+				rsblockend
 
 v_levelselect_hold_delay:	rs.w 1 ; $FFFFFF80 ; level select - time until change when up/down is held
 v_levelselect_item:		rs.w 1 ; $FFFFFF82 ; level select - item selected
