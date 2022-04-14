@@ -43,7 +43,7 @@ ZoneCount:	equ 6						; discrete zones are: GHZ, MZ, SYZ, LZ, SLZ, and SBZ
 		include "Nemesis File List.asm"
 ; ===========================================================================
 
-StartOfRom:
+ROM_Start:
 Vectors:	dc.l v_stack_pointer&$FFFFFF			; Initial stack pointer value
 		dc.l EntryPoint					; Start of program
 		dc.l BusError					; Bus error
@@ -84,12 +84,11 @@ Vectors:	dc.l v_stack_pointer&$FFFFFF			; Initial stack pointer value
 			dc.w ErrorTrap
 			dcb.l 3,ErrorTrap
 		endc
-Console:	dc.b "SEGA MEGA DRIVE "				; Hardware system ID (Console name)
-Date:		dc.b "(C)SEGA 1991.APR"				; Copyright holder and release date (generally year)
-Title_Local:	dc.b "SONIC THE               HEDGEHOG                " ; Domestic name
-Title_Int:	dc.b "SONIC THE               HEDGEHOG                " ; International name
+		dc.b "SEGA MEGA DRIVE "				; Hardware system ID (Console name)
+		dc.b "(C)SEGA 1991.APR"				; Copyright holder and release date (generally year)
+		dc.b "SONIC THE               HEDGEHOG                " ; Domestic name
+		dc.b "SONIC THE               HEDGEHOG                " ; International name
 
-Serial:
 	if Revision=0
 		dc.b "GM 00001009-00"				; Serial/version number (Rev 0)
 	else
@@ -98,12 +97,11 @@ Serial:
 
 Checksum: 	dc.w $0
 		dc.b "J               "				; I/O support
-RomStartLoc:	dc.l StartOfRom					; Start address of ROM
-RomEndLoc:	dc.l EndOfRom-1					; End address of ROM
-RamStartLoc:	dc.l $FF0000					; Start address of RAM
-RamEndLoc:	dc.l $FFFFFF					; End address of RAM
+ROM_Start_Ptr:	dc.l ROM_Start					; Start address of ROM
+ROM_End_Ptr:	dc.l ROM_End-1					; End address of ROM
+		dc.l $FF0000					; Start address of RAM
+		dc.l $FFFFFF					; End address of RAM
 
-SRAMSupport:
 	if EnableSRAM=1
 		dc.b "RA", $A0+(BackupSRAM<<6)+(AddressSRAM<<3), $20
 		dc.l $200001					; SRAM start
@@ -114,8 +112,8 @@ SRAMSupport:
 		dc.l $20202020					; SRAM end
 	endc
 
-Notes:		dc.b "                                                    " ; Notes (unused, anything can be put in this space, but it has to be 52 bytes.)
-Region:		dc.b "JUE             "				; Region (Country code)
+		dc.b "                                                    " ; Notes (unused, anything can be put in this space, but it has to be 52 bytes.)
+		dc.b "JUE             "				; Region (Country code)
 EndOfHeader:
 
 ; ===========================================================================
@@ -138,7 +136,7 @@ GameProgram:
 
 CheckSumCheck:
 		movea.l	#EndOfHeader,a0				; start	checking bytes after the header	($200)
-		movea.l	#RomEndLoc,a1				; stop at end of ROM
+		movea.l	#ROM_End_Ptr,a1				; stop at end of ROM
 		move.l	(a1),d0
 		moveq	#0,d1
 
@@ -248,6 +246,7 @@ Pal_LZCyc1:	incbin	"Palettes\Cycle - LZ Waterfall.bin"
 Pal_LZCyc2:	incbin	"Palettes\Cycle - LZ Conveyor Belt.bin"
 Pal_LZCyc3:	incbin	"Palettes\Cycle - LZ Conveyor Belt Underwater.bin"
 Pal_SBZ3Cyc1:	incbin	"Palettes\Cycle - SBZ3 Waterfall.bin"
+Pal_MZCyc:	incbin	"Palettes\Cycle - MZ (Unused).bin"
 Pal_SLZCyc:	incbin	"Palettes\Cycle - SLZ.bin"
 Pal_SYZCyc1:	incbin	"Palettes\Cycle - SYZ1.bin"
 Pal_SYZCyc2:	incbin	"Palettes\Cycle - SYZ2.bin"
@@ -1547,12 +1546,12 @@ ObjPos_Null:	endobj
 		else
 			dcb.b $63C,$FF
 		endc
-		;dcb.b ($10000-(*%$10000))-(EndOfRom-SoundDriver),$FF
+		;dcb.b ($10000-(*%$10000))-(ROM_End-SoundDriver),$FF
 
 ; ---------------------------------------------------------------------------
 ; Sound driver data
 ; ---------------------------------------------------------------------------
 		include "sound/Sound Data.asm"
 
-EndOfRom:
+ROM_End:
 		END
