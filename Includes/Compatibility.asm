@@ -641,3 +641,11 @@ CheckCeilingDist_Part2:	equ Sonic_FindCeiling_Quick
 CheckLeftCeilingDist:	equ Sonic_FindWallLeft
 CheckLeftWallDist:	equ Sonic_FindWallLeft_Quick_UsePos
 CheckLeftWallDist_Part2:	equ Sonic_FindWallLeft_Quick
+
+; Sonic 3 & Knuckles Github
+anim_frame_timer:	equ ost_anim_time
+respawn_addr:		equ ost_respawn
+ground_vel:		equ ost_inertia
+invulnerability_timer:	equ ost_sonic_flash_time
+invincibility_timer:	equ ost_sonic_inv_time
+speed_shoes_timer:	equ ost_sonic_shoe_time

@@ -167,3 +167,12 @@ nemfile:	macro
 
 nemfolder:	equs "Graphics - Compressed\"
 nemfolderdec:	equs "Graphics - Compressed\Decompressed\"
+
+; ---------------------------------------------------------------------------
+; Declares a blank object
+; input: label
+; ---------------------------------------------------------------------------
+
+blankobj:	macro
+	\1:	rts
+		endm

@@ -179,7 +179,7 @@ MainGameLoop:
 		andi.w	#$1C,d0					; limit Game Mode value to $1C max (change to $7C to add more game modes)
 		jsr	GameModeArray(pc,d0.w)			; jump to apt location in ROM
 		bra.s	MainGameLoop				; loop indefinitely
-; ===========================================================================
+
 ; ---------------------------------------------------------------------------
 ; Main game mode array
 ; ---------------------------------------------------------------------------
@@ -301,11 +301,11 @@ Angle_Data:	incbin	"Misc Data\Angle Table.bin"
 		include "Includes\GM_Level.asm"
 		include "Includes\LZWaterFeatures.asm"
 
+; ---------------------------------------------------------------------------
+; Demo pointers and routines
+; ---------------------------------------------------------------------------
 		include "Includes\MoveSonicInDemo & DemoRecorder.asm"
 
-; ---------------------------------------------------------------------------
-; Demo sequence	pointers
-; ---------------------------------------------------------------------------
 DemoDataPtr:	dc.l Demo_GHZ					; demos run after the title screen
 		dc.l Demo_GHZ
 		dc.l Demo_MZ
@@ -324,10 +324,7 @@ DemoEndDataPtr:	dc.l Demo_EndGHZ1				; demos run during the credits
 		dc.l Demo_EndSBZ2
 		dc.l Demo_EndGHZ2
 
-		; unused demo data
-		dc.b   0, $8B,   8, $37,   0, $42,   8, $5C,   0, $6A,   8, $5F,   0, $2F,   8, $2C
-		dc.b   0, $21,   8,   3, $28, $30,   8,   8,   0, $2E,   8, $15,   0,  $F,   8, $46
-		dc.b   0, $1A,   8, $FF,   8, $CA,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0
+		incbin	"Demos\Unused.bin"			; unused demo data
 		even
 
 		include_Level_colptrs				; Includes\GM_Level.asm
@@ -440,8 +437,7 @@ Demo_EndGHZ2:	incbin	"Demos\Ending - GHZ2.bin"
 		include "Objects\Platforms.asm"			; BasicPlatform
 		include "Objects\Platforms [Mappings].asm"	; Map_Plat_Unused, Map_Plat_GHZ, Map_Plat_SYZ, Map_Plat_SLZ
 
-Obj19:
-		rts						; blank object
+		blankobj Obj19
 		
 		include "Objects\GHZ Giant Ball [Mappings].asm"	; Map_GBall
 
@@ -646,8 +642,7 @@ NullObject:
 		include_MotoBug_1
 		include "Objects\Moto Bug [Mappings].asm"	; Map_Moto
 
-Obj4F:
-		rts						; blank object
+		blankobj Obj4F
 
 		include "Objects\Yadrin.asm"			; Yadrin
 		include "Objects\Yadrin [Mappings].asm"		; Map_Yad
@@ -855,8 +850,7 @@ See_DataFlat:	incbin	"Collision\SLZ Seesaw Heightmap (Flat).bin" ; used by Seesa
 
 		include "Objects\Special Stage Sonic.asm"	; SonicSpecial
 
-Obj10:
-		rts						; blank object
+		blankobj Obj10
 
 		include "Includes\AnimateLevelGfx.asm"
 
@@ -883,12 +877,12 @@ Art_LivesNums:	incbin	"Graphics\Lives Counter Numbers.bin"	; 8x8 pixel numbers o
 		align	$200,$FF
 		if Revision=0
 			nemfile	Nem_SegaLogo
-	Eni_SegaLogo:	incbin	"Tilemaps\Sega Logo.eni"	; large Sega logo (mappings)
+	Eni_SegaLogo:	incbin	"Tilemaps\Sega Logo (REV00).eni" ; large Sega logo (mappings)
 			even
 		else
 			dcb.b	$300,$FF
 			nemfile	Nem_SegaLogo
-	Eni_SegaLogo:	incbin	"Tilemaps\Sega Logo (JP1).eni"	; large Sega logo (mappings)
+	Eni_SegaLogo:	incbin	"Tilemaps\Sega Logo.eni"	; large Sega logo (mappings)
 			even
 		endc
 Eni_Title:	incbin	"Tilemaps\Title Screen.eni"		; title screen foreground (mappings)
@@ -1101,9 +1095,9 @@ Blk16_MZ:	incbin	"16x16 Mappings\MZ.eni"
 		even
 		nemfile	Nem_MZ
 Blk256_MZ:	if Revision=0
-			incbin	"256x256 Mappings\MZ.kos"
+			incbin	"256x256 Mappings\MZ (REV00).kos"
 		else
-			incbin	"256x256 Mappings\MZ (JP1).kos"
+			incbin	"256x256 Mappings\MZ.kos"
 		endc
 		even
 Blk16_SLZ:	incbin	"16x16 Mappings\SLZ.eni"
@@ -1120,9 +1114,9 @@ Blk16_SBZ:	incbin	"16x16 Mappings\SBZ.eni"
 		even
 		nemfile	Nem_SBZ
 Blk256_SBZ:	if Revision=0
-			incbin	"256x256 Mappings\SBZ.kos"
+			incbin	"256x256 Mappings\SBZ (REV00).kos"
 		else
-			incbin	"256x256 Mappings\SBZ (JP1).kos"
+			incbin	"256x256 Mappings\SBZ.kos"
 		endc
 		even
 ; ---------------------------------------------------------------------------
@@ -1185,13 +1179,13 @@ SS_3:		incbin	"Special Stage Layouts\3.eni"
 SS_4:		incbin	"Special Stage Layouts\4.eni"
 		even
 		if Revision=0
+	SS_5:		incbin	"Special Stage Layouts\5 (REV00).eni"
+			even
+	SS_6:		incbin	"Special Stage Layouts\6 (REV00).eni"
+		else
 	SS_5:		incbin	"Special Stage Layouts\5.eni"
 			even
 	SS_6:		incbin	"Special Stage Layouts\6.eni"
-		else
-	SS_5:		incbin	"Special Stage Layouts\5 (JP1).eni"
-			even
-	SS_6:		incbin	"Special Stage Layouts\6 (JP1).eni"
 		endc
 		even
 ; ---------------------------------------------------------------------------
@@ -1218,37 +1212,37 @@ Art_SbzSmoke:	incbin	"Graphics\SBZ Background Smoke.bin"
 Level_Index:	index *
 		; GHZ
 		ptr Level_GHZ1
-		ptr Level_GHZbg
-		ptr byte_68D70
+		ptr Level_GHZ_bg
+		ptr Level_GHZ1_unused
 		
 		ptr Level_GHZ2
-		ptr Level_GHZbg
-		ptr byte_68E3C
+		ptr Level_GHZ_bg
+		ptr Level_GHZ2_unused
 		
 		ptr Level_GHZ3
-		ptr Level_GHZbg
-		ptr byte_68F84
+		ptr Level_GHZ_bg
+		ptr Level_GHZ3_unused
 		
-		ptr byte_68F88
-		ptr byte_68F88
-		ptr byte_68F88
+		ptr Level_GHZ4_unused
+		ptr Level_GHZ4_unused
+		ptr Level_GHZ4_unused
 		
 		; LZ
 		ptr Level_LZ1
-		ptr Level_LZbg
-		ptr byte_69190
+		ptr Level_LZ_bg
+		ptr Level_LZ1_unused
 		
 		ptr Level_LZ2
-		ptr Level_LZbg
-		ptr byte_6922E
+		ptr Level_LZ_bg
+		ptr Level_LZ2_unused
 		
 		ptr Level_LZ3
-		ptr Level_LZbg
-		ptr byte_6934C
+		ptr Level_LZ_bg
+		ptr Level_LZ3_unused
 		
 		ptr Level_SBZ3
-		ptr Level_LZbg
-		ptr byte_6940A
+		ptr Level_LZ_bg
+		ptr Level_SBZ3_unused
 		
 		; MZ
 		ptr Level_MZ1
@@ -1257,49 +1251,49 @@ Level_Index:	index *
 		
 		ptr Level_MZ2
 		ptr Level_MZ2bg
-		ptr byte_6965C
+		ptr Level_MZ2_unused
 		
 		ptr Level_MZ3
 		ptr Level_MZ3bg
-		ptr byte_697E6
+		ptr Level_MZ3_unused
 		
-		ptr byte_697EA
-		ptr byte_697EA
-		ptr byte_697EA
+		ptr Level_MZ4_unused
+		ptr Level_MZ4_unused
+		ptr Level_MZ4_unused
 		
 		; SLZ
 		ptr Level_SLZ1
-		ptr Level_SLZbg
-		ptr byte_69B84
+		ptr Level_SLZ_bg
+		ptr Level_SLZ_unused
 		
 		ptr Level_SLZ2
-		ptr Level_SLZbg
-		ptr byte_69B84
+		ptr Level_SLZ_bg
+		ptr Level_SLZ_unused
 		
 		ptr Level_SLZ3
-		ptr Level_SLZbg
-		ptr byte_69B84
+		ptr Level_SLZ_bg
+		ptr Level_SLZ_unused
 		
-		ptr byte_69B84
-		ptr byte_69B84
-		ptr byte_69B84
+		ptr Level_SLZ_unused
+		ptr Level_SLZ_unused
+		ptr Level_SLZ_unused
 		
 		; SYZ
 		ptr Level_SYZ1
-		ptr Level_SYZbg
-		ptr byte_69C7E
+		ptr Level_SYZ_bg
+		ptr Level_SYZ1_unused
 		
 		ptr Level_SYZ2
-		ptr Level_SYZbg
-		ptr byte_69D86
+		ptr Level_SYZ_bg
+		ptr Level_SYZ2_unused
 		
 		ptr Level_SYZ3
-		ptr Level_SYZbg
-		ptr byte_69EE4
+		ptr Level_SYZ_bg
+		ptr Level_SYZ3_unused
 		
-		ptr byte_69EE8
-		ptr byte_69EE8
-		ptr byte_69EE8
+		ptr Level_SYZ4_unused
+		ptr Level_SYZ4_unused
+		ptr Level_SYZ4_unused
 		
 		; SBZ
 		ptr Level_SBZ1
@@ -1310,59 +1304,60 @@ Level_Index:	index *
 		ptr Level_SBZ2bg
 		ptr Level_SBZ2bg
 		
+		; FZ
 		ptr Level_SBZ2
 		ptr Level_SBZ2bg
-		ptr byte_6A2F8
+		ptr Level_SBZ2_unused
 		
-		ptr byte_6A2FC
-		ptr byte_6A2FC
-		ptr byte_6A2FC
+		ptr Level_SBZ4_unused
+		ptr Level_SBZ4_unused
+		ptr Level_SBZ4_unused
 		zonewarning Level_Index,24
 		
 		; Ending
 		ptr Level_End
-		ptr Level_GHZbg
-		ptr byte_6A320
+		ptr Level_GHZ_bg
+		ptr Level_End_unused
 		
 		ptr Level_End
-		ptr Level_GHZbg
-		ptr byte_6A320
+		ptr Level_GHZ_bg
+		ptr Level_End_unused
 		
-		ptr byte_6A320
-		ptr byte_6A320
-		ptr byte_6A320
+		ptr Level_End_unused
+		ptr Level_End_unused
+		ptr Level_End_unused
 		
-		ptr byte_6A320
-		ptr byte_6A320
-		ptr byte_6A320
+		ptr Level_End_unused
+		ptr Level_End_unused
+		ptr Level_End_unused
 
 Level_GHZ1:	incbin	"Level Layouts\ghz1.bin"
 		even
-byte_68D70:	dc.b 0,	0, 0, 0
+Level_GHZ1_unused:	dc.b 0,	0, 0, 0
 Level_GHZ2:	incbin	"Level Layouts\ghz2.bin"
 		even
-byte_68E3C:	dc.b 0,	0, 0, 0
+Level_GHZ2_unused:	dc.b 0,	0, 0, 0
 Level_GHZ3:	incbin	"Level Layouts\ghz3.bin"
 		even
-Level_GHZbg:	incbin	"Level Layouts\ghzbg.bin"
+Level_GHZ_bg:	incbin	"Level Layouts\ghzbg.bin"
 		even
-byte_68F84:	dc.b 0,	0, 0, 0
-byte_68F88:	dc.b 0,	0, 0, 0
+Level_GHZ3_unused:	dc.b 0,	0, 0, 0
+Level_GHZ4_unused:	dc.b 0,	0, 0, 0
 
 Level_LZ1:	incbin	"Level Layouts\lz1.bin"
 		even
-Level_LZbg:	incbin	"Level Layouts\lzbg.bin"
+Level_LZ_bg:	incbin	"Level Layouts\lzbg.bin"
 		even
-byte_69190:	dc.b 0,	0, 0, 0
+Level_LZ1_unused:	dc.b 0,	0, 0, 0
 Level_LZ2:	incbin	"Level Layouts\lz2.bin"
 		even
-byte_6922E:	dc.b 0,	0, 0, 0
+Level_LZ2_unused:	dc.b 0,	0, 0, 0
 Level_LZ3:	incbin	"Level Layouts\lz3.bin"
 		even
-byte_6934C:	dc.b 0,	0, 0, 0
+Level_LZ3_unused:	dc.b 0,	0, 0, 0
 Level_SBZ3:	incbin	"Level Layouts\sbz3.bin"
 		even
-byte_6940A:	dc.b 0,	0, 0, 0
+Level_SBZ3_unused:	dc.b 0,	0, 0, 0
 
 Level_MZ1:	incbin	"Level Layouts\mz1.bin"
 		even
@@ -1372,40 +1367,40 @@ Level_MZ2:	incbin	"Level Layouts\mz2.bin"
 		even
 Level_MZ2bg:	incbin	"Level Layouts\mz2bg.bin"
 		even
-byte_6965C:	dc.b 0,	0, 0, 0
+Level_MZ2_unused:	dc.b 0,	0, 0, 0
 Level_MZ3:	incbin	"Level Layouts\mz3.bin"
 		even
 Level_MZ3bg:	incbin	"Level Layouts\mz3bg.bin"
 		even
-byte_697E6:	dc.b 0,	0, 0, 0
-byte_697EA:	dc.b 0,	0, 0, 0
+Level_MZ3_unused:	dc.b 0,	0, 0, 0
+Level_MZ4_unused:	dc.b 0,	0, 0, 0
 
 Level_SLZ1:	incbin	"Level Layouts\slz1.bin"
 		even
-Level_SLZbg:	incbin	"Level Layouts\slzbg.bin"
+Level_SLZ_bg:	incbin	"Level Layouts\slzbg.bin"
 		even
 Level_SLZ2:	incbin	"Level Layouts\slz2.bin"
 		even
 Level_SLZ3:	incbin	"Level Layouts\slz3.bin"
 		even
-byte_69B84:	dc.b 0,	0, 0, 0
+Level_SLZ_unused:	dc.b 0,	0, 0, 0
 
 Level_SYZ1:	incbin	"Level Layouts\syz1.bin"
 		even
-Level_SYZbg:	if Revision=0
+Level_SYZ_bg:	if Revision=0
 			incbin	"Level Layouts\syzbg.bin"
 		else
 			incbin	"Level Layouts\syzbg (JP1).bin"
 		endc
 		even
-byte_69C7E:	dc.b 0,	0, 0, 0
+Level_SYZ1_unused:	dc.b 0,	0, 0, 0
 Level_SYZ2:	incbin	"Level Layouts\syz2.bin"
 		even
-byte_69D86:	dc.b 0,	0, 0, 0
+Level_SYZ2_unused:	dc.b 0,	0, 0, 0
 Level_SYZ3:	incbin	"Level Layouts\syz3.bin"
 		even
-byte_69EE4:	dc.b 0,	0, 0, 0
-byte_69EE8:	dc.b 0,	0, 0, 0
+Level_SYZ3_unused:	dc.b 0,	0, 0, 0
+Level_SYZ4_unused:	dc.b 0,	0, 0, 0
 
 Level_SBZ1:	incbin	"Level Layouts\sbz1.bin"
 		even
@@ -1415,12 +1410,11 @@ Level_SBZ2:	incbin	"Level Layouts\sbz2.bin"
 		even
 Level_SBZ2bg:	incbin	"Level Layouts\sbz2bg.bin"
 		even
-byte_6A2F8:	dc.b 0,	0, 0, 0
-byte_6A2FC:	dc.b 0,	0, 0, 0
+Level_SBZ2_unused:	dc.b 0,	0, 0, 0
+Level_SBZ4_unused:	dc.b 0,	0, 0, 0
 Level_End:	incbin	"Level Layouts\ending.bin"
 		even
-byte_6A320:	dc.b 0,	0, 0, 0
-
+Level_End_unused:	dc.b 0,	0, 0, 0
 
 Art_BigRing:	incbin	"Graphics\Giant Ring.bin"
 		even
