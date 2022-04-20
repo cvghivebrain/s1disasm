@@ -4,14 +4,12 @@
 ; (also known as SMPS 68k Type 1b)
 ; ---------------------------------------------------------------------------
 
-; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; include song language macros
 ; ---------------------------------------------------------------------------
 
 		include "sound/Sound Language.asm"
 
-; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Address Table
 ; ---------------------------------------------------------------------------
@@ -23,19 +21,17 @@ Go_SoundIndex:		dc.l SoundIndex
 Go_SpeedUpIndex:	dc.l SpeedUpIndex
 Go_Envelopes:		dc.l Envelopes
 
-; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Envelope pointer list
 ; ---------------------------------------------------------------------------
 
-GenEnvTable	macro	name
-		dc.l envdata_\name			; create a pointer for every envelope
+GenEnvTable:	macro	name
+		dc.l envdata_\name				; create a pointer for every envelope
 		endm
 
 Envelopes:
-		VolumeEnv	GenEnvTable		; generate pointers for all the envelopes
+		VolumeEnv	GenEnvTable			; generate pointers for all the envelopes
 
-; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Envelope includes
 ; ---------------------------------------------------------------------------
@@ -98,9 +94,8 @@ envdata_09:
 		dc.b $08, $09, $0A, $0B, $0C, $0D, $0E, $0F
 		dc.b evcHold
 
-		even					; align to word
+		even
 
-; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Speed shoes tempo list.
 ; Overrides normal tempo value for the duration of speed shoes.
@@ -109,28 +104,26 @@ envdata_09:
 ; tempos while speed shoes are active. If you don't want that, you should add
 ; their "correct" sped-up main tempos to the list, in "sound/Sounds.asm"!
 
-GenSpeedup	macro	name, priority, tempo
-	if strlen("\tempo")>0				; checks if \tempo was given a value
+GenSpeedup:	macro	name, priority, tempo
+		if strlen("\tempo")>0				; checks if \tempo was given a value
 		dc.b \tempo
-	endc
+		endc
 		endm
 
 SpeedUpIndex:
-		MusicFiles	GenSpeedup		; generate the speed shoes tempo list
+		MusicFiles	GenSpeedup			; generate the speed shoes tempo list
 
-; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Song address table
 ; ---------------------------------------------------------------------------
 
-GenMusicTable	macro	name
-		dc.l musfile_\name			; create a pointer for every music file
+GenMusicTable:	macro	name
+		dc.l musfile_\name				; create a pointer for every music file
 		endm
 
 MusicIndex:
-		MusicFiles	GenMusicTable		; generate pointers for all the files
+		MusicFiles	GenMusicTable			; generate pointers for all the files
 
-; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Priority table
 ;
@@ -142,32 +135,30 @@ MusicIndex:
 ; will only override special SFX and music will only override music.
 ; ---------------------------------------------------------------------------
 
-GenPriority	macro	name, priority
+GenPriority:	macro	name, priority
 		dc.b \priority
 		endm
 
 SoundPriorities:
-		MusicFiles	GenPriority		; generate priorities for all music
-		dcb.b _firstSfx-_lastMusic-1, $90	; dummy entries for music entries that are not defined
-		SfxFiles	GenPriority		; generate priorities for all sfx
-		dcb.b _firstSpecSfx-_lastSfx-1, $80	; dummy entries for sfx entries that are not defined
-		SpecSfxFiles	GenPriority		; generate priorities for all special sfx
-		dcb.b _firstCmd-_lastSpecSfx-1, $80	; dummy entries for special sfx entries that are not defined
-		DriverCmdFiles	GenPriority		; generate priorities for all commands
+		MusicFiles	GenPriority			; generate priorities for all music
+		dcb.b _firstSfx-_lastMusic-1, $90		; dummy entries for music entries that are not defined
+		SfxFiles	GenPriority			; generate priorities for all sfx
+		dcb.b _firstSpecSfx-_lastSfx-1, $80		; dummy entries for sfx entries that are not defined
+		SpecSfxFiles	GenPriority			; generate priorities for all special sfx
+		dcb.b _firstCmd-_lastSpecSfx-1, $80		; dummy entries for special sfx entries that are not defined
+		DriverCmdFiles	GenPriority			; generate priorities for all commands
 
-; ===========================================================================
 ; ---------------------------------------------------------------------------
-; include the actual sound driver program
+; Include the actual sound driver program
 ; ---------------------------------------------------------------------------
 
 		include "sound/Sound Driver.asm"
 
-; ===========================================================================
 ; ---------------------------------------------------------------------------
-; patch and include the kosinski compressed DAC driver
+; Patch and include the kosinski compressed DAC driver
 ; ---------------------------------------------------------------------------
 
-Kos_DacDriver:		; TODO: this is currently hardcoded to replace the dummy pointers and values with actual values. we should find a way to not hardcode this
+Kos_DacDriver:							; TODO: this is currently hardcoded to replace the dummy pointers and values with actual values. we should find a way to not hardcode this
 		incbin	"sound\DAC Driver.kos", 0, $15
 		dc.b ((SegaPCM&$FF8000)/$8000)&1		; Least bit of bank ID (bit 15 of address)
 		incbin	"sound\DAC Driver.kos", $16, 6
@@ -181,59 +172,54 @@ Kos_DacDriver:		; TODO: this is currently hardcoded to replace the dummy pointer
 		incbin	"sound\DAC Driver.kos", $B5, $16AB
 		even
 
-; ===========================================================================
 ; ---------------------------------------------------------------------------
-; music file includes
+; Music file includes
 ; ---------------------------------------------------------------------------
 
-_song =		-1					; used to track song stats
+_song: =		-1					; used to track song stats
 
-IncludeMusic	macro	name
-musfile_\name	include	"sound/music/\name\.s"		; include the music file itself
-		even					; next file must be aligned to word
+IncludeMusic:	macro	name
+musfile_\name:	include	"sound/music/\name\.s"			; include the music file itself
+		even						; next file must be aligned to word
 		endm
 
-		MusicFiles	IncludeMusic		; generate includes for all the files
-; ===========================================================================
+		MusicFiles	IncludeMusic			; generate includes for all the files
+
 ; ---------------------------------------------------------------------------
-; sfx pointer list
+; Sfx pointer list
 ; ---------------------------------------------------------------------------
 
-GenSfxTable	macro	name
-		dc.l sfxfile_\name			; create a pointer for every sfx file
+GenSfxTable:	macro	name
+		dc.l sfxfile_\name				; create a pointer for every sfx file
 		endm
 
 SoundIndex:
-		SfxFiles	GenSfxTable		; generate pointers for all the sfx
+		SfxFiles	GenSfxTable			; generate pointers for all the sfx
 
-; ===========================================================================
 ; ---------------------------------------------------------------------------
-; special sfx pointer list
+; Special sfx pointer list
 ; ---------------------------------------------------------------------------
 
 SpecSoundIndex:
-		SpecSfxFiles	GenSfxTable		; generate pointers for all the special sfx
+		SpecSfxFiles	GenSfxTable			; generate pointers for all the special sfx
 
-; ===========================================================================
 ; ---------------------------------------------------------------------------
-; sfx includes
+; Sfx includes
 ; ---------------------------------------------------------------------------
 
-IncludeSfx	macro	name
-sfxfile_\name	include	"sound/sfx/\name\.s"		; include the sfx file itself
-		even					; next file must be aligned to word
+IncludeSfx:	macro	name
+sfxfile_\name:	include	"sound/sfx/\name\.s"			; include the sfx file itself
+		even						; next file must be aligned to word
 		endm
 
-		SfxFiles	IncludeSfx		; generate includes for all the files
+		SfxFiles	IncludeSfx			; generate includes for all the files
 
-; ===========================================================================
 ; ---------------------------------------------------------------------------
-; special sfx includes
+; Special sfx includes
 ; ---------------------------------------------------------------------------
 
-		SpecSfxFiles	IncludeSfx		; generate includes for all the files
+		SpecSfxFiles	IncludeSfx			; generate includes for all the files
 
-; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; SEGA PCM include
 ;
@@ -242,14 +228,14 @@ sfxfile_\name	include	"sound/sfx/\name\.s"		; include the sfx file itself
 
 		; check that SEGA PCM is not larger than a z80 bank
 		if filesize("\SegaPCM_File") > $8000
-			inform 3,"Sega sound must fit within $8000 bytes, but its size is $%h bytes.", filesize("\SegaPCM_File")
+		inform 3,"Sega sound must fit within $8000 bytes, but its size is $%h bytes.", filesize("\SegaPCM_File")
 		endc
 
 		; Don't let Sega sample cross $8000-byte boundary (DAC driver doesn't switch banks automatically)
 		if (*&$7FFF) + filesize("\SegaPCM_File") > $8000
-			align $8000
+		align $8000
 		endc
 ; ---------------------------------------------------------------------------
 
-SegaPCM:	incbin	"\SegaPCM_File"			; include the actual Sega PCM data
+SegaPCM:	incbin	"\SegaPCM_File"				; include the actual Sega PCM data
 		even

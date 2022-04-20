@@ -1,26 +1,24 @@
-; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Subroutine to	load the DAC driver
 ; ---------------------------------------------------------------------------
 
 DacDriverLoad:
 		nop
-		stopZ80					; stop the z80 and make sure z80 reset was not asserted
+		stopZ80						; stop the z80 and make sure z80 reset was not asserted
 		resetZ80_release
 
-		lea	(Kos_DacDriver).l,a0		; compressed DAC driver address
-		lea	(z80_ram).l,a1			; load into start of z80 RAM
-		bsr.w	KosDec				; decompress the DAC driver
+		lea	(Kos_DacDriver).l,a0			; compressed DAC driver address
+		lea	(z80_ram).l,a1				; load into start of z80 RAM
+		bsr.w	KosDec					; decompress the DAC driver
 
-		resetZ80_assert				; assert z80 reset
-	rept 4
-		nop					; wait a little time to finish resetting
-	endr
-		resetZ80_release			; release z80 reset (enables z80)
-		startZ80				; start z80 again
+		resetZ80_assert					; assert z80 reset
+		rept 4
+		nop						; wait a little time to finish resetting
+		endr
+		resetZ80_release				; release z80 reset (enables z80)
+		startZ80					; start z80 again
 		rts
 
-; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Subroutines to play sounds in various queue slots
 ;
