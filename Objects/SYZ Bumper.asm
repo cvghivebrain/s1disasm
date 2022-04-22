@@ -36,10 +36,10 @@ Bump_Hit:	; Routine 2
 		sub.w	ost_y_pos(a1),d2
 		jsr	(CalcAngle).l				; convert to angle
 		jsr	(CalcSine).l				; convert to sine/cosine
-		muls.w	#-$700,d1
+		muls.w	#-bumper_power,d1
 		asr.l	#8,d1
 		move.w	d1,ost_x_vel(a1)			; bounce Sonic away
-		muls.w	#-$700,d0
+		muls.w	#-bumper_power,d0
 		asr.l	#8,d0
 		move.w	d0,ost_y_vel(a1)			; bounce Sonic away
 		bset	#status_air_bit,ost_status(a1)

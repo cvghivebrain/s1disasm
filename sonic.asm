@@ -296,6 +296,7 @@ Sine_Data:	incbin	"Misc Data\Sine & Cosine Waves.bin"	; values for a 256 degree 
 Angle_Data:	incbin	"Misc Data\Angle Table.bin"
 
 		include_Sega					; "Includes\GM_Sega.asm"
+		include "Includes\Demo Pointers.asm"
 		include "Includes\GM_Title.asm"
 
 		include "Includes\GM_Level.asm"
@@ -305,25 +306,7 @@ Angle_Data:	incbin	"Misc Data\Angle Table.bin"
 ; Demo pointers and routines
 ; ---------------------------------------------------------------------------
 		include "Includes\MoveSonicInDemo & DemoRecorder.asm"
-
-DemoDataPtr:	dc.l Demo_GHZ					; demos run after the title screen
-		dc.l Demo_GHZ
-		dc.l Demo_MZ
-		dc.l Demo_MZ
-		dc.l Demo_SYZ
-		dc.l Demo_SYZ
-		dc.l Demo_SS
-		dc.l Demo_SS
-
-DemoEndDataPtr:	dc.l Demo_EndGHZ1				; demos run during the credits
-		dc.l Demo_EndMZ
-		dc.l Demo_EndSYZ
-		dc.l Demo_EndLZ
-		dc.l Demo_EndSLZ
-		dc.l Demo_EndSBZ1
-		dc.l Demo_EndSBZ2
-		dc.l Demo_EndGHZ2
-
+		include_demo_pointers				; Includes\Demo Pointers.asm
 		incbin	"Demos\Unused.bin"			; unused demo data
 		even
 

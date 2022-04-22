@@ -67,13 +67,13 @@ Card_Main:	; Routine 0
 		movea.l	a0,a1					; replace current object with 1st item in list
 		moveq	#0,d0
 		move.b	(v_zone).w,d0
-		cmpi.w	#(id_LZ<<8)+3,(v_zone).w		; check if level is SBZ3
+		cmpi.w	#id_SBZ_act3,(v_zone).w			; check if level is SBZ3
 		bne.s	@not_sbz3				; if not, branch
 		moveq	#5,d0					; load title card number 5 (SBZ)
 
 	@not_sbz3:
 		move.w	d0,d2
-		cmpi.w	#(id_SBZ<<8)+2,(v_zone).w		; check if level is FZ
+		cmpi.w	#id_FZ,(v_zone).w			; check if level is FZ
 		bne.s	@not_fz					; if not, branch
 		moveq	#6,d0					; load title card number 6 (FZ)
 		moveq	#id_frame_card_fz,d2			; use "FINAL" frame ($B)

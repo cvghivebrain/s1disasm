@@ -34,7 +34,7 @@ PushB_Main:	; Routine 0
 		move.b	#$F,ost_width(a0)
 		move.l	#Map_Push,ost_mappings(a0)
 		move.w	#tile_Nem_MzBlock+tile_pal3,ost_tile(a0) ; MZ specific code
-		cmpi.b	#1,(v_zone).w				; is current zone Labyrinth?
+		cmpi.b	#id_LZ,(v_zone).w			; is current zone Labyrinth?
 		bne.s	@notLZ					; if not, branch
 		move.w	#$3DE+tile_pal3,ost_tile(a0)		; LZ specific code
 
@@ -73,7 +73,7 @@ PushB_Action:	; Routine 2
 		move.w	#$11,d3
 		move.w	ost_x_pos(a0),d4
 		bsr.w	PushB_Solid				; make block solid & update its position
-		cmpi.w	#(id_MZ<<8)+0,(v_zone).w		; is the level MZ act 1?
+		cmpi.w	#id_MZ_act1,(v_zone).w			; is the level MZ act 1?
 		bne.s	PushB_Display				; if not, branch
 		bclr	#7,ost_subtype(a0)
 		move.w	ost_x_pos(a0),d0
@@ -213,7 +213,7 @@ PushB_OnLava_Sunk:
 ; ---------------------------------------------------------------------------
 
 PushB_ChkGeyser:
-		cmpi.w	#(id_MZ<<8)+1,(v_zone).w		; is the level MZ act 2?
+		cmpi.w	#id_MZ_act2,(v_zone).w			; is the level MZ act 2?
 		bne.s	@not_mz2				; if not, branch
 		move.w	#-$20,d2
 		cmpi.w	#$DD0,ost_x_pos(a0)
@@ -225,7 +225,7 @@ PushB_ChkGeyser:
 		rts
 
 @not_mz2:
-		cmpi.w	#(id_MZ<<8)+2,(v_zone).w		; is the level MZ act 3?
+		cmpi.w	#id_MZ_act3,(v_zone).w			; is the level MZ act 3?
 		bne.s	@not_mz3				; if not, branch
 		move.w	#$20,d2
 		cmpi.w	#$560,ost_x_pos(a0)

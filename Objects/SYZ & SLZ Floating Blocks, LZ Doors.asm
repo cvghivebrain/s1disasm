@@ -229,7 +229,7 @@ FBlock_UpDown_Move:
 FBlock_UpButton:
 		tst.b	ost_fblock_move_flag(a0)		; is object moving?
 		bne.s	@chk_distance				; if yes, branch
-		cmpi.w	#(id_LZ<<8)+0,(v_zone).w		; is level LZ1 ?
+		cmpi.w	#id_LZ_act1,(v_zone).w			; is level LZ1 ?
 		bne.s	@not_lz1				; if not, branch
 		cmpi.b	#3,ost_fblock_btn_num(a0)		; is object linked to button 3?
 		bne.s	@not_lz1				; if not, branch
@@ -245,7 +245,7 @@ FBlock_UpButton:
 		move.b	ost_fblock_btn_num(a0),d0
 		btst	#0,(a2,d0.w)				; check status of linked button
 		beq.s	@not_pressed				; branch if not pressed
-		cmpi.w	#(id_LZ<<8)+0,(v_zone).w		; is level LZ1 ?
+		cmpi.w	#id_LZ_act1,(v_zone).w			; is level LZ1 ?
 		bne.s	@not_lz1_again				; if not, branch
 		cmpi.b	#3,d0					; is object linked to button 3?
 		bne.s	@not_lz1_again				; if not, branch

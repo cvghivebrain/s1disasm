@@ -95,7 +95,7 @@ EndDemoSetup:
 		move.l	d0,(v_time).w				; clear time
 		move.l	d0,(v_score).w				; clear score
 		move.b	d0,(v_last_lamppost).w			; clear lamppost counter
-		cmpi.w	#4,(v_credits_num).w			; is LZ demo running?
+		cmpi.w	#id_Demo_EndLZ+1,(v_credits_num).w	; is LZ demo running?
 		bne.s	@exit					; if not, branch
 
 		lea	(EndDemo_LampVar).l,a1			; load lamppost variables
@@ -109,24 +109,7 @@ EndDemoSetup:
 @exit:
 		rts
 
-; ---------------------------------------------------------------------------
-; Ending demo level array
-
-; Lists levels used in ending demos
-; ---------------------------------------------------------------------------
-
-EndDemoList:
-		dc.b id_GHZ, 0					; Green Hill Zone, act 1
-		dc.b id_MZ, 1					; Marble Zone, act 2
-		dc.b id_SYZ, 2					; Spring Yard Zone, act 3
-		dc.b id_LZ, 2					; Labyrinth Zone, act 3
-		dc.b id_SLZ, 2					; Star Light Zone, act 3
-		dc.b id_SBZ, 0					; Scrap Brain Zone, act 1
-		dc.b id_SBZ, 1					; Scrap Brain Zone, act 2
-		dc.b id_GHZ, 0					; Green Hill Zone, act 1
-	EndDemoList_end:
-
-sizeof_EndDemoList:	equ EndDemoList_end-EndDemoList
+		include_enddemo_list				; Includes\Demo Pointers.asm
 
 ; ---------------------------------------------------------------------------
 ; Lamppost variables in the end sequence demo (Labyrinth Zone)

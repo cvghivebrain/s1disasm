@@ -78,7 +78,7 @@ GM_Title:
 		move.w	#0,(v_debug_active).w			; disable debug item placement mode
 		move.w	#0,(v_demo_mode).w			; disable debug mode
 		move.w	#0,(v_title_unused).w			; unused variable
-		move.w	#(id_GHZ<<8),(v_zone).w			; set level to GHZ act 1 (0000)
+		move.w	#id_GHZ_act1,(v_zone).w			; set level to GHZ act 1 (0000)
 		move.w	#0,(v_palcycle_time).w			; disable palette cycling
 		bsr.w	LevelParameterLoad			; set level boundaries and Sonic's start position
 		bsr.w	DeformLayers
@@ -294,7 +294,7 @@ LevelSelect:
 
 LevSel_Ending:
 		move.b	#id_Ending,(v_gamemode).w		; set gamemode to $18 (Ending)
-		move.w	#(id_EndZ<<8),(v_zone).w		; set level to 0600 (Ending)
+		move.w	#id_EndZ_good,(v_zone).w		; set level to 0600 (Ending)
 		rts	
 ; ===========================================================================
 
@@ -453,7 +453,7 @@ PlayDemo:
 	@demo_0_to_3:
 		move.w	#1,(v_demo_mode).w			; turn demo mode on
 		move.b	#id_Demo,(v_gamemode).w			; set screen mode to 08 (demo)
-		cmpi.w	#$600,d0				; is level number 0600 (special	stage)?
+		cmpi.w	#id_Demo_SS,d0				; is level number 0600 (special	stage)?
 		bne.s	@demo_level				; if not, branch
 		move.b	#id_Special,(v_gamemode).w		; set screen mode to $10 (Special Stage)
 		clr.w	(v_zone).w				; clear	level number
@@ -471,16 +471,7 @@ PlayDemo:
 		endc
 		rts	
 
-; ---------------------------------------------------------------------------
-; Demo level array
-
-; Lists levels used in demos
-; ---------------------------------------------------------------------------
-DemoLevelArray:
-		dc.b id_GHZ, 0					; Green Hill Zone, act 1
-		dc.b id_MZ, 0					; Marble Zone, act 1
-		dc.b id_SYZ, 0					; Spring Yard Zone, act 1
-		dc.w $600					; Special Stage
+		include_demo_list				; Includes\Demo Pointers.asm
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	change what you're selecting in the level select

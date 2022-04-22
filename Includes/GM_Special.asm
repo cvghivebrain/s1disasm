@@ -117,7 +117,7 @@ SS_MainLoop:
 			bne.w	SS_ToLevel
 		endc
 		move.b	#id_Level,(v_gamemode).w		; set screen mode to $0C (level)
-		cmpi.w	#(id_SBZ<<8)+3,(v_zone).w		; is level number higher than FZ?
+		cmpi.w	#id_FZ+1,(v_zone).w			; is level number higher than FZ?
 		blo.s	@level_ok				; if not, branch
 		clr.w	(v_zone).w				; set to GHZ1
 

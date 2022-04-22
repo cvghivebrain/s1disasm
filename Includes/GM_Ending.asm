@@ -47,11 +47,11 @@ GM_Ending:
 		move.w	#$8720,(a6)				; set background colour (line 3; colour 0)
 		move.w	#$8A00+223,(v_vdp_hint_counter).w	; set palette change position (for water)
 		move.w	(v_vdp_hint_counter).w,(a6)
-		move.w	#30,(v_air).w
-		move.w	#id_EndZ<<8,(v_zone).w			; set level number to 0600 (extra flowers)
+		move.w	#air_full,(v_air).w
+		move.w	#id_EndZ_good,(v_zone).w		; set level number to 0600 (extra flowers)
 		cmpi.b	#6,(v_emeralds).w			; do you have all 6 emeralds?
 		beq.s	@all_emeralds				; if yes, branch
-		move.w	#(id_EndZ<<8)+1,(v_zone).w		; set level number to 0601 (no flowers)
+		move.w	#id_EndZ_bad,(v_zone).w			; set level number to 0601 (no flowers)
 
 	@all_emeralds:
 		moveq	#id_PLC_Ending,d0

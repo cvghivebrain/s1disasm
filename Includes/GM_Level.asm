@@ -113,7 +113,7 @@ GM_Level:
 		move.b	#1,(v_water_direction).w		; enable water
 
 	@skip_water:
-		move.w	#30,(v_air).w
+		move.w	#air_full,(v_air).w
 		enable_ints
 		moveq	#id_Pal_Sonic,d0
 		bsr.w	PalLoad_Now				; load Sonic's palette
@@ -137,12 +137,12 @@ GM_Level:
 		bmi.s	Level_Skip_TtlCard			; if yes, branch
 		moveq	#0,d0
 		move.b	(v_zone).w,d0
-		cmpi.w	#(id_LZ<<8)+3,(v_zone).w		; is level SBZ3?
+		cmpi.w	#id_SBZ_act3,(v_zone).w			; is level SBZ3?
 		bne.s	@not_sbz3_bgm				; if not, branch
 		moveq	#5,d0					; use 5th music (SBZ)
 
 	@not_sbz3_bgm:
-		cmpi.w	#(id_SBZ<<8)+2,(v_zone).w		; is level FZ?
+		cmpi.w	#id_FZ,(v_zone).w			; is level FZ?
 		bne.s	@not_fz_bgm				; if not, branch
 		moveq	#6,d0					; use 6th music (FZ)
 

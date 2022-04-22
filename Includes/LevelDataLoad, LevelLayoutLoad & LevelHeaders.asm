@@ -21,14 +21,14 @@ LevelDataLoad:
 		move.w	(a2)+,d0				; load music id (unused, overwritten on next line)
 		move.w	(a2),d0					; load palette id
 		andi.w	#$FF,d0					; read only low byte (high byte was duplicate)
-		cmpi.w	#(id_LZ<<8)+3,(v_zone).w		; is level SBZ3 (LZ4) ?
+		cmpi.w	#id_SBZ_act3,(v_zone).w			; is level SBZ3 (LZ4) ?
 		bne.s	@notSBZ3				; if not, branch
 		moveq	#id_Pal_SBZ3,d0				; use SB3 palette
 
 	@notSBZ3:
-		cmpi.w	#(id_SBZ<<8)+1,(v_zone).w		; is level SBZ2?
+		cmpi.w	#id_SBZ_act2,(v_zone).w			; is level SBZ2?
 		beq.s	@isSBZorFZ				; if yes, branch
-		cmpi.w	#(id_SBZ<<8)+2,(v_zone).w		; is level FZ?
+		cmpi.w	#id_FZ,(v_zone).w			; is level FZ?
 		bne.s	@normalpal				; if not, branch
 
 	@isSBZorFZ:

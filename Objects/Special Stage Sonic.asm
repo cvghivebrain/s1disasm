@@ -34,7 +34,7 @@ SSS_Main:	; Routine 0
 		move.b	#sonic_height_roll,ost_height(a0)
 		move.b	#sonic_width_roll,ost_width(a0)
 		move.l	#Map_Sonic,ost_mappings(a0)
-		move.w	#vram_sonic/sizeof_cell,ost_tile(a0)
+		move.w	#tile_sonic,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#0,ost_priority(a0)
 		move.b	#id_Roll,ost_anim(a0)
@@ -605,10 +605,10 @@ SSS_ChkBumper:
 		sub.w	ost_y_pos(a0),d2
 		jsr	(CalcAngle).l
 		jsr	(CalcSine).l
-		muls.w	#-$700,d1
+		muls.w	#-bumper_power,d1
 		asr.l	#8,d1
 		move.w	d1,ost_x_vel(a0)			; bounce Sonic away from bumper
-		muls.w	#-$700,d0
+		muls.w	#-bumper_power,d0
 		asr.l	#8,d0
 		move.w	d0,ost_y_vel(a0)
 		bset	#status_air_bit,ost_status(a0)		; set Sonic's air flag

@@ -6,10 +6,10 @@
 ; ---------------------------------------------------------------------------
 
 ResumeMusic:
-		cmpi.w	#12,(v_air).w				; more than 12 seconds of air left?
+		cmpi.w	#air_alert,(v_air).w			; more than 12 seconds of air left?
 		bhi.s	@over12					; if yes, branch
 		move.w	#mus_LZ,d0				; play LZ music
-		cmpi.w	#(id_LZ<<8)+3,(v_zone).w		; check if level is 0103 (SBZ3)
+		cmpi.w	#id_SBZ_act3,(v_zone).w			; check if level is 0103 (SBZ3)
 		bne.s	@notsbz
 		move.w	#mus_SBZ,d0				; play SBZ music
 
@@ -29,6 +29,6 @@ ResumeMusic:
 		jsr	(PlaySound0).l
 
 	@over12:
-		move.w	#30,(v_air).w				; reset air to 30 seconds
+		move.w	#air_full,(v_air).w			; reset air to 30 seconds
 		clr.b	(v_ost_bubble+ost_drown_disp_time).w
 		rts

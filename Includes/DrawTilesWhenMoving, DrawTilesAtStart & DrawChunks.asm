@@ -867,7 +867,7 @@ DrawTilesAtStart:
 			beq.w	DrawTilesAtStart_GHZ		; branch if GHZ
 			cmpi.b	#id_MZ,(v_zone).w
 			beq.w	DrawTilesAtStart_MZ		; branch if  LZ
-			cmpi.w	#(id_SBZ<<8)+0,(v_zone).w
+			cmpi.w	#id_SBZ_act1,(v_zone).w
 			beq.w	DrawTilesAtStart_SBZ1		; branch if SBZ act 1
 			cmpi.b	#id_EndZ,(v_zone).w
 			beq.w	DrawTilesAtStart_GHZ		; branch if on ending

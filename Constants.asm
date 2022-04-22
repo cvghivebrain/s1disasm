@@ -22,31 +22,32 @@ sizeof_levelrow:	equ level_max_width*2			; level row, followed by background row
 sizeof_level:		equ sizeof_levelrow*level_max_height	; includes background in $40 byte alternating strips
 
 ; VRAM data
-vram_window:	equ $A000	; window nametable - unused
-vram_fg:	equ $C000	; foreground nametable ($1000 bytes)
-vram_bg:	equ $E000	; background nametable ($1000 bytes)
-vram_sonic:	equ $F000	; Sonic graphics ($2E0 bytes)
-vram_sprites:	equ $F800	; sprite table ($280 bytes)
-vram_hscroll:	equ $FC00	; horizontal scroll table ($380 bytes)
+vram_window:		equ $A000	; window nametable - unused
+vram_fg:		equ $C000	; foreground nametable ($1000 bytes)
+vram_bg:		equ $E000	; background nametable ($1000 bytes)
+vram_sonic:		equ $F000	; Sonic graphics ($2E0 bytes)
+tile_sonic:		equ vram_sonic/sizeof_cell
+vram_sprites:		equ $F800	; sprite table ($280 bytes)
+vram_hscroll:		equ $FC00	; horizontal scroll table ($380 bytes)
 
-draw_base:	equ vram_fg			; base address for nametables, used by Calc_VRAM_Pos (must be multiple of $4000)
-draw_fg:	equ $4000+(vram_fg-draw_base)	; VRAM write command + fg nametable address relative to base
-draw_bg:	equ $4000+(vram_bg-draw_base)	; VRAM write command + bg nametable address relative to base
+draw_base:		equ vram_fg			; base address for nametables, used by Calc_VRAM_Pos (must be multiple of $4000)
+draw_fg:		equ $4000+(vram_fg-draw_base)	; VRAM write command + fg nametable address relative to base
+draw_bg:		equ $4000+(vram_bg-draw_base)	; VRAM write command + bg nametable address relative to base
 
-vram_crabmeat:	equ $8000	; crabmeat graphics
-vram_bomb:	equ $8000	; bomb enemy graphics
-vram_giantring:	equ $8000	; giant ring graphics
-vram_orbinaut:	equ $8520	; orbinaut graphics
-vram_buzz:	equ $8880	; buzz bomber graphics
-vram_yadrin:	equ $8F60	; yadrin graphics
-vram_cater:	equ $9FE0	; caterkiller graphics
-vram_button:	equ $A1E0	; button graphics
-vram_spikes:	equ $A360	; spikes graphics
-vram_hspring:	equ $A460	; horizontal spring graphics
-vram_vspring:	equ $A660	; vertical spring graphics
-vram_animal1:	equ $B000	; animal graphics
-vram_animal2:	equ $B240	; animal graphics
-vram_credits:	equ $B400	; credits font graphics
+vram_crabmeat:		equ $8000	; crabmeat graphics
+vram_bomb:		equ $8000	; bomb enemy graphics
+vram_giantring:		equ $8000	; giant ring graphics
+vram_orbinaut:		equ $8520	; orbinaut graphics
+vram_buzz:		equ $8880	; buzz bomber graphics
+vram_yadrin:		equ $8F60	; yadrin graphics
+vram_cater:		equ $9FE0	; caterkiller graphics
+vram_button:		equ $A1E0	; button graphics
+vram_spikes:		equ $A360	; spikes graphics
+vram_hspring:		equ $A460	; horizontal spring graphics
+vram_vspring:		equ $A660	; vertical spring graphics
+vram_animal1:		equ $B000	; animal graphics
+vram_animal2:		equ $B240	; animal graphics
+vram_credits:		equ $B400	; credits font graphics
 
 vram_title_credits:	equ $14C0	; "Sonic Team Presents" title screen graphics
 vram_title:		equ $4000	; main title screen graphics
@@ -93,6 +94,27 @@ id_SYZ:		equ 4
 id_SBZ:		equ 5
 id_EndZ:	equ 6
 id_SS:		equ 7
+id_GHZ_act1:	equ (id_GHZ<<8)+0	; $0000
+id_GHZ_act2:	equ (id_GHZ<<8)+1	; $0001
+id_GHZ_act3:	equ (id_GHZ<<8)+2	; $0002
+id_LZ_act1:	equ (id_LZ<<8)+0	; $0100
+id_LZ_act2:	equ (id_LZ<<8)+1	; $0101
+id_LZ_act3:	equ (id_LZ<<8)+2	; $0102
+id_MZ_act1:	equ (id_MZ<<8)+0	; $0200
+id_MZ_act2:	equ (id_MZ<<8)+1	; $0201
+id_MZ_act3:	equ (id_MZ<<8)+2	; $0202
+id_SLZ_act1:	equ (id_SLZ<<8)+0	; $0300
+id_SLZ_act2:	equ (id_SLZ<<8)+1	; $0301
+id_SLZ_act3:	equ (id_SLZ<<8)+2	; $0302
+id_SYZ_act1:	equ (id_SYZ<<8)+0	; $0400
+id_SYZ_act2:	equ (id_SYZ<<8)+1	; $0401
+id_SYZ_act3:	equ (id_SYZ<<8)+2	; $0402
+id_SBZ_act1:	equ (id_SBZ<<8)+0	; $0500
+id_SBZ_act2:	equ (id_SBZ<<8)+1	; $0501
+id_SBZ_act3:	equ (id_LZ<<8)+3	; $0103
+id_FZ:		equ (id_SBZ<<8)+2	; $0502
+id_EndZ_good:	equ (id_EndZ<<8)+0	; $0600 - ending with all chaos emeralds (extra flowers)
+id_EndZ_bad:	equ (id_EndZ<<8)+1	; $0601 - ending without all emeralds (no flowers)
 
 ; Colours
 cBlack:		equ $000		; colour black
@@ -146,6 +168,19 @@ sonic_height:			equ $13				; half height while standing
 sonic_width_roll:		equ 7				; half width while rolling
 sonic_height_roll:		equ $E				; half height while rolling
 sonic_average_radius:		equ $A				; half width/height used for quick collision checks
+
+camera_y_shift_up:		equ $C8				; v_camera_y_shift when looking up
+camera_y_shift_default:		equ $60				; v_camera_y_shift normally
+camera_y_shift_down:		equ 8				; v_camera_y_shift when ducking
+
+air_full:			equ 30				; time in seconds that Sonic can hold his breath
+air_alert:			equ 12				; time in seconds remaining when music changes to drowning alert
+air_ding1:			equ 25
+air_ding2:			equ 20
+air_ding3:			equ 15
+
+; Object physics
+bumper_power:			equ $700
 
 ; Object variables
 			rsset 0

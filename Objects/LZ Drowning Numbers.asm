@@ -110,7 +110,7 @@ Drown_Delete:	; Routine 8, Routine $10
 ; ===========================================================================
 
 Drown_AirLeft:	; Routine $C
-		cmpi.w	#$C,(v_air).w				; check air remaining
+		cmpi.w	#air_alert,(v_air).w			; check air remaining
 		bhi.s	@delete					; if higher than $C, branch
 		subq.w	#1,ost_drown_num_time(a0)
 		bne.s	@display
@@ -199,13 +199,13 @@ Drown_Countdown:; Routine $A
 		andi.w	#1,d0					; random number 0 or 1
 		move.b	d0,ost_drown_extra_bub(a0)
 		move.w	(v_air).w,d0				; check air remaining
-		cmpi.w	#25,d0
+		cmpi.w	#air_ding1,d0
 		beq.s	@warnsound				; play sound if	air is 25
-		cmpi.w	#20,d0
-		beq.s	@warnsound
-		cmpi.w	#15,d0
-		beq.s	@warnsound
-		cmpi.w	#12,d0
+		cmpi.w	#air_ding2,d0
+		beq.s	@warnsound				; play sound if	air is 20
+		cmpi.w	#air_ding3,d0
+		beq.s	@warnsound				; play sound if	air is 15
+		cmpi.w	#air_alert,d0
 		bhi.s	@reduceair				; if air is above 12, branch
 
 		bne.s	@skipmusic				; if air is less than 12, branch

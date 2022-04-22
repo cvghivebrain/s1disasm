@@ -30,7 +30,7 @@ Sonic_Main:	; Routine 0
 		move.b	#sonic_height,ost_height(a0)
 		move.b	#sonic_width,ost_width(a0)
 		move.l	#Map_Sonic,ost_mappings(a0)
-		move.w	#vram_sonic/sizeof_cell,ost_tile(a0)
+		move.w	#tile_sonic,ost_tile(a0)
 		move.b	#2,ost_priority(a0)
 		move.b	#$18,ost_displaywidth(a0)
 		move.b	#render_rel,ost_render(a0)
@@ -125,11 +125,11 @@ Sonic_Display:
 		bne.s	@chkshoes				; if not 0, branch
 		tst.b	(f_boss_boundary).w
 		bne.s	@removeinvincible			; branch if at a boss
-		cmpi.w	#$C,(v_air).w				; is air < $C?
+		cmpi.w	#air_alert,(v_air).w			; is air < $C?
 		bcs.s	@removeinvincible			; if yes, branch
 		moveq	#0,d0
 		move.b	(v_zone).w,d0
-		cmpi.w	#(id_LZ<<8)+3,(v_zone).w		; check if level is SBZ3
+		cmpi.w	#id_SBZ_act3,(v_zone).w			; check if level is SBZ3
 		bne.s	@music					; if not, branch
 		moveq	#5,d0					; play SBZ music
 
@@ -360,7 +360,7 @@ Sonic_LookUp:
 		btst	#bitUp,(v_joypad_hold).w		; is up being pressed?
 		beq.s	Sonic_Duck				; if not, branch
 		move.b	#id_LookUp,ost_anim(a0)			; use "looking up" animation
-		cmpi.w	#$C8,(v_camera_y_shift).w
+		cmpi.w	#camera_y_shift_up,(v_camera_y_shift).w	; $C8
 		beq.s	Sonic_ScrOk				; branch if screen is at max y scroll
 		addq.w	#2,(v_camera_y_shift).w			; scroll up 2px
 		bra.s	Sonic_ScrOk
@@ -370,14 +370,14 @@ Sonic_Duck:
 		btst	#bitDn,(v_joypad_hold).w		; is down being pressed?
 		beq.s	Sonic_ResetScr				; if not, branch
 		move.b	#id_Duck,ost_anim(a0)			; use "ducking" animation
-		cmpi.w	#8,(v_camera_y_shift).w
+		cmpi.w	#camera_y_shift_down,(v_camera_y_shift).w ; 8
 		beq.s	Sonic_ScrOk				; branch if screen is at min y scroll
 		subq.w	#2,(v_camera_y_shift).w			; scroll down 2px
 		bra.s	Sonic_ScrOk
 ; ===========================================================================
 
 Sonic_ResetScr:
-		cmpi.w	#$60,(v_camera_y_shift).w		; is screen in its default position?
+		cmpi.w	#camera_y_shift_default,(v_camera_y_shift).w ; is screen in its default position? ($60)
 		beq.s	Sonic_ScrOk				; if yes, branch
 		bcc.s	Sonic_HighScr				; branch if screen is higher
 		addq.w	#4,(v_camera_y_shift).w			; move screen back 4px to default (actually 2px because of next line)
@@ -732,7 +732,7 @@ Sonic_JumpDirection:
 		move.w	d0,ost_x_vel(a0)			; update x speed
 
 @chk_camera:
-		cmpi.w	#$60,(v_camera_y_shift).w		; is the screen in its default position?
+		cmpi.w	#camera_y_shift_default,(v_camera_y_shift).w ; is the screen in its default position? ($60)
 		beq.s	@camera_ok				; if yes, branch
 		bcc.s	@camera_high				; branch if higher
 		addq.w	#4,(v_camera_y_shift).w
@@ -822,13 +822,13 @@ Sonic_LevelBound:
 ; ===========================================================================
 
 @bottom:
-		cmpi.w	#(id_SBZ<<8)+1,(v_zone).w		; is level SBZ2 ?
+		cmpi.w	#id_SBZ_act2,(v_zone).w			; is level SBZ2 ?
 		bne.w	KillSonic				; if not, kill Sonic
 		cmpi.w	#$2000,(v_ost_player+ost_x_pos).w	; has Sonic reached $2000 on x axis?
 		bcs.w	KillSonic				; if not, kill Sonic
 		clr.b	(v_last_lamppost).w			; clear	lamppost counter
 		move.w	#1,(f_restart).w			; restart the level
-		move.w	#(id_LZ<<8)+3,(v_zone).w		; set level to SBZ3 (LZ4)
+		move.w	#id_SBZ_act3,(v_zone).w			; set level to SBZ3 (LZ4)
 		rts	
 ; ===========================================================================
 

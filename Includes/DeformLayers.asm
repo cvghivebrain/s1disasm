@@ -937,7 +937,7 @@ UpdateCamera_Y:
 ; ===========================================================================
 
 UCY_OutsideMid_Ground:
-		cmpi.w	#96,(v_camera_y_shift).w		; has Sonic looked up/down recently? (default y shift is 96)
+		cmpi.w	#camera_y_shift_default,(v_camera_y_shift).w ; has Sonic looked up/down recently? (default y shift is 96)
 		bne.s	@y_shift_different			; if yes, branch
 
 		move.w	(v_ost_player+ost_inertia).w,d1		; get Sonic's inertia

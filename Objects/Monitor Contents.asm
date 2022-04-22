@@ -102,7 +102,7 @@ Pow_ChkInvinc:
 		tst.b	(f_boss_boundary).w			; is boss mode on?
 		bne.s	Pow_NoMusic				; if yes, branch
 		if Revision<>0
-			cmpi.w	#$C,(v_air).w
+			cmpi.w	#air_alert,(v_air).w
 			bls.s	Pow_NoMusic
 		endc
 		play.w	0, jmp, mus_Invincible			; play invincibility music

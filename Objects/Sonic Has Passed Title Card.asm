@@ -148,7 +148,7 @@ Has_Bonus:	; Routine 6
 		bne.s	@add_bonus				; if yes, branch
 		play.w	1, jsr, sfx_Register			; play "ker-ching" sound
 		addq.b	#2,ost_routine(a0)			; goto Has_Wait next, and then Has_NextLevel
-		cmpi.w	#(id_SBZ<<8)+1,(v_zone).w		; is current level SBZ2?
+		cmpi.w	#id_SBZ_act2,(v_zone).w			; is current level SBZ2?
 		bne.s	@not_sbz2				; if not, branch
 		addq.b	#4,ost_routine(a0)			; goto Has_Wait next, and then Has_MoveBack
 
@@ -205,40 +205,40 @@ Has_NextLevel:	; Routine $A
 
 LevelOrder:
 		; Green Hill Zone
-		dc.b id_GHZ, 1					; Act 1
-		dc.b id_GHZ, 2					; Act 2
-		dc.b id_MZ, 0					; Act 3
-		dc.b 0, 0
+		dc.w id_GHZ_act2				; Act 1
+		dc.w id_GHZ_act3				; Act 2
+		dc.w id_MZ_act1					; Act 3
+		dc.w id_GHZ_act1
 
 		; Labyrinth Zone
-		dc.b id_LZ, 1					; Act 1
-		dc.b id_LZ, 2					; Act 2
-		dc.b id_SLZ, 0					; Act 3
-		dc.b id_SBZ, 2					; Scrap Brain Zone Act 3
+		dc.w id_LZ_act2					; Act 1
+		dc.w id_LZ_act3					; Act 2
+		dc.w id_SLZ_act1				; Act 3
+		dc.w id_FZ					; Scrap Brain Zone Act 3
 
 		; Marble Zone
-		dc.b id_MZ, 1					; Act 1
-		dc.b id_MZ, 2					; Act 2
-		dc.b id_SYZ, 0					; Act 3
-		dc.b 0, 0
+		dc.w id_MZ_act2					; Act 1
+		dc.w id_MZ_act3					; Act 2
+		dc.w id_SYZ_act1				; Act 3
+		dc.w id_GHZ_act1
 
 		; Star Light Zone
-		dc.b id_SLZ, 1					; Act 1
-		dc.b id_SLZ, 2					; Act 2
-		dc.b id_SBZ, 0					; Act 3
-		dc.b 0, 0
+		dc.w id_SLZ_act2				; Act 1
+		dc.w id_SLZ_act3				; Act 2
+		dc.w id_SBZ_act1				; Act 3
+		dc.w id_GHZ_act1
 
 		; Spring Yard Zone
-		dc.b id_SYZ, 1					; Act 1
-		dc.b id_SYZ, 2					; Act 2
-		dc.b id_LZ, 0					; Act 3
-		dc.b 0, 0
+		dc.w id_SYZ_act2				; Act 1
+		dc.w id_SYZ_act3				; Act 2
+		dc.w id_LZ_act1					; Act 3
+		dc.w id_GHZ_act1
 
 		; Scrap Brain Zone
-		dc.b id_SBZ, 1					; Act 1
-		dc.b id_LZ, 3					; Act 2
-		dc.b 0, 0					; Final Zone
-		dc.b 0, 0
+		dc.w id_SBZ_act2				; Act 1
+		dc.w id_SBZ_act3				; Act 2
+		dc.w id_GHZ_act1				; Final Zone
+		dc.w id_GHZ_act1
 		even
 		zonewarning LevelOrder,8
 ; ===========================================================================

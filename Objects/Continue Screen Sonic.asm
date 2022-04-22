@@ -24,7 +24,7 @@ CSon_Main:	; Routine 0
 		move.w	#$A0,ost_x_pos(a0)
 		move.w	#$C0,ost_y_pos(a0)
 		move.l	#Map_Sonic,ost_mappings(a0)
-		move.w	#vram_sonic/sizeof_cell,ost_tile(a0)
+		move.w	#tile_sonic,ost_tile(a0)
 		move.b	#render_rel,ost_render(a0)
 		move.b	#2,ost_priority(a0)
 		move.b	#id_Float3,ost_anim(a0)			; use "floating" animation
