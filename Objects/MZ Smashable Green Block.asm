@@ -73,17 +73,17 @@ Smab_Solid:	; Routine 2
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.w	(v_enemy_combo).w,d2
 		addq.w	#2,(v_enemy_combo).w			; increment bonus counter
-		cmpi.w	#6,d2					; have fewer than 3 blocks broken?
+		cmpi.w	#Smab_Points_End-Smab_Points-2,d2	; have fewer than 3 blocks broken?
 		bcs.s	@bonus					; if yes, branch
-		moveq	#6,d2					; set cap for points
+		moveq	#Smab_Points_End-Smab_Points-2,d2	; set cap for points
 
 	@bonus:
 		moveq	#0,d0
-		move.w	Smab_Scores(pc,d2.w),d0
-		cmpi.w	#$20,(v_enemy_combo).w			; have 16 blocks been smashed?
+		move.w	Smab_Points(pc,d2.w),d0
+		cmpi.w	#combo_max,(v_enemy_combo).w		; have 16 blocks been smashed?
 		bcs.s	@givepoints				; if not, branch
-		move.w	#1000,d0				; give 10000 points for 16th block
-		moveq	#10,d2
+		move.w	#combo_max_points,d0			; give 10000 points for 16th block
+		moveq	#id_frame_points_10k*2,d2
 
 	@givepoints:
 		jsr	(AddPoints).l
@@ -103,7 +103,8 @@ Smab_Speeds:	dc.w -$200, -$200				; x speed, y speed
 		dc.w $200, -$200
 		dc.w $100, -$100
 
-Smab_Scores:	dc.w 10						; 100 (block 1)
-		dc.w 20						; 200 (block 2)
-		dc.w 50						; 500 (block 3)
-		dc.w 100					; 1000 (blocks 4-15)
+Smab_Points:	dc.w 100/10					; 100 (block 1)
+		dc.w 200/10					; 200 (block 2)
+		dc.w 500/10					; 500 (block 3)
+		dc.w 1000/10					; 1000 (blocks 4-15)
+	Smab_Points_End:

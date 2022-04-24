@@ -157,30 +157,47 @@ sonic_deceleration_water:	equ sonic_deceleration/2
 sonic_max_speed_shoes:		equ sonic_max_speed*2		; with speed shoes
 sonic_acceleration_shoes:	equ sonic_acceleration*2
 sonic_deceleration_shoes:	equ sonic_deceleration
-sonic_ss_max_speed:		equ $800			; special stage
+sonic_min_speed_roll:		equ $80				; speed required to trigger roll
+sonic_min_speed_slope:		equ $280			; speed required to overcome gravity on steep slopes
 sonic_jump_power:		equ $680			; initial jump power
 sonic_jump_power_water:		equ $380			; initial jump power underwater
 sonic_jump_release:		equ $400			; jump speed after releasing A/B/C
 sonic_jump_release_water:	equ sonic_jump_release/2
+sonic_max_speed_surface:	equ $1000			; y speed coming out of water
+sonic_buoyancy:			equ $28
+sonic_ss_max_speed:		equ $800			; special stage
 
-sonic_width:			equ 9				; half width while standing
-sonic_height:			equ $13				; half height while standing
-sonic_width_roll:		equ 7				; half width while rolling
-sonic_height_roll:		equ $E				; half height while rolling
-sonic_average_radius:		equ $A				; half width/height used for quick collision checks
+sonic_width:			equ 18/2			; half width while standing
+sonic_height:			equ 38/2			; half height while standing
+sonic_width_roll:		equ 14/2			; half width while rolling
+sonic_height_roll:		equ 28/2			; half height while rolling
+sonic_average_radius:		equ 20/2			; half width/height used for quick collision checks
+sonic_width_hitbox:		equ 16/2			; half width of hitbox for object collision
+sonic_height_hitbox:		equ 32/2			; half height of hitbox for object collision
+sonic_height_hitbox_duck:	equ 20/2			; half height of hitbox for object collision while ducking
 
 camera_y_shift_up:		equ $C8				; v_camera_y_shift when looking up
 camera_y_shift_default:		equ $60				; v_camera_y_shift normally
 camera_y_shift_down:		equ 8				; v_camera_y_shift when ducking
 
+; Times
+sonic_shoe_time:		equ 20*60			; time in frames that speed shoes last (20 seconds)
+sonic_invincible_time:		equ 20*60			; time in frames that invincibility lasts (20 seconds)
+sonic_flash_time:		equ 2*60			; time in frames that Sonic flashes after being hit (2 seconds)
+ring_delay:			equ 30				; time in frames before Sonic is able to collect rings after being hit (0.5 seconds)
 air_full:			equ 30				; time in seconds that Sonic can hold his breath
-air_alert:			equ 12				; time in seconds remaining when music changes to drowning alert
 air_ding1:			equ 25
 air_ding2:			equ 20
 air_ding3:			equ 15
+air_alert:			equ 12				; time in seconds remaining when music changes to drowning alert
 
 ; Object physics
 bumper_power:			equ $700
+spring_power_red:		equ $1000
+spring_power_yellow:		equ $A00
+
+combo_max:			equ 16*2			; value at which v_enemy_combo gives the max points
+combo_max_points:		equ 10000/10			; points given after 16 enemies are broken in a row
 
 ; Object variables
 			rsset 0
@@ -266,7 +283,7 @@ ost_enemy_combo:	equ $3E	; number of enemies broken in a row (0-$A) (2 bytes)
 
 ; Object variables used by Sonic
 ost_sonic_flash_time:	equ $30	; time Sonic flashes for after getting hit (2 bytes)
-ost_sonic_inv_time:	equ $32	; time left for invincibility (2 bytes)
+ost_sonic_invincible_time: equ $32 ; time left for invincibility (2 bytes)
 ost_sonic_shoe_time:	equ $34	; time left for speed shoes (2 bytes)
 ost_sonic_angle_right:	equ $36 ; angle of floor on Sonic's right side
 ost_sonic_angle_left:	equ $37 ; angle of floor on Sonic's left side

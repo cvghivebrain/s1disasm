@@ -14,18 +14,18 @@ ReactToItem:
 		nop	
 		move.w	ost_x_pos(a0),d2
 		move.w	ost_y_pos(a0),d3
-		subq.w	#8,d2					; d2 = x pos of Sonic's left edge
+		subq.w	#sonic_width_hitbox,d2			; d2 = x pos of Sonic's left edge
 		moveq	#0,d5
 		move.b	ost_height(a0),d5
-		subq.b	#3,d5					; d5 = Sonic's height
+		subq.b	#sonic_height-sonic_height_hitbox,d5	; d5 = Sonic's height minus 3
 		sub.w	d5,d3					; d3 = y pos of Sonic's top edge
 		cmpi.b	#id_frame_Duck,ost_frame(a0)		; is Sonic ducking?
 		bne.s	@notducking				; if not, branch
-		addi.w	#$C,d3					; lower top edge when ducking
-		moveq	#$A,d5					; use smaller height
+		addi.w	#(sonic_height_hitbox-sonic_height_hitbox_duck)*2,d3 ; lower top edge when ducking (by 12px)
+		moveq	#sonic_height_hitbox_duck,d5		; use smaller height
 
 	@notducking:
-		move.w	#$10,d4					; d4 = Sonic's total width
+		move.w	#sonic_width_hitbox*2,d4		; d4 = Sonic's total width (16px)
 		add.w	d5,d5					; d5 = Sonic's total height
 		lea	(v_ost_level_obj).w,a1			; first OST slot for interactable objects
 		move.w	#countof_ost_ert-1,d6			; number of interactable objects
@@ -138,14 +138,14 @@ React_ChkDist:
 		tst.b	d1
 		bmi.w	React_ChkHurt				; branch if type is $80 (harmful)
 
-		; ost_col_type is $40-$7F (powerups)
+		; ost_col_type is $40-$7F (monitor, ring, giant ring)
 		move.b	ost_col_type(a1),d0
 		andi.b	#$3F,d0					; read only bits 0-5 (size)
 		cmpi.b	#id_col_16x16,d0			; is collision type $46 (monitor)?
 		beq.s	React_Monitor				; if yes, branch
-		cmpi.w	#90,ost_sonic_flash_time(a0)		; is Sonic invincible?
+		cmpi.w	#sonic_flash_time-ring_delay,ost_sonic_flash_time(a0) ; has Sonic been hit recently?
 		bcc.w	@invincible				; if yes, branch
-		addq.b	#2,ost_routine(a1)			; advance the object's routine counter
+		addq.b	#2,ost_routine(a1)			; goto Ring_Collect (if ring), RLoss_Collect (if bouncing ring), GRing_Collect (if giant ring) next
 
 	@invincible:
 		rts	
@@ -206,16 +206,16 @@ React_Enemy:
 		moveq	#0,d0
 		move.w	(v_enemy_combo).w,d0
 		addq.w	#2,(v_enemy_combo).w			; add 2 to item bonus counter
-		cmpi.w	#@points_end-@points-2,d0
+		cmpi.w	#Enemy_Points_end-Enemy_Points-2,d0
 		bcs.s	@bonusokay
-		moveq	#@points_end-@points-2,d0		; max bonus is #6 (1000 points)
+		moveq	#Enemy_Points_end-Enemy_Points-2,d0	; max bonus is #6 (1000 points)
 
 	@bonusokay:
 		move.w	d0,ost_enemy_combo(a1)			; set frame for points object (spawned by animal object)
-		move.w	@points(pc,d0.w),d0
-		cmpi.w	#$20,(v_enemy_combo).w			; have 16 enemies been destroyed?
+		move.w	Enemy_Points(pc,d0.w),d0
+		cmpi.w	#combo_max,(v_enemy_combo).w		; have 16 enemies been destroyed?
 		bcs.s	@lessthan16				; if not, branch
-		move.w	#1000,d0				; fix bonus to 10000
+		move.w	#combo_max_points,d0			; fix bonus to 10000
 		move.w	#id_frame_points_10k*2,ost_enemy_combo(a1) ; use 10k frame for points object
 
 	@lessthan16:
@@ -239,8 +239,11 @@ React_Enemy:
 		subi.w	#$100,ost_y_vel(a0)
 		rts	
 
-@points:	dc.w 10, 20, 50, 100				; points awarded div 10
-@points_end:
+Enemy_Points:	dc.w 100/10
+		dc.w 200/10
+		dc.w 500/10
+		dc.w 1000/10
+	Enemy_Points_end:
 
 ; ===========================================================================
 
@@ -310,7 +313,7 @@ HurtSonic:
 	@isleft:
 		move.w	#0,ost_inertia(a0)
 		move.b	#id_Hurt,ost_anim(a0)
-		move.w	#120,ost_sonic_flash_time(a0)		; set temp invincible time to 2 seconds
+		move.w	#sonic_flash_time,ost_sonic_flash_time(a0) ; set temp invincible time to 2 seconds
 		move.w	#sfx_Death,d0				; load normal damage sound
 		cmpi.b	#id_Spikes,(a2)				; was damage caused by spikes?
 		bne.s	@sound					; if not, branch

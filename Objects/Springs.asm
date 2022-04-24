@@ -31,8 +31,8 @@ Spring_Index:	index *,,2
 		ptr Spring_AniDwn				; $10
 		ptr Spring_ResetDwn				; $12
 
-Spring_Powers:	dc.w -$1000					; power	of red spring
-		dc.w -$A00					; power	of yellow spring
+Spring_Powers:	dc.w -spring_power_red				; power	of red spring
+		dc.w -spring_power_yellow			; power	of yellow spring
 
 ost_spring_power:	equ $30					; power of current spring (2 bytes)
 ; ===========================================================================
@@ -132,7 +132,7 @@ Spring_BounceLR:
 		neg.w	ost_x_vel(a1)				; move Sonic to	the right
 
 	@xflipped:
-		move.w	#$F,ost_sonic_lock_time(a1)		; lock controls for 0.25 seconds
+		move.w	#15,ost_sonic_lock_time(a1)		; lock controls for 0.25 seconds
 		move.w	ost_x_vel(a1),ost_inertia(a1)
 		bchg	#status_xflip_bit,ost_status(a1)
 		btst	#status_jump_bit,ost_status(a1)		; is Sonic jumping/rolling?

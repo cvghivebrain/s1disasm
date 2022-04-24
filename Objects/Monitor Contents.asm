@@ -69,7 +69,7 @@ Pow_ChkShoes:
 		bne.s	Pow_ChkShield
 
 		move.b	#1,(v_shoes).w				; speed up the BG music
-		move.w	#$4B0,(v_ost_player+ost_sonic_shoe_time).w ; time limit for the power-up
+		move.w	#sonic_shoe_time,(v_ost_player+ost_sonic_shoe_time).w ; time limit for the power-up
 		move.w	#sonic_max_speed_shoes,(v_sonic_max_speed).w ; change Sonic's top speed
 		move.w	#sonic_acceleration_shoes,(v_sonic_acceleration).w ; change Sonic's acceleration
 		move.w	#sonic_deceleration_shoes,(v_sonic_deceleration).w ; change Sonic's deceleration
@@ -90,7 +90,7 @@ Pow_ChkInvinc:
 		bne.s	Pow_ChkRings
 
 		move.b	#1,(v_invincibility).w			; make Sonic invincible
-		move.w	#$4B0,(v_ost_player+ost_sonic_inv_time).w ; time limit for the power-up
+		move.w	#sonic_invincible_time,(v_ost_player+ost_sonic_invincible_time).w ; time limit for the power-up
 		move.b	#id_ShieldItem,(v_ost_stars1).w		; load stars object ($3801)
 		move.b	#id_ani_stars1,(v_ost_stars1+ost_anim).w
 		move.b	#id_ShieldItem,(v_ost_stars2).w		; load stars object ($3802)

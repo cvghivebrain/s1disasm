@@ -366,7 +366,7 @@ flips_remaining:	equ $2C
 flip_speed:		equ $2D
 move_lock:		equ $2E
 invulnerable_time:	equ ost_sonic_flash_time
-invincibility_time:	equ ost_sonic_inv_time
+invincibility_time:	equ ost_sonic_invincible_time
 speedshoes_time:	equ ost_sonic_shoe_time
 next_tilt:		equ ost_sonic_angle_right
 tilt:			equ ost_sonic_angle_left
@@ -647,5 +647,5 @@ anim_frame_timer:	equ ost_anim_time
 respawn_addr:		equ ost_respawn
 ground_vel:		equ ost_inertia
 invulnerability_timer:	equ ost_sonic_flash_time
-invincibility_timer:	equ ost_sonic_inv_time
+invincibility_timer:	equ ost_sonic_invincible_time
 speed_shoes_timer:	equ ost_sonic_shoe_time
