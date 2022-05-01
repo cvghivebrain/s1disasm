@@ -9,6 +9,9 @@ sega_bg_height:	equ 8
 sega_fg_width:	equ $28						; fg dimensions - white box with logo cutout
 sega_fg_height:	equ $1C
 
+countof_stripe:	equ filesize("Palettes\Sega - Stripe.bin")/2	; colours in stripe that moves across logo
+countof_sega:	equ $C/2					; colours in Sega logo
+
 GM_Sega:
 		play.b	1, bsr.w, cmd_Stop			; stop music
 		bsr.w	ClearPLC
@@ -45,7 +48,7 @@ GM_Sega:
 	@loadpal:
 		moveq	#id_Pal_SegaBG,d0
 		bsr.w	PalLoad_Now				; load Sega logo palette
-		move.w	#-$A,(v_palcycle_num).w
+		move.w	#-((countof_stripe-1)*2),(v_palcycle_num).w ; -$A
 		move.w	#0,(v_palcycle_time).w
 		move.w	#0,(v_palcycle_buffer+$12).w
 		move.w	#0,(v_palcycle_buffer+$10).w
@@ -78,94 +81,97 @@ Sega_WaitLoop:
 
 ; ---------------------------------------------------------------------------
 ; Palette cycling routine - Sega logo
+
+; output:
+;	d0 = 0 when palette routine is complete
 ; ---------------------------------------------------------------------------
 
 PalCycle_Sega:
-PalCycle_Sega_Gradient:
-		tst.b	(v_palcycle_time+1).w			; is low byte of timer 0?
-		bne.s	loc_206A				; if not, branch
+PalCycle_Sega_Stripe:
+		tst.b	(f_sega_pal_next).w
+		bne.s	PalCycle_Sega_Full			; branch if stripe animation is finished
 		lea	(v_pal_dry_line2).w,a1			; address for 2nd palette line
 		lea	(Pal_Sega1).l,a0			; address of blue gradient palette source
-		moveq	#5,d1
+		moveq	#countof_stripe-1,d1			; 6-1
 		move.w	(v_palcycle_num).w,d0			; d0 = -$A (initially)
 
 	@loop_findcolour:
-		bpl.s	loc_202A				; branch if d0 = 0 
+		bpl.s	@loop_colours				; branch if d0 = 0 
 		addq.w	#2,a0					; read next colour from source
 		subq.w	#1,d1
 		addq.w	#2,d0					; increment d0
 		bra.s	@loop_findcolour			; repeat until d0 = 0
 ; ===========================================================================
 
-loc_202A:
-		move.w	d0,d2
+@loop_colours:
+		move.w	d0,d2					; d0 = position within target palette
 		andi.w	#$1E,d2
-		bne.s	loc_2034
-		addq.w	#2,d0
+		bne.s	@no_skip
+		addq.w	#2,d0					; skip 1 colour if at the start of a line (1st colour is transparent)
 
-loc_2034:
-		cmpi.w	#$60,d0
-		bhs.s	loc_203E
-		move.w	(a0)+,(a1,d0.w)
+	@no_skip:
+		cmpi.w	#sizeof_pal*3,d0
+		bhs.s	@end_of_pal				; branch if at the end of the palettes
+		move.w	(a0)+,(a1,d0.w)				; copy 1 colour from source to target
 
-loc_203E:
+	@end_of_pal:
 		addq.w	#2,d0
-		dbf	d1,loc_202A
+		dbf	d1,@loop_colours
 
 		move.w	(v_palcycle_num).w,d0
-		addq.w	#2,d0
+		addq.w	#2,d0					; increment counter
 		move.w	d0,d2
 		andi.w	#$1E,d2
-		bne.s	loc_2054
-		addq.w	#2,d0
+		bne.s	@no_skip2
+		addq.w	#2,d0					; skip 1 colour if at the start of a line
 
-loc_2054:
-		cmpi.w	#$64,d0
-		blt.s	loc_2062
-		move.w	#$401,(v_palcycle_time).w
-		moveq	#-$C,d0
+	@no_skip2:
+		cmpi.w	#(sizeof_pal*3)+4,d0
+		blt.s	@not_at_end				; branch if not at the end
+		move.w	#$401,(v_palcycle_time).w		; set timer to 4 and set flag f_sega_pal_next
+		moveq	#-(countof_sega*2),d0			; -$C
 
-loc_2062:
+	@not_at_end:
 		move.w	d0,(v_palcycle_num).w
 		moveq	#1,d0
 		rts	
 ; ===========================================================================
 
-loc_206A:
+PalCycle_Sega_Full:
 		subq.b	#1,(v_palcycle_time).w			; decrement timer
-		bpl.s	loc_20BC				; branch if positive
+		bpl.s	@wait					; branch if time remains
 		move.b	#4,(v_palcycle_time).w
 		move.w	(v_palcycle_num).w,d0
-		addi.w	#$C,d0
-		cmpi.w	#$30,d0
-		blo.s	PalCycle_Sega_Flash
-		moveq	#0,d0
+		addi.w	#countof_sega*2,d0			; next batch of colours ($C)
+		cmpi.w	#countof_sega*2*4,d0			; $30
+		blo.s	@update					; branch if animation is incomplete
+		moveq	#0,d0					; set flag when animation is complete
 		rts	
 ; ===========================================================================
 
-PalCycle_Sega_Flash:
-		move.w	d0,(v_palcycle_num).w
+@update:
+		move.w	d0,(v_palcycle_num).w			; update counter
 		lea	(Pal_Sega2).l,a0
-		lea	(a0,d0.w),a0
-		lea	(v_pal_dry_line1+(2*2)).w,a1
+		lea	(a0,d0.w),a0				; jump to source palette
+		lea	(v_pal_dry_line1+(2*2)).w,a1		; start on first palette line, 3rd colour
 		move.l	(a0)+,(a1)+
 		move.l	(a0)+,(a1)+
-		move.w	(a0)+,(a1)
+		move.w	(a0)+,(a1)				; write 5 colours
 		lea	(v_pal_dry_line2).w,a1
 		moveq	#0,d0
-		moveq	#$2C,d1
+		moveq	#((countof_color-1)*3)-1,d1		; colours in 3 lines (without transparent), minus 1 ($2C)
 
-loc_20A8:
+	@loop_fill:
 		move.w	d0,d2
 		andi.w	#$1E,d2
-		bne.s	loc_20B2
-		addq.w	#2,d0
+		bne.s	@no_skip
+		addq.w	#2,d0					; skip 1 colour if at the start of a line
 
-loc_20B2:
-		move.w	(a0),(a1,d0.w)
-		addq.w	#2,d0
-		dbf	d1,loc_20A8
+	@no_skip:
+		move.w	(a0),(a1,d0.w)				; write colour
+		addq.w	#2,d0					; next colour
+		dbf	d1,@loop_fill				; repeat for lines 2, 3, and 4 (ignoring transparent)
 
-loc_20BC:
-		moveq	#1,d0
+@wait:
+		moveq	#1,d0					; set flag for incomplete animation
 		rts

@@ -120,6 +120,7 @@ v_spritecount:			rs.b 1 ; $FFFFF62C ; number of sprites on-screen
 unused_f62d:			rs.b 5
 v_palcycle_num:			rs.w 1 ; $FFFFF632 ; palette cycling - current index number
 v_palcycle_time:		rs.w 1 ; $FFFFF634 ; palette cycling - time until the next change
+f_sega_pal_next:		equ v_palcycle_time+1 ; $FFFFF635 ; flag set when Sega stripe animation is complete
 v_random:			rs.l 1 ; $FFFFF636 ; pseudo random number generator result
 f_pause:			rs.w 1 ; $FFFFF63A ; flag set to pause the game
 unused_f63c:			rs.b 4
