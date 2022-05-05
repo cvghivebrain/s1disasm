@@ -1464,13 +1464,13 @@ ObjPos_Index:	index *
 		ptr ObjPos_Null
 		zonewarning ObjPos_Index,$10
 		; Ending
-		ptr ObjPos_End
+		ptr ObjPos_Ending
 		ptr ObjPos_Null
-		ptr ObjPos_End
+		ptr ObjPos_Ending
 		ptr ObjPos_Null
-		ptr ObjPos_End
+		ptr ObjPos_Ending
 		ptr ObjPos_Null
-		ptr ObjPos_End
+		ptr ObjPos_Ending
 		ptr ObjPos_Null
 		; --- Put extra object data here. ---
 ObjPosLZPlatform_Index:
