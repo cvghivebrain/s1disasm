@@ -20,11 +20,13 @@ rsalign:	macros
 
 rsblock:	macro
 		rsalign 2					; align to even address
-		rsblocklast: = __rs
+		rsblock_\1: equ __rs
 		endm
 
-rsblockend:	macros
-		rs.b (4-((__rs-rsblocklast)%4))%4		; align to 4 (starting from rsblock)
+rsblockend:	macro
+		rs.b (4-((__rs-rsblock_\1)%4))%4		; align to 4 (starting from rsblock)
+		loops_to_clear_\1: equ ((__rs-rsblock_\1)/4)-1	; number of loops needed to clear block with longword writes
+		endm
 
 ; ---------------------------------------------------------------------------
 ; Create a pointer index.

@@ -19,10 +19,9 @@ GM_Title:
 		clr.b	(f_water_pal_full).w
 		bsr.w	ClearScreen
 
-		lea	(v_ost_all).w,a1
+		lea	(v_ost_all).w,a1			; RAM address to start clearing
 		moveq	#0,d0
-		move.w	#((sizeof_ost*countof_ost)/4)-1,d1
-
+		move.w	#loops_to_clear_ost,d1			; size of RAM block to clear
 	@clear_ost:
 		move.l	d0,(a1)+
 		dbf	d1,@clear_ost				; fill OST ($D000-$EFFF) with 0
@@ -41,12 +40,11 @@ GM_Title:
 		copyTilemap	$FF0000,vram_fg,0,0,$28,$1C	; copy Japanese credits mappings to fg nametable in VRAM
 
 		lea	(v_pal_dry_next).w,a1
-		moveq	#cBlack,d0
-		move.w	#(sizeof_pal_all/4)-1,d1
-
+		moveq	#0,d0
+		move.w	#loops_to_clear_pal,d1
 	@clear_pal:
 		move.l	d0,(a1)+
-		dbf	d1,@clear_pal				; fill palette with 0 (black)
+		dbf	d1,@clear_pal				; clear next palette
 
 		moveq	#id_Pal_Sonic,d0			; load Sonic's palette
 		bsr.w	PalLoad_Next				; palette will be shown after fading in
@@ -235,7 +233,7 @@ Title_PressedStart:
 		bsr.w	PalLoad_Now				; load level select palette
 		lea	(v_hscroll_buffer).w,a1
 		moveq	#0,d0
-		move.w	#(sizeof_vram_hscroll/4)-1,d1
+		move.w	#loops_to_clear_hscroll,d1
 
 	@clear_hscroll:
 		move.l	d0,(a1)+
@@ -339,7 +337,7 @@ PlayLevel:
 		move.b	d0,(v_last_ss_levelid).w		; clear special stage number
 		move.b	d0,(v_emeralds).w			; clear emeralds
 		move.l	d0,(v_emerald_list).w			; clear emeralds
-		move.l	d0,(v_emerald_list+4).w			; clear emeralds
+		move.l	d0,(v_emerald_list+4).w			; clear emeralds (also clears v_oscillating_direction)
 		move.b	d0,(v_continues).w			; clear continues
 		if Revision=0
 		else

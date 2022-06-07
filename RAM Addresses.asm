@@ -24,9 +24,12 @@ v_16x16_tiles:			rs.b sizeof_16x16_all ; $FFFFB000 ; 16x16 tile mappings ($1800 
 v_sonic_gfx_buffer:		rs.b sizeof_vram_sonic ; $FFFFC800 ; buffered Sonic graphics ($17 cells) ($2E0 bytes)
 unused_cae0:			rs.b $20
 v_sonic_pos_tracker:		rs.l $40 ; $FFFFCB00 ; earlier position tracking list for Sonic, used by invinciblity stars ($100 bytes)
+				rsblock hscroll
 v_hscroll_buffer:		rs.b sizeof_vram_hscroll ; $FFFFCC00 ; scrolling table data ($380 bytes)
-unused_cf80:			rs.b $80
-				rsblock ; $D000-$EFFF cleared by GM_Title, GM_Level, GM_Special, GM_Continue, GM_Credits, GM_Ending
+				rsblockend hscroll
+v_hscroll_buffer_padding:	rs.b sizeof_vram_hscroll_padded-sizeof_vram_hscroll ; $FFFFCF80 ; not needed but cleared by ClearScreen ($80 bytes)
+
+				rsblock ost ; $D000-$EFFF cleared by GM_Title, GM_Level, GM_Special, GM_Continue, GM_Credits, GM_Ending
 v_ost_all:			rs.b sizeof_ost*countof_ost ; $FFFFD000 ; object variable space ($40 bytes per object; $80 objects) ($2000 bytes)
 	v_ost_player:		equ v_ost_all ; object variable space for Sonic ($40 bytes)
 	; Title screen and intro
@@ -79,7 +82,7 @@ v_ost_all:			rs.b sizeof_ost*countof_ost ; $FFFFD000 ; object variable space ($4
 	; Level - can interact with Sonic
 	v_ost_level_obj:	equ v_ost_all+(sizeof_ost*countof_ost_inert) ; level object variable space ($1800 bytes)
 v_ost_end:			equ v_ost_all+(sizeof_ost*countof_ost) ; $FFFFF000
-				rsblockend
+				rsblockend ost
 
 v_snddriver_ram:		rs.b v_snddriver_size ; $FFFFF000 ; start of RAM for the sound driver data ($5C0 bytes)
 								; sound driver equates are now defined in "sound/Sound Equates.asm"
@@ -90,28 +93,29 @@ unused_f5c0:			rs.b $40 ; $FFFFF5C0 ; unused space (reserved for sound driver?)
 
 v_gamemode:			rs.b 1 ; $FFFFF600 ; gamemode: 00=Sega; 04=Title; 08=Demo; 0C=Level; 10=SS; 14=Cont; 18=End; 1C=Credit; 8C=PreLevel
 unused_f601:			rs.b 1
-v_joypad_hold:			rs.b 1 ; $FFFFF602 ; joypad input - held, can be overridden by demos
-v_joypad_press:			rs.b 1 ; $FFFFF603 ; joypad input - pressed, can be overridden by demos
-v_joypad_hold_actual:		rs.b 1 ; $FFFFF604 ; joypad input - held, actual
-v_joypad_press_actual:		rs.b 1 ; $FFFFF605 ; joypad input - pressed, actual
-v_joypad2_hold_actual:		rs.b 1 ; $FFFFF606 ; joypad 2 input - held, actual - unused
-v_joypad2_press_actual:		rs.b 1 ; $FFFFF607 ; joypad 2 input - pressed, actual - unused
+v_joypad_hold:			rs.w 1 ; $FFFFF602 ; joypad input - held, can be overridden by demos
+v_joypad_press:			equ __rs-1 ; $FFFFF603 ; joypad input - pressed, can be overridden by demos
+v_joypad_hold_actual:		rs.w 1 ; $FFFFF604 ; joypad input - held, actual
+v_joypad_press_actual:		equ __rs-1 ; $FFFFF605 ; joypad input - pressed, actual
+v_joypad2_hold_actual:		rs.w 1 ; $FFFFF606 ; joypad 2 input - held, actual - unused
+v_joypad2_press_actual:		equ __rs-1 ; $FFFFF607 ; joypad 2 input - pressed, actual - unused
 unused_f608:			rs.b 4
 v_vdp_mode_buffer:		rs.w 1 ; $FFFFF60C ; VDP register $81 buffer - contains $8134 which is sent to vdp_control_port
 unused_f60e:			rs.b 6
 v_countdown:			rs.w 1 ; $FFFFF614 ; decrements every time VBlank runs, used as a general purpose timer
-v_fg_y_pos_vsram:		rs.w 1 ; $FFFFF616 ; foreground y position, sent to VSRAM during VBlank
-v_bg_y_pos_vsram:		rs.w 1 ; $FFFFF618 ; background y position, sent to VSRAM during VBlank
-v_fg_x_pos_hscroll:		rs.w 1 ; $FFFFF61A ; foreground x position - unused
-v_bg_x_pos_hscroll:		rs.w 1 ; $FFFFF61C ; background x position - unused
+v_fg_y_pos_vsram:		rs.l 1 ; $FFFFF616 ; foreground y position, sent to VSRAM during VBlank
+v_bg_y_pos_vsram:		equ __rs-2 ; $FFFFF618 ; background y position, sent to VSRAM during VBlank
+v_fg_x_pos_hscroll:		rs.l 1 ; $FFFFF61A ; foreground x position - unused
+v_bg_x_pos_hscroll:		equ __rs-2 ; $FFFFF61C ; background x position - unused
 v_bg3_y_pos_copy_unused:	rs.w 1 ; $FFFFF61E ; copy of v_bg3_y_pos - unused
 v_bg3_x_pos_copy_unused:	rs.w 1 ; $FFFFF620 ; copy of v_bg3_x_pos - unused
 unused_f622:			rs.b 2
 v_vdp_hint_counter:		rs.w 1 ; $FFFFF624 ; VDP register $8A buffer - horizontal interrupt counter ($8Axx)
-v_vdp_hint_line:		equ v_vdp_hint_counter+1 ; screen line where water starts and palette is changed by HBlank
-v_palfade_start:		rs.b 1 ; $FFFFF626 ; palette fading - start position in bytes
-v_palfade_size:			rs.b 1 ; $FFFFF627 ; palette fading - number of colours
-				rsblock ; $F628-$F67F cleared by GM_Level, GM_Ending
+v_vdp_hint_line:		equ __rs-1 ; screen line where water starts and palette is changed by HBlank
+v_palfade_start:		rs.w 1 ; $FFFFF626 ; palette fading - start position in bytes
+v_palfade_size:			equ __rs-1 ; $FFFFF627 ; palette fading - number of colours
+
+				rsblock vblankstuff ; $F628-$F67F cleared by GM_Level, GM_Ending
 v_vblank_0e_counter:		rs.b 1 ; $FFFFF628 ; counter that increments when VBlank routine $E is run - unused
 unused_f629:			rs.b 1
 v_vblank_routine:		rs.b 1 ; $FFFFF62A ; VBlank routine counter
@@ -120,7 +124,7 @@ v_spritecount:			rs.b 1 ; $FFFFF62C ; number of sprites on-screen
 unused_f62d:			rs.b 5
 v_palcycle_num:			rs.w 1 ; $FFFFF632 ; palette cycling - current index number
 v_palcycle_time:		rs.w 1 ; $FFFFF634 ; palette cycling - time until the next change
-f_sega_pal_next:		equ v_palcycle_time+1 ; $FFFFF635 ; flag set when Sega stripe animation is complete
+f_sega_pal_next:		equ __rs-1 ; $FFFFF635 ; flag set when Sega stripe animation is complete
 v_random:			rs.l 1 ; $FFFFF636 ; pseudo random number generator result
 f_pause:			rs.w 1 ; $FFFFF63A ; flag set to pause the game
 unused_f63c:			rs.b 4
@@ -134,8 +138,10 @@ v_water_direction:		rs.b 1 ; $FFFFF64C ; water setting - 0 = no water; 1 = water
 v_water_routine:		rs.b 1 ; $FFFFF64D ; water event routine counter
 f_water_pal_full:		rs.b 1 ; $FFFFF64E ; flag set when water covers the entire screen (00 = partly/all dry; 01 = all underwater)
 f_hblank_run_snd:		rs.b 1 ; $FFFFF64F ; flag set when sound driver should be run from HBlank
-v_palcycle_buffer:		rs.b $30 ; $FFFFF650 ; palette data buffer (used for palette cycling)
-				rsblockend
+v_palcycle_buffer:		rs.w $18 ; $FFFFF650 ; palette data buffer (used for palette cycling) ($30 bytes)
+				rsblockend vblankstuff
+
+				rsalign 2
 v_plc_buffer:			rs.b sizeof_plc*countof_plc ; $FFFFF680 ; pattern load cues buffer (maximum $10 PLCs) ($60 bytes)
 v_plc_buffer_dest:		equ v_plc_buffer+4 ; VRAM destination for 1st item in PLC buffer (2 bytes)
 v_nem_mode_ptr:			rs.l 1 ; $FFFFF6E0 ; pointer for nemesis decompression code ($1502 or $150C)
@@ -147,7 +153,8 @@ v_nem_shift:			rs.l 1 ; $FFFFF6F4 ; Nemesis register buffer - d6: shift value
 v_nem_tile_count:		rs.w 1 ; $FFFFF6F8 ; number of 8x8 tiles in a Nemesis archive
 v_nem_tile_count_frame:		rs.w 1 ; $FFFFF6FA ; number of 8x8 tiles to process in 1 frame
 unused_f6fc:			rs.b 4
-				rsblock ; $F700-$F7FF cleared by GM_Level, GM_Special, GM_Ending
+
+				rsblock levelinfo ; $F700-$F7FF cleared by GM_Level, GM_Special, GM_Ending
 v_camera_x_pos:			rs.l 1 ; $FFFFF700 ; foreground camera x position
 v_camera_y_pos:			rs.l 1 ; $FFFFF704 ; foreground camera y position
 v_bg1_x_pos:			rs.l 1 ; $FFFFF708 ; background x position
@@ -156,14 +163,14 @@ v_bg2_x_pos:			rs.l 1 ; $FFFFF710 ; background 2 x position (e.g. GHZ treeline)
 v_bg2_y_pos:			rs.l 1 ; $FFFFF714 ; background 2 y position
 v_bg3_x_pos:			rs.l 1 ; $FFFFF718 ; background 3 x position (e.g. GHZ mountains)
 v_bg3_y_pos:			rs.l 1 ; $FFFFF71C ; background 3 y position
-v_boundary_left_next:		rs.w 1 ; $FFFFF720 ; left level boundary, next (actual boundary shifts to match this)
-v_boundary_right_next:		rs.w 1 ; $FFFFF722 ; right level boundary, next
-v_boundary_top_next:		rs.w 1 ; $FFFFF724 ; top level boundary, next
-v_boundary_bottom_next:		rs.w 1 ; $FFFFF726 ; bottom level boundary, next
-v_boundary_left:		rs.w 1 ; $FFFFF728 ; left level boundary
-v_boundary_right:		rs.w 1 ; $FFFFF72A ; right level boundary
-v_boundary_top:			rs.w 1 ; $FFFFF72C ; top level boundary
-v_boundary_bottom:		rs.w 1 ; $FFFFF72E ; bottom level boundary
+v_boundary_left_next:		rs.l 1 ; $FFFFF720 ; left level boundary, next (actual boundary shifts to match this)
+v_boundary_right_next:		equ __rs-2 ; $FFFFF722 ; right level boundary, next
+v_boundary_top_next:		rs.l 1 ; $FFFFF724 ; top level boundary, next
+v_boundary_bottom_next:		equ __rs-2 ; $FFFFF726 ; bottom level boundary, next
+v_boundary_left:		rs.l 1 ; $FFFFF728 ; left level boundary
+v_boundary_right:		equ __rs-2 ; $FFFFF72A ; right level boundary
+v_boundary_top:			rs.l 1 ; $FFFFF72C ; top level boundary
+v_boundary_bottom:		equ __rs-2 ; $FFFFF72E ; bottom level boundary
 v_boundary_unused:		rs.w 1 ; $FFFFF730 ; unused value from LevelSizeArray, always 4
 v_boundary_left_unused:		rs.w 1 ; $FFFFF732 ; left level boundary plus $240 - unused
 unused_f734:			rs.b 6
@@ -181,7 +188,7 @@ unused_f747:			rs.b 1
 v_levelsizeload_unused_4:	rs.b 1 ; $FFFFF748
 unused_f749:			rs.b 1
 v_fg_x_redraw_flag:		rs.w 1 ; $FFFFF74A ; $10 when foreground camera x has moved 16 pixels and needs redrawing
-v_fg_y_redraw_flag:		equ v_fg_x_redraw_flag+1 ; $10 when foreground camera y has moved 16 pixels and needs redrawing
+v_fg_y_redraw_flag:		equ __rs-1 ; $10 when foreground camera y has moved 16 pixels and needs redrawing
 v_bg1_x_redraw_flag:		rs.b 1 ; $FFFFF74C ; $10 when background x has moved 16 pixels and needs redrawing
 v_bg1_y_redraw_flag:		rs.b 1 ; $FFFFF74D ; $10 when background y has moved 16 pixels and needs redrawing
 v_bg2_x_redraw_flag:		rs.b 1 ; $FFFFF74E ; $10 when background 2 x has moved 16 pixels and needs redrawing
@@ -189,14 +196,10 @@ v_bg2_y_redraw_flag:		rs.b 1 ; $FFFFF74F ; $10 when background 2 y has moved 16 
 v_bg3_x_redraw_flag:		rs.b 1 ; $FFFFF750 ; $10 when background 3 x has moved 16 pixels and needs redrawing
 v_bg3_y_redraw_flag:		rs.b 1 ; $FFFFF751 ; $10 when background 3 y has moved 16 pixels and needs redrawing - unused
 unused_f752:			rs.b 2
-v_fg_redraw_direction:		rs.b 1 ; $FFFFF754 ; 16x16 row redraw flag bitfield for foreground - 0 = top; 1 = bottom; 2 = left; 3 = right; 4 = top (all); 5 = bottom (all)
-unused_f755:			rs.b 1
-v_bg1_redraw_direction:		rs.b 1 ; $FFFFF756 ; 16x16 row redraw flag bitfield for background 1
-unused_f757:			rs.b 1
-v_bg2_redraw_direction:		rs.b 1 ; $FFFFF758 ; 16x16 row redraw flag bitfield for background 2
-unused_f759:			rs.b 1
-v_bg3_redraw_direction:		rs.b 1 ; $FFFFF75A ; 16x16 row redraw flag bitfield for background 3
-unused_f75b:			rs.b 1
+v_fg_redraw_direction:		rs.w 1 ; $FFFFF754 ; 16x16 row redraw flag bitfield for foreground - high byte: 0 = top; 1 = bottom; 2 = left; 3 = right; 4 = top (all); 5 = bottom (all)
+v_bg1_redraw_direction:		rs.w 1 ; $FFFFF756 ; 16x16 row redraw flag bitfield for background 1
+v_bg2_redraw_direction:		rs.w 1 ; $FFFFF758 ; 16x16 row redraw flag bitfield for background 2
+v_bg3_redraw_direction:		rs.w 1 ; $FFFFF75A ; 16x16 row redraw flag bitfield for background 3
 f_boundary_bottom_change:	rs.b 1 ; $FFFFF75C ; flag set when bottom level boundary is changing
 unused_f75d:			rs.b 3
 v_sonic_max_speed:		rs.w 1 ; $FFFFF760 ; Sonic's maximum speed
@@ -232,13 +235,13 @@ v_cstomp_y_pos:			rs.w 1 ; $FFFFF7A4 ; y position of MZ chain stomper, used for 
 unused_f7a6:			rs.b 1
 v_boss_status:			rs.b 1 ; $FFFFF7A7 ; status of boss and prison capsule - 01 = boss defeated; 02 = prison opened
 v_sonic_pos_tracker_num:	rs.w 1 ; $FFFFF7A8 ; current location within position tracking data
-v_sonic_pos_tracker_num_low:	equ v_sonic_pos_tracker_num+1
+v_sonic_pos_tracker_num_low:	equ __rs-1
 f_boss_boundary:		rs.b 1 ; $FFFFF7AA ; flag set to stop Sonic moving off the right side of the screen at a boss
 unused_f7ab:			rs.b 1
-v_256x256_with_loop_1:		rs.b 1 ; $FFFFF7AC ; 256x256 level tile which contains a loop (GHZ/SLZ)
-v_256x256_with_loop_2:		rs.b 1 ; $FFFFF7AD ; 256x256 level tile which contains a loop (GHZ/SLZ)
-v_256x256_with_tunnel_1:	rs.b 1 ; $FFFFF7AE ; 256x256 level tile which contains a roll tunnel (GHZ)
-v_256x256_with_tunnel_2:	rs.b 1 ; $FFFFF7AF ; 256x256 level tile which contains a roll tunnel (GHZ)
+v_256x256_with_loop_1:		rs.l 1 ; $FFFFF7AC ; 256x256 level tile which contains a loop (GHZ/SLZ)
+v_256x256_with_loop_2:		equ __rs-3 ; $FFFFF7AD ; 256x256 level tile which contains a loop (GHZ/SLZ)
+v_256x256_with_tunnel_1:	equ __rs-2 ; $FFFFF7AE ; 256x256 level tile which contains a roll tunnel (GHZ)
+v_256x256_with_tunnel_2:	equ __rs-1 ; $FFFFF7AF ; 256x256 level tile which contains a roll tunnel (GHZ)
 v_levelani_0_frame:		rs.b 1 ; $FFFFF7B0 ; level graphics animation 0 - current frame
 v_levelani_0_time:		rs.b 1 ; $FFFFF7B1 ; level graphics animation 0 - time until next frame
 v_levelani_1_frame:		rs.b 1 ; $FFFFF7B2 ; level graphics animation 1 - current frame
@@ -272,12 +275,14 @@ v_end_sonic_routine:		rs.b 1 ; $FFFFF7D7 ; routine counter for Sonic in the endi
 v_water_ripple_y_pos:		rs.w 1 ; $FFFFF7D8 ; y position of bg/fg water ripple effects; $80 added every frame, meaning high byte increments every 2 frames
 unused_f7da:			rs.b 6
 v_button_state:			rs.b $10 ; $FFFFF7E0 ; flags set when Sonic stands on a button
-v_scroll_block_1_height:	rs.w 1 ; $FFFFF7F0 ; scroll block height - $70 for GHZ; $800 for all others
-v_scroll_block_2_height:	rs.w 1 ; $FFFFF7F2 ; scroll block height - always $100, unused
-v_scroll_block_3_height:	rs.w 1 ; $FFFFF7F4 ; scroll block height - always $100, unused
-v_scroll_block_4_height:	rs.w 1 ; $FFFFF7F6 ; scroll block height - $100 for GHZ; 0 for all others, unused
+v_scroll_block_1_height:	rs.w 4 ; $FFFFF7F0 ; scroll block height - $70 for GHZ; $800 for all others
+v_scroll_block_2_height:	equ __rs-6 ; $FFFFF7F2 ; scroll block height - always $100, unused
+v_scroll_block_3_height:	equ __rs-4 ; $FFFFF7F4 ; scroll block height - always $100, unused
+v_scroll_block_4_height:	equ __rs-2 ; $FFFFF7F6 ; scroll block height - $100 for GHZ; 0 for all others, unused
 unused_f7f8:			rs.b 8
-				rsblockend
+				rsblockend levelinfo
+
+				rsalign 2
 v_sprite_buffer:		rs.b sizeof_vram_sprites-$80 ; $FFFFF800 ; sprite table ($280 bytes, last $80 bytes are overwritten by v_pal_water_next)
 v_pal_water_next:		rs.w countof_color*4 ; $FFFFFA00 ; target underwater palette, used for transitions
 v_pal_water:			rs.w countof_color*4 ; $FFFFFA80 ; main underwater palette
@@ -290,7 +295,10 @@ v_pal_dry_line1:		equ v_pal_dry
 v_pal_dry_line2:		equ v_pal_dry+sizeof_pal ; $FFFFFB20 ; 2nd palette line
 v_pal_dry_line3:		equ v_pal_dry+(sizeof_pal*2) ; $FFFFFB40 ; 3rd palette line
 v_pal_dry_line4:		equ v_pal_dry+(sizeof_pal*3) ; $FFFFFB60 ; 4th palette line
+				rsblock pal
 v_pal_dry_next:			rs.w countof_color*4 ; $FFFFFB80 ; target palette, used for transitions
+				rsblockend pal
+				rsalign 2
 v_respawn_list:			rs.b $100 ; $FFFFFC00 ; object state list (2 bytes for counter; 1 byte each for up to $FE objects)
 
 				rsalign 4
@@ -301,7 +309,7 @@ v_keep_after_reset:		equ v_stack_pointer ; $FFFFFE00 ; everything after this add
 
 f_restart:			rs.w 1 ; $FFFFFE02 ; flag set to end/restart level
 v_frame_counter:		rs.w 1 ; $FFFFFE04 ; frame counter, increments every frame
-v_frame_counter_low:		equ v_frame_counter+1 ; low byte for frame counter
+v_frame_counter_low:		equ __rs-1 ; $FFFFFE05 ; low byte for frame counter
 v_debug_item_index:		rs.b 1 ; $FFFFFE06 ; debug item currently selected (NOT the object id of the item)
 unused_fe07:			rs.b 1
 v_debug_active:			rs.w 1 ; $FFFFFE08 ; xx01 when debug mode is in use and Sonic is an item; 0 otherwise
@@ -309,10 +317,10 @@ v_debug_active_hi:		equ v_debug_active ; high byte of v_debug_active, routine co
 v_debug_move_delay:		rs.b 1 ; $FFFFFE0A ; debug mode - horizontal speed
 v_debug_move_speed:		rs.b 1 ; $FFFFFE0B ; debug mode - vertical speed
 v_vblank_counter:		rs.l 1 ; $FFFFFE0C ; vertical interrupt counter, increments every VBlank
-v_vblank_counter_word:		equ v_vblank_counter+2 ; low word for v_vblank_counter
-v_vblank_counter_byte:		equ v_vblank_counter_word+1 ; low byte for v_vblank_counter
+v_vblank_counter_word:		equ __rs-2 ; $FFFFFE0E ; low word for v_vblank_counter
+v_vblank_counter_byte:		equ __rs-1 ; $FFFFFE0F ; low byte for v_vblank_counter
 v_zone:				rs.w 1 ; $FFFFFE10 ; current zone number
-v_act:				equ v_zone+1 ; $FFFFFE11 ; current act number
+v_act:				equ __rs-1 ; $FFFFFE11 ; current act number
 v_lives:			rs.b 1 ; $FFFFFE12 ; number of lives
 unused_fe13:			rs.b 1
 v_air:				rs.w 1 ; $FFFFFE14 ; air remaining while underwater (2 bytes)
@@ -328,15 +336,17 @@ f_hud_time_update:		rs.b 1 ; $FFFFFE1E ; time counter update flag
 f_hud_score_update:		rs.b 1 ; $FFFFFE1F ; score counter update flag
 v_rings:			rs.w 1 ; $FFFFFE20 ; rings
 v_time:				rs.l 1 ; $FFFFFE22 ; time
-v_time_min:			equ v_time+1 ; time - minutes
-v_time_sec:			equ v_time+2 ; time - seconds
-v_time_frames:			equ v_time+3 ; time - frames
+v_time_min:			equ __rs-3 ; $FFFFFE23 ; time - minutes
+v_time_sec:			equ __rs-2 ; $FFFFFE24 ; time - seconds
+v_time_frames:			equ __rs-1 ; $FFFFFE25 ; time - frames
 v_score:			rs.l 1 ; $FFFFFE26 ; score
 unused_fe2a:			rs.b 2
 v_shield:			rs.b 1 ; $FFFFFE2C ; shield status - 00 = no; 01 = yes
 v_invincibility:		rs.b 1 ; $FFFFFE2D ; invinciblity status - 00 = no; 01 = yes
 v_shoes:			rs.b 1 ; $FFFFFE2E ; speed shoes status - 00 = no; 01 = yes
 v_unused_powerup:		rs.b 1 ; $FFFFFE2F ; unused power up status
+
+				rsblock lamppost ; written to as a block by GM_Credits
 v_last_lamppost:		rs.b 1 ; $FFFFFE30 ; id of the last lamppost you hit
 
 ; Lamppost copied variables:
@@ -346,8 +356,7 @@ v_sonic_x_pos_lampcopy:		rs.w 1 ; $FFFFFE32 ; lamppost copy of Sonic's x positio
 v_sonic_y_pos_lampcopy:		rs.w 1 ; $FFFFFE34 ; lamppost copy of Sonic's y position
 v_rings_lampcopy:		rs.w 1 ; $FFFFFE36 ; lamppost copy of v_rings
 v_time_lampcopy:		rs.l 1 ; $FFFFFE38 ; lamppost copy of v_time
-v_dle_routine_lampcopy:		rs.b 1 ; $FFFFFE3C ; lamppost copy of v_dle_routine
-unused_fe3d:			rs.b 1
+v_dle_routine_lampcopy:		rs.w 1 ; $FFFFFE3C ; lamppost copy of v_dle_routine
 v_boundary_bottom_lampcopy:	rs.w 1 ; $FFFFFE3E ; lamppost copy of v_boundary_bottom
 v_camera_x_pos_lampcopy:	rs.w 1 ; $FFFFFE40 ; lamppost copy of v_camera_x_pos
 v_camera_y_pos_lampcopy:	rs.w 1 ; $FFFFFE42 ; lamppost copy of v_camera_y_pos
@@ -360,13 +369,16 @@ v_bg3_y_pos_lampcopy:		rs.w 1 ; $FFFFFE4E ; lamppost copy of v_bg3_y_pos
 v_water_height_normal_lampcopy:	rs.w 1 ; $FFFFFE50 ; lamppost copy of v_water_height_normal
 v_water_routine_lampcopy:	rs.b 1 ; $FFFFFE52 ; lamppost copy of v_water_routine
 f_water_pal_full_lampcopy:	rs.b 1 ; $FFFFFE53 ; lamppost copy of f_water_pal_full
+				rsblockend lamppost
 v_ring_reward_lampcopy:		rs.b 1 ; $FFFFFE54 ; lamppost copy of v_ring_reward
 unused_fe55:			rs.b 2
 
 v_emeralds:			rs.b 1 ; $FFFFFE57 ; number of chaos emeralds
-v_emerald_list:			rs.b 6 ; $FFFFFE58 ; which individual emeralds you have, 1 byte per emerald numbered 0 to 5
+v_emerald_list:			rs.w 3 ; $FFFFFE58 ; which individual emeralds you have, 1 byte per emerald numbered 0 to 5 (6 bytes)
 v_oscillating_direction:	rs.w 1 ; $FFFFFE5E ; bitfield for the direction values in the table below are moving - 0 = up; 1 = down
-				rsblock ; $FE60-$FEFF cleared by GM_Special; $FE60-$FF7F cleared by GM_Level, GM_Ending
+
+				rsblock synctables ; $FE60-$FEFF cleared by GM_Special
+				rsblock synctables2 ; $FE60-$FF7F cleared by GM_Level, GM_Ending
 v_oscillating_table:		rs.l $10 ; $FFFFFE60 ; table of 16 oscillating values, for platform movement - 1 word for current value, 1 word for rate
 v_oscillating_0_to_20:		equ v_oscillating_table
 v_oscillating_0_to_30:		equ v_oscillating_table+4
@@ -396,25 +408,26 @@ unused_feca:			rs.b $26
 v_boundary_top_debugcopy:	rs.w 1 ; $FFFFFEF0 ; top level boundary, buffered while debug mode is in use
 v_boundary_bottom_debugcopy:	rs.w 1 ; $FFFFFEF2 ; bottom level boundary, buffered while debug mode is in use
 unused_fef4:			rs.b $C
-				rsblockend
+				rsblockend synctables
+
 unused_ff00:			rs.b $10
 
 ; Variables copied during VBlank and used by DrawTilesWhenMoving:
 
-v_camera_x_pos_copy:		rs.l 1 ; $FFFFFF10 ; copy of v_camera_x_pos
-v_camera_y_pos_copy:		rs.l 1 ; $FFFFFF14 ; copy of v_camera_y_pos
-v_bg1_x_pos_copy:		rs.l 1 ; $FFFFFF18 ; copy of v_bg1_x_pos
-v_bg1_y_pos_copy:		rs.l 1 ; $FFFFFF1C ; copy of v_bg1_y_pos
-v_bg2_x_pos_copy:		rs.l 1 ; $FFFFFF20 ; copy of v_bg2_x_pos
-v_bg2_y_pos_copy:		rs.l 1 ; $FFFFFF24 ; copy of v_bg2_y_pos
-v_bg3_x_pos_copy:		rs.l 1 ; $FFFFFF28 ; copy of v_bg3_x_pos
-v_bg3_y_pos_copy:		rs.l 1 ; $FFFFFF2C ; copy of v_bg3_y_pos
-v_fg_redraw_direction_copy:	rs.w 1 ; $FFFFFF30 ; copy of v_fg_redraw_direction
-v_bg1_redraw_direction_copy:	rs.w 1 ; $FFFFFF32 ; copy of v_bg1_redraw_direction
-v_bg2_redraw_direction_copy:	rs.w 1 ; $FFFFFF34 ; copy of v_bg2_redraw_direction
-v_bg3_redraw_direction_copy:	rs.w 1 ; $FFFFFF36 ; copy of v_bg3_redraw_direction
+v_camera_x_pos_copy:		rs.l 8 ; $FFFFFF10 ; copy of v_camera_x_pos
+v_camera_y_pos_copy:		equ __rs-$1C ; $FFFFFF14 ; copy of v_camera_y_pos
+v_bg1_x_pos_copy:		equ __rs-$18 ; $FFFFFF18 ; copy of v_bg1_x_pos
+v_bg1_y_pos_copy:		equ __rs-$14 ; $FFFFFF1C ; copy of v_bg1_y_pos
+v_bg2_x_pos_copy:		equ __rs-$10 ; $FFFFFF20 ; copy of v_bg2_x_pos
+v_bg2_y_pos_copy:		equ __rs-$C ; $FFFFFF24 ; copy of v_bg2_y_pos
+v_bg3_x_pos_copy:		equ __rs-8 ; $FFFFFF28 ; copy of v_bg3_x_pos
+v_bg3_y_pos_copy:		equ __rs-4 ; $FFFFFF2C ; copy of v_bg3_y_pos
+v_fg_redraw_direction_copy:	rs.w 4 ; $FFFFFF30 ; copy of v_fg_redraw_direction
+v_bg1_redraw_direction_copy:	equ __rs-6 ; $FFFFFF32 ; copy of v_bg1_redraw_direction
+v_bg2_redraw_direction_copy:	equ __rs-4 ; $FFFFFF34 ; copy of v_bg2_redraw_direction
+v_bg3_redraw_direction_copy:	equ __rs-2 ; $FFFFFF36 ; copy of v_bg3_redraw_direction
 unused_ff38:			rs.b $48
-				rsblockend
+				rsblockend synctables2
 
 v_levelselect_hold_delay:	rs.w 1 ; $FFFFFF80 ; level select - time until change when up/down is held
 v_levelselect_item:		rs.w 1 ; $FFFFFF82 ; level select - item selected
@@ -423,10 +436,10 @@ unused_ff86:			rs.b $3A
 v_highscore:			rs.l 1 ; $FFFFFFC0 ; highest score so far (REV00 only)
 v_score_next_life:		equ v_highscore	; points required for next extra life (REV01 only)
 unused_ffc4:			rs.b $1C
-f_levelselect_cheat:		rs.b 1 ; $FFFFFFE0 ; flag set when level select cheat has been entered
-f_slowmotion_cheat:		rs.b 1 ; $FFFFFFE1 ; flag set when slow motion & frame advance cheat has been entered
-f_debug_cheat:			rs.b 1 ; $FFFFFFE2 ; flag set when debug mode cheat has been entered
-f_credits_cheat:		rs.b 1 ; $FFFFFFE3 ; flag set when hidden credits & press start cheat has been entered
+f_levelselect_cheat:		rs.l 1 ; $FFFFFFE0 ; flag set when level select cheat has been entered
+f_slowmotion_cheat:		equ __rs-3 ; $FFFFFFE1 ; flag set when slow motion & frame advance cheat has been entered
+f_debug_cheat:			equ __rs-2 ; $FFFFFFE2 ; flag set when debug mode cheat has been entered
+f_credits_cheat:		equ __rs-1 ; $FFFFFFE3 ; flag set when hidden credits & press start cheat has been entered
 v_title_d_count:		rs.w 1 ; $FFFFFFE4 ; number of times the d-pad is pressed on title screen, but only in the order UDLR
 v_title_c_count:		rs.w 1 ; $FFFFFFE6 ; number of times C is pressed on title screen
 unused_ffe8:			rs.b 2

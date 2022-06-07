@@ -16,9 +16,9 @@ GM_Credits:
 		clr.b	(f_water_pal_full).w
 		bsr.w	ClearScreen
 
-		lea	(v_ost_all).w,a1
+		lea	(v_ost_all).w,a1			; RAM address to start clearing
 		moveq	#0,d0
-		move.w	#((sizeof_ost*countof_ost)/4)-1,d1
+		move.w	#loops_to_clear_ost,d1			; size of RAM block to clear
 	@clear_ost:
 		move.l	d0,(a1)+
 		dbf	d1,@clear_ost				; clear object RAM
@@ -29,10 +29,10 @@ GM_Credits:
 
 		lea	(v_pal_dry_next).w,a1
 		moveq	#0,d0
-		move.w	#(sizeof_pal_all/4)-1,d1
+		move.w	#loops_to_clear_pal,d1
 	@clear_pal:
 		move.l	d0,(a1)+
-		dbf	d1,@clear_pal				; fill palette with black
+		dbf	d1,@clear_pal				; clear next palette
 
 		moveq	#id_Pal_Sonic,d0
 		bsr.w	PalLoad_Next				; load Sonic's palette

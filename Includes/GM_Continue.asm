@@ -11,9 +11,9 @@ GM_Continue:
 		move.w	#$8700,(a6)				; background colour
 		bsr.w	ClearScreen
 
-		lea	(v_ost_all).w,a1
+		lea	(v_ost_all).w,a1			; RAM address to start clearing
 		moveq	#0,d0
-		move.w	#((sizeof_ost*countof_ost)/4)-1,d1
+		move.w	#loops_to_clear_ost,d1			; size of RAM block to clear
 	@clear_ost:
 		move.l	d0,(a1)+
 		dbf	d1,@clear_ost				; clear object RAM

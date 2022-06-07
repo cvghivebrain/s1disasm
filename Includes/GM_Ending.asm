@@ -6,30 +6,30 @@ GM_Ending:
 		play.b	1, bsr.w, cmd_Stop			; stop music
 		bsr.w	PaletteFadeOut				; fade out from previous gamemode
 
-		lea	(v_ost_all).w,a1
+		lea	(v_ost_all).w,a1			; RAM address to start clearing
 		moveq	#0,d0
-		move.w	#((sizeof_ost*countof_ost)/4)-1,d1
+		move.w	#loops_to_clear_ost,d1			; size of RAM block to clear
 	@clear_ost:
 		move.l	d0,(a1)+
 		dbf	d1,@clear_ost				; clear object RAM
 
 		lea	(v_vblank_0e_counter).w,a1
 		moveq	#0,d0
-		move.w	#((v_plc_buffer-v_vblank_0e_counter)/4)-1,d1
+		move.w	#loops_to_clear_vblankstuff,d1
 	@clear_ram1:
 		move.l	d0,(a1)+
 		dbf	d1,@clear_ram1				; clear	variables ($F628-$F67F)
 
 		lea	(v_camera_x_pos).w,a1
 		moveq	#0,d0
-		move.w	#((v_sprite_buffer-v_camera_x_pos)/4)-1,d1
+		move.w	#loops_to_clear_levelinfo,d1
 	@clear_ram2:
 		move.l	d0,(a1)+
 		dbf	d1,@clear_ram2				; clear	variables ($F700-$F7FF)
 
 		lea	(v_oscillating_table).w,a1
 		moveq	#0,d0
-		move.w	#((v_levelselect_hold_delay-v_oscillating_table)/4)-1,d1
+		move.w	#loops_to_clear_synctables2,d1
 	@clear_ram3:
 		move.l	d0,(a1)+
 		dbf	d1,@clear_ram3				; clear	variables ($FE60-$FF7F)
