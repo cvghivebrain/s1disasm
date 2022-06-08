@@ -69,7 +69,7 @@ NewPLC:
 
 ClearPLC:
 		lea	(v_plc_buffer).w,a2			; PLC buffer space in RAM
-		moveq	#$1F,d0
+		moveq	#loops_to_clear_plc,d0
 
 	@loop:
 		clr.l	(a2)+

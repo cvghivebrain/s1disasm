@@ -141,7 +141,7 @@ f_hblank_run_snd:		rs.b 1 ; $FFFFF64F ; flag set when sound driver should be run
 v_palcycle_buffer:		rs.w $18 ; $FFFFF650 ; palette data buffer (used for palette cycling) ($30 bytes)
 				rsblockend vblankstuff
 
-				rsalign 2
+				rsblock plc
 v_plc_buffer:			rs.b sizeof_plc*countof_plc ; $FFFFF680 ; pattern load cues buffer (maximum $10 PLCs) ($60 bytes)
 v_plc_buffer_dest:		equ v_plc_buffer+4 ; VRAM destination for 1st item in PLC buffer (2 bytes)
 v_nem_mode_ptr:			rs.l 1 ; $FFFFF6E0 ; pointer for nemesis decompression code ($1502 or $150C)
@@ -153,6 +153,7 @@ v_nem_shift:			rs.l 1 ; $FFFFF6F4 ; Nemesis register buffer - d6: shift value
 v_nem_tile_count:		rs.w 1 ; $FFFFF6F8 ; number of 8x8 tiles in a Nemesis archive
 v_nem_tile_count_frame:		rs.w 1 ; $FFFFF6FA ; number of 8x8 tiles to process in 1 frame
 unused_f6fc:			rs.b 4
+				rsblockend plc
 
 				rsblock levelinfo ; $F700-$F7FF cleared by GM_Level, GM_Special, GM_Ending
 v_camera_x_pos:			rs.l 1 ; $FFFFF700 ; foreground camera x position
