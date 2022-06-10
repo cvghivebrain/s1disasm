@@ -472,7 +472,7 @@ SSS_ChkRing:
 
 	@noslot:
 		jsr	(CollectRing).l				; get a ring
-		cmpi.w	#50,(v_rings).w				; check if you have 50 rings
+		cmpi.w	#rings_for_continue,(v_rings).w		; check if you have 50 rings
 		bcs.s	@nocontinue				; if not, branch
 		bset	#0,(v_ring_reward).w			; set flag
 		bne.s	@nocontinue				; branch if flag was already set
@@ -511,7 +511,7 @@ SSS_ChkEmerald:
 		move.l	a1,ss_update_levelptr(a2)
 
 	@noslot:
-		cmpi.b	#6,(v_emeralds).w			; do you have all the emeralds?
+		cmpi.b	#countof_emeralds,(v_emeralds).w	; do you have all the emeralds?
 		beq.s	@noemerald				; if yes, branch
 		subi.b	#id_SS_Item_Em1,d4
 		moveq	#0,d0

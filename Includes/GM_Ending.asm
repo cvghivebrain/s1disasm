@@ -49,7 +49,7 @@ GM_Ending:
 		move.w	(v_vdp_hint_counter).w,(a6)
 		move.w	#air_full,(v_air).w
 		move.w	#id_EndZ_good,(v_zone).w		; set level number to 0600 (extra flowers)
-		cmpi.b	#6,(v_emeralds).w			; do you have all 6 emeralds?
+		cmpi.b	#countof_emeralds,(v_emeralds).w	; do you have all 6 emeralds?
 		beq.s	@all_emeralds				; if yes, branch
 		move.w	#id_EndZ_bad,(v_zone).w			; set level number to 0601 (no flowers)
 

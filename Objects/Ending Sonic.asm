@@ -28,7 +28,7 @@ ost_esonic_wait_time:	equ $30					; time to wait between events (2 bytes)
 ; ===========================================================================
 
 ESon_Main:	; Routine 0
-		cmpi.b	#6,(v_emeralds).w			; do you have all 6 emeralds?
+		cmpi.b	#countof_emeralds,(v_emeralds).w	; do you have all 6 emeralds?
 		beq.s	ESon_Main2				; if yes, branch
 		addi.b	#id_ESon_Leap,ost_routine2(a0)		; else, skip emerald sequence
 		move.w	#216,ost_esonic_wait_time(a0)		; set delay to 3.6 seconds

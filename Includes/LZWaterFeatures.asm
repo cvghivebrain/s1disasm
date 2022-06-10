@@ -428,7 +428,7 @@ LZWaterSlides:
 	@sonic_in_air:
 		tst.b	(f_jump_only).w
 		beq.s	@not_locked				; branch if controls aren't locked
-		move.w	#5,ost_sonic_lock_time(a1)		; lock controls for 5 more frames
+		move.w	#sonic_lock_time_slide,ost_sonic_lock_time(a1) ; lock controls for 5 more frames
 		clr.b	(f_jump_only).w				; unlock controls
 
 	@not_locked:

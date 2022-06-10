@@ -56,7 +56,7 @@ SSR_Main:	; Routine 0
 		movea.l	a0,a1					; replace current object with 1st from list
 		lea	(SSR_Config).l,a2			; position, routine & frame settings
 		moveq	#3,d1					; 3 additional items
-		cmpi.w	#50,(v_rings).w				; do you have 50 or more rings?
+		cmpi.w	#rings_for_continue,(v_rings).w		; do you have 50 or more rings?
 		bcs.s	@loop					; if no, branch
 		addq.w	#1,d1					; if yes, add 1	item (continue)
 
@@ -145,7 +145,7 @@ SSR_RingBonus:	; Routine 6
 		play.w	1, jsr, sfx_Register			; play "ker-ching" sound
 		addq.b	#2,ost_routine(a0)			; goto SSR_Wait next, and then SSR_Exit
 		move.w	#180,ost_anim_time(a0)			; set time delay to 3 seconds
-		cmpi.w	#50,(v_rings).w				; do you have at least 50 rings?
+		cmpi.w	#rings_for_continue,(v_rings).w		; do you have at least 50 rings?
 		bcs.s	@exit					; if not, branch
 		move.w	#60,ost_anim_time(a0)			; set time delay to 1 second
 		addq.b	#4,ost_routine(a0)			; goto SSR_Continue next

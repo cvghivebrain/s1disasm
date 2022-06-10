@@ -95,7 +95,7 @@ Bub_ChkWater:	; Routine 4
 		clr.w	ost_y_vel(a1)
 		clr.w	ost_inertia(a1)				; stop Sonic
 		move.b	#id_GetAir,ost_anim(a1)			; use bubble-collecting animation
-		move.w	#35,ost_sonic_lock_time(a1)		; lock controls for 35 frames
+		move.w	#sonic_lock_time_bubble,ost_sonic_lock_time(a1) ; lock controls for 35 frames
 		move.b	#0,ost_sonic_jump(a1)			; cancel jump
 		bclr	#status_pushing_bit,ost_status(a1)
 		bclr	#status_rolljump_bit,ost_status(a1)

@@ -78,7 +78,7 @@ Cont_MainLoop:
 
 @goto_level:
 		move.b	#id_Level,(v_gamemode).w		; set screen mode to $0C (level)
-		move.b	#3,(v_lives).w				; set lives to 3
+		move.b	#lives_start,(v_lives).w		; set lives to 3
 		moveq	#0,d0
 		move.w	d0,(v_rings).w				; clear rings
 		move.l	d0,(v_time).w				; clear time

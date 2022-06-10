@@ -155,13 +155,12 @@ HasPassedAct:
 		add.w	d0,d0
 		move.w	TimeBonuses(pc,d0.w),(v_time_bonus).w	; set time bonus
 		move.w	(v_rings).w,d0				; load number of rings
-		mulu.w	#10,d0					; multiply by 10
+		mulu.w	#bonus_points_per_ring,d0		; multiply by 10
 		move.w	d0,(v_ring_bonus).w			; set ring bonus
 		play.w	1, jsr, mus_HasPassed			; play "Sonic Has Passed" music
 
 Sign_SonicRun_Exit:
-		rts	
-; End of function HasPassedAct
+		rts
 
 ; ===========================================================================
 TimeBonuses:	dc.w   5000

@@ -44,7 +44,7 @@ AddPoints:
 			cmp.l   (v_score_next_life).w,d0	; has Sonic got 50000+ points?
 			blo.s   @noextralife			; if not, branch
 
-			addi.l  #5000,(v_score_next_life).w	; increase requirement by 50000
+			addi.l  #points_for_life,(v_score_next_life).w ; increase requirement by 50000
 			tst.b   (v_console_region).w
 			bmi.s   @noextralife			; branch if Mega Drive is Japanese
 			addq.b  #1,(v_lives).w			; give extra life

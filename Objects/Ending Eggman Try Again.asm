@@ -30,7 +30,7 @@ EEgg_Main:	; Routine 0
 		move.b	#render_abs,ost_render(a0)
 		move.b	#2,ost_priority(a0)
 		move.b	#id_ani_eegg_end,ost_anim(a0)		; use "END" animation
-		cmpi.b	#6,(v_emeralds).w			; do you have all 6 emeralds?
+		cmpi.b	#countof_emeralds,(v_emeralds).w	; do you have all 6 emeralds?
 		beq.s	EEgg_Animate				; if yes, branch
 
 		move.b	#id_CreditsText,(v_ost_tryagain).w	; load credits object

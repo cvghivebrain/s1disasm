@@ -26,7 +26,7 @@ TCha_Main:	; Routine 0
 		movea.l	a0,a1
 		moveq	#0,d2
 		moveq	#0,d3
-		moveq	#6-1,d1
+		moveq	#countof_emeralds-1,d1
 		sub.b	(v_emeralds).w,d1
 
 @makeemerald:

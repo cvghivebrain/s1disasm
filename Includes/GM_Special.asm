@@ -164,7 +164,7 @@ SS_FinishLoop:
 		move.b	#1,(f_hud_score_update).w		; update score counter
 		move.b	#1,(f_pass_bonus_update).w		; update ring bonus counter
 		move.w	(v_rings).w,d0
-		mulu.w	#10,d0					; multiply rings by 10
+		mulu.w	#bonus_points_per_ring,d0		; multiply rings by 10
 		move.w	d0,(v_ring_bonus).w			; set rings bonus
 		play.w	1, jsr, mus_HasPassed			; play end-of-level music
 
@@ -1078,7 +1078,7 @@ SS_Load:
 		move.b	#0,(v_last_ss_levelid).w		; reset if higher than 6
 
 	@ss_valid:
-		cmpi.b	#6,(v_emeralds).w			; do you have all emeralds?
+		cmpi.b	#countof_emeralds,(v_emeralds).w	; do you have all emeralds?
 		beq.s	SS_LoadData				; if yes, branch
 		moveq	#0,d1
 		move.b	(v_emeralds).w,d1

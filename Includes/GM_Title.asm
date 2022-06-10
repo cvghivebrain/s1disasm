@@ -311,14 +311,14 @@ LevSel_Level_SS:
 		bne.s	LevSel_Level				; if not, branch
 		move.b	#id_Special,(v_gamemode).w		; set gamemode to $10 (Special Stage)
 		clr.w	(v_zone).w				; clear	level
-		move.b	#3,(v_lives).w				; set lives to 3
+		move.b	#lives_start,(v_lives).w		; set lives to 3
 		moveq	#0,d0
 		move.w	d0,(v_rings).w				; clear rings
 		move.l	d0,(v_time).w				; clear time
 		move.l	d0,(v_score).w				; clear score
 		if Revision=0
 		else
-			move.l	#5000,(v_score_next_life).w	; extra life is awarded at 50000 points
+			move.l	#points_for_life,(v_score_next_life).w ; extra life is awarded at 50000 points
 		endc
 		rts	
 ; ===========================================================================
@@ -329,7 +329,7 @@ LevSel_Level:
 
 PlayLevel:
 		move.b	#id_Level,(v_gamemode).w		; set gamemode to $0C (level)
-		move.b	#3,(v_lives).w				; set lives to 3
+		move.b	#lives_start,(v_lives).w		; set lives to 3
 		moveq	#0,d0
 		move.w	d0,(v_rings).w				; clear rings
 		move.l	d0,(v_time).w				; clear time
@@ -341,7 +341,7 @@ PlayLevel:
 		move.b	d0,(v_continues).w			; clear continues
 		if Revision=0
 		else
-			move.l	#5000,(v_score_next_life).w	; extra life is awarded at 50000 points
+			move.l	#points_for_life,(v_score_next_life).w ; extra life is awarded at 50000 points
 		endc
 		play.b	1, bsr.w, cmd_Fade			; fade out music
 		rts	
@@ -458,14 +458,14 @@ PlayDemo:
 		clr.b	(v_last_ss_levelid).w			; clear special stage number
 
 	@demo_level:
-		move.b	#3,(v_lives).w				; set lives to 3
+		move.b	#lives_start,(v_lives).w		; set lives to 3
 		moveq	#0,d0
 		move.w	d0,(v_rings).w				; clear rings
 		move.l	d0,(v_time).w				; clear time
 		move.l	d0,(v_score).w				; clear score
 		if Revision=0
 		else
-			move.l	#5000,(v_score_next_life).w	; extra life is awarded at 50000 points
+			move.l	#points_for_life,(v_score_next_life).w ; extra life is awarded at 50000 points
 		endc
 		rts	
 

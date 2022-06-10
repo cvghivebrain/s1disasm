@@ -89,7 +89,7 @@ EndDemoSetup:
 		bhs.s	@exit					; if yes, branch
 		move.w	#$8001,(v_demo_mode).w			; set demo+ending mode
 		move.b	#id_Demo,(v_gamemode).w			; set game mode to 8 (demo)
-		move.b	#3,(v_lives).w				; set lives to 3
+		move.b	#lives_start,(v_lives).w		; set lives to 3
 		moveq	#0,d0
 		move.w	d0,(v_rings).w				; clear rings
 		move.l	d0,(v_time).w				; clear time

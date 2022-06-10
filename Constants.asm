@@ -185,6 +185,10 @@ sonic_shoe_time:		equ 20*60			; time in frames that speed shoes last (20 seconds
 sonic_invincible_time:		equ 20*60			; time in frames that invincibility lasts (20 seconds)
 sonic_flash_time:		equ 2*60			; time in frames that Sonic flashes after being hit (2 seconds)
 ring_delay:			equ 30				; time in frames before Sonic is able to collect rings after being hit (0.5 seconds)
+sonic_lock_time_slope:		equ 30				; time in frames that controls are locked when stuck on a slope (0.5 seconds)
+sonic_lock_time_bubble:		equ 35				; time in frames that controls are locked after collecting a bubble (0.58 seconds)
+sonic_lock_time_spring:		equ 15				; time in frames that controls are locked after jumping on a spring (0.25 seconds)
+sonic_lock_time_slide:		equ 5				; time in frames that controls are locked after leaving a LZ slide (0.08 seconds)
 air_full:			equ 30				; time in seconds that Sonic can hold his breath
 air_ding1:			equ 25
 air_ding2:			equ 20
@@ -196,8 +200,17 @@ bumper_power:			equ $700
 spring_power_red:		equ $1000
 spring_power_yellow:		equ $A00
 
+lives_start:			equ 3				; lives at start of game
+rings_for_life:			equ 100				; rings needed for first extra life
+rings_for_life2:		equ 200				; rings needed for second extra life
+rings_for_special_stage:	equ 50				; rings needed for special stage giant ring to appear
+rings_for_continue:		equ 50				; rings needed for continue in special stage
+rings_from_monitor:		equ 10				; rings given by ring monitor
 combo_max:			equ 16*2			; value at which v_enemy_combo gives the max points
 combo_max_points:		equ 10000/10			; points given after 16 enemies are broken in a row
+bonus_points_per_ring:		equ 100/10			; points given per ring at the end of a level
+points_for_life:		equ 50000/10			; points needed for extra life (awarded every 50000 points without cap)
+countof_emeralds:		equ 6				; number of chaos emeralds
 
 ; Object variables
 			rsset 0
@@ -292,7 +305,7 @@ ost_sonic_sbz_disc:	equ $38 ; 1 if Sonic is stuck to SBZ disc
 ost_sonic_restart_time:	equ $3A ; time until level restarts (2 bytes)
 ost_sonic_jump:		equ $3C ; 1 if Sonic is jumping
 ost_sonic_on_obj:	equ $3D	; OST index of object Sonic stands on
-ost_sonic_lock_time:	equ $3E	; time left for locked controls, e.g. after hitting a spring (2 bytes)
+ost_sonic_lock_time:	equ $3E	; time left for locked d-pad controls (jumping is allowed), e.g. after hitting a spring (2 bytes)
 
 ; Boss variables
 hitcount_all:		equ 8

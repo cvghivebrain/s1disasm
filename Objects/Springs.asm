@@ -132,7 +132,7 @@ Spring_BounceLR:
 		neg.w	ost_x_vel(a1)				; move Sonic to	the right
 
 	@xflipped:
-		move.w	#15,ost_sonic_lock_time(a1)		; lock controls for 0.25 seconds
+		move.w	#sonic_lock_time_spring,ost_sonic_lock_time(a1) ; lock controls for 0.25 seconds
 		move.w	ost_x_vel(a1),ost_inertia(a1)
 		bchg	#status_xflip_bit,ost_status(a1)
 		btst	#status_jump_bit,ost_status(a1)		; is Sonic jumping/rolling?

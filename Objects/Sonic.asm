@@ -1050,7 +1050,7 @@ Sonic_SlopeRepel:
 		bcc.s	@exit					; branch if inertia is at least $280
 		clr.w	ost_inertia(a0)				; set Sonic's inertia to 0
 		bset	#status_air_bit,ost_status(a0)
-		move.w	#30,ost_sonic_lock_time(a0)		; lock controls for half a second
+		move.w	#sonic_lock_time_slope,ost_sonic_lock_time(a0) ; lock controls for half a second
 
 	@exit:
 		rts	
