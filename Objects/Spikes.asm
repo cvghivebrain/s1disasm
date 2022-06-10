@@ -104,7 +104,7 @@ Spike_Hurt:
 			asl.l	#8,d0
 		else
 								; this fixes the infamous "spike bug"
-			tst.w	ost_sonic_flash_rate(a0)	; is Sonic flashing after being hurt?
+			tst.w	ost_sonic_flash_time(a0)	; is Sonic flashing after being hurt?
 			bne.s	Spike_Skip_Hurt			; if yes, branch
 			jmp	(Spike_Bugfix).l		; this is a copy of the above code that was pushed aside for this
 	Spike_Resume:
