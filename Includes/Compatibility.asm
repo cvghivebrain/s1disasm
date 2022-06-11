@@ -17,7 +17,7 @@ obAniFrame:		equ ost_anim_frame
 obAnim:			equ ost_anim
 obNextAni:		equ ost_anim_restart
 obTimeFrame:		equ ost_anim_time
-obDelayAni:		equ ost_anim_delay
+obDelayAni:		equ ost_anim_time_low
 obColType:		equ ost_col_type
 obColProp:		equ ost_col_property
 obStatus:		equ ost_status
@@ -327,6 +327,7 @@ Sonic_ChgJumpDir:	equ Sonic_JumpDirection
 
 ; Sonic 1 2021
 ost_actwidth:		equ ost_displaywidth
+ost_anim_delay:		equ ost_anim_time_low
 
 ; Sonic 2 Github
 id:			equ ost_id

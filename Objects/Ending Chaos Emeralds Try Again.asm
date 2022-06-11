@@ -65,7 +65,7 @@ TCha_Main:	; Routine 0
 		addq.b	#1,d2
 		move.b	#$80,ost_angle(a1)
 		move.b	d3,ost_anim_time(a1)
-		move.b	d3,ost_anim_delay(a1)
+		move.b	d3,ost_anim_time_low(a1)
 		addi.w	#10,d3
 		lea	sizeof_ost(a1),a1
 		dbf	d1,@makeemerald
@@ -90,7 +90,7 @@ TCha_Move:	; Routine 2
 
 	@angle_0:
 		clr.w	ost_ectry_speed(a0)
-		move.b	ost_anim_delay(a0),ost_anim_time(a0)
+		move.b	ost_anim_time_low(a0),ost_anim_time(a0)
 
 	@angle_not_80:
 		jsr	(CalcSine).l				; convert angle (d0) to sine (d0) and cosine (d1)

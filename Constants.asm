@@ -214,8 +214,8 @@ countof_emeralds:		equ 6				; number of chaos emeralds
 
 ; Object variables
 			rsset 0
-ost_id:			rs.b 1	; 0 ; object id
-ost_render:		rs.b 1	; 1 ; bitfield for x/y flip, display mode
+ost_id:			rs.b 1		; 0 ; object id
+ost_render:		rs.b 1		; 1 ; bitfield for x/y flip, display mode
 	render_xflip:		equ 1	; xflip
 	render_yflip:		equ 2	; yflip
 	render_rel:		equ 4	; relative screen position - coordinates are based on the level
@@ -233,7 +233,7 @@ ost_render:		rs.b 1	; 1 ; bitfield for x/y flip, display mode
 	render_rawmap_bit:	equ 5
 	render_behind_bit:	equ 6
 	render_onscreen_bit:	equ 7
-ost_tile:		rs.w 1	; 2 ; palette line & VRAM setting (2 bytes)
+ost_tile:		rs.w 1		; 2 ; palette line & VRAM setting (2 bytes)
 	tile_xflip:	equ $800
 	tile_yflip:	equ $1000
 	tile_pal1:	equ 0
@@ -246,28 +246,28 @@ ost_tile:		rs.w 1	; 2 ; palette line & VRAM setting (2 bytes)
 	tile_pal12_bit:	equ 5
 	tile_pal34_bit:	equ 6
 	tile_hi_bit:	equ 7
-ost_mappings:		rs.l 1	; 4 ; mappings address (4 bytes)
-ost_x_pos:		rs.l 1	; 8 ; x-axis position (2 bytes)
-ost_x_sub:		equ ost_x_pos+2	; $A ; x-axis subpixel position (2 bytes)
-ost_y_screen:		equ ost_x_pos+2	; $A ; y-axis position for screen-fixed items (2 bytes)
-ost_y_pos:		rs.l 1	; $C ; y-axis position (2 bytes)
-ost_y_sub:		equ ost_y_pos+2	; $E ; y-axis subpixel position (2 bytes)
-ost_x_vel:		rs.w 1	; $10 ; x-axis velocity (2 bytes)
-ost_y_vel:		rs.w 1	; $12 ; y-axis velocity (2 bytes)
-ost_inertia:		rs.w 1	; $14 ; potential speed (2 bytes)
-ost_height:		rs.b 1	; $16 ; height/2
-ost_width:		rs.b 1	; $17 ; width/2
-ost_priority:		rs.b 1	; $18 ; sprite stack priority - 0 is highest, 7 is lowest
-ost_displaywidth:	rs.b 1	; $19 ; display width/2
-ost_frame:		rs.b 1	; $1A ; current frame displayed
-ost_anim_frame:		rs.b 1	; $1B ; current frame in animation script
-ost_anim:		rs.b 1	; $1C ; current animation
-ost_anim_restart:	rs.b 1	; $1D ; restart animation flag / next animation number (Sonic)
-ost_anim_time:		rs.b 1	; $1E ; time to next frame
-ost_anim_delay:		rs.b 1	; $1F ; time to delay animation
-ost_col_type:		rs.b 1	; $20 ; collision response type - 0 = none; 1-$3F = enemy; $41-$7F = items; $81-BF = hurts; $C1-$FF = custom
-ost_col_property:	rs.b 1	; $21 ; collision extra property
-ost_status:		rs.b 1	; $22 ; orientation or mode
+ost_mappings:		rs.l 1		; 4 ; mappings address (4 bytes)
+ost_x_pos:		rs.l 1		; 8 ; x-axis position (2 bytes)
+ost_x_sub:		equ __rs-2	; $A ; x-axis subpixel position (2 bytes)
+ost_y_screen:		equ __rs-2	; $A ; y-axis position for screen-fixed items (2 bytes)
+ost_y_pos:		rs.l 1		; $C ; y-axis position (2 bytes)
+ost_y_sub:		equ __rs-2	; $E ; y-axis subpixel position (2 bytes)
+ost_x_vel:		rs.l 1		; $10 ; x-axis velocity (2 bytes)
+ost_y_vel:		equ __rs-2	; $12 ; y-axis velocity (2 bytes)
+ost_inertia:		rs.w 1		; $14 ; potential speed (2 bytes)
+ost_height:		rs.b 1		; $16 ; height/2
+ost_width:		rs.b 1		; $17 ; width/2
+ost_priority:		rs.w 1		; $18 ; sprite stack priority - 0 is highest, 7 is lowest
+ost_displaywidth:	equ __rs-1	; $19 ; display width/2
+ost_frame:		rs.b 1		; $1A ; current frame displayed
+ost_anim_frame:		rs.b 1		; $1B ; current frame in animation script
+ost_anim:		rs.w 1		; $1C ; current animation
+ost_anim_restart:	equ __rs-1	; $1D ; restart animation flag / next animation number (Sonic)
+ost_anim_time:		rs.w 1		; $1E ; time to next frame (1 byte) / general timer (2 bytes)
+ost_anim_time_low:	equ __rs-1	; $1F ; used by some objects as master copy of timer
+ost_col_type:		rs.b 1		; $20 ; collision response type - 0 = none; 1-$3F = enemy; $41-$7F = items; $81-BF = hurts; $C1-$FF = custom
+ost_col_property:	rs.b 1		; $21 ; collision extra property
+ost_status:		rs.b 1		; $22 ; orientation or mode
 	status_xflip:		equ 1	; xflip
 	status_yflip:		equ 2	; yflip (objects only)
 	status_air:		equ 2	; Sonic is in the air (Sonic only)
@@ -286,26 +286,26 @@ ost_status:		rs.b 1	; $22 ; orientation or mode
 	status_pushing_bit:	equ 5
 	status_underwater_bit:	equ 6
 	status_broken_bit:	equ 7
-ost_respawn:		rs.b 1	; $23 ; respawn list index number
-ost_routine:		rs.b 1	; $24 ; routine number
-ost_routine2:		rs.b 1	; $25 ; secondary routine number
+ost_respawn:		rs.b 1		; $23 ; respawn list index number
+ost_routine:		rs.b 1		; $24 ; routine number
+ost_routine2:		rs.b 1		; $25 ; secondary routine number
 ost_solid:		equ ost_routine2 ; $25 ; solid status flag
-ost_angle:		rs.w 1	; $26 ; angle of floor or rotation - 0 = flat; $40 = vertical left; $80 = ceiling; $C0 = vertical right
-ost_subtype:		rs.b 1	; $28 ; object subtype
-ost_enemy_combo:	equ $3E	; number of enemies broken in a row (0-$A) (2 bytes)
+ost_angle:		rs.w 1		; $26 ; angle of floor or rotation - 0 = flat; $40 = vertical left; $80 = ceiling; $C0 = vertical right
+ost_subtype:		rs.w 1		; $28 ; object subtype
+ost_enemy_combo:	equ $3E		; number of enemies broken in a row (0-$A) (2 bytes)
 
 ; Object variables used by Sonic
-ost_sonic_flash_time:	equ $30	; time Sonic flashes for after getting hit (2 bytes)
-ost_sonic_invincible_time: equ $32 ; time left for invincibility (2 bytes)
-ost_sonic_shoe_time:	equ $34	; time left for speed shoes (2 bytes)
-ost_sonic_angle_right:	equ $36 ; angle of floor on Sonic's right side
-ost_sonic_angle_left:	equ $37 ; angle of floor on Sonic's left side
-ost_sonic_sbz_disc:	equ $38 ; 1 if Sonic is stuck to SBZ disc
+ost_sonic_flash_time:	equ $30		; time Sonic flashes for after getting hit (2 bytes)
+ost_sonic_invincible_time: equ $32	; time left for invincibility (2 bytes)
+ost_sonic_shoe_time:	equ $34		; time left for speed shoes (2 bytes)
+ost_sonic_angle_right:	equ $36		; angle of floor on Sonic's right side
+ost_sonic_angle_left:	equ $37		; angle of floor on Sonic's left side
+ost_sonic_sbz_disc:	equ $38		; 1 if Sonic is stuck to SBZ disc
 
-ost_sonic_restart_time:	equ $3A ; time until level restarts (2 bytes)
-ost_sonic_jump:		equ $3C ; 1 if Sonic is jumping
-ost_sonic_on_obj:	equ $3D	; OST index of object Sonic stands on
-ost_sonic_lock_time:	equ $3E	; time left for locked d-pad controls (jumping is allowed), e.g. after hitting a spring (2 bytes)
+ost_sonic_restart_time:	equ $3A		; time until level restarts (2 bytes)
+ost_sonic_jump:		equ $3C		; 1 if Sonic is jumping
+ost_sonic_on_obj:	equ $3D		; OST index of object Sonic stands on
+ost_sonic_lock_time:	equ $3E		; time left for locked d-pad controls (jumping is allowed), e.g. after hitting a spring (2 bytes)
 
 ; Boss variables
 hitcount_all:		equ 8

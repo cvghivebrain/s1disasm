@@ -25,12 +25,12 @@ TSon_Main:	; Routine 0
 		move.l	#Map_TSon,ost_mappings(a0)
 		move.w	#(vram_title_sonic/sizeof_cell)+tile_pal2,ost_tile(a0)
 		move.b	#1,ost_priority(a0)
-		move.b	#29,ost_anim_delay(a0)			; set time delay to 0.5 seconds
+		move.b	#29,ost_anim_time_low(a0)			; set time delay to 0.5 seconds
 		lea	(Ani_TSon).l,a1
 		bsr.w	AnimateSprite
 
 TSon_Delay:	;Routine 2
-		subq.b	#1,ost_anim_delay(a0)			; decrement timer
+		subq.b	#1,ost_anim_time_low(a0)			; decrement timer
 		bpl.s	@wait					; if time remains, branch
 		addq.b	#2,ost_routine(a0)			; goto TSon_Move next
 		bra.w	DisplaySprite

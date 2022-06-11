@@ -35,11 +35,11 @@ Anim_Next:
 		andi.b	#$1F,d0					; sprite number only
 		move.b	d0,ost_frame(a0)			; load sprite number
 		move.b	ost_status(a0),d0
-		rol.b	#3,d1
-		eor.b	d0,d1
-		andi.b	#status_xflip+status_yflip,d1		; get x/yflip bits in d1
-		andi.b	#$FF-render_xflip-render_yflip,ost_render(a0)
-		or.b	d1,ost_render(a0)			; apply x/yflip bits from status
+		rol.b	#3,d1					; move x/yflip bits into bits 0 and 1
+		eor.b	d0,d1					; combine with status
+		andi.b	#status_xflip+status_yflip,d1		; d1 = x/yflip bits only
+		andi.b	#$FF-render_xflip-render_yflip,ost_render(a0) ; clear x/yflip bits for render
+		or.b	d1,ost_render(a0)			; apply x/yflip bits to render
 		addq.b	#1,ost_anim_frame(a0)			; next frame number
 
 Anim_Wait:

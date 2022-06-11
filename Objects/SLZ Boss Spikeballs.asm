@@ -81,8 +81,8 @@ BSpike_Fall:	; Routine 2
 
 	@no_xflip:
 		move.w	#$F0,ost_subtype(a0)
-		move.b	#10,ost_anim_delay(a0)			; set frame duration to 10 frames
-		move.b	ost_anim_delay(a0),ost_anim_time(a0)
+		move.b	#10,ost_anim_time_low(a0)			; set frame duration to 10 frames
+		move.b	ost_anim_time_low(a0),ost_anim_time(a0)
 		bra.w	BSpike_Update
 ; ===========================================================================
 
@@ -156,18 +156,18 @@ BSpike_Bounce:	; Routine 4
 BSpike_Animate:
 		cmpi.w	#$78,ost_subtype(a0)			; subtype decrements like a timer
 		bne.s	@not_fast				; branch if not at specified value
-		move.b	#5,ost_anim_delay(a0)			; use faster animation speed
+		move.b	#5,ost_anim_time_low(a0)			; use faster animation speed
 
 	@not_fast:
 		cmpi.w	#$3C,ost_subtype(a0)
 		bne.s	@not_faster
-		move.b	#2,ost_anim_delay(a0)			; use fastest animation speed
+		move.b	#2,ost_anim_time_low(a0)			; use fastest animation speed
 
 	@not_faster:
 		subq.b	#1,ost_anim_time(a0)			; decrement animation timer
 		bgt.s	@wait					; branch if time remains
 		bchg	#0,ost_frame(a0)			; change frame
-		move.b	ost_anim_delay(a0),ost_anim_time(a0)
+		move.b	ost_anim_time_low(a0),ost_anim_time(a0)
 
 	@wait:
 		rts	
