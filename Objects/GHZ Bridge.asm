@@ -19,7 +19,7 @@ Bri_Index:	index *,,2
 		ptr Bri_Delete
 		ptr Bri_Display
 
-ost_bridge_child_list:	equ $29					; OST indices of child objects (up to 15 bytes)
+ost_bridge_child_list:	equ ost_subtype+1			; $29 ; OST indices of child objects (up to 15 bytes)
 ost_bridge_y_start:	equ $3C					; original y position (2 bytes)
 ost_bridge_bend:	equ $3E					; number of pixels a log has been deflected
 ost_bridge_current_log:	equ $3F					; log Sonic is currently standing on (left to right, starts at 0)

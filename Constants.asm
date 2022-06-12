@@ -213,6 +213,8 @@ points_for_life:		equ 50000/10			; points needed for extra life (awarded every 5
 countof_emeralds:		equ 6				; number of chaos emeralds
 
 ; Object variables
+		pusho			; save options
+		opt	ae+		; enable auto evens
 			rsset 0
 ost_id:			rs.b 1		; 0 ; object id
 ost_render:		rs.b 1		; 1 ; bitfield for x/y flip, display mode
@@ -291,7 +293,9 @@ ost_routine:		rs.b 1		; $24 ; routine number
 ost_routine2:		rs.b 1		; $25 ; secondary routine number
 ost_solid:		equ ost_routine2 ; $25 ; solid status flag
 ost_angle:		rs.w 1		; $26 ; angle of floor or rotation - 0 = flat; $40 = vertical left; $80 = ceiling; $C0 = vertical right
-ost_subtype:		rs.w 1		; $28 ; object subtype
+ost_subtype:		rs.w 1		; $28 ; object subtype - must go last because some objects use this as a start address for a list
+		popo			; restore options
+		inform	0,"0-$%h bytes of OST per object used, leaving $%h bytes of scratch RAM.",__rs-1,$40-__rs
 ost_enemy_combo:	equ $3E		; number of enemies broken in a row (0-$A) (2 bytes)
 
 ; Object variables used by Sonic
