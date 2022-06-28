@@ -18,7 +18,9 @@ EEgg_Index:	index *,,2
 		ptr EEgg_Juggle
 		ptr EEgg_Wait
 
-ost_eeggman_wait_time:	equ $30					; time between juggle motions (2 bytes)
+		rsobj EndEggman,$30
+ost_eeggman_wait_time:	rs.w 1					; $30 ; time between juggle motions
+		rsobjend
 ; ===========================================================================
 
 EEgg_Main:	; Routine 0

@@ -25,11 +25,15 @@ Cyl_PosData:	dc.w $24D0, $620				; bottom left
 		dc.w $2490, $4C0				; top left
 		dc.w $2510, $4C0				; top right
 
-ost_cylinder_flag:	equ $29					; flag set when extending
-ost_cylinder_eggman:	equ $30					; -1 if cylinder contains Eggman (2 bytes)
-ost_cylinder_parent:	equ $34					; address of OST of parent object (4 bytes)
-ost_cylinder_y_start:	equ $38					; original y position (4 bytes; low word always 0)
-ost_cylinder_y_move:	equ $3C					; amount the cylinder has moved (4 bytes)
+		rsobj EggmanCylinder
+ost_cylinder_flag:	rs.b 1					; $29 ; flag set when extending
+		rsset $30
+ost_cylinder_eggman:	rs.w 1					; $30 ; -1 if cylinder contains Eggman
+		rsset $34
+ost_cylinder_parent:	rs.l 1					; $34 ; address of OST of parent object
+ost_cylinder_y_start:	rs.l 1					; $38 ; original y position (low word always 0)
+ost_cylinder_y_move:	rs.l 1					; $3C ; amount the cylinder has moved
+		rsobjend
 ; ===========================================================================
 
 Cyl_Main:	; Routine 0

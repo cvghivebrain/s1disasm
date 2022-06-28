@@ -19,11 +19,14 @@ Plasma_Index:	index *,,2
 		ptr Plasma_Finish
 		ptr Plasma_Balls
 
-ost_plasma_flag:	equ $29					; flag set when firing
-ost_plasma_x_target:	equ $30					; x position where plasma ball stops (2 bytes)
-ost_plasma_count_top:	equ $32					; number of plasma balls moving across top (2 bytes)
-ost_plasma_parent:	equ $34					; address of OST of parent object (4 bytes)
-ost_plasma_count_any:	equ $38					; number of plasma balls on-screen (2 bytes)
+		rsobj BossPlasma
+ost_plasma_flag:	rs.b 1					; $29 ; flag set when firing
+		rsset $30
+ost_plasma_x_target:	rs.w 1					; $30 ; x position where plasma ball stops
+ost_plasma_count_top:	rs.w 1					; $32 ; number of plasma balls moving across top
+ost_plasma_parent:	rs.l 1					; $34 ; address of OST of parent object
+ost_plasma_count_any:	rs.w 1					; $38 ; number of plasma balls on-screen
+		rsobjend
 ; ===========================================================================
 
 Plasma_Main:	; Routine 0

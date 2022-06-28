@@ -43,7 +43,7 @@ sizeof_Elev_Var2:	equ Elev_Var2_1-Elev_Var2
 
 ost_elev_y_start:	equ $30					; original y-axis position (2 bytes)
 ost_elev_x_start:	equ $32					; original x-axis position (2 bytes)
-ost_elev_moved:		equ $34					; distance moved (2 bytes)
+ost_elev_moved:		equ $34					; distance moved (4 bytes)
 ost_elev_acceleration:	equ $38					; acceleration - i.e. its movement is not linear (2 bytes)
 ost_elev_dec_flag:	equ $3A					; 1 = decelerate
 ost_elev_distance:	equ $3C					; half distance to move (2 bytes)

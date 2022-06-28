@@ -49,7 +49,7 @@ FindNearestTile:
 		addq.w	#1,d1
 		cmpi.w	#$29,d1					; is 256x256 tile number $28?
 		bne.s	@treatasnormal				; if not, branch
-		move.w	#$51,d1					; replace with $50
+		move.w	#$51,d1					; replace with $51
 
 	@treatasnormal:
 		subq.b	#1,d1

@@ -15,7 +15,9 @@ Hog_Index:	index *,,2
 		ptr Hog_Main
 		ptr Hog_Action
 
-ost_hog_flag:	equ $32						; 0 to launch a cannonball
+		rsobj BallHog,$32
+ost_hog_flag:	rs.b 1						; $32 ; 0 to launch a cannonball
+		rsobjend
 ; ===========================================================================
 
 Hog_Main:	; Routine 0

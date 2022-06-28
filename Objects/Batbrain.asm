@@ -15,7 +15,9 @@ Bat_Index:	index *,,2
 		ptr Bat_Main
 		ptr Bat_Action
 
-ost_bat_sonic_y_pos:	equ $36					; Sonic's y position (2 bytes)
+		rsobj Batbrain,$36
+ost_bat_sonic_y_pos:	rs.w 1					; $36 ; Sonic's y position
+		rsobjend
 ; ===========================================================================
 
 Bat_Main:	; Routine 0

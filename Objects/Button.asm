@@ -26,7 +26,7 @@ But_Main:	; Routine 0
 		cmpi.b	#id_MZ,(v_zone).w			; is level Marble Zone?
 		beq.s	@is_marble				; if yes, branch
 
-		move.w	#tile_Nem_Button+4,ost_tile(a0)	; SYZ, LZ and SBZ specific code
+		move.w	#tile_Nem_Button+4,ost_tile(a0)		; SYZ, LZ and SBZ specific code
 
 	@is_marble:
 		move.b	#render_rel,ost_render(a0)

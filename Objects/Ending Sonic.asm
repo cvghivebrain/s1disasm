@@ -24,7 +24,9 @@ ESon_Index:	index *,,2
 		ptr ESon_Leap
 		ptr ESon_Animate
 
-ost_esonic_wait_time:	equ $30					; time to wait between events (2 bytes)
+		rsobj EndSonic,$30
+ost_esonic_wait_time:	rs.w 1					; $30 ; time to wait between events
+		rsobjend
 ; ===========================================================================
 
 ESon_Main:	; Routine 0

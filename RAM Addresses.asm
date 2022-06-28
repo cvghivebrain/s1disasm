@@ -315,8 +315,8 @@ v_debug_item_index:		rs.b 1 ; $FFFFFE06 ; debug item currently selected (NOT the
 unused_fe07:			rs.b 1
 v_debug_active:			rs.w 1 ; $FFFFFE08 ; xx01 when debug mode is in use and Sonic is an item; 0 otherwise
 v_debug_active_hi:		equ v_debug_active ; high byte of v_debug_active, routine counter for DebugMode (00/02)
-v_debug_move_delay:		rs.b 1 ; $FFFFFE0A ; debug mode - horizontal speed
-v_debug_move_speed:		rs.b 1 ; $FFFFFE0B ; debug mode - vertical speed
+v_debug_move_delay:		rs.b 1 ; $FFFFFE0A ; debug mode - time delay in frames between holding the d-pad and the object moving
+v_debug_move_speed:		rs.b 1 ; $FFFFFE0B ; debug mode - speed the object moves, increases the longer d-pad is held
 v_vblank_counter:		rs.l 1 ; $FFFFFE0C ; vertical interrupt counter, increments every VBlank
 v_vblank_counter_word:		equ __rs-2 ; $FFFFFE0E ; low word for v_vblank_counter
 v_vblank_counter_byte:		equ __rs-1 ; $FFFFFE0F ; low byte for v_vblank_counter

@@ -19,7 +19,7 @@ DetectPlatform:
 
 		; perform x-axis range check
 		move.w	ost_x_pos(a1),d0
-		sub.w	ost_x_pos(a0),d0
+		sub.w	ost_x_pos(a0),d0			; d0 = Sonic's distance from centre of platform (-ve if left of centre)
 		add.w	d1,d0
 		bmi.w	Plat_Exit				; branch if Sonic is left of the platform
 		add.w	d1,d1
@@ -28,7 +28,7 @@ DetectPlatform:
 
 	Plat_NoXCheck:						; jump here to skip x position check
 		move.w	ost_y_pos(a0),d0
-		subq.w	#8,d0
+		subq.w	#8,d0					; assume platform is 8px tall
 
 	Plat_NoXCheck_AltY:					; jump here to skip x position check and use custom y position
 
@@ -36,12 +36,12 @@ DetectPlatform:
 		move.w	ost_y_pos(a1),d2
 		move.b	ost_height(a1),d1
 		ext.w	d1
-		add.w	d2,d1
+		add.w	d2,d1					; d1 = y pos of Sonic's bottom edge
 		addq.w	#4,d1
-		sub.w	d1,d0
-		bhi.w	Plat_Exit
-		cmpi.w	#-$10,d0
-		blo.w	Plat_Exit
+		sub.w	d1,d0					; d0 = distance between top of platform and Sonic's bottom edge (-ve if below platform)
+		bhi.w	Plat_Exit				; branch if Sonic is above platform
+		cmpi.w	#-16,d0
+		blo.w	Plat_Exit				; branch if Sonic is more than 16px below top of platform
 
 		tst.b	(v_lock_multi).w			; is object collision off?
 		bmi.w	Plat_Exit				; if yes, branch
@@ -62,7 +62,7 @@ Plat_NoCheck:							; jump here to skip all checks
 		movea.l	d0,a2					; point a2 to that address
 		bclr	#status_platform_bit,ost_status(a2)	; clear platform bit for the other platform
 		clr.b	ost_routine2(a2)
-		cmpi.b	#4,ost_routine(a2)			; does its rountine counter suggest it's being stood on? (platforms all use similar rountines)
+		cmpi.b	#id_Plat_StoodOn,ost_routine(a2)	; does its routine counter suggest it's being stood on? (platforms all use similar routines)
 		bne.s	@no					; if not, branch
 		subq.b	#2,ost_routine(a2)			; decrement counter to "detect mode"
 

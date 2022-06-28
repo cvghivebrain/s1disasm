@@ -22,11 +22,13 @@ Cat_Index:	index *,,2
 		ptr Cat_Delete
 		ptr Cat_Fragment
 
-ost_cat_wait_time:	equ $2A					; time to wait between actions
-ost_cat_mode:		equ $2B					; bit 4 (+$10) = mouth is open/segment moving up; bit 7 (+$80) = update animation
-ost_cat_floormap:	equ $2C					; height map of floor beneath caterkiller (16 bytes)
-ost_cat_parent:		equ $3C					; address of OST of parent object (4 bytes - high byte is ost_cat_segment_pos)
-ost_cat_segment_pos:	equ $3C					; segment position - starts as 0/4/8/$A, increments as it moves
+		rsobj Caterkiller,$2A
+ost_cat_wait_time:	rs.b 1					; $2A ; time to wait between actions
+ost_cat_mode:		rs.b 1					; $2B ; bit 4 (+$10) = mouth is open/segment moving up; bit 7 (+$80) = update animation
+ost_cat_floormap:	rs.b 16					; $2C ; height map of floor beneath caterkiller (16 bytes)
+ost_cat_parent:		rs.l 1					; $3C ; address of OST of parent object (4 bytes - high byte is ost_cat_segment_pos)
+ost_cat_segment_pos:	equ ost_cat_parent			; $3C ; segment position - starts as 0/4/8/$A, increments as it moves
+		rsobjend
 ; ===========================================================================
 
 Cat_Fall:

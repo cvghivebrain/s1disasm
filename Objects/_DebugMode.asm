@@ -29,7 +29,7 @@ Debug_Main:	; Routine 0
 
 		move.w	#0,(v_ss_rotation_speed).w		; stop special stage rotating
 		move.w	#0,(v_ss_angle).w			; make special stage "upright"
-		moveq	#6,d0					; use 6th debug	item list
+		moveq	#id_DebugList_Ending,d0			; use 6th debug	item list
 		bra.s	@selectlist
 ; ===========================================================================
 
@@ -48,11 +48,11 @@ Debug_Main:	; Routine 0
 
 	@noreset:
 		bsr.w	Debug_GetFrame				; get mappings, VRAM & frame id from debug list
-		move.b	#12,(v_debug_move_delay).w
+		move.b	#debug_move_delay,(v_debug_move_delay).w
 		move.b	#1,(v_debug_move_speed).w
 
 Debug_Action:	; Routine 2
-		moveq	#6,d0
+		moveq	#id_DebugList_Ending,d0
 		cmpi.b	#id_Special,(v_gamemode).w
 		beq.s	@isntlevel
 
@@ -86,8 +86,8 @@ Debug_Control:
 		andi.w	#btnDir,d0				; is up/down/left/right	held?
 		bne.s	@dirheld				; if yes, branch
 
-		move.b	#12,(v_debug_move_delay).w
-		move.b	#15,(v_debug_move_speed).w
+		move.b	#debug_move_delay,(v_debug_move_delay).w
+		move.b	#debug_move_speed,(v_debug_move_speed).w
 		bra.w	Debug_ChgItem
 ; ===========================================================================
 
@@ -188,7 +188,7 @@ Debug_ChgItem:
 		moveq	#0,d0
 		move.w	d0,(v_debug_active).w			; deactivate debug mode
 		move.l	#Map_Sonic,(v_ost_player+ost_mappings).w
-		move.w	#vram_sonic/$20,(v_ost_player+ost_tile).w
+		move.w	#tile_sonic,(v_ost_player+ost_tile).w
 		move.b	d0,(v_ost_player+ost_anim).w
 		move.w	d0,ost_x_sub(a0)
 		move.w	d0,ost_y_sub(a0)
@@ -200,7 +200,7 @@ Debug_ChgItem:
 		clr.w	(v_ss_angle).w
 		move.w	#$40,(v_ss_rotation_speed).w		; set new level rotation speed
 		move.l	#Map_Sonic,(v_ost_player+ost_mappings).w
-		move.w	#vram_sonic/$20,(v_ost_player+ost_tile).w
+		move.w	#tile_sonic,(v_ost_player+ost_tile).w
 		move.b	#id_Roll,(v_ost_player+ost_anim).w
 		bset	#status_jump_bit,(v_ost_player+ost_status).w
 		bset	#status_air_bit,(v_ost_player+ost_status).w

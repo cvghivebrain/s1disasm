@@ -15,8 +15,10 @@ Burro_Index:	index *,,2
 		ptr Burro_Main
 		ptr Burro_Action
 
-ost_burro_turn_time:		equ $30				; time between direction changes (2 bytes)
-ost_burro_findfloor_flag:	equ $32				; flag set every other frame to detect edge of floor
+		rsobj Burrobot,$30
+ost_burro_turn_time:		rs.w 1				; $30 ; time between direction changes
+ost_burro_findfloor_flag:	rs.b 1				; $32 ; flag set every other frame to detect edge of floor
+		rsobjend
 ; ===========================================================================
 
 Burro_Main:	; Routine 0

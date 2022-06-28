@@ -21,13 +21,15 @@ GBall_Index:	index *,,2
 		ptr GBall_Link
 		ptr GBall_Ball
 
-ost_ball_boss_dist:	equ $32					; distance of base from boss (2 bytes)
-ost_ball_parent:	equ $34					; address of OST of parent object (4 bytes)
-ost_ball_base_y_pos:	equ $38					; y position of base (2 bytes)
-ost_ball_base_x_pos:	equ $3A					; x position of base (2 bytes)
-ost_ball_radius:	equ $3C					; distance of ball/link from base
-ost_ball_side:		equ $3D					; which side the ball is on - 0 = right; 1 = left
-ost_ball_speed:		equ $3E					; rate of change of angle (2 bytes)
+		rsobj BossBall,$32
+ost_ball_boss_dist:	rs.w 1					; $32 ; distance of base from boss
+ost_ball_parent:	rs.l 1					; $34 ; address of OST of parent object
+ost_ball_base_y_pos:	rs.w 1					; $38 ; y position of base
+ost_ball_base_x_pos:	rs.w 1					; $3A ; x position of base
+ost_ball_radius:	rs.b 1					; $3C ; distance of ball/link from base
+ost_ball_side:		rs.b 1					; $3D ; which side the ball is on - 0 = right; 1 = left
+ost_ball_speed:		rs.w 1					; $3E ; rate of change of angle
+		rsobjend
 ; ===========================================================================
 
 GBall_Main:	; Routine 0
@@ -150,8 +152,7 @@ GBall_UpdateBase:
 		move.b	#id_ExBom_Main,ost_routine(a0)
 
 	@not_beaten:
-		rts	
-; End of function GBall_UpdateBase
+		rts
 
 ; ===========================================================================
 
@@ -225,8 +226,6 @@ GBall_Move:
 		move.b	ost_angle(a0),d0			; get latest angle
 
 		;bra.w	Swing_MoveAll				; runs directly into Swing_MoveAll (update positions of all objects)
-
-; End of function GBall_Move
 
 		endm
 		

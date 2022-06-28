@@ -94,11 +94,14 @@ Anml_EndVram:	dc.w tile_Nem_Flicky_End			; $A
 		dc.w tile_Nem_Chicken_End			; $13
 		dc.w tile_Nem_Squirrel_End			; $14
 
-ost_animal_direction:	equ $29					; animal goes left/right
-ost_animal_type:	equ $30					; type of animal (0-$B)
-ost_animal_x_vel:	equ $32					; horizontal speed (2 bytes)
-ost_animal_y_vel:	equ $34					; vertical speed (2 bytes)
-ost_animal_prison_num:	equ $36					; id num for animals in prison capsule, lets them jummp out 1 at a time (2 bytes)
+		rsobj Animals
+ost_animal_direction:	rs.b 1					; $29 ; animal goes left/right
+		rsset $30
+ost_animal_type:	rs.b 1					; $30 ; type of animal (0-$B)
+ost_animal_x_vel:	rs.w 1					; $32 ; horizontal speed
+ost_animal_y_vel:	rs.w 1					; $34 ; vertical speed
+ost_animal_prison_num:	rs.w 1					; $36 ; id num for animals in prison capsule, lets them jump out 1 at a time
+		rsobjend
 ; ===========================================================================
 
 Anml_Main:	; Routine 0

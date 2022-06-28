@@ -18,8 +18,10 @@ Buzz_Index:	index *,,2
 		ptr Buzz_Action
 		ptr Buzz_Delete
 
-ost_buzz_wait_time:	equ $32					; time delay for each action (2 bytes)
-ost_buzz_mode:		equ $34					; current action - 0 = flying; 1 = recently fired; 2 = near Sonic
+		rsobj BuzzBomber,$32
+ost_buzz_wait_time:	rs.w 1					; $32 ; time delay for each action
+ost_buzz_mode:		rs.b 1					; $34 ; current action - 0 = flying; 1 = recently fired; 2 = near Sonic
+		rsobjend
 ; ===========================================================================
 
 Buzz_Main:	; Routine 0

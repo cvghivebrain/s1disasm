@@ -15,8 +15,10 @@ Jaws_Index:	index *,,2
 		ptr Jaws_Main
 		ptr Jaws_Turn
 
-ost_jaws_turn_time:	equ $30					; time until jaws turns (2 bytes)
-ost_jaws_turn_master:	equ $32					; time between turns, copied to ost_jaws_turn_time every turn (2 bytes)
+		rsobj Jaws,$30
+ost_jaws_turn_time:	rs.w 1					; $30 ; time until jaws turns
+ost_jaws_turn_master:	rs.w 1					; $32 ; time between turns, copied to ost_jaws_turn_time every turn
+		rsobjend
 ; ===========================================================================
 
 Jaws_Main:	; Routine 0

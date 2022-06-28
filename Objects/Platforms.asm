@@ -254,7 +254,7 @@ Plat_Type_Falls_Now:
 		asl.l	#8,d0
 		add.l	d0,d3					; add falling speed to y pos
 		move.l	d3,ost_plat_y_pos(a0)			; update y pos
-		addi.w	#ost_plat_y_nudge,ost_y_vel(a0)		; apply gravity
+		addi.w	#$38,ost_y_vel(a0)			; apply gravity
 		move.w	(v_boundary_bottom).w,d0
 		addi.w	#224,d0					; d0 = y pos of bottom edge of level
 		cmp.w	ost_plat_y_pos(a0),d0

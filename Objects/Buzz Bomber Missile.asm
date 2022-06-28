@@ -19,8 +19,11 @@ Msl_Index:	index *,,2
 		ptr Msl_Delete
 		ptr Msl_FromNewt
 
-ost_missile_wait_time:	equ $32					; time delay (2 bytes)
-ost_missile_parent:	equ $3C					; address of OST of parent object (4 bytes)
+		rsobj Missile,$32
+ost_missile_wait_time:	rs.w 1					; $32 ; time delay
+		rsset $3C
+ost_missile_parent:	rs.l 1					; $3C ; address of OST of parent object
+		rsobjend
 ; ===========================================================================
 
 Msl_Main:	; Routine 0

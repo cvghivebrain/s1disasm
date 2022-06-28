@@ -23,9 +23,12 @@ Lamp_Index:	index *,,2
 		ptr Lamp_Finish
 		ptr Lamp_Twirl
 
-ost_lamp_x_start:	equ $30					; original x-axis position (2 bytes)
-ost_lamp_y_start:	equ $32					; original y-axis position (2 bytes)
-ost_lamp_twirl_time:	equ $36					; length of time to twirl the lamp (2 bytes)
+		rsobj Lamppost,$30
+ost_lamp_x_start:	rs.w 1					; $30 ; original x-axis position
+ost_lamp_y_start:	rs.w 1					; $32 ; original y-axis position
+		rsset $36
+ost_lamp_twirl_time:	rs.w 1					; $36 ; length of time to twirl the lamp
+		rsobjend
 ; ===========================================================================
 
 Lamp_Main:	; Routine 0

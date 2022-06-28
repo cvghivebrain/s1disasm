@@ -16,7 +16,9 @@ Chop_Index:	index *,,2
 		ptr Chop_Main
 		ptr Chop_ChgSpeed
 
-ost_chopper_y_start:	equ $30					; original y position (2 bytes)
+		rsobj Chopper,$30
+ost_chopper_y_start:	rs.w 1					; $30 ; original y position
+		rsobjend
 ; ===========================================================================
 
 Chop_Main:	; Routine 0

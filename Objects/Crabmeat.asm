@@ -20,8 +20,10 @@ Crab_Index:	index *,,2
 		ptr Crab_BallMain
 		ptr Crab_BallMove
 
-ost_crab_wait_time:	equ $30					; time until crabmeat fires (2 bytes)
-ost_crab_mode:		equ $32					; current action - 0/1 = not firing; 2/3 = firing
+		rsobj Crabmeat,$30
+ost_crab_wait_time:	rs.w 1					; $30 ; time until crabmeat fires
+ost_crab_mode:		rs.b 1					; $32 ; current action - 0/1 = not firing; 2/3 = firing
+		rsobjend
 ; ===========================================================================
 
 Crab_Main:	; Routine 0

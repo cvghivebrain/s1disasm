@@ -21,7 +21,9 @@ ESth_Index:	index *,,2
 		ptr ESth_Move
 		ptr ESth_GotoCredits
 
-ost_esth_wait_time:	equ $30					; time until exit (2 bytes)
+		rsobj EndStH,$30
+ost_esth_wait_time:	rs.w 1					; $30 ; time until exit
+		rsobjend
 ; ===========================================================================
 
 ESth_Main:	; Routine 0

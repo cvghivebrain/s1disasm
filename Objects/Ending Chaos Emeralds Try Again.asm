@@ -16,10 +16,12 @@ TCha_Index:	index *,,2
 		ptr TCha_Main
 		ptr TCha_Move
 
-ost_ectry_x_start:	equ $38					; x-axis centre of emerald circle (2 bytes)
-ost_ectry_y_start:	equ $3A					; y-axis centre of emerald circle (2 bytes)
-ost_ectry_radius:	equ $3C					; radius
-ost_ectry_speed:	equ $3E					; speed at which emeralds rotate around central point (2 bytes)
+		rsobj TryChaos,$38
+ost_ectry_x_start:	rs.w 1					; $38 ; x-axis centre of emerald circle
+ost_ectry_y_start:	rs.w 1					; $3A ; y-axis centre of emerald circle
+ost_ectry_radius:	rs.b 1					; $3C ; radius
+ost_ectry_speed:	rs.w 1					; $3E ; speed at which emeralds rotate around central point
+		rsobjend
 ; ===========================================================================
 
 TCha_Main:	; Routine 0

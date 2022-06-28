@@ -32,7 +32,6 @@ Swing_Solid:
 		move.w	ost_y_pos(a0),d0
 		sub.w	d3,d0
 		bra.w	Plat_NoXCheck_AltY
-; End of function Swing_Solid
 
 include_SwingingPlatform_1:	macro
 
@@ -51,10 +50,12 @@ Swing_Index:	index *,,2
 		ptr Swing_Display
 		ptr Swing_Action
 
-ost_swing_y_start:	equ $38					; original y-axis position (2 bytes)
-ost_swing_x_start:	equ $3A					; original x-axis position (2 bytes)
-ost_swing_radius:	equ $3C					; distance of chainlink from anchor
-ost_swing_unused:	equ $3E
+		rsobj SwingingPlatform,$38
+ost_swing_y_start:	rs.w 1					; $38 ; original y-axis position
+ost_swing_x_start:	rs.w 1					; $3A ; original x-axis position
+ost_swing_radius:	rs.b 1					; $3C ; distance of chainlink from anchor
+ost_swing_unused:	rs.w 1					; $3E
+		rsobjend
 ; ===========================================================================
 
 Swing_Main:	; Routine 0
@@ -207,7 +208,6 @@ Swing_Move:
 
 	@no_xflip:
 		bra.s	Swing_MoveAll
-; End of function Swing_Move
 
 		endm
 
@@ -251,8 +251,7 @@ Swing_MoveAll:
 		move.w	d4,ost_y_pos(a1)			; update position
 		move.w	d5,ost_x_pos(a1)
 		dbf	d6,@loop				; repeat for all chainlinks and platform
-		rts	
-; End of function Swing_MoveAll
+		rts
 
 ; ===========================================================================
 

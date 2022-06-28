@@ -15,7 +15,9 @@ Cbal_Index:	index *,,2
 		ptr Cbal_Main
 		ptr Cbal_Bounce
 
-ost_ball_time:	equ $30						; time until the cannonball explodes (2 bytes)
+		rsobj Cannonball,$30
+ost_ball_time:	rs.w 1						; $30 ; time until the cannonball explodes
+		rsobjend
 ; ===========================================================================
 
 Cbal_Main:	; Routine 0
@@ -78,7 +80,7 @@ Cbal_Animate:
 Cbal_Display:
 		bsr.w	DisplaySprite
 		move.w	(v_boundary_bottom).w,d0
-		addi.w	#224,d0
+		addi.w	#screen_height,d0
 		cmp.w	ost_y_pos(a0),d0			; has object fallen off the level?
 		bcs.w	DeleteObject				; if yes, branch
 		rts	

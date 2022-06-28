@@ -33,8 +33,11 @@ FBall_Speeds:	; Vertical - goes up and falls down
 		dc.w $200					; x7
 		dc.w 0						; x8
 
-ost_fireball_mz_boss:	equ $29					; set to $FF if spawned by MZ boss
-ost_fireball_y_start:	equ $30					; original y position (2 bytes)
+		rsobj FireBall
+ost_fireball_mz_boss:	rs.b 1					; $29 ; set to $FF if spawned by MZ boss
+		rsset $30
+ost_fireball_y_start:	rs.w 1					; $30 ; original y position
+		rsobjend
 ; ===========================================================================
 
 FBall_Main:	; Routine 0

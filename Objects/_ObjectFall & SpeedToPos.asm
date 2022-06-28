@@ -13,7 +13,7 @@ ObjectFall:
 		asl.l	#8,d0					; d0 = ost_x_vel * $100
 		add.l	d0,d2					; add to x position
 		move.w	ost_y_vel(a0),d0
-		addi.w	#$38,ost_y_vel(a0)			; increase falling speed
+		addi.w	#$38,ost_y_vel(a0)			; apply gravity
 		ext.l	d0
 		asl.l	#8,d0					; d0 = last ost_y_vel * $100
 		add.l	d0,d3					; add to y position

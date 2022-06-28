@@ -29,6 +29,30 @@ rsblockend:	macro
 		endm
 
 ; ---------------------------------------------------------------------------
+; Organise object RAM usage.
+; ---------------------------------------------------------------------------
+
+rsobj:		macro name,start
+		rsobj_name: equs "\name"			; remember name of current object
+		if strlen("\start")>0
+		rsset \start					; start at specified position
+		else
+		rsset ost_used					; start at end of regular OST usage
+		endc
+		pusho						; save options
+		opt	ae+					; enable auto evens
+		endm
+
+rsobjend:	macro
+		if __rs>sizeof_ost
+		inform	3,"OST for \rsobj_name exceeds maximum by $%h bytes.",__rs-sizeof_ost
+		else
+		;inform	0,"0-$%h bytes of OST for \rsobj_name used, leaving $%h bytes unused.",__rs-1,sizeof_ost-__rs
+		endc
+		popo
+		endm
+
+; ---------------------------------------------------------------------------
 ; Create a pointer index.
 ; input: start location (usually * or 0; leave blank to make pointers
 ;  relative to themselves), id start (default 0), id increment (default 1)

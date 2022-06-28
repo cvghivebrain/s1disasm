@@ -18,7 +18,9 @@ Smash_Index:	index *,,2
 		ptr Smash_Solid
 		ptr Smash_FragMove
 
-ost_smash_x_vel:	equ $30					; Sonic's horizontal speed (2 bytes)
+		rsobj SmashWall,$30
+ost_smash_x_vel:	rs.w 1					; $30 ; Sonic's horizontal speed
+		rsobjend
 ; ===========================================================================
 
 Smash_Main:	; Routine 0
@@ -135,11 +137,9 @@ SmashObject:
 	@playsnd:
 		play.w	1, jmp, sfx_Smash			; play smashing sound
 
-; End of function SmashObject
-
 ; ===========================================================================
 ; Smashed block	fragment speeds
-;
+
 Smash_FragSpd1:	dc.w $400, -$500				; x speed, y speed
 		dc.w $600, -$100
 		dc.w $600, $100
