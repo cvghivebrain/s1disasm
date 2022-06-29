@@ -16,7 +16,9 @@ Shi_Index:	index *,,2
 		ptr Shi_Shield
 		ptr Shi_Stars
 
-ost_invincibility_last_pos:	equ $30				; previous position in tracking index, for invincibility trail
+		rsobj ShieldItem,$30
+ost_invincibility_last_pos:	rs.b 1				; $30 ; previous position in tracking index, for invincibility trail
+		rsobjend
 ; ===========================================================================
 
 Shi_Main:	; Routine 0

@@ -17,8 +17,10 @@ Card_Index:	index *,,2
 		ptr Card_Wait
 		ptr Card_Wait
 
-ost_card_x_stop:	equ $30					; on screen x position (2 bytes)
-ost_card_x_start:	equ $32					; start & finish x position (2 bytes)
+		rsobj TitleCard,$30
+ost_card_x_stop:	rs.w 1					; $30 ; on screen x position
+ost_card_x_start:	rs.w 1					; $32 ; start & finish x position
+		rsobjend
 
 include_Card_Data:	macro
 Card_ItemData:	; y position, routine number, frame number

@@ -21,12 +21,16 @@ LBlk_Var:	; width, height
 		dc.b $10, $10					; $2x
 		dc.b $10, $10					; $3x
 
-ost_lblock_y_start:	equ $30					; original y-axis position (2 bytes)
-ost_lblock_x_start:	equ $34					; original x-axis position (2 bytes)
-ost_lblock_wait_time:	equ $36					; time delay for block movement (2 bytes)
-ost_lblock_flag:	equ $38					; 1 = untouched; 0 = touched
-ost_lblock_sink:	equ $3E					; amount the block sinks after Sonic stands on it
-ost_lblock_coll_flag:	equ $3F					; 0 = none; 1 = side collision; -1 = top/bottom collision
+		rsobj LabyrinthBlock,$30
+ost_lblock_y_start:	rs.w 1					; $30 ; original y-axis position
+		rsset $34
+ost_lblock_x_start:	rs.w 1					; $34 ; original x-axis position
+ost_lblock_wait_time:	rs.w 1					; $36 ; time delay for block movement
+ost_lblock_flag:	rs.b 1					; $38 ; 1 = untouched; 0 = touched
+		rsset $3E
+ost_lblock_sink:	rs.b 1					; $3E ; amount the block sinks after Sonic stands on it
+ost_lblock_coll_flag:	rs.b 1					; $3F ; 0 = none; 1 = side collision; -1 = top/bottom collision
+		rsobjend
 ; ===========================================================================
 
 LBlk_Main:	; Routine 0

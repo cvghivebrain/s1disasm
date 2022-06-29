@@ -15,8 +15,10 @@ Roll_Index:	index *,,2
 		ptr Roll_Main
 		ptr Roll_Action
 
-ost_roller_open_time:	equ $30					; time roller stays open for (2 bytes)
-ost_roller_mode:	equ $32					; +1 = roller has jumped; +$80 = roller has stopped
+		rsobj Roller,$30
+ost_roller_open_time:	rs.w 1					; $30 ; time roller stays open for
+ost_roller_mode:	rs.b 1					; $32 ; +1 = roller has jumped; +$80 = roller has stopped
+		rsobjend
 ; ===========================================================================
 
 Roll_Main:	; Routine 0
@@ -163,8 +165,7 @@ Roll_Stop:
 		bset	#7,ost_roller_mode(a0)			; set flag for roller stopped
 
 	@exit:
-		rts	
-; End of function Roll_Stop
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Animation script

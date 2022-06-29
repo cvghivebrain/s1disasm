@@ -15,10 +15,12 @@ Flame_Index:	index *,,2
 		ptr Flame_Main
 		ptr Flame_Action
 
-ost_flame_time:		equ $30					; time until current action is complete (2 bytes)
-ost_flame_on_master:	equ $32					; time flame is on (2 bytes)
-ost_flame_off_master:	equ $34					; time flame is off (2 bytes)
-ost_flame_last_frame:	equ $36					; last frame of animation
+		rsobj Flamethrower,$30
+ost_flame_time:		rs.w 1					; $30 ; time until current action is complete
+ost_flame_on_master:	rs.w 1					; $32 ; time flame is on
+ost_flame_off_master:	rs.w 1					; $34 ; time flame is off
+ost_flame_last_frame:	rs.b 1					; $36 ; last frame of animation
+		rsobjend
 ; ===========================================================================
 
 Flame_Main:	; Routine 0

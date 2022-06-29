@@ -25,7 +25,9 @@ FFloor_Index:	index *,,2
 		ptr FFloor_Block
 		ptr FFloor_Frag
 
-ost_ffloor_children:	equ $30					; addresses of OSTs of child objects (2 bytes * 8)
+		rsobj FalseFloor,$30
+ost_ffloor_children:	rs.w 8					; $30 ; addresses of OSTs of child objects (2 bytes * 8)
+		rsobjend
 ; ===========================================================================
 
 FFloor_Main:	; Routine 0

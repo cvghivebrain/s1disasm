@@ -16,7 +16,9 @@ Newt_Index:	index *,,2
 		ptr Newt_Action
 		ptr Newt_Delete
 
-ost_newtron_fire_flag:	equ $32					; set to 1 after newtron fires a missile
+		rsobj Newtron,$32
+ost_newtron_fire_flag:	rs.b 1					; $32 ; set to 1 after newtron fires a missile
+		rsobjend
 ; ===========================================================================
 
 Newt_Main:	; Routine 0

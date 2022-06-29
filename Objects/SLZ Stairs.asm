@@ -19,13 +19,15 @@ Stair_Index:	index *,,2
 		ptr Stair_Move
 		ptr Stair_Solid
 
-ost_stair_x_start:	equ $30					; original x-axis position (2 bytes)
-ost_stair_y_start:	equ $32					; original y-axis position (2 bytes)
-ost_stair_wait_time:	equ $34					; time delay for stairs to move (2 bytes)
-ost_stair_flag:		equ $36					; 1 = stood on; $80+ = hit from below
-ost_stair_child_id:	equ $37					; which child the current object is; $38-$3B
-ost_stair_y_diff_list:	equ $38					; distance moved by each child object (4 bytes)
-ost_stair_parent:	equ $3C					; address of OST of parent object (4 bytes)
+		rsobj Staircase,$30
+ost_stair_x_start:	rs.w 1					; $30 ; original x-axis position
+ost_stair_y_start:	rs.w 1					; $32 ; original y-axis position
+ost_stair_wait_time:	rs.w 1					; $34 ; time delay for stairs to move
+ost_stair_flag:		rs.b 1					; $36 ; 1 = stood on; $80+ = hit from below
+ost_stair_child_id:	rs.b 1					; $37 ; which child the current object is; $38-$3B
+ost_stair_y_diff_list:	rs.b 4					; $38 ; distance moved by each child object (4 bytes)
+ost_stair_parent:	rs.l 1					; $3C ; address of OST of parent object
+		rsobjend
 ; ===========================================================================
 
 Stair_Main:	; Routine 0

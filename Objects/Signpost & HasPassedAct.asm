@@ -25,9 +25,11 @@ Sign_Index:	index *,,2
 		ptr Sign_SonicRun
 		ptr Sign_Exit
 
-ost_sign_spin_time:	equ $30					; time for signpost to spin (2 bytes)
-ost_sign_sparkle_time:	equ $32					; time between sparkles (2 bytes)
-ost_sign_sparkle_id:	equ $34					; counter to keep track of sparkles
+		rsobj Signpost,$30
+ost_sign_spin_time:	rs.w 1					; $30 ; time for signpost to spin
+ost_sign_sparkle_time:	rs.w 1					; $32 ; time between sparkles
+ost_sign_sparkle_id:	rs.b 1					; $34 ; counter to keep track of sparkles
+		rsobjend
 ; ===========================================================================
 
 Sign_Main:	; Routine 0

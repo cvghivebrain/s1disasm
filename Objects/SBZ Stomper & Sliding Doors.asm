@@ -25,13 +25,16 @@ Sto_Var_4:	dc.b  $80, $40,	  0,   id_Sto_SlideDiagonal	; $4x/$Cx - huge sliding 
 
 sizeof_Sto_Var:	equ Sto_Var_1-Sto_Var
 
-ost_stomp_y_start:	equ $30					; original y-axis position (2 bytes)
-ost_stomp_x_start:	equ $34					; original x-axis position (2 bytes)
-ost_stomp_wait_time:	equ $36					; time until next action (2 bytes)
-ost_stomp_flag:		equ $38					; flag set when associated button is pressed
-ost_stomp_moved:	equ $3A					; distance moved (2 bytes)
-ost_stomp_distance:	equ $3C					; distance to move (2 bytes)
-ost_stomp_button_num:	equ $3E					; button number associated with door
+		rsobj ScrapStomp,$30
+ost_stomp_y_start:	rs.w 1					; $30 ; original y-axis position
+		rsset $34
+ost_stomp_x_start:	rs.w 1					; $34 ; original x-axis position
+ost_stomp_wait_time:	rs.w 1					; $36 ; time until next action
+ost_stomp_flag:		rs.b 1					; $38 ; flag set when associated button is pressed
+ost_stomp_moved:	rs.w 1					; $3A ; distance moved
+ost_stomp_distance:	rs.w 1					; $3C ; distance to move
+ost_stomp_button_num:	rs.b 1					; $3E ; button number associated with door
+		rsobjend
 ; ===========================================================================
 
 Sto_Main:	; Routine 0

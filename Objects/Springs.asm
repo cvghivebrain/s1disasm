@@ -34,7 +34,9 @@ Spring_Index:	index *,,2
 Spring_Powers:	dc.w -spring_power_red				; power	of red spring
 		dc.w -spring_power_yellow			; power	of yellow spring
 
-ost_spring_power:	equ $30					; power of current spring (2 bytes)
+		rsobj Springs,$30
+ost_spring_power:	rs.w 1					; $30 ; power of current spring
+		rsobjend
 ; ===========================================================================
 
 Spring_Main:	; Routine 0

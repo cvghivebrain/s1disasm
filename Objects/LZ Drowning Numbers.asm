@@ -24,14 +24,17 @@ Drown_Index:	index *,,2
 		ptr Drown_Display_Num
 		ptr Drown_Delete
 
-ost_drown_restart_time:	equ $2C					; time to restart after Sonic drowns (2 bytes)
-ost_drown_x_start:	equ $30					; original x-axis position (2 bytes)
-ost_drown_disp_time:	equ $32					; time to display each number
-ost_drown_type:		equ $33					; bubble type
-ost_drown_extra_bub:	equ $34					; number of extra bubbles to create
-ost_drown_extra_flag:	equ $36					; flags for extra bubbles (2 bytes)
-ost_drown_num_time:	equ $38					; time between each number changes (2 bytes)
-ost_drown_delay_time	equ $3A					; delay between bubbles (2 bytes)
+		rsobj DrownCount,$2C
+ost_drown_restart_time:	rs.w 1					; $2C ; time to restart after Sonic drowns
+		rsset $30
+ost_drown_x_start:	rs.w 1					; $30 ; original x-axis position
+ost_drown_disp_time:	rs.b 1					; $32 ; time to display each number
+ost_drown_type:		rs.b 1					; $33 ; bubble type
+ost_drown_extra_bub:	rs.b 1					; $34 ; number of extra bubbles to create
+ost_drown_extra_flag:	rs.w 1					; $36 ; flags for extra bubbles
+ost_drown_num_time:	rs.w 1					; $38 ; time between each number changes
+ost_drown_delay_time	rs.w 1					; $3A ; delay between bubbles
+		rsobjend
 ; ===========================================================================
 
 Drown_Main:	; Routine 0

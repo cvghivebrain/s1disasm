@@ -28,10 +28,12 @@ MBlock_Var_4:	dc.b $30, id_frame_mblock_mz3			; $4x - triple block
 
 sizeof_MBlock_Var:	equ MBlock_Var_1-MBlock_Var
 
-ost_mblock_x_start:	equ $30					; original x position (2 bytes)
-ost_mblock_y_start:	equ $32					; original y position (2 bytes)
-ost_mblock_wait_time:	equ $34					; time delay before moving platform back - subtype x9/xA only (2 bytes)
-ost_mblock_move_flag:	equ $36					; 1 = move platform back to its original position - subtype x9/xA only
+		rsobj MovingBlock,$30
+ost_mblock_x_start:	rs.w 1					; $30 ; original x position
+ost_mblock_y_start:	rs.w 1					; $32 ; original y position
+ost_mblock_wait_time:	rs.w 1					; $34 ; time delay before moving platform back - subtype x9/xA only
+ost_mblock_move_flag:	rs.w 1					; $36 ; 1 = move platform back to its original position - subtype x9/xA only
+		rsobjend
 ; ===========================================================================
 
 MBlock_Main:	; Routine 0

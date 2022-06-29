@@ -15,12 +15,15 @@ Disc_Index:	index *,,2
 		ptr Disc_Main
 		ptr Disc_Action
 
-ost_disc_y_start:	equ $30					; original y-axis position (2 bytes)
-ost_disc_x_start:	equ $32					; original x-axis position (2 bytes)
-ost_disc_inner_radius:	equ $34					; distance of small circle from centre
-ost_disc_rotation:	equ $36					; rate/direction of small circle rotation (2 bytes)
-ost_disc_outer_radius:	equ $38					; distance of Sonic from centre
-ost_disc_init_flag:	equ $3A					; set when Sonic lands on the disc
+		rsobj RunningDisc,$30
+ost_disc_y_start:	rs.w 1					; $30 ; original y-axis position
+ost_disc_x_start:	rs.w 1					; $32 ; original x-axis position
+ost_disc_inner_radius:	rs.b 1					; $34 ; distance of small circle from centre
+ost_disc_rotation:	rs.w 1					; $36 ; rate/direction of small circle rotation
+ost_disc_outer_radius:	rs.b 1					; $38 ; distance of Sonic from centre
+		rsset $3A
+ost_disc_init_flag:	rs.b 1					; $3A ; set when Sonic lands on the disc
+		rsobjend
 ; ===========================================================================
 
 Disc_Main:	; Routine 0

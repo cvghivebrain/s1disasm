@@ -13,7 +13,9 @@ Van_Index:	index *,,2
 		ptr Van_RmvSonic
 		ptr Van_LoadSonic
 
-ost_vanish_time:	equ $30					; time for Sonic to disappear (2 bytes)
+		rsobj VanishSonic,$30
+ost_vanish_time:	rs.w 1					; $30 ; time for Sonic to disappear
+		rsobjend
 ; ===========================================================================
 
 Van_Main:	; Routine 0

@@ -18,8 +18,10 @@ Circ_Index:	index *,,2
 		ptr Circ_Platform
 		ptr Circ_StoodOn
 
-ost_circ_y_start:	equ $30					; original y-axis position (2 bytes)
-ost_circ_x_start:	equ $32					; original x-axis position (2 bytes)
+		rsobj CirclingPlatform,$30
+ost_circ_y_start:	rs.w 1					; $30 ; original y-axis position
+ost_circ_x_start:	rs.w 1					; $32 ; original x-axis position
+		rsobjend
 ; ===========================================================================
 
 Circ_Main:	; Routine 0

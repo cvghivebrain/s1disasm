@@ -21,10 +21,12 @@ Orb_Index:	index *,,2
 		ptr Orb_MoveOrb
 		ptr Orb_FireOrb
 
-ost_orb_direction:	equ $36					; direction orbs rotate: 1 = clockwise; -1 = anticlockwise
-ost_orb_child_count:	equ $37					; number of child objects
-ost_orb_child_list:	equ $38					; OST indices of child objects (4 bytes - 1 byte per ball)
-ost_orb_parent:		equ $3C					; address of OST of parent object (4 bytes)
+		rsobj Orbinaut,$36
+ost_orb_direction:	rs.b 1					; $36 ; direction orbs rotate: 1 = clockwise; -1 = anticlockwise
+ost_orb_child_count:	rs.b 1					; $37 ; number of child objects
+ost_orb_child_list:	rs.b 4					; $38 ; OST indices of child objects (4 bytes - 1 byte per ball)
+ost_orb_parent:		rs.l 1					; $3C ; address of OST of parent object
+		rsobjend
 ; ===========================================================================
 
 Orb_Main:	; Routine 0

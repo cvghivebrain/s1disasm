@@ -15,8 +15,10 @@ Fan_Index:	index *,,2
 		ptr Fan_Main
 		ptr Fan_Delay
 
-ost_fan_wait_time:	equ $30					; time between switching on/off (2 bytes)
-ost_fan_flag:		equ $32					; 0 = on; 1 = off
+		rsobj Fan,$30
+ost_fan_wait_time:	rs.w 1					; $30 ; time between switching on/off
+ost_fan_flag:		rs.b 1					; $32 ; 0 = on; 1 = off
+		rsobjend
 ; ===========================================================================
 
 Fan_Main:	; Routine 0

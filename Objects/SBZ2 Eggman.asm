@@ -20,8 +20,11 @@ SEgg_Index:	index *,,2
 SEgg_ObjData:	dc.b id_SEgg_Eggman, id_ani_eggman_stand, 3	; routine number, animation, priority
 		dc.b id_SEgg_Button, 0, 3
 
-ost_eggman_parent:	equ $34					; address of OST of parent object (4 bytes)
-ost_eggman_wait_time:	equ $3C					; time delay between events (2 bytes)
+		rsobj ScrapEggman,$34
+ost_eggman_parent:	rs.l 1					; $34 ; address of OST of parent object
+		rsset $3C
+ost_eggman_wait_time:	rs.w 1					; $3C ; time delay between events
+		rsobjend
 ; ===========================================================================
 
 SEgg_Main:	; Routine 0

@@ -27,11 +27,15 @@ FBlock_Var:	; width/2, height/2
 		dc.b	8, $20					; subtype 6x/Ex
 		dc.b  $40, $10					; subtype 7x/Fx
 
-ost_fblock_y_start:	equ $30					; original y position (2 bytes)
-ost_fblock_x_start:	equ $34					; original x position (2 bytes)
-ost_fblock_move_flag:	equ $38					; 1 = block/door is moving
-ost_fblock_move_dist:	equ $3A					; distance to move (2 bytes)
-ost_fblock_btn_num:	equ $3C					; which button the block is linked to
+		rsobj FloatingBlock,$30
+ost_fblock_y_start:	rs.w 1					; $30 ; original y position
+		rsset $34
+ost_fblock_x_start:	rs.w 1					; $34 ; original x position
+		rsset $38
+ost_fblock_move_flag:	rs.b 1					; $38 ; 1 = block/door is moving
+ost_fblock_move_dist:	rs.w 1					; $3A ; distance to move
+ost_fblock_btn_num:	rs.b 1					; $3C ; which button the block is linked to
+		rsobjend
 ; ===========================================================================
 
 FBlock_Main:	; Routine 0

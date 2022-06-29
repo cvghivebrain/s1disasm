@@ -32,7 +32,9 @@ Pri_Var:	dc.b id_Pri_Body, $20, 4, id_frame_prison_capsule ; 0 - body
 		dc.b id_Pri_Switch2, $10, 4, id_frame_prison_switch2 ; 2 - unused
 		dc.b id_Pri_Panel, $10, 3, id_frame_prison_unused_panel ; 3 - unused
 
-ost_prison_y_start:	equ $30					; original y position (2 bytes)
+		rsobj Prison,$30
+ost_prison_y_start:	rs.w 1					; $30 ; original y position
+		rsobjend
 ; ===========================================================================
 
 Pri_Main:	; Routine 0

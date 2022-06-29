@@ -15,11 +15,14 @@ Gird_Index:	index *,,2
 		ptr Gird_Main
 		ptr Gird_Action
 
-ost_girder_y_start:	equ $30					; original y-axis position (2 bytes)
-ost_girder_x_start:	equ $32					; original x-axis position (2 bytes)
-ost_girder_move_time:	equ $34					; duration for movement in a direction (2 bytes)
-ost_girder_setting:	equ $38					; which movement settings to use, increments by 8
-ost_girder_wait_time:	equ $3A					; delay for movement (2 bytes)
+		rsobj Girder,$30
+ost_girder_y_start:	rs.w 1					; $30 ; original y-axis position
+ost_girder_x_start:	rs.w 1					; $32 ; original x-axis position
+ost_girder_move_time:	rs.w 1					; $34 ; duration for movement in a direction
+		rsset $38
+ost_girder_setting:	rs.b 1					; $38 ; which movement settings to use, increments by 8
+ost_girder_wait_time:	rs.w 1					; $3A ; delay for movement
+		rsobjend
 ; ===========================================================================
 
 Gird_Main:	; Routine 0

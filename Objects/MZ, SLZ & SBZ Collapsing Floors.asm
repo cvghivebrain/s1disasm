@@ -21,8 +21,11 @@ CFlo_Index:	index *,,2
 		ptr CFlo_Delete
 		ptr CFlo_WalkOff
 
-ost_cfloor_wait_time:	equ $38					; time delay for collapsing floor
-ost_cfloor_flag:	equ $3A					; 1 = Sonic has touched the floor
+		rsobj CollapseFloor,$38
+ost_cfloor_wait_time:	rs.w 1					; $38 ; time delay for collapsing floor
+		rsset $3A
+ost_cfloor_flag:	rs.w 1					; $3A ; 1 = Sonic has touched the floor
+		rsobjend
 ; ===========================================================================
 
 CFlo_Main:	; Routine 0

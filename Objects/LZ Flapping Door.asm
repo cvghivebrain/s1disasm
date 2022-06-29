@@ -15,8 +15,10 @@ Flap_Index:	index *,,2
 		ptr Flap_Main
 		ptr Flap_OpenClose
 
-ost_flap_wait:	equ $30						; time until change (2 bytes)
-ost_flap_time:	equ $32						; time between opening/closing (2 bytes)
+		rsobj FlapDoor,$30
+ost_flap_wait:	rs.w 1					; $30 ; time until change
+ost_flap_time:	rs.w 1					; $32 ; time between opening/closing
+		rsobjend
 ; ===========================================================================
 
 Flap_Main:	; Routine 0

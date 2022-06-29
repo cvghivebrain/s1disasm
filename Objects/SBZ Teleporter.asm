@@ -22,13 +22,17 @@ Tele_Index:	index *,,2
 		ptr Tele_Bump
 		ptr Tele_Bend
 
-ost_tele_time:		equ $2E					; travel time between each bend (2 bytes; only high byte is read)
-ost_tele_bump:		equ $32					; counter for initial "bump" when Sonic enters teleport, 0-$80
-ost_tele_x_target:	equ $36					; next x position to teleport to (2 bytes)
-ost_tele_y_target:	equ $38					; next y position to teleport to (2 bytes)
-ost_tele_bends:		equ $3A					; number of bends Sonic has passed in pipe, increments by 4
-ost_tele_data_size:	equ $3B					; size of coordinate data in bytes
-ost_tele_data_ptr:	equ $3C					; address of coordinate data (4 bytes)
+		rsobj Teleport,$2E
+ost_tele_time:		rs.w 1					; $2E ; travel time between each bend (2 bytes; only high byte is read)
+		rsset $32
+ost_tele_bump:		rs.b 1					; $32 ; counter for initial "bump" when Sonic enters teleport, 0-$80
+		rsset $36
+ost_tele_x_target:	rs.w 1					; $36 ; next x position to teleport to
+ost_tele_y_target:	rs.w 1					; $38 ; next y position to teleport to
+ost_tele_bends:		rs.b 1					; $3A ; number of bends Sonic has passed in pipe, increments by 4
+ost_tele_data_size:	rs.b 1					; $3B ; size of coordinate data in bytes
+ost_tele_data_ptr:	rs.l 1					; $3C ; address of coordinate data
+		rsobjend
 ; ===========================================================================
 
 Tele_Main:	; Routine 0
@@ -226,8 +230,7 @@ Tele_Move_X:
 
 	@abs_time:
 		move.w	d0,ost_tele_time(a0)			; set travel time for current direction
-		rts	
-; End of function Tele_Move
+		rts
 
 ; ===========================================================================
 Tele_Data:	index *

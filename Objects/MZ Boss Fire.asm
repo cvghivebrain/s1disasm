@@ -19,10 +19,14 @@ BFire_Index:	index *,,2
 		ptr BFire_TempFire
 		ptr BFire_TempFireDel
 
-ost_bfire_wait_time:	equ $29					; time to wait between events
-ost_bfire_x_start:	equ $30					; original x position (2 bytes)
-ost_bfire_x_prev:	equ $32					; x position where most recent fire spread object was spawned (2 bytes)
-ost_bfire_y_start:	equ $38					; original y position (2 bytes)
+		rsobj BossFire
+ost_bfire_wait_time:	rs.b 1					; $29 ; time to wait between events
+		rsset $30
+ost_bfire_x_start:	rs.w 1					; $30 ; original x position
+ost_bfire_x_prev:	rs.w 1					; $32 ; x position where most recent fire spread object was spawned
+		rsset $38
+ost_bfire_y_start:	rs.w 1					; $38 ; original y position
+		rsobjend
 ; ===========================================================================
 
 BFire_Main:	; Routine 0
@@ -128,8 +132,7 @@ BFire_SpawnFire:
 		move.w	#$67,ost_subtype(a1)			; subtype 0, timer 1.7 seconds
 
 	@fail:
-		rts	
-; End of function BFire_SpawnFire
+		rts
 
 ; ===========================================================================
 

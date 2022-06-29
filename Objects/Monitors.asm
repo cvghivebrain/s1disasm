@@ -252,8 +252,7 @@ Mon_Solid_Detect:
 		cmp.w	d2,d1
 		bcc.s	@side_hit				; branch if Sonic is to the right
 		moveq	#-1,d1					; set top/bottom collision flag
-		rts	
-; End of function Mon_Solid_Detect
+		rts
 
 		endm
 		

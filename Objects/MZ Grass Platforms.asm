@@ -23,12 +23,15 @@ LGrass_Data_1:	ptr LGrass_Coll_Sloped
 LGrass_Data_2:	ptr LGrass_Coll_Narrow
 		dc.b id_frame_grass_narrow, $20
 
-ost_grass_x_start:	equ $2A					; original x position (2 bytes)
-ost_grass_y_start:	equ $2C					; original y position (2 bytes)
-ost_grass_coll_ptr:	equ $30					; pointer to collision data (4 bytes)
-ost_grass_sink:		equ $34					; pixels the platform has sunk when stood on
-ost_grass_burn_flag:	equ $35					; 0 = not burning; 1 = burning
-ost_grass_children:	equ $36					; OST indices of child objects (8 bytes)
+		rsobj LargeGrass
+ost_grass_x_start:	rs.w 1					; $2A ; original x position
+ost_grass_y_start:	rs.w 1					; $2C ; original y position
+		rsset $30
+ost_grass_coll_ptr:	rs.l 1					; $30 ; pointer to collision data
+ost_grass_sink:		rs.b 1					; $34 ; pixels the platform has sunk when stood on
+ost_grass_burn_flag:	rs.b 1					; $35 ; 0 = not burning; 1 = burning
+ost_grass_children:	rs.b 8					; $36 ; OST indices of child objects (8 bytes)
+		rsobjend
 
 sizeof_grass_data:	equ LGrass_Data_1-LGrass_Data
 ; ===========================================================================
@@ -107,7 +110,6 @@ LGrass_Types:
 		add.w	d0,d0
 		move.w	LGrass_TypeIndex(pc,d0.w),d1
 		jmp	LGrass_TypeIndex(pc,d1.w)
-; End of function LGrass_Types
 
 ; ===========================================================================
 LGrass_TypeIndex:
@@ -245,8 +247,7 @@ LGrass_AddChildToList:
 		lsr.w	#6,d0
 		andi.w	#$7F,d0					; d0 = OST index of child
 		move.b	d0,(a2)					; copy d0 to end of list
-		rts	
-; End of function LGrass_AddChildToList
+		rts
 
 ; ===========================================================================
 

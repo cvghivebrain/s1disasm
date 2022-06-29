@@ -15,7 +15,9 @@ Elec_Index:	index *,,2
 		ptr Elec_Main
 		ptr Elec_Shock
 
-ost_electric_rate:	equ $34					; zap rate - applies bitmask to frame counter (2 bytes)
+		rsobj Electro,$34
+ost_electric_rate:	rs.w 1					; $34 ; zap rate - applies bitmask to frame counter
+		rsobjend
 ; ===========================================================================
 
 Elec_Main:	; Routine 0

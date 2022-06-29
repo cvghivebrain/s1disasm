@@ -28,13 +28,15 @@ SStom_Len:	dc.w $3800					; 0 - short
 		dc.w $A000					; 1 - long
 		dc.w $5000					; 2 - medium (non-functional; see SStom_Move)
 
-ost_mash_x_start:	equ $30					; original x position (2 bytes)
-ost_mash_length:	equ $32					; current pole length (2 bytes)
-ost_mash_max_length:	equ $34					; maximum pole length (2 bytes)
-ost_mash_retract_flag:	equ $36					; 1 = retract (2 bytes)
-ost_mash_wait_time:	equ $38					; time to wait while fully extended (2 bytes)
-ost_mash_y_start:	equ $3A					; original y position (2 bytes)
-ost_mash_parent:	equ $3C					; address of OST of parent object (4 bytes)
+		rsobj SideStomop,$30
+ost_mash_x_start:	rs.w 1					; $30 ; original x position
+ost_mash_length:	rs.w 1					; $32 ; current pole length
+ost_mash_max_length:	rs.w 1					; $34 ; maximum pole length
+ost_mash_retract_flag:	rs.w 1					; $36 ; 1 = retract
+ost_mash_wait_time:	rs.w 1					; $38 ; time to wait while fully extended
+ost_mash_y_start:	rs.w 1					; $3A ; original y position
+ost_mash_parent:	rs.l 1					; $3C ; address of OST of parent object
+		rsobjend
 ; ===========================================================================
 
 SStom_Main:	; Routine 0

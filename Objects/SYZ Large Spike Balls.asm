@@ -15,10 +15,12 @@ BBall_Index:	index *,,2
 		ptr BBall_Main
 		ptr BBall_Move
 
-ost_bball_y_start:	equ $38					; original y-axis position (2 bytes)
-ost_bball_x_start:	equ $3A					; original x-axis position (2 bytes)
-ost_bball_radius:	equ $3C					; radius of circle
-ost_bball_speed:	equ $3E					; speed (2 bytes)
+		rsobj BigSpikeBall,$38
+ost_bball_y_start:	rs.w 1					; $38 ; original y-axis position
+ost_bball_x_start:	rs.w 1					; $3A ; original x-axis position
+ost_bball_radius:	rs.b 1					; $3C ; radius of circle
+ost_bball_speed:	rs.w 1					; $3E ; speed
+		rsobjend
 ; ===========================================================================
 
 BBall_Main:	; Routine 0

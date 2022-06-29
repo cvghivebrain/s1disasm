@@ -18,12 +18,14 @@ SBall_Index:	index *,,2
 		ptr SBall_Move
 		ptr SBall_Display
 
-ost_sball_child_count:	equ $29					; number of child objects
-ost_sball_child_list:	equ $30					; OST indices of child objects and parent (8 bytes)
-ost_sball_y_start:	equ $38					; centre y-axis position (2 bytes)
-ost_sball_x_start:	equ $3A					; centre x-axis position (2 bytes)
-ost_sball_radius:	equ $3C					; radius (1 byte)
-ost_sball_speed:	equ $3E					; rate of spin (2 bytes)
+		rsobj SpikeBall
+ost_sball_child_count:	rs.b 1					; $29 ; number of child objects
+ost_sball_child_list:	rs.b 14					; $2A ; OST indices of child objects and parent (14 bytes)
+ost_sball_y_start:	rs.w 1					; $38 ; centre y-axis position
+ost_sball_x_start:	rs.w 1					; $3A ; centre x-axis position
+ost_sball_radius:	rs.b 1					; $3C ; radius
+ost_sball_speed:	rs.w 1					; $3E ; rate of spin
+		rsobjend
 ; ===========================================================================
 
 SBall_Main:	; Routine 0

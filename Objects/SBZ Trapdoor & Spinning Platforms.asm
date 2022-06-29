@@ -16,10 +16,12 @@ Spin_Index:	index *,,2
 		ptr Spin_Trapdoor
 		ptr Spin_Spinner
 
-ost_spin_wait_time:	equ $30					; time until change (2 bytes)
-ost_spin_wait_master:	equ $32					; time between changes (2 bytes)
-ost_spin_flag:		equ $34					; 1 = switch between animations, spinning platforms only
-ost_spin_sync:		equ $36					; bitmask used to synchronise timing: subtype $8x = $3F; subtype $9x = $7F (2 bytes)
+		rsobj SpinPlatform,$30
+ost_spin_wait_time:	rs.w 1					; $30 ; time until change
+ost_spin_wait_master:	rs.w 1					; $32 ; time between changes
+ost_spin_flag:		rs.b 1					; $34 ; 1 = switch between animations, spinning platforms only
+ost_spin_sync:		rs.w 1					; $36 ; bitmask used to synchronise timing: subtype $8x = $3F; subtype $9x = $7F
+		rsobjend
 ; ===========================================================================
 
 Spin_Main:	; Routine 0

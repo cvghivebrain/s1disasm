@@ -22,8 +22,10 @@ Has_Index:	index *,,2
 		ptr Has_MoveBack
 		ptr Has_Boundary
 
-ost_has_x_stop:		equ $30					; on screen x position (2 bytes)
-ost_has_x_start:	equ $32					; start & finish x position (2 bytes)
+		rsobj HasPassedCard,$30
+ost_has_x_stop:		rs.w 1					; $30 ; on screen x position
+ost_has_x_start:	rs.w 1					; $32 ; start & finish x position
+		rsobjend
 
 include_Has_Config:	macro
 		; x pos start, x pos stop, y pos

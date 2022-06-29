@@ -34,8 +34,7 @@ Yad_ChkWall:
 
 @no_collision:
 		moveq	#0,d0
-		rts	
-; End of function Yad_ChkWall
+		rts
 
 ; ---------------------------------------------------------------------------
 ; Object 50 - Yadrin enemy (SYZ)
@@ -54,7 +53,9 @@ Yad_Index:	index *,,2
 		ptr Yad_Main
 		ptr Yad_Action
 
-ost_yadrin_wait_time:	equ $30					; time to wait before changing direction (2 bytes)
+		rsobj Yadrin,$30
+ost_yadrin_wait_time:	rs.w 1					; $30 ; time to wait before changing direction
+		rsobjend
 ; ===========================================================================
 
 Yad_Main:	; Routine 0

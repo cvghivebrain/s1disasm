@@ -43,8 +43,10 @@ Ring_Spacing:	dc.b $10, 0					; $0x - horizontal tight
 		dc.b -$10, 8					; $Ex - unused
 		dc.b -$18, $10					; $Fx - unused
 
-ost_ring_x_main:	equ $32					; x position of primary ring (2 bytes)
-ost_ring_num:		equ $34					; which ring in the group of 1-7 rings it is
+		rsobj Rings,$32
+ost_ring_x_main:	rs.w 1					; $32 ; x position of primary ring
+ost_ring_num:		rs.b 1					; $34 ; which ring in the group of 1-7 rings it is
+		rsobjend
 ; ===========================================================================
 
 Ring_Main:	; Routine 0

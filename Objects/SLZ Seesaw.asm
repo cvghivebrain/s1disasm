@@ -30,12 +30,16 @@ See_Index:	index *,,2
 		ptr See_SpikeAction
 		ptr See_SpikeFall
 
-ost_seesaw_x_start:	equ $30					; original x-axis position (2 bytes)
-ost_seesaw_y_start:	equ $34					; original y-axis position (2 bytes)
-ost_seesaw_impact:	equ $38					; speed Sonic hits the seesaw (2 bytes)
-ost_seesaw_state:	equ $3A					; seesaw: 0 = left raised; 2 = right raised; 1 = flat
+		rsobj Seesaw,$30
+ost_seesaw_x_start:	rs.w 1					; $30 ; original x-axis position
+		rsset $34
+ost_seesaw_y_start:	rs.w 1					; $34 ; original y-axis position
+		rsset $38
+ost_seesaw_impact:	rs.w 1					; $38 ; speed Sonic hits the seesaw
+ost_seesaw_state:	rs.b 1					; $3A ; seesaw: 0 = left raised; 2 = right raised; 1 = flat
 								; spikeball: 0 = on/launched from right side; 2 = on/launched from left side
-ost_seesaw_parent:	equ $3C					; address of OST of parent object (4 bytes)
+ost_seesaw_parent:	rs.l 1					; $3C ; address of OST of parent object
+		rsobjend
 ; ===========================================================================
 
 See_Main:	; Routine 0

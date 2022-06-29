@@ -18,8 +18,11 @@ Moto_Index:	index *,,2
 		ptr Moto_Animate
 		ptr Moto_Delete
 
-ost_moto_wait_time:	equ $30					; time delay before changing direction (2 bytes)
-ost_moto_smoke_time:	equ $33					; time delay between smoke puffs
+		rsobj MotoBug,$30
+ost_moto_wait_time:	rs.w 1					; $30 ; time delay before changing direction
+		rsset $33
+ost_moto_smoke_time:	rs.b 1					; $33 ; time delay between smoke puffs
+		rsobjend
 ; ===========================================================================
 
 Moto_Main:	; Routine 0

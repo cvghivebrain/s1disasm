@@ -17,10 +17,13 @@ VanP_Index:	index *,,2
 		ptr VanP_StoodOn
 		ptr VanP_Sync
 
-ost_vanish_wait_time:	equ $30					; time until change (2 bytes)
-ost_vanish_wait_master:	equ $32					; time between changes (2 bytes)
-ost_vanish_sync_sub:	equ $36					; value to subtract from framecount for synchronising (2 bytes)
-ost_vanish_sync_mask:	equ $38					; bitmask for synchronising (2 bytes)
+		rsobj VanishPlatform,$30
+ost_vanish_wait_time:	rs.w 1					; $30 ; time until change
+ost_vanish_wait_master:	rs.w 1					; $32 ; time between changes
+		rsset $36
+ost_vanish_sync_sub:	rs.w 1					; $36 ; value to subtract from framecount for synchronising
+ost_vanish_sync_mask:	rs.w 1					; $38 ; bitmask for synchronising
+		rsobjend
 ; ===========================================================================
 
 VanP_Main:	; Routine 0

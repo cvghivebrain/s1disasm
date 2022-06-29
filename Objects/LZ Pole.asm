@@ -16,8 +16,10 @@ Pole_Index:	index *,,2
 		ptr Pole_Action
 		ptr Pole_Display
 
-ost_pole_time:		equ $30					; time between grabbing the pole & breaking (2 bytes)
-ost_pole_grabbed:	equ $32					; flag set when Sonic grabs the pole
+		rsobj Pole,$30
+ost_pole_time:		rs.w 1					; $30 ; time between grabbing the pole & breaking
+ost_pole_grabbed:	rs.b 1					; $32 ; flag set when Sonic grabs the pole
+		rsobjend
 ; ===========================================================================
 
 Pole_Main:	; Routine 0

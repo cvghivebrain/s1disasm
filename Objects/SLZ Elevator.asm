@@ -41,13 +41,15 @@ Elev_Var2_E:	dc.b $30, id_Elev_UpVanish
 
 sizeof_Elev_Var2:	equ Elev_Var2_1-Elev_Var2
 
-ost_elev_y_start:	equ $30					; original y-axis position (2 bytes)
-ost_elev_x_start:	equ $32					; original x-axis position (2 bytes)
-ost_elev_moved:		equ $34					; distance moved (4 bytes)
-ost_elev_acceleration:	equ $38					; acceleration - i.e. its movement is not linear (2 bytes)
-ost_elev_dec_flag:	equ $3A					; 1 = decelerate
-ost_elev_distance:	equ $3C					; half distance to move (2 bytes)
-ost_elev_dist_master:	equ $3E					; master copy of ost_elev_distance (2 bytes)
+		rsobj Elevator,$30
+ost_elev_y_start:	rs.w 1					; $30 ; original y-axis position
+ost_elev_x_start:	rs.w 1					; $32 ; original x-axis position
+ost_elev_moved:		rs.l 1					; $34 ; distance moved
+ost_elev_acceleration:	rs.w 1					; $38 ; acceleration - i.e. its movement is not linear
+ost_elev_dec_flag:	rs.b 1					; $3A ; 1 = decelerate
+ost_elev_distance:	rs.w 1					; $3C ; half distance to move
+ost_elev_dist_master:	rs.w 1					; $3E ; master copy of ost_elev_distance
+		rsobjend
 ; ===========================================================================
 
 Elev_Main:	; Routine 0
@@ -255,8 +257,7 @@ Elev_Move:
 		clr.b	ost_subtype(a0)				; convert to type 0 (non-moving)
 
 	@keep_type:
-		rts	
-; End of function Elev_Move
+		rts
 
 ; ===========================================================================
 

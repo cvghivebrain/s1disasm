@@ -18,11 +18,15 @@ GFire_Index:	index *,,2
 		ptr GFire_Spread
 		ptr GFire_Move
 
-ost_burn_x_start:	equ $2A					; original x position (2 bytes)
-ost_burn_y_start:	equ $2C					; original y position (2 bytes)
-ost_burn_coll_ptr:	equ $30					; pointer to collision data (4 bytes)
-ost_burn_parent:	equ $38					; address of OST of parent object (4 bytes)
-ost_burn_sink:		equ $3C					; pixels the platform has sunk when stood on
+		rsobj GrassFire
+ost_burn_x_start:	rs.w 1					; $2A ; original x position
+ost_burn_y_start:	rs.w 1					; $2C ; original y position
+		rsset $30
+ost_burn_coll_ptr:	rs.l 1					; $30 ; pointer to collision data
+		rsset $38
+ost_burn_parent:	rs.l 1					; $38 ; address of OST of parent object
+ost_burn_sink:		rs.w 1					; $3C ; pixels the platform has sunk when stood on
+		rsobjend
 ; ===========================================================================
 
 GFire_Main:	; Routine 0

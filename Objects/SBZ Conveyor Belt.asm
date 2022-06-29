@@ -15,8 +15,10 @@ Conv_Index:	index *,,2
 		ptr Conv_Main
 		ptr Conv_Action
 
-ost_convey_speed:	equ $36					; speed - can also be negative (2 bytes)
-ost_convey_width:	equ $38					; width/2
+		rsobj Conveyor,$36
+ost_convey_speed:	rs.w 1					; $36 ; speed - can also be negative
+ost_convey_width:	rs.b 1					; $38 ; width/2
+		rsobjend
 ; ===========================================================================
 
 Conv_Main:	; Routine 0

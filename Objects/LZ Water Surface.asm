@@ -15,8 +15,10 @@ Surf_Index:	index *,,2
 		ptr Surf_Main
 		ptr Surf_Action
 
-ost_surf_x_start:	equ $30					; original x-axis position (2 bytes)
-ost_surf_freeze:	equ $32					; flag to freeze animation
+		rsobj WaterSurface,$30
+ost_surf_x_start:	rs.w 1					; $30 ; original x-axis position
+ost_surf_freeze:	rs.b 1					; $32 ; flag to freeze animation
+		rsobjend
 ; ===========================================================================
 
 Surf_Main:	; Routine 0

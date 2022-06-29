@@ -29,10 +29,14 @@ BSpike_Index:	index *,,2
 		ptr BSpike_Explode
 		ptr BSpike_MoveFrag
 
-ost_bspike_x_start:	equ $30					; seesaw x position (2 bytes)
-ost_bspike_y_start:	equ $34					; seesaw y position (2 bytes)
-ost_bspike_state:	equ $3A					; seesaw state: 0 = left raised; 2 = right raised; 1/3 = flat
-ost_bspike_seesaw:	equ $3C					; address of OST of seesaw (4 bytes)
+		rsobj BossSpikeball,$30
+ost_bspike_x_start:	rs.w 1					; $30 ; seesaw x position
+		rsset $34
+ost_bspike_y_start:	rs.w 1					; $34 ; seesaw y position
+		rsset $3A
+ost_bspike_state:	rs.b 1					; $3A ; seesaw state: 0 = left raised; 2 = right raised; 1/3 = flat
+ost_bspike_seesaw:	rs.l 1					; $3C ; address of OST of seesaw
+		rsobjend
 ; ===========================================================================
 
 BSpike_Main:	; Routine 0

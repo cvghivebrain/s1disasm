@@ -21,8 +21,11 @@ Geyser_Index:	index *,,2
 Geyser_Speeds:	dc.w -$500					; 0 - geyser
 		dc.w 0						; 1 - lavafall
 
-ost_geyser_y_start:	equ $30					; original y position (2 bytes)
-ost_geyser_parent:	equ $3C					; address of OST of parent object (4 bytes)
+		rsobj LavaGeyser,$30
+ost_geyser_y_start:	rs.w 1					; $30 ; original y position
+		rsset $3C
+ost_geyser_parent:	rs.l 1					; $3C ; address of OST of parent object
+		rsobjend
 ; ===========================================================================
 
 Geyser_Main:	; Routine 0

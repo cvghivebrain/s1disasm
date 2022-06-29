@@ -17,8 +17,10 @@ Smab_Index:	index *,,2
 		ptr Smab_Solid
 		ptr Smab_FragMove
 
-ost_smash_sonic_ani:	equ $32					; Sonic's current animation number
-ost_smash_count:	equ $34					; number of blocks hit + enemies previously hit in a single jump (2 bytes)
+		rsobj SmashBlock,$32
+ost_smash_sonic_ani:	rs.b 1					; $32 ; Sonic's current animation number
+ost_smash_count:	rs.w 1					; $34 ; number of blocks hit + enemies previously hit in a single jump
+		rsobjend
 ; ===========================================================================
 
 Smab_Main:	; Routine 0

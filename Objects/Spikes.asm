@@ -26,11 +26,13 @@ Spike_Var_3:	dc.b id_frame_spike_3upwide, $1C		; $3x
 Spike_Var_4:	dc.b id_frame_spike_6upwide, $40		; $4x
 Spike_Var_5:	dc.b id_frame_spike_1left, $10			; $5x
 
-ost_spike_x_start:	equ $30					; original X position (2 bytes)
-ost_spike_y_start:	equ $32					; original Y position (2 bytes)
-ost_spike_move_dist:	equ $34					; pixel distance to move object * $100, either direction (2 bytes)
-ost_spike_move_flag:	equ $36					; 0 = original position; 1 = moved position (2 bytes)
-ost_spike_move_time:	equ $38					; time until object moves again (2 bytes)
+		rsobj Spikes,$30
+ost_spike_x_start:	rs.w 1					; $30 ; original X position
+ost_spike_y_start:	rs.w 1					; $32 ; original Y position
+ost_spike_move_dist:	rs.w 1					; $34 ; pixel distance to move object * $100, either direction
+ost_spike_move_flag:	rs.w 1					; $36 ; 0 = original position; 1 = moved position
+ost_spike_move_time:	rs.w 1					; $38 ; time until object moves again
+		rsobjend
 ; ===========================================================================
 
 Spike_Main:	; Routine 0

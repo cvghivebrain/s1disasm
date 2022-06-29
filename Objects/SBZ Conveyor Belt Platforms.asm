@@ -37,15 +37,18 @@ SpinC_Index:	index *,,2
 		ptr SpinC_Main
 		ptr SpinC_Solid
 
-ost_spinc_subtype_copy:	equ $2F					; copy of the initial subtype ($80/$81/etc.)
-ost_spinc_x_pos_centre:	equ $30					; approximate x position of centre of conveyor (2 bytes)
-ost_spinc_corner_x_pos:	equ $34					; x position of next corner (2 bytes)
-ost_spinc_corner_y_pos:	equ $36					; y position of next corner (2 bytes)
-ost_spinc_corner_next:	equ $38					; index of next corner
-ost_spinc_corner_count:	equ $39					; total number of corners +1, times 4
-ost_spinc_corner_inc:	equ $3A					; amount to add to corner index (4 or -4)
-ost_spinc_reverse:	equ $3B					; 1 = conveyors run backwards
-ost_spinc_corner_ptr:	equ $3C					; address of corner position data (4 bytes)
+		rsobj SpinConvey,$2F
+ost_spinc_subtype_copy:	rs.b 1					; $2F ; copy of the initial subtype ($80/$81/etc.)
+ost_spinc_x_pos_centre:	rs.w 1					; $30 ; approximate x position of centre of conveyor
+		rsset $34
+ost_spinc_corner_x_pos:	rs.w 1					; $34 ; x position of next corner
+ost_spinc_corner_y_pos:	rs.w 1					; $36 ; y position of next corner
+ost_spinc_corner_next:	rs.b 1					; $38 ; index of next corner
+ost_spinc_corner_count:	rs.b 1					; $39 ; total number of corners +1, times 4
+ost_spinc_corner_inc:	rs.b 1					; $3A ; amount to add to corner index (4 or -4)
+ost_spinc_reverse:	rs.b 1					; $3B ; 1 = conveyors run backwards
+ost_spinc_corner_ptr:	rs.l 1					; $3C ; address of corner position data
+		rsobjend
 ; ===========================================================================
 
 SpinC_Main:	; Routine 0

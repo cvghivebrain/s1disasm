@@ -30,13 +30,16 @@ Glass_Vars012:	dc.b id_Glass_Block012,	0, id_frame_glass_tall	; routine num, y-a
 Glass_Vars34:	dc.b id_Glass_Block34, 0, id_frame_glass_short
 		dc.b id_Glass_Reflect34, 0, id_frame_glass_shine
 
-ost_glass_y_start:	equ $30					; original y position (2 bytes)
-ost_glass_y_dist:	equ $32					; distance block moves when switch is pressed (2 bytes)
-ost_glass_move_mode:	equ $34					; 1 when block moves after switch is pressed
-ost_glass_jump_init:	equ $35					; 1 when block has been jumped on at least once
-ost_glass_sink_dist:	equ $36					; distance to make block sink when jumped on; unused type 3 block (2 bytes)
-ost_glass_sink_delay:	equ $38					; time to delay block sinking
-ost_glass_parent:	equ $3C					; address of OST of parent object (4 bytes)
+		rsobj GlassBlock,$30
+ost_glass_y_start:	rs.w 1					; $30 ; original y position
+ost_glass_y_dist:	rs.w 1					; $32 ; distance block moves when switch is pressed
+ost_glass_move_mode:	rs.b 1					; $34 ; 1 when block moves after switch is pressed
+ost_glass_jump_init:	rs.b 1					; $35 ; 1 when block has been jumped on at least once
+ost_glass_sink_dist:	rs.w 1					; $36 ; distance to make block sink when jumped on; unused type 3 block
+ost_glass_sink_delay:	rs.b 1					; $38 ; time to delay block sinking
+		rsset $3C
+ost_glass_parent:	rs.l 1					; $3C ; address of OST of parent object
+		rsobjend
 ; ===========================================================================
 
 Glass_Main:	; Routine 0

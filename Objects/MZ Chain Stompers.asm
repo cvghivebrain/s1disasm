@@ -36,13 +36,15 @@ CStom_Length_4:	dc.w $3800					; 4 - unused
 CStom_Length_5:	dc.w $5800					; 5 - unused
 CStom_Length_6:	dc.w $B800					; 6 - unused
 
-ost_cstomp_y_start:		equ $30				; original y position (2 bytes)
-ost_cstomp_chain_length:	equ $32				; current chain length (2 bytes)
-ost_cstomp_chain_max:		equ $34				; maximum chain length (2 bytes)
-ost_cstomp_rise_flag:		equ $36				; 0 = falling; 1 = rising (2 bytes)
-ost_cstomp_delay_time:		equ $38				; time delay between fully extended and rising again (2 bytes)
-ost_cstomp_switch_id:		equ $3A				; switch number for the current stomper
-ost_cstomp_parent:		equ $3C				; address of OST of parent object (4 bytes)
+		rsobj ChainStomp,$30
+ost_cstomp_y_start:		rs.w 1					; $30 ; original y position
+ost_cstomp_chain_length:	rs.w 1					; $32 ; current chain length
+ost_cstomp_chain_max:		rs.w 1					; $34 ; maximum chain length
+ost_cstomp_rise_flag:		rs.w 1					; $36 ; 0 = falling; 1 = rising
+ost_cstomp_delay_time:		rs.w 1					; $38 ; time delay between fully extended and rising again
+ost_cstomp_switch_id:		rs.b 1					; $3A ; switch number for the current stomper
+ost_cstomp_parent:		rs.l 1					; $3C ; address of OST of parent object
+		rsobjend
 ; ===========================================================================
 
 CStom_Main:	; Routine 0

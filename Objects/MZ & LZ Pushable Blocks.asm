@@ -22,10 +22,12 @@ PushB_Var_1:	dc.b $40, id_frame_pblock_four
 
 sizeof_PushB_Var:	equ PushB_Var_1-PushB_Var
 
-ost_pblock_lava_speed:	equ $30					; x axis speed when block is on lava (2 bytes)
-ost_pblock_lava_flag:	equ $32					; 1 = block is on lava
-ost_pblock_x_start:	equ $34					; original x position (2 bytes)
-ost_pblock_y_start:	equ $36					; original y position (2 bytes)
+		rsobj PushBlock,$30
+ost_pblock_lava_speed:	rs.w 1					; $30 ; x axis speed when block is on lava
+ost_pblock_lava_flag:	rs.b 1					; $32 ; 1 = block is on lava
+ost_pblock_x_start:	rs.w 1					; $34 ; original x position
+ost_pblock_y_start:	rs.w 1					; $36 ; original y position
+		rsobjend
 ; ===========================================================================
 
 PushB_Main:	; Routine 0

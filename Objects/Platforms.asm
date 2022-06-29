@@ -20,11 +20,15 @@ Plat_Index:	index *,,2
 		ptr Plat_Delete
 		ptr Plat_Action
 
-ost_plat_y_pos:		equ $2C					; y position ignoring dip when Sonic is on the platform (2 bytes)
-ost_plat_x_start:	equ $32					; original x position (2 bytes)
-ost_plat_y_start:	equ $34					; original y position (2 bytes)
-ost_plat_y_nudge:	equ $38					; amount of dip when Sonic is on the platform
-ost_plat_wait_time:	equ $3A					; time delay for platform moving when stood on (2 bytes)
+		rsobj BasicPlatform,$2C
+ost_plat_y_pos:		rs.w 1					; $2C ; y position ignoring dip when Sonic is on the platform
+		rsset $32
+ost_plat_x_start:	rs.w 1					; $32 ; original x position
+ost_plat_y_start:	rs.w 1					; $34 ; original y position
+		rsset $38
+ost_plat_y_nudge:	rs.b 1					; $38 ; amount of dip when Sonic is on the platform
+ost_plat_wait_time:	rs.w 1					; $3A ; time delay for platform moving when stood on
+		rsobjend
 ; ===========================================================================
 
 Plat_Main:	; Routine 0
