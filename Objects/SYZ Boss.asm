@@ -19,27 +19,20 @@ BSYZ_Index:	index *,,2
 		ptr BSYZ_FlameMain
 		ptr BSYZ_SpikeMain
 
-BSYZ_ObjData:	dc.b id_BSYZ_ShipMain,	id_ani_boss_ship, 5	; routine number, animation, priority
-		dc.b id_BSYZ_FaceMain,	id_ani_boss_face1, 5
+BSYZ_ObjData:	dc.b id_BSYZ_ShipMain, id_ani_boss_ship, 5	; routine number, animation, priority
+		dc.b id_BSYZ_FaceMain, id_ani_boss_face1, 5
 		dc.b id_BSYZ_FlameMain, id_ani_boss_blank, 5
 		dc.b id_BSYZ_SpikeMain, 0, 5
 
-ost_bsyz_mode:		equ $29					; $FF = lifting block
-ost_bsyz_parent_x_pos:	equ $30					; parent x position (2 bytes)
-ost_bsyz_block_num:	equ $34					; number of block Eggman is above (0-9) - parent only
-ost_bsyz_parent:	equ $34					; address of OST of parent object - children only (4 bytes)
-ost_bsyz_block:		equ $36					; address of OST of block Eggman is above - parent only (2 bytes)
-ost_bsyz_parent_y_pos:	equ $38					; parent y position (2 bytes)
-ost_bsyz_wait_time:	equ $3C					; time to wait between each action (2 bytes)
-ost_bsyz_flash_num:	equ $3E					; number of times to make boss flash when hit
-ost_bsyz_wobble:	equ $3F					; wobble state as Eggman moves back & forth (1 byte incremented every frame & interpreted by CalcSine)
+ost_boss_block_num:	equ ost_boss_parent			; $34 ; number of block Eggman is above (0-9) - parent only
+ost_boss_block:		equ ost_boss_parent+2			; $36 ; address of OST of block Eggman is above - parent only (2 bytes)
 ; ===========================================================================
 
 BSYZ_Main:	; Routine 0
 		move.w	#$2DB0,ost_x_pos(a0)
 		move.w	#$4DA,ost_y_pos(a0)
-		move.w	ost_x_pos(a0),ost_bsyz_parent_x_pos(a0)
-		move.w	ost_y_pos(a0),ost_bsyz_parent_y_pos(a0)
+		move.w	ost_x_pos(a0),ost_boss_parent_x_pos(a0)
+		move.w	ost_y_pos(a0),ost_boss_parent_y_pos(a0)
 		move.b	#id_col_24x24,ost_col_type(a0)
 		move.b	#hitcount_syz,ost_col_property(a0)	; set number of hits to 8
 		lea	BSYZ_ObjData(pc),a2			; get routine number, animation & priority
@@ -65,7 +58,7 @@ BSYZ_Main:	; Routine 0
 		move.w	#tile_Nem_Eggman,ost_tile(a1)
 		move.b	#render_rel,ost_render(a1)
 		move.b	#$20,ost_displaywidth(a1)
-		move.l	a0,ost_bsyz_parent(a1)			; save address of OST of parent
+		move.l	a0,ost_boss_parent(a1)			; save address of OST of parent
 		dbf	d1,@loop				; repeat sequence 3 more times
 
 BSYZ_ShipMain:	; Routine 2
@@ -92,36 +85,36 @@ BSYZ_ShipIndex:index *,,2
 
 BSYZ_ShipStart:
 		move.w	#-$100,ost_x_vel(a0)			; move ship left
-		cmpi.w	#$2D38,ost_bsyz_parent_x_pos(a0)	; has ship appeared from the right yet?
+		cmpi.w	#$2D38,ost_boss_parent_x_pos(a0)	; has ship appeared from the right yet?
 		bcc.s	BSYZ_Update				; if not, branch
 		addq.b	#2,ost_routine2(a0)			; goto BSYZ_ShipMove next
 
 BSYZ_Update:
-		move.b	ost_bsyz_wobble(a0),d0			; get wobble byte
-		addq.b	#2,ost_bsyz_wobble(a0)			; increment wobble (wraps to 0 after $FE)
+		move.b	ost_boss_wobble(a0),d0			; get wobble byte
+		addq.b	#2,ost_boss_wobble(a0)			; increment wobble (wraps to 0 after $FE)
 		jsr	(CalcSine).l				; convert to sine
 		asr.w	#2,d0					; divide by 4
 		move.w	d0,ost_y_vel(a0)			; set as y speed
 
 BSYZ_Update_SkipWobble:
 		bsr.w	BossMove				; update parent position
-		move.w	ost_bsyz_parent_y_pos(a0),ost_y_pos(a0)	; update actual position
-		move.w	ost_bsyz_parent_x_pos(a0),ost_x_pos(a0)
+		move.w	ost_boss_parent_y_pos(a0),ost_y_pos(a0)	; update actual position
+		move.w	ost_boss_parent_x_pos(a0),ost_x_pos(a0)
 
 BSYZ_Update_SkipPos:
 		move.w	ost_x_pos(a0),d0
 		subi.w	#$2C00,d0				; subtract x pos of first block
 		lsr.w	#5,d0					; divide by 32
-		move.b	d0,ost_bsyz_block_num(a0)		; id of block the ship is above
+		move.b	d0,ost_boss_block_num(a0)		; id of block the ship is above
 		cmpi.b	#id_BSYZ_Explode,ost_routine2(a0)
 		bcc.s	@exit
 		tst.b	ost_status(a0)				; has boss been beaten?
 		bmi.s	@beaten					; if yes, branch
 		tst.b	ost_col_type(a0)			; is ship collision clear?
 		bne.s	@exit					; if not, branch
-		tst.b	ost_bsyz_flash_num(a0)			; is ship flashing?
+		tst.b	ost_boss_flash_num(a0)			; is ship flashing?
 		bne.s	@flash					; if yes, branch
-		move.b	#$20,ost_bsyz_flash_num(a0)		; set ship to flash 32 times
+		move.b	#$20,ost_boss_flash_num(a0)		; set ship to flash 32 times
 		play.w	1, jsr, sfx_BossHit			; play boss damage sound
 
 	@flash:
@@ -129,11 +122,11 @@ BSYZ_Update_SkipPos:
 		moveq	#0,d0					; move 0 (black) to d0
 		tst.w	(a1)					; is colour white?
 		bne.s	@is_white				; if yes, branch
-		move.w	#cWhite,d0				; move $EEE (white) to d0
+		move.w	#boss_flash_color,d0			; move $EEE (white) to d0
 
 	@is_white:
 		move.w	d0,(a1)					; load colour stored in	d0
-		subq.b	#1,ost_bsyz_flash_num(a0)		; decrement flash counter
+		subq.b	#1,ost_boss_flash_num(a0)		; decrement flash counter
 		bne.s	@exit					; branch if not 0
 		move.b	#id_col_24x24,ost_col_type(a0)		; enable boss collision again
 
@@ -145,13 +138,13 @@ BSYZ_Update_SkipPos:
 		moveq	#100,d0
 		bsr.w	AddPoints				; give Sonic 1000 points
 		move.b	#id_BSYZ_Explode,ost_routine2(a0)
-		move.w	#180,ost_bsyz_wait_time(a0)		; set timer to 3 seconds
+		move.w	#180,ost_boss_wait_time(a0)		; set timer to 3 seconds
 		clr.w	ost_x_vel(a0)				; stop boss moving
 		rts	
 ; ===========================================================================
 
 BSYZ_ShipMove:
-		move.w	ost_bsyz_parent_x_pos(a0),d0
+		move.w	ost_boss_parent_x_pos(a0),d0
 		move.w	#$140,ost_x_vel(a0)			; move ship right
 		btst	#status_xflip_bit,ost_status(a0)	; is ship facing left?
 		bne.s	@face_right				; if not, branch
@@ -167,7 +160,7 @@ BSYZ_ShipMove:
 
 @chg_dir:
 		bchg	#status_xflip_bit,ost_status(a0)	; change direction
-		clr.b	ost_bsyz_wait_time+1(a0)		; clear low byte of timer
+		clr.b	ost_boss_wait_time+1(a0)		; clear low byte of timer
 
 @inside_boundary:
 		subi.w	#$2C10,d0				; get x pos of ship relative to left edge
@@ -179,20 +172,20 @@ BSYZ_ShipMove:
 	@d0_is_0:
 		subq.w	#1,d0
 		bgt.s	@update
-		tst.b	ost_bsyz_wait_time+1(a0)		; is low byte of timer 0?
+		tst.b	ost_boss_wait_time+1(a0)		; is low byte of timer 0?
 		bne.s	@update					; if not, branch
 		move.w	(v_ost_player+ost_x_pos).w,d1
 		subi.w	#$2C00,d1				; get x pos of Sonic relative to left edge
 		asr.w	#5,d1					; divide by 32
-		cmp.b	ost_bsyz_block_num(a0),d1		; is ship above Sonic?
+		cmp.b	ost_boss_block_num(a0),d1		; is ship above Sonic?
 		bne.s	@update					; if not, branch
 
 		moveq	#0,d0
-		move.b	ost_bsyz_block_num(a0),d0
+		move.b	ost_boss_block_num(a0),d0
 		asl.w	#5,d0
 		addi.w	#$2C10,d0				; get x pos of block below ship
-		move.w	d0,ost_bsyz_parent_x_pos(a0)		; align ship to block
-		bsr.w	BSYZ_FindBlock				; save address of OST of block to ost_bsyz_block
+		move.w	d0,ost_boss_parent_x_pos(a0)		; align ship to block
+		bsr.w	BSYZ_FindBlock				; save address of OST of block to ost_boss_block
 		addq.b	#2,ost_routine2(a0)			; goto BSYZ_Attack next
 		clr.w	ost_subtype(a0)				; goto BSYZ_Descend next
 		clr.w	ost_x_vel(a0)				; stop moving horizontally
@@ -217,19 +210,19 @@ BSYZ_Attack_Index:
 
 BSYZ_Descend:
 		move.w	#$180,ost_y_vel(a0)			; move ship down
-		move.w	ost_bsyz_parent_y_pos(a0),d0
+		move.w	ost_boss_parent_y_pos(a0),d0
 		cmpi.w	#$556,d0				; has ship reached block?
 		bcs.s	@update					; if not, branch
-		move.w	#$556,ost_bsyz_parent_y_pos(a0)		; align to block
-		clr.w	ost_bsyz_wait_time(a0)
+		move.w	#$556,ost_boss_parent_y_pos(a0)		; align to block
+		clr.w	ost_boss_wait_time(a0)
 		moveq	#-1,d0
-		move.w	ost_bsyz_block(a0),d0			; get address of OST of block
+		move.w	ost_boss_block(a0),d0			; get address of OST of block
 		beq.s	@no_block				; branch if block not found
 		movea.l	d0,a1					; a1 = address of OST of block
 		move.b	#-1,ost_bblock_mode(a1)			; set block lifting flag
-		move.b	#-1,ost_bsyz_mode(a0)
+		move.b	#-1,ost_boss_mode(a0)
 		move.l	a0,ost_bblock_boss(a1)
-		move.w	#50,ost_bsyz_wait_time(a0)		; set timer to 50 frames
+		move.w	#50,ost_boss_wait_time(a0)		; set timer to 50 frames
 
 	@no_block:
 		clr.w	ost_y_vel(a0)				; stop moving
@@ -240,11 +233,11 @@ BSYZ_Descend:
 ; ===========================================================================
 
 BSYZ_Lift:
-		subq.w	#1,ost_bsyz_wait_time(a0)		; decrement timer (already 0 if there was no block)
+		subq.w	#1,ost_boss_wait_time(a0)		; decrement timer (already 0 if there was no block)
 		bpl.s	@shake					; branch if time remains
 		addq.b	#2,ost_subtype(a0)			; goto BSYZ_LiftStop next
 		move.w	#-$800,ost_y_vel(a0)			; move ship up
-		tst.w	ost_bsyz_block(a0)			; is boss in block lifting mode?
+		tst.w	ost_boss_block(a0)			; is boss in block lifting mode?
 		bne.s	@lifting				; if yes, branch
 		asr	ost_y_vel(a0)
 
@@ -255,33 +248,33 @@ BSYZ_Lift:
 
 @shake:
 		moveq	#0,d0
-		cmpi.w	#30,ost_bsyz_wait_time(a0)		; have 20 frames passed since making contact with the block?
+		cmpi.w	#30,ost_boss_wait_time(a0)		; have 20 frames passed since making contact with the block?
 		bgt.s	@update					; if not, branch
 		moveq	#2,d0					; shake 2px
-		btst	#1,ost_bsyz_wait_time+1(a0)		; test bit 1 of timer (changes every 2nd frame)
+		btst	#1,ost_boss_wait_time+1(a0)		; test bit 1 of timer (changes every 2nd frame)
 		beq.s	@update					; branch if 0
 		neg.w	d0					; shake -2px
 
 @update:
-		add.w	ost_bsyz_parent_y_pos(a0),d0		; add parent y pos to shake
+		add.w	ost_boss_parent_y_pos(a0),d0		; add parent y pos to shake
 		move.w	d0,ost_y_pos(a0)			; update actual y pos
-		move.w	ost_bsyz_parent_x_pos(a0),ost_x_pos(a0)
+		move.w	ost_boss_parent_x_pos(a0),ost_x_pos(a0)
 		bra.w	BSYZ_Update_SkipPos
 ; ===========================================================================
 
 BSYZ_LiftStop:
 		move.w	#$4DA,d0
-		tst.w	ost_bsyz_block(a0)			; was block found?
+		tst.w	ost_boss_block(a0)			; was block found?
 		beq.s	@no_block				; if not, branch
 		subi.w	#$18,d0
 
 	@no_block:
-		cmp.w	ost_bsyz_parent_y_pos(a0),d0		; has ship reached top of the screen?
+		cmp.w	ost_boss_parent_y_pos(a0),d0		; has ship reached top of the screen?
 		blt.s	@not_at_top				; if not, branch
-		move.w	#8,ost_bsyz_wait_time(a0)
-		tst.w	ost_bsyz_block(a0)			; was block found?
+		move.w	#8,ost_boss_wait_time(a0)
+		tst.w	ost_boss_block(a0)			; was block found?
 		beq.s	@no_block2				; if not, branch
-		move.w	#45,ost_bsyz_wait_time(a0)
+		move.w	#45,ost_boss_wait_time(a0)
 
 	@no_block2:
 		addq.b	#2,ost_subtype(a0)			; goto BSYZ_BreakBlock next
@@ -299,58 +292,58 @@ BSYZ_LiftStop:
 ; ===========================================================================
 
 BSYZ_BreakBlock:
-		subq.w	#1,ost_bsyz_wait_time(a0)		; decrement timer
+		subq.w	#1,ost_boss_wait_time(a0)		; decrement timer
 		bgt.s	@shake
 		bmi.s	@reset_to_hover				; branch if below 0
 		moveq	#-1,d0
-		move.w	ost_bsyz_block(a0),d0			; get address of OST of block
+		move.w	ost_boss_block(a0),d0			; get address of OST of block
 		beq.s	@no_block				; branch if there is no block
 		movea.l	d0,a1
 		move.b	#$A,ost_bblock_mode(a1)			; signal block to break
 
 	@no_block:
-		clr.w	ost_bsyz_block(a0)
+		clr.w	ost_boss_block(a0)
 		bra.s	@shake
 ; ===========================================================================
 
 @reset_to_hover:
-		cmpi.w	#-$1E,ost_bsyz_wait_time(a0)
+		cmpi.w	#-$1E,ost_boss_wait_time(a0)
 		bne.s	@shake
-		clr.b	ost_bsyz_mode(a0)
+		clr.b	ost_boss_mode(a0)
 		subq.b	#2,ost_routine2(a0)			; goto BSYZ_ShipMove next
-		move.b	#-1,ost_bsyz_wait_time+1(a0)
+		move.b	#-1,ost_boss_wait_time+1(a0)
 		bra.s	@update
 ; ===========================================================================
 
 @shake:
 		moveq	#1,d0
-		tst.w	ost_bsyz_block(a0)			; is there a block?
+		tst.w	ost_boss_block(a0)			; is there a block?
 		beq.s	@no_block2				; if not, branch
 		moveq	#2,d0					; shake value
 
 	@no_block2:
-		cmpi.w	#$4DA,ost_bsyz_parent_y_pos(a0)		; is ship at top of screen?
+		cmpi.w	#$4DA,ost_boss_parent_y_pos(a0)		; is ship at top of screen?
 		beq.s	@skip_shake				; if yes, branch
 		blt.s	@above_top				; branch if above top
 		neg.w	d0					; invert shake
 
 	@above_top:
-		tst.w	ost_bsyz_block(a0)
-		add.w	d0,ost_bsyz_parent_y_pos(a0)		; apply shake to parent y pos
+		tst.w	ost_boss_block(a0)
+		add.w	d0,ost_boss_parent_y_pos(a0)		; apply shake to parent y pos
 
 	@skip_shake:
 		moveq	#0,d0
-		tst.w	ost_bsyz_block(a0)			; is there a block?
+		tst.w	ost_boss_block(a0)			; is there a block?
 		beq.s	@skip_shake2				; if not, branch
 		moveq	#2,d0
-		btst	#0,ost_bsyz_wait_time+1(a0)
+		btst	#0,ost_boss_wait_time+1(a0)
 		beq.s	@skip_shake2
 		neg.w	d0
 
 	@skip_shake2:
-		add.w	ost_bsyz_parent_y_pos(a0),d0
+		add.w	ost_boss_parent_y_pos(a0),d0
 		move.w	d0,ost_y_pos(a0)			; update actual y pos
-		move.w	ost_bsyz_parent_x_pos(a0),ost_x_pos(a0)
+		move.w	ost_boss_parent_x_pos(a0),ost_x_pos(a0)
 
 @update:
 		bra.w	BSYZ_Update_SkipPos
@@ -363,18 +356,18 @@ BSYZ_BreakBlock:
 ; ---------------------------------------------------------------------------
 
 BSYZ_FindBlock:
-		clr.w	ost_bsyz_block(a0)
+		clr.w	ost_boss_block(a0)
 		lea	(v_ost_all+sizeof_ost).w,a1		; first OST slot excluding Sonic
 		moveq	#$3E,d0					; check first $40 OSTs (there are $80 total)
 		moveq	#id_BossBlock,d1
-		move.b	ost_bsyz_block_num(a0),d2		; id of block Eggman is above
+		move.b	ost_boss_block_num(a0),d2		; id of block Eggman is above
 
 @loop:
 		cmp.b	(a1),d1					; is object a SYZ boss block?
 		bne.s	@next					; if not, branch
 		cmp.b	ost_subtype(a1),d2			; is Eggman above the block?
 		bne.s	@next					; if not, branch
-		move.w	a1,ost_bsyz_block(a0)			; save address of OST of block
+		move.w	a1,ost_boss_block(a0)			; save address of OST of block
 		bra.s	@exit
 ; ===========================================================================
 
@@ -389,7 +382,7 @@ BSYZ_FindBlock:
 ; ===========================================================================
 
 BSYZ_Explode:
-		subq.w	#1,ost_bsyz_wait_time(a0)		; decrement timer
+		subq.w	#1,ost_boss_wait_time(a0)		; decrement timer
 		bmi.s	@stop_exploding				; branch if below 0
 		bra.w	BossExplode				; load explosion object
 ; ===========================================================================
@@ -400,7 +393,7 @@ BSYZ_Explode:
 		bset	#status_xflip_bit,ost_status(a0)	; ship face right
 		bclr	#status_broken_bit,ost_status(a0)
 		clr.w	ost_x_vel(a0)
-		move.w	#-1,ost_bsyz_wait_time(a0)		; set timer (counts up)
+		move.w	#-1,ost_boss_wait_time(a0)		; set timer (counts up)
 		tst.b	(v_boss_status).w
 		bne.s	@update
 		move.b	#1,(v_boss_status).w			; set boss beaten flag
@@ -410,7 +403,7 @@ BSYZ_Explode:
 ; ===========================================================================
 
 BSYZ_Recover:
-		addq.w	#1,ost_bsyz_wait_time(a0)		; increment timer
+		addq.w	#1,ost_boss_wait_time(a0)		; increment timer
 		beq.s	@stop_falling				; branch if 0
 		bpl.s	@ship_recovers				; branch if 1 or more
 		addi.w	#$18,ost_y_vel(a0)			; apply gravity (falls)
@@ -423,10 +416,10 @@ BSYZ_Recover:
 ; ===========================================================================
 
 @ship_recovers:
-		cmpi.w	#$20,ost_bsyz_wait_time(a0)		; have 32 frames passed since ship stopped falling?
+		cmpi.w	#$20,ost_boss_wait_time(a0)		; have 32 frames passed since ship stopped falling?
 		bcs.s	@ship_rises				; if not, branch
 		beq.s	@stop_rising				; if exactly 32, branch
-		cmpi.w	#$2A,ost_bsyz_wait_time(a0)		; have 42 frames passed since ship stopped falling?
+		cmpi.w	#$2A,ost_boss_wait_time(a0)		; have 42 frames passed since ship stopped falling?
 		bcs.s	@update					; if not, branch
 		addq.b	#2,ost_routine2(a0)			; goto BSYZ_Escape next
 		bra.s	@update
@@ -469,7 +462,7 @@ BSYZ_Escape:
 
 BSYZ_FaceMain:	; Routine 4
 		moveq	#id_ani_boss_face1,d1
-		movea.l	ost_bsyz_parent(a0),a1			; get address of OST of parent object
+		movea.l	ost_boss_parent(a0),a1			; get address of OST of parent object
 		moveq	#0,d0
 		move.b	ost_routine2(a1),d0
 		move.w	BSYZ_Face_Index(pc,d0.w),d0
@@ -543,7 +536,7 @@ BSYZ_Face_ChkHit:
 
 BSYZ_FlameMain:; Routine 6
 		move.b	#id_ani_boss_blank,ost_anim(a0)
-		movea.l	ost_bsyz_parent(a0),a1			; get address of OST of parent object
+		movea.l	ost_boss_parent(a0),a1			; get address of OST of parent object
 		cmpi.b	#id_BSYZ_Escape,ost_routine2(a1)	; is ship on BSYZ_Escape?
 		bne.s	@chk_moving				; if not, branch
 		move.b	#id_ani_boss_bigflame,ost_anim(a0)	; use big flame animation
@@ -568,7 +561,7 @@ BSYZ_FlameMain:; Routine 6
 BSYZ_Display:
 		lea	(Ani_Bosses).l,a1
 		jsr	(AnimateSprite).l
-		movea.l	ost_bsyz_parent(a0),a1			; get address of OST of parent object
+		movea.l	ost_boss_parent(a0),a1			; get address of OST of parent object
 		move.w	ost_x_pos(a1),ost_x_pos(a0)
 		move.w	ost_y_pos(a1),ost_y_pos(a0)
 
@@ -585,7 +578,7 @@ BSYZ_SpikeMain:; Routine 8
 		move.l	#Map_BossItems,ost_mappings(a0)
 		move.w	#tile_Nem_Weapons+tile_pal2,ost_tile(a0)
 		move.b	#id_frame_boss_spike,ost_frame(a0)
-		movea.l	ost_bsyz_parent(a0),a1			; get address of OST of parent object
+		movea.l	ost_boss_parent(a0),a1			; get address of OST of parent object
 		cmpi.b	#id_BSYZ_Escape,ost_routine2(a1)	; is ship on BSYZ_Escape?
 		bne.s	@not_escaping				; if not, branch
 		tst.b	ost_render(a0)				; is object on-screen?
@@ -594,7 +587,7 @@ BSYZ_SpikeMain:; Routine 8
 	@not_escaping:
 		move.w	ost_x_pos(a1),ost_x_pos(a0)
 		move.w	ost_y_pos(a1),ost_y_pos(a0)
-		move.w	ost_bsyz_wait_time(a0),d0
+		move.w	ost_boss_wait_time(a0),d0
 		cmpi.b	#id_BSYZ_Attack,ost_routine2(a1)	; is ship descending or lifting a block?
 		bne.s	@not_attacking				; if not, branch
 		cmpi.b	#id_BSYZ_BreakBlock,ost_subtype(a1)	; is block being broken right now?
@@ -608,7 +601,7 @@ BSYZ_SpikeMain:; Routine 8
 ; ===========================================================================
 
 @breaking_block:
-		tst.w	ost_bsyz_wait_time(a1)
+		tst.w	ost_boss_wait_time(a1)
 		bpl.s	@set_spike
 
 @not_attacking:
@@ -617,16 +610,16 @@ BSYZ_SpikeMain:; Routine 8
 		subq.w	#5,d0
 
 @set_spike:
-		move.w	d0,ost_bsyz_wait_time(a0)		; set timer
+		move.w	d0,ost_boss_wait_time(a0)		; set timer
 		asr.w	#2,d0
 		add.w	d0,ost_y_pos(a0)			; extend or retract spike
 		move.b	#8,ost_displaywidth(a0)
 		move.b	#$C,ost_height(a0)
 		clr.b	ost_col_type(a0)
-		movea.l	ost_bsyz_parent(a0),a1			; get address of OST of parent object
+		movea.l	ost_boss_parent(a0),a1			; get address of OST of parent object
 		tst.b	ost_col_type(a1)			; has ship been hit recently?
 		beq.s	@display				; if yes, branch
-		tst.b	ost_bsyz_mode(a1)			; is block being lifted?
+		tst.b	ost_boss_mode(a1)			; is block being lifted?
 		bne.s	@display				; if yes, branch
 		move.b	#id_col_4x16+id_col_hurt,ost_col_type(a0) ; make spike harmful
 

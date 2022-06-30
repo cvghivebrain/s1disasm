@@ -318,14 +318,29 @@ ost_sonic_on_obj:	rs.b 1					; $3D ; OST index of object Sonic stands on
 ost_sonic_lock_time:	rs.w 1					; $3E ; time left for locked d-pad controls (jumping is allowed), e.g. after hitting a spring
 		rsobjend
 
+; Object variables used by bosses
+		rsobj Boss
+ost_boss_mode:		rs.b 1					; $29 ; $FF = lifting block (SYZ only)
+ost_boss_seesaw:	rs.w 3					; $2A ; addresses of OSTs of seesaws (SLZ only; 2 bytes * 3)
+ost_boss_parent_x_pos:	rs.w 1					; $30 ; parent x position
+		rsset $34
+ost_boss_parent:	rs.l 1					; $34 ; address of OST of parent object - child only
+ost_boss_parent_y_pos:	rs.w 1					; $38 ; parent y position
+		rsset $3C
+ost_boss_wait_time:	rs.w 1					; $3C ; time to wait between each action
+ost_boss_flash_num:	rs.b 1					; $3E ; number of times to make boss flash when hit
+ost_boss_wobble:	rs.b 1					; $3F ; wobble state as Eggman moves back & forth (1 byte incremented every frame & interpreted by CalcSine)
+		rsobjend
+
 ; Boss variables
-hitcount_all:		equ 8
+hitcount_all:		equ 8					; number of hits to beat boss
 hitcount_ghz:		equ hitcount_all
 hitcount_mz:		equ hitcount_all
 hitcount_syz:		equ hitcount_all
 hitcount_lz:		equ hitcount_all
 hitcount_slz:		equ hitcount_all
 hitcount_fz:		equ hitcount_all
+boss_flash_color:	equ cWhite				; colour boss flashes when hit
 
 ; Animation flags
 afEnd:		equ $FF						; return to beginning of animation
@@ -338,12 +353,6 @@ afxflip:	equ $20
 afyflip:	equ $40
 
 ; 16x16 row/column redraw flags (v_fg_redraw_direction)
-redraw_top:		equ 1
-redraw_bottom:		equ 2
-redraw_left:		equ 4
-redraw_right:		equ 8
-redraw_topall:		equ $10
-redraw_bottomall:	equ $20
 redraw_top_bit:		equ 0
 redraw_bottom_bit:	equ 1
 redraw_left_bit:	equ 2
@@ -352,17 +361,23 @@ redraw_topall_bit:	equ 4
 redraw_bottomall_bit:	equ 5
 redraw_bg2_left_bit:	equ 0					; REV01 only
 redraw_bg2_right_bit:	equ 1					; REV01 only
+redraw_top:		equ 1<<redraw_top_bit			; 1
+redraw_bottom:		equ 1<<redraw_bottom_bit		; 2
+redraw_left:		equ 1<<redraw_left_bit			; 4
+redraw_right:		equ 1<<redraw_right_bit			; 8
+redraw_topall:		equ 1<<redraw_topall_bit		; $10
+redraw_bottomall:	equ 1<<redraw_bottomall_bit		; $20
 
 ; 16x16 and 256x256 mappings
-tilemap_xflip:		equ $800
-tilemap_yflip:		equ $1000
-tilemap_solid_top:	equ $2000
-tilemap_solid_lrb:	equ $4000
-tilemap_solid_all:	equ $6000
 tilemap_xflip_bit:	equ $B
 tilemap_yflip_bit:	equ $C
 tilemap_solid_top_bit:	equ $D
 tilemap_solid_lrb_bit:	equ $E
+tilemap_xflip:		equ 1<<tilemap_xflip_bit		; $800
+tilemap_yflip:		equ 1<<tilemap_yflip_bit		; $1000
+tilemap_solid_top:	equ 1<<tilemap_solid_top_bit		; $2000
+tilemap_solid_lrb:	equ 1<<tilemap_solid_lrb_bit		; $4000
+tilemap_solid_all:	equ tilemap_solid_top+tilemap_solid_lrb	; $6000
 
 ; Special Stages
 ss_block_width:		equ $18					; width of blocks in grid (walls, items, et al)
