@@ -33,7 +33,7 @@ Card_ItemData:	; y position, routine number, frame number
 		dc.w $E0
 		dc.b id_Card_Move, id_frame_card_oval		; oval
 
-Card_PosData:	; y pos, x pos
+Card_PosData:	; x pos start, x pos stop
 		dc.w 0,	$120					; GREEN HILL
 		dc.w -$104, $13C				; ZONE
 		dc.w $414, $154					; ACT x

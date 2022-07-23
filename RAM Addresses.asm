@@ -23,7 +23,7 @@ v_sprite_queue:			rs.b sizeof_priority*8 ; $FFFFAC00 ; sprite display queue, fir
 v_16x16_tiles:			rs.b sizeof_16x16_all ; $FFFFB000 ; 16x16 tile mappings ($1800 bytes)
 v_sonic_gfx_buffer:		rs.b sizeof_vram_sonic ; $FFFFC800 ; buffered Sonic graphics ($17 cells) ($2E0 bytes)
 unused_cae0:			rs.b $20
-v_sonic_pos_tracker:		rs.l $40 ; $FFFFCB00 ; earlier position tracking list for Sonic, used by invinciblity stars ($100 bytes)
+v_sonic_pos_tracker:		rs.l $40 ; $FFFFCB00 ; earlier position tracking list for Sonic, used by invincibility stars ($100 bytes)
 				rsblock hscroll
 v_hscroll_buffer:		rs.b sizeof_vram_hscroll ; $FFFFCC00 ; scrolling table data ($380 bytes)
 				rsblockend hscroll
