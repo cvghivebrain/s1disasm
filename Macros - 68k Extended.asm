@@ -19,81 +19,81 @@ ublt:		macros
 ; ---------------------------------------------------------------------------
 
 jhi:		macro
-		bls.s	@nojump
+		bls.s	@nojump\@
 		jmp	\1
-	@nojump:
+	@nojump\@:
 		endm
 
 jcc:		macro
-		bcs.s	@nojump
+		bcs.s	@nojump\@
 		jmp	\1
-	@nojump:
+	@nojump\@:
 		endm
 
 jhs:		macros
 		jcc	\1
 
 jls:		macro
-		bhi.s	@nojump
+		bhi.s	@nojump\@
 		jmp	\1
-	@nojump:
+	@nojump\@:
 		endm
 
 jcs:		macro
-		bcc.s	@nojump
+		bcc.s	@nojump\@
 		jmp	\1
-	@nojump:
+	@nojump\@:
 		endm
 
 jlo:		macros
 		jcs	\1
 
 jeq:		macro
-		bne.s	@nojump
+		bne.s	@nojump\@
 		jmp	\1
-	@nojump:
+	@nojump\@:
 		endm
 
 jne:		macro
-		beq.s	@nojump
+		beq.s	@nojump\@
 		jmp	\1
-	@nojump:
+	@nojump\@:
 		endm
 
 jgt:		macro
-		ble.s	@nojump
+		ble.s	@nojump\@
 		jmp	\1
-	@nojump:
+	@nojump\@:
 		endm
 
 jge:		macro
-		blt.s	@nojump
+		blt.s	@nojump\@
 		jmp	\1
-	@nojump:
+	@nojump\@:
 		endm
 
 jle:		macro
-		bgt.s	@nojump
+		bgt.s	@nojump\@
 		jmp	\1
-	@nojump:
+	@nojump\@:
 		endm
 
 jlt:		macro
-		bge.s	@nojump
+		bge.s	@nojump\@
 		jmp	\1
-	@nojump:
+	@nojump\@:
 		endm
 
 jpl:		macro
-		bmi.s	@nojump
+		bmi.s	@nojump\@
 		jmp	\1
-	@nojump:
+	@nojump\@:
 		endm
 
 jmi:		macro
-		bpl.s	@nojump
+		bpl.s	@nojump\@
 		jmp	\1
-	@nojump:
+	@nojump\@:
 		endm
 
 ujge:		macros

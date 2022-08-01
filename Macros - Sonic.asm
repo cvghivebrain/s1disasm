@@ -75,7 +75,7 @@ piece:		macro
 		dc.b ((sprite_width-1)<<2)+sprite_height-1
 		sprite_xpos: = \1
 		if \4<0						; is tile index negative?
-			sprite_tile: = $10000\4			; convert signed to unsigned
+			sprite_tile: = $10000+(\4)		; convert signed to unsigned
 		else
 			sprite_tile: = \4
 		endc
