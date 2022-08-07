@@ -14,49 +14,49 @@ HUD_Update:
 		tst.w	(f_debug_enable).w			; is debug mode	on?
 		bne.w	HudDebug				; if yes, branch
 		tst.b	(f_hud_score_update).w			; does the score need updating?
-		beq.s	@chkrings				; if not, branch
+		beq.s	.chkrings				; if not, branch
 
 		clr.b	(f_hud_score_update).w
 		hudVRAM	$DC80					; set VRAM address
 		move.l	(v_score).w,d1				; load score
 		bsr.w	Hud_Score
 
-	@chkrings:
+	.chkrings:
 		tst.b	(v_hud_rings_update).w			; does the ring	counter	need updating?
-		beq.s	@chktime				; if not, branch
-		bpl.s	@notzero
+		beq.s	.chktime				; if not, branch
+		bpl.s	.notzero
 		bsr.w	Hud_ZeroRings				; reset rings to 0 if Sonic is hit
 
-	@notzero:
+	.notzero:
 		clr.b	(v_hud_rings_update).w
 		hudVRAM	$DF40					; set VRAM address
 		moveq	#0,d1
 		move.w	(v_rings).w,d1				; load number of rings
 		bsr.w	Hud_Rings
 
-	@chktime:
+	.chktime:
 		tst.b	(f_hud_time_update).w			; does the time	need updating?
-		beq.s	@chklives				; if not, branch
+		beq.s	.chklives				; if not, branch
 		tst.w	(f_pause).w				; is the game paused?
-		bne.s	@chklives				; if yes, branch
+		bne.s	.chklives				; if yes, branch
 		lea	(v_time).w,a1
 		cmpi.l	#(9*$10000)+(59*$100)+59,(a1)+		; is the time 9:59:59?
 		beq.s	TimeOver				; if yes, branch
 
 		addq.b	#1,-(a1)				; increment 1/60s counter
 		cmpi.b	#60,(a1)				; check if passed 60
-		bcs.s	@chklives
+		bcs.s	.chklives
 		move.b	#0,(a1)
 		addq.b	#1,-(a1)				; increment second counter
 		cmpi.b	#60,(a1)				; check if passed 60
-		bcs.s	@updatetime
+		bcs.s	.updatetime
 		move.b	#0,(a1)
 		addq.b	#1,-(a1)				; increment minute counter
 		cmpi.b	#9,(a1)					; check if passed 9
-		bcs.s	@updatetime
+		bcs.s	.updatetime
 		move.b	#9,(a1)					; keep as 9
 
-	@updatetime:
+	.updatetime:
 		hudVRAM	$DE40
 		moveq	#0,d1
 		move.b	(v_time_min).w,d1			; load	minutes
@@ -66,15 +66,15 @@ HUD_Update:
 		move.b	(v_time_sec).w,d1			; load	seconds
 		bsr.w	Hud_Secs
 
-	@chklives:
+	.chklives:
 		tst.b	(f_hud_lives_update).w			; does the lives counter need updating?
-		beq.s	@chkbonus				; if not, branch
+		beq.s	.chkbonus				; if not, branch
 		clr.b	(f_hud_lives_update).w
 		bsr.w	Hud_Lives
 
-	@chkbonus:
+	.chkbonus:
 		tst.b	(f_pass_bonus_update).w			; do time/ring bonus counters need updating?
-		beq.s	@finish					; if not, branch
+		beq.s	.finish					; if not, branch
 		clr.b	(f_pass_bonus_update).w
 		locVRAM	$AE00
 		moveq	#0,d1
@@ -84,7 +84,7 @@ HUD_Update:
 		move.w	(v_ring_bonus).w,d1			; load ring bonus
 		bsr.w	Hud_TimeRingBonus
 
-	@finish:
+	.finish:
 		rts	
 ; ===========================================================================
 
@@ -100,30 +100,30 @@ TimeOver:
 HudDebug:
 		bsr.w	HudDb_XY
 		tst.b	(v_hud_rings_update).w			; does the ring	counter	need updating?
-		beq.s	@objcounter				; if not, branch
-		bpl.s	@notzero
+		beq.s	.objcounter				; if not, branch
+		bpl.s	.notzero
 		bsr.w	Hud_ZeroRings				; reset rings to 0 if Sonic is hit
 
-	@notzero:
+	.notzero:
 		clr.b	(v_hud_rings_update).w
 		hudVRAM	$DF40					; set VRAM address
 		moveq	#0,d1
 		move.w	(v_rings).w,d1				; load number of rings
 		bsr.w	Hud_Rings
 
-	@objcounter:
+	.objcounter:
 		hudVRAM	$DEC0					; set VRAM address
 		moveq	#0,d1
 		move.b	(v_spritecount).w,d1			; load "number of objects" counter
 		bsr.w	Hud_Secs
 		tst.b	(f_hud_lives_update).w			; does the lives counter need updating?
-		beq.s	@chkbonus				; if not, branch
+		beq.s	.chkbonus				; if not, branch
 		clr.b	(f_hud_lives_update).w
 		bsr.w	Hud_Lives
 
-	@chkbonus:
+	.chkbonus:
 		tst.b	(f_pass_bonus_update).w			; does the ring/time bonus counter need updating?
-		beq.s	@finish					; if not, branch
+		beq.s	.finish					; if not, branch
 		clr.b	(f_pass_bonus_update).w
 		locVRAM	$AE00					; set VRAM address
 		moveq	#0,d1
@@ -133,7 +133,7 @@ HudDebug:
 		move.w	(v_ring_bonus).w,d1			; load ring bonus
 		bsr.w	Hud_TimeRingBonus
 
-	@finish:
+	.finish:
 		rts
 
 ; ---------------------------------------------------------------------------
@@ -169,29 +169,29 @@ Hud_Base:
 Hud_Base_Load:
 		lea	Art_Hud(pc),a1				; address of HUD gfx
 
-@loop_chars:
+.loop_chars:
 		move.w	#((sizeof_cell/4)*2)-1,d1		; each character consist of 2 cells
 		move.b	(a2)+,d0				; get tile id
-		bmi.s	@blank_char				; branch if $FF
+		bmi.s	.blank_char				; branch if $FF
 		ext.w	d0
 		lsl.w	#5,d0					; multiply tile id by $20
 		lea	(a1,d0.w),a3				; jump to relevant gfx
 
-	@loop_gfx:
+	.loop_gfx:
 		move.l	(a3)+,(a6)				; write 2 cells to VRAM
-		dbf	d1,@loop_gfx
+		dbf	d1,.loop_gfx
 
-@next_char:
-		dbf	d2,@loop_chars				; repeat for all characters
+.next_char:
+		dbf	d2,.loop_chars				; repeat for all characters
 
 		rts	
 ; ===========================================================================
 
-@blank_char:
+.blank_char:
 		move.l	#0,(a6)					; erase character
-		dbf	d1,@blank_char
+		dbf	d1,.blank_char
 
-		bra.s	@next_char
+		bra.s	.next_char
 
 Hud_TilesBase:	dc.b $16, $FF, $FF, $FF, $FF, $FF, $FF,	0	; "E      0" in score
 		dc.b 0, $14, 0, 0				; "0:00" in time
@@ -221,22 +221,22 @@ HudDb_XY2:
 		moveq	#8-1,d6					; number of digits
 		lea	(Art_Text).l,a1				; debug number gfx
 
-	@loop:
+	.loop:
 		rol.w	#4,d1
 		move.w	d1,d2					; copy nybble to d2
 		andi.w	#$F,d2
 		cmpi.w	#$A,d2
-		bcs.s	@is_0to9				; branch if 0-9
+		bcs.s	.is_0to9				; branch if 0-9
 		addq.w	#7,d2					; use later tile for A-F
 
-	@is_0to9:
+	.is_0to9:
 		lsl.w	#5,d2					; multiply by $20
 		lea	(a1,d2.w),a3				; jump to relevant tile in gfx
 		rept sizeof_cell/4
 		move.l	(a3)+,(a6)				; copy tile to VRAM
 		endr
 		swap	d1
-		dbf	d6,@loop				; repeat for all digits stored in d1
+		dbf	d6,.loop				; repeat for all digits stored in d1
 
 		rts
 
@@ -268,26 +268,26 @@ Hud_LoadArt:
 		moveq	#0,d4
 		lea	Art_Hud(pc),a1				; address of HUD number gfx
 
-@loop:
+.loop:
 		moveq	#0,d2
 		move.l	(a2)+,d3				; d3 = multiple of 10
 
-	@find_digit:
+	.find_digit:
 		sub.l	d3,d1
-		bcs.s	@digit_found				; branch if score is less than the value in d3
+		bcs.s	.digit_found				; branch if score is less than the value in d3
 		addq.w	#1,d2					; increment digit counter
-		bra.s	@find_digit				; repeat until d2 = digit
+		bra.s	.find_digit				; repeat until d2 = digit
 ; ===========================================================================
 
-@digit_found:
+.digit_found:
 		add.l	d3,d1
 		tst.w	d2
-		beq.s	@digit_0				; branch if digit is 0
+		beq.s	.digit_0				; branch if digit is 0
 		move.w	#1,d4					; set flag to load gfx for digit
 
-	@digit_0:
+	.digit_0:
 		tst.w	d4
-		beq.s	@skip_digit				; branch if digit was 0
+		beq.s	.skip_digit				; branch if digit was 0
 		lsl.w	#6,d2					; multiply by $40 (size of 2 tiles per digit)
 		move.l	d0,4(a6)				; set target VRAM address
 		lea	(a1,d2.w),a3				; jump to relevant gfx source
@@ -295,9 +295,9 @@ Hud_LoadArt:
 		move.l	(a3)+,(a6)				; copy 2 tiles to VRAM
 		endr
 
-	@skip_digit:
+	.skip_digit:
 		addi.l	#(sizeof_cell*2)<<16,d0			; next VRAM address, 2 tiles ahead
-		dbf	d6,@loop				; repeat for number of digits
+		dbf	d6,.loop				; repeat for number of digits
 
 		rts
 
@@ -321,25 +321,25 @@ ContScrCounter:
 		moveq	#0,d4
 		lea	Art_Hud(pc),a1				; address of number gfx
 
-@loop:
+.loop:
 		moveq	#0,d2
 		move.l	(a2)+,d3				; d3 = multiple of 10
 
-@find_digit:
+.find_digit:
 		sub.l	d3,d1
-		blo.s	@digit_found				; branch if number is less than the value in d3
+		blo.s	.digit_found				; branch if number is less than the value in d3
 		addq.w	#1,d2					; increment digit counter
-		bra.s	@find_digit				; repeat until d2 = digit
+		bra.s	.find_digit				; repeat until d2 = digit
 ; ===========================================================================
 
-@digit_found:
+.digit_found:
 		add.l	d3,d1
 		lsl.w	#6,d2					; multiply by $40 (size of 2 tiles per digit)
 		lea	(a1,d2.w),a3				; jump to relevant gfx source
 		rept (sizeof_cell/4)*2
 		move.l	(a3)+,(a6)				; copy 2 tiles to VRAM
 		endr
-		dbf	d6,@loop				; repeat 1 more	time
+		dbf	d6,.loop				; repeat 1 more	time
 
 		rts
 
@@ -378,24 +378,24 @@ Hud_Time_Load:
 		moveq	#0,d4
 		lea	Art_Hud(pc),a1				; address of HUD number gfx
 
-@loop:
+.loop:
 		moveq	#0,d2
 		move.l	(a2)+,d3				; d3 = multiple of 10
 
-	@find_digit:
+	.find_digit:
 		sub.l	d3,d1
-		bcs.s	@digit_found				; branch if time is less than the value in d3
+		bcs.s	.digit_found				; branch if time is less than the value in d3
 		addq.w	#1,d2					; increment digit counter
-		bra.s	@find_digit				; repeat until d2 = digit
+		bra.s	.find_digit				; repeat until d2 = digit
 ; ===========================================================================
 
-@digit_found:
+.digit_found:
 		add.l	d3,d1
 		tst.w	d2
-		beq.s	@digit_0				; branch if digit is 0
+		beq.s	.digit_0				; branch if digit is 0
 		move.w	#1,d4					; unused flag
 
-	@digit_0:
+	.digit_0:
 		lsl.w	#6,d2					; multiply by $40 (size of 2 tiles per digit)
 		move.l	d0,4(a6)				; set target VRAM address
 		lea	(a1,d2.w),a3				; jump to relevant gfx source
@@ -403,7 +403,7 @@ Hud_Time_Load:
 		move.l	(a3)+,(a6)				; copy 2 tiles to VRAM
 		endr
 		addi.l	#(sizeof_cell*2)<<16,d0			; next VRAM address, 2 tiles ahead
-		dbf	d6,@loop				; repeat for number of digits
+		dbf	d6,.loop				; repeat for number of digits
 
 		rts
 
@@ -424,46 +424,46 @@ Hud_TimeRingBonus:
 		moveq	#0,d4
 		lea	Art_Hud(pc),a1				; address of HUD number gfx
 
-@loop:
+.loop:
 		moveq	#0,d2
 		move.l	(a2)+,d3				; d3 = multiple of 10
 
-	@find_digit:
+	.find_digit:
 		sub.l	d3,d1
-		bcs.s	@digit_found				; branch if bonus is less than the value in d3
+		bcs.s	.digit_found				; branch if bonus is less than the value in d3
 		addq.w	#1,d2					; increment digit counter
-		bra.s	@find_digit				; repeat until d2 = digit
+		bra.s	.find_digit				; repeat until d2 = digit
 ; ===========================================================================
 
-@digit_found:
+.digit_found:
 		add.l	d3,d1
 		tst.w	d2
-		beq.s	@digit_0				; branch if digit is 0
+		beq.s	.digit_0				; branch if digit is 0
 		move.w	#1,d4					; set flag to load gfx for digit
 
-	@digit_0:
+	.digit_0:
 		tst.w	d4
-		beq.s	@skip_digit				; branch if digit was 0
+		beq.s	.skip_digit				; branch if digit was 0
 		lsl.w	#6,d2					; multiply by $40 (size of 2 tiles per digit)
 		lea	(a1,d2.w),a3				; jump to relevant gfx source
 		rept (sizeof_cell/4)*2
 		move.l	(a3)+,(a6)				; copy 2 tiles to VRAM
 		endr
 
-@next:
-		dbf	d6,@loop				; repeat for number of digits
+.next:
+		dbf	d6,.loop				; repeat for number of digits
 
 		rts	
 ; ===========================================================================
 
-@skip_digit:
+.skip_digit:
 		moveq	#((sizeof_cell/4)*2)-1,d5
 
-	@loop_erase:
+	.loop_erase:
 		move.l	#0,(a6)					; write blank digit to VRAM
-		dbf	d5,@loop_erase
+		dbf	d5,.loop_erase
 
-		bra.s	@next
+		bra.s	.next
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	load uncompressed lives	counter	patterns
@@ -483,48 +483,48 @@ Hud_Lives:
 		moveq	#0,d4
 		lea	Art_LivesNums(pc),a1			; address of lives counter gfx
 
-@loop:
+.loop:
 		move.l	d0,4(a6)				; set VRAM address
 		moveq	#0,d2
 		move.l	(a2)+,d3				; d3 = multiple of 10
 
-	@find_digit:
+	.find_digit:
 		sub.l	d3,d1
-		bcs.s	@digit_found				; branch if lives is less than the value in d3
+		bcs.s	.digit_found				; branch if lives is less than the value in d3
 		addq.w	#1,d2					; increment digit counter
-		bra.s	@find_digit				; repeat until d2 = digit
+		bra.s	.find_digit				; repeat until d2 = digit
 ; ===========================================================================
 
-@digit_found:
+.digit_found:
 		add.l	d3,d1
 		tst.w	d2
-		beq.s	@digit_0				; branch if digit is 0
+		beq.s	.digit_0				; branch if digit is 0
 		move.w	#1,d4					; set flag to load gfx for digit
 
-	@digit_0:
+	.digit_0:
 		tst.w	d4
-		beq.s	@skip_digit				; branch if digit was 0
+		beq.s	.skip_digit				; branch if digit was 0
 
-@show_digit:
+.show_digit:
 		lsl.w	#5,d2					; multiply by $20 (size of cell)
 		lea	(a1,d2.w),a3				; jump to relevant gfx source
 		rept sizeof_cell/4
 		move.l	(a3)+,(a6)				; copy tile to VRAM
 		endr
 
-@next:
+.next:
 		addi.l	#(sizeof_cell*2)<<16,d0			; next VRAM address, 2 tiles ahead (1st & 2nd digits are not adjacent)
-		dbf	d6,@loop				; repeat 1 more time
+		dbf	d6,.loop				; repeat 1 more time
 
 		rts	
 ; ===========================================================================
 
-@skip_digit:
+.skip_digit:
 		tst.w	d6
-		beq.s	@show_digit				; branch if this is the 2nd digit
+		beq.s	.show_digit				; branch if this is the 2nd digit
 		moveq	#(sizeof_cell/4)-1,d5
 
-	@loop_erase:
+	.loop_erase:
 		move.l	#0,(a6)					; write blank digit to VRAM
-		dbf	d5,@loop_erase
-		bra.s	@next
+		dbf	d5,.loop_erase
+		bra.s	.next

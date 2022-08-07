@@ -32,25 +32,25 @@ Geyser_Main:	; Routine 0
 		addq.b	#2,ost_routine(a0)			; goto Geyser_Action next
 		move.w	ost_y_pos(a0),ost_geyser_y_start(a0)
 		tst.b	ost_subtype(a0)				; is this a geyser or lavafall?
-		beq.s	@isgeyser				; branch if geyser
+		beq.s	.isgeyser				; branch if geyser
 		subi.w	#$250,ost_y_pos(a0)			; start from above
 
-	@isgeyser:
+	.isgeyser:
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0
 		add.w	d0,d0
 		move.w	Geyser_Speeds(pc,d0.w),ost_y_vel(a0)	; set y speed based on subtype
 		movea.l	a0,a1
 		moveq	#1,d1
-		bsr.s	@makelava
-		bra.s	@activate
+		bsr.s	.makelava
+		bra.s	.activate
 ; ===========================================================================
 
-	@loop:
+	.loop:
 		bsr.w	FindNextFreeObj
-		bne.s	@fail
+		bne.s	.fail
 
-@makelava:
+.makelava:
 		move.b	#id_LavaGeyser,ost_id(a1)
 		move.l	#Map_Geyser,ost_mappings(a1)
 		move.w	#tile_Nem_Lava+tile_pal4,ost_tile(a1)
@@ -62,15 +62,15 @@ Geyser_Main:	; Routine 0
 		move.b	#1,ost_priority(a1)
 		move.b	#id_ani_geyser_bubble4,ost_anim(a1)
 		tst.b	ost_subtype(a0)
-		beq.s	@fail					; branch if geyser
+		beq.s	.fail					; branch if geyser
 		move.b	#id_ani_geyser_end,ost_anim(a1)		; use different animation for lavafall
 
-	@fail:
-		dbf	d1,@loop				; repeat once for middle section
+	.fail:
+		dbf	d1,.loop				; repeat once for middle section
 		rts	
 ; ===========================================================================
 
-@activate:
+.activate:
 		addi.w	#$60,ost_y_pos(a1)			; move 2nd object down 96px
 		move.w	ost_geyser_y_start(a0),ost_geyser_y_start(a1)
 		addi.w	#$60,ost_geyser_y_start(a1)
@@ -80,10 +80,10 @@ Geyser_Main:	; Routine 0
 		addq.b	#id_Geyser_Middle,ost_routine(a1)	; goto Geyser_Middle next
 		move.l	a0,ost_geyser_parent(a1)
 		tst.b	ost_subtype(a0)
-		beq.s	@sound					; branch if geyser
+		beq.s	.sound					; branch if geyser
 
 		moveq	#0,d1
-		bsr.w	@loop					; load one more object
+		bsr.w	.loop					; load one more object
 		addq.b	#2,ost_routine(a1)			; goto Geyser_Action next
 		bset	#tile_yflip_bit,ost_tile(a1)
 		addi.w	#$100,ost_y_pos(a1)
@@ -92,7 +92,7 @@ Geyser_Main:	; Routine 0
 		move.l	ost_geyser_parent(a0),ost_geyser_parent(a1)
 		move.b	#0,ost_subtype(a0)
 
-	@sound:
+	.sound:
 		play.w	1, jsr, sfx_Burning			; play flame sound
 
 Geyser_Action:	; Routine 2
@@ -118,12 +118,12 @@ Geyser_Type00:
 		addi.w	#$18,ost_y_vel(a0)			; apply gravity
 		move.w	ost_geyser_y_start(a0),d0
 		cmp.w	ost_y_pos(a0),d0			; is geyser back at start position?
-		bcc.s	@exit					; if not, branch
+		bcc.s	.exit					; if not, branch
 		addq.b	#4,ost_routine(a0)			; goto Geyser_Delete next
 		movea.l	ost_geyser_parent(a0),a1
 		move.b	#id_ani_geyser_bubble3,ost_anim(a1)
 
-	@exit:
+	.exit:
 		rts	
 ; ===========================================================================
 
@@ -131,12 +131,12 @@ Geyser_Type01:
 		addi.w	#$18,ost_y_vel(a0)			; apply gravity
 		move.w	ost_geyser_y_start(a0),d0
 		cmp.w	ost_y_pos(a0),d0			; is lavafall at final position?
-		bcc.s	@exit					; if not, branch
+		bcc.s	.exit					; if not, branch
 		addq.b	#4,ost_routine(a0)			; goto Geyser_Delete next
 		movea.l	ost_geyser_parent(a0),a1
 		move.b	#id_ani_geyser_bubble2,ost_anim(a1)
 
-	@exit:
+	.exit:
 		rts	
 ; ===========================================================================
 
@@ -151,24 +151,24 @@ Geyser_Middle:	; Routine 4
 		neg.w	d0
 		moveq	#id_frame_geyser_medcolumn1,d1
 		cmpi.w	#$40,d0
-		bge.s	@not_short				; branch if object is more than 64px from position
+		bge.s	.not_short				; branch if object is more than 64px from position
 		moveq	#id_frame_geyser_shortcolumn1,d1
 
-	@not_short:
+	.not_short:
 		cmpi.w	#$80,d0
-		ble.s	@not_long				; branch if object is less than 128px from position
+		ble.s	.not_long				; branch if object is less than 128px from position
 		moveq	#id_frame_geyser_longcolumn1,d1
 
-	@not_long:
+	.not_long:
 		subq.b	#1,ost_anim_time(a0)			; decrement animation timer
-		bpl.s	@update_frame				; branch if time remains
+		bpl.s	.update_frame				; branch if time remains
 		move.b	#7,ost_anim_time(a0)			; reset timer
 		addq.b	#1,ost_anim_frame(a0)			; next frame
 		cmpi.b	#2,ost_anim_frame(a0)
-		bcs.s	@update_frame				; branch if valid frame
+		bcs.s	.update_frame				; branch if valid frame
 		move.b	#0,ost_anim_frame(a0)			; reset frame to 0 if past max
 
-	@update_frame:
+	.update_frame:
 		move.b	ost_anim_frame(a0),d0
 		add.b	d1,d0
 		move.b	d0,ost_frame(a0)			; set frame based on animation and initial frame (d1)

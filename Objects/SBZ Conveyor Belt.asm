@@ -26,10 +26,10 @@ Conv_Main:	; Routine 0
 		move.b	#128,ost_convey_width(a0)		; set width to 128px
 		move.b	ost_subtype(a0),d1			; get object type
 		andi.b	#$F,d1					; read only low nybble
-		beq.s	@typeis0				; if zero, branch
+		beq.s	.typeis0				; if zero, branch
 		move.b	#56,ost_convey_width(a0)		; set width to 56px
 
-	@typeis0:
+	.typeis0:
 		move.b	ost_subtype(a0),d1			; get object type
 		andi.b	#$F0,d1					; read only high nybble
 		ext.w	d1
@@ -38,10 +38,10 @@ Conv_Main:	; Routine 0
 
 Conv_Action:	; Routine 2
 		bsr.s	Conv_MoveSonic				; check collision and move Sonic
-		out_of_range.s	@delete
+		out_of_range.s	.delete
 		rts	
 
-	@delete:
+	.delete:
 		jmp	(DeleteObject).l
 ; ===========================================================================
 
@@ -55,16 +55,16 @@ Conv_MoveSonic:
 		sub.w	ost_x_pos(a0),d0			; d0 = distance between Sonic and conveyor centre (-ve if Sonic is left)
 		add.w	d2,d0
 		cmp.w	d3,d0
-		bcc.s	@notonconveyor				; branch if not in range
+		bcc.s	.notonconveyor				; branch if not in range
 		move.w	ost_y_pos(a1),d1
 		sub.w	ost_y_pos(a0),d1
 		addi.w	#$30,d1
 		cmpi.w	#$30,d1
-		bcc.s	@notonconveyor				; branch if not in range on y axis
+		bcc.s	.notonconveyor				; branch if not in range on y axis
 		btst	#status_air_bit,ost_status(a1)		; is Sonic in the air?
-		bne.s	@notonconveyor				; if yes, branch
+		bne.s	.notonconveyor				; if yes, branch
 		move.w	ost_convey_speed(a0),d0
 		add.w	d0,ost_x_pos(a1)			; apply conveyor speed/direction to Sonic
 
-	@notonconveyor:
+	.notonconveyor:
 		rts	

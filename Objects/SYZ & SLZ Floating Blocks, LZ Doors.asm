@@ -43,10 +43,10 @@ FBlock_Main:	; Routine 0
 		move.l	#Map_FBlock,ost_mappings(a0)
 		move.w	#0+tile_pal3,ost_tile(a0)
 		cmpi.b	#id_LZ,(v_zone).w			; check if level is LZ
-		bne.s	@not_lz					; if not, branch
+		bne.s	.not_lz					; if not, branch
 		move.w	#tile_Nem_LzDoorV+tile_pal3,ost_tile(a0) ; LZ specific code
 
-	@not_lz:
+	.not_lz:
 		move.b	#render_rel,ost_render(a0)
 		move.b	#3,ost_priority(a0)
 		moveq	#0,d0
@@ -67,45 +67,45 @@ FBlock_Main:	; Routine 0
 		if Revision=0
 		else
 			cmpi.b	#type_fblock_syzrect2x2+type_fblock_farrightbutton,ost_subtype(a0) ; is the subtype $37? (used once in SYZ3)
-			bne.s	@dontdelete			; if not, branch
+			bne.s	.dontdelete			; if not, branch
 			cmpi.w	#$1BB8,ost_x_pos(a0)		; is object in its start position?
-			bne.s	@notatpos			; if not, branch
+			bne.s	.notatpos			; if not, branch
 			tst.b	(f_fblock_finish).w		; has similar object reached its destination?
-			beq.s	@dontdelete			; if not, branch
+			beq.s	.dontdelete			; if not, branch
 			jmp	(DeleteObject).l
-	@notatpos:
+	.notatpos:
 			clr.b	ost_subtype(a0)			; stop object moving
 			tst.b	(f_fblock_finish).w
-			bne.s	@dontdelete
+			bne.s	.dontdelete
 			jmp	(DeleteObject).l
-	@dontdelete:
+	.dontdelete:
 		endc
 		moveq	#0,d0
 		cmpi.b	#id_LZ,(v_zone).w			; check if level is LZ
-		beq.s	@not_syzslz				; if yes, branch
+		beq.s	.not_syzslz				; if yes, branch
 		move.b	ost_subtype(a0),d0			; SYZ/SLZ specific code
 		andi.w	#$F,d0					; read low nybble of subtype
 		subq.w	#8,d0					; subtract 8
-		bcs.s	@not_syzslz				; branch if low nybble was > 8
+		bcs.s	.not_syzslz				; branch if low nybble was > 8
 		lsl.w	#2,d0					; multiply by 4
 		lea	(v_oscillating_0_to_40_alt+2).w,a2
 		lea	(a2,d0.w),a2				; read oscillating value
 		tst.w	(a2)
-		bpl.s	@not_syzslz				; branch if not -ve
+		bpl.s	.not_syzslz				; branch if not -ve
 		bchg	#status_xflip_bit,ost_status(a0)	; xflip object
 
-	@not_syzslz:
+	.not_syzslz:
 		move.b	ost_subtype(a0),d0			; get subtype
 		bpl.s	FBlock_Action				; if subtype is 0-$7F, branch
 		andi.b	#$F,d0					; read low nybble
 		move.b	d0,ost_fblock_btn_num(a0)		; save to variable
 		move.b	#id_FBlock_UpButton,ost_subtype(a0)	; force subtype to 5 (moves up when button is pressed)
 		cmpi.b	#id_frame_fblock_lzhoriz,ost_frame(a0)	; is object a large horizontal LZ door?
-		bne.s	@chkstate				; if not, branch
+		bne.s	.chkstate				; if not, branch
 		move.b	#id_FBlock_LeftButton,ost_subtype(a0)	; force subtype to $C (moves left when button is pressed)
 		move.w	#$80,ost_fblock_move_dist(a0)
 
-	@chkstate:
+	.chkstate:
 		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
@@ -126,7 +126,7 @@ FBlock_Action:	; Routine 2
 		jsr	FBlock_Types(pc,d1.w)			; update position
 		move.w	(sp)+,d4
 		tst.b	ost_render(a0)
-		bpl.s	@chkdel
+		bpl.s	.chkdel
 		moveq	#0,d1
 		move.b	ost_displaywidth(a0),d1
 		addi.w	#$B,d1
@@ -136,20 +136,20 @@ FBlock_Action:	; Routine 2
 		addq.w	#1,d3
 		bsr.w	SolidObject				; detect collision
 
-	@chkdel:
+	.chkdel:
 		if Revision=0
 			out_of_range	DeleteObject,ost_fblock_x_start(a0)
 			bra.w	DisplaySprite
 		else
-			out_of_range.s	@chkdel2,ost_fblock_x_start(a0)
-		@display:
+			out_of_range.s	.chkdel2,ost_fblock_x_start(a0)
+		.display:
 			bra.w	DisplaySprite
-		@chkdel2:
+		.chkdel2:
 			cmpi.b	#type_fblock_syzrect2x2+type_fblock_farrightbutton,ost_subtype(a0)
-			bne.s	@delete
+			bne.s	.delete
 			tst.b	ost_fblock_move_flag(a0)
-			bne.s	@display
-		@delete:
+			bne.s	.display
+		.delete:
 			jmp	(DeleteObject).l
 		endc
 ; ===========================================================================
@@ -191,11 +191,11 @@ FBlock_LeftRightWide:
 
 FBlock_LeftRight_Move:
 		btst	#status_xflip_bit,ost_status(a0)
-		beq.s	@noflip
+		beq.s	.noflip
 		neg.w	d0
 		add.w	d1,d0
 
-	@noflip:
+	.noflip:
 		move.w	ost_fblock_x_start(a0),d1
 		sub.w	d0,d1
 		move.w	d1,ost_x_pos(a0)			; move object horizontally
@@ -218,11 +218,11 @@ FBlock_UpDownWide:
 
 FBlock_UpDown_Move:
 		btst	#status_xflip_bit,ost_status(a0)
-		beq.s	@noflip
+		beq.s	.noflip
 		neg.w	d0
 		add.w	d1,d0
 
-	@noflip:
+	.noflip:
 		move.w	ost_fblock_y_start(a0),d1
 		sub.w	d0,d1
 		move.w	d1,ost_y_pos(a0)			; move object vertically
@@ -232,119 +232,119 @@ FBlock_UpDown_Move:
 ; Type 5 - moves up when a button is pressed
 FBlock_UpButton:
 		tst.b	ost_fblock_move_flag(a0)		; is object moving?
-		bne.s	@chk_distance				; if yes, branch
+		bne.s	.chk_distance				; if yes, branch
 		cmpi.w	#id_LZ_act1,(v_zone).w			; is level LZ1 ?
-		bne.s	@not_lz1				; if not, branch
+		bne.s	.not_lz1				; if not, branch
 		cmpi.b	#3,ost_fblock_btn_num(a0)		; is object linked to button 3?
-		bne.s	@not_lz1				; if not, branch
+		bne.s	.not_lz1				; if not, branch
 		clr.b	(f_water_tunnel_disable).w		; enable water tunnels
 		move.w	(v_ost_player+ost_x_pos).w,d0
 		cmp.w	ost_x_pos(a0),d0			; is Sonic to the right?
-		bcc.s	@not_lz1				; if yes, branch
+		bcc.s	.not_lz1				; if yes, branch
 		move.b	#1,(f_water_tunnel_disable).w		; disable water tunnels if Sonic is to the left
 
-	@not_lz1:
+	.not_lz1:
 		lea	(v_button_state).w,a2
 		moveq	#0,d0
 		move.b	ost_fblock_btn_num(a0),d0
 		btst	#0,(a2,d0.w)				; check status of linked button
-		beq.s	@not_pressed				; branch if not pressed
+		beq.s	.not_pressed				; branch if not pressed
 		cmpi.w	#id_LZ_act1,(v_zone).w			; is level LZ1 ?
-		bne.s	@not_lz1_again				; if not, branch
+		bne.s	.not_lz1_again				; if not, branch
 		cmpi.b	#3,d0					; is object linked to button 3?
-		bne.s	@not_lz1_again				; if not, branch
+		bne.s	.not_lz1_again				; if not, branch
 		clr.b	(f_water_tunnel_disable).w		; enable water tunnels
 
-	@not_lz1_again:
+	.not_lz1_again:
 		move.b	#1,ost_fblock_move_flag(a0)		; flag object as moving
 
-	@chk_distance:
+	.chk_distance:
 		tst.w	ost_fblock_move_dist(a0)		; is remaining distance = 0?
-		beq.s	@finish					; if yes, branch
+		beq.s	.finish					; if yes, branch
 		subq.w	#2,ost_fblock_move_dist(a0)		; decrement distance
 
-	@not_pressed:
+	.not_pressed:
 		move.w	ost_fblock_move_dist(a0),d0
 		btst	#status_xflip_bit,ost_status(a0)
-		beq.s	@no_xflip
+		beq.s	.no_xflip
 		neg.w	d0					; invert if xflipped
 
-	@no_xflip:
+	.no_xflip:
 		move.w	ost_fblock_y_start(a0),d1
 		add.w	d0,d1					; add distance to start position
 		move.w	d1,ost_y_pos(a0)			; update y pos
 		rts	
 ; ===========================================================================
 
-@finish:
+.finish:
 		addq.b	#1,ost_subtype(a0)			; convert to type 6
 		clr.b	ost_fblock_move_flag(a0)		; clear movement flag
 		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
-		beq.s	@not_pressed
+		beq.s	.not_pressed
 		bset	#0,2(a2,d0.w)
-		bra.s	@not_pressed
+		bra.s	.not_pressed
 ; ===========================================================================
 
 ; Type 6 - moves down when button is pressed
 FBlock_DownButton:
 		tst.b	ost_fblock_move_flag(a0)		; is object moving?
-		bne.s	@chk_distance				; if yes, branch
+		bne.s	.chk_distance				; if yes, branch
 		lea	(v_button_state).w,a2
 		moveq	#0,d0
 		move.b	ost_fblock_btn_num(a0),d0
 		tst.b	(a2,d0.w)				; check status of linked button (unused button subtype $4x)
-		bpl.s	@not_pressed				; branch if not pressed
+		bpl.s	.not_pressed				; branch if not pressed
 		move.b	#1,ost_fblock_move_flag(a0)
 
-	@chk_distance:
+	.chk_distance:
 		moveq	#0,d0
 		move.b	ost_height(a0),d0
 		add.w	d0,d0
 		cmp.w	ost_fblock_move_dist(a0),d0		; has object moved distance equal to its height?
-		beq.s	@finish					; if yes, branch
+		beq.s	.finish					; if yes, branch
 		addq.w	#2,ost_fblock_move_dist(a0)		; increment distance
 
-	@not_pressed:
+	.not_pressed:
 		move.w	ost_fblock_move_dist(a0),d0
 		btst	#status_xflip_bit,ost_status(a0)
-		beq.s	@no_xflip
+		beq.s	.no_xflip
 		neg.w	d0					; invert if xflipped
 
-	@no_xflip:
+	.no_xflip:
 		move.w	ost_fblock_y_start(a0),d1
 		add.w	d0,d1					; add distance to start position
 		move.w	d1,ost_y_pos(a0)			; update y pos
 		rts	
 ; ===========================================================================
 
-@finish:
+.finish:
 		subq.b	#1,ost_subtype(a0)			; convert to type 5
 		clr.b	ost_fblock_move_flag(a0)		; clear movement flag
 		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
-		beq.s	@not_pressed
+		beq.s	.not_pressed
 		bclr	#0,2(a2,d0.w)
-		bra.s	@not_pressed
+		bra.s	.not_pressed
 ; ===========================================================================
 
 ; Type 7 - moves far right when button $F is pressed
 FBlock_FarRightButton:
 		tst.b	ost_fblock_move_flag(a0)		; is object moving already?
-		bne.s	@chk_distance				; if yes, branch
+		bne.s	.chk_distance				; if yes, branch
 		tst.b	(v_button_state+$F).w			; has button number $F been pressed?
-		beq.s	@end					; if not, branch
+		beq.s	.end					; if not, branch
 		move.b	#1,ost_fblock_move_flag(a0)
 		clr.w	ost_fblock_move_dist(a0)
 
-	@chk_distance:
+	.chk_distance:
 		addq.w	#1,ost_x_pos(a0)			; move object right
 		move.w	ost_x_pos(a0),ost_fblock_x_start(a0)
 		addq.w	#1,ost_fblock_move_dist(a0)		; increment movement counter
 		cmpi.w	#$380,ost_fblock_move_dist(a0)		; has object moved $380 pixels?
-		bne.s	@end					; if not, branch
+		bne.s	.end					; if not, branch
 		if Revision=0
 		else
 			move.b	#1,(f_fblock_finish).w
@@ -352,91 +352,91 @@ FBlock_FarRightButton:
 		endc
 		clr.b	ost_subtype(a0)				; stop object moving
 
-	@end:
+	.end:
 		rts	
 ; ===========================================================================
 
 ; Type $C - moves left when button is pressed
 FBlock_LeftButton:
 		tst.b	ost_fblock_move_flag(a0)		; is object moving?
-		bne.s	@chk_distance				; if yes, branch
+		bne.s	.chk_distance				; if yes, branch
 		lea	(v_button_state).w,a2
 		moveq	#0,d0
 		move.b	ost_fblock_btn_num(a0),d0
 		btst	#0,(a2,d0.w)				; check status of linked button
-		beq.s	@not_pressed				; branch if not pressed
+		beq.s	.not_pressed				; branch if not pressed
 		move.b	#1,ost_fblock_move_flag(a0)		; flag object as moving
 
-	@chk_distance:
+	.chk_distance:
 		tst.w	ost_fblock_move_dist(a0)		; is remaining distance = 0?
-		beq.s	@finish					; if yes, branch
+		beq.s	.finish					; if yes, branch
 		subq.w	#2,ost_fblock_move_dist(a0)		; decrement distance
 
-	@not_pressed:
+	.not_pressed:
 		move.w	ost_fblock_move_dist(a0),d0
 		btst	#status_xflip_bit,ost_status(a0)
-		beq.s	@no_xflip
+		beq.s	.no_xflip
 		neg.w	d0					; invert if xflipped
 		addi.w	#$80,d0
 
-	@no_xflip:
+	.no_xflip:
 		move.w	ost_fblock_x_start(a0),d1
 		add.w	d0,d1					; add distance to start position
 		move.w	d1,ost_x_pos(a0)			; update x pos
 		rts	
 ; ===========================================================================
 
-@finish:
+.finish:
 		addq.b	#1,ost_subtype(a0)			; convert to type $D
 		clr.b	ost_fblock_move_flag(a0)		; clear movement flag
 		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
-		beq.s	@not_pressed
+		beq.s	.not_pressed
 		bset	#0,2(a2,d0.w)
-		bra.s	@not_pressed
+		bra.s	.not_pressed
 ; ===========================================================================
 
 ; Type $D - moves right when button is pressed
 FBlock_RightButton:
 		tst.b	ost_fblock_move_flag(a0)		; is object moving?
-		bne.s	@chk_distance				; if yes, branch
+		bne.s	.chk_distance				; if yes, branch
 		lea	(v_button_state).w,a2
 		moveq	#0,d0
 		move.b	ost_fblock_btn_num(a0),d0
 		tst.b	(a2,d0.w)				; check status of linked button (unused button subtype $4x)
-		bpl.s	@not_pressed				; branch if not pressed
+		bpl.s	.not_pressed				; branch if not pressed
 		move.b	#1,ost_fblock_move_flag(a0)
 
-	@chk_distance:
+	.chk_distance:
 		move.w	#$80,d0
 		cmp.w	ost_fblock_move_dist(a0),d0		; has object moved 128px?
-		beq.s	@finish					; if yes, branch
+		beq.s	.finish					; if yes, branch
 		addq.w	#2,ost_fblock_move_dist(a0)		; increment distance
 
-	@not_pressed:
+	.not_pressed:
 		move.w	ost_fblock_move_dist(a0),d0
 		btst	#status_xflip_bit,ost_status(a0)
-		beq.s	@no_xflip
+		beq.s	.no_xflip
 		neg.w	d0					; invert if xflipped
 		addi.w	#$80,d0
 
-	@no_xflip:
+	.no_xflip:
 		move.w	ost_fblock_x_start(a0),d1
 		add.w	d0,d1					; add distance to start position
 		move.w	d1,ost_x_pos(a0)			; update x pos
 		rts	
 ; ===========================================================================
 
-@finish:
+.finish:
 		subq.b	#1,ost_subtype(a0)			; convert to type $C
 		clr.b	ost_fblock_move_flag(a0)		; clear movement flag
 		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
-		beq.s	@not_pressed
+		beq.s	.not_pressed
 		bclr	#0,2(a2,d0.w)
-		bra.s	@not_pressed
+		bra.s	.not_pressed
 ; ===========================================================================
 
 ; Type 8 - moves around in a square
@@ -476,14 +476,14 @@ FBlock_SquareBiggest:
 
 FBlock_Square_Move:
 		tst.w	d3					; is oscillating value rate currently 0? (i.e. at peak or nadir of oscillation)
-		bne.s	@keep_going				; if not, branch
+		bne.s	.keep_going				; if not, branch
 		addq.b	#status_xflip,ost_status(a0)		; change direction
 		andi.b	#status_xflip+status_yflip,ost_status(a0) ; prevent bit overflow
 
-	@keep_going:
+	.keep_going:
 		move.b	ost_status(a0),d2
 		andi.b	#status_xflip+status_yflip,d2		; read xflip and yflip bits
-		bne.s	@xflip					; branch if either are set
+		bne.s	.xflip					; branch if either are set
 		sub.w	d1,d0
 		add.w	ost_fblock_x_start(a0),d0
 		move.w	d0,ost_x_pos(a0)			; update position
@@ -493,9 +493,9 @@ FBlock_Square_Move:
 		rts	
 ; ===========================================================================
 
-@xflip:
+.xflip:
 		subq.b	#1,d2
-		bne.s	@yflip					; branch if yflip bit is set
+		bne.s	.yflip					; branch if yflip bit is set
 		subq.w	#1,d1
 		sub.w	d1,d0
 		neg.w	d0
@@ -507,9 +507,9 @@ FBlock_Square_Move:
 		rts	
 ; ===========================================================================
 
-@yflip:
+.yflip:
 		subq.b	#1,d2
-		bne.s	@xflip_and_yflip			; branch if xflip and yflip bits are set
+		bne.s	.xflip_and_yflip			; branch if xflip and yflip bits are set
 		subq.w	#1,d1
 		sub.w	d1,d0
 		neg.w	d0
@@ -521,7 +521,7 @@ FBlock_Square_Move:
 		rts	
 ; ===========================================================================
 
-@xflip_and_yflip:
+.xflip_and_yflip:
 		sub.w	d1,d0
 		add.w	ost_fblock_y_start(a0),d0
 		move.w	d0,ost_y_pos(a0)			; update position

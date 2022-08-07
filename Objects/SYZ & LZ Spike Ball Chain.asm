@@ -39,13 +39,13 @@ SBall_Main:	; Routine 0
 		move.w	ost_y_pos(a0),ost_sball_y_start(a0)
 		move.b	#id_col_4x4+id_col_hurt,ost_col_type(a0) ; SYZ specific code (chain hurts Sonic)
 		cmpi.b	#id_LZ,(v_zone).w			; check if level is LZ
-		bne.s	@notlz
+		bne.s	.notlz
 
 		move.b	#0,ost_col_type(a0)			; LZ specific code (chain doesn't hurt)
 		move.w	#tile_Nem_LzSpikeBall,ost_tile(a0)
 		move.l	#Map_SBall2,ost_mappings(a0)
 
-	@notlz:
+	.notlz:
 		move.b	ost_subtype(a0),d1			; get object type
 		andi.b	#$F0,d1					; read only high nybble
 		ext.w	d1
@@ -63,15 +63,15 @@ SBall_Main:	; Routine 0
 		lsl.w	#4,d3					; multiply type by $10
 		move.b	d3,ost_sball_radius(a0)			; set as radius
 		subq.w	#1,d1					; type minus 1 for first loop
-		bcs.s	@fail					; branch if type was 0 (invalid)
+		bcs.s	.fail					; branch if type was 0 (invalid)
 		btst	#3,ost_subtype(a0)
-		beq.s	@makechain				; branch if bit 3 of subtype isn't set (+8)
+		beq.s	.makechain				; branch if bit 3 of subtype isn't set (+8)
 		subq.w	#1,d1
-		bcs.s	@fail
+		bcs.s	.fail
 
-@makechain:
+.makechain:
 		bsr.w	FindFreeObj				; find free OST slot
-		bne.s	@fail					; branch if not found
+		bne.s	.fail					; branch if not found
 		addq.b	#1,ost_sball_child_count(a0)		; increment child object counter
 		move.w	a1,d5					; get RAM address of OST of child object
 		subi.w	#v_ost_all&$FFFF,d5			; subtract $D000
@@ -89,16 +89,16 @@ SBall_Main:	; Routine 0
 		subi.b	#$10,d3					; subtract $10 for radius, each object closer to centre
 		move.b	d3,ost_sball_radius(a1)
 		cmpi.b	#id_LZ,(v_zone).w			; check if zone is LZ
-		bne.s	@notlzagain				; if not, branch
+		bne.s	.notlzagain				; if not, branch
 
 		tst.b	d3
-		bne.s	@notlzagain				; branch if not the centre object
+		bne.s	.notlzagain				; branch if not the centre object
 		move.b	#id_frame_sball_base,ost_frame(a1)	; use different frame for LZ chain base
 
-	@notlzagain:
-		dbf	d1,@makechain				; repeat for length of chain
+	.notlzagain:
+		dbf	d1,.makechain				; repeat for length of chain
 
-	@fail:
+	.fail:
 		move.w	a0,d5					; parent object OST address
 		subi.w	#v_ost_all&$FFFF,d5
 		lsr.w	#6,d5
@@ -126,7 +126,7 @@ SBall_MoveAll:
 		moveq	#0,d6
 		move.b	(a2)+,d6				; get number of objects
 
-	@loop:
+	.loop:
 		moveq	#0,d4
 		move.b	(a2)+,d4				; get OST index of object
 		lsl.w	#6,d4
@@ -143,28 +143,28 @@ SBall_MoveAll:
 		add.w	d3,d5
 		move.w	d4,ost_y_pos(a1)			; update position
 		move.w	d5,ost_x_pos(a1)
-		dbf	d6,@loop				; repeat for all objects
+		dbf	d6,.loop				; repeat for all objects
 		rts	
 ; ===========================================================================
 
 SBall_ChkDel:
-		out_of_range	@delete,ost_sball_x_start(a0)
+		out_of_range	.delete,ost_sball_x_start(a0)
 		bra.w	DisplaySprite
 ; ===========================================================================
 
-@delete:
+.delete:
 		moveq	#0,d2
 		lea	ost_sball_child_count(a0),a2
 		move.b	(a2)+,d2				; get number of objects
 
-	@deleteloop:
+	.deleteloop:
 		moveq	#0,d0
 		move.b	(a2)+,d0				; get OST index of object
 		lsl.w	#6,d0
 		addi.l	#v_ost_all&$FFFFFF,d0			; convert to RAM address
 		movea.l	d0,a1					; point a1 to address
 		bsr.w	DeleteChild
-		dbf	d2,@deleteloop				; delete all pieces of chain
+		dbf	d2,.deleteloop				; delete all pieces of chain
 
 		rts	
 ; ===========================================================================

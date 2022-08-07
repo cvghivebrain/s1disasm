@@ -9,30 +9,30 @@ GM_Ending:
 		lea	(v_ost_all).w,a1			; RAM address to start clearing
 		moveq	#0,d0
 		move.w	#loops_to_clear_ost,d1			; size of RAM block to clear
-	@clear_ost:
+	.clear_ost:
 		move.l	d0,(a1)+
-		dbf	d1,@clear_ost				; clear object RAM
+		dbf	d1,.clear_ost				; clear object RAM
 
 		lea	(v_vblank_0e_counter).w,a1
 		moveq	#0,d0
 		move.w	#loops_to_clear_vblankstuff,d1
-	@clear_ram1:
+	.clear_ram1:
 		move.l	d0,(a1)+
-		dbf	d1,@clear_ram1				; clear	variables ($F628-$F67F)
+		dbf	d1,.clear_ram1				; clear	variables ($F628-$F67F)
 
 		lea	(v_camera_x_pos).w,a1
 		moveq	#0,d0
 		move.w	#loops_to_clear_levelinfo,d1
-	@clear_ram2:
+	.clear_ram2:
 		move.l	d0,(a1)+
-		dbf	d1,@clear_ram2				; clear	variables ($F700-$F7FF)
+		dbf	d1,.clear_ram2				; clear	variables ($F700-$F7FF)
 
 		lea	(v_oscillating_table).w,a1
 		moveq	#0,d0
 		move.w	#loops_to_clear_synctables2,d1
-	@clear_ram3:
+	.clear_ram3:
 		move.l	d0,(a1)+
-		dbf	d1,@clear_ram3				; clear	variables ($FE60-$FF7F)
+		dbf	d1,.clear_ram3				; clear	variables ($FE60-$FF7F)
 
 		disable_ints
 		disable_display
@@ -50,10 +50,10 @@ GM_Ending:
 		move.w	#air_full,(v_air).w
 		move.w	#id_EndZ_good,(v_zone).w		; set level number to 0600 (extra flowers)
 		cmpi.b	#countof_emeralds,(v_emeralds).w	; do you have all 6 emeralds?
-		beq.s	@all_emeralds				; if yes, branch
+		beq.s	.all_emeralds				; if yes, branch
 		move.w	#id_EndZ_bad,(v_zone).w			; set level number to 0601 (no flowers)
 
-	@all_emeralds:
+	.all_emeralds:
 		moveq	#id_PLC_Ending,d0
 		bsr.w	QuickPLC				; load ending sequence graphics in 1 frame
 		jsr	(Hud_Base).l				; load uncompressed portion of HUD graphics
@@ -71,10 +71,10 @@ GM_Ending:
 		bsr.w	PalLoad_Next				; load Sonic's palette
 		play.w	0, bsr.w, mus_Ending			; play ending sequence music
 		btst	#bitA,(v_joypad_hold_actual).w		; is button A being held?
-		beq.s	@no_debug				; if not, branch
+		beq.s	.no_debug				; if not, branch
 		move.b	#1,(f_debug_enable).w			; enable debug mode
 
-	@no_debug:
+	.no_debug:
 		move.b	#id_SonicPlayer,(v_ost_player).w	; load Sonic object
 		bset	#status_xflip_bit,(v_ost_player+ost_status).w ; make Sonic face left
 		move.b	#1,(f_lock_controls).w			; lock controls
@@ -124,7 +124,7 @@ End_MainLoop:
 		bsr.w	OscillateNumDo
 		bsr.w	SynchroAnimate
 		cmpi.b	#id_Ending,(v_gamemode).w		; is gamemode $18 (ending)?
-		beq.s	@continue_ending			; if yes, branch
+		beq.s	.continue_ending			; if yes, branch
 
 		move.b	#id_Credits,(v_gamemode).w		; goto credits
 		play.b	1, bsr.w, mus_Credits			; play credits music
@@ -132,7 +132,7 @@ End_MainLoop:
 		rts	
 ; ===========================================================================
 
-@continue_ending:
+.continue_ending:
 		tst.w	(f_restart).w				; has Sonic released the emeralds? (set by EndSonic object)
 		beq.w	End_MainLoop				; if not, branch
 
@@ -157,11 +157,11 @@ End_FlashLoop:
 		bsr.w	OscillateNumDo
 		bsr.w	SynchroAnimate
 		subq.w	#1,(v_palfade_time).w			; decrement palette timer
-		bpl.s	@wait					; branch if time remains
+		bpl.s	.wait					; branch if time remains
 		move.w	#2,(v_palfade_time).w			; set timer
 		bsr.w	WhiteOut_ToWhite			; increase brightness of palette (up to max $EEE)
 
-	@wait:
+	.wait:
 		tst.w	(f_restart).w				; is flash complete? (set by EndSonic object)
 		beq.w	End_FlashLoop				; if not, branch
 

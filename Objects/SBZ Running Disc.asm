@@ -39,11 +39,11 @@ Disc_Main:	; Routine 0
 		move.b	#$48,ost_disc_outer_radius(a0)
 		move.b	ost_subtype(a0),d1			; get object type
 		andi.b	#$F,d1					; read only the	low nybble
-		beq.s	@typeis0				; branch if 0
+		beq.s	.typeis0				; branch if 0
 		move.b	#$10,ost_disc_inner_radius(a0)		; unused smaller disc
 		move.b	#$38,ost_disc_outer_radius(a0)
 
-	@typeis0:
+	.typeis0:
 		move.b	ost_subtype(a0),d1			; get object type
 		andi.b	#$F0,d1					; read only the	high nybble
 		ext.w	d1
@@ -73,74 +73,74 @@ Disc_Detect:
 		sub.w	ost_disc_x_start(a0),d0
 		add.w	d2,d0
 		cmp.w	d3,d0
-		bcc.s	@not_on_disc
+		bcc.s	.not_on_disc
 		move.w	ost_y_pos(a1),d1
 		sub.w	ost_disc_y_start(a0),d1
 		add.w	d2,d1
 		cmp.w	d3,d1
-		bcc.s	@not_on_disc				; branch if Sonic is outside the range of the disc
+		bcc.s	.not_on_disc				; branch if Sonic is outside the range of the disc
 		btst	#status_air_bit,ost_status(a1)		; is Sonic in the air?
 		beq.s	Disc_Inertia				; if not, branch
 		clr.b	ost_disc_init_flag(a0)
 		rts	
 ; ===========================================================================
 
-@not_on_disc:
+.not_on_disc:
 		tst.b	ost_disc_init_flag(a0)			; was Sonic on the disc last frame?
-		beq.s	@skip_clear				; if not, branch
+		beq.s	.skip_clear				; if not, branch
 		clr.b	ost_sonic_sbz_disc(a1)
 		clr.b	ost_disc_init_flag(a0)
 
-	@skip_clear:
+	.skip_clear:
 		rts	
 ; ===========================================================================
 
 Disc_Inertia:
 		tst.b	ost_disc_init_flag(a0)			; was Sonic on the disc last frame?
-		bne.s	@skip_init				; if yes, branch
+		bne.s	.skip_init				; if yes, branch
 		move.b	#1,ost_disc_init_flag(a0)		; set flag for Sonic being on the disc
 		btst	#status_jump_bit,ost_status(a1)		; is Sonic jumping?
-		bne.s	@jumping				; if yes, branch
+		bne.s	.jumping				; if yes, branch
 		clr.b	ost_anim(a1)				; use walking animation
 
-	@jumping:
+	.jumping:
 		bclr	#status_pushing_bit,ost_status(a1)
 		move.b	#id_Run,ost_anim_restart(a1)		; use running animation
 		move.b	#1,ost_sonic_sbz_disc(a1)		; keep Sonic stuck to disc until he jumps
 
-	@skip_init:
+	.skip_init:
 		move.w	ost_inertia(a1),d0
 		tst.w	ost_disc_rotation(a0)			; check rotation direction (only $200 is used)
 		bpl.s	Disc_Inertia_Clockwise			; branch if positive
 
 		cmpi.w	#-$400,d0
-		ble.s	@chk_max_neg
+		ble.s	.chk_max_neg
 		move.w	#-$400,ost_inertia(a1)			; set minimum inertia on disc
 		rts	
 ; ===========================================================================
 
-@chk_max_neg:
+.chk_max_neg:
 		cmpi.w	#-$F00,d0
-		bge.s	@exit
+		bge.s	.exit
 		move.w	#-$F00,ost_inertia(a1)			; set maximum inertia on disc
 
-	@exit:
+	.exit:
 		rts	
 ; ===========================================================================
 
 Disc_Inertia_Clockwise:
 		cmpi.w	#$400,d0
-		bge.s	@chk_max
+		bge.s	.chk_max
 		move.w	#$400,ost_inertia(a1)			; set minimum inertia on disc
 		rts	
 ; ===========================================================================
 
-@chk_max:
+.chk_max:
 		cmpi.w	#$F00,d0
-		ble.s	@exit
+		ble.s	.exit
 		move.w	#$F00,ost_inertia(a1)			; set maximum inertia on disc
 
-	@exit:
+	.exit:
 		rts	
 ; ===========================================================================
 
@@ -167,8 +167,8 @@ Disc_MoveSpot:
 ; ===========================================================================
 
 Disc_ChkDel:
-		out_of_range.s	@delete,ost_disc_x_start(a0)
+		out_of_range.s	.delete,ost_disc_x_start(a0)
 		jmp	(DisplaySprite).l
 
-	@delete:
+	.delete:
 		jmp	(DeleteObject).l

@@ -16,10 +16,10 @@ GM_Special:
 		enable_ints
 		dma_fill	0,$6FFF,$5000
 
-	@wait_for_dma:
+	.wait_for_dma:
 		move.w	(a5),d1					; read control port ($C00004)
 		btst	#1,d1					; is DMA running?
-		bne.s	@wait_for_dma				; if yes, branch
+		bne.s	.wait_for_dma				; if yes, branch
 		
 		move.w	#$8F02,(a5)				; set VDP increment to 2 bytes
 		bsr.w	SS_BGLoad
@@ -29,30 +29,30 @@ GM_Special:
 		lea	(v_ost_all).w,a1			; RAM address to start clearing
 		moveq	#0,d0
 		move.w	#loops_to_clear_ost,d1			; size of RAM block to clear
-	@clear_ost:
+	.clear_ost:
 		move.l	d0,(a1)+
-		dbf	d1,@clear_ost				; clear	the object RAM
+		dbf	d1,.clear_ost				; clear	the object RAM
 
 		lea	(v_camera_x_pos).w,a1
 		moveq	#0,d0
 		move.w	#loops_to_clear_levelinfo,d1
-	@clear_ram1:
+	.clear_ram1:
 		move.l	d0,(a1)+
-		dbf	d1,@clear_ram1				; clear	variables $FFFFF700-$FFFFF7FF
+		dbf	d1,.clear_ram1				; clear	variables $FFFFF700-$FFFFF7FF
 
 		lea	(v_oscillating_table).w,a1
 		moveq	#0,d0
 		move.w	#loops_to_clear_synctables,d1
-	@clear_ram2:
+	.clear_ram2:
 		move.l	d0,(a1)+
-		dbf	d1,@clear_ram2				; clear	variables $FFFFFE60-$FFFFFEFF
+		dbf	d1,.clear_ram2				; clear	variables $FFFFFE60-$FFFFFEFF
 
 		lea	(v_ss_bubble_x_pos).w,a1
 		moveq	#0,d0
 		move.w	#($200/4)-1,d1
-	@clear_bubblecloud_bg:
+	.clear_bubblecloud_bg:
 		move.l	d0,(a1)+
-		dbf	d1,@clear_bubblecloud_bg		; clear	bg x position data
+		dbf	d1,.clear_bubblecloud_bg		; clear	bg x position data
 
 		clr.b	(f_water_pal_full).w
 		clr.w	(f_restart).w
@@ -102,11 +102,11 @@ SS_MainLoop:
 		jsr	(SS_ShowLayout).l			; display layout
 		bsr.w	SS_BGAnimate				; animate background
 		tst.w	(v_demo_mode).w				; is demo mode on?
-		beq.s	@not_demo				; if not, branch
+		beq.s	.not_demo				; if not, branch
 		tst.w	(v_countdown).w				; is there time left on the demo?
 		beq.w	SS_ToSegaScreen				; if not, branch
 
-	@not_demo:
+	.not_demo:
 		cmpi.b	#id_Special,(v_gamemode).w		; is game mode $10 (special stage)?
 		beq.w	SS_MainLoop				; if yes, branch
 
@@ -118,10 +118,10 @@ SS_MainLoop:
 		endc
 		move.b	#id_Level,(v_gamemode).w		; set screen mode to $0C (level)
 		cmpi.w	#id_FZ+1,(v_zone).w			; is level number higher than FZ?
-		blo.s	@level_ok				; if not, branch
+		blo.s	.level_ok				; if not, branch
 		clr.w	(v_zone).w				; set to GHZ1
 
-	@level_ok:
+	.level_ok:
 		move.w	#60,(v_countdown).w			; set delay time to 1 second
 		move.w	#palfade_all,(v_palfade_start).w	; $3F
 		clr.w	(v_palfade_time).w
@@ -136,11 +136,11 @@ SS_FinishLoop:
 		jsr	(SS_ShowLayout).l
 		bsr.w	SS_BGAnimate
 		subq.w	#1,(v_palfade_time).w
-		bpl.s	@leave_palette				; branch if palette timer is 0 or higher
+		bpl.s	.leave_palette				; branch if palette timer is 0 or higher
 		move.w	#2,(v_palfade_time).w			; set palette update delay to 2 frames
 		bsr.w	WhiteOut_ToWhite			; fade to white in increments
 
-	@leave_palette:
+	.leave_palette:
 		tst.w	(v_countdown).w				; has timer hit 0?
 		bne.s	SS_FinishLoop				; if not, branch
 
@@ -171,9 +171,9 @@ SS_FinishLoop:
 		lea	(v_ost_all).w,a1
 		moveq	#0,d0
 		move.w	#((sizeof_ost*countof_ost)/4)-1,d1
-	@clear_ost:
+	.clear_ost:
 		move.l	d0,(a1)+
-		dbf	d1,@clear_ost				; clear object RAM
+		dbf	d1,.clear_ost				; clear object RAM
 
 		move.b	#id_SSResult,(v_ost_ssresult1).w	; load results screen object
 
@@ -226,49 +226,49 @@ SS_BGLoad:
 		moveq	#7-1,d7					; number of canvases for frames of bird/fish and in-between
 
 ; Each frame of bird/fish animation is stored as a canvas in VRAM. The game switches between them by changing the bg nametable register.
-@loop_canvas:
+.loop_canvas:
 		move.l	d3,d0					; copy VDP command
 		moveq	#4-1,d6					; number of rows visible
 		moveq	#0,d4					; first square is blank (i.e. blank-bird-blank-bird-etc.)
 		cmpi.w	#3,d7
-		bhs.s	@loop_rows				; branch if canvas is bird
+		bhs.s	.loop_rows				; branch if canvas is bird
 		moveq	#1,d4					; first square is fish (i.e. fish-blank-fish-blank-etc.)
 
-@loop_rows:
+.loop_rows:
 		moveq	#8-1,d5					; number of squares in a row
 
-@loop_birdfish:
+.loop_birdfish:
 		movea.l	a2,a1					; get address of tilemap as stored in RAM
 		eori.b	#1,d4					; switch between blank square and bird/fish
-		bne.s	@is_birdfish				; branch if set to bird/fish
+		bne.s	.is_birdfish				; branch if set to bird/fish
 		cmpi.w	#6,d7
-		bne.s	@skip_birdfish				; branch if not first frame
+		bne.s	.skip_birdfish				; branch if not first frame
 		lea	(v_ss_enidec_buffer).l,a1		; use tilemap for checkerboard pattern
 
-	@is_birdfish:
+	.is_birdfish:
 		movem.l	d0-d4,-(sp)
 		moveq	#fish_width-1,d1
 		moveq	#fish_height-1,d2
 		bsr.w	TilemapToVRAM				; copy tilemap for 1 bird or fish from RAM to VRAM
 		movem.l	(sp)+,d0-d4
 
-	@skip_birdfish:
+	.skip_birdfish:
 		addi.l	#(fish_width*2)<<16,d0			; skip 8 cells ($10 bytes)
-		dbf	d5,@loop_birdfish			; repeat for all squares in 1 row
+		dbf	d5,.loop_birdfish			; repeat for all squares in 1 row
 
 		addi.l	#((fish_height-1)*$80)<<16,d0		; skip 7 rows ($380 byes)
 		eori.b	#1,d4					; stagger blank/birdfish pattern
-		dbf	d6,@loop_rows				; repeat for all rows (4 in total)
+		dbf	d6,.loop_rows				; repeat for all rows (4 in total)
 
 		addi.l	#$1000<<16,d3				; add $1000 to VRAM address
-		bpl.s	@vdp_ok					; branch if valid VDP command
+		bpl.s	.vdp_ok					; branch if valid VDP command
 		swap	d3
 		addi.l	#$C000,d3				; fix VDP command
 		swap	d3
 
-	@vdp_ok:
+	.vdp_ok:
 		adda.w	#sizeof_fish,a2				; read from next tilemap
-		dbf	d7,@loop_canvas				; repeat for all canvases
+		dbf	d7,.loop_canvas				; repeat for all canvases
 		
 		lea	(v_ss_enidec_buffer).l,a1
 		lea	(Eni_SSBg2).l,a0			; load mappings for clouds/bubbles
@@ -297,9 +297,9 @@ SS_BGLoad:
 
 PalCycle_SS:
 		tst.w	(f_pause).w				; is game paused?
-		bne.s	@exit					; if yes, branch
+		bne.s	.exit					; if yes, branch
 		subq.w	#1,(v_palcycle_ss_time).w		; decrement timer
-		bpl.s	@exit					; branch if time remains
+		bpl.s	.exit					; branch if time remains
 		lea	(vdp_control_port).l,a6
 		move.w	(v_palcycle_ss_num).w,d0		; get cycle index counter
 		addq.w	#1,(v_palcycle_ss_num).w		; increment
@@ -308,10 +308,10 @@ PalCycle_SS:
 		lea	(SS_Timing_Values).l,a0
 		adda.w	d0,a0
 		move.b	(a0)+,d0				; get time byte
-		bpl.s	@use_time				; branch if not -1
+		bpl.s	.use_time				; branch if not -1
 		move.w	#$1FF,d0				; use $1FF if -1
 
-	@use_time:
+	.use_time:
 		move.w	d0,(v_palcycle_ss_time).w		; set time until next palette change
 		moveq	#0,d0
 		move.b	(a0)+,d0				; get bg mode byte
@@ -337,37 +337,37 @@ PalCycle_SS:
 		move.l	(a1)+,(a2)+
 		move.l	(a1)+,(a2)+				; write palette
 
-	@exit:
+	.exit:
 		rts	
 ; ===========================================================================
 
 PalCycle_SS_2:
 		move.w	(v_palcycle_ss_unused).w,d1		; this is always 0
 		cmpi.w	#$8A,d0					; is offset $80-$89?
-		blo.s	@offset_80_89				; if yes, branch
+		blo.s	.offset_80_89				; if yes, branch
 		addq.w	#1,d1
 
-	@offset_80_89:
+	.offset_80_89:
 		mulu.w	#$2A,d1					; d1 = always 0 or $2A
 		lea	(Pal_SSCyc2).l,a1			; use palette cycle set 2
 		adda.w	d1,a1
 		andi.w	#$7F,d0					; ignore bit 7
 		bclr	#0,d0					; clear bit 0
-		beq.s	@offset_even				; branch if already clear
+		beq.s	.offset_even				; branch if already clear
 		lea	(v_pal_dry_line4+$E).w,a2
 		move.l	(a1),(a2)+
 		move.l	4(a1),(a2)+
 		move.l	8(a1),(a2)+				; write palette
 
-	@offset_even:
+	.offset_even:
 		adda.w	#$C,a1
 		lea	(v_pal_dry_line3+$1A).w,a2
 		cmpi.w	#$A,d0					; is offset 0-8?
-		blo.s	@offset_0_8				; if yes, branch
+		blo.s	.offset_0_8				; if yes, branch
 		subi.w	#$A,d0
 		lea	(v_pal_dry_line4+$1A).w,a2
 
-	@offset_0_8:
+	.offset_0_8:
 		move.w	d0,d1
 		add.w	d0,d0
 		add.w	d1,d0					; multiply d0 by 3
@@ -437,20 +437,20 @@ include_Special_2:	macro
 
 SS_BGAnimate:
 		move.w	(v_ss_bg_mode).w,d0			; get frame for fish/bird animation
-		bne.s	@not_0					; branch if not 0
+		bne.s	.not_0					; branch if not 0
 		move.w	#0,(v_bg1_y_pos).w
 		move.w	(v_bg1_y_pos).w,(v_bg_y_pos_vsram).w	; reset vertical scroll for bubble/cloud layer
 
-	@not_0:
+	.not_0:
 		cmpi.w	#8,d0
 		bhs.s	SS_BGBirdCloud				; branch if d0 is 8-$C (birds and clouds)
 		cmpi.w	#6,d0
-		bne.s	@not_6					; branch if d0 isn't 6
+		bne.s	.not_6					; branch if d0 isn't 6
 		addq.w	#1,(v_bg3_x_pos).w
 		addq.w	#1,(v_bg1_y_pos).w
 		move.w	(v_bg1_y_pos).w,(v_bg_y_pos_vsram).w	; scroll bubble layer
 
-	@not_6:
+	.not_6:
 		moveq	#0,d0
 		move.w	(v_bg1_x_pos).w,d0
 		neg.w	d0
@@ -479,20 +479,20 @@ SS_BGWobbleLoop:
 
 SS_BGBirdCloud:
 		cmpi.w	#$C,d0
-		bne.s	@not_C					; branch if d0 isn't $C
+		bne.s	.not_C					; branch if d0 isn't $C
 		subq.w	#1,(v_bg3_x_pos).w
 		lea	(v_ss_cloud_x_pos).w,a3
 		move.l	#$18000,d2
 		moveq	#6,d1
 
-	@loop:
+	.loop:
 		move.l	(a3),d0
 		sub.l	d2,d0
 		move.l	d0,(a3)+
 		subi.l	#$2000,d2
-		dbf	d1,@loop
+		dbf	d1,.loop
 
-	@not_C:
+	.not_C:
 		lea	(v_ss_cloud_x_pos).w,a3
 		lea	(SS_Cloud_ScrollBlocks).l,a2
 
@@ -508,31 +508,31 @@ SS_Scroll_CloudsBubbles:
 		andi.w	#$FF,d2
 		lsl.w	#2,d2
 
-	@loop_block:
+	.loop_block:
 		move.w	(a3)+,d0
 		addq.w	#2,a3
 		moveq	#0,d1
 		move.b	(a2)+,d1
 		subq.w	#1,d1
 
-	@loop_line:
+	.loop_line:
 		move.l	d0,(a1,d2.w)
 		addq.w	#4,d2
 		andi.w	#$3FC,d2
-		dbf	d1,@loop_line
-		dbf	d3,@loop_block
+		dbf	d1,.loop_line
+		dbf	d3,.loop_block
 		rts
 
 ; ===========================================================================
 SS_Bubble_ScrollBlocks:
-		dc.b @end-@start-1
-	@start:	dc.b $28, $18, $10, $28, $18, $10, $30, $18, 8, $10
-	@end:
+		dc.b .end-.start-1
+	.start:	dc.b $28, $18, $10, $28, $18, $10, $30, $18, 8, $10
+	.end:
 		even
 SS_Cloud_ScrollBlocks:
-		dc.b @end-@start-1
-	@start:	dc.b $30, $30, $30, $28, $18, $18, $18
-	@end:
+		dc.b .end-.start-1
+	.start:	dc.b $30, $30, $30, $28, $18, $18, $18
+	.end:
 		even
 SS_Bubble_WobbleData:
 		dc.b 8, 2
@@ -592,7 +592,7 @@ SS_ShowLayout:
 		addi.w	#-$B4,d3
 		move.w	#ss_visible_height-1,d7			; grid is 16 cells high
 
-	@loop_gridrow:
+	.loop_gridrow:
 		movem.w	d0-d2,-(sp)
 		movem.w	d0-d1,-(sp)
 		neg.w	d0
@@ -607,7 +607,7 @@ SS_ShowLayout:
 		move.l	d6,d2
 		move.w	#ss_visible_width-1,d6			; grid is 16 cells wide
 
-	@loop_gridcell:
+	.loop_gridcell:
 		move.l	d2,d0
 		asr.l	#8,d0
 		move.w	d0,(a1)+
@@ -616,11 +616,11 @@ SS_ShowLayout:
 		move.w	d0,(a1)+
 		add.l	d5,d2
 		add.l	d4,d1
-		dbf	d6,@loop_gridcell			; repeat for all cells in row
+		dbf	d6,.loop_gridcell			; repeat for all cells in row
 
 		movem.w	(sp)+,d0-d2
 		addi.w	#ss_block_width,d3
-		dbf	d7,@loop_gridrow			; repeat for all rows
+		dbf	d7,.loop_gridrow			; repeat for all rows
 
 ; Populate the 16x16 grid with sprites based on the level layout
 		move.w	(sp)+,d5
@@ -637,27 +637,27 @@ SS_ShowLayout:
 		lea	(v_ss_sprite_grid_plot).w,a4		; transformation grid
 		move.w	#ss_visible_height-1,d7
 
-	@loop_spriterow:
+	.loop_spriterow:
 		move.w	#ss_visible_width-1,d6
 
-	@loop_sprite:
+	.loop_sprite:
 		moveq	#0,d0
 		move.b	(a0)+,d0				; get level block
-		beq.s	@skip					; branch if 0 (blank)
+		beq.s	.skip					; branch if 0 (blank)
 		cmpi.b	#(SS_ItemIndex_end-SS_ItemIndex)/6,d0
-		bhi.s	@skip					; branch if above $4E (invalid)
+		bhi.s	.skip					; branch if above $4E (invalid)
 		move.w	(a4),d3					; get grid x pos
 		addi.w	#288,d3				
 		cmpi.w	#112,d3
-		blo.s	@skip					; branch if off screen
+		blo.s	.skip					; branch if off screen
 		cmpi.w	#464,d3
-		bhs.s	@skip
+		bhs.s	.skip
 		move.w	2(a4),d2				; get grid y pos
 		addi.w	#240,d2
 		cmpi.w	#112,d2
-		blo.s	@skip
+		blo.s	.skip
 		cmpi.w	#368,d2
-		bhs.s	@skip
+		bhs.s	.skip
 
 		lea	(v_ss_sprite_info).l,a5
 		lsl.w	#3,d0
@@ -670,24 +670,24 @@ SS_ShowLayout:
 		moveq	#0,d1
 		move.b	(a1)+,d1				; get number of sprite pieces from mappings
 		subq.b	#1,d1
-		bmi.s	@skip					; branch if 0
+		bmi.s	.skip					; branch if 0
 		jsr	(BuildSpr_Normal).l			; build sprites from mappings
 
-	@skip:
+	.skip:
 		addq.w	#4,a4					; next sprite
-		dbf	d6,@loop_sprite
+		dbf	d6,.loop_sprite
 
 		lea	ss_width-ss_visible_width(a0),a0	; next row
-		dbf	d7,@loop_spriterow
+		dbf	d7,.loop_spriterow
 
 		move.b	d5,(v_spritecount).w
 		cmpi.b	#countof_max_sprites,d5			; max number of sprites ($50)
-		beq.s	@spritelimit				; branch if at limit
+		beq.s	.spritelimit				; branch if at limit
 		move.l	#0,(a2)
 		rts	
 ; ===========================================================================
 
-@spritelimit:
+.spritelimit:
 		move.b	#0,-5(a2)				; set last sprite link
 		rts
 
@@ -705,28 +705,28 @@ SS_AniWallsRings:
 		andi.w	#$F,d0					; read only low nybble
 		moveq	#((SS_ItemIndex_wall_end-SS_ItemIndex)/6)-1,d1 ; $23
 
-	@wall_loop:
+	.wall_loop:
 		move.w	d0,(a1)					; change frame id to appropriately rotated wall
 		addq.w	#sizeof_ss_sprite_info,a1		; jump to frame id for next wall block
-		dbf	d1,@wall_loop				; repeat for every wall block
+		dbf	d1,.wall_loop				; repeat for every wall block
 
 		lea	(v_ss_sprite_info+ss_sprite_frame_low).l,a1 ; frame id of first sprite (it's blank, but that doesn't matter)
 		subq.b	#1,(v_syncani_1_time).w			; decrement animation timer
-		bpl.s	@not0_1					; branch if time remains
+		bpl.s	.not0_1					; branch if time remains
 		move.b	#7,(v_syncani_1_time).w			; reset timer
 		addq.b	#1,(v_syncani_1_frame).w		; increment frame
 		andi.b	#3,(v_syncani_1_frame).w		; there are 4 frames max (0/1/2/3)
 
-	@not0_1:
+	.not0_1:
 		move.b	(v_syncani_1_frame).w,(id_SS_Item_Ring*sizeof_ss_sprite_info)(a1) ; $1D0(a1) ; update ring frame
 		
 		subq.b	#1,(v_syncani_2_time).w			; decrement timer
-		bpl.s	@not0_2					; branch if time remains
+		bpl.s	.not0_2					; branch if time remains
 		move.b	#7,(v_syncani_2_time).w			; reset timer
 		addq.b	#1,(v_syncani_2_frame).w		; increment frame
 		andi.b	#1,(v_syncani_2_frame).w		; there are 2 frames only (0/1)
 
-	@not0_2:
+	.not0_2:
 		move.b	(v_syncani_2_frame).w,d0
 		move.b	d0,(id_SS_Item_GOAL*sizeof_ss_sprite_info)(a1) ; $138(a1)
 		move.b	d0,(id_SS_Item_RedWhi*sizeof_ss_sprite_info)(a1) ; $160(a1)
@@ -740,12 +740,12 @@ SS_AniWallsRings:
 		move.b	d0,(id_SS_Item_Em6*sizeof_ss_sprite_info)(a1) ; $200(a1)
 		
 		subq.b	#1,(v_syncani_3_time).w
-		bpl.s	@not0_3
+		bpl.s	.not0_3
 		move.b	#4,(v_syncani_3_time).w
 		addq.b	#1,(v_syncani_3_frame).w
 		andi.b	#3,(v_syncani_3_frame).w		; there are 4 frames (0/1/2/3)
 
-	@not0_3:
+	.not0_3:
 		move.b	(v_syncani_3_frame).w,d0
 		move.b	d0,(id_SS_Item_Glass1*sizeof_ss_sprite_info)(a1) ; $168(a1)
 		move.b	d0,(id_SS_Item_Glass2*sizeof_ss_sprite_info)(a1) ; $170(a1)
@@ -753,12 +753,12 @@ SS_AniWallsRings:
 		move.b	d0,(id_SS_Item_Glass4*sizeof_ss_sprite_info)(a1) ; $180(a1)
 		
 		subq.b	#1,(v_syncani_0_time).w
-		bpl.s	@not0_0
+		bpl.s	.not0_0
 		move.b	#7,(v_syncani_0_time).w
 		subq.b	#1,(v_syncani_0_frame).w
 		andi.b	#7,(v_syncani_0_frame).w		; there are 8 frames (0-7)
 
-	@not0_0:
+	.not0_0:
 		lea	(v_ss_sprite_info+(sizeof_ss_sprite_info*2)+ss_sprite_tile).l,a1 ; start with tile id of 2nd wall sprite
 		lea	(SS_Wall_Vram_Settings).l,a0		; new tile ids
 		moveq	#0,d0
@@ -858,13 +858,13 @@ SS_FindFreeUpdate:
 		lea	(v_ss_sprite_update_list).l,a2		; address of sprite update list
 		move.w	#$20-1,d0				; up to $20 slots
 
-	@loop:
+	.loop:
 		tst.b	(a2)					; is slot free?
-		beq.s	@free					; if yes, branch
+		beq.s	.free					; if yes, branch
 		addq.w	#8,a2					; try next slot
-		dbf	d0,@loop
+		dbf	d0,.loop
 
-	@free:
+	.free:
 		rts
 
 ; ---------------------------------------------------------------------------
@@ -877,17 +877,17 @@ SS_UpdateItems:
 		lea	(v_ss_sprite_update_list).l,a0		; sprite update list
 		move.w	#countof_ss_update-1,d7			; $20
 
-	@loop:
+	.loop:
 		moveq	#0,d0
 		move.b	(a0),d0					; read update id
-		beq.s	@no_update				; branch if 0
+		beq.s	.no_update				; branch if 0
 		lsl.w	#2,d0
 		movea.l	SS_UpdateIndex-4(pc,d0.w),a1
 		jsr	(a1)					; run appropriate routine
 
-	@no_update:
+	.no_update:
 		addq.w	#sizeof_ss_update,a0			; next slot in list
-		dbf	d7,@loop
+		dbf	d7,.loop
 
 		rts
 
@@ -903,7 +903,7 @@ SS_UpdateIndex:	index.l 0,1
 
 SS_UpdateRing:
 		subq.b	#1,ss_update_time(a0)			; decrement timer
-		bpl.s	@wait					; branch if positive
+		bpl.s	.wait					; branch if positive
 		move.b	#5,ss_update_time(a0)			; 5 frames until next update
 		moveq	#0,d0
 		move.b	ss_update_frame(a0),d0			; get current frame
@@ -911,11 +911,11 @@ SS_UpdateRing:
 		movea.l	ss_update_levelptr(a0),a1		; get pointer to level layout
 		move.b	SS_RingData(pc,d0.w),d0			; get new item id
 		move.b	d0,(a1)					; update level layout
-		bne.s	@wait					; branch if id isn't 0
+		bne.s	.wait					; branch if id isn't 0
 		clr.l	(a0)					; free slot in update list
 		clr.l	ss_update_levelptr(a0)
 
-	@wait:
+	.wait:
 		rts	
 ; ===========================================================================
 SS_RingData:	dc.b id_SS_Item_Spark1, id_SS_Item_Spark2, id_SS_Item_Spark3, id_SS_Item_Spark4, 0
@@ -924,24 +924,24 @@ SS_RingData:	dc.b id_SS_Item_Spark1, id_SS_Item_Spark2, id_SS_Item_Spark3, id_SS
 
 SS_UpdateBumper:
 		subq.b	#1,ss_update_time(a0)
-		bpl.s	@wait
+		bpl.s	.wait
 		move.b	#7,ss_update_time(a0)
 		moveq	#0,d0
 		move.b	ss_update_frame(a0),d0
 		addq.b	#1,ss_update_frame(a0)
 		movea.l	ss_update_levelptr(a0),a1
 		move.b	SS_BumperData(pc,d0.w),d0
-		bne.s	@update
+		bne.s	.update
 		clr.l	(a0)
 		clr.l	ss_update_levelptr(a0)
 		move.b	#id_SS_Item_Bumper,(a1)
 		rts	
 ; ===========================================================================
 
-@update:
+.update:
 		move.b	d0,(a1)
 
-@wait:
+.wait:
 		rts	
 ; ===========================================================================
 SS_BumperData:	dc.b id_SS_Item_Bump1, id_SS_Item_Bump2, id_SS_Item_Bump1, id_SS_Item_Bump2, 0
@@ -950,7 +950,7 @@ SS_BumperData:	dc.b id_SS_Item_Bump1, id_SS_Item_Bump2, id_SS_Item_Bump1, id_SS_
 
 SS_Update1Up:
 		subq.b	#1,ss_update_time(a0)
-		bpl.s	@wait
+		bpl.s	.wait
 		move.b	#5,ss_update_time(a0)
 		moveq	#0,d0
 		move.b	ss_update_frame(a0),d0
@@ -958,11 +958,11 @@ SS_Update1Up:
 		movea.l	ss_update_levelptr(a0),a1
 		move.b	SS_1UpData(pc,d0.w),d0
 		move.b	d0,(a1)
-		bne.s	@wait
+		bne.s	.wait
 		clr.l	(a0)
 		clr.l	ss_update_levelptr(a0)
 
-	@wait:
+	.wait:
 		rts	
 ; ===========================================================================
 SS_1UpData:	dc.b id_SS_Item_EmSp1, id_SS_Item_EmSp2, id_SS_Item_EmSp3, id_SS_Item_EmSp4, 0
@@ -971,24 +971,24 @@ SS_1UpData:	dc.b id_SS_Item_EmSp1, id_SS_Item_EmSp2, id_SS_Item_EmSp3, id_SS_Ite
 
 SS_UpdateR:
 		subq.b	#1,ss_update_time(a0)
-		bpl.s	@wait
+		bpl.s	.wait
 		move.b	#7,ss_update_time(a0)
 		moveq	#0,d0
 		move.b	ss_update_frame(a0),d0
 		addq.b	#1,ss_update_frame(a0)
 		movea.l	ss_update_levelptr(a0),a1
 		move.b	SS_RData(pc,d0.w),d0
-		bne.s	@update
+		bne.s	.update
 		clr.l	(a0)
 		clr.l	ss_update_levelptr(a0)
 		move.b	#id_SS_Item_R,(a1)
 		rts	
 ; ===========================================================================
 
-@update:
+.update:
 		move.b	d0,(a1)
 
-@wait:
+.wait:
 		rts	
 ; ===========================================================================
 SS_RData:	dc.b id_SS_Item_R, id_SS_Item_R2, id_SS_Item_R, id_SS_Item_R2, 0
@@ -997,7 +997,7 @@ SS_RData:	dc.b id_SS_Item_R, id_SS_Item_R2, id_SS_Item_R, id_SS_Item_R2, 0
 
 SS_UpdateEmerald:
 		subq.b	#1,ss_update_time(a0)
-		bpl.s	@wait
+		bpl.s	.wait
 		move.b	#5,ss_update_time(a0)
 		moveq	#0,d0
 		move.b	ss_update_frame(a0),d0
@@ -1005,13 +1005,13 @@ SS_UpdateEmerald:
 		movea.l	ss_update_levelptr(a0),a1
 		move.b	SS_EmeraldData(pc,d0.w),d0
 		move.b	d0,(a1)
-		bne.s	@wait
+		bne.s	.wait
 		clr.l	(a0)
 		clr.l	ss_update_levelptr(a0)
 		move.b	#id_SSS_ExitStage,(v_ost_player+ost_routine).w
 		play.w	1, jsr, sfx_Goal			; play special stage GOAL sound
 
-	@wait:
+	.wait:
 		rts	
 ; ===========================================================================
 SS_EmeraldData:	dc.b id_SS_Item_EmSp1, id_SS_Item_EmSp2, id_SS_Item_EmSp3, id_SS_Item_EmSp4, 0
@@ -1020,7 +1020,7 @@ SS_EmeraldData:	dc.b id_SS_Item_EmSp1, id_SS_Item_EmSp2, id_SS_Item_EmSp3, id_SS
 
 SS_UpdateGlass:
 		subq.b	#1,ss_update_time(a0)			; decrement timer
-		bpl.s	@wait					; branch if time is positive
+		bpl.s	.wait					; branch if time is positive
 		move.b	#1,ss_update_time(a0)			; set timer to 1 frame
 		moveq	#0,d0
 		move.b	ss_update_frame(a0),d0			; get current frame
@@ -1028,12 +1028,12 @@ SS_UpdateGlass:
 		movea.l	ss_update_levelptr(a0),a1		; get pointer to level layout
 		move.b	SS_GlassData(pc,d0.w),d0		; read new frame id
 		move.b	d0,(a1)					; update level layout
-		bne.s	@wait					; branch if frame id isn't 0
+		bne.s	.wait					; branch if frame id isn't 0
 		move.b	ss_update_levelptr(a0),(a1)		; replace glass with weaker glass
 		clr.l	(a0)					; free update slot
 		clr.l	ss_update_levelptr(a0)
 
-	@wait:
+	.wait:
 		rts	
 ; ===========================================================================
 SS_GlassData:	dc.b id_SS_Item_Glass5, id_SS_Item_Glass6, id_SS_Item_Glass7, id_SS_Item_Glass8, id_SS_Item_Glass5, id_SS_Item_Glass6, id_SS_Item_Glass7, id_SS_Item_Glass8, 0
@@ -1074,10 +1074,10 @@ SS_Load:
 		move.b	(v_last_ss_levelid).w,d0		; load number of last special stage entered
 		addq.b	#1,(v_last_ss_levelid).w
 		cmpi.b	#6,(v_last_ss_levelid).w
-		blo.s	@ss_valid
+		blo.s	.ss_valid
 		move.b	#0,(v_last_ss_levelid).w		; reset if higher than 6
 
-	@ss_valid:
+	.ss_valid:
 		cmpi.b	#countof_emeralds,(v_emeralds).w	; do you have all emeralds?
 		beq.s	SS_LoadData				; if yes, branch
 		moveq	#0,d1
@@ -1107,40 +1107,40 @@ SS_LoadData:
 
 		lea	(v_ss_layout).l,a1
 		move.w	#($4000/4)-1,d0
-	@clear_layout:
+	.clear_layout:
 		clr.l	(a1)+
-		dbf	d0,@clear_layout			; clear RAM (0-$3FFF)
+		dbf	d0,.clear_layout			; clear RAM (0-$3FFF)
 
 		lea	(v_ss_layout_start).l,a1		; start of actual data ($FF1020)
 		lea	(v_ss_layout_buffer).l,a0
 		moveq	#ss_height_actual-1,d1			; $40
 
-	@loop_row:
+	.loop_row:
 		moveq	#ss_width_actual-1,d2			; $40
 
-	@loop_bytes:
+	.loop_bytes:
 		move.b	(a0)+,(a1)+
-		dbf	d2,@loop_bytes				; copy one row
+		dbf	d2,.loop_bytes				; copy one row
 
 		lea	ss_width-ss_width_actual(a1),a1		; jump to next row (i.e. skip $40 bytes of padding)
-		dbf	d1,@loop_row				; copy all rows
+		dbf	d1,.loop_row				; copy all rows
 
 		lea	(v_ss_sprite_info+sizeof_ss_sprite_info).l,a1 ; start with sprite type 1 (0 is blank)
 		lea	(SS_ItemIndex).l,a0
 		moveq	#((SS_ItemIndex_end-SS_ItemIndex)/6)-1,d1
 
-	@loop_map_ptrs:
+	.loop_map_ptrs:
 		move.l	(a0)+,(a1)+				; copy mappings pointer
 		move.w	#0,(a1)+				; create blank word
 		move.b	-4(a0),-1(a1)				; copy frame id to low byte of blank word
 		move.w	(a0)+,(a1)+				; copy tile id
-		dbf	d1,@loop_map_ptrs			; copy mappings pointers & VRAM settings to RAM
+		dbf	d1,.loop_map_ptrs			; copy mappings pointers & VRAM settings to RAM
 
 		lea	(v_ss_sprite_update_list).l,a1
 		move.w	#((sizeof_ss_update*countof_ss_update)/4)-1,d1
-	@loop_update_list:
+	.loop_update_list:
 		clr.l	(a1)+
-		dbf	d1,@loop_update_list			; clear RAM ($4400-$44FF)
+		dbf	d1,.loop_update_list			; clear RAM ($4400-$44FF)
 
 		rts
 

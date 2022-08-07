@@ -20,10 +20,10 @@ ost_vanish_time:	rs.w 1					; $30 ; time for Sonic to disappear
 
 Van_Main:	; Routine 0
 		tst.l	(v_plc_buffer).w			; are pattern load cues empty?
-		beq.s	@isempty				; if yes, branch
+		beq.s	.isempty				; if yes, branch
 		rts	
 
-	@isempty:
+	.isempty:
 		addq.b	#2,ost_routine(a0)			; goto Van_RmvSonic next
 		move.l	#Map_Vanish,ost_mappings(a0)
 		move.b	#render_rel,ost_render(a0)
@@ -39,24 +39,24 @@ Van_RmvSonic:	; Routine 2
 		lea	(Ani_Vanish).l,a1
 		jsr	(AnimateSprite).l			; animate and goto Van_LoadSonic next
 		cmpi.b	#id_frame_vanish_flash3,ost_frame(a0)	; is final flash frame displayed?
-		bne.s	@display				; if not, branch
+		bne.s	.display				; if not, branch
 
 		tst.b	(v_ost_player).w			; has Sonic already been removed?
-		beq.s	@display				; if yes, branch
+		beq.s	.display				; if yes, branch
 		move.b	#0,(v_ost_player).w			; remove Sonic
 		play.w	1, jsr, sfx_Goal			; play Special Stage "GOAL" sound
 
-	@display:
+	.display:
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 
 Van_LoadSonic:	; Routine 4
 		subq.w	#1,ost_vanish_time(a0)			; decrement timer
-		bne.s	@wait					; if time remains, branch
+		bne.s	.wait					; if time remains, branch
 		move.b	#id_SonicPlayer,(v_ost_player).w	; load Sonic object
 		jmp	(DeleteObject).l
 
-	@wait:
+	.wait:
 		rts	
 
 ; ---------------------------------------------------------------------------

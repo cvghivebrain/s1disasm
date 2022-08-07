@@ -43,7 +43,7 @@ Lamp_Main:	; Routine 0
 		move.b	ost_respawn(a0),d0
 		bclr	#7,2(a2,d0.w)
 		btst	#0,2(a2,d0.w)				; has lamppost been hit?
-		bne.s	@red					; if yes, branch
+		bne.s	.red					; if yes, branch
 
 		move.b	(v_last_lamppost).w,d1			; get number of last lamppost hit
 		andi.b	#$7F,d1
@@ -52,7 +52,7 @@ Lamp_Main:	; Routine 0
 		cmp.b	d2,d1					; is this a "new" lamppost?
 		bcs.s	Lamp_Blue				; if yes, branch
 
-	@red:
+	.red:
 		bset	#0,2(a2,d0.w)				; remember lamppost as red
 		move.b	#id_Lamp_Finish,ost_routine(a0)		; goto Lamp_Finish next
 		move.b	#id_frame_lamp_red,ost_frame(a0)	; use red lamppost frame
@@ -61,15 +61,15 @@ Lamp_Main:	; Routine 0
 
 Lamp_Blue:	; Routine 2
 		tst.w	(v_debug_active).w			; is debug mode	being used?
-		bne.w	@donothing				; if yes, branch
+		bne.w	.donothing				; if yes, branch
 		tst.b	(v_lock_multi).w			; is object collision enabled?
-		bmi.w	@donothing				; if not, branch
+		bmi.w	.donothing				; if not, branch
 		move.b	(v_last_lamppost).w,d1
 		andi.b	#$7F,d1
 		move.b	ost_subtype(a0),d2
 		andi.b	#$7F,d2
 		cmp.b	d2,d1					; is this a "new" lamppost?
-		bcs.s	@chkhit					; if yes, branch
+		bcs.s	.chkhit					; if yes, branch
 
 		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
@@ -77,25 +77,25 @@ Lamp_Blue:	; Routine 2
 		bset	#0,2(a2,d0.w)				; remember lamppost as red
 		move.b	#id_Lamp_Finish,ost_routine(a0)		; goto Lamp_Finish next
 		move.b	#id_frame_lamp_red,ost_frame(a0)	; use red lamppost frame
-		bra.w	@donothing
+		bra.w	.donothing
 ; ===========================================================================
 
-@chkhit:
+.chkhit:
 		move.w	(v_ost_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0
 		addq.w	#8,d0
 		cmpi.w	#$10,d0
-		bcc.w	@donothing
+		bcc.w	.donothing
 		move.w	(v_ost_player+ost_y_pos).w,d0
 		sub.w	ost_y_pos(a0),d0
 		addi.w	#$40,d0
 		cmpi.w	#$68,d0
-		bcc.s	@donothing
+		bcc.s	.donothing
 
 		play.w	1, jsr, sfx_Lamppost			; play lamppost sound
 		addq.b	#2,ost_routine(a0)			; goto Lamp_Finish next
 		jsr	(FindFreeObj).l				; find free OST slot
-		bne.s	@fail					; branch if not found
+		bne.s	.fail					; branch if not found
 		move.b	#id_Lamppost,ost_id(a1)			; load twirling lamp object
 		move.b	#id_Lamp_Twirl,ost_routine(a1)		; child object goto Lamp_Twirl next
 		move.w	ost_x_pos(a0),ost_lamp_x_start(a1)
@@ -109,7 +109,7 @@ Lamp_Blue:	; Routine 2
 		move.b	#id_frame_lamp_redballonly,ost_frame(a1) ; use "ball only" frame
 		move.w	#32,ost_lamp_twirl_time(a1)
 
-	@fail:
+	.fail:
 		move.b	#id_frame_lamp_poleonly,ost_frame(a0)	; use "post only" frame
 		bsr.w	Lamp_StoreInfo				; store Sonic's position, rings, lives etc.
 		lea	(v_respawn_list).w,a2
@@ -117,7 +117,7 @@ Lamp_Blue:	; Routine 2
 		move.b	ost_respawn(a0),d0
 		bset	#0,2(a2,d0.w)				; remember lamppost as red
 
-	@donothing:
+	.donothing:
 		rts	
 ; ===========================================================================
 
@@ -127,10 +127,10 @@ Lamp_Finish:	; Routine 4
 
 Lamp_Twirl:	; Routine 6
 		subq.w	#1,ost_lamp_twirl_time(a0)		; decrement timer
-		bpl.s	@continue				; if time remains, keep twirling
+		bpl.s	.continue				; if time remains, keep twirling
 		move.b	#id_Lamp_Finish,ost_routine(a0)		; goto Lamp_Finish next
 
-	@continue:
+	.continue:
 		move.b	ost_angle(a0),d0
 		subi.b	#$10,ost_angle(a0)
 		subi.b	#$40,d0
@@ -200,18 +200,18 @@ Lamp_LoadInfo:
 		move.w	(v_bg3_x_pos_lampcopy).w,(v_bg3_x_pos).w
 		move.w	(v_bg3_y_pos_lampcopy).w,(v_bg3_y_pos).w
 		cmpi.b	#id_LZ,(v_zone).w			; is this Labyrinth Zone?
-		bne.s	@notlabyrinth				; if not, branch
+		bne.s	.notlabyrinth				; if not, branch
 
 		move.w	(v_water_height_normal_lampcopy).w,(v_water_height_normal).w
 		move.b	(v_water_routine_lampcopy).w,(v_water_routine).w
 		move.b	(f_water_pal_full_lampcopy).w,(f_water_pal_full).w
 
-	@notlabyrinth:
+	.notlabyrinth:
 		tst.b	(v_last_lamppost).w			; is last lamppost negative? (it never is)
-		bpl.s	@exit					; if not, branch
+		bpl.s	.exit					; if not, branch
 		move.w	(v_sonic_x_pos_lampcopy).w,d0
 		subi.w	#160,d0
 		move.w	d0,(v_boundary_left).w			; set left boundary to half a screen to Sonic's left
 
-	@exit:
+	.exit:
 		rts	

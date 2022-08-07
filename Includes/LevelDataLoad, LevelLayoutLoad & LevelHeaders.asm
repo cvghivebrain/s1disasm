@@ -22,28 +22,28 @@ LevelDataLoad:
 		move.w	(a2),d0					; load palette id
 		andi.w	#$FF,d0					; read only low byte (high byte was duplicate)
 		cmpi.w	#id_SBZ_act3,(v_zone).w			; is level SBZ3 (LZ4) ?
-		bne.s	@notSBZ3				; if not, branch
+		bne.s	.notSBZ3				; if not, branch
 		moveq	#id_Pal_SBZ3,d0				; use SB3 palette
 
-	@notSBZ3:
+	.notSBZ3:
 		cmpi.w	#id_SBZ_act2,(v_zone).w			; is level SBZ2?
-		beq.s	@isSBZorFZ				; if yes, branch
+		beq.s	.isSBZorFZ				; if yes, branch
 		cmpi.w	#id_FZ,(v_zone).w			; is level FZ?
-		bne.s	@normalpal				; if not, branch
+		bne.s	.normalpal				; if not, branch
 
-	@isSBZorFZ:
+	.isSBZorFZ:
 		moveq	#id_Pal_SBZ2,d0				; use SBZ2/FZ palette
 
-	@normalpal:
+	.normalpal:
 		bsr.w	PalLoad_Next				; load palette (based on d0)
 		movea.l	(sp)+,a2				; retrieve level header address from stack
 		addq.w	#4,a2					; jump to 2nd PLC
 		moveq	#0,d0
 		move.b	(a2),d0					; read 2nd PLC id
-		beq.s	@skipPLC				; if 2nd PLC is 0 (i.e. the ending sequence), branch
+		beq.s	.skipPLC				; if 2nd PLC is 0 (i.e. the ending sequence), branch
 		bsr.w	AddPLC					; load pattern load cues
 
-	@skipPLC:
+	.skipPLC:
 		rts
 
 ; ---------------------------------------------------------------------------
@@ -58,9 +58,9 @@ LevelLayoutLoad:
 		move.w	#((v_sprite_queue-v_level_layout)/4)-1,d1
 		moveq	#0,d0
 
-	@clear_ram:
+	.clear_ram:
 		move.l	d0,(a3)+
-		dbf	d1,@clear_ram				; clear the RAM ($A400-ABFF)
+		dbf	d1,.clear_ram				; clear the RAM ($A400-ABFF)
 
 		lea	(v_level_layout).w,a3			; RAM address for level layout
 		moveq	#0,d1
@@ -86,15 +86,15 @@ LevelLayoutLoad2:
 		move.b	(a1)+,d1				; load cropped level width (in tiles)
 		move.b	(a1)+,d2				; load cropped level height (in tiles)
 
-	@loop_row:
+	.loop_row:
 		move.w	d1,d0
 		movea.l	a3,a0
 
-	@loop_tile:
+	.loop_tile:
 		move.b	(a1)+,(a0)+
-		dbf	d0,@loop_tile				; load 1 row
+		dbf	d0,.loop_tile				; load 1 row
 		lea	sizeof_levelrow(a3),a3			; do next row
-		dbf	d2,@loop_row				; repeat for number of rows
+		dbf	d2,.loop_row				; repeat for number of rows
 		rts
 
 ; ---------------------------------------------------------------------------

@@ -48,7 +48,7 @@ Spring_Main:	; Routine 0
 		move.b	#4,ost_priority(a0)
 		move.b	ost_subtype(a0),d0
 		btst	#4,d0					; is spring type $1x? (horizontal)
-		beq.s	@not_horizontal				; if not, branch
+		beq.s	.not_horizontal				; if not, branch
 
 		move.b	#id_Spring_LR,ost_routine(a0)		; goto Spring_LR next
 		move.b	#id_ani_spring_left,ost_anim(a0)
@@ -56,19 +56,19 @@ Spring_Main:	; Routine 0
 		move.w	#tile_Nem_VSpring,ost_tile(a0)
 		move.b	#8,ost_displaywidth(a0)
 
-	@not_horizontal:
+	.not_horizontal:
 		btst	#5,d0					; is spring type $2x? (downwards)
-		beq.s	@not_down				; if not, branch
+		beq.s	.not_down				; if not, branch
 
 		move.b	#id_Spring_Dwn,ost_routine(a0)		; goto Spring_Dwn next
 		bset	#status_yflip_bit,ost_status(a0)
 
-	@not_down:
+	.not_down:
 		btst	#1,d0					; is spring subtype $x2?
-		beq.s	@not_yellow				; if not, branch
+		beq.s	.not_yellow				; if not, branch
 		bset	#tile_pal12_bit,ost_tile(a0)		; use 2nd palette (yellow spring)
 
-	@not_yellow:
+	.not_yellow:
 		andi.w	#$F,d0					; read only low nybble of subtype (0 or 2)
 		move.w	Spring_Powers(pc,d0.w),ost_spring_power(a0) ; get power level
 		rts	
@@ -115,10 +115,10 @@ Spring_LR:	; Routine 8
 		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject				; detect collision
 		cmpi.b	#id_Spring_Up,ost_routine(a0)		; has routine changed? (unused; SolidObject doesn't change it)
-		bne.s	@routine_ok				; if not, branch
+		bne.s	.routine_ok				; if not, branch
 		move.b	#id_Spring_LR,ost_routine(a0)
 
-	@routine_ok:
+	.routine_ok:
 		btst	#status_pushing_bit,ost_status(a0)
 		bne.s	Spring_BounceLR
 		rts	
@@ -129,19 +129,19 @@ Spring_BounceLR:
 		move.w	ost_spring_power(a0),ost_x_vel(a1)	; move Sonic to the left
 		addq.w	#8,ost_x_pos(a1)
 		btst	#status_xflip_bit,ost_status(a0)	; is object flipped?
-		bne.s	@xflipped				; if yes, branch
+		bne.s	.xflipped				; if yes, branch
 		subi.w	#$10,ost_x_pos(a1)
 		neg.w	ost_x_vel(a1)				; move Sonic to	the right
 
-	@xflipped:
+	.xflipped:
 		move.w	#sonic_lock_time_spring,ost_sonic_lock_time(a1) ; lock controls for 0.25 seconds
 		move.w	ost_x_vel(a1),ost_inertia(a1)
 		bchg	#status_xflip_bit,ost_status(a1)
 		btst	#status_jump_bit,ost_status(a1)		; is Sonic jumping/rolling?
-		bne.s	@is_rolling				; if yes, branch
+		bne.s	.is_rolling				; if yes, branch
 		move.b	#id_Walk,ost_anim(a1)			; use walking animation
 
-	@is_rolling:
+	.is_rolling:
 		bclr	#status_pushing_bit,ost_status(a0)
 		bclr	#status_pushing_bit,ost_status(a1)
 		play.w	1, jsr, sfx_Spring			; play spring sound
@@ -164,16 +164,16 @@ Spring_Dwn:	; Routine $E
 		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject				; detect collision
 		cmpi.b	#id_Spring_Up,ost_routine(a0)		; has routine changed? (unused; SolidObject doesn't change it)
-		bne.s	@routine_ok				; if not, branch
+		bne.s	.routine_ok				; if not, branch
 		move.b	#id_Spring_Dwn,ost_routine(a0)
 
-	@routine_ok:
+	.routine_ok:
 		tst.b	ost_solid(a0)				; is Sonic on top of the spring?
-		bne.s	@on_top					; if yes, branch
+		bne.s	.on_top					; if yes, branch
 		tst.w	d4
 		bmi.s	Spring_BounceDwn			; branch if Sonic hits spring from beneath
 
-	@on_top:
+	.on_top:
 		rts	
 ; ===========================================================================
 

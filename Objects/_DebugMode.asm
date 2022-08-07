@@ -25,28 +25,28 @@ Debug_Main:	; Routine 0
 		move.b	#0,ost_frame(a0)
 		move.b	#0,ost_anim(a0)
 		cmpi.b	#id_Special,(v_gamemode).w		; is game mode $10 (special stage)?
-		bne.s	@islevel				; if not, branch
+		bne.s	.islevel				; if not, branch
 
 		move.w	#0,(v_ss_rotation_speed).w		; stop special stage rotating
 		move.w	#0,(v_ss_angle).w			; make special stage "upright"
 		moveq	#id_DebugList_Ending,d0			; use 6th debug	item list
-		bra.s	@selectlist
+		bra.s	.selectlist
 ; ===========================================================================
 
-@islevel:
+.islevel:
 		moveq	#0,d0
 		move.b	(v_zone).w,d0
 
-@selectlist:
+.selectlist:
 		lea	(DebugList).l,a2
 		add.w	d0,d0
 		adda.w	(a2,d0.w),a2				; get address of debug list
 		move.w	(a2)+,d6				; get number of items in list
 		cmp.b	(v_debug_item_index).w,d6		; have you gone past the last item?
-		bhi.s	@noreset				; if not, branch
+		bhi.s	.noreset				; if not, branch
 		move.b	#0,(v_debug_item_index).w		; back to start of list
 
-	@noreset:
+	.noreset:
 		bsr.w	Debug_GetFrame				; get mappings, VRAM & frame id from debug list
 		move.b	#debug_move_delay,(v_debug_move_delay).w
 		move.b	#1,(v_debug_move_speed).w
@@ -54,12 +54,12 @@ Debug_Main:	; Routine 0
 Debug_Action:	; Routine 2
 		moveq	#id_DebugList_Ending,d0
 		cmpi.b	#id_Special,(v_gamemode).w
-		beq.s	@isntlevel
+		beq.s	.isntlevel
 
 		moveq	#0,d0
 		move.b	(v_zone).w,d0
 
-	@isntlevel:
+	.isntlevel:
 		lea	(DebugList).l,a2
 		add.w	d0,d0
 		adda.w	(a2,d0.w),a2				; get address of debug list
@@ -80,29 +80,29 @@ Debug_Control:
 		move.w	#1,d1
 		move.b	(v_joypad_press_actual).w,d4
 		andi.w	#btnDir,d4				; is up/down/left/right	pressed?
-		bne.s	@dirpressed				; if yes, branch
+		bne.s	.dirpressed				; if yes, branch
 
 		move.b	(v_joypad_hold_actual).w,d0
 		andi.w	#btnDir,d0				; is up/down/left/right	held?
-		bne.s	@dirheld				; if yes, branch
+		bne.s	.dirheld				; if yes, branch
 
 		move.b	#debug_move_delay,(v_debug_move_delay).w
 		move.b	#debug_move_speed,(v_debug_move_speed).w
 		bra.w	Debug_ChgItem
 ; ===========================================================================
 
-@dirheld:
+.dirheld:
 		subq.b	#1,(v_debug_move_delay).w		; decrement timer
-		bne.s	@chk_up					; if not 0, branch
+		bne.s	.chk_up					; if not 0, branch
 		move.b	#1,(v_debug_move_delay).w		; set delay timer to 1 frame
 		addq.b	#1,(v_debug_move_speed).w		; increment speed
-		bne.s	@dirpressed				; if not 0, branch
+		bne.s	.dirpressed				; if not 0, branch
 		move.b	#-1,(v_debug_move_speed).w
 
-@dirpressed:
+.dirpressed:
 		move.b	(v_joypad_hold_actual).w,d4
 
-	@chk_up:
+	.chk_up:
 		moveq	#0,d1
 		move.b	(v_debug_move_speed).w,d1
 		addq.w	#1,d1
@@ -111,64 +111,64 @@ Debug_Control:
 		move.l	ost_y_pos(a0),d2
 		move.l	ost_x_pos(a0),d3
 		btst	#bitUp,d4				; is up	being held?
-		beq.s	@chk_down				; if not, branch
+		beq.s	.chk_down				; if not, branch
 		sub.l	d1,d2					; move Sonic up
-		bcc.s	@chk_down
+		bcc.s	.chk_down
 		moveq	#0,d2					; keep Sonic within top boundary
 
-	@chk_down:
+	.chk_down:
 		btst	#bitDn,d4				; is down being held?
-		beq.s	@chk_left				; if not, branch
+		beq.s	.chk_left				; if not, branch
 		add.l	d1,d2					; move Sonic down
 		cmpi.l	#$7FF0000,d2				; is Sonic above $7FF? (bottom boundary)
-		bcs.s	@chk_left				; if yes, branch
+		bcs.s	.chk_left				; if yes, branch
 		move.l	#$7FF0000,d2				; keep Sonic within bottom boundary
 
-	@chk_left:
+	.chk_left:
 		btst	#bitL,d4				; is left being held?
-		beq.s	@chk_right				; if not, branch
+		beq.s	.chk_right				; if not, branch
 		sub.l	d1,d3					; move Sonic left
-		bcc.s	@chk_right
+		bcc.s	.chk_right
 		moveq	#0,d3					; keep Sonic within left boundary
 
-	@chk_right:
+	.chk_right:
 		btst	#bitR,d4				; is right being held?
-		beq.s	@update_pos				; if not, branch
+		beq.s	.update_pos				; if not, branch
 		add.l	d1,d3					; move Sonic right (no boundary check for right side)
 
-	@update_pos:
+	.update_pos:
 		move.l	d2,ost_y_pos(a0)
 		move.l	d3,ost_x_pos(a0)
 
 Debug_ChgItem:
 		btst	#bitA,(v_joypad_hold_actual).w		; is button A held?
-		beq.s	@createitem				; if not, branch
+		beq.s	.createitem				; if not, branch
 		btst	#bitC,(v_joypad_press_actual).w		; is button C pressed?
-		beq.s	@nextitem				; if not, branch
+		beq.s	.nextitem				; if not, branch
 
 		subq.b	#1,(v_debug_item_index).w		; go back 1 item
-		bcc.s	@display				; if item is 0 or higher, branch
+		bcc.s	.display				; if item is 0 or higher, branch
 		add.b	d6,(v_debug_item_index).w		; if item is -1, loop to last item
-		bra.s	@display
+		bra.s	.display
 ; ===========================================================================
 
-@nextitem:
+.nextitem:
 		btst	#bitA,(v_joypad_press_actual).w		; is button A pressed?
-		beq.s	@createitem				; if not, branch
+		beq.s	.createitem				; if not, branch
 		addq.b	#1,(v_debug_item_index).w		; go forwards 1 item
 		cmp.b	(v_debug_item_index).w,d6
-		bhi.s	@display
+		bhi.s	.display
 		move.b	#0,(v_debug_item_index).w		; loop back to first item
 
-	@display:
+	.display:
 		bra.w	Debug_GetFrame
 ; ===========================================================================
 
-@createitem:
+.createitem:
 		btst	#bitC,(v_joypad_press_actual).w		; is button C pressed?
-		beq.s	@backtonormal				; if not, branch
+		beq.s	.backtonormal				; if not, branch
 		jsr	(FindFreeObj).l
-		bne.s	@backtonormal
+		bne.s	.backtonormal
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	ost_mappings(a0),ost_id(a1)		; create object (object id is held in high byte of mappings pointer)
@@ -182,9 +182,9 @@ Debug_ChgItem:
 		rts	
 ; ===========================================================================
 
-@backtonormal:
+.backtonormal:
 		btst	#bitB,(v_joypad_press_actual).w		; is button B pressed?
-		beq.s	@stayindebug				; if not, branch
+		beq.s	.stayindebug				; if not, branch
 		moveq	#0,d0
 		move.w	d0,(v_debug_active).w			; deactivate debug mode
 		move.l	#Map_Sonic,(v_ost_player+ost_mappings).w
@@ -195,7 +195,7 @@ Debug_ChgItem:
 		move.w	(v_boundary_top_debugcopy).w,(v_boundary_top).w ; restore level boundaries
 		move.w	(v_boundary_bottom_debugcopy).w,(v_boundary_bottom_next).w
 		cmpi.b	#id_Special,(v_gamemode).w		; are you in the special stage?
-		bne.s	@stayindebug				; if not, branch
+		bne.s	.stayindebug				; if not, branch
 
 		clr.w	(v_ss_angle).w
 		move.w	#$40,(v_ss_rotation_speed).w		; set new level rotation speed
@@ -205,7 +205,7 @@ Debug_ChgItem:
 		bset	#status_jump_bit,(v_ost_player+ost_status).w
 		bset	#status_air_bit,(v_ost_player+ost_status).w
 
-	@stayindebug:
+	.stayindebug:
 		rts
 
 ; ---------------------------------------------------------------------------

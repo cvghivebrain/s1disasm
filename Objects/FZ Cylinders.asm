@@ -59,10 +59,10 @@ Cyl_Main:	; Routine 0
 
 Cyl_Action:	; Routine 2
 		cmpi.b	#2,ost_subtype(a0)			; is cylinder on ceiling?
-		ble.s	@not_ceiling				; if not, branch
+		ble.s	.not_ceiling				; if not, branch
 		bset	#status_yflip_bit,ost_render(a0)	; yflip
 
-	@not_ceiling:
+	.not_ceiling:
 		clr.l	ost_cylinder_y_move(a0)
 		tst.b	ost_cylinder_flag(a0)			; is cylinder set to move?
 		beq.s	Cyl_Update				; if not, branch
@@ -75,21 +75,21 @@ Cyl_Update:
 		swap	d1					; get important word
 		move.w	d1,ost_y_pos(a0)			; update y position
 		cmpi.b	#id_Cyl_Move,ost_routine(a0)		; is cylinder active?
-		bne.s	@skip_eggman				; if not, branch
+		bne.s	.skip_eggman				; if not, branch
 		tst.w	ost_cylinder_eggman(a0)			; does cylinder contain Eggman?
-		bpl.s	@skip_eggman				; if not, branch
+		bpl.s	.skip_eggman				; if not, branch
 		moveq	#-$A,d0
 		cmpi.b	#2,ost_subtype(a0)			; is cylinder on ceiling?
-		ble.s	@not_ceiling				; if not, branch
+		ble.s	.not_ceiling				; if not, branch
 		moveq	#$E,d0
 
-	@not_ceiling:
+	.not_ceiling:
 		add.w	d0,d1
 		movea.l	ost_cylinder_parent(a0),a1		; get address of OST of parent (Eggman)
 		move.w	d1,ost_y_pos(a1)			; update Eggman position
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 
-	@skip_eggman:
+	.skip_eggman:
 		move.w	#$2B,d1
 		move.w	#$60,d2
 		move.w	#$61,d3
@@ -97,34 +97,34 @@ Cyl_Update:
 		jsr	(SolidObject).l
 		moveq	#0,d0
 		move.w	ost_cylinder_y_move(a0),d1		; distance cylinder has moved
-		bpl.s	@moved_down				; branch if 0 or +ve
+		bpl.s	.moved_down				; branch if 0 or +ve
 		neg.w	d1					; make value +ve
 		subq.w	#8,d1
-		bcs.s	@update_frame				; branch if it was more than 8px
+		bcs.s	.update_frame				; branch if it was more than 8px
 		addq.b	#1,d0
 		asr.w	#4,d1					; divide by 16
 		add.w	d1,d0
-		bra.s	@update_frame
+		bra.s	.update_frame
 ; ===========================================================================
 
-@moved_down:
+.moved_down:
 		subi.w	#$27,d1
-		bcs.s	@update_frame				; branch if cylinder moved more than 39px
+		bcs.s	.update_frame				; branch if cylinder moved more than 39px
 		addq.b	#1,d0
 		asr.w	#4,d1					; divide by 16
 		add.w	d1,d0
 
-@update_frame:
+.update_frame:
 		move.b	d0,ost_frame(a0)			; set frame
 		move.w	(v_ost_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0
-		bmi.s	@display				; branch if Sonic is left of cylinder
+		bmi.s	.display				; branch if Sonic is left of cylinder
 		subi.w	#320,d0
-		bmi.s	@display				; branch if Sonic is within 320px of cylinder
+		bmi.s	.display				; branch if Sonic is within 320px of cylinder
 		tst.b	ost_render(a0)				; is object on-screen?
 		bpl.w	Cyl_Delete				; if not, branch
 
-	@display:
+	.display:
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 
@@ -144,16 +144,16 @@ Cyl_Move_Index:	index *,,2
 
 Cyl_Bottom:
 		tst.b	ost_cylinder_flag(a0)			; is cylinder extending?
-		bne.s	@extend					; if yes, branch
+		bne.s	.extend					; if yes, branch
 		movea.l	ost_cylinder_parent(a0),a1		; get address of OST of parent (Eggman)
 		tst.b	ost_col_property(a1)			; has boss been beaten?
-		bne.s	@not_beaten				; if not, branch
+		bne.s	.not_beaten				; if not, branch
 		bsr.w	BossExplode				; spawn explosion
 		subi.l	#$10000,ost_cylinder_y_move(a0)
 
-	@not_beaten:
+	.not_beaten:
 		addi.l	#$20000,ost_cylinder_y_move(a0)		; retract 2px
-		bcc.s	@exit					; branch if not fully retracted
+		bcc.s	.exit					; branch if not fully retracted
 		clr.l	ost_cylinder_y_move(a0)			; reset to 0
 		movea.l	ost_cylinder_parent(a0),a1		; get address of OST of parent
 		subq.w	#1,ost_fz_phase_state(a1)
@@ -162,36 +162,36 @@ Cyl_Bottom:
 		rts	
 ; ===========================================================================
 
-@extend:
+.extend:
 		cmpi.w	#-$10,ost_cylinder_y_move(a0)		; has cylinder moved at least 16px?
-		bge.s	@after_16px				; if yes, branch
+		bge.s	.after_16px				; if yes, branch
 		subi.l	#$28000,ost_cylinder_y_move(a0)		; move 2.5px
 
-	@after_16px:
+	.after_16px:
 		subi.l	#$8000,ost_cylinder_y_move(a0)		; move 0.5px
 		cmpi.w	#-$A0,ost_cylinder_y_move(a0)		; has cylinder moved 160px?
-		bgt.s	@exit					; if yes, branch
+		bgt.s	.exit					; if yes, branch
 		clr.w	ost_cylinder_y_move+2(a0)		; clear subpixel
 		move.w	#-$A0,ost_cylinder_y_move(a0)		; align to 160px
 		clr.b	ost_cylinder_flag(a0)			; clear extending flag
 
-@exit:
+.exit:
 		rts	
 ; ===========================================================================
 
 Cyl_Top:
 		bset	#render_yflip_bit,ost_render(a0)
 		tst.b	ost_cylinder_flag(a0)
-		bne.s	@extend
+		bne.s	.extend
 		movea.l	ost_cylinder_parent(a0),a1
 		tst.b	ost_col_property(a1)
-		bne.s	@not_beaten
+		bne.s	.not_beaten
 		bsr.w	BossExplode
 		addi.l	#$10000,ost_cylinder_y_move(a0)
 
-	@not_beaten:
+	.not_beaten:
 		subi.l	#$20000,ost_cylinder_y_move(a0)
-		bcc.s	@exit
+		bcc.s	.exit
 		clr.l	ost_cylinder_y_move(a0)
 		movea.l	ost_cylinder_parent(a0),a1
 		subq.w	#1,ost_fz_phase_state(a1)
@@ -200,18 +200,18 @@ Cyl_Top:
 		rts	
 ; ===========================================================================
 
-@extend:
+.extend:
 		cmpi.w	#$10,ost_cylinder_y_move(a0)
-		blt.s	@after_16px
+		blt.s	.after_16px
 		addi.l	#$28000,ost_cylinder_y_move(a0)
 
-	@after_16px:
+	.after_16px:
 		addi.l	#$8000,ost_cylinder_y_move(a0)
 		cmpi.w	#$A0,ost_cylinder_y_move(a0)
-		blt.s	@exit
+		blt.s	.exit
 		clr.w	ost_cylinder_y_move+2(a0)
 		move.w	#$A0,ost_cylinder_y_move(a0)
 		clr.b	ost_cylinder_flag(a0)
 
-@exit:
+.exit:
 		rts	

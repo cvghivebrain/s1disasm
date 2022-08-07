@@ -28,12 +28,12 @@ Shi_Main:	; Routine 0
 		move.b	#1,ost_priority(a0)
 		move.b	#$10,ost_displaywidth(a0)
 		tst.b	ost_anim(a0)				; is object a shield?
-		bne.s	@stars					; if not, branch
+		bne.s	.stars					; if not, branch
 		move.w	#tile_Nem_Shield,ost_tile(a0)		; shield specific code
 		rts	
 ; ===========================================================================
 
-@stars:
+.stars:
 		addq.b	#2,ost_routine(a0)			; goto Shi_Stars next
 		move.w	#tile_Nem_Stars,ost_tile(a0)
 		rts	
@@ -41,9 +41,9 @@ Shi_Main:	; Routine 0
 
 Shi_Shield:	; Routine 2
 		tst.b	(v_invincibility).w			; does Sonic have invincibility?
-		bne.s	@hide					; if yes, branch
+		bne.s	.hide					; if yes, branch
 		tst.b	(v_shield).w				; does Sonic have shield?
-		beq.s	@delete					; if not, branch
+		beq.s	.delete					; if not, branch
 
 		move.w	(v_ost_player+ost_x_pos).w,ost_x_pos(a0) ; match Sonic's position & orientation
 		move.w	(v_ost_player+ost_y_pos).w,ost_y_pos(a0)
@@ -52,20 +52,20 @@ Shi_Shield:	; Routine 2
 		jsr	(AnimateSprite).l
 		jmp	(DisplaySprite).l
 
-	@hide:
+	.hide:
 		rts	
 
-	@delete:
+	.delete:
 		jmp	(DeleteObject).l
 ; ===========================================================================
 
 Shi_Stars:	; Routine 4
 		tst.b	(v_invincibility).w			; does Sonic have invincibility?
-		beq.s	@delete					; if not, branch
+		beq.s	.delete					; if not, branch
 		move.w	(v_sonic_pos_tracker_num).w,d0		; get current index value for position tracking data
 		move.b	ost_anim(a0),d1				; get animation id (1 to 4)
 		subq.b	#1,d1					; subtract 1 (0 to 3)
-		bra.s	@trail
+		bra.s	.trail
 ; ===========================================================================
 ; unused - similar to below, but with star objects closer together
 		lsl.b	#4,d1					; multiply animation number by 16
@@ -76,10 +76,10 @@ Shi_Stars:	; Routine 4
 		addq.b	#4,d1					; increment tracking index
 		andi.b	#$F,d1					; cap at 15
 		move.b	d1,ost_invincibility_last_pos(a0)	; set new tracking index value
-		bra.s	@set_pos
+		bra.s	.set_pos
 ; ===========================================================================
 
-@trail:
+.trail:
 		lsl.b	#3,d1
 		move.b	d1,d2
 		add.b	d1,d1
@@ -90,13 +90,13 @@ Shi_Stars:	; Routine 4
 		sub.b	d1,d0					; subtract from tracker
 		addq.b	#4,d1					; increment tracking index
 		cmpi.b	#$18,d1
-		bcs.s	@is_valid				; branch if valid (0-23)
+		bcs.s	.is_valid				; branch if valid (0-23)
 		moveq	#0,d1					; reset to 0
 
-	@is_valid:
+	.is_valid:
 		move.b	d1,ost_invincibility_last_pos(a0)	; set new tracking index value
 
-	@set_pos:
+	.set_pos:
 		lea	(v_sonic_pos_tracker).w,a1		; position data
 		lea	(a1,d0.w),a1				; jump to relevant position data
 		move.w	(a1)+,ost_x_pos(a0)			; update position of stars
@@ -107,7 +107,7 @@ Shi_Stars:	; Routine 4
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 
-@delete:	
+.delete:	
 		jmp	(DeleteObject).l
 
 ; ---------------------------------------------------------------------------

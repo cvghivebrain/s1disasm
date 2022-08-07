@@ -36,10 +36,10 @@ Harp_Move:	; Routine 2
 		bsr.w	AnimateSprite				; animate and goto Harp_Wait next
 		moveq	#0,d0
 		move.b	ost_frame(a0),d0			; get frame number
-		move.b	@types(pc,d0.w),ost_col_type(a0)	; get collision type
+		move.b	.types(pc,d0.w),ost_col_type(a0)	; get collision type
 		bra.w	DespawnObject
 
-	@types:
+	.types:
 		dc.b id_col_8x4+id_col_hurt			; horizontal, short
 		dc.b id_col_24x4+id_col_hurt			; horizontal, middle
 		dc.b id_col_40x4+id_col_hurt			; horizontal, extended
@@ -50,12 +50,12 @@ Harp_Move:	; Routine 2
 
 Harp_Wait:	; Routine 4
 		subq.w	#1,ost_harp_time(a0)			; decrement timer
-		bpl.s	@chkdel					; branch if time remains
+		bpl.s	.chkdel					; branch if time remains
 		move.w	#60,ost_harp_time(a0)			; reset timer
 		subq.b	#2,ost_routine(a0)			; goto Harp_Move next
 		bchg	#0,ost_anim(a0)				; reverse animation
 
-	@chkdel:
+	.chkdel:
 		bra.w	DespawnObject
 
 ; ---------------------------------------------------------------------------

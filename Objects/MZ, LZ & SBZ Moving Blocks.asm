@@ -41,23 +41,23 @@ MBlock_Main:	; Routine 0
 		move.l	#Map_MBlock,ost_mappings(a0)
 		move.w	#tile_Nem_MzBlock+tile_pal3,ost_tile(a0)
 		cmpi.b	#id_LZ,(v_zone).w			; check if level is LZ
-		bne.s	@not_lz
+		bne.s	.not_lz
 
 		move.l	#Map_MBlockLZ,ost_mappings(a0)		; LZ specific code
 		move.w	#tile_Nem_LzHalfBlock+tile_pal3,ost_tile(a0)
 		move.b	#7,ost_height(a0)
 
-	@not_lz:
+	.not_lz:
 		cmpi.b	#id_SBZ,(v_zone).w			; check if level is SBZ
-		bne.s	@not_sbz
+		bne.s	.not_sbz
 
 		move.w	#tile_Nem_Stomper+tile_pal2,ost_tile(a0) ; SBZ specific code (object 5228)
 		cmpi.b	#type_mblock_sbz+type_mblock_updown,ost_subtype(a0) ; is object 5228 ?
-		beq.s	@is_sbz_28				; if yes, branch
+		beq.s	.is_sbz_28				; if yes, branch
 		move.w	#tile_Nem_SlideFloor+tile_pal3,ost_tile(a0) ; SBZ specific code (object 523x)
 
-	@not_sbz:
-	@is_sbz_28:
+	.not_sbz:
+	.is_sbz_28:
 		move.b	#render_rel,ost_render(a0)
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0			; get subtype
@@ -125,11 +125,11 @@ MBlock_LeftRight:
 		move.b	(v_oscillating_0_to_60).w,d0
 		move.w	#$60,d1
 		btst	#status_xflip_bit,ost_status(a0)
-		beq.s	@no_xflip
+		beq.s	.no_xflip
 		neg.w	d0
 		add.w	d1,d0
 
-	@no_xflip:
+	.no_xflip:
 		move.w	ost_mblock_x_start(a0),d1
 		sub.w	d0,d1
 		move.w	d1,ost_x_pos(a0)
@@ -143,10 +143,10 @@ MBlock_Right:
 MBlock_RightDrop:
 MBlock_Slide:
 		cmpi.b	#id_MBlock_StandOn,ost_routine(a0)	; is Sonic standing on the platform?
-		bne.s	@wait
+		bne.s	.wait
 		addq.b	#1,ost_subtype(a0)			; if yes, add 1 to type
 
-	@wait:
+	.wait:
 		rts	
 ; ===========================================================================
 
@@ -156,12 +156,12 @@ MBlock_Right_Now:
 		move.b	ost_displaywidth(a0),d3
 		bsr.w	FindWallRightObj
 		tst.w	d1					; has the platform hit a wall?
-		bmi.s	@hit_wall				; if yes, branch
+		bmi.s	.hit_wall				; if yes, branch
 		addq.w	#1,ost_x_pos(a0)			; move platform to the right
 		move.w	ost_x_pos(a0),ost_mblock_x_start(a0)
 		rts	
 
-@hit_wall:
+.hit_wall:
 		clr.b	ost_subtype(a0)				; change to type 00 (non-moving	type)
 		rts	
 ; ===========================================================================
@@ -172,12 +172,12 @@ MBlock_RightDrop_Now:
 		move.b	ost_displaywidth(a0),d3
 		bsr.w	FindWallRightObj
 		tst.w	d1					; has the platform hit a wall?
-		bmi.s	@hit_wall				; if yes, branch
+		bmi.s	.hit_wall				; if yes, branch
 		addq.w	#1,ost_x_pos(a0)			; move platform to the right
 		move.w	ost_x_pos(a0),ost_mblock_x_start(a0)
 		rts	
 
-@hit_wall:
+.hit_wall:
 		addq.b	#1,ost_subtype(a0)			; change to type 06 (falling)
 		rts	
 ; ===========================================================================
@@ -188,22 +188,22 @@ MBlock_Drop_Now:
 		addi.w	#$18,ost_y_vel(a0)			; make the platform fall
 		bsr.w	FindFloorObj
 		tst.w	d1					; has platform hit the floor?
-		bpl.w	@keep_falling				; if not, branch
+		bpl.w	.keep_falling				; if not, branch
 		add.w	d1,ost_y_pos(a0)			; align to floor
 		clr.w	ost_y_vel(a0)				; stop platform	falling
 		clr.b	ost_subtype(a0)				; change to type 00 (non-moving)
 
-	@keep_falling:
+	.keep_falling:
 		rts	
 ; ===========================================================================
 
 ; Type 7
 MBlock_RightDrop_Button:
 		tst.b	(v_button_state+2).w			; has button number 02 been pressed?
-		beq.s	@not_pressed
+		beq.s	.not_pressed
 		subq.b	#3,ost_subtype(a0)			; if yes, change object type to 04
 
-	@not_pressed:
+	.not_pressed:
 		addq.l	#4,sp
 		out_of_range	DeleteObject,ost_mblock_x_start(a0)
 		rts	
@@ -214,11 +214,11 @@ MBlock_UpDown:
 		move.b	(v_oscillating_0_to_80).w,d0
 		move.w	#$80,d1
 		btst	#status_xflip_bit,ost_status(a0)
-		beq.s	@no_xflip
+		beq.s	.no_xflip
 		neg.w	d0					; reverse vertical direction if xflip bit is set
 		add.w	d1,d0
 
-	@no_xflip:
+	.no_xflip:
 		move.w	ost_mblock_y_start(a0),d1
 		sub.w	d0,d1
 		move.w	d1,ost_y_pos(a0)
@@ -232,11 +232,11 @@ MBlock_Slide_Now:
 		add.w	d3,d3
 		moveq	#8,d1
 		btst	#status_xflip_bit,ost_status(a0)
-		beq.s	@no_xflip
+		beq.s	.no_xflip
 		neg.w	d1
 		neg.w	d3
 
-	@no_xflip:
+	.no_xflip:
 		tst.w	ost_mblock_move_flag(a0)		; is platform set to move back?
 		bne.s	MBlock_0A_Back				; if yes, branch
 		move.w	ost_x_pos(a0),d0
@@ -250,10 +250,10 @@ MBlock_Slide_Now:
 
 MBlock_0A_Wait:
 		subq.w	#1,ost_mblock_wait_time(a0)		; subtract 1 from time delay
-		bne.s	@wait					; if time remains, branch
+		bne.s	.wait					; if time remains, branch
 		move.w	#1,ost_mblock_move_flag(a0)		; set platform to move back to its original position
 
-	@wait:
+	.wait:
 		rts	
 ; ===========================================================================
 

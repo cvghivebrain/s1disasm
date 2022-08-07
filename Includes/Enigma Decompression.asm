@@ -43,11 +43,11 @@ Eni_Loop:
 		andi.w	#$7F,d1					; get format list entry
 		move.w	d1,d2					; and copy it
 		cmpi.w	#$40,d1					; is the high bit of the entry set?
-		bhs.s	@sevenbitentry
+		bhs.s	.sevenbitentry
 		moveq	#6,d0					; if it isn't, the entry is actually 6 bits
 		lsr.w	#1,d2
 
-	@sevenbitentry:
+	.sevenbitentry:
 		bsr.w	EniDec_FetchByte
 		andi.w	#$F,d2					; get repeat count
 		lsr.w	#4,d1
@@ -57,54 +57,54 @@ Eni_Loop:
 ; ===========================================================================
 
 EniDec_00:
-	@loop:
+	.loop:
 		move.w	a2,(a1)+				; copy incremental copy word
 		addq.w	#1,a2					; increment it
-		dbf	d2,@loop				; repeat
+		dbf	d2,.loop				; repeat
 		bra.s	Eni_Loop
 ; ===========================================================================
 
 EniDec_01:
-	@loop:
+	.loop:
 		move.w	a4,(a1)+				; copy literal copy word
-		dbf	d2,@loop				; repeat
+		dbf	d2,.loop				; repeat
 		bra.s	Eni_Loop
 ; ===========================================================================
 
 EniDec_100:
 		bsr.w	EniDec_FetchInlineValue
-	@loop:
+	.loop:
 		move.w	d1,(a1)+				; copy inline value
-		dbf	d2,@loop				; repeat
+		dbf	d2,.loop				; repeat
 
 		bra.s	Eni_Loop
 ; ===========================================================================
 
 EniDec_101:
 		bsr.w	EniDec_FetchInlineValue
-	@loop:
+	.loop:
 		move.w	d1,(a1)+				; copy inline value
 		addq.w	#1,d1					; increment
-		dbf	d2,@loop				; repeat
+		dbf	d2,.loop				; repeat
 
 		bra.s	Eni_Loop
 ; ===========================================================================
 EniDec_110:
 		bsr.w	EniDec_FetchInlineValue
-	@loop:
+	.loop:
 		move.w	d1,(a1)+				; copy inline value
 		subq.w	#1,d1					; decrement
-		dbf	d2,@loop				; repeat
+		dbf	d2,.loop				; repeat
 
 		bra.s	Eni_Loop
 ; ===========================================================================
 EniDec_111:
 		cmpi.w	#$F,d2
 		beq.s	EniDec_Done
-	@loop:
+	.loop:
 		bsr.w	EniDec_FetchInlineValue			; fetch new inline value
 		move.w	d1,(a1)+				; copy it
-		dbf	d2,@loop				; and repeat
+		dbf	d2,.loop				; and repeat
 
 		bra.s	Eni_Loop
 ; ===========================================================================
@@ -122,16 +122,16 @@ EniDec_Index:
 EniDec_Done:
 		subq.w	#1,a0					; go back by one byte
 		cmpi.w	#16,d6					; were we going to start on a completely new byte?
-		bne.s	@notnewbyte				; if not, branch
+		bne.s	.notnewbyte				; if not, branch
 		subq.w	#1,a0					; and another one if needed
 
-	@notnewbyte:
+	.notnewbyte:
 		move.w	a0,d0
 		lsr.w	#1,d0					; are we on an odd byte?
-		bcc.s	@evenbyte				; if not, branch
+		bcc.s	.evenbyte				; if not, branch
 		addq.w	#1,a0					; ensure we're on an even byte
 
-	@evenbyte:
+	.evenbyte:
 		movem.l	(sp)+,d0-d7/a1-a5
 		rts	
 
@@ -144,49 +144,49 @@ EniDec_FetchInlineValue:
 		move.w	a3,d3					; copy starting art tile
 		move.b	d4,d1					; copy PCCVH bitfield
 		add.b	d1,d1					; is the priority bit set?
-		bcc.s	@skippriority				; if not, branch
+		bcc.s	.skippriority				; if not, branch
 		subq.w	#1,d6
 		btst	d6,d5					; is the priority bit set in the inline render flags?
-		beq.s	@skippriority				; if not, branch
+		beq.s	.skippriority				; if not, branch
 		ori.w	#$8000,d3				; otherwise set priority bit in art tile
 
-	@skippriority:
+	.skippriority:
 		add.b	d1,d1					; is the high palette line bit set?
-		bcc.s	@skiphighpal				; if not, branch
+		bcc.s	.skiphighpal				; if not, branch
 		subq.w	#1,d6
 		btst	d6,d5
-		beq.s	@skiphighpal
+		beq.s	.skiphighpal
 		addi.w	#$4000,d3				; set second palette line bit
 
-	@skiphighpal:
+	.skiphighpal:
 		add.b	d1,d1					; is the low palette line bit set?
-		bcc.s	@skiplowpal				; if not, branch
+		bcc.s	.skiplowpal				; if not, branch
 		subq.w	#1,d6
 		btst	d6,d5
-		beq.s	@skiplowpal
+		beq.s	.skiplowpal
 		addi.w	#$2000,d3				; set first palette line bit
 
-	@skiplowpal:
+	.skiplowpal:
 		add.b	d1,d1					; is the vertical flip flag set?
-		bcc.s	@skipyflip				; if not, branch
+		bcc.s	.skipyflip				; if not, branch
 		subq.w	#1,d6
 		btst	d6,d5
-		beq.s	@skipyflip
+		beq.s	.skipyflip
 		ori.w	#$1000,d3				; set yflip bit
 
-	@skipyflip:
+	.skipyflip:
 		add.b	d1,d1					; is the horizontal flip flag set?
-		bcc.s	@skipxflip				; if not, branch
+		bcc.s	.skipxflip				; if not, branch
 		subq.w	#1,d6
 		btst	d6,d5
-		beq.s	@skipxflip
+		beq.s	.skipxflip
 		ori.w	#$800,d3				; set xflip bit
 
-	@skipxflip:
+	.skipxflip:
 		move.w	d5,d1
 		move.w	d6,d7
 		sub.w	a5,d7					; subtract length in bits of inline copy value
-		bcc.s	@enoughbits				; branch if a new word doesn't need to be read
+		bcc.s	.enoughbits				; branch if a new word doesn't need to be read
 		move.w	d7,d6
 		addi.w	#16,d6
 		neg.w	d7					; calculate bit deficit
@@ -197,7 +197,7 @@ EniDec_FetchInlineValue:
 		and.w	EniDec_Masks-2(pc,d7.w),d5
 		add.w	d5,d1					; combine upper bits with lower bits
 
-@maskvalue:
+.maskvalue:
 		move.w	a5,d0					; get length in bits of inline copy value
 		add.w	d0,d0
 		and.w	EniDec_Masks-2(pc,d0.w),d1		; mask value appropriately
@@ -208,8 +208,8 @@ EniDec_FetchInlineValue:
 		rts	
 ; ===========================================================================
 
-@enoughbits:
-		beq.s	@justenough				; if the word has been exactly exhausted, branch
+.enoughbits:
+		beq.s	.justenough				; if the word has been exactly exhausted, branch
 		lsr.w	d7,d1					; get inline copy value
 		move.w	a5,d0
 		add.w	d0,d0
@@ -219,9 +219,9 @@ EniDec_FetchInlineValue:
 		bra.s	EniDec_FetchByte
 ; ===========================================================================
 
-@justenough:
+.justenough:
 		moveq	#16,d6					; reset shift value
-		bra.s	@maskvalue
+		bra.s	.maskvalue
 ; ===========================================================================
 
 EniDec_Masks:
@@ -234,10 +234,10 @@ EniDec_Masks:
 EniDec_FetchByte:
 		sub.w	d0,d6					; subtract length of current entry from shift value so that next entry is read next time around
 		cmpi.w	#9,d6					; does a new byte need to be read?
-		bhs.s	@locret					; if not, branch
+		bhs.s	.locret					; if not, branch
 		addq.w	#8,d6
 		asl.w	#8,d5
 		move.b	(a0)+,d5
 
-	@locret:
+	.locret:
 		rts

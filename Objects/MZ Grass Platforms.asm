@@ -88,10 +88,10 @@ LGrass_Solid:
 		addi.w	#$B,d1					; width
 		move.w	#$20,d2					; height
 		cmpi.b	#id_frame_grass_narrow,ost_frame(a0)	; is this a narrow platform?
-		bne.s	@not_narrow				; if not, branch
+		bne.s	.not_narrow				; if not, branch
 		move.w	#$30,d2					; use larger height
 
-	@not_narrow:
+	.not_narrow:
 		movea.l	ost_grass_coll_ptr(a0),a2
 		bsr.w	SolidObject_Heightmap
 
@@ -155,11 +155,11 @@ LGrass_Type04:
 
 LGrass_Move:
 		btst	#3,ost_subtype(a0)			; is bit 3 of subtype set? (+8)
-		beq.s	@no_rev					; if not, branch
+		beq.s	.no_rev					; if not, branch
 		neg.w	d0					; reverse direction
 		add.w	d1,d0
 
-	@no_rev:
+	.no_rev:
 		move.w	ost_grass_y_start(a0),d1
 		sub.w	d0,d1
 		move.w	d1,ost_y_pos(a0)			; update y position
@@ -170,20 +170,20 @@ LGrass_Move:
 LGrass_Type05:
 		move.b	ost_grass_sink(a0),d0			; get current sink distance
 		tst.b	ost_solid(a0)				; is platform being stood on?
-		bne.s	@stood_on				; if yes, branch
+		bne.s	.stood_on				; if yes, branch
 		subq.b	#2,d0					; decrement sink distance
-		bcc.s	@update_sink				; branch if not < 0
+		bcc.s	.update_sink				; branch if not < 0
 		moveq	#0,d0					; reset to 0
-		bra.s	@update_sink
+		bra.s	.update_sink
 ; ===========================================================================
 
-@stood_on:
+.stood_on:
 		addq.b	#4,d0					; add 4 to sink distance
 		cmpi.b	#$40,d0					; has it reached $40?
-		bcs.s	@update_sink				; if not, branch
+		bcs.s	.update_sink				; if not, branch
 		move.b	#$40,d0					; max $40
 
-@update_sink:
+.update_sink:
 		move.b	d0,ost_grass_sink(a0)			; update sink distance
 		jsr	(CalcSine).l				; convert to sine
 		lsr.w	#4,d0
@@ -191,12 +191,12 @@ LGrass_Type05:
 		add.w	ost_grass_y_start(a0),d0
 		move.w	d0,ost_y_pos(a0)			; update position
 		cmpi.b	#$20,ost_grass_sink(a0)
-		bne.s	@skip_fire				; branch if not at $20
+		bne.s	.skip_fire				; branch if not at $20
 		tst.b	ost_grass_burn_flag(a0)
-		bne.s	@skip_fire				; branch if already burning
+		bne.s	.skip_fire				; branch if already burning
 		move.b	#1,ost_grass_burn_flag(a0)		; set burning flag
 		bsr.w	FindNextFreeObj				; find free OST slot
-		bne.s	@skip_fire				; branch if not found
+		bne.s	.skip_fire				; branch if not found
 
 		move.b	#id_GrassFire,ost_id(a1)		; load sitting flame object (this spreads itself)
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
@@ -209,23 +209,23 @@ LGrass_Type05:
 		movea.l	a0,a2
 		bsr.s	LGrass_AddChildToList			; save first flame OST index to list in parent OST
 
-	@skip_fire:
+	.skip_fire:
 		moveq	#0,d2
 		lea	ost_grass_children(a0),a2		; get address of child list
 		move.b	(a2)+,d2				; get quantity
 		subq.b	#1,d2
-		bcs.s	@skip_fire_sink				; branch if 0
+		bcs.s	.skip_fire_sink				; branch if 0
 
-	@loop_fire_sink:
+	.loop_fire_sink:
 		moveq	#0,d0
 		move.b	(a2)+,d0
 		lsl.w	#6,d0
 		addi.w	#v_ost_all&$FFFF,d0			; convert child OST index to address
 		movea.w	d0,a1
 		move.w	d1,ost_burn_sink(a1)			; copy parent sink distance to child
-		dbf	d2,@loop_fire_sink			; repeat for all children
+		dbf	d2,.loop_fire_sink			; repeat for all children
 
-	@skip_fire_sink:
+	.skip_fire_sink:
 		rts	
 
 ; ---------------------------------------------------------------------------
@@ -253,11 +253,11 @@ LGrass_AddChildToList:
 
 LGrass_ChkDel:
 		tst.b	ost_grass_burn_flag(a0)			; is platform burning?
-		beq.s	@not_burning				; if not, branch
+		beq.s	.not_burning				; if not, branch
 		tst.b	ost_render(a0)				; is platform off screen?
 		bpl.s	LGrass_DelFlames			; if yes, branch
 
-	@not_burning:
+	.not_burning:
 		out_of_range	DeleteObject,ost_grass_x_start(a0)
 		rts	
 ; ===========================================================================
@@ -268,9 +268,9 @@ LGrass_DelFlames:
 		move.b	(a2),d2					; get quantity
 		clr.b	(a2)+					; clear quantity
 		subq.b	#1,d2
-		bcs.s	@no_fire				; branch if 0
+		bcs.s	.no_fire				; branch if 0
 
-	@loop_del:
+	.loop_del:
 		moveq	#0,d0
 		move.b	(a2),d0
 		clr.b	(a2)+
@@ -278,10 +278,10 @@ LGrass_DelFlames:
 		addi.w	#v_ost_all&$FFFF,d0			; convert child OST index to address
 		movea.w	d0,a1
 		bsr.w	DeleteChild				; delete child object
-		dbf	d2,@loop_del				; repeat for all children
+		dbf	d2,.loop_del				; repeat for all children
 
 		move.b	#0,ost_grass_burn_flag(a0)
 		move.b	#0,ost_grass_sink(a0)
 
-	@no_fire:
+	.no_fire:
 		rts

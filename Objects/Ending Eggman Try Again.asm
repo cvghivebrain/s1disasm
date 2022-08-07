@@ -49,31 +49,31 @@ EEgg_Juggle:	; Routine 4
 		addq.b	#2,ost_routine(a0)			; goto EEgg_Wait next
 		moveq	#2,d0
 		btst	#0,ost_anim(a0)
-		beq.s	@noflip
+		beq.s	.noflip
 		neg.w	d0
 
-	@noflip:
+	.noflip:
 		lea	(v_ost_tryag_emeralds).w,a1		; get RAM address for emeralds
 		moveq	#6-1,d1
 
-@emeraldloop:
+.emeraldloop:
 		move.b	d0,ost_ectry_speed(a1)			; set emerald speed to 2 or -2
 		move.w	d0,d2
 		asl.w	#3,d2					; d2 = speed * 8
 		add.b	d2,ost_angle(a1)			; update angle
 		lea	sizeof_ost(a1),a1			; next emerald
-		dbf	d1,@emeraldloop				; repeat for all emeralds
+		dbf	d1,.emeraldloop				; repeat for all emeralds
 
 		addq.b	#1,ost_frame(a0)
 		move.w	#112,ost_eeggman_wait_time(a0)		; set time delay between juggles
 
 EEgg_Wait:	; Routine 6
 		subq.w	#1,ost_eeggman_wait_time(a0)		; decrement timer
-		bpl.s	@nochg					; branch if time remains
+		bpl.s	.nochg					; branch if time remains
 		bchg	#0,ost_anim(a0)
 		move.b	#id_EEgg_Animate,ost_routine(a0)	; goto EEgg_Animate next
 
-	@nochg:
+	.nochg:
 		rts	
 
 ; ---------------------------------------------------------------------------

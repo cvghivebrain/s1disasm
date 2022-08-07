@@ -31,21 +31,21 @@ TSon_Main:	; Routine 0
 
 TSon_Delay:	;Routine 2
 		subq.b	#1,ost_anim_time_low(a0)			; decrement timer
-		bpl.s	@wait					; if time remains, branch
+		bpl.s	.wait					; if time remains, branch
 		addq.b	#2,ost_routine(a0)			; goto TSon_Move next
 		bra.w	DisplaySprite
 
-	@wait:
+	.wait:
 		rts	
 ; ===========================================================================
 
 TSon_Move:	; Routine 4
 		subq.w	#8,ost_y_screen(a0)			; move Sonic up
 		cmpi.w	#$96,ost_y_screen(a0)			; has Sonic reached final position?
-		bne.s	@display				; if not, branch
+		bne.s	.display				; if not, branch
 		addq.b	#2,ost_routine(a0)			; goto TSon_Animate next
 
-	@display:
+	.display:
 		bra.w	DisplaySprite
 
 		rts	

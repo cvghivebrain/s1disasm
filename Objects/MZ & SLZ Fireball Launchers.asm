@@ -37,17 +37,17 @@ FireM_Main:	; Routine 0
 
 FireM_MakeFire:	; Routine 2
 		subq.b	#1,ost_anim_time(a0)			; decrement timer
-		bne.s	@wait					; if time remains, branch
+		bne.s	.wait					; if time remains, branch
 		move.b	ost_anim_time_low(a0),ost_anim_time(a0)	; reset time delay
 		bsr.w	CheckOffScreen				; is object on-screen?
-		bne.s	@wait					; if not, branch
+		bne.s	.wait					; if not, branch
 		bsr.w	FindFreeObj				; find free OST slot
-		bne.s	@wait					; branch if not found
+		bne.s	.wait					; branch if not found
 
 		move.b	#id_FireBall,ost_id(a1)			; load fireball object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	ost_subtype(a0),ost_subtype(a1)		; subtype = speed/direction
 
-	@wait:
+	.wait:
 		rts	

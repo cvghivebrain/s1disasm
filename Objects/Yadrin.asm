@@ -12,27 +12,27 @@ Yad_ChkWall:
 		move.w	(v_frame_counter).w,d0			; get word that increments every frame
 		add.w	d7,d0					; add OST id (so that multiple yadrins don't do wall check on the same frame)
 		andi.w	#3,d0					; read only bits 0-1
-		bne.s	@no_collision				; branch if either are set
+		bne.s	.no_collision				; branch if either are set
 		moveq	#0,d3
 		move.b	ost_displaywidth(a0),d3
 		tst.w	ost_x_vel(a0)				; is yadrin moving to the left?
-		bmi.s	@moving_left				; if yes, branch
+		bmi.s	.moving_left				; if yes, branch
 		bsr.w	FindWallRightObj
 		tst.w	d1					; has yadrin hit wall to the right?
-		bpl.s	@no_collision				; if not, branch
+		bpl.s	.no_collision				; if not, branch
 
-@collision:
+.collision:
 		moveq	#1,d0					; set collision flag
 		rts	
 ; ===========================================================================
 
-@moving_left:
+.moving_left:
 		not.w	d3					; flip width
 		bsr.w	FindWallLeftObj
 		tst.w	d1					; has yadrin hit wall to the left?
-		bmi.s	@collision				; if yes, branch
+		bmi.s	.collision				; if yes, branch
 
-@no_collision:
+.no_collision:
 		moveq	#0,d0
 		rts
 
@@ -70,13 +70,13 @@ Yad_Main:	; Routine 0
 		bsr.w	ObjectFall				; apply gravity & update position
 		bsr.w	FindFloorObj
 		tst.w	d1					; has yadrin hit the floor?
-		bpl.s	@keep_falling				; if not, branch
+		bpl.s	.keep_falling				; if not, branch
 		add.w	d1,ost_y_pos(a0)			; align to floor
 		move.w	#0,ost_y_vel(a0)			; stop falling
 		addq.b	#2,ost_routine(a0)			; goto Yad_Action next
 		bchg	#status_xflip_bit,ost_status(a0)
 
-	@keep_falling:
+	.keep_falling:
 		rts	
 ; ===========================================================================
 
@@ -96,16 +96,16 @@ Yad_Index2:	index *,,2
 
 Yad_Move:
 		subq.w	#1,ost_yadrin_wait_time(a0)		; decrement timer
-		bpl.s	@wait					; if time remains, branch
+		bpl.s	.wait					; if time remains, branch
 		addq.b	#2,ost_routine2(a0)			; goto Yad_FixToFloor next
 		move.w	#-$100,ost_x_vel(a0)			; move object left
 		move.b	#id_ani_yadrin_walk,ost_anim(a0)	; use walking animation
 		bchg	#status_xflip_bit,ost_status(a0)
-		bne.s	@no_xflip
+		bne.s	.no_xflip
 		neg.w	ost_x_vel(a0)				; move right if xflipped
 
-	@wait:
-	@no_xflip:
+	.wait:
+	.no_xflip:
 		rts	
 ; ===========================================================================
 

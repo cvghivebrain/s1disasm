@@ -91,9 +91,9 @@ ShowErrorMessage:
 		locVRAM	vram_error				; target $F800 in VRAM
 		lea	(Art_Text).l,a0				; level select text graphics
 		move.w	#((sizeof_art_text-sizeof_cell)/2)-1,d1	; -$20 because the last letter (X) is missed off
-	@loadgfx:
+	.loadgfx:
 		move.w	(a0)+,(a6)
-		dbf	d1,@loadgfx
+		dbf	d1,.loadgfx
 
 		moveq	#0,d0					; clear	d0
 		move.b	(v_error_type).w,d0			; load error code
@@ -102,38 +102,38 @@ ShowErrorMessage:
 		locVRAM	(vram_fg+(sizeof_vram_row*12)+(2*2))	; draw message on 12th row, 2nd column
 		moveq	#19-1,d1				; number of characters (minus 1)
 
-	@showchars:
+	.showchars:
 		moveq	#0,d0
 		move.b	(a0)+,d0				; get one character
 		addi.w	#(vram_error/sizeof_cell)-"0",d0	; VRAM tile id minus ASCII baseline ("0" = $30)
 		move.w	d0,(a6)					; write to fg nametable in VRAM
-		dbf	d1,@showchars				; repeat for number of characters
+		dbf	d1,.showchars				; repeat for number of characters
 		rts
 
 ; ===========================================================================
 ErrorText:	index *
-		ptr @exception
-		ptr @bus
-		ptr @address
-		ptr @illinstruct
-		ptr @zerodivide
-		ptr @chkinstruct
-		ptr @trapv
-		ptr @privilege
-		ptr @trace
-		ptr @line1010
-		ptr @line1111
-@exception:	dc.b "ERROR EXCEPTION    "
-@bus:		dc.b "BUS ERROR          "
-@address:	dc.b "ADDRESS ERROR      "
-@illinstruct:	dc.b "ILLEGAL INSTRUCTION"
-@zerodivide:	dc.b "@ERO DIVIDE        "			; @ = Z
-@chkinstruct:	dc.b "CHK INSTRUCTION    "
-@trapv:		dc.b "TRAPV INSTRUCTION  "
-@privilege:	dc.b "PRIVILEGE VIOLATION"
-@trace:		dc.b "TRACE              "
-@line1010:	dc.b "LINE 1010 EMULATOR "
-@line1111:	dc.b "LINE 1111 EMULATOR "
+		ptr .exception
+		ptr .bus
+		ptr .address
+		ptr .illinstruct
+		ptr .zerodivide
+		ptr .chkinstruct
+		ptr .trapv
+		ptr .privilege
+		ptr .trace
+		ptr .line1010
+		ptr .line1111
+.exception:	dc.b "ERROR EXCEPTION    "
+.bus:		dc.b "BUS ERROR          "
+.address:	dc.b "ADDRESS ERROR      "
+.illinstruct:	dc.b "ILLEGAL INSTRUCTION"
+.zerodivide:	dc.b "@ERO DIVIDE        "			; @ = Z
+.chkinstruct:	dc.b "CHK INSTRUCTION    "
+.trapv:		dc.b "TRAPV INSTRUCTION  "
+.privilege:	dc.b "PRIVILEGE VIOLATION"
+.trace:		dc.b "TRACE              "
+.line1010:	dc.b "LINE 1010 EMULATOR "
+.line1111:	dc.b "LINE 1111 EMULATOR "
 		even
 
 ; ---------------------------------------------------------------------------
@@ -150,20 +150,20 @@ ShowErrorValue:
 		move.w	#(vram_error/sizeof_cell)+$A,(a6)	; display "$" symbol
 		moveq	#8-1,d2
 
-	@loop:
+	.loop:
 		rol.l	#4,d0					; move highest nybble into lowest nybble
-		bsr.s	@shownumber				; display 8 numbers
-		dbf	d2,@loop
+		bsr.s	.shownumber				; display 8 numbers
+		dbf	d2,.loop
 		rts
 
-@shownumber:
+.shownumber:
 		move.w	d0,d1					; copy input to d1
 		andi.w	#$F,d1					; read one nybble
 		cmpi.w	#$A,d1
-		blo.s	@chars0to9
+		blo.s	.chars0to9
 		addq.w	#7,d1					; add 7 for characters A-F
 
-	@chars0to9:
+	.chars0to9:
 		addi.w	#(vram_error/sizeof_cell),d1
 		move.w	d1,(a6)					; write to fg nametable in VRAM
 		rts

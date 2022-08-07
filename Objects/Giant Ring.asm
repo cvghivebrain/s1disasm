@@ -50,18 +50,18 @@ GRing_Collect:	; Routine 4
 		subq.b	#2,ost_routine(a0)			; goto GRing_Animate next
 		move.b	#0,ost_col_type(a0)
 		bsr.w	FindFreeObj				; find free OST slot
-		bne.w	@fail					; branch if not found
+		bne.w	.fail					; branch if not found
 		move.b	#id_RingFlash,ost_id(a1)		; load giant ring flash object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.l	a0,ost_flash_parent(a1)
 		move.w	(v_ost_player+ost_x_pos).w,d0
 		cmp.w	ost_x_pos(a0),d0			; has Sonic come from the left?
-		bcs.s	@noflip					; if yes, branch
+		bcs.s	.noflip					; if yes, branch
 		bset	#render_xflip_bit,ost_render(a1)	; reverse flash object
 
-	@fail:
-	@noflip:
+	.fail:
+	.noflip:
 		play.w	1, jsr, sfx_GiantRing			; play giant ring sound
 		bra.s	GRing_Animate
 ; ===========================================================================

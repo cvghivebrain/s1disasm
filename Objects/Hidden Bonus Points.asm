@@ -31,17 +31,17 @@ Bonus_Main:	; Routine 0
 		sub.w	ost_x_pos(a0),d0			; d0 = Sonic's distance from item (-ve if Sonic is left, +ve if right)
 		add.w	d2,d0					; add radius
 		cmp.w	d3,d0					; is Sonic within item's width?
-		bcc.s	@chkdel					; if not, branch
+		bcc.s	.chkdel					; if not, branch
 		move.w	ost_y_pos(a1),d1
 		sub.w	ost_y_pos(a0),d1
 		add.w	d2,d1
 		cmp.w	d3,d1					; is Sonic within item's height?
-		bcc.s	@chkdel					; if not, branch
+		bcc.s	.chkdel					; if not, branch
 
 		tst.w	(v_debug_active).w			; is debug in use?
-		bne.s	@chkdel					; if yes, branch
+		bne.s	.chkdel					; if yes, branch
 		tst.b	(f_giantring_collected).w		; has giant ring been collected?
-		bne.s	@chkdel					; if yes, branch
+		bne.s	.chkdel					; if yes, branch
 
 		addq.b	#2,ost_routine(a0)			; goto Bonus_Display next
 		move.l	#Map_Bonus,ost_mappings(a0)
@@ -58,11 +58,11 @@ Bonus_Main:	; Routine 0
 		move.w	Bonus_Points(pc,d0.w),d0		; load bonus points from array
 		jsr	(AddPoints).l				; add points and update HUD
 
-	@chkdel:
-		out_of_range.s	@delete
+	.chkdel:
+		out_of_range.s	.delete
 		rts	
 
-	@delete:
+	.delete:
 		jmp	(DeleteObject).l
 
 ; ===========================================================================
@@ -75,9 +75,9 @@ Bonus_Points_3:	dc.w 1						; subtype 3 - 10 points (should be 100)
 
 Bonus_Display:	; Routine 2
 		subq.w	#1,ost_bonus_wait_time(a0)		; decrement display time
-		bmi.s	@delete					; if time is zero, branch
-		out_of_range.s	@delete
+		bmi.s	.delete					; if time is zero, branch
+		out_of_range.s	.delete
 		jmp	(DisplaySprite).l
 
-	@delete:	
+	.delete:	
 		jmp	(DeleteObject).l

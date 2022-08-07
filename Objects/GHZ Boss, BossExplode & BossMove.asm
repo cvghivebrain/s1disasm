@@ -28,14 +28,14 @@ BGHZ_Main:	; Routine 0
 		lea	(BGHZ_ObjData).l,a2			; get data for routine number & animation
 		movea.l	a0,a1					; replace current object with 1st in list
 		moveq	#2,d1					; 2 additional objects
-		bra.s	@load_boss
+		bra.s	.load_boss
 ; ===========================================================================
 
-@loop:
+.loop:
 		jsr	(FindNextFreeObj).l			; find free OST slot
-		bne.s	@fail					; branch if not found
+		bne.s	.fail					; branch if not found
 
-@load_boss:
+.load_boss:
 		move.b	(a2)+,ost_routine(a1)			; goto BGHZ_ShipMain/BGHZ_FaceMain/BGHZ_FlameMain next
 		move.b	#id_BossGreenHill,ost_id(a1)
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
@@ -47,9 +47,9 @@ BGHZ_Main:	; Routine 0
 		move.b	#3,ost_priority(a1)
 		move.b	(a2)+,ost_anim(a1)
 		move.l	a0,ost_boss_parent(a1)			; save address of OST of parent
-		dbf	d1,@loop				; repeat sequence 2 more times
+		dbf	d1,.loop				; repeat sequence 2 more times
 
-	@fail:
+	.fail:
 		move.w	ost_x_pos(a0),ost_boss_parent_x_pos(a0)
 		move.w	ost_y_pos(a0),ost_boss_parent_y_pos(a0)
 		move.b	#id_col_24x24,ost_col_type(a0)
@@ -95,34 +95,34 @@ BGHZ_Update:
 		move.w	ost_boss_parent_x_pos(a0),ost_x_pos(a0)	; update actual x pos
 		addq.b	#2,ost_boss_wobble(a0)			; increment wobble (wraps to 0 after $FE)
 		cmpi.b	#id_BGHZ_Explode,ost_routine2(a0)
-		bcc.s	@exit
+		bcc.s	.exit
 		tst.b	ost_status(a0)				; has boss been beaten?
-		bmi.s	@beaten					; if yes, branch
+		bmi.s	.beaten					; if yes, branch
 		tst.b	ost_col_type(a0)			; is ship collision clear?
-		bne.s	@exit					; if not, branch
+		bne.s	.exit					; if not, branch
 		tst.b	ost_boss_flash_num(a0)			; is ship flashing?
-		bne.s	@flash					; if yes, branch
+		bne.s	.flash					; if yes, branch
 		move.b	#$20,ost_boss_flash_num(a0)		; set ship to flash 32 times
 		play.w	1, jsr, sfx_BossHit			; play boss damage sound
 
-	@flash:
+	.flash:
 		lea	(v_pal_dry_line2+2).w,a1		; load 2nd palette, 2nd entry
 		moveq	#0,d0					; move 0 (black) to d0
 		tst.w	(a1)					; is colour white?
-		bne.s	@is_white				; if yes, branch
+		bne.s	.is_white				; if yes, branch
 		move.w	#boss_flash_color,d0			; move $EEE (white) to d0
 
-	@is_white:
+	.is_white:
 		move.w	d0,(a1)					; load colour stored in	d0
 		subq.b	#1,ost_boss_flash_num(a0)		; decrement flash counter
-		bne.s	@exit					; branch if not 0
+		bne.s	.exit					; branch if not 0
 		move.b	#id_col_24x24,ost_col_type(a0)		; enable boss collision again
 
-	@exit:
+	.exit:
 		rts	
 ; ===========================================================================
 
-@beaten:
+.beaten:
 		moveq	#100,d0
 		bsr.w	AddPoints				; give Sonic 1000 points
 		move.b	#id_BGHZ_Explode,ost_routine2(a0)
@@ -136,9 +136,9 @@ BGHZ_Update:
 BossExplode:
 		move.b	(v_vblank_counter_byte).w,d0		; get byte that increments every frame
 		andi.b	#7,d0					; read bits 0-2
-		bne.s	@fail					; branch if any are set
+		bne.s	.fail					; branch if any are set
 		jsr	(FindFreeObj).l				; find free OST slot
-		bne.s	@fail					; branch if not found
+		bne.s	.fail					; branch if not found
 		move.b	#id_ExplosionBomb,ost_id(a1)		; load explosion object every 8th frame
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
@@ -153,7 +153,7 @@ BossExplode:
 		lsr.b	#3,d0
 		add.w	d0,ost_y_pos(a1)
 
-	@fail:
+	.fail:
 		rts
 
 ; ---------------------------------------------------------------------------
@@ -182,114 +182,114 @@ BGHZ_MakeBall:
 		move.w	#-$40,ost_y_vel(a0)			; move ship upwards
 		bsr.w	BossMove				; update parent position
 		cmpi.w	#$2A00,ost_boss_parent_x_pos(a0)	; has ship reached target position?
-		bne.s	@wait					; if not, branch
+		bne.s	.wait					; if not, branch
 		move.w	#0,ost_x_vel(a0)			; stop ship
 		move.w	#0,ost_y_vel(a0)
 		addq.b	#2,ost_routine2(a0)			; goto BGHZ_ShipMove next
 		jsr	(FindNextFreeObj).l			; find free OST slot
-		bne.s	@fail					; branch if not found
+		bne.s	.fail					; branch if not found
 		move.b	#id_BossBall,ost_id(a1)			; load swinging ball object
 		move.w	ost_boss_parent_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_boss_parent_y_pos(a0),ost_y_pos(a1)
 		move.l	a0,ost_ball_parent(a1)
 
-	@fail:
+	.fail:
 		move.w	#119,ost_boss_wait_time(a0)		; set wait time to 2 seconds
 
-	@wait:
+	.wait:
 		bra.w	BGHZ_Update				; update actual position, check for hits
 ; ===========================================================================
 
 BGHZ_ShipMove:
 		subq.w	#1,ost_boss_wait_time(a0)		; decrement timer
-		bpl.s	@wait					; branch if time remains
+		bpl.s	.wait					; branch if time remains
 		addq.b	#2,ost_routine2(a0)			; goto BGHZ_ChgDir next
 		move.w	#63,ost_boss_wait_time(a0)		; set wait time to 1 second
 		move.w	#$100,ost_x_vel(a0)			; set speed
 		cmpi.w	#$2A00,ost_boss_parent_x_pos(a0)	; has ship moved after ball was spawned?
-		bne.s	@wait					; if yes, branch
+		bne.s	.wait					; if yes, branch
 		move.w	#127,ost_boss_wait_time(a0)		; set timer to 2 seconds
 		move.w	#$40,ost_x_vel(a0)			; set initial speed as slower
 
-	@wait:
+	.wait:
 		btst	#status_xflip_bit,ost_status(a0)	; is ship facing left?
-		bne.s	@face_right				; if not, branch
+		bne.s	.face_right				; if not, branch
 		neg.w	ost_x_vel(a0)				; go left instead
 
-	@face_right:
+	.face_right:
 		bra.w	BGHZ_Update				; update actual position, check for hits
 ; ===========================================================================
 
 BGHZ_ChgDir:
 		subq.w	#1,ost_boss_wait_time(a0)		; decrement timer
-		bmi.s	@chg_dir				; branch if below 0
+		bmi.s	.chg_dir				; branch if below 0
 		bsr.w	BossMove				; update parent position
-		bra.s	@update_pos
+		bra.s	.update_pos
 ; ===========================================================================
 
-@chg_dir:
+.chg_dir:
 		bchg	#status_xflip_bit,ost_status(a0)	; change direction
 		move.w	#63,ost_boss_wait_time(a0)		; set wait time
 		subq.b	#2,ost_routine2(a0)			; goto BGHZ_ShipMove next
 		move.w	#0,ost_x_vel(a0)			; stop moving
 
-@update_pos:
+.update_pos:
 		bra.w	BGHZ_Update				; update actual position, check for hits
 ; ===========================================================================
 
 BGHZ_Explode:
 		subq.w	#1,ost_boss_wait_time(a0)		; decrement timer
-		bmi.s	@stop_exploding				; branch if below 0
+		bmi.s	.stop_exploding				; branch if below 0
 		bra.w	BossExplode				; load explosion object
 ; ===========================================================================
 
-@stop_exploding:
+.stop_exploding:
 		bset	#status_xflip_bit,ost_status(a0)	; ship face right
 		bclr	#status_broken_bit,ost_status(a0)
 		clr.w	ost_x_vel(a0)				; stop moving
 		addq.b	#2,ost_routine2(a0)			; goto BGHZ_Recover next
 		move.w	#-38,ost_boss_wait_time(a0)		; set timer (counts up)
 		tst.b	(v_boss_status).w
-		bne.s	@exit
+		bne.s	.exit
 		move.b	#1,(v_boss_status).w			; set boss beaten flag
 
-	@exit:
+	.exit:
 		rts	
 ; ===========================================================================
 
 BGHZ_Recover:
 		addq.w	#1,ost_boss_wait_time(a0)		; increment timer
-		beq.s	@stop_falling				; branch if 0
-		bpl.s	@ship_recovers				; branch if 1 or more
+		beq.s	.stop_falling				; branch if 0
+		bpl.s	.ship_recovers				; branch if 1 or more
 		addi.w	#$18,ost_y_vel(a0)			; apply gravity (falls)
-		bra.s	@update
+		bra.s	.update
 ; ===========================================================================
 
-@stop_falling:
+.stop_falling:
 		clr.w	ost_y_vel(a0)				; stop falling
-		bra.s	@update
+		bra.s	.update
 ; ===========================================================================
 
-@ship_recovers:
+.ship_recovers:
 		cmpi.w	#$30,ost_boss_wait_time(a0)		; have 48 frames passed since ship stopped falling?
-		bcs.s	@ship_rises				; if not, branch
-		beq.s	@stop_rising				; if exactly 48, branch
+		bcs.s	.ship_rises				; if not, branch
+		beq.s	.stop_rising				; if exactly 48, branch
 		cmpi.w	#$38,ost_boss_wait_time(a0)		; have 56 frames passed since ship stopped rising?
-		bcs.s	@update					; if not, branch
+		bcs.s	.update					; if not, branch
 		addq.b	#2,ost_routine2(a0)			; if yes, goto BGHZ_Escape next
-		bra.s	@update
+		bra.s	.update
 ; ===========================================================================
 
-@ship_rises:
+.ship_rises:
 		subq.w	#8,ost_y_vel(a0)			; move ship upwards
-		bra.s	@update
+		bra.s	.update
 ; ===========================================================================
 
-@stop_rising:
+.stop_rising:
 		clr.w	ost_y_vel(a0)				; stop ship rising
 		play.w	0, jsr, mus_GHZ				; play GHZ music
 
-@update:
+.update:
 		bsr.w	BossMove				; update parent position
 		bra.w	BGHZ_Update				; update actual position, check for hits
 ; ===========================================================================
@@ -298,21 +298,21 @@ BGHZ_Escape:
 		move.w	#$400,ost_x_vel(a0)			; move ship right
 		move.w	#-$40,ost_y_vel(a0)			; move ship upwards
 		cmpi.w	#$2AC0,(v_boundary_right).w		; check for new boundary
-		beq.s	@chkdel
+		beq.s	.chkdel
 		addq.w	#2,(v_boundary_right).w			; expand right edge of level boundary
-		bra.s	@update
+		bra.s	.update
 ; ===========================================================================
 
-@chkdel:
+.chkdel:
 		tst.b	ost_render(a0)				; is ship on-screen?
-		bpl.s	@delete					; if not, branch
+		bpl.s	.delete					; if not, branch
 
-@update:
+.update:
 		bsr.w	BossMove				; update parent position
 		bra.w	BGHZ_Update				; update actual position, check for hits
 ; ===========================================================================
 
-@delete:
+.delete:
 		jmp	(DeleteObject).l
 ; ===========================================================================
 
@@ -322,43 +322,43 @@ BGHZ_FaceMain:	; Routine 4
 		movea.l	ost_boss_parent(a0),a1			; get address of OST of parent object
 		move.b	ost_routine2(a1),d0
 		subq.b	#4,d0					; is ship on BGHZ_ShipMove?
-		bne.s	@chk_recover				; if not, branch
+		bne.s	.chk_recover				; if not, branch
 		cmpi.w	#$2A00,ost_boss_parent_x_pos(a1)	; is ship in middle while ball spawns?
-		bne.s	@chk_hit				; if not, branch
+		bne.s	.chk_hit				; if not, branch
 		moveq	#id_ani_boss_laugh,d1			; laugh while ball spawns
 
-@chk_recover:
+.chk_recover:
 		subq.b	#6,d0					; is ship on BGHZ_Recover?
-		bmi.s	@chk_hit				; if not, branch
+		bmi.s	.chk_hit				; if not, branch
 		moveq	#id_ani_boss_defeat,d1
-		bra.s	@update
+		bra.s	.update
 ; ===========================================================================
 
-@chk_hit:
+.chk_hit:
 		tst.b	ost_col_type(a1)			; is boss collision on?
-		bne.s	@chk_sonic_hurt				; if yes, branch
+		bne.s	.chk_sonic_hurt				; if yes, branch
 		moveq	#id_ani_boss_hit,d1			; use hit animation
-		bra.s	@update
+		bra.s	.update
 ; ===========================================================================
 
-@chk_sonic_hurt:
+.chk_sonic_hurt:
 		cmpi.b	#id_Sonic_Hurt,(v_ost_player+ost_routine).w ; is Sonic hurt or dead?
-		bcs.s	@update					; if not, branch
+		bcs.s	.update					; if not, branch
 		moveq	#id_ani_boss_laugh,d1			; use laughing animation
 
-@update:
+.update:
 		move.b	d1,ost_anim(a0)				; set animation
 		subq.b	#2,d0					; is ship on BGHZ_Escape?
-		bne.s	@display				; if not, branch
+		bne.s	.display				; if not, branch
 		move.b	#id_ani_boss_panic,ost_anim(a0)		; use sweating animation
 		tst.b	ost_render(a0)				; is object on-screen?
-		bpl.s	@delete					; if not, branch
+		bpl.s	.delete					; if not, branch
 
-	@display:
+	.display:
 		bra.s	BGHZ_Display
 ; ===========================================================================
 
-@delete:
+.delete:
 		jmp	(DeleteObject).l
 ; ===========================================================================
 
@@ -366,23 +366,23 @@ BGHZ_FlameMain:	; Routine 6
 		move.b	#id_ani_boss_blank,ost_anim(a0)
 		movea.l	ost_boss_parent(a0),a1			; get address of OST of parent object
 		cmpi.b	#id_BGHZ_Escape,ost_routine2(a1)	; is ship on BGHZ_Escape?
-		bne.s	@chk_moving				; if not, branch
+		bne.s	.chk_moving				; if not, branch
 		move.b	#id_ani_boss_bigflame,ost_anim(a0)	; use big flame animation
 		tst.b	ost_render(a0)				; is object on-screen?
-		bpl.s	@delete					; if not, branch
-		bra.s	@display
+		bpl.s	.delete					; if not, branch
+		bra.s	.display
 ; ===========================================================================
 
-@chk_moving:
+.chk_moving:
 		move.w	ost_x_vel(a1),d0
-		beq.s	@display				; branch if ship isn't moving
+		beq.s	.display				; branch if ship isn't moving
 		move.b	#id_ani_boss_flame1,ost_anim(a0)
 
-@display:
+.display:
 		bra.s	BGHZ_Display
 ; ===========================================================================
 
-@delete:
+.delete:
 		jmp	(DeleteObject).l
 ; ===========================================================================
 

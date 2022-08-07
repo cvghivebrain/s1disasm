@@ -65,55 +65,55 @@ include_EdgeWalls_2:	macro
 
 Edge_SolidWall:
 		bsr.w	Edge_ChkCollision
-		beq.s	@no_collision				; branch if no collision
-		bmi.w	@topbottom				; branch if top/bottom collision
+		beq.s	.no_collision				; branch if no collision
+		bmi.w	.topbottom				; branch if top/bottom collision
 		tst.w	d0					; where is Sonic?
-		beq.w	@centre					; if inside the object, branch
-		bmi.s	@right					; if right of the object, branch
+		beq.w	.centre					; if inside the object, branch
+		bmi.s	.right					; if right of the object, branch
 		tst.w	ost_x_vel(a1)				; is Sonic moving left?
-		bmi.s	@centre					; if yes, branch
-		bra.s	@left
+		bmi.s	.centre					; if yes, branch
+		bra.s	.left
 ; ===========================================================================
 
-@right:
+.right:
 		tst.w	ost_x_vel(a1)				; is Sonic moving right?
-		bpl.s	@centre					; if yes, branch
+		bpl.s	.centre					; if yes, branch
 
-@left:
+.left:
 		sub.w	d0,ost_x_pos(a1)
 		move.w	#0,ost_inertia(a1)
 		move.w	#0,ost_x_vel(a1)			; stop Sonic moving
 
-@centre:
+.centre:
 		btst	#status_air_bit,ost_status(a1)		; is Sonic in the air?
-		bne.s	@air					; if yes, branch
+		bne.s	.air					; if yes, branch
 		bset	#status_pushing_bit,ost_status(a1)	; make Sonic push object
 		bset	#status_pushing_bit,ost_status(a0)	; make object be pushed
 		rts	
 ; ===========================================================================
 
-@no_collision:
+.no_collision:
 		btst	#status_pushing_bit,ost_status(a0)	; is Sonic pushing?
-		beq.s	@exit					; if not, branch
+		beq.s	.exit					; if not, branch
 		move.w	#id_Run,ost_anim(a1)			; use running animation
 
-@air:
+.air:
 		bclr	#status_pushing_bit,ost_status(a0)	; clear pushing flag
 		bclr	#status_pushing_bit,ost_status(a1)	; clear Sonic's pushing flag
 
-	@exit:
+	.exit:
 		rts	
 ; ===========================================================================
 
-@topbottom:
+.topbottom:
 		tst.w	ost_y_vel(a1)				; is Sonic moving downwards?
-		bpl.s	@exit2					; if yes, branch
+		bpl.s	.exit2					; if yes, branch
 		tst.w	d3					; is Sonic above the object?
-		bpl.s	@exit2					; if yes, branch
+		bpl.s	.exit2					; if yes, branch
 		sub.w	d3,ost_y_pos(a1)			; correct Sonic's position
 		move.w	#0,ost_y_vel(a1)			; stop Sonic moving
 
-	@exit2:
+	.exit2:
 		rts
 ; ===========================================================================
 
@@ -148,21 +148,21 @@ Edge_ChkCollision:
 		bne.s	Edge_Ignore				; if yes, branch
 		move.w	d0,d5
 		cmp.w	d0,d1					; is Sonic right of centre of object?
-		bhs.s	@isright				; if yes, branch
+		bhs.s	.isright				; if yes, branch
 		add.w	d1,d1
 		sub.w	d1,d0
 		move.w	d0,d5
 		neg.w	d5
 
-	@isright:
+	.isright:
 		move.w	d3,d1
 		cmp.w	d3,d2					; is Sonic below centre of object?
-		bhs.s	@isbelow				; if yes, branch
+		bhs.s	.isbelow				; if yes, branch
 		sub.w	d4,d3
 		move.w	d3,d1
 		neg.w	d1
 
-	@isbelow:
+	.isbelow:
 		cmp.w	d1,d5
 		bhi.s	Edge_TopBottom
 		moveq	#1,d4

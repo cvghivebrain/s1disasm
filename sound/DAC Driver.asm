@@ -71,10 +71,10 @@ zDACDecodeTbl:
 CheckForSamples:
 		ld	hl,zDAC_Sample				; Load the address of next sample.
 
-@nullsample:
+.nullsample:
 		ld	a,(hl)					; a = next sample to play.
 		or	a					; Do we have a valid sample?
-		jp	p,@nullsample				; Loop until we do
+		jp	p,.nullsample				; Loop until we do
 
 		sub	81h					; Make 0-based index
 		ld	(hl),a					; Store it back into sample index (i.e., mark it as being played)

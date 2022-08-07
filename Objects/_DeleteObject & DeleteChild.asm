@@ -17,7 +17,7 @@ DeleteChild:							; child objects are already in (a1)
 		moveq	#0,d1
 		moveq	#(sizeof_ost/4)-1,d0
 
-	@loop:
+	.loop:
 		move.l	d1,(a1)+				; clear	the object RAM
-		dbf	d0,@loop				; repeat for length of object RAM
+		dbf	d0,.loop				; repeat for length of object RAM
 		rts	

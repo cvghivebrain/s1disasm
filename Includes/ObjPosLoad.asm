@@ -36,53 +36,53 @@ OPL_Init:
 		move.w	#$101,(a2)+				; start respawn counter at 1
 		move.w	#($17C/4)-1,d0				; deletes half the stack as well; should be $100
 
-	@clear_respawn_list:
+	.clear_respawn_list:
 		clr.l	(a2)+
-		dbf	d0,@clear_respawn_list			; clear object respawn list
+		dbf	d0,.clear_respawn_list			; clear object respawn list
 
 		lea	(v_respawn_list).w,a2
 		moveq	#0,d2
 		move.w	(v_camera_x_pos).w,d6
 		subi.w	#128,d6					; d6 = 128px to left of screen
-		bcc.s	@use_screen_x				; branch if camera is > 128px from left boundary
+		bcc.s	.use_screen_x				; branch if camera is > 128px from left boundary
 		moveq	#0,d6					; assume 0 if camera is close to left boundary
 
-	@use_screen_x:
+	.use_screen_x:
 		andi.w	#$FF80,d6				; round down to nearest $80
 		movea.l	(v_opl_ptr_right).w,a0			; get objpos data pointer
 
-@loop_find_right_init:
+.loop_find_right_init:
 		cmp.w	(a0),d6					; (a0) = x pos of object; d6 = edge of spawn window
-		bls.s	@found_right				; branch if object is right of edge (1st object outside spawn window)
+		bls.s	.found_right				; branch if object is right of edge (1st object outside spawn window)
 		tst.b	4(a0)					; 4(a0) = object id and remember state flag
-		bpl.s	@no_respawn				; branch if no remember flag found
+		bpl.s	.no_respawn				; branch if no remember flag found
 		move.b	(a2),d2					; d2 = respawn state
 		addq.b	#1,(a2)					; increment respawn list counter
 
-	@no_respawn:
+	.no_respawn:
 		addq.w	#6,a0					; goto next object in objpos list
-		bra.s	@loop_find_right_init			; loop until object is found within window
+		bra.s	.loop_find_right_init			; loop until object is found within window
 ; ===========================================================================
 
-@found_right:
+.found_right:
 		move.l	a0,(v_opl_ptr_right).w			; save pointer for objpos, 128px left of screen
 		movea.l	(v_opl_ptr_left).w,a0			; get first objpos in list again
 		subi.w	#128,d6					; d6 = 256px to left of screen
-		bcs.s	@found_left				; branch if camera is close to left boundary
+		bcs.s	.found_left				; branch if camera is close to left boundary
 
-@loop_find_left_init:
+.loop_find_left_init:
 		cmp.w	(a0),d6					; (a0) = x pos of object; d6 = edge of spawn window
-		bls.s	@found_left				; branch if object is right of edge (1st object inside spawn window)
+		bls.s	.found_left				; branch if object is right of edge (1st object inside spawn window)
 		tst.b	4(a0)					; 4(a0) = object id and remember state flag
-		bpl.s	@no_respawn2				; branch if no remember flag found
+		bpl.s	.no_respawn2				; branch if no remember flag found
 		addq.b	#1,1(a2)				; increment second respawn list counter
 
-	@no_respawn2:
+	.no_respawn2:
 		addq.w	#6,a0					; goto next object in objpos list
-		bra.s	@loop_find_left_init			; loop until object is found within window
+		bra.s	.loop_find_left_init			; loop until object is found within window
 ; ===========================================================================
 
-@found_left:
+.found_left:
 		move.l	a0,(v_opl_ptr_left).w			; save pointer for objpos, 256px left of screen
 		move.w	#-1,(v_opl_screen_x_pos).w		; start screen at -1 so OPL_Main thinks it's moving right
 
@@ -99,50 +99,50 @@ OPL_MovedLeft:
 		move.w	d6,(v_opl_screen_x_pos).w		; update screen position
 		movea.l	(v_opl_ptr_left).w,a0			; jump to objpos on left side of window
 		subi.w	#128,d6					; d6 = 128px to left of screen
-		bcs.s	@found_left				; branch if camera is close to left boundary
+		bcs.s	.found_left				; branch if camera is close to left boundary
 
-@loop_find_left:
+.loop_find_left:
 		cmp.w	-6(a0),d6				; read objpos backwards
-		bge.s	@found_left				; branch if object is outside spawn window
+		bge.s	.found_left				; branch if object is outside spawn window
 		subq.w	#6,a0					; update pointer
 		tst.b	4(a0)					; 4(a0) = object id and remember state flag
-		bpl.s	@no_respawn				; branch if no remember flag found
+		bpl.s	.no_respawn				; branch if no remember flag found
 		subq.b	#1,1(a2)				; decrement second respawn list counter
 		move.b	1(a2),d2				; get respawn counter
 
-	@no_respawn:
+	.no_respawn:
 		bsr.w	OPL_SpawnObj				; check respawn flag and spawn object
-		bne.s	@fail					; branch if spawn fails
+		bne.s	.fail					; branch if spawn fails
 		subq.w	#6,a0					; goto previous object in objpos list
-		bra.s	@loop_find_left				; loop until object is found within window
+		bra.s	.loop_find_left				; loop until object is found within window
 ; ===========================================================================
 
-@fail:
+.fail:
 		tst.b	4(a0)
-		bpl.s	@no_respawn2
+		bpl.s	.no_respawn2
 		addq.b	#1,1(a2)
 
-	@no_respawn2:
+	.no_respawn2:
 		addq.w	#6,a0
 
-@found_left:
+.found_left:
 		move.l	a0,(v_opl_ptr_left).w			; save pointer for objpos
 		movea.l	(v_opl_ptr_right).w,a0			; jump to objpos on right side of window
 		addi.w	#128+320+320,d6				; d6 = 320px to right of screen
 
-@loop_find_right:
+.loop_find_right:
 		cmp.w	-6(a0),d6				; read objpos backwards
-		bgt.s	@found_right				; branch if object is within spawn window
+		bgt.s	.found_right				; branch if object is within spawn window
 		tst.b	-2(a0)					; -2(a0) = object id and remember state flag
-		bpl.s	@no_respawn3				; branch if no remember flag found
+		bpl.s	.no_respawn3				; branch if no remember flag found
 		subq.b	#1,(a2)					; decrement respawn list counter
 
-	@no_respawn3:
+	.no_respawn3:
 		subq.w	#6,a0					; goto previous object in objpos list
-		bra.s	@loop_find_right
+		bra.s	.loop_find_right
 ; ===========================================================================
 
-@found_right:
+.found_right:
 		move.l	a0,(v_opl_ptr_right).w			; save pointer for objpos
 		rts	
 ; ===========================================================================
@@ -152,37 +152,37 @@ OPL_MovedRight:
 		movea.l	(v_opl_ptr_right).w,a0			; jump to objpos on right side of window
 		addi.w	#320+320,d6				; d6 = 320px to right of screen
 
-@loop_find_right:
+.loop_find_right:
 		cmp.w	(a0),d6					; (a0) = x pos of object; d6 = right edge of spawn window
-		bls.s	@found_right				; branch if object is outside spawn window
+		bls.s	.found_right				; branch if object is outside spawn window
 		tst.b	4(a0)
-		bpl.s	@no_respawn
+		bpl.s	.no_respawn
 		move.b	(a2),d2
 		addq.b	#1,(a2)
 
-	@no_respawn:
+	.no_respawn:
 		bsr.w	OPL_SpawnObj				; check respawn flag and spawn object
-		beq.s	@loop_find_right			; loop until object is found outside window
+		beq.s	.loop_find_right			; loop until object is found outside window
 
-	@found_right:
+	.found_right:
 		move.l	a0,(v_opl_ptr_right).w			; save pointer for objpos
 		movea.l	(v_opl_ptr_left).w,a0			; jump to objpos on left side of window
 		subi.w	#320+320+128,d6				; d6 = 128px to left of screen
-		bcs.s	@found_left
+		bcs.s	.found_left
 
-@loop_find_left:
+.loop_find_left:
 		cmp.w	(a0),d6					; (a0) = x pos of object; d6 = left edge of spawn window
-		bls.s	@found_left				; branch if object is within spawn window
+		bls.s	.found_left				; branch if object is within spawn window
 		tst.b	4(a0)
-		bpl.s	@no_respawn2
+		bpl.s	.no_respawn2
 		addq.b	#1,1(a2)
 
-	@no_respawn2:
+	.no_respawn2:
 		addq.w	#6,a0
-		bra.s	@loop_find_left
+		bra.s	.loop_find_left
 ; ===========================================================================
 
-@found_left:
+.found_left:
 		move.l	a0,(v_opl_ptr_left).w
 
 OPL_NoMove:
@@ -214,7 +214,7 @@ OPL_SpawnObj:
 
 OPL_MakeItem:
 		bsr.w	FindFreeObj				; find free OST slot
-		bne.s	@fail					; branch if not found
+		bne.s	.fail					; branch if not found
 		move.w	(a0)+,ost_x_pos(a1)			; set x pos
 		move.w	(a0)+,d0				; get y pos and x/yflip flags
 		move.w	d0,d1
@@ -225,14 +225,14 @@ OPL_MakeItem:
 		move.b	d1,ost_render(a1)			; apply x/yflip
 		move.b	d1,ost_status(a1)
 		move.b	(a0)+,d0				; get object id
-		bpl.s	@no_respawn_bit				; branch if remember respawn bit is not set
+		bpl.s	.no_respawn_bit				; branch if remember respawn bit is not set
 		andi.b	#$7F,d0					; ignore respawn bit
 		move.b	d2,ost_respawn(a1)			; give object its place in the respawn table
 
-	@no_respawn_bit:
+	.no_respawn_bit:
 		move.b	d0,ost_id(a1)				; load object
 		move.b	(a0)+,ost_subtype(a1)			; set subtype
 		moveq	#0,d0
 
-	@fail:
+	.fail:
 		rts	

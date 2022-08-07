@@ -38,13 +38,13 @@ ADoor_OpenShut:	; Routine 2
 
 		add.w	d1,d0					; d0 = Sonic's x position
 		cmp.w	ost_x_pos(a0),d0			; is Sonic left of the door?
-		bcc.s	@sonic_is_left				; if yes, branch
+		bcc.s	.sonic_is_left				; if yes, branch
 		btst	#status_xflip_bit,ost_status(a0)
 		bne.s	ADoor_Animate
 		bra.s	ADoor_Open
 ; ===========================================================================
 
-@sonic_is_left:
+.sonic_is_left:
 		btst	#status_xflip_bit,ost_status(a0)
 		beq.s	ADoor_Animate
 
@@ -55,7 +55,7 @@ ADoor_Animate:
 		lea	(Ani_ADoor).l,a1
 		bsr.w	AnimateSprite
 		tst.b	ost_frame(a0)				; is the door open?
-		bne.s	@remember				; if yes, branch
+		bne.s	.remember				; if yes, branch
 		move.w	#$11,d1
 		move.w	#$20,d2
 		move.w	d2,d3
@@ -63,7 +63,7 @@ ADoor_Animate:
 		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject
 
-	@remember:
+	.remember:
 		bra.w	DespawnObject
 
 ; ---------------------------------------------------------------------------

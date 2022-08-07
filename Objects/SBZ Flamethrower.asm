@@ -49,24 +49,24 @@ Flame_Main:	; Routine 0
 
 Flame_Action:	; Routine 2
 		subq.w	#1,ost_flame_time(a0)			; decrement timer
-		bpl.s	@wait					; if time remains, branch
+		bpl.s	.wait					; if time remains, branch
 		move.w	ost_flame_off_master(a0),ost_flame_time(a0) ; begin pause time
 		bchg	#0,ost_anim(a0)				; switch between on/off animations
-		beq.s	@wait					; branch if previously on
+		beq.s	.wait					; branch if previously on
 
 		move.w	ost_flame_on_master(a0),ost_flame_time(a0) ; begin flaming time
 		play.w	1, jsr, sfx_Flame			; play flame sound
 
-	@wait:
+	.wait:
 		lea	(Ani_Flame).l,a1
 		bsr.w	AnimateSprite
 		move.b	#0,ost_col_type(a0)
 		move.b	ost_flame_last_frame(a0),d0
 		cmp.b	ost_frame(a0),d0			; has flame animation finished?
-		bne.s	@harmless				; if not, branch
+		bne.s	.harmless				; if not, branch
 		move.b	#id_col_12x24+id_col_hurt,ost_col_type(a0) ; make object harmful
 
-	@harmless:
+	.harmless:
 		out_of_range	DeleteObject
 		bra.w	DisplaySprite
 

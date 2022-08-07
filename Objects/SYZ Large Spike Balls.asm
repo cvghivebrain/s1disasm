@@ -72,11 +72,11 @@ BBall_Sideways:
 		moveq	#0,d0
 		move.b	(v_oscillating_0_to_60).w,d0		; get oscillating value
 		btst	#status_xflip_bit,ost_status(a0)
-		beq.s	@noflip
+		beq.s	.noflip
 		neg.w	d0					; invert if xflipped
 		add.w	d1,d0
 
-	@noflip:
+	.noflip:
 		move.w	ost_bball_x_start(a0),d1		; get initial x pos
 		sub.w	d0,d1					; subtract difference
 		move.w	d1,ost_x_pos(a0)			; update position
@@ -89,11 +89,11 @@ BBall_UpDown:
 		moveq	#0,d0
 		move.b	(v_oscillating_0_to_60).w,d0		; get oscillating value
 		btst	#status_xflip_bit,ost_status(a0)
-		beq.s	@noflip
+		beq.s	.noflip
 		neg.w	d0					; invert if xflipped
 		addi.w	#$80,d0
 
-	@noflip:
+	.noflip:
 		move.w	ost_bball_y_start(a0),d1		; get initial y pos
 		sub.w	d0,d1					; subtract difference
 		move.w	d1,ost_y_pos(a0)			; update position

@@ -73,17 +73,17 @@ Circ_Anticlockwise:
 		subi.b	#$50,d2
 		ext.w	d2
 		btst	#0,ost_subtype(a0)			; is type 1 or 3?
-		beq.s	@not_1_or_3				; if not, branch
+		beq.s	.not_1_or_3				; if not, branch
 		neg.w	d1
 		neg.w	d2
 
-	@not_1_or_3:
+	.not_1_or_3:
 		btst	#1,ost_subtype(a0)			; is type 2 or 3?
-		beq.s	@not_2_or_3				; if not, branch
+		beq.s	.not_2_or_3				; if not, branch
 		neg.w	d1
 		exg	d1,d2
 
-	@not_2_or_3:
+	.not_2_or_3:
 		add.w	ost_circ_x_start(a0),d1
 		move.w	d1,ost_x_pos(a0)
 		add.w	ost_circ_y_start(a0),d2
@@ -99,17 +99,17 @@ Circ_Clockwise:
 		subi.b	#$50,d2
 		ext.w	d2
 		btst	#0,ost_subtype(a0)
-		beq.s	@not_1_or_3
+		beq.s	.not_1_or_3
 		neg.w	d1
 		neg.w	d2
 
-	@not_1_or_3:
+	.not_1_or_3:
 		btst	#1,ost_subtype(a0)
-		beq.s	@not_2_or_3
+		beq.s	.not_2_or_3
 		neg.w	d1
 		exg	d1,d2
 
-	@not_2_or_3:
+	.not_2_or_3:
 		neg.w	d1					; reverse x position delta
 		add.w	ost_circ_x_start(a0),d1
 		move.w	d1,ost_x_pos(a0)

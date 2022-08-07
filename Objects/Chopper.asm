@@ -39,21 +39,21 @@ Chop_ChgSpeed:	; Routine 2
 		addi.w	#$18,ost_y_vel(a0)			; reduce speed
 		move.w	ost_chopper_y_start(a0),d0
 		cmp.w	ost_y_pos(a0),d0			; has Chopper returned to its original position?
-		bcc.s	@chganimation				; if not, branch
+		bcc.s	.chganimation				; if not, branch
 		move.w	d0,ost_y_pos(a0)
 		move.w	#-$700,ost_y_vel(a0)			; set vertical speed
 
-	@chganimation:
+	.chganimation:
 		move.b	#id_ani_chopper_fast,ost_anim(a0)	; use fast animation
 		subi.w	#$C0,d0
 		cmp.w	ost_y_pos(a0),d0
-		bcc.s	@nochg
+		bcc.s	.nochg
 		move.b	#id_ani_chopper_slow,ost_anim(a0)	; use slow animation
 		tst.w	ost_y_vel(a0)				; is Chopper at	its highest point?
-		bmi.s	@nochg					; if not, branch
+		bmi.s	.nochg					; if not, branch
 		move.b	#id_ani_chopper_still,ost_anim(a0)	; use stationary animation
 
-	@nochg:
+	.nochg:
 		rts	
 
 ; ---------------------------------------------------------------------------

@@ -13,23 +13,23 @@ AddPLC:
 		lea	(a1,d0.w),a1				; jump to relevant PLC
 		lea	(v_plc_buffer).w,a2			; PLC buffer space in RAM
 
-	@findspace:
+	.findspace:
 		tst.l	(a2)					; is first space available?
-		beq.s	@copytoRAM				; if yes, branch
+		beq.s	.copytoRAM				; if yes, branch
 		addq.w	#sizeof_plc,a2				; if not, try next space
-		bra.s	@findspace				; repeat until space is found (warning: there are $10 spaces, but it may overflow)
+		bra.s	.findspace				; repeat until space is found (warning: there are $10 spaces, but it may overflow)
 ; ===========================================================================
 
-@copytoRAM:
+.copytoRAM:
 		move.w	(a1)+,d0				; get PLC item count
-		bmi.s	@skip					; branch if -1 (i.e. 0 items)
+		bmi.s	.skip					; branch if -1 (i.e. 0 items)
 
-	@loop:
+	.loop:
 		move.l	(a1)+,(a2)+
 		move.w	(a1)+,(a2)+				; copy PLC to RAM
-		dbf	d0,@loop				; repeat for all items in PLC
+		dbf	d0,.loop				; repeat for all items in PLC
 
-	@skip:
+	.skip:
 		movem.l	(sp)+,a1-a2				; restore a1/a2 from stack
 		rts
 
@@ -50,14 +50,14 @@ NewPLC:
 		bsr.s	ClearPLC				; erase any data in PLC buffer space
 		lea	(v_plc_buffer).w,a2
 		move.w	(a1)+,d0				; get PLC item count
-		bmi.s	@skip					; branch if -1 (i.e. 0 items)
+		bmi.s	.skip					; branch if -1 (i.e. 0 items)
 
-	@loop:
+	.loop:
 		move.l	(a1)+,(a2)+
 		move.w	(a1)+,(a2)+				; copy PLC to RAM
-		dbf	d0,@loop				; repeat for all items in PLC
+		dbf	d0,.loop				; repeat for all items in PLC
 
-	@skip:
+	.skip:
 		movem.l	(sp)+,a1-a2				; restore a1/a2 from stack
 		rts
 
@@ -71,9 +71,9 @@ ClearPLC:
 		lea	(v_plc_buffer).w,a2			; PLC buffer space in RAM
 		moveq	#loops_to_clear_plc,d0
 
-	@loop:
+	.loop:
 		clr.l	(a2)+
-		dbf	d0,@loop				; clear RAM $F680-$F700
+		dbf	d0,.loop				; clear RAM $F680-$F700
 		rts
 
 ; ---------------------------------------------------------------------------
@@ -83,17 +83,17 @@ ClearPLC:
 
 RunPLC:
 		tst.l	(v_plc_buffer).w			; does PLC buffer contain any items?
-		beq.s	@exit					; if not, branch
+		beq.s	.exit					; if not, branch
 		tst.w	(v_nem_tile_count).w
-		bne.s	@exit
+		bne.s	.exit
 		movea.l	(v_plc_buffer).w,a0			; get pointer for Nemesis compressed graphics
 		lea	(NemPCD_WriteRowToVDP).l,a3
 		lea	(v_nem_gfx_buffer).w,a1
 		move.w	(a0)+,d2				; get 1st word of Nemesis graphics header
-		bpl.s	@normal_mode				; branch if 0-$7FFF
+		bpl.s	.normal_mode				; branch if 0-$7FFF
 		adda.w	#NemPCD_WriteRowToVDP_XOR-NemPCD_WriteRowToVDP,a3 ; use XOR mode
 
-	@normal_mode:
+	.normal_mode:
 		andi.w	#$7FFF,d2				; clear highest bit
 		move.w	d2,(v_nem_tile_count).w			; load tile count
 		bsr.w	NemDec_BuildCodeTable
@@ -110,7 +110,7 @@ RunPLC:
 		move.l	d5,(v_nem_header).w
 		move.l	d6,(v_nem_shift).w
 
-	@exit:
+	.exit:
 		rts
 
 ; ---------------------------------------------------------------------------
@@ -155,13 +155,13 @@ ProcessPLC_Decompress:
 		move.l	(v_nem_shift).w,d6
 		lea	(v_nem_gfx_buffer).w,a1
 
-	@loop_tile:
+	.loop_tile:
 		movea.w	#8,a5
 		bsr.w	NemPCD_NewRow
 		subq.w	#1,(v_nem_tile_count).w			; decrement tile counter
 		beq.s	ProcessPLC_Finish			; branch if 0
 		subq.w	#1,(v_nem_tile_count_frame).w		; decrement tile per frame counter
-		bne.s	@loop_tile				; branch if not 0
+		bne.s	.loop_tile				; branch if not 0
 
 		move.l	a0,(v_plc_buffer).w			; save pointer to latest compressed data
 		move.l	a3,(v_nem_mode_ptr).w
@@ -179,9 +179,9 @@ ProcessPLC_Finish:
 		lea	(v_plc_buffer).w,a0
 		moveq	#$15,d0
 
-	@loop:
+	.loop:
 		move.l	6(a0),(a0)+				; shift contents of PLC buffer up 6 bytes
-		dbf	d0,@loop
+		dbf	d0,.loop
 		rts
 
 ; ---------------------------------------------------------------------------
@@ -199,7 +199,7 @@ QuickPLC:
 		lea	(a1,d0.w),a1
 		move.w	(a1)+,d1				; get length of PLC
 
-	@loop:
+	.loop:
 		movea.l	(a1)+,a0				; get compressed graphics pointer
 		moveq	#0,d0
 		move.w	(a1)+,d0				; get VRAM address
@@ -209,5 +209,5 @@ QuickPLC:
 		swap	d0
 		move.l	d0,(vdp_control_port).l			; converted VRAM address to VDP format
 		bsr.w	NemDec					; decompress
-		dbf	d1,@loop				; repeat for length of PLC
+		dbf	d1,.loop				; repeat for length of PLC
 		rts

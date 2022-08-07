@@ -7,7 +7,7 @@
 
 ; ===========================================================================
 
-		opt	l@					; @ is the local label symbol
+		opt	l.					; . is the local label symbol
 		opt	ae-					; automatic evens are disabled by default
 		opt	ws+					; allow statements to contain white-spaces
 		opt	w+					; print warnings
@@ -140,10 +140,10 @@ CheckSumCheck:
 		move.l	(a1),d0
 		moveq	#0,d1
 
-	@loop:
+	.loop:
 		add.w	(a0)+,d1
 		cmp.l	a0,d0
-		bhs.s	@loop
+		bhs.s	.loop
 		movea.l	#Checksum,a1				; read the checksum
 		cmp.w	(a1),d1					; compare checksum in header to ROM
 		bne.w	CheckSumError				; if they don't match, branch
@@ -152,9 +152,9 @@ CheckSumCheck:
 		lea	(v_keep_after_reset).w,a6		; $FFFFFE00
 		moveq	#0,d7
 		move.w	#(($FFFFFFFF-v_keep_after_reset+1)/4)-1,d6
-	@clearRAM:
+	.clearRAM:
 		move.l	d7,(a6)+
-		dbf	d6,@clearRAM				; clear RAM ($FE00-$FFFF)
+		dbf	d6,.clearRAM				; clear RAM ($FE00-$FFFF)
 
 		move.b	(console_version).l,d0
 		andi.b	#$C0,d0
@@ -165,9 +165,9 @@ GameInit:
 		lea	($FF0000).l,a6
 		moveq	#0,d7
 		move.w	#((v_keep_after_reset&$FFFF)/4)-1,d6
-	@clearRAM:
+	.clearRAM:
 		move.l	d7,(a6)+
-		dbf	d6,@clearRAM				; clear RAM ($0000-$FDFF)
+		dbf	d6,.clearRAM				; clear RAM ($0000-$FDFF)
 
 		bsr.w	VDPSetupGame				; clear CRAM and set VDP registers
 		bsr.w	DacDriverLoad
@@ -209,12 +209,12 @@ CheckSumError:
 		move.l	#$C0000000,(vdp_control_port).l		; set VDP to CRAM write
 		moveq	#(sizeof_pal_all/2)-1,d7
 
-	@fillred:
+	.fillred:
 		move.w	#cRed,(vdp_data_port).l			; fill palette with red
-		dbf	d7,@fillred				; repeat $3F more times
+		dbf	d7,.fillred				; repeat $3F more times
 
-	@endlessloop:
-		bra.s	@endlessloop
+	.endlessloop:
+		bra.s	.endlessloop
 ; ===========================================================================
 
 		include	"Includes\Errors.asm"

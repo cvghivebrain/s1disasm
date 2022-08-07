@@ -37,21 +37,21 @@ Plat_Main:	; Routine 0
 		move.l	#Map_Plat_GHZ,ost_mappings(a0)
 		move.b	#$20,ost_displaywidth(a0)
 		cmpi.b	#id_SYZ,(v_zone).w			; check if level is SYZ
-		bne.s	@notSYZ
+		bne.s	.notSYZ
 
 		move.l	#Map_Plat_SYZ,ost_mappings(a0)		; SYZ specific code
 		move.b	#$20,ost_displaywidth(a0)
 
-	@notSYZ:
+	.notSYZ:
 		cmpi.b	#id_SLZ,(v_zone).w			; check if level is SLZ
-		bne.s	@notSLZ
+		bne.s	.notSLZ
 
 		move.l	#Map_Plat_SLZ,ost_mappings(a0)		; SLZ specific code
 		move.b	#$20,ost_displaywidth(a0)
 		move.w	#0+tile_pal3,ost_tile(a0)
 		move.b	#id_Plat_Type_Falls,ost_subtype(a0)	; force subtype 3
 
-	@notSLZ:
+	.notSLZ:
 		move.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)
 		move.w	ost_y_pos(a0),ost_plat_y_pos(a0)
@@ -61,19 +61,19 @@ Plat_Main:	; Routine 0
 		moveq	#0,d1
 		move.b	ost_subtype(a0),d0
 		cmpi.b	#id_Plat_Type_UpDown_Large,d0		; is object type $A (large platform)?
-		bne.s	@setframe				; if not, branch
+		bne.s	.setframe				; if not, branch
 		addq.b	#id_frame_plat_large,d1			; use frame #1
 		move.b	#$20,ost_displaywidth(a0)		; set width
 
-	@setframe:
+	.setframe:
 		move.b	d1,ost_frame(a0)			; set frame to d1
 
 Plat_Solid:	; Routine 2
 		tst.b	ost_plat_y_nudge(a0)			; has platform dipped from being stood on?
-		beq.s	@no_dip					; if not, branch
+		beq.s	.no_dip					; if not, branch
 		subq.b	#4,ost_plat_y_nudge(a0)			; decrement dip amount
 
-	@no_dip:
+	.no_dip:
 		moveq	#0,d1
 		move.b	ost_displaywidth(a0),d1
 		bsr.w	DetectPlatform				; detect collision, update flags, goto Plat_StoodOn next if stood on
@@ -87,10 +87,10 @@ Plat_Action:	; Routine 8
 
 Plat_StoodOn:	; Routine 4
 		cmpi.b	#$40,ost_plat_y_nudge(a0)		; is platform at max dip?
-		beq.s	@max_dip				; if yes, branch
+		beq.s	.max_dip				; if yes, branch
 		addq.b	#4,ost_plat_y_nudge(a0)			; increment dip
 
-	@max_dip:
+	.max_dip:
 		moveq	#0,d1
 		move.b	ost_displaywidth(a0),d1
 		bsr.w	ExitPlatform				; detect Sonic leaving platform, goto Plat_Solid next if he does
@@ -127,11 +127,11 @@ Plat_Move:
 		move.b	ost_subtype(a0),d0
 		andi.w	#$F,d0					; read low nybble of subtype
 		add.w	d0,d0
-		move.w	@index(pc,d0.w),d1
-		jmp	@index(pc,d1.w)
+		move.w	.index(pc,d0.w),d1
+		jmp	.index(pc,d1.w)
 
 ; ===========================================================================
-@index:		index *
+.index:		index *
 		ptr Plat_Type_Still				; 0
 		ptr Plat_Type_Sideways				; 1
 		ptr Plat_Type_UpDown				; 2
@@ -217,17 +217,17 @@ Plat_Type_UpDown:
 ; Type 3
 Plat_Type_Falls:
 		tst.w	ost_plat_wait_time(a0)			; is time delay set?
-		bne.s	@type03_wait				; if yes, branch
+		bne.s	.type03_wait				; if yes, branch
 		btst	#status_platform_bit,ost_status(a0)	; is Sonic standing on the platform?
-		beq.s	@type03_nomove				; if not, branch
+		beq.s	.type03_nomove				; if not, branch
 		move.w	#30,ost_plat_wait_time(a0)		; set time delay to 0.5 seconds
 
-	@type03_nomove:
+	.type03_nomove:
 		rts	
 
-	@type03_wait:
+	.type03_wait:
 		subq.w	#1,ost_plat_wait_time(a0)		; decrement timer
-		bne.s	@type03_nomove				; brainch if time remains
+		bne.s	.type03_nomove				; brainch if time remains
 		move.w	#32,ost_plat_wait_time(a0)
 		addq.b	#1,ost_subtype(a0)			; change to type 04 (falling)
 		rts	
@@ -236,11 +236,11 @@ Plat_Type_Falls:
 ; Type 4
 Plat_Type_Falls_Now:
 		tst.w	ost_plat_wait_time(a0)
-		beq.s	@wait					; branch if time is 0
+		beq.s	.wait					; branch if time is 0
 		subq.w	#1,ost_plat_wait_time(a0)		; decrement timer
-		bne.s	@wait					; branch if time remains
+		bne.s	.wait					; branch if time remains
 		btst	#status_platform_bit,ost_status(a0)
-		beq.s	@skip_sonic				; branch if Sonic isn't on platform
+		beq.s	.skip_sonic				; branch if Sonic isn't on platform
 		bset	#status_air_bit,ost_status(a1)
 		bclr	#status_platform_bit,ost_status(a1)
 		move.b	#id_Sonic_Control,ost_routine(a1)
@@ -248,10 +248,10 @@ Plat_Type_Falls_Now:
 		clr.b	ost_routine2(a0)
 		move.w	ost_y_vel(a0),ost_y_vel(a1)		; pull Sonic down with platform
 
-	@skip_sonic:
+	.skip_sonic:
 		move.b	#id_Plat_Action,ost_routine(a0)		; goto Plat_Action next (same as Plat_Solid without platform detection)
 
-	@wait:
+	.wait:
 		move.l	ost_plat_y_pos(a0),d3
 		move.w	ost_y_vel(a0),d0
 		ext.l	d0
@@ -262,31 +262,31 @@ Plat_Type_Falls_Now:
 		move.w	(v_boundary_bottom).w,d0
 		addi.w	#224,d0					; d0 = y pos of bottom edge of level
 		cmp.w	ost_plat_y_pos(a0),d0
-		bcc.s	@within_level				; branch if platform is inside level
+		bcc.s	.within_level				; branch if platform is inside level
 		move.b	#id_Plat_Delete,ost_routine(a0)		; goto Plat_Delete next
 
-	@within_level:
+	.within_level:
 		rts	
 ; ===========================================================================
 
 ; Type 7
 Plat_Type_Rises:
 		tst.w	ost_plat_wait_time(a0)			; is time delay set?
-		bne.s	@type07_wait				; if yes, branch
+		bne.s	.type07_wait				; if yes, branch
 		lea	(v_button_state).w,a2			; load button statuses
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0			; move object type ($x7) to d0
 		lsr.w	#4,d0					; divide d0 by 8, round	down
 		tst.b	(a2,d0.w)				; has button no. d0 been pressed?
-		beq.s	@type07_nomove				; if not, branch
+		beq.s	.type07_nomove				; if not, branch
 		move.w	#60,ost_plat_wait_time(a0)		; set time delay to 1 second
 
-	@type07_nomove:
+	.type07_nomove:
 		rts	
 
-	@type07_wait:
+	.type07_wait:
 		subq.w	#1,ost_plat_wait_time(a0)		; subtract 1 from time delay
-		bne.s	@type07_nomove				; if time is > 0, branch
+		bne.s	.type07_nomove				; if time is > 0, branch
 		addq.b	#1,ost_subtype(a0)			; change to type 08
 		rts	
 ; ===========================================================================
@@ -297,10 +297,10 @@ Plat_Type_Rises_Now:
 		move.w	ost_plat_y_start(a0),d0
 		subi.w	#$200,d0
 		cmp.w	ost_plat_y_pos(a0),d0			; has platform moved $200 pixels?
-		bne.s	@type08_nostop				; if not, branch
+		bne.s	.type08_nostop				; if not, branch
 		clr.b	ost_subtype(a0)				; change to type 00 (stop moving)
 
-	@type08_nostop:
+	.type08_nostop:
 		rts	
 ; ===========================================================================
 

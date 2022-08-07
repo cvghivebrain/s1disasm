@@ -22,9 +22,9 @@ GM_Title:
 		lea	(v_ost_all).w,a1			; RAM address to start clearing
 		moveq	#0,d0
 		move.w	#loops_to_clear_ost,d1			; size of RAM block to clear
-	@clear_ost:
+	.clear_ost:
 		move.l	d0,(a1)+
-		dbf	d1,@clear_ost				; fill OST ($D000-$EFFF) with 0
+		dbf	d1,.clear_ost				; fill OST ($D000-$EFFF) with 0
 
 		locVRAM	0
 		lea	(Nem_JapNames).l,a0			; load Japanese credits
@@ -42,9 +42,9 @@ GM_Title:
 		lea	(v_pal_dry_next).w,a1
 		moveq	#0,d0
 		move.w	#loops_to_clear_pal,d1
-	@clear_pal:
+	.clear_pal:
 		move.l	d0,(a1)+
-		dbf	d1,@clear_pal				; clear next palette
+		dbf	d1,.clear_pal				; clear next palette
 
 		moveq	#id_Pal_Sonic,d0			; load Sonic's palette
 		bsr.w	PalLoad_Next				; palette will be shown after fading in
@@ -68,9 +68,9 @@ GM_Title:
 		lea	(Art_Text).l,a5				; load level select font
 		move.w	#(sizeof_art_text/2)-1,d1
 
-	@load_text:
+	.load_text:
 		move.w	(a5)+,(a6)
-		dbf	d1,@load_text				; load level select font
+		dbf	d1,.load_text				; load level select font
 
 		move.b	#0,(v_last_lamppost).w			; clear lamppost counter
 		move.w	#0,(v_debug_active).w			; disable debug item placement mode
@@ -116,9 +116,9 @@ GM_Title:
 		moveq	#0,d0
 		move.w	#7,d1					; should be $F; 7 only clears half the OST
 
-	@clear_ost_psb:
+	.clear_ost_psb:
 		move.l	d0,(a1)+
-		dbf	d1,@clear_ost_psb
+		dbf	d1,.clear_ost_psb
 
 		move.b	#id_TitleSonic,(v_ost_titlesonic).w	; load big Sonic object
 		move.b	#id_PSBTM,(v_ost_psb).w			; load "PRESS START BUTTON" object
@@ -127,12 +127,12 @@ GM_Title:
 		if Revision=0
 		else
 			tst.b   (v_console_region).w		; is console Japanese?
-			bpl.s   @isjap				; if yes, branch
+			bpl.s   .isjap				; if yes, branch
 		endc
 
 		move.b	#id_PSBTM,(v_ost_tm).w			; load "TM" object
 		move.b	#id_frame_psb_tm,(v_ost_tm+ost_frame).w
-	@isjap:
+	.isjap:
 		move.b	#id_PSBTM,(v_ost_titlemask).w		; load object which hides part of Sonic
 		move.b	#id_frame_psb_mask,(v_ost_titlemask+ost_frame).w
 		jsr	(ExecuteObjects).l
@@ -169,55 +169,55 @@ Title_MainLoop:
 
 Title_Cheat:
 		tst.b	(v_console_region).w			; check	if the machine is US/EU or Japanese
-		bpl.s	@japanese				; if Japanese, branch
+		bpl.s	.japanese				; if Japanese, branch
 
 		lea	(LevSelCode_US).l,a0			; load US/EU code
-		bra.s	@overseas
+		bra.s	.overseas
 
-	@japanese:
+	.japanese:
 		lea	(LevSelCode_J).l,a0			; load JP code
 
-	@overseas:
+	.overseas:
 		move.w	(v_title_d_count).w,d0			; get number of times d-pad has been pressed in correct order
 		adda.w	d0,a0					; jump to relevant position in sequence
 		move.b	(v_joypad_press_actual).w,d0		; get button press
 		andi.b	#btnDir,d0				; read only UDLR buttons
 		cmp.b	(a0),d0					; does button press match the cheat code?
-		bne.s	@reset_cheat				; if not, branch
+		bne.s	.reset_cheat				; if not, branch
 		addq.w	#1,(v_title_d_count).w			; next button press
 		tst.b	d0					; is d-pad currently pressed?
-		bne.s	@count_c				; if yes, branch
+		bne.s	.count_c				; if yes, branch
 
 		lea	(f_levelselect_cheat).w,a0		; cheat flag array
 		move.w	(v_title_c_count).w,d1			; d1 = number of times C was pressed
 		lsr.w	#1,d1					; divide by 2
 		andi.w	#3,d1					; read only bits 0/1
-		beq.s	@levelselect_only			; branch if 0
+		beq.s	.levelselect_only			; branch if 0
 		tst.b	(v_console_region).w
-		bpl.s	@levelselect_only			; branch if region is Japanese
+		bpl.s	.levelselect_only			; branch if region is Japanese
 		moveq	#1,d1
 		move.b	d1,1(a0,d1.w)				; enable debug mode (C is pressed 2 or more times)
 
-	@levelselect_only:
+	.levelselect_only:
 		move.b	#1,(a0,d1.w)				; activate cheat: no C = level select; CC+ = slowmo (US/EU); CC = slowmo (JP); CCCC = debug (JP); CCCCCC = hidden credits (JP)
 		play.b	1, bsr.w, sfx_Ring			; play ring sound when code is entered
-		bra.s	@count_c
+		bra.s	.count_c
 ; ===========================================================================
 
-@reset_cheat:
+.reset_cheat:
 		tst.b	d0					; is d-pad currently pressed?
-		beq.s	@count_c				; if not, branch
+		beq.s	.count_c				; if not, branch
 		cmpi.w	#9,(v_title_d_count).w
-		beq.s	@count_c
+		beq.s	.count_c
 		move.w	#0,(v_title_d_count).w			; reset UDLR counter
 
-@count_c:
+.count_c:
 		move.b	(v_joypad_press_actual).w,d0
 		andi.b	#btnC,d0				; is C button pressed?
-		beq.s	@c_not_pressed				; if not, branch
+		beq.s	.c_not_pressed				; if not, branch
 		addq.w	#1,(v_title_c_count).w			; increment C counter
 
-	@c_not_pressed:
+	.c_not_pressed:
 		tst.w	(v_countdown).w				; has counter hit 0? (started at $178)
 		beq.w	PlayDemo				; if yes, branch
 		andi.b	#btnStart,(v_joypad_press_actual).w	; check if Start is pressed
@@ -235,9 +235,9 @@ Title_PressedStart:
 		moveq	#0,d0
 		move.w	#loops_to_clear_hscroll,d1
 
-	@clear_hscroll:
+	.clear_hscroll:
 		move.l	d0,(a1)+
-		dbf	d1,@clear_hscroll			; clear hscroll buffer (in RAM)
+		dbf	d1,.clear_hscroll			; clear hscroll buffer (in RAM)
 
 		move.l	d0,(v_fg_y_pos_vsram).w
 		disable_ints
@@ -245,9 +245,9 @@ Title_PressedStart:
 		locVRAM	vram_bg
 		move.w	#(sizeof_vram_bg/4)-1,d1
 
-	@clear_bg:
+	.clear_bg:
 		move.l	d0,(a6)
-		dbf	d1,@clear_bg				; clear bg nametable (in VRAM)
+		dbf	d1,.clear_bg				; clear bg nametable (in VRAM)
 
 		bsr.w	LevSel_ShowText
 
@@ -271,21 +271,21 @@ LevelSelect:
 		move.w	(v_levelselect_sound).w,d0
 		addi.w	#$80,d0
 		tst.b	(f_credits_cheat).w			; is Japanese credits cheat on?
-		beq.s	@nocheat				; if not, branch
+		beq.s	.nocheat				; if not, branch
 		cmpi.w	#$9F,d0					; is sound $9F being played?
 		beq.s	LevSel_Ending				; if yes, branch
 		cmpi.w	#$9E,d0					; is sound $9E being played?
 		beq.s	LevSel_Credits				; if yes, branch
 
-	@nocheat:
+	.nocheat:
 		; This is a workaround for a bug, see Sound_ChkValue for more.
 		; Once you've fixed the bugs there, comment these four instructions out
 		cmpi.w	#_lastMusic+1,d0			; is sound $80-$93 being played?
-		blo.s	@play					; if yes, branch
+		blo.s	.play					; if yes, branch
 		cmpi.w	#_firstSfx,d0				; is sound $94-$9F being played?
 		blo.s	LevelSelect				; if yes, branch
 
-	@play:
+	.play:
 		bsr.w	PlaySound1
 		bra.s	LevelSelect
 ; ===========================================================================
@@ -416,7 +416,7 @@ LevSelCode_US:	dc.b btnUp,btnDn,btnL,btnR,0,$FF
 PlayDemo:
 		move.w	#30,(v_countdown).w			; set delay to half a second
 
-@loop_delay:
+.loop_delay:
 		move.b	#id_VBlank_Title,(v_vblank_routine).w
 		bsr.w	WaitForVBlank
 		bsr.w	DeformLayers
@@ -426,16 +426,16 @@ PlayDemo:
 		addq.w	#2,d0					; increment
 		move.w	d0,(v_ost_player+ost_x_pos).w		; update
 		cmpi.w	#$1C00,d0				; has dummy object reached $1C00?
-		blo.s	@chk_start				; if not, branch
+		blo.s	.chk_start				; if not, branch
 		move.b	#id_Sega,(v_gamemode).w			; goto Sega screen
 		rts	
 ; ===========================================================================
 
-@chk_start:
+.chk_start:
 		andi.b	#btnStart,(v_joypad_press_actual).w	; is Start button pressed?
 		bne.w	Title_PressedStart			; if yes, branch
 		tst.w	(v_countdown).w				; has delay timer hit 0?
-		bne.w	@loop_delay				; if not, branch
+		bne.w	.loop_delay				; if not, branch
 
 		play.b	1, bsr.w, cmd_Fade			; fade out music
 		move.w	(v_demo_num).w,d0			; load demo number
@@ -445,19 +445,19 @@ PlayDemo:
 		move.w	d0,(v_zone).w
 		addq.w	#1,(v_demo_num).w			; add 1 to demo number
 		cmpi.w	#4,(v_demo_num).w			; is demo number less than 4?
-		blo.s	@demo_0_to_3				; if yes, branch
+		blo.s	.demo_0_to_3				; if yes, branch
 		move.w	#0,(v_demo_num).w			; reset demo number to	0
 
-	@demo_0_to_3:
+	.demo_0_to_3:
 		move.w	#1,(v_demo_mode).w			; turn demo mode on
 		move.b	#id_Demo,(v_gamemode).w			; set screen mode to 08 (demo)
 		cmpi.w	#id_Demo_SS,d0				; is level number 0600 (special	stage)?
-		bne.s	@demo_level				; if not, branch
+		bne.s	.demo_level				; if not, branch
 		move.b	#id_Special,(v_gamemode).w		; set screen mode to $10 (Special Stage)
 		clr.w	(v_zone).w				; clear	level number
 		clr.b	(v_last_ss_levelid).w			; clear special stage number
 
-	@demo_level:
+	.demo_level:
 		move.b	#lives_start,(v_lives).w		; set lives to 3
 		moveq	#0,d0
 		move.w	d0,(v_rings).w				; clear rings
@@ -478,31 +478,31 @@ PlayDemo:
 LevSel_Navigate:
 		move.b	(v_joypad_press_actual).w,d1
 		andi.b	#btnUp+btnDn,d1				; is up/down currently pressed?
-		bne.s	@updown					; if yes, branch
+		bne.s	.updown					; if yes, branch
 		subq.w	#1,(v_levelselect_hold_delay).w		; decrement cooldown timer
 		bpl.s	LevSel_SndTest				; if time remains, branch
 
-	@updown:
+	.updown:
 		move.w	#11,(v_levelselect_hold_delay).w	; reset time delay to 1/5th of a second
 		move.b	(v_joypad_hold_actual).w,d1
 		andi.b	#btnUp+btnDn,d1				; is up/down pressed?
 		beq.s	LevSel_SndTest				; if not, branch
 		move.w	(v_levelselect_item).w,d0
 		btst	#bitUp,d1				; is up	pressed?
-		beq.s	@down					; if not, branch
+		beq.s	.down					; if not, branch
 		subq.w	#1,d0					; move up 1 selection
-		bhs.s	@down
+		bhs.s	.down
 		moveq	#(LevSel_Ptr_ST-LevSel_Ptrs)/2,d0	; if selection moves below 0, jump to selection	$14
 
-	@down:
+	.down:
 		btst	#bitDn,d1				; is down pressed?
-		beq.s	@set_item				; if not, branch
+		beq.s	.set_item				; if not, branch
 		addq.w	#1,d0					; move down 1 selection
 		cmpi.w	#(LevSel_Ptr_End-LevSel_Ptrs)/2,d0
-		blo.s	@set_item
+		blo.s	.set_item
 		moveq	#0,d0					; if selection moves above $14,	jump to	selection 0
 
-	@set_item:
+	.set_item:
 		move.w	d0,(v_levelselect_item).w		; set new selection
 		bsr.w	LevSel_ShowText				; refresh text
 		rts	
@@ -510,30 +510,30 @@ LevSel_Navigate:
 
 LevSel_SndTest:
 		cmpi.w	#(LevSel_Ptr_ST-LevSel_Ptrs)/2,(v_levelselect_item).w ; is item $14 selected?
-		bne.s	@exit					; if not, branch
+		bne.s	.exit					; if not, branch
 		move.b	(v_joypad_press_actual).w,d1
 		andi.b	#btnR+btnL,d1				; is left/right	pressed?
-		beq.s	@exit					; if not, branch
+		beq.s	.exit					; if not, branch
 		move.w	(v_levelselect_sound).w,d0
 		btst	#bitL,d1				; is left pressed?
-		beq.s	@right					; if not, branch
+		beq.s	.right					; if not, branch
 		subq.w	#1,d0					; subtract 1 from sound	test
-		bhs.s	@right
+		bhs.s	.right
 		moveq	#$4F,d0					; if sound test	moves below 0, set to $4F
 
-	@right:
+	.right:
 		btst	#bitR,d1				; is right pressed?
-		beq.s	@refresh_text				; if not, branch
+		beq.s	.refresh_text				; if not, branch
 		addq.w	#1,d0					; add 1	to sound test
 		cmpi.w	#$50,d0
-		blo.s	@refresh_text
+		blo.s	.refresh_text
 		moveq	#0,d0					; if sound test	moves above $4F, set to	0
 
-	@refresh_text:
+	.refresh_text:
 		move.w	d0,(v_levelselect_sound).w		; set sound test number
 		bsr.w	LevSel_ShowText				; refresh text
 
-	@exit:
+	.exit:
 		rts
 
 ; ---------------------------------------------------------------------------
@@ -553,11 +553,11 @@ soundtest_pos:	= (sizeof_vram_row*$18)+($18*2)
 		move.w	#(vram_text/sizeof_cell)+tile_pal4+tile_hi,d3 ; VRAM setting ($E680: 4th palette, $680th tile)
 		moveq	#$14,d1					; number of lines of text
 
-	@loop_lines:
+	.loop_lines:
 		move.l	d4,4(a6)
 		bsr.w	LevSel_DrawLine				; draw line of text
 		addi.l	#sizeof_vram_row<<16,d4			; jump to next line
-		dbf	d1,@loop_lines
+		dbf	d1,.loop_lines
 
 		moveq	#0,d0
 		move.w	(v_levelselect_item).w,d0		; get number of line currently highlighted
@@ -578,10 +578,10 @@ soundtest_pos:	= (sizeof_vram_row*$18)+($18*2)
 
 		move.w	#(vram_text/sizeof_cell)+tile_pal4+tile_hi,d3 ; white text for sound test
 		cmpi.w	#(LevSel_Ptr_ST-LevSel_Ptrs)/2,(v_levelselect_item).w ; is highlighted line the sound test? ($14)
-		bne.s	@soundtest				; if not, branch
+		bne.s	.soundtest				; if not, branch
 		move.w	#(vram_text/sizeof_cell)+tile_pal3+tile_hi,d3 ; yellow text for sound test
 
-	@soundtest:
+	.soundtest:
 		locVRAM	vram_bg+soundtest_pos			; $EC30	- sound test position on screen
 		move.w	(v_levelselect_sound).w,d0		; get sound test number
 		addi.w	#$80,d0					; add $80
@@ -599,10 +599,10 @@ soundtest_pos:	= (sizeof_vram_row*$18)+($18*2)
 LevSel_DrawSound:
 		andi.w	#$F,d0					; read only low nybble
 		cmpi.b	#$A,d0					; is digit $A-$F?
-		blo.s	@is_0_9					; if not, branch
+		blo.s	.is_0_9					; if not, branch
 		addi.b	#7,d0					; graphics for A-F start 7 cells later
 
-	@is_0_9:
+	.is_0_9:
 		add.w	d3,d0					; d0 = character + VRAM setting ($EC30)
 		move.w	d0,(a6)					; write to nametable in VRAM
 		rts
@@ -614,19 +614,19 @@ LevSel_DrawSound:
 LevSel_DrawLine:
 		moveq	#$17,d2					; number of characters per line
 
-	@loop:
+	.loop:
 		moveq	#0,d0
 		move.b	(a1)+,d0				; get character
-		bpl.s	@isvalid				; branch if valid (0-$7F)
+		bpl.s	.isvalid				; branch if valid (0-$7F)
 		move.w	#0,(a6)					; use blank character instead
-		dbf	d2,@loop
+		dbf	d2,.loop
 		rts	
 
 
-	@isvalid:
+	.isvalid:
 		add.w	d3,d0					; combine char with VRAM setting
 		move.w	d0,(a6)					; send to VRAM
-		dbf	d2,@loop
+		dbf	d2,.loop
 		rts
 
 ; ---------------------------------------------------------------------------

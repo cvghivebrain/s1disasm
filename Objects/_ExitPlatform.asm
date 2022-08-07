@@ -17,18 +17,18 @@ ExitPlatform2:							; jump here to use different value for d2 (only GHZ bridges
 		add.w	d2,d2
 		lea	(v_ost_player).w,a1
 		btst	#status_air_bit,ost_status(a1)		; is Sonic in the air?
-		bne.s	@reset					; if yes, branch
+		bne.s	.reset					; if yes, branch
 		move.w	ost_x_pos(a1),d0
 		sub.w	ost_x_pos(a0),d0			; d0 = Sonic's distance from platform centre (-ve if left of centre)
 		add.w	d1,d0
-		bmi.s	@reset					; branch if Sonic is left of the platform
+		bmi.s	.reset					; branch if Sonic is left of the platform
 		cmp.w	d2,d0
-		blo.s	@do_nothing				; branch if Sonic is not right of the platform
+		blo.s	.do_nothing				; branch if Sonic is not right of the platform
 
-	@reset:
+	.reset:
 		bclr	#status_platform_bit,ost_status(a1)	; clear Sonic's platform bit
 		move.b	#id_Plat_Solid,ost_routine(a0)		; set platform back to "detect mode" (all platforms use routine 2 for this)
 		bclr	#status_platform_bit,ost_status(a0)	; clear platform's platform bit
 
-	@do_nothing:
+	.do_nothing:
 		rts

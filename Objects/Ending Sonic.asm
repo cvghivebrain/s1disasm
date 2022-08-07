@@ -50,55 +50,55 @@ ESon_Main2:
 ESon_MakeEmeralds:
 		; Routine 2
 		subq.w	#1,ost_esonic_wait_time(a0)		; decrement timer
-		bne.s	@wait					; branch if time remains
+		bne.s	.wait					; branch if time remains
 		addq.b	#2,ost_routine2(a0)			; goto ESon_Animate next
 		move.w	#id_ani_esonic_confused,ost_anim(a0)
 		move.b	#id_EndChaos,(v_ost_end_emeralds).w	; load chaos emeralds objects
 
-	@wait:
+	.wait:
 		rts	
 ; ===========================================================================
 
 ESon_LookUp:	; Routine 6
 		cmpi.w	#$2000,((v_ost_end_emeralds&$FFFFFF)+ost_echaos_radius).l ; has emerald circle expanded fully?
-		bne.s	@wait					; if not, branch
+		bne.s	.wait					; if not, branch
 		move.w	#1,(f_restart).w			; set level to restart (causes flash)
 		move.w	#90,ost_esonic_wait_time(a0)		; set delay to 1.5 seconds
 		addq.b	#2,ost_routine2(a0)			; goto ESon_ClrEmeralds next
 
-	@wait:
+	.wait:
 		rts	
 ; ===========================================================================
 
 ESon_ClrEmeralds:
 		; Routine 8
 		subq.w	#1,ost_esonic_wait_time(a0)		; decrement timer
-		bne.s	@wait
+		bne.s	.wait
 		lea	(v_ost_end_emeralds).w,a1		; address of OST of emeralds
 		move.w	#((sizeof_ost*$10)/4)-1,d1		; amount of space to clear (excessive; $10 could be 6)
 
-	@loop:
+	.loop:
 		clr.l	(a1)+
-		dbf	d1,@loop				; clear the object RAM
+		dbf	d1,.loop				; clear the object RAM
 
 		move.w	#1,(f_restart).w
 		addq.b	#2,ost_routine2(a0)			; goto ESon_Animate next
 		move.b	#id_ani_esonic_confused,ost_anim(a0)
 		move.w	#60,ost_esonic_wait_time(a0)		; set delay to 1 second
 
-	@wait:
+	.wait:
 		rts	
 ; ===========================================================================
 
 ESon_MakeLogo:	; Routine $C
 		subq.w	#1,ost_esonic_wait_time(a0)		; decrement timer
-		bne.s	@wait
+		bne.s	.wait
 		addq.b	#2,ost_routine2(a0)			; goto ESon_Animate next
 		move.w	#180,ost_esonic_wait_time(a0)		; set delay to 3 seconds
 		move.b	#id_ani_esonic_leap,ost_anim(a0)
 		move.b	#id_EndSTH,(v_ost_end_emeralds).w	; load "SONIC THE HEDGEHOG" object
 
-	@wait:
+	.wait:
 		rts	
 ; ===========================================================================
 
@@ -109,7 +109,7 @@ ESon_Animate:	; Rountine 4, $A, $E, $12
 
 ESon_Leap:	; Routine $10
 		subq.w	#1,ost_esonic_wait_time(a0)		; decrement timer
-		bne.s	@wait
+		bne.s	.wait
 		addq.b	#2,ost_routine2(a0)			; goto ESon_Animate next
 		move.l	#Map_ESon,ost_mappings(a0)
 		move.w	#tile_Nem_EndSonic,ost_tile(a0)
@@ -121,7 +121,7 @@ ESon_Leap:	; Routine $10
 		move.b	#id_EndSTH,(v_ost_end_emeralds).w	; load "SONIC THE HEDGEHOG" object
 		bra.s	ESon_Animate
 
-	@wait:
+	.wait:
 		rts	
 
 ; ---------------------------------------------------------------------------

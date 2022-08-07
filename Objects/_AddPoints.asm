@@ -20,14 +20,14 @@ AddPoints:
 			add.l	d0,(a3)				; add d0*10 to the score
 			move.l	#999999,d1
 			cmp.l	(a3),d1				; is score below 999999?
-			bhi.w	@belowmax			; if yes, branch
+			bhi.w	.belowmax			; if yes, branch
 			move.l	d1,(a3)				; reset	score to 999999
 			move.l	d1,(a2)
 
-		@belowmax:
+		.belowmax:
 			move.l	(a3),d0
 			cmp.l	(a2),d0				; is score smaller than high score?
-			blo.w	@nohighscore			; if yes, branch
+			blo.w	.nohighscore			; if yes, branch
 			move.l	d0,(a2)				; copy score to high score
 
 		else
@@ -36,22 +36,22 @@ AddPoints:
 			add.l   d0,(a3)
 			move.l  #999999,d1
 			cmp.l   (a3),d1				; is score below 999999?
-			bhi.s   @belowmax			; if yes, branch
+			bhi.s   .belowmax			; if yes, branch
 			move.l  d1,(a3)				; reset score to 999999
 
-		@belowmax:
+		.belowmax:
 			move.l  (a3),d0
 			cmp.l   (v_score_next_life).w,d0	; has Sonic got 50000+ points?
-			blo.s   @noextralife			; if not, branch
+			blo.s   .noextralife			; if not, branch
 
 			addi.l  #points_for_life,(v_score_next_life).w ; increase requirement by 50000
 			tst.b   (v_console_region).w
-			bmi.s   @noextralife			; branch if Mega Drive is Japanese
+			bmi.s   .noextralife			; branch if Mega Drive is Japanese
 			addq.b  #1,(v_lives).w			; give extra life
 			addq.b  #1,(f_hud_lives_update).w
 			play.w	0, jmp, mus_ExtraLife		; play extra life music
 		endc
 
-@nohighscore:
-@noextralife:
+.nohighscore:
+.noextralife:
 		rts

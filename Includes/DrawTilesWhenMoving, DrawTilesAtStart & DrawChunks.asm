@@ -47,9 +47,9 @@ DrawTilesWhenMoving:
 		lea	(v_level_layout).w,a4
 		move.w	#draw_fg,d2				; value added to base VRAM address to get fg nametable
 		tst.b	(a2)					; are any redraw flags set?
-		beq.s	@exit					; if not, branch
+		beq.s	.exit					; if not, branch
 		bclr	#redraw_top_bit,(a2)			; clear flag for redraw top
-		beq.s	@chk_bottom				; branch if already clear
+		beq.s	.chk_bottom				; branch if already clear
 
 		; Draw new tiles at the top
 		moveq	#-16,d4					; y coordinate - 16px (size of block) above top
@@ -59,9 +59,9 @@ DrawTilesWhenMoving:
 		moveq	#-16,d5
 		bsr.w	DrawRow
 
-	@chk_bottom:
+	.chk_bottom:
 		bclr	#redraw_bottom_bit,(a2)			; clear flag for redraw bottom
-		beq.s	@chk_left				; branch if already clear
+		beq.s	.chk_left				; branch if already clear
 
 		; Draw new tiles at the bottom
 		move.w	#224,d4					; y coordinate - bottom of screen
@@ -71,9 +71,9 @@ DrawTilesWhenMoving:
 		moveq	#-16,d5
 		bsr.w	DrawRow
 
-	@chk_left:
+	.chk_left:
 		bclr	#redraw_left_bit,(a2)			; clear flag for redraw left
-		beq.s	@chk_right				; branch if already clear
+		beq.s	.chk_right				; branch if already clear
 
 		; Draw new tiles on the left
 		moveq	#-16,d4					; y coordinate - 16px (size of block) above top
@@ -83,9 +83,9 @@ DrawTilesWhenMoving:
 		moveq	#-16,d5
 		bsr.w	DrawColumn
 
-	@chk_right:
+	.chk_right:
 		bclr	#redraw_right_bit,(a2)			; clear flag for redraw right
-		beq.s	@exit					; branch if already clear
+		beq.s	.exit					; branch if already clear
 
 		; Draw new tiles on the right
 		moveq	#-16,d4					; y coordinate - 16px (size of block) above top
@@ -95,7 +95,7 @@ DrawTilesWhenMoving:
 		move.w	#320,d5
 		bsr.w	DrawColumn
 
-@exit:
+.exit:
 		rts
 
 ; ---------------------------------------------------------------------------
@@ -115,9 +115,9 @@ DrawTilesWhenMoving:
 
 DrawBGScrollBlock1:
 		tst.b	(a2)					; are any redraw flags set?
-		beq.w	@exit					; if not, branch
+		beq.w	.exit					; if not, branch
 		bclr	#redraw_top_bit,(a2)			; clear flag for redraw top
-		beq.s	@chk_bottom				; branch if already clear
+		beq.s	.chk_bottom				; branch if already clear
 
 		; Draw new tiles at the top
 		moveq	#-16,d4					; y coordinate - 16px (size of block) above top
@@ -132,9 +132,9 @@ DrawBGScrollBlock1:
 			bsr.w	DrawRow
 		endc
 
-	@chk_bottom:
+	.chk_bottom:
 		bclr	#redraw_bottom_bit,(a2)			; clear flag for redraw bottom
-		beq.s	@chk_left				; branch if already clear
+		beq.s	.chk_left				; branch if already clear
 
 		; Draw new tiles at the bottom
 		move.w	#224,d4					; y coordinate - bottom of screen
@@ -149,9 +149,9 @@ DrawBGScrollBlock1:
 			bsr.w	DrawRow
 		endc
 
-	@chk_left:
+	.chk_left:
 		bclr	#redraw_left_bit,(a2)			; clear flag for redraw left
-		beq.s	@chk_right				; branch if already clear
+		beq.s	.chk_right				; branch if already clear
 
 		; Draw new tiles on the left
 		moveq	#-16,d4
@@ -165,23 +165,23 @@ DrawBGScrollBlock1:
 			move.w	4(a3),d1			; get bg y position
 			andi.w	#$FFF0,d1			; round down to nearest 16
 			sub.w	d1,d6
-			blt.s	@chk_right			; if bg block 1 is offscreen, skip loading its tiles
+			blt.s	.chk_right			; if bg block 1 is offscreen, skip loading its tiles
 			lsr.w	#4,d6				; d6 = number of rows not above the screen
 			cmpi.w	#((224+16+16)/16)-1,d6		; compare with height of screen + 16px either side
-			blo.s	@bg_covers_partial		; branch if less
+			blo.s	.bg_covers_partial		; branch if less
 			moveq	#((224+16+16)/16)-1,d6		; limit to height of screen + 16px either side
-	@bg_covers_partial:
+	.bg_covers_partial:
 			bsr.w	DrawColumn_Partial
 		else
 			bsr.w	DrawColumn
 		endc
 
-	@chk_right:
+	.chk_right:
 		bclr	#redraw_right_bit,(a2)			; clear flag for redraw right
 		if Revision=0
-			beq.s	@exit				; branch if already clear
+			beq.s	.exit				; branch if already clear
 		else
-			beq.s	@chk_topall			; branch if already clear
+			beq.s	.chk_topall			; branch if already clear
 		endc
 		; Draw new tiles on the right
 		moveq	#-16,d4
@@ -195,19 +195,19 @@ DrawBGScrollBlock1:
 			move.w	4(a3),d1			; get bg y position
 			andi.w	#$FFF0,d1			; round down to nearest 16
 			sub.w	d1,d6
-			blt.s	@exit
+			blt.s	.exit
 			lsr.w	#4,d6
 			cmpi.w	#((224+16+16)/16)-1,d6
-			blo.s	@bg_covers_partial2
+			blo.s	.bg_covers_partial2
 			moveq	#((224+16+16)/16)-1,d6
-	@bg_covers_partial2:
+	.bg_covers_partial2:
 			bsr.w	DrawColumn_Partial
 		else
 			bsr.w	DrawColumn
 
-	@chk_topall:
+	.chk_topall:
 			bclr	#redraw_topall_bit,(a2)
-			beq.s	@chk_bottomall
+			beq.s	.chk_bottomall
 		; Draw entire row at the top
 			moveq	#-16,d4				; y coordinate - 16px (size of block) above top
 			moveq	#0,d5
@@ -216,9 +216,9 @@ DrawBGScrollBlock1:
 			moveq	#0,d5
 			moveq	#(512/16)-1,d6
 			bsr.w	DrawRow_IgnoreX
-	@chk_bottomall:
+	.chk_bottomall:
 			bclr	#redraw_bottomall_bit,(a2)
-			beq.s	@exit
+			beq.s	.exit
 		; Draw entire row at the bottom
 			move.w	#224,d4				; y coordinate - bottom of screen
 			moveq	#0,d5
@@ -229,20 +229,20 @@ DrawBGScrollBlock1:
 			bsr.w	DrawRow_IgnoreX
 		endc
 
-@exit:
+.exit:
 		rts
 ; ===========================================================================
 
 ; Essentially, this draws everything that isn't scroll block 1
 DrawBGScrollBlock2:
 		tst.b	(a2)					; are any redraw flags set?
-		beq.w	@exit					; if not, branch
+		beq.w	.exit					; if not, branch
 		if Revision=0
 			bclr	#redraw_left_bit,(a2)		; clear flag for redraw left
-			beq.s	@chk_right			; branch if already clear
+			beq.s	.chk_right			; branch if already clear
 		; Draw new tiles on the left
 			cmpi.w	#16,(a3)			; is bg block 2 within 16px of left edge?
-			blo.s	@chk_right			; if yes, branch
+			blo.s	.chk_right			; if yes, branch
 
 			move.w	(v_scroll_block_1_height).w,d4	; get bg block 1 height (GHZ = $70; others = $800)
 			move.w	4(a3),d1			; get bg y position
@@ -257,15 +257,15 @@ DrawBGScrollBlock2:
 			move.w	4(a3),d1
 			andi.w	#$FFF0,d1
 			sub.w	d1,d6				; d6 = height of screen that isn't bg block 1
-			blt.s	@chk_right			; branch if bg block 1 is completely off screen
+			blt.s	.chk_right			; branch if bg block 1 is completely off screen
 			lsr.w	#4,d6				; divide by 16
 			subi.w	#((224+16)/16)-1,d6		; d6 = rows for bg block 2, minus rows for whole screen
-			bhs.s	@chk_right
+			bhs.s	.chk_right
 			neg.w	d6
 			bsr.w	DrawColumn_Partial
-	@chk_right:
+	.chk_right:
 			bclr	#redraw_right_bit,(a2)		; clear flag for redraw right
-			beq.s	@exit				; branch if already clear
+			beq.s	.exit				; branch if already clear
 		; Draw new tiles on the right
 			move.w	(v_scroll_block_1_height).w,d4
 			move.w	4(a3),d1
@@ -280,17 +280,17 @@ DrawBGScrollBlock2:
 			move.w	4(a3),d1
 			andi.w	#$FFF0,d1
 			sub.w	d1,d6
-			blt.s	@exit
+			blt.s	.exit
 			lsr.w	#4,d6
 			subi.w	#((224+16)/16)-1,d6
-			bhs.s	@exit
+			bhs.s	.exit
 			neg.w	d6
 			bsr.w	DrawColumn_Partial
 		else
 			cmpi.b	#id_SBZ,(v_zone).w		; is current zone SBZ?
 			beq.w	DrawBGScrollBlock2_SBZ		; if yes, branch
 			bclr	#redraw_bg2_left_bit,(a2)	; clear flag for redraw left (REV01 uses bit 0 for redraw left flag)
-			beq.s	@chk_right			; branch if already clear
+			beq.s	.chk_right			; branch if already clear
 		; Draw new tiles on the left
 			move.w	#224/2,d4			; draw the bottom half of the screen
 			moveq	#-16,d5
@@ -299,9 +299,9 @@ DrawBGScrollBlock2:
 			moveq	#-16,d5
 			moveq	#3-1,d6				; draw three 16x16 tiles... could this be a repurposed version of the unused code?
 			bsr.w	DrawColumn_Partial
-	@chk_right:
+	.chk_right:
 			bclr	#redraw_bg2_right_bit,(a2)	; clear flag for redraw right (REV01 uses bit 0 for redraw right flag)
-			beq.s	@exit				; branch if already clear
+			beq.s	.exit				; branch if already clear
 		; Draw new tiles on the right
 			move.w	#224/2,d4
 			move.w	#320,d5
@@ -311,7 +311,7 @@ DrawBGScrollBlock2:
 			moveq	#3-1,d6
 			bsr.w	DrawColumn_Partial
 		endc
-@exit:
+.exit:
 		rts
 ; ===========================================================================
 
@@ -321,9 +321,9 @@ DrawBGScrollBlock2:
 DrawBGScrollBlock2_Unused:
 		if Revision=0
 			tst.b	(a2)
-			beq.s	@exit
+			beq.s	.exit
 			bclr	#redraw_left_bit,(a2)
-			beq.s	@chk_right
+			beq.s	.chk_right
 		; Draw new tiles on the left
 			move.w	#224-16,d4			; Note that full screen coverage is normally 224+16+16. This is exactly three blocks less.
 			move.w	4(a3),d1
@@ -337,9 +337,9 @@ DrawBGScrollBlock2_Unused:
 			moveq	#3-1,d6				; Draw only three rows
 			bsr.w	DrawColumn_Partial
 
-	@chk_right:
+	.chk_right:
 			bclr	#redraw_right_bit,(a2)
-			beq.s	@exit
+			beq.s	.exit
 		; Draw new tiles on the right
 			move.w	#224-16,d4
 			move.w	4(a3),d1
@@ -353,7 +353,7 @@ DrawBGScrollBlock2_Unused:
 			moveq	#3-1,d6
 			bsr.w	DrawColumn_Partial
 
-	@exit:
+	.exit:
 			rts
 		endc
 ;===============================================================================
@@ -368,11 +368,11 @@ DrawBGScrollBlock2_Unused:
 DrawBGScrollBlock2_SBZ:
 			moveq	#-16,d4				; draw 16px above top of screen
 			bclr	#redraw_top_bit,(a2)		; clear flag for redraw top
-			bne.s	@top_bottom			; branch if it was set
+			bne.s	.top_bottom			; branch if it was set
 			bclr	#redraw_bottom_bit,(a2)		; clear flag for redraw bottom
-			beq.s	@chk_other			; branch if already clear
+			beq.s	.chk_other			; branch if already clear
 			move.w	#224,d4				; draw at bottom of screen
-	@top_bottom:
+	.top_bottom:
 			lea	(locj_6DF4+1).l,a0
 			move.w	(v_bg1_y_pos).w,d0
 			add.w	d4,d0				; d0 = v_bg1_y_pos -16 or +224
@@ -381,27 +381,27 @@ DrawBGScrollBlock2_SBZ:
 			move.b	(a0,d0.w),d0
 			lea	(DrawBG_XPosCopy_Ptrs).l,a3	; dc.w v_bg1_x_pos_copy, v_bg1_x_pos_copy, v_bg2_x_pos_copy, v_bg3_x_pos_copy
 			movea.w	(a3,d0.w),a3			; get pointer to bg block 1/2/3 x pos
-			beq.s	@bg_x_pos_0			; branch if 0
+			beq.s	.bg_x_pos_0			; branch if 0
 			moveq	#-16,d5				; x coordinate
 			movem.l	d4/d5,-(sp)
 			bsr.w	Calc_VRAM_Pos			; d0 = VDP command for bg nametable
 			movem.l	(sp)+,d4/d5
 			bsr.w	DrawRow				; draw full row on top or bottom of screen
-			bra.s	@chk_other
+			bra.s	.chk_other
 ;===============================================================================
-	@bg_x_pos_0:
+	.bg_x_pos_0:
 			moveq	#0,d5
 			movem.l	d4/d5,-(sp)
 			bsr.w	Calc_VRAM_Pos_IgnoreX
 			movem.l	(sp)+,d4/d5
 			moveq	#(512/16)-1,d6			; draw entire row
 			bsr.w	DrawRow_IgnoreX
-	@chk_other:
+	.chk_other:
 			tst.b	(a2)				; are any redraw flags set?
-			bne.s	@more				; if yes, branch
+			bne.s	.more				; if yes, branch
 			rts
 ;===============================================================================			
-	@more:
+	.more:
 			moveq	#-16,d4				; y coordinate - top of screen
 			moveq	#-16,d5				; x coordinate - left of screen
 			move.b	(a2),d0				; get remaining redraw flag bits
@@ -425,12 +425,12 @@ DrawBGScrollBlock3:
 		if Revision=0
 		else
 			tst.b	(a2)				; are any redraw flags set?
-			beq.w	@exit				; if not, branch
+			beq.w	.exit				; if not, branch
 			cmpi.b	#id_MZ,(v_zone).w		; is current zone MZ?
 			beq.w	DrawBGScrollBlock3_MZ		; if yes, branch
 
 			bclr	#redraw_bg2_left_bit,(a2)	; clear flag for redraw left
-			beq.s	@chk_right			; branch if already clear
+			beq.s	.chk_right			; branch if already clear
 		; Draw new tiles on the left
 			move.w	#$40,d4
 			moveq	#-16,d5
@@ -439,9 +439,9 @@ DrawBGScrollBlock3:
 			moveq	#-16,d5
 			moveq	#3-1,d6
 			bsr.w	DrawColumn_Partial
-	@chk_right:
+	.chk_right:
 			bclr	#redraw_bg2_right_bit,(a2)
-			beq.s	@exit
+			beq.s	.exit
 		; Draw new tiles on the right
 			move.w	#$40,d4
 			move.w	#320,d5
@@ -450,7 +450,7 @@ DrawBGScrollBlock3:
 			move.w	#320,d5
 			moveq	#3-1,d6
 			bsr.w	DrawColumn_Partial
-	@exit:
+	.exit:
 			rts
 	locj_6EF2:
 			dc.b $00,$00,$00,$00,$00,$00,$06,$06,$04,$04,$04,$04,$04,$04,$04,$04
@@ -563,7 +563,7 @@ DrawRow_Partial:
 		move.l	#sizeof_vram_row<<16,d7			; delta between rows of tiles (as in VDP command)
 		move.l	d0,d1
 
-	@loop:
+	.loop:
 		movem.l	d4-d5,-(sp)
 		bsr.w	GetBlockData
 		move.l	d1,d0
@@ -572,7 +572,7 @@ DrawRow_Partial:
 		andi.b	#$7F,d1					; wrap around row
 		movem.l	(sp)+,d4-d5
 		addi.w	#16,d5					; x coordinate of next block
-		dbf	d6,@loop
+		dbf	d6,.loop
 		rts
 
 		if Revision=0
@@ -581,7 +581,7 @@ DrawRow_IgnoreX:
 			move.l	#sizeof_vram_row<<16,d7
 			move.l	d0,d1
 
-	@loop:
+	.loop:
 			movem.l	d4-d5,-(sp)
 			bsr.w	GetBlockData_IgnoreX
 			move.l	d1,d0
@@ -590,7 +590,7 @@ DrawRow_IgnoreX:
 			andi.b	#$7F,d1
 			movem.l	(sp)+,d4-d5
 			addi.w	#16,d5
-			dbf	d6,@loop
+			dbf	d6,.loop
 			rts
 		endc
 
@@ -616,7 +616,7 @@ DrawColumn_Partial:
 		move.l	#sizeof_vram_row<<16,d7			; delta between rows of tiles (as in VDP command)
 		move.l	d0,d1
 
-	@loop:
+	.loop:
 		movem.l	d4-d5,-(sp)
 		bsr.w	GetBlockData
 		move.l	d1,d0
@@ -625,7 +625,7 @@ DrawColumn_Partial:
 		andi.w	#$FFF,d1				; wrap around plane
 		movem.l	(sp)+,d4-d5
 		addi.w	#16,d4					; x coordinate of next block
-		dbf	d6,@loop
+		dbf	d6,.loop
 		rts
 
 ; ---------------------------------------------------------------------------
@@ -766,7 +766,7 @@ GetBlockData:
 		add.w	d3,d0					; combine for position within layout
 		moveq	#-1,d3					; d3 = $FFFFFFFF (used to make a RAM address)
 		move.b	(a4,d0.w),d3				; d3 = $FFFFFF00 + 256x256 tile id
-		beq.s	@exit					; if 0, just return a pointer to the first block (expected to be empty)
+		beq.s	.exit					; if 0, just return a pointer to the first block (expected to be empty)
 		; Turn 256x256 tile id into address of 256x256 mappings
 		subq.b	#1,d3					; first 256x256 tile id is 1, not 0
 		andi.w	#$7F,d3					; ignore high bit
@@ -786,7 +786,7 @@ GetBlockData:
 		lsl.w	#3,d3
 		adda.w	d3,a1					; a1 = address of 16x16 tile mappings
 
-	@exit:
+	.exit:
 		rts
 
 ; ---------------------------------------------------------------------------
@@ -890,7 +890,7 @@ DrawChunks:
 		moveq	#-16,d4					; draw from 16px above top of screen
 		moveq	#((224+16+16)/16)-1,d6			; draw entire height of screen
 
-	@loop:
+	.loop:
 		movem.l	d4-d6,-(sp)
 		moveq	#0,d5					; draw from left edge of screen
 		move.w	d4,d1
@@ -901,7 +901,7 @@ DrawChunks:
 		bsr.w	DrawRow_Partial
 		movem.l	(sp)+,d4-d6
 		addi.w	#16,d4					; next row
-		dbf	d6,@loop
+		dbf	d6,.loop
 		rts
 ;===============================================================================
 

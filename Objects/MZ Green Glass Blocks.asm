@@ -47,22 +47,22 @@ Glass_Main:	; Routine 0
 		moveq	#1,d1
 		move.b	#$48,ost_height(a0)
 		cmpi.b	#3,ost_subtype(a0)			; is object type 0/1/2 ?
-		bcs.s	@type012				; if yes, branch
+		bcs.s	.type012				; if yes, branch
 
 		lea	(Glass_Vars34).l,a2
 		moveq	#1,d1
 		move.b	#$38,ost_height(a0)
 
-	@type012:
+	.type012:
 		movea.l	a0,a1
-		bra.s	@load					; load main object
+		bra.s	.load					; load main object
 ; ===========================================================================
 
-	@repeat:
+	.repeat:
 		bsr.w	FindNextFreeObj
-		bne.s	@fail
+		bne.s	.fail
 
-@load:
+.load:
 		move.b	(a2)+,ost_routine(a1)			; goto Glass_Block012/Glass_Reflect012/Glass_Block34/Glass_Reflect34 next
 		move.b	#id_GlassBlock,ost_id(a1)
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
@@ -79,14 +79,14 @@ Glass_Main:	; Routine 0
 		move.b	#4,ost_priority(a1)
 		move.b	(a2)+,ost_frame(a1)			; get frame
 		move.l	a0,ost_glass_parent(a1)			; save address of OST of parent object
-		dbf	d1,@repeat				; repeat once to load "reflection object"
+		dbf	d1,.repeat				; repeat once to load "reflection object"
 
 		move.b	#$10,ost_displaywidth(a1)
 		move.b	#3,ost_priority(a1)
 		addq.b	#8,ost_subtype(a1)			; +8 to reflection object subtype
 		andi.b	#$F,ost_subtype(a1)			; clear high nybble of subtype
 
-	@fail:
+	.fail:
 		move.w	#$90,ost_glass_y_dist(a0)
 		bset	#render_useheight_bit,ost_render(a0)
 
@@ -165,63 +165,63 @@ Glass_UpDown_Rev:
 
 Glass_UpDown_Reflect:
 		btst	#3,ost_subtype(a0)			; is object a reflection?
-		beq.s	@not_reflection				; if not, branch
+		beq.s	.not_reflection				; if not, branch
 		neg.w	d0					; reverse for reflection
 		add.w	d1,d0
 		lsr.b	#1,d0					; divide by 2
 		addi.w	#$20,d0					; move down 32px
 
-	@not_reflection:
+	.not_reflection:
 		bra.w	Glass_Move
 ; ===========================================================================
 
 ; Type 3 - drops each time it's jumped on
 Glass_Drop_Jump:
 		btst	#3,ost_subtype(a0)			; is object a reflection?
-		beq.s	@not_reflection				; if not, branch
+		beq.s	.not_reflection				; if not, branch
 		move.b	(v_oscillating_0_to_40_fast).w,d0
 		subi.w	#$10,d0
 		bra.w	Glass_Move
 
-	@not_reflection:
+	.not_reflection:
 		btst	#status_platform_bit,ost_status(a0)	; is Sonic on the block?
-		bne.s	@chk_move				; if yes, branch
+		bne.s	.chk_move				; if yes, branch
 		bclr	#0,ost_glass_move_mode(a0)
-		bra.s	@skip_move
+		bra.s	.skip_move
 ; ===========================================================================
 
-@chk_move:
+.chk_move:
 		tst.b	ost_glass_move_mode(a0)			; is block already moving?
-		bne.s	@skip_move				; if yes, branch
+		bne.s	.skip_move				; if yes, branch
 		move.b	#1,ost_glass_move_mode(a0)		; set moving flag
 		bset	#0,ost_glass_jump_init(a0)		; set first jump flag
-		beq.s	@skip_move				; branch if previously 0 (i.e. not jumped on before)
+		beq.s	.skip_move				; branch if previously 0 (i.e. not jumped on before)
 		bset	#7,ost_glass_move_mode(a0)		; +$80 to moving flag
 		move.w	#$10,ost_glass_sink_dist(a0)		; sink $10 pixels after it's jumped on
 		move.b	#$A,ost_glass_sink_delay(a0)
 		cmpi.w	#$40,ost_glass_y_dist(a0)		; is block within $40 of its final position?
-		bne.s	@skip_move				; if not, branch
+		bne.s	.skip_move				; if not, branch
 		move.w	#$40,ost_glass_sink_dist(a0)		; sink rest of the way
 
-@skip_move:
+.skip_move:
 		tst.b	ost_glass_move_mode(a0)
-		bpl.s	@update_pos
+		bpl.s	.update_pos
 		tst.b	ost_glass_sink_delay(a0)
-		beq.s	@wait					; branch if time remains on delay timer
+		beq.s	.wait					; branch if time remains on delay timer
 		subq.b	#1,ost_glass_sink_delay(a0)		; decrement timer
-		bne.s	@update_pos
+		bne.s	.update_pos
 
-	@wait:
+	.wait:
 		tst.w	ost_glass_y_dist(a0)
-		beq.s	@no_dist
+		beq.s	.no_dist
 		subq.w	#1,ost_glass_y_dist(a0)
 		subq.w	#1,ost_glass_sink_dist(a0)
-		bne.s	@update_pos
+		bne.s	.update_pos
 
-	@no_dist:
+	.no_dist:
 		bclr	#7,ost_glass_move_mode(a0)
 
-	@update_pos:
+	.update_pos:
 		move.w	ost_glass_y_dist(a0),d0
 		bra.s	Glass_Move
 ; ===========================================================================
@@ -237,21 +237,21 @@ Glass_Drop_Button:
 
 Glass_ChkBtn:
 		tst.b	ost_glass_move_mode(a0)			; is block already moving?
-		bne.s	@skip_button				; if yes, branch
+		bne.s	.skip_button				; if yes, branch
 		lea	(v_button_state).w,a2
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0			; load object type number
 		lsr.w	#4,d0					; read only the	high nybble
 		tst.b	(a2,d0.w)				; has button number d0 been pressed?
-		beq.s	@no_dist				; if not, branch
+		beq.s	.no_dist				; if not, branch
 		move.b	#1,ost_glass_move_mode(a0)		; set moving flag
 
-	@skip_button:
+	.skip_button:
 		tst.w	ost_glass_y_dist(a0)			; does block still have distance to move?
-		beq.s	@no_dist				; if not, branch
+		beq.s	.no_dist				; if not, branch
 		subq.w	#2,ost_glass_y_dist(a0)			; decrement distance
 
-	@no_dist:
+	.no_dist:
 		move.w	ost_glass_y_dist(a0),d0
 
 Glass_Move:

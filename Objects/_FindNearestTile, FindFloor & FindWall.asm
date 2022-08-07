@@ -22,8 +22,8 @@ FindNearestTile:
 		moveq	#-1,d1					; d1 = $FFFFFFFF (used to make a RAM address)
 		lea	(v_level_layout).w,a1
 		move.b	(a1,d0.w),d1				; get 256x256 tile number
-		beq.s	@blanktile				; branch if 0
-		bmi.s	@specialtile				; branch if > $7F
+		beq.s	.blanktile				; branch if 0
+		bmi.s	.specialtile				; branch if > $7F
 
 		subq.b	#1,d1					; make tiles start at 0
 		ext.w	d1					; d1 = $FFFF00xx
@@ -37,21 +37,21 @@ FindNearestTile:
 		andi.w	#$1E,d0					; d0 = high nybble of low byte of x pos, multiplied by 2
 		add.w	d0,d1					; add to base address
 
-	@blanktile:
+	.blanktile:
 		movea.l	d1,a1
 		rts	
 ; ===========================================================================
 
-@specialtile:
+.specialtile:
 		andi.w	#$7F,d1
 		btst	#render_behind_bit,ost_render(a0)	; is object "behind a loop"?
-		beq.s	@treatasnormal				; if not, branch
+		beq.s	.treatasnormal				; if not, branch
 		addq.w	#1,d1
 		cmpi.w	#$29,d1					; is 256x256 tile number $28?
-		bne.s	@treatasnormal				; if not, branch
+		bne.s	.treatasnormal				; if not, branch
 		move.w	#$51,d1					; replace with $51
 
-	@treatasnormal:
+	.treatasnormal:
 		subq.b	#1,d1
 		ror.w	#7,d1
 		move.w	d2,d0
@@ -89,11 +89,11 @@ FindFloor:
 		move.w	(a1),d0					; get value for solidness, orientation and 16x16 tile number
 		move.w	d0,d4
 		andi.w	#$7FF,d0				; ignore solid/orientation bits
-		beq.s	@isblank				; branch if tile is blank
+		beq.s	.isblank				; branch if tile is blank
 		btst	d5,d4					; is the tile solid?
-		bne.s	@issolid				; if yes, branch
+		bne.s	.issolid				; if yes, branch
 
-@isblank:
+.isblank:
 		add.w	a3,d2
 		bsr.w	FindFloor2				; try tile below the nearest
 		sub.w	a3,d2
@@ -101,28 +101,28 @@ FindFloor:
 		rts	
 ; ===========================================================================
 
-@issolid:
+.issolid:
 		movea.l	(v_collision_index_ptr).w,a2
 		move.b	(a2,d0.w),d0				; get collision heightmap id
 		andi.w	#$FF,d0					; heightmap id is 1 byte
-		beq.s	@isblank				; branch if 0
+		beq.s	.isblank				; branch if 0
 		lea	(AngleMap).l,a2
 		move.b	(a2,d0.w),(a4)				; get collision angle value
 		lsl.w	#4,d0					; d0 = heightmap id * $10 (the width of a heightmap for 1 tile)
 		move.w	d3,d1					; get x pos of object
 		btst	#tilemap_xflip_bit,d4			; is tile flipped horizontally?
-		beq.s	@no_xflip				; if not, branch
+		beq.s	.no_xflip				; if not, branch
 		not.w	d1
 		neg.b	(a4)					; xflip angle
 
-	@no_xflip:
+	.no_xflip:
 		btst	#tilemap_yflip_bit,d4			; is tile flipped vertically?
-		beq.s	@no_yflip				; if not, branch
+		beq.s	.no_yflip				; if not, branch
 		addi.b	#$40,(a4)
 		neg.b	(a4)
 		subi.b	#$40,(a4)				; yflip angle
 
-	@no_yflip:
+	.no_yflip:
 		andi.w	#$F,d1					; read only low nybble of x pos (i.e. x pos within 16x16 tile)
 		add.w	d0,d1					; (id * $10) + x pos. = place in heightmap data
 		lea	(CollArray1).l,a2
@@ -130,15 +130,15 @@ FindFloor:
 		ext.w	d0
 		eor.w	d6,d4					; apply x/yflip (allows for double-flip cancellation)
 		btst	#tilemap_yflip_bit,d4			; is block flipped vertically?
-		beq.s	@no_yflip2				; if not, branch
+		beq.s	.no_yflip2				; if not, branch
 		neg.w	d0
 
-	@no_yflip2:
+	.no_yflip2:
 		tst.w	d0
-		beq.s	@isblank				; branch if height is 0
-		bmi.s	@negfloor				; branch if height is negative
+		beq.s	.isblank				; branch if height is 0
+		bmi.s	.negfloor				; branch if height is negative
 		cmpi.b	#$10,d0
-		beq.s	@maxfloor				; branch if height is $10 (max)
+		beq.s	.maxfloor				; branch if height is $10 (max)
 		move.w	d2,d1					; get y pos of object
 		andi.w	#$F,d1					; read only low nybble for y pos within 16x16 tile
 		add.w	d1,d0
@@ -147,13 +147,13 @@ FindFloor:
 		rts	
 ; ===========================================================================
 
-@negfloor:
+.negfloor:
 		move.w	d2,d1
 		andi.w	#$F,d1
 		add.w	d1,d0
-		bpl.w	@isblank
+		bpl.w	.isblank
 
-@maxfloor:
+.maxfloor:
 		sub.w	a3,d2
 		bsr.w	FindFloor2				; try tile above the nearest
 		add.w	a3,d2
@@ -169,11 +169,11 @@ FindFloor2:
 		move.w	(a1),d0
 		move.w	d0,d4
 		andi.w	#$7FF,d0
-		beq.s	@isblank2
+		beq.s	.isblank2
 		btst	d5,d4
-		bne.s	@issolid
+		bne.s	.issolid
 
-@isblank2:
+.isblank2:
 		move.w	#$F,d1
 		move.w	d2,d0
 		andi.w	#$F,d0
@@ -181,28 +181,28 @@ FindFloor2:
 		rts	
 ; ===========================================================================
 
-@issolid:
+.issolid:
 		movea.l	(v_collision_index_ptr).w,a2
 		move.b	(a2,d0.w),d0
 		andi.w	#$FF,d0
-		beq.s	@isblank2
+		beq.s	.isblank2
 		lea	(AngleMap).l,a2
 		move.b	(a2,d0.w),(a4)
 		lsl.w	#4,d0
 		move.w	d3,d1
 		btst	#tilemap_xflip_bit,d4
-		beq.s	@no_xflip
+		beq.s	.no_xflip
 		not.w	d1
 		neg.b	(a4)
 
-	@no_xflip:
+	.no_xflip:
 		btst	#tilemap_yflip_bit,d4
-		beq.s	@no_yflip
+		beq.s	.no_yflip
 		addi.b	#$40,(a4)
 		neg.b	(a4)
 		subi.b	#$40,(a4)
 
-	@no_yflip:
+	.no_yflip:
 		andi.w	#$F,d1
 		add.w	d0,d1
 		lea	(CollArray1).l,a2
@@ -210,13 +210,13 @@ FindFloor2:
 		ext.w	d0
 		eor.w	d6,d4
 		btst	#tilemap_yflip_bit,d4
-		beq.s	@no_yflip2
+		beq.s	.no_yflip2
 		neg.w	d0
 
-	@no_yflip2:
+	.no_yflip2:
 		tst.w	d0
-		beq.s	@isblank2
-		bmi.s	@negfloor
+		beq.s	.isblank2
+		bmi.s	.negfloor
 		move.w	d2,d1
 		andi.w	#$F,d1
 		add.w	d1,d0
@@ -225,11 +225,11 @@ FindFloor2:
 		rts	
 ; ===========================================================================
 
-@negfloor:
+.negfloor:
 		move.w	d2,d1
 		andi.w	#$F,d1
 		add.w	d1,d0
-		bpl.w	@isblank2
+		bpl.w	.isblank2
 		not.w	d1
 		rts
 
@@ -257,11 +257,11 @@ FindWall:
 		move.w	(a1),d0					; get value for solidness, orientation and 16x16 tile number
 		move.w	d0,d4
 		andi.w	#$7FF,d0				; ignore solid/orientation bits
-		beq.s	@isblank				; branch if tile is blank
+		beq.s	.isblank				; branch if tile is blank
 		btst	d5,d4					; is the tile solid?
-		bne.s	@issolid				; if yes, branch
+		bne.s	.issolid				; if yes, branch
 
-@isblank:
+.isblank:
 		add.w	a3,d3
 		bsr.w	FindWall2				; try tile to the right
 		sub.w	a3,d3
@@ -269,28 +269,28 @@ FindWall:
 		rts	
 ; ===========================================================================
 
-@issolid:
+.issolid:
 		movea.l	(v_collision_index_ptr).w,a2
 		move.b	(a2,d0.w),d0				; get collision heightmap id
 		andi.w	#$FF,d0					; heightmap id is 1 byte
-		beq.s	@isblank				; branch if 0
+		beq.s	.isblank				; branch if 0
 		lea	(AngleMap).l,a2
 		move.b	(a2,d0.w),(a4)				; get collision angle value
 		lsl.w	#4,d0					; d0 = heightmap id * $10 (the width of a heightmap for 1 tile)
 		move.w	d2,d1					; get y pos of object
 		btst	#tilemap_yflip_bit,d4			; is block flipped vertically?
-		beq.s	@no_yflip				; if not, branch
+		beq.s	.no_yflip				; if not, branch
 		not.w	d1
 		addi.b	#$40,(a4)
 		neg.b	(a4)
 		subi.b	#$40,(a4)				; yflip angle
 
-	@no_yflip:
+	.no_yflip:
 		btst	#tilemap_xflip_bit,d4			; is block flipped horizontally?
-		beq.s	@no_xflip				; if not, branch
+		beq.s	.no_xflip				; if not, branch
 		neg.b	(a4)					; xflip angle
 
-	@no_xflip:
+	.no_xflip:
 		andi.w	#$F,d1					; read only low nybble of x pos (i.e. x pos within 16x16 tile)
 		add.w	d0,d1					; (id * $10) + x pos. = place in heightmap data
 		lea	(CollArray2).l,a2
@@ -298,15 +298,15 @@ FindWall:
 		ext.w	d0
 		eor.w	d6,d4					; apply x/yflip (allows for double-flip cancellation)
 		btst	#tilemap_xflip_bit,d4			; is block flipped horizontally?
-		beq.s	@no_xflip2				; if not, branch
+		beq.s	.no_xflip2				; if not, branch
 		neg.w	d0
 
-	@no_xflip2:
+	.no_xflip2:
 		tst.w	d0
-		beq.s	@isblank				; branch if height is 0
-		bmi.s	@negfloor				; branch if height is negative
+		beq.s	.isblank				; branch if height is 0
+		bmi.s	.negfloor				; branch if height is negative
 		cmpi.b	#$10,d0
-		beq.s	@maxfloor				; branch if height is $10 (max)
+		beq.s	.maxfloor				; branch if height is $10 (max)
 		move.w	d3,d1					; get x pos of object
 		andi.w	#$F,d1					; read only low nybble for x pos within 16x16 tile
 		add.w	d1,d0
@@ -315,13 +315,13 @@ FindWall:
 		rts	
 ; ===========================================================================
 
-@negfloor:
+.negfloor:
 		move.w	d3,d1
 		andi.w	#$F,d1
 		add.w	d1,d0
-		bpl.w	@isblank
+		bpl.w	.isblank
 
-@maxfloor:
+.maxfloor:
 		sub.w	a3,d3
 		bsr.w	FindWall2				; try tile to the left
 		add.w	a3,d3
@@ -337,11 +337,11 @@ FindWall2:
 		move.w	(a1),d0
 		move.w	d0,d4
 		andi.w	#$7FF,d0
-		beq.s	@isblank
+		beq.s	.isblank
 		btst	d5,d4
-		bne.s	@issolid
+		bne.s	.issolid
 
-@isblank:
+.isblank:
 		move.w	#$F,d1
 		move.w	d3,d0
 		andi.w	#$F,d0
@@ -349,28 +349,28 @@ FindWall2:
 		rts	
 ; ===========================================================================
 
-@issolid:
+.issolid:
 		movea.l	(v_collision_index_ptr).w,a2
 		move.b	(a2,d0.w),d0
 		andi.w	#$FF,d0
-		beq.s	@isblank
+		beq.s	.isblank
 		lea	(AngleMap).l,a2
 		move.b	(a2,d0.w),(a4)
 		lsl.w	#4,d0
 		move.w	d2,d1
 		btst	#tilemap_yflip_bit,d4
-		beq.s	@no_yflip
+		beq.s	.no_yflip
 		not.w	d1
 		addi.b	#$40,(a4)
 		neg.b	(a4)
 		subi.b	#$40,(a4)
 
-	@no_yflip:
+	.no_yflip:
 		btst	#tilemap_xflip_bit,d4
-		beq.s	@no_xflip
+		beq.s	.no_xflip
 		neg.b	(a4)
 
-	@no_xflip:
+	.no_xflip:
 		andi.w	#$F,d1
 		add.w	d0,d1
 		lea	(CollArray2).l,a2
@@ -378,13 +378,13 @@ FindWall2:
 		ext.w	d0
 		eor.w	d6,d4
 		btst	#tilemap_xflip_bit,d4
-		beq.s	@no_xflip2
+		beq.s	.no_xflip2
 		neg.w	d0
 
-	@no_xflip2:
+	.no_xflip2:
 		tst.w	d0
-		beq.s	@isblank
-		bmi.s	@negfloor
+		beq.s	.isblank
+		bmi.s	.negfloor
 		move.w	d3,d1
 		andi.w	#$F,d1
 		add.w	d1,d0
@@ -393,10 +393,10 @@ FindWall2:
 		rts	
 ; ===========================================================================
 
-@negfloor:
+.negfloor:
 		move.w	d3,d1
 		andi.w	#$F,d1
 		add.w	d1,d0
-		bpl.w	@isblank
+		bpl.w	.isblank
 		not.w	d1
 		rts

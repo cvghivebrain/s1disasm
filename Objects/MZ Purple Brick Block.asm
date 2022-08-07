@@ -34,7 +34,7 @@ Brick_Main:	; Routine 0
 
 Brick_Action:	; Routine 2
 		tst.b	ost_render(a0)
-		bpl.s	@chkdel
+		bpl.s	.chkdel
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0			; get object type
 		andi.w	#7,d0					; read only bits 0-2
@@ -47,7 +47,7 @@ Brick_Action:	; Routine 2
 		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject
 
-	@chkdel:
+	.chkdel:
 		if Revision=0
 			bsr.w	DisplaySprite
 			out_of_range	DeleteObject
@@ -74,10 +74,10 @@ Brick_Still:
 Brick_Falls:
 		move.w	(v_ost_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0
-		bcc.s	@sonic_is_right				; branch if Sonic is to the right
+		bcc.s	.sonic_is_right				; branch if Sonic is to the right
 		neg.w	d0					; make d0 +ve
 
-	@sonic_is_right:
+	.sonic_is_right:
 		cmpi.w	#$90,d0					; is Sonic within 144px of the block?
 		bcc.s	Brick_Wobbles				; if not, resume wobbling
 		move.b	#id_Brick_FallNow,ost_subtype(a0)	; if yes, make the block fall
@@ -87,11 +87,11 @@ Brick_Wobbles:
 		moveq	#0,d0
 		move.b	(v_oscillating_0_to_10).w,d0
 		btst	#3,ost_subtype(a0)			; is subtype 8 or above?
-		beq.s	@no_rev					; if not, branch
+		beq.s	.no_rev					; if not, branch
 		neg.w	d0					; wobble the opposite way
 		addi.w	#$10,d0
 
-	@no_rev:
+	.no_rev:
 		move.w	ost_brick_y_start(a0),d1		; get initial position
 		sub.w	d0,d1					; apply wobble
 		move.w	d1,ost_y_pos(a0)			; update position to make it wobble
@@ -104,7 +104,7 @@ Brick_FallNow:
 		addi.w	#$18,ost_y_vel(a0)			; apply gravity
 		bsr.w	FindFloorObj
 		tst.w	d1					; has the block	hit the	floor?
-		bpl.w	@exit					; if not, branch
+		bpl.w	.exit					; if not, branch
 		add.w	d1,ost_y_pos(a0)			; align to floor
 		clr.w	ost_y_vel(a0)				; stop the block falling
 		move.w	ost_y_pos(a0),ost_brick_y_start(a0)
@@ -116,10 +116,10 @@ Brick_FallNow:
 		else
 			cmpi.w	#$16A,d0			; is the 16x16 tile it's landed on lava?
 		endc
-		bcc.s	@exit					; if yes, branch
+		bcc.s	.exit					; if yes, branch
 		move.b	#0,ost_subtype(a0)			; don't wobble
 
-	@exit:
+	.exit:
 		rts	
 ; ===========================================================================
 

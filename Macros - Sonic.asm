@@ -5,9 +5,9 @@
 ; ---------------------------------------------------------------------------
 
 zonewarning:	macro loc,elementsize
-	@end:
-		if (@end-loc)-(ZoneCount*elementsize)<>0
-		inform 1,"Size of \loc ($%h) does not match ZoneCount ($\#ZoneCount).",(@end-loc)/elementsize
+	.end:
+		if (.end-loc)-(ZoneCount*elementsize)<>0
+		inform 1,"Size of \loc ($%h) does not match ZoneCount ($\#ZoneCount).",(.end-loc)/elementsize
 		endc
 		endm
 

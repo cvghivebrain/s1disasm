@@ -54,7 +54,7 @@ DetectPlatform:
 
 Plat_NoCheck:							; jump here to skip all checks
 		btst	#status_platform_bit,ost_status(a1)	; is Sonic on a platform already?
-		beq.s	@no					; if not, branch
+		beq.s	.no					; if not, branch
 		moveq	#0,d0
 		move.b	ost_sonic_on_obj(a1),d0			; get OST index for that platform
 		lsl.w	#6,d0
@@ -63,10 +63,10 @@ Plat_NoCheck:							; jump here to skip all checks
 		bclr	#status_platform_bit,ost_status(a2)	; clear platform bit for the other platform
 		clr.b	ost_routine2(a2)
 		cmpi.b	#id_Plat_StoodOn,ost_routine(a2)	; does its routine counter suggest it's being stood on? (platforms all use similar routines)
-		bne.s	@no					; if not, branch
+		bne.s	.no					; if not, branch
 		subq.b	#2,ost_routine(a2)			; decrement counter to "detect mode"
 
-	@no:
+	.no:
 		move.w	a0,d0
 		subi.w	#v_ost_all&$FFFF,d0
 		lsr.w	#6,d0
@@ -76,13 +76,13 @@ Plat_NoCheck:							; jump here to skip all checks
 		move.w	#0,ost_y_vel(a1)
 		move.w	ost_x_vel(a1),ost_inertia(a1)
 		btst	#status_air_bit,ost_status(a1)		; is Sonic in the air/jumping?
-		beq.s	@notinair				; if not, branch
+		beq.s	.notinair				; if not, branch
 		move.l	a0,-(sp)
 		movea.l	a1,a0
 		jsr	(Sonic_ResetOnFloor).l			; make Sonic land
 		movea.l	(sp)+,a0
 
-	@notinair:
+	.notinair:
 		bset	#status_platform_bit,ost_status(a1)
 		bset	#status_platform_bit,ost_status(a0)
 

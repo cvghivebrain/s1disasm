@@ -13,9 +13,9 @@ VDPSetupGame:
 		lea	(vdp_data_port).l,a1
 		lea	(VDPSetupArray).l,a2
 		moveq	#((VDPSetupArray_end-VDPSetupArray)/2)-1,d7
-	@setreg:
+	.setreg:
 		move.w	(a2)+,(a0)
-		dbf	d7,@setreg				; set the VDP registers
+		dbf	d7,.setreg				; set the VDP registers
 
 		move.w	(VDPSetupArray+2).l,d0
 		move.w	d0,(v_vdp_mode_buffer).w		; save $8134 to buffer for later use
@@ -24,19 +24,19 @@ VDPSetupGame:
 		moveq	#0,d0
 		move.l	#$C0000000,(vdp_control_port).l		; set VDP to CRAM write
 		move.w	#$40-1,d7
-	@clrCRAM:
+	.clrCRAM:
 		move.w	d0,(a1)
-		dbf	d7,@clrCRAM				; clear	the CRAM
+		dbf	d7,.clrCRAM				; clear	the CRAM
 
 		clr.l	(v_fg_y_pos_vsram).w
 		clr.l	(v_fg_x_pos_hscroll).w
 		move.l	d1,-(sp)
 		dma_fill	0,$FFFF,0			; clear the VRAM (also sets a5 to vdp_control_port)
 
-	@waitforDMA:
+	.waitforDMA:
 		move.w	(a5),d1
 		btst	#1,d1					; is dma_fill still running?
-		bne.s	@waitforDMA				; if yes, branch
+		bne.s	.waitforDMA				; if yes, branch
 
 		move.w	#$8F02,(a5)				; set VDP increment size
 		move.l	(sp)+,d1

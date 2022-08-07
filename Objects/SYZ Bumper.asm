@@ -27,7 +27,7 @@ Bump_Main:	; Routine 0
 
 Bump_Hit:	; Routine 2
 		tst.b	ost_col_property(a0)			; has Sonic touched the bumper?
-		beq.w	@display				; if not, branch
+		beq.w	.display				; if not, branch
 		clr.b	ost_col_property(a0)
 		lea	(v_ost_player).w,a1
 		move.w	ost_x_pos(a0),d1
@@ -51,36 +51,36 @@ Bump_Hit:	; Routine 2
 		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
-		beq.s	@addscore
+		beq.s	.addscore
 		cmpi.b	#$8A,2(a2,d0.w)				; has bumper been hit 10 times?
-		bcc.s	@display				; if yes, Sonic	gets no	points
+		bcc.s	.display				; if yes, Sonic	gets no	points
 		addq.b	#1,2(a2,d0.w)
 
-	@addscore:
+	.addscore:
 		moveq	#1,d0
 		jsr	(AddPoints).l				; add 10 to score
 		bsr.w	FindFreeObj
-		bne.s	@display
+		bne.s	.display
 		move.b	#id_Points,ost_id(a1)			; load points object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	#id_frame_points_10,ost_frame(a1)
 
-	@display:
+	.display:
 		lea	(Ani_Bump).l,a1
 		bsr.w	AnimateSprite
-		out_of_range.s	@resetcount
+		out_of_range.s	.resetcount
 		bra.w	DisplaySprite
 ; ===========================================================================
 
-@resetcount:
+.resetcount:
 		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
-		beq.s	@delete
+		beq.s	.delete
 		bclr	#7,2(a2,d0.w)
 
-	@delete:
+	.delete:
 		bra.w	DeleteObject
 
 ; ---------------------------------------------------------------------------

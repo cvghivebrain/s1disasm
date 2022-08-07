@@ -6,17 +6,17 @@
 
 OscillateNumInit:
 		lea	(v_oscillating_direction).w,a1
-		lea	(@baselines).l,a2
-		moveq	#((@end-@baselines)/2)-1,d1
+		lea	(.baselines).l,a2
+		moveq	#((.end-.baselines)/2)-1,d1
 
-	@loop:
+	.loop:
 		move.w	(a2)+,(a1)+				; copy baseline values to RAM
-		dbf	d1,@loop
+		dbf	d1,.loop
 		rts	
 
 
 ; ===========================================================================
-@baselines:	dc.w %0000000001111100				; direction bitfield (0 = up; 1 = down)
+.baselines:	dc.w %0000000001111100				; direction bitfield (0 = up; 1 = down)
 
 		; start value, start rate
 		dc.w $80, 0					; 0 - LZ water height, MZ grass platforms
@@ -35,7 +35,7 @@ OscillateNumInit:
 		dc.w $7080, $276				; $34 - SYZ/SLZ floating blocks
 		dc.w $80, 0					; $38 - unused
 		dc.w $80, 0					; $3C - unused
-	@end:
+	.end:
 		even
 
 ; ---------------------------------------------------------------------------
@@ -46,47 +46,47 @@ OscillateNumInit:
 
 OscillateNumDo:
 		cmpi.b	#id_Sonic_Death,(v_ost_player+ost_routine).w ; has Sonic just died?
-		bcc.s	@end					; if yes, branch
+		bcc.s	.end					; if yes, branch
 		lea	(v_oscillating_direction).w,a1
-		lea	(@settings).l,a2
+		lea	(.settings).l,a2
 		move.w	(a1)+,d3				; get oscillation direction bitfield
 		moveq	#$F,d1					; bit to test/store direction
 
-@loop:
+.loop:
 		move.w	(a2)+,d2				; get frequency
 		move.w	(a2)+,d4				; get amplitude
 		btst	d1,d3					; check oscillation direction
-		bne.s	@down					; branch if 1
+		bne.s	.down					; branch if 1
 
-	@up:
+	.up:
 		move.w	2(a1),d0				; get current rate
 		add.w	d2,d0					; add frequency
 		move.w	d0,2(a1)				; update rate
 		add.w	d0,0(a1)				; add rate to value
 		cmp.b	0(a1),d4
-		bhi.s	@next					; branch if value is below middle value
+		bhi.s	.next					; branch if value is below middle value
 		bset	d1,d3					; set direction to down
-		bra.s	@next
+		bra.s	.next
 
-	@down:
+	.down:
 		move.w	2(a1),d0				; get current rate
 		sub.w	d2,d0					; subtract frequency
 		move.w	d0,2(a1)				; update rate
 		add.w	d0,0(a1)				; add rate to value
 		cmp.b	0(a1),d4
-		bls.s	@next					; branch if value is above middle value
+		bls.s	.next					; branch if value is above middle value
 		bclr	d1,d3					; set direction to up
 
-	@next:
+	.next:
 		addq.w	#4,a1					; next value/rate
-		dbf	d1,@loop				; repeat for all bits in direction bitfield
+		dbf	d1,.loop				; repeat for all bits in direction bitfield
 		move.w	d3,(v_oscillating_direction).w		; update direction bitfield
 
-@end:
+.end:
 		rts
 
 ; ===========================================================================
-@settings:	; frequency, middle value
+.settings:	; frequency, middle value
 		dc.w 2,	$10					; 0 - LZ water height, MZ grass platforms
 		dc.w 2,	$18					; 4 - MZ grass platforms, SBZ saws
 		dc.w 2,	$20					; 8 - MZ magma animation, MZ grass platforms, SYZ/SLZ floating blocks

@@ -47,7 +47,7 @@ Hel_Main:	; Routine 0
 		bcs.s	Hel_Action				; skip to action if length is only 1
 		moveq	#0,d6
 
-@loop:
+.loop:
 		bsr.w	FindFreeObj				; find free OST slot
 		bne.s	Hel_Action				; branch if not found
 		addq.b	#1,ost_subtype(a0)			; keep track of number of child objects
@@ -70,7 +70,7 @@ Hel_Main:	; Routine 0
 		andi.b	#7,d6					; there are only 8 frames
 		addi.w	#$10,d3					; x position of next spike
 		cmp.w	ost_x_pos(a0),d3			; is this spike in the centre?
-		bne.s	@not_centre				; if not, branch
+		bne.s	.not_centre				; if not, branch
 
 		move.b	d6,ost_helix_frame(a0)			; set parent spike frame
 		addq.b	#1,d6
@@ -78,8 +78,8 @@ Hel_Main:	; Routine 0
 		addi.w	#$10,d3					; skip to next spike
 		addq.b	#1,ost_subtype(a0)
 
-	@not_centre:
-		dbf	d1,@loop				; repeat d1 times (helix length)
+	.not_centre:
+		dbf	d1,.loop				; repeat d1 times (helix length)
 
 Hel_Action:	; Routine 2, 4
 		bsr.w	Hel_RotateSpikes
@@ -96,10 +96,10 @@ Hel_RotateSpikes:
 		add.b	ost_helix_frame(a0),d0			; add initial frame
 		andi.b	#7,d0					; there are 8 frames max
 		move.b	d0,ost_frame(a0)			; change current frame
-		bne.s	@harmless				; branch if not 0
+		bne.s	.harmless				; branch if not 0
 		move.b	#id_col_4x16+id_col_hurt,ost_col_type(a0) ; make object harmful
 
-	@harmless:
+	.harmless:
 		rts	
 ; End of function Hel_RotateSpikes
 
@@ -117,14 +117,14 @@ Hel_DelAll:
 		subq.b	#2,d2					; minus 1 for parent, minus 1 for first loop
 		bcs.s	Hel_Delete
 
-	@loop:
+	.loop:
 		moveq	#0,d0
 		move.b	(a2)+,d0
 		lsl.w	#6,d0
 		addi.l	#v_ost_all&$FFFFFF,d0
 		movea.l	d0,a1					; get child address
 		bsr.w	DeleteChild				; delete object
-		dbf	d2,@loop				; repeat d2 times (helix length)
+		dbf	d2,.loop				; repeat d2 times (helix length)
 
 Hel_Delete:	; Routine 6
 		bsr.w	DeleteObject

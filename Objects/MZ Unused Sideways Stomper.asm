@@ -47,13 +47,13 @@ SStom_Main:	; Routine 0
 		lea	(SStom_Var).l,a2
 		movea.l	a0,a1					; 1st object is main metal block
 		moveq	#3,d1					; 3 additional objects
-		bra.s	@load
+		bra.s	.load
 
-	@loop:
+	.loop:
 		bsr.w	FindNextFreeObj				; find free OST slot
-		bne.s	@fail					; branch if not found
+		bne.s	.fail					; branch if not found
 
-	@load:
+	.load:
 		move.b	(a2)+,ost_routine(a1)			; goto SStom_Solid/SStom_Spikes/SStom_Pole/SStom_Display next
 		move.b	#id_SideStomp,ost_id(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
@@ -71,17 +71,17 @@ SStom_Main:	; Routine 0
 		move.w	d2,ost_mash_max_length(a1)		; set max pole length from subtype
 		move.b	#4,ost_priority(a1)
 		cmpi.b	#id_frame_mash_spikes,(a2)		; is subobject spikes?
-		bne.s	@notspikes				; if not, branch
+		bne.s	.notspikes				; if not, branch
 		move.b	#id_col_16x24+id_col_hurt,ost_col_type(a1) ; use harmful collision type
 
-	@notspikes:
+	.notspikes:
 		move.b	(a2)+,ost_frame(a1)
 		move.l	a0,ost_mash_parent(a1)			; save address of OST of parent
-		dbf	d1,@loop				; repeat 3 times
+		dbf	d1,.loop				; repeat 3 times
 
 		move.b	#3,ost_priority(a1)
 
-	@fail:
+	.fail:
 		move.b	#$10,ost_displaywidth(a0)
 
 SStom_Solid:	; Routine 2
@@ -141,37 +141,37 @@ SStom_Move_Index:
 
 SStom_Move_0:
 		tst.w	ost_mash_retract_flag(a0)		; is flag set to retract?
-		beq.s	@extend					; if not, branch
+		beq.s	.extend					; if not, branch
 		tst.w	ost_mash_wait_time(a0)			; has time delay run out?
-		beq.s	@retract				; if yes, branch
+		beq.s	.retract				; if yes, branch
 		subq.w	#1,ost_mash_wait_time(a0)		; decrement timer
-		bra.s	@update_pos
+		bra.s	.update_pos
 ; ===========================================================================
 
-@retract:
+.retract:
 		subi.w	#$80,ost_mash_length(a0)		; retract
-		bcc.s	@update_pos				; branch if at least $80 is left on length
+		bcc.s	.update_pos				; branch if at least $80 is left on length
 		move.w	#0,ost_mash_length(a0)			; set to 0
 		move.w	#0,ost_x_vel(a0)
 		move.w	#0,ost_mash_retract_flag(a0)		; reset flag to extend
-		bra.s	@update_pos
+		bra.s	.update_pos
 ; ===========================================================================
 
-@extend:
+.extend:
 		move.w	ost_mash_max_length(a0),d1
 		cmp.w	ost_mash_length(a0),d1			; is pole fully extended?
-		beq.s	@update_pos				; if yes, branch
+		beq.s	.update_pos				; if yes, branch
 		move.w	ost_x_vel(a0),d0
 		addi.w	#$70,ost_x_vel(a0)			; increase speed
 		add.w	d0,ost_mash_length(a0)
 		cmp.w	ost_mash_length(a0),d1			; is pole fully extended?
-		bhi.s	@update_pos				; if not, branch
+		bhi.s	.update_pos				; if not, branch
 		move.w	d1,ost_mash_length(a0)
 		move.w	#0,ost_x_vel(a0)			; stop
 		move.w	#1,ost_mash_retract_flag(a0)		; set flag to retract
 		move.w	#60,ost_mash_wait_time(a0)		; set delay to 1 second
 
-@update_pos:
+.update_pos:
 		moveq	#0,d0
 		move.b	ost_mash_length(a0),d0
 		neg.w	d0

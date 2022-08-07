@@ -45,13 +45,13 @@ Gar_Main:	; Routine 0
 
 Gar_MakeFire:	; Routine 2
 		subq.b	#1,ost_anim_time(a0)			; decrement timer
-		bne.s	@nofire					; if time remains, branch
+		bne.s	.nofire					; if time remains, branch
 
 		move.b	ost_anim_time_low(a0),ost_anim_time(a0)	; reset timer
 		bsr.w	CheckOffScreen
-		bne.s	@nofire					; branch if off screen
+		bne.s	.nofire					; branch if off screen
 		bsr.w	FindFreeObj				; find free OST slot
-		bne.s	@nofire					; branch if not found
+		bne.s	.nofire					; branch if not found
 		move.b	#id_Gargoyle,ost_id(a1)			; load fireball object
 		addq.b	#id_Gar_FireBall,ost_routine(a1)	; use Gar_FireBall routine
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
@@ -59,7 +59,7 @@ Gar_MakeFire:	; Routine 2
 		move.b	ost_render(a0),ost_render(a1)
 		move.b	ost_status(a0),ost_status(a1)
 
-	@nofire:
+	.nofire:
 		rts	
 ; ===========================================================================
 
@@ -77,29 +77,29 @@ Gar_FireBall:	; Routine 4
 		addq.w	#8,ost_y_pos(a0)
 		move.w	#$200,ost_x_vel(a0)			; move fireball right
 		btst	#status_xflip_bit,ost_status(a0)	; is gargoyle facing left?
-		bne.s	@noflip					; if not, branch
+		bne.s	.noflip					; if not, branch
 		neg.w	ost_x_vel(a0)				; move fireball left
 
-	@noflip:
+	.noflip:
 		play.w	1, jsr, sfx_FireBall			; play fireball sound
 
 Gar_AniFire:	; Routine 6
 		move.b	(v_frame_counter_low).w,d0
 		andi.b	#7,d0
-		bne.s	@nochg
+		bne.s	.nochg
 		bchg	#0,ost_frame(a0)			; change frame every 8 frames
 
-	@nochg:
+	.nochg:
 		bsr.w	SpeedToPos				; update position
 		btst	#status_xflip_bit,ost_status(a0)	; is fireball moving left?
-		bne.s	@isright				; if not, branch
+		bne.s	.isright				; if not, branch
 		moveq	#-8,d3
 		bsr.w	FindWallLeftObj
 		tst.w	d1
 		bmi.w	DeleteObject				; delete if the	fireball hits a	wall to the left
 		rts	
 
-	@isright:
+	.isright:
 		moveq	#8,d3
 		bsr.w	FindWallRightObj
 		tst.w	d1

@@ -37,41 +37,41 @@ Pole_Main:	; Routine 0
 
 Pole_Action:	; Routine 2
 		tst.b	ost_pole_grabbed(a0)			; has pole already been grabbed?
-		beq.s	@grab					; if not, branch
+		beq.s	.grab					; if not, branch
 		tst.w	ost_pole_time(a0)
-		beq.s	@moveup
+		beq.s	.moveup
 		subq.w	#1,ost_pole_time(a0)			; decrement time until break
-		bne.s	@moveup
+		bne.s	.moveup
 		move.b	#id_frame_pole_broken,ost_frame(a0)	; break the pole
-		bra.s	@release
+		bra.s	.release
 ; ===========================================================================
 
-@moveup:
+.moveup:
 		lea	(v_ost_player).w,a1
 		move.w	ost_y_pos(a0),d0
 		subi.w	#$18,d0					; d0 = y position for top of pole
 		btst	#bitUp,(v_joypad_hold_actual).w		; is "up" pressed?
-		beq.s	@movedown				; if not, branch
+		beq.s	.movedown				; if not, branch
 		subq.w	#1,ost_y_pos(a1)			; move Sonic up
 		cmp.w	ost_y_pos(a1),d0
-		bcs.s	@movedown
+		bcs.s	.movedown
 		move.w	d0,ost_y_pos(a1)			; keep Sonic from moving beyond top of pole
 
-@movedown:
+.movedown:
 		addi.w	#$24,d0					; d0 = y position for bottom of pole
 		btst	#bitDn,(v_joypad_hold_actual).w		; is "down" pressed?
-		beq.s	@letgo					; if not, branch
+		beq.s	.letgo					; if not, branch
 		addq.w	#1,ost_y_pos(a1)			; move Sonic down
 		cmp.w	ost_y_pos(a1),d0
-		bcc.s	@letgo
+		bcc.s	.letgo
 		move.w	d0,ost_y_pos(a1)			; keep Sonic from moving beyond bottom of pole
 
-@letgo:
+.letgo:
 		move.b	(v_joypad_press).w,d0
 		andi.w	#btnABC,d0				; is A/B/C pressed?
 		beq.s	Pole_Display				; if not, branch
 
-@release:
+.release:
 		clr.b	ost_col_type(a0)
 		addq.b	#2,ost_routine(a0)			; goto Pole_Display next
 		clr.b	(v_lock_multi).w
@@ -80,7 +80,7 @@ Pole_Action:	; Routine 2
 		bra.s	Pole_Display
 ; ===========================================================================
 
-@grab:
+.grab:
 		tst.b	ost_col_property(a0)			; has Sonic touched the	pole?
 		beq.s	Pole_Display				; if not, branch
 		lea	(v_ost_player).w,a1

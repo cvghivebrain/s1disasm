@@ -11,18 +11,18 @@
 ClearScreen:
 		dma_fill	0,sizeof_vram_fg-1,vram_fg	; clear foreground nametable
 
-	@wait_for_dma:
+	.wait_for_dma:
 		move.w	(a5),d1					; get status register (a5 = vdp_control_port)
 		btst	#1,d1					; is DMA in progress?
-		bne.s	@wait_for_dma				; if yes, branch
+		bne.s	.wait_for_dma				; if yes, branch
 
 		move.w	#$8F02,(a5)				; set VDP increment 2 bytes
 		dma_fill	0,sizeof_vram_bg-1,vram_bg	; clear background nametable
 
-	@wait_for_dma2:
+	.wait_for_dma2:
 		move.w	(a5),d1
 		btst	#1,d1
-		bne.s	@wait_for_dma2
+		bne.s	.wait_for_dma2
 
 		move.w	#$8F02,(a5)				; set VDP increment 2 bytes
 		if Revision=0
@@ -36,14 +36,14 @@ ClearScreen:
 		lea	(v_sprite_buffer).w,a1
 		moveq	#0,d0
 		move.w	#(sizeof_vram_sprites/4),d1		; this should be ($280/4)-1, leading to a slight bug (first 2 colours of v_pal_water are cleared)
-	@clearsprites:
+	.clearsprites:
 		move.l	d0,(a1)+
-		dbf	d1,@clearsprites			; clear sprite table (in RAM)
+		dbf	d1,.clearsprites			; clear sprite table (in RAM)
 
 		lea	(v_hscroll_buffer).w,a1
 		moveq	#0,d0
 		move.w	#(sizeof_vram_hscroll_padded/4),d1	; this should be ($400/4)-1, leading to a slight bug (first 4 bytes of Sonic's object RAM are cleared)
-	@clearhscroll:
+	.clearhscroll:
 		move.l	d0,(a1)+
-		dbf	d1,@clearhscroll			; clear hscroll table (in RAM)
+		dbf	d1,.clearhscroll			; clear hscroll table (in RAM)
 		rts

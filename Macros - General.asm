@@ -149,7 +149,7 @@ ptr:		macro
 		prefix_id: equs "id_"
 		endc
 		
-		if instr("\1","@")=1				; check if pointer is local
+		if instr("\1",".")=1				; check if pointer is local
 		else
 			if ~def(\prefix_id\\1)
 			\prefix_id\\1: equ ptr_id		; create id for pointer

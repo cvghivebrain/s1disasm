@@ -42,15 +42,15 @@ Smab_Solid:	; Routine 2
 		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject
 		btst	#status_platform_bit,ost_status(a0)	; has Sonic landed on the block?
-		bne.s	@smash					; if yes, branch
+		bne.s	.smash					; if yes, branch
 
-	@notspinning:
+	.notspinning:
 		rts	
 ; ===========================================================================
 
-@smash:
+.smash:
 		cmpi.b	#id_Roll,ost_smash_sonic_ani(a0)	; is Sonic rolling/jumping?
-		bne.s	@notspinning				; if not, branch
+		bne.s	.notspinning				; if not, branch
 		move.w	ost_smash_count(a0),(v_enemy_combo).w
 		bset	#status_jump_bit,ost_status(a1)
 		move.b	#sonic_height_roll,ost_height(a1)
@@ -76,18 +76,18 @@ Smab_Solid:	; Routine 2
 		move.w	(v_enemy_combo).w,d2
 		addq.w	#2,(v_enemy_combo).w			; increment bonus counter
 		cmpi.w	#Smab_Points_End-Smab_Points-2,d2	; have fewer than 3 blocks broken?
-		bcs.s	@bonus					; if yes, branch
+		bcs.s	.bonus					; if yes, branch
 		moveq	#Smab_Points_End-Smab_Points-2,d2	; set cap for points
 
-	@bonus:
+	.bonus:
 		moveq	#0,d0
 		move.w	Smab_Points(pc,d2.w),d0
 		cmpi.w	#combo_max,(v_enemy_combo).w		; have 16 blocks been smashed?
-		bcs.s	@givepoints				; if not, branch
+		bcs.s	.givepoints				; if not, branch
 		move.w	#combo_max_points,d0			; give 10000 points for 16th block
 		moveq	#id_frame_points_10k*2,d2
 
-	@givepoints:
+	.givepoints:
 		jsr	(AddPoints).l
 		lsr.w	#1,d2
 		move.b	d2,ost_frame(a1)

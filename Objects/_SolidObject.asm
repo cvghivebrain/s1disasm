@@ -22,22 +22,22 @@ SolidObject:
 		add.w	d2,d2
 		lea	(v_ost_player).w,a1
 		btst	#status_air_bit,ost_status(a1)		; is Sonic in the air?
-		bne.s	@leave					; if yes, branch
+		bne.s	.leave					; if yes, branch
 		move.w	ost_x_pos(a1),d0
 		sub.w	ost_x_pos(a0),d0
 		add.w	d1,d0					; d0 = x pos of Sonic on object
-		bmi.s	@leave					; if Sonic moves off the left, branch
+		bmi.s	.leave					; if Sonic moves off the left, branch
 		cmp.w	d2,d0					; has Sonic moved off the right?
-		bcs.s	@stand					; if not, branch
+		bcs.s	.stand					; if not, branch
 
-	@leave:
+	.leave:
 		bclr	#status_platform_bit,ost_status(a1)	; clear Sonic's standing flag
 		bclr	#status_platform_bit,ost_status(a0)	; clear object's standing flag
 		clr.b	ost_solid(a0)
 		moveq	#0,d4					; clear flag for no collision
 		rts	
 
-	@stand:
+	.stand:
 		move.w	d4,d2
 		bsr.w	MoveWithPlatform
 		moveq	#0,d4					; clear flag for no new collision
@@ -54,22 +54,22 @@ SolidObject_NoRenderChk:
 		add.w	d2,d2
 		lea	(v_ost_player).w,a1
 		btst	#status_air_bit,ost_status(a1)
-		bne.s	@leave
+		bne.s	.leave
 		move.w	ost_x_pos(a1),d0
 		sub.w	ost_x_pos(a0),d0
 		add.w	d1,d0
-		bmi.s	@leave
+		bmi.s	.leave
 		cmp.w	d2,d0
-		bcs.s	@stand
+		bcs.s	.stand
 
-	@leave:
+	.leave:
 		bclr	#status_platform_bit,ost_status(a1)
 		bclr	#status_platform_bit,ost_status(a0)
 		clr.b	ost_solid(a0)
 		moveq	#0,d4
 		rts	
 
-	@stand:
+	.stand:
 		move.w	d4,d2
 		bsr.w	MoveWithPlatform
 		moveq	#0,d4
@@ -105,11 +105,11 @@ SolidObject_Heightmap:
 
 		move.w	d0,d5
 		btst	#render_xflip_bit,ost_render(a0)	; is object horizontally flipped?
-		beq.s	@no_xflip				; if not, branch
+		beq.s	.no_xflip				; if not, branch
 		not.w	d5
 		add.w	d3,d5					; d5 = x pos of Sonic on object, xflipped if needed
 
-	@no_xflip:
+	.no_xflip:
 		lsr.w	#1,d5
 		moveq	#0,d3
 		move.b	(a2,d5.w),d3				; get heightmap value based on Sonic's position on platform
@@ -172,23 +172,23 @@ Solid_Collision:
 		bne.w	Solid_Debug				; if yes, branch
 		move.w	d0,d5					; d0/d5 = x pos of Sonic on object
 		cmp.w	d0,d1					; d1 = object half width
-		bcc.s	@sonic_left				; branch if Sonic is on the left side
+		bcc.s	.sonic_left				; branch if Sonic is on the left side
 		add.w	d1,d1
 		sub.w	d1,d0
 		move.w	d0,d5
 		neg.w	d5					; d5 = x dist of Sonic from left/right edge (nearest)
 
-	@sonic_left:
+	.sonic_left:
 		move.w	d3,d1					; d1/d3 = y pos of Sonic's feet on object
 		cmp.w	d3,d2					; d2 = object half height
-		bcc.s	@sonic_top				; branch if Sonic is on top half
+		bcc.s	.sonic_top				; branch if Sonic is on top half
 
 		subq.w	#4,d3
 		sub.w	d4,d3
 		move.w	d3,d1
 		neg.w	d1					; d1 = y dist of Sonic from top/bottom edge (nearest)
 
-	@sonic_top:
+	.sonic_top:
 		cmp.w	d1,d5
 		bhi.w	Solid_TopBottom				; branch if Sonic is nearer top/bottom than left/right
 		cmpi.w	#4,d1
@@ -306,7 +306,7 @@ Solid_Miss:
 
 Solid_ResetFloor:
 		btst	#status_platform_bit,ost_status(a1)	; is Sonic standing on something?
-		beq.s	@notonobj				; if not, branch
+		beq.s	.notonobj				; if not, branch
 
 		moveq	#0,d0
 		move.b	ost_sonic_on_obj(a1),d0			; get OST index of object being stood on
@@ -316,7 +316,7 @@ Solid_ResetFloor:
 		bclr	#status_platform_bit,ost_status(a2)	; clear object's standing flags
 		clr.b	ost_solid(a2)
 
-	@notonobj:
+	.notonobj:
 		move.w	a0,d0
 		subi.w	#v_ost_all&$FFFF,d0
 		lsr.w	#6,d0
@@ -326,13 +326,13 @@ Solid_ResetFloor:
 		move.w	#0,ost_y_vel(a1)			; stop Sonic
 		move.w	ost_x_vel(a1),ost_inertia(a1)
 		btst	#status_air_bit,ost_status(a1)		; is Sonic in the air?
-		beq.s	@notinair				; if not, branch
+		beq.s	.notinair				; if not, branch
 		move.l	a0,-(sp)				; save address of OST of current object to stack
 		movea.l	a1,a0					; temporarily make Sonic the current object
 		jsr	(Sonic_ResetOnFloor).l			; reset Sonic as if on floor
 		movea.l	(sp)+,a0				; restore address of OST of current object from stack
 
-	@notinair:
+	.notinair:
 		bset	#status_platform_bit,ost_status(a1)	; set object standing flag
 		bset	#status_platform_bit,ost_status(a0)	; set Sonic standing on object flag
 		rts

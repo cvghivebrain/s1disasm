@@ -67,7 +67,7 @@ LBlk_Action:	; Routine 2
 		jsr	LBlk_Type_Index(pc,d1.w)		; update position/speed based on type
 		move.w	(sp)+,d4				; retrieve x pos from stack
 		tst.b	ost_render(a0)				; is block on-screen?
-		bpl.s	@chkdel					; if not, branch
+		bpl.s	.chkdel					; if not, branch
 		moveq	#0,d1
 		move.b	ost_displaywidth(a0),d1
 		addi.w	#$B,d1
@@ -79,7 +79,7 @@ LBlk_Action:	; Routine 2
 		move.b	d4,ost_lblock_coll_flag(a0)		; copy collision type (output from SolidObject)
 		bsr.w	LBlk_Sink
 
-	@chkdel:
+	.chkdel:
 		out_of_range	DeleteObject,ost_lblock_x_start(a0)
 		bra.w	DisplaySprite
 ; ===========================================================================
@@ -104,18 +104,18 @@ LBlk_Type_Solid:
 LBlk_Type_Sinks:
 LBlk_Type_Rises:
 		tst.w	ost_lblock_wait_time(a0)		; does time remain?
-		bne.s	@wait01					; if yes, branch
+		bne.s	.wait01					; if yes, branch
 		btst	#status_platform_bit,ost_status(a0)	; is Sonic standing on the object?
-		beq.s	@donothing01				; if not, branch
+		beq.s	.donothing01				; if not, branch
 		move.w	#30,ost_lblock_wait_time(a0)		; wait for half second
 
-	@donothing01:
+	.donothing01:
 		rts	
 ; ===========================================================================
 
-	@wait01:
+	.wait01:
 		subq.w	#1,ost_lblock_wait_time(a0)		; decrement waiting time
-		bne.s	@donothing01				; if time remains, branch
+		bne.s	.donothing01				; if time remains, branch
 		addq.b	#1,ost_subtype(a0)			; goto LBlk_Type_Sinks_Now or LBlk_Type_Rises_Now
 		clr.b	ost_lblock_flag(a0)			; flag block as touched
 		rts	
@@ -127,13 +127,13 @@ LBlk_Type_Sinks_Now:
 		addq.w	#8,ost_y_vel(a0)			; make block fall
 		bsr.w	FindFloorObj
 		tst.w	d1					; has block hit the floor?
-		bpl.w	@nofloor02				; if not, branch
+		bpl.w	.nofloor02				; if not, branch
 		addq.w	#1,d1
 		add.w	d1,ost_y_pos(a0)			; align to floor
 		clr.w	ost_y_vel(a0)				; stop when it touches the floor
 		clr.b	ost_subtype(a0)				; set type to 00 (non-moving type)
 
-	@nofloor02:
+	.nofloor02:
 		rts	
 ; ===========================================================================
 
@@ -143,23 +143,23 @@ LBlk_Type_Rises_Now:
 		subq.w	#8,ost_y_vel(a0)			; make block rise
 		bsr.w	FindCeilingObj
 		tst.w	d1					; has block hit the ceiling?
-		bpl.w	@noceiling04				; if not, branch
+		bpl.w	.noceiling04				; if not, branch
 		sub.w	d1,ost_y_pos(a0)			; align to ceiling
 		clr.w	ost_y_vel(a0)				; stop when it touches the ceiling
 		clr.b	ost_subtype(a0)				; set type to 0 (non-moving type)
 
-	@noceiling04:
+	.noceiling04:
 		rts	
 ; ===========================================================================
 
 ; Type 5 - sinks when touched from the side (unused)
 LBlk_Type_Sinks_Side:
 		cmpi.b	#1,ost_lblock_coll_flag(a0)		; has Sonic touched the side of the block?
-		bne.s	@notouch05				; if not, branch
+		bne.s	.notouch05				; if not, branch
 		addq.b	#1,ost_subtype(a0)			; set type to 6 (LBlk_Type_Sinks_Now)
 		clr.b	ost_lblock_flag(a0)			; flag block as touched
 
-	@notouch05:
+	.notouch05:
 		rts	
 ; ===========================================================================
 
@@ -167,37 +167,37 @@ LBlk_Type_Sinks_Side:
 LBlk_Type_Floats:
 		move.w	(v_water_height_actual).w,d0
 		sub.w	ost_y_pos(a0),d0			; is block level with water?
-		beq.s	@stop07					; if yes, branch
-		bcc.s	@fall07					; branch if block is above water
+		beq.s	.stop07					; if yes, branch
+		bcc.s	.fall07					; branch if block is above water
 		cmpi.w	#-2,d0					; is block within 2 pixels of water surface?
-		bge.s	@near_surface				; if yes, branch
+		bge.s	.near_surface				; if yes, branch
 		moveq	#-2,d0					; set maximum rate for block rising
 
-	@near_surface:
+	.near_surface:
 		add.w	d0,ost_y_pos(a0)			; make the block rise
 		bsr.w	FindCeilingObj
 		tst.w	d1					; has block hit the ceiling?
-		bpl.w	@noceiling07				; if not, branch
+		bpl.w	.noceiling07				; if not, branch
 		sub.w	d1,ost_y_pos(a0)			; stop block
 
-	@noceiling07:
+	.noceiling07:
 		rts	
 ; ===========================================================================
 
-@fall07:
+.fall07:
 		cmpi.w	#2,d0					; is block within 2 pixels of water surface?
-		ble.s	@near_surface2				; if yes, branch
+		ble.s	.near_surface2				; if yes, branch
 		moveq	#2,d0					; set maximum rate for block sinking
 
-	@near_surface2:
+	.near_surface2:
 		add.w	d0,ost_y_pos(a0)			; make the block sink
 		bsr.w	FindFloorObj
 		tst.w	d1					; has block hit the floor?
-		bpl.w	@stop07					; if not, branch
+		bpl.w	.stop07					; if not, branch
 		addq.w	#1,d1
 		add.w	d1,ost_y_pos(a0)			; stop block
 
-	@stop07:
+	.stop07:
 		rts
 
 ; ---------------------------------------------------------------------------
@@ -206,21 +206,21 @@ LBlk_Type_Floats:
 
 LBlk_Sink:
 		tst.b	ost_lblock_flag(a0)			; has block been stood on or touched?
-		beq.s	@exit					; if yes, branch
+		beq.s	.exit					; if yes, branch
 		btst	#status_platform_bit,ost_status(a0)	; is Sonic standing on it now?
-		bne.s	@standing_on				; if yes, branch
+		bne.s	.standing_on				; if yes, branch
 		tst.b	ost_lblock_sink(a0)			; is block in default position?
-		beq.s	@exit					; if yes, branch
+		beq.s	.exit					; if yes, branch
 		subq.b	#4,ost_lblock_sink(a0)			; incrementally return block to default
-		bra.s	@update_y
+		bra.s	.update_y
 ; ===========================================================================
 
-@standing_on:
+.standing_on:
 		cmpi.b	#$40,ost_lblock_sink(a0)		; is block at maximum sink?
-		beq.s	@exit					; if yes, branch
+		beq.s	.exit					; if yes, branch
 		addq.b	#4,ost_lblock_sink(a0)			; keep sinking
 
-@update_y:
+.update_y:
 		move.b	ost_lblock_sink(a0),d0
 		jsr	(CalcSine).l				; convert sink value to sine
 		move.w	#$400,d1
@@ -229,5 +229,5 @@ LBlk_Sink:
 		add.w	ost_lblock_y_start(a0),d0
 		move.w	d0,ost_y_pos(a0)			; update position
 
-@exit:
+.exit:
 		rts	

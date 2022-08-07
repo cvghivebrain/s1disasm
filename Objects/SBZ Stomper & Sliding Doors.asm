@@ -51,36 +51,36 @@ Sto_Main:	; Routine 0
 		move.l	#Map_Stomp,ost_mappings(a0)
 		move.w	#tile_Nem_Stomper+tile_pal2,ost_tile(a0)
 		cmpi.b	#id_LZ,(v_zone).w			; check if level is LZ/SBZ3
-		bne.s	@skip_sbz3_init				; if not, branch
+		bne.s	.skip_sbz3_init				; if not, branch
 		bset	#0,(f_stomp_sbz3_init).w		; flag object as loaded
-		beq.s	@sbz3_init				; branch if not previously loaded
+		beq.s	.sbz3_init				; branch if not previously loaded
 
-@chkdel:
+.chkdel:
 		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
-		beq.s	@delete
+		beq.s	.delete
 		bclr	#7,2(a2,d0.w)
 
-	@delete:
+	.delete:
 		jmp	(DeleteObject).l
 ; ===========================================================================
 
-@sbz3_init:
+.sbz3_init:
 		move.w	#tile_Nem_Sbz3HugeDoor+tile_pal3,ost_tile(a0)
 		cmpi.w	#$A80,ost_x_pos(a0)			; is object in its starting position?
-		bne.s	@skip_sbz3_init				; if not, branch
+		bne.s	.skip_sbz3_init				; if not, branch
 		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
-		beq.s	@skip_sbz3_init
+		beq.s	.skip_sbz3_init
 		btst	#0,2(a2,d0.w)
-		beq.s	@skip_sbz3_init
+		beq.s	.skip_sbz3_init
 		clr.b	(f_stomp_sbz3_init).w
-		bra.s	@chkdel
+		bra.s	.chkdel
 ; ===========================================================================
 
-@skip_sbz3_init:
+.skip_sbz3_init:
 		ori.b	#render_rel,ost_render(a0)
 		move.b	#4,ost_priority(a0)
 		move.w	ost_x_pos(a0),ost_stomp_x_start(a0)
@@ -96,10 +96,10 @@ Sto_Main:	; Routine 0
 		move.b	d0,ost_stomp_button_num(a0)		; copy to ost_stomp_button_num
 		move.b	(a3),ost_subtype(a0)			; update subtype with value from list
 		cmpi.b	#id_Sto_SlideDiagonal,(a3)		; is object the huge sliding door from SBZ3? (5)
-		bne.s	@chkgone				; if not, branch
+		bne.s	.chkgone				; if not, branch
 		bset	#render_useheight_bit,ost_render(a0)
 
-	@chkgone:
+	.chkgone:
 		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
@@ -116,7 +116,7 @@ Sto_Action:	; Routine 2
 		jsr	Sto_Type_Index(pc,d1.w)
 		move.w	(sp)+,d4				; retrieve x pos from stack
 		tst.b	ost_render(a0)
-		bpl.s	@chkdel
+		bpl.s	.chkdel
 		moveq	#0,d1
 		move.b	ost_displaywidth(a0),d1
 		addi.w	#$B,d1
@@ -126,21 +126,21 @@ Sto_Action:	; Routine 2
 		addq.w	#1,d3
 		bsr.w	SolidObject
 
-	@chkdel:
-		out_of_range.s	@chkgone,ost_stomp_x_start(a0)
+	.chkdel:
+		out_of_range.s	.chkgone,ost_stomp_x_start(a0)
 		jmp	(DisplaySprite).l
 
-	@chkgone:
+	.chkgone:
 		cmpi.b	#id_LZ,(v_zone).w
-		bne.s	@delete
+		bne.s	.delete
 		clr.b	(f_stomp_sbz3_init).w
 		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
-		beq.s	@delete
+		beq.s	.delete
 		bclr	#7,2(a2,d0.w)
 
-	@delete:
+	.delete:
 		jmp	(DeleteObject).l
 ; ===========================================================================
 Sto_Type_Index:
@@ -162,117 +162,117 @@ Sto_Still:
 ; Horizonal door, opens when button (ost_stomp_button_num) is pressed
 Sto_SlideOpen:
 		tst.b	ost_stomp_flag(a0)			; has door been activated?
-		bne.s	@isactive01				; if yes, branch
+		bne.s	.isactive01				; if yes, branch
 		lea	(v_button_state).w,a2
 		moveq	#0,d0
 		move.b	ost_stomp_button_num(a0),d0
 		btst	#0,(a2,d0.w)				; has button been pressed?
-		beq.s	@update_pos				; if not, branch
+		beq.s	.update_pos				; if not, branch
 		move.b	#1,ost_stomp_flag(a0)
 
-	@isactive01:
+	.isactive01:
 		move.w	ost_stomp_distance(a0),d0		; get target distance
 		cmp.w	ost_stomp_moved(a0),d0			; has door moved that distance?
-		beq.s	@finished01				; if yes, branch
+		beq.s	.finished01				; if yes, branch
 		addq.w	#2,ost_stomp_moved(a0)			; move 2px
 
-@update_pos:
+.update_pos:
 		move.w	ost_stomp_moved(a0),d0
 		btst	#status_xflip_bit,ost_status(a0)
-		beq.s	@noflip01
+		beq.s	.noflip01
 		neg.w	d0
 		addi.w	#$80,d0
 
-	@noflip01:
+	.noflip01:
 		move.w	ost_stomp_x_start(a0),d1		; get initial x pos
 		sub.w	d0,d1					; apply difference
 		move.w	d1,ost_x_pos(a0)			; update position
 		rts	
 ; ===========================================================================
 
-@finished01:
+.finished01:
 		addq.b	#1,ost_subtype(a0)			; change type to 2
 		move.w	#180,ost_stomp_wait_time(a0)		; set timer to 3 seconds
 		clr.b	ost_stomp_flag(a0)			; clear active flag
 		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
-		beq.s	@update_pos
+		beq.s	.update_pos
 		bset	#0,2(a2,d0.w)
-		bra.s	@update_pos
+		bra.s	.update_pos
 ; ===========================================================================
 
 ; Type 2
 ; Horizonal door, returns to its original position after 3 seconds
 Sto_SlideClose:
 		tst.b	ost_stomp_flag(a0)			; has door been activated?
-		bne.s	@isactive02				; if yes, branch
+		bne.s	.isactive02				; if yes, branch
 		subq.w	#1,ost_stomp_wait_time(a0)		; decrement timer
-		bne.s	@update_pos				; branch if time remains
+		bne.s	.update_pos				; branch if time remains
 		move.b	#1,ost_stomp_flag(a0)
 
-	@isactive02:
+	.isactive02:
 		tst.w	ost_stomp_moved(a0)			; has door reached its original position?
-		beq.s	@finished02				; if yes, branch
+		beq.s	.finished02				; if yes, branch
 		subq.w	#2,ost_stomp_moved(a0)			; move back 2px
 
-@update_pos:
+.update_pos:
 		move.w	ost_stomp_moved(a0),d0
 		btst	#status_xflip_bit,ost_status(a0)
-		beq.s	@noflip02
+		beq.s	.noflip02
 		neg.w	d0
 		addi.w	#$80,d0
 
-	@noflip02:
+	.noflip02:
 		move.w	ost_stomp_x_start(a0),d1		; get initial x pos
 		sub.w	d0,d1					; apply difference
 		move.w	d1,ost_x_pos(a0)			; update position
 		rts	
 ; ===========================================================================
 
-@finished02:
+.finished02:
 		subq.b	#1,ost_subtype(a0)			; change back to type 1
 		clr.b	ost_stomp_flag(a0)			; clear active flag
 		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
-		beq.s	@update_pos
+		beq.s	.update_pos
 		bclr	#0,2(a2,d0.w)
-		bra.s	@update_pos
+		bra.s	.update_pos
 ; ===========================================================================
 
 ; Type 3
 ; Stomper, drops quickly and rises slowly
 Sto_Drop_RiseSlow:
 		tst.b	ost_stomp_flag(a0)
-		bne.s	@isactive03
+		bne.s	.isactive03
 		tst.w	ost_stomp_moved(a0)			; has stomper started moving?
-		beq.s	@wait					; if not, branch
+		beq.s	.wait					; if not, branch
 		subq.w	#1,ost_stomp_moved(a0)			; move up 1px
-		bra.s	@update_pos
+		bra.s	.update_pos
 ; ===========================================================================
 
-@wait:
+.wait:
 		subq.w	#1,ost_stomp_wait_time(a0)		; decrement wait time
-		bpl.s	@update_pos				; branch if time remains
+		bpl.s	.update_pos				; branch if time remains
 		move.w	#60,ost_stomp_wait_time(a0)		; set wait time to 1 second
 		move.b	#1,ost_stomp_flag(a0)
 
-@isactive03:
+.isactive03:
 		addq.w	#8,ost_stomp_moved(a0)			; move down 8px
 		move.w	ost_stomp_moved(a0),d0
 		cmp.w	ost_stomp_distance(a0),d0		; has stomper reached maximum distance?
-		bne.s	@update_pos				; if not, branch
+		bne.s	.update_pos				; if not, branch
 		clr.b	ost_stomp_flag(a0)
 
-@update_pos:
+.update_pos:
 		move.w	ost_stomp_moved(a0),d0
 		btst	#status_xflip_bit,ost_status(a0)
-		beq.s	@noflip03
+		beq.s	.noflip03
 		neg.w	d0
 		addi.w	#$38,d0
 
-	@noflip03:
+	.noflip03:
 		move.w	ost_stomp_y_start(a0),d1		; get initial y pos
 		add.w	d0,d1					; apply difference
 		move.w	d1,ost_y_pos(a0)			; update position
@@ -283,41 +283,41 @@ Sto_Drop_RiseSlow:
 ; Stomper, drops quickly and rises quickly
 Sto_Drop_RiseFast:
 		tst.b	ost_stomp_flag(a0)
-		bne.s	@isactive04
+		bne.s	.isactive04
 		tst.w	ost_stomp_moved(a0)			; has stomper started moving?
-		beq.s	@wait					; if not, branch
+		beq.s	.wait					; if not, branch
 		subq.w	#8,ost_stomp_moved(a0)			; move up 8px
-		bra.s	@update_pos
+		bra.s	.update_pos
 ; ===========================================================================
 
-@wait:
+.wait:
 		subq.w	#1,ost_stomp_wait_time(a0)		; decrement wait time
-		bpl.s	@update_pos				; branch if time remains
+		bpl.s	.update_pos				; branch if time remains
 		move.w	#60,ost_stomp_wait_time(a0)		; set wait time to 1 second
 		move.b	#1,ost_stomp_flag(a0)
 
-@isactive04:
+.isactive04:
 		move.w	ost_stomp_moved(a0),d0
 		cmp.w	ost_stomp_distance(a0),d0		; has stomper reached maximum distance?
-		beq.s	@wait2					; if not, branch
+		beq.s	.wait2					; if not, branch
 		addq.w	#8,ost_stomp_moved(a0)			; move down 8px
-		bra.s	@update_pos
+		bra.s	.update_pos
 ; ===========================================================================
 
-@wait2:
+.wait2:
 		subq.w	#1,ost_stomp_wait_time(a0)		; decrement wait time
-		bpl.s	@update_pos				; branch if time remains
+		bpl.s	.update_pos				; branch if time remains
 		move.w	#60,ost_stomp_wait_time(a0)		; set wait time to 1 second
 		clr.b	ost_stomp_flag(a0)
 
-@update_pos:
+.update_pos:
 		move.w	ost_stomp_moved(a0),d0
 		btst	#status_xflip_bit,ost_status(a0)
-		beq.s	@noflip04
+		beq.s	.noflip04
 		neg.w	d0
 		addi.w	#$38,d0
 
-	@noflip04:
+	.noflip04:
 		move.w	ost_stomp_y_start(a0),d1		; get initial y pos
 		add.w	d0,d1					; apply difference
 		move.w	d1,ost_y_pos(a0)			; update position
@@ -328,31 +328,31 @@ Sto_Drop_RiseFast:
 ; Huge sliding door from SBZ3
 Sto_SlideDiagonal:
 		tst.b	ost_stomp_flag(a0)			; has door been activated?
-		bne.s	@update_pos				; if yes, branch
+		bne.s	.update_pos				; if yes, branch
 		lea	(v_button_state).w,a2
 		moveq	#0,d0
 		move.b	ost_stomp_button_num(a0),d0
 		btst	#0,(a2,d0.w)				; has relevant button been pressed?
-		beq.s	@exit					; if not, branch
+		beq.s	.exit					; if not, branch
 		move.b	#1,ost_stomp_flag(a0)			; set active flag
 		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
-		beq.s	@update_pos
+		beq.s	.update_pos
 		bset	#0,2(a2,d0.w)
 
-	@update_pos:
+	.update_pos:
 		subi.l	#$10000,ost_x_pos(a0)			; move left 1px
 		addi.l	#$8000,ost_y_pos(a0)			; move down 0.5px
 		move.w	ost_x_pos(a0),ost_stomp_x_start(a0)
 		cmpi.w	#$980,ost_x_pos(a0)			; has door reached target position?
-		beq.s	@finish					; if yes, branch
+		beq.s	.finish					; if yes, branch
 
-	@exit:
+	.exit:
 		rts	
 ; ===========================================================================
 
-@finish:
+.finish:
 		clr.b	ost_subtype(a0)				; change type to 0 (doesn't move)
 		clr.b	ost_stomp_flag(a0)
 		rts	

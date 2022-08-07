@@ -40,21 +40,21 @@ Gird_Main:	; Routine 0
 Gird_Action:	; Routine 2
 		move.w	ost_x_pos(a0),-(sp)
 		tst.w	ost_girder_wait_time(a0)		; has time delay hit 0?
-		beq.s	@beginmove				; if yes, branch
+		beq.s	.beginmove				; if yes, branch
 		subq.w	#1,ost_girder_wait_time(a0)		; decrement delay timer
-		bne.s	@skip_move				; skip movement update
+		bne.s	.skip_move				; skip movement update
 
-	@beginmove:
+	.beginmove:
 		jsr	(SpeedToPos).l				; update position
 		subq.w	#1,ost_girder_move_time(a0)		; decrement movement timer
-		bne.s	@skip_chg				; if time remains, branch
+		bne.s	.skip_chg				; if time remains, branch
 		bsr.w	Gird_ChgDir				; if time is 0, set new speed & direction
 
-	@skip_move:
-	@skip_chg:
+	.skip_move:
+	.skip_chg:
 		move.w	(sp)+,d4
 		tst.b	ost_render(a0)				; is object on-screen?
-		bpl.s	@chkdel					; if not, branch
+		bpl.s	.chkdel					; if not, branch
 		moveq	#0,d1
 		move.b	ost_displaywidth(a0),d1
 		addi.w	#$B,d1
@@ -64,11 +64,11 @@ Gird_Action:	; Routine 2
 		addq.w	#1,d3
 		bsr.w	SolidObject
 
-	@chkdel:
-		out_of_range.s	@delete,ost_girder_x_start(a0)
+	.chkdel:
+		out_of_range.s	.delete,ost_girder_x_start(a0)
 		jmp	(DisplaySprite).l
 
-	@delete:
+	.delete:
 		jmp	(DeleteObject).l
 
 ; ---------------------------------------------------------------------------
@@ -78,7 +78,7 @@ Gird_Action:	; Routine 2
 Gird_ChgDir:
 		move.b	ost_girder_setting(a0),d0		; get current setting
 		andi.w	#$18,d0
-		lea	(@settings).l,a1
+		lea	(.settings).l,a1
 		lea	(a1,d0.w),a1				; jump to relevant settings
 		move.w	(a1)+,ost_x_vel(a0)			; speed/direction
 		move.w	(a1)+,ost_y_vel(a0)
@@ -87,7 +87,7 @@ Gird_ChgDir:
 		move.w	#7,ost_girder_wait_time(a0)		; set time until it starts moving again
 		rts	
 ; ===========================================================================
-@settings:	;   x vel,   y vel, duration
+.settings:	;   x vel,   y vel, duration
 		dc.w   $100,	 0,   $60,     0		; right
 		dc.w	  0,  $100,   $30,     0		; down
 		dc.w  -$100,  -$40,   $60,     0		; up/left

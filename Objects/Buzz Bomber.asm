@@ -36,37 +36,37 @@ Buzz_Main:	; Routine 0
 Buzz_Action:	; Routine 2
 		moveq	#0,d0
 		move.b	ost_routine2(a0),d0
-		move.w	@index(pc,d0.w),d1
-		jsr	@index(pc,d1.w)
+		move.w	.index(pc,d0.w),d1
+		jsr	.index(pc,d1.w)
 		lea	(Ani_Buzz).l,a1
 		bsr.w	AnimateSprite
 		bra.w	DespawnObject
 ; ===========================================================================
-@index:		index *,,2
+.index:		index *,,2
 		ptr Buzz_Move
 		ptr Buzz_ChkDist
 ; ===========================================================================
 
 Buzz_Move:
 		subq.w	#1,ost_buzz_wait_time(a0)		; subtract 1 from time delay
-		bpl.s	@wait					; if time remains, branch
+		bpl.s	.wait					; if time remains, branch
 		btst	#1,ost_buzz_mode(a0)			; is Buzz Bomber near Sonic?
-		bne.s	@fire					; if yes, branch
+		bne.s	.fire					; if yes, branch
 		addq.b	#2,ost_routine2(a0)			; goto Buzz_ChkDist next
 		move.w	#127,ost_buzz_wait_time(a0)		; set time delay to just over 2 seconds
 		move.w	#$400,ost_x_vel(a0)			; move Buzz Bomber to the right
 		move.b	#id_ani_buzz_fly2,ost_anim(a0)		; use "flying" animation
 		btst	#status_xflip_bit,ost_status(a0)	; is Buzz Bomber facing left?
-		bne.s	@wait					; if not, branch
+		bne.s	.wait					; if not, branch
 		neg.w	ost_x_vel(a0)				; move Buzz Bomber to the left
 
-	@wait:
+	.wait:
 		rts	
 ; ===========================================================================
 
-	@fire:
+	.fire:
 		bsr.w	FindFreeObj
-		bne.s	@fail
+		bne.s	.fail
 		move.b	#id_Missile,ost_id(a1)			; load missile object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
@@ -75,11 +75,11 @@ Buzz_Move:
 		move.w	#$200,ost_x_vel(a1)			; move missile to the right
 		move.w	#$18,d0
 		btst	#status_xflip_bit,ost_status(a0)	; is Buzz Bomber facing left?
-		bne.s	@noflip					; if not, branch
+		bne.s	.noflip					; if not, branch
 		neg.w	d0
 		neg.w	ost_x_vel(a1)				; move missile to the left
 
-	@noflip:
+	.noflip:
 		add.w	d0,ost_x_pos(a1)
 		move.b	ost_status(a0),ost_status(a1)
 		move.w	#$E,ost_missile_wait_time(a1)
@@ -88,42 +88,42 @@ Buzz_Move:
 		move.w	#59,ost_buzz_wait_time(a0)
 		move.b	#id_ani_buzz_fire,ost_anim(a0)		; use "firing" animation
 
-	@fail:
+	.fail:
 		rts	
 ; ===========================================================================
 
 Buzz_ChkDist:
 		subq.w	#1,ost_buzz_wait_time(a0)		; subtract 1 from time delay
-		bmi.s	@chgdirection
+		bmi.s	.chgdirection
 		bsr.w	SpeedToPos
 		tst.b	ost_buzz_mode(a0)
-		bne.s	@keepgoing
+		bne.s	.keepgoing
 		move.w	(v_ost_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0
-		bpl.s	@isleft
+		bpl.s	.isleft
 		neg.w	d0
 
-	@isleft:
+	.isleft:
 		cmpi.w	#$60,d0					; is Buzz Bomber within	$60 pixels of Sonic?
-		bcc.s	@keepgoing				; if not, branch
+		bcc.s	.keepgoing				; if not, branch
 		tst.b	ost_render(a0)
-		bpl.s	@keepgoing
+		bpl.s	.keepgoing
 		move.b	#2,ost_buzz_mode(a0)			; set Buzz Bomber to "near Sonic"
 		move.w	#29,ost_buzz_wait_time(a0)		; set time delay to half a second
-		bra.s	@stop
+		bra.s	.stop
 ; ===========================================================================
 
-	@chgdirection:
+	.chgdirection:
 		move.b	#0,ost_buzz_mode(a0)			; set Buzz Bomber to "normal"
 		bchg	#status_xflip_bit,ost_status(a0)	; change direction
 		move.w	#59,ost_buzz_wait_time(a0)
 
-	@stop:
+	.stop:
 		subq.b	#2,ost_routine2(a0)
 		move.w	#0,ost_x_vel(a0)			; stop Buzz Bomber moving
 		move.b	#id_ani_buzz_fly1,ost_anim(a0)		; use "hovering" animation
 
-@keepgoing:
+.keepgoing:
 		rts	
 ; ===========================================================================
 

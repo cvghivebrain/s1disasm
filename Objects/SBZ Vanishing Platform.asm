@@ -56,12 +56,12 @@ VanP_Sync:	; Routine 6
 		move.w	(v_frame_counter).w,d0			; get word that increments every frame
 		sub.w	ost_vanish_sync_sub(a0),d0
 		and.w	ost_vanish_sync_mask(a0),d0		; apply bitmask
-		bne.s	@animate				; branch if any bits are set
+		bne.s	.animate				; branch if any bits are set
 		subq.b	#4,ost_routine(a0)			; goto VanP_Detect next (every $100 or $400 frames)
 		bra.s	VanP_Detect
 ; ===========================================================================
 
-@animate:
+.animate:
 		lea	(Ani_Van).l,a1
 		jsr	(AnimateSprite).l
 		bra.w	DespawnObject
@@ -70,22 +70,22 @@ VanP_Sync:	; Routine 6
 VanP_Detect:	; Routine 2
 VanP_StoodOn:	; Routine 4
 		subq.w	#1,ost_vanish_wait_time(a0)		; decrement timer
-		bpl.s	@wait					; branch if time remains
+		bpl.s	.wait					; branch if time remains
 		move.w	#127,ost_vanish_wait_time(a0)		; reset timer to 2 seconds
 		tst.b	ost_anim(a0)				; is platform vanishing?
-		beq.s	@isvanishing				; if yes, branch
+		beq.s	.isvanishing				; if yes, branch
 		move.w	ost_vanish_wait_master(a0),ost_vanish_wait_time(a0) ; reset timer to $80 (type $x0) or $380 (type $x6)
 
-	@isvanishing:
+	.isvanishing:
 		bchg	#0,ost_anim(a0)				; switch between vanishing/appearing animations
 
-	@wait:
+	.wait:
 		lea	(Ani_Van).l,a1
 		jsr	(AnimateSprite).l
 		btst	#1,ost_frame(a0)			; has platform vanished?
-		bne.s	@notsolid				; if yes, branch
+		bne.s	.notsolid				; if yes, branch
 		cmpi.b	#id_VanP_Detect,ost_routine(a0)		; is platform being stood on?
-		bne.s	@stood_on				; if yes, branch
+		bne.s	.stood_on				; if yes, branch
 
 		moveq	#0,d1
 		move.b	ost_displaywidth(a0),d1
@@ -93,7 +93,7 @@ VanP_StoodOn:	; Routine 4
 		bra.w	DespawnObject
 ; ===========================================================================
 
-@stood_on:
+.stood_on:
 		moveq	#0,d1
 		move.b	ost_displaywidth(a0),d1
 		jsr	(ExitPlatform).l			; goto VanP_Detect next if Sonic leaves platform
@@ -102,16 +102,16 @@ VanP_StoodOn:	; Routine 4
 		bra.w	DespawnObject
 ; ===========================================================================
 
-@notsolid:
+.notsolid:
 		btst	#status_platform_bit,ost_status(a0)	; is Sonic on the platform?
-		beq.s	@skip_clear				; if not, branch
+		beq.s	.skip_clear				; if not, branch
 		lea	(v_ost_player).w,a1
 		bclr	#status_platform_bit,ost_status(a1)	; clear all platform flags
 		bclr	#status_platform_bit,ost_status(a0)
 		move.b	#id_VanP_Detect,ost_routine(a0)
 		clr.b	ost_solid(a0)
 
-	@skip_clear:
+	.skip_clear:
 		bra.w	DespawnObject
 
 ; ---------------------------------------------------------------------------

@@ -21,11 +21,11 @@ LCon_Display:
 
 LCon_ChkDel:
 		cmpi.b	#2,(v_act).w				; is this act 3?
-		bne.s	@not_act3				; if not, branch
+		bne.s	.not_act3				; if not, branch
 		cmpi.w	#-$80,d0				; is object to the right?
 		bcc.s	LCon_Display				; if yes, branch
 
-	@not_act3:
+	.not_act3:
 		move.b	ost_lcon_subtype_copy(a0),d0		; get original subtype
 		bpl.w	DeleteObject				; branch if not the parent object
 		andi.w	#$7F,d0
@@ -88,7 +88,7 @@ LCon_Platform_Init:
 		move.b	d1,ost_lcon_corner_next(a0)
 		move.b	#4,ost_lcon_corner_inc(a0)
 		tst.b	(f_convey_reverse).w			; is conveyor set to reverse?
-		beq.s	@no_reverse				; if not, branch
+		beq.s	.no_reverse				; if not, branch
 		
 		move.b	#1,ost_lcon_reverse(a0)
 		neg.b	ost_lcon_corner_inc(a0)
@@ -96,18 +96,18 @@ LCon_Platform_Init:
 		move.b	ost_lcon_corner_next(a0),d1
 		add.b	ost_lcon_corner_inc(a0),d1
 		cmp.b	ost_lcon_corner_count(a0),d1		; is next corner valid?
-		bcs.s	@is_valid				; if yes, branch
+		bcs.s	.is_valid				; if yes, branch
 		move.b	d1,d0
 		moveq	#0,d1					; reset corner counter to 0
 		tst.b	d0
-		bpl.s	@is_valid
+		bpl.s	.is_valid
 		move.b	ost_lcon_corner_count(a0),d1
 		subq.b	#4,d1
 
-	@is_valid:
+	.is_valid:
 		move.b	d1,ost_lcon_corner_next(a0)		; update corner counter
 
-	@no_reverse:
+	.no_reverse:
 		move.w	(a2,d1.w),ost_lcon_corner_x_pos(a0)	; get corner position data
 		move.w	2(a2,d1.w),ost_lcon_corner_y_pos(a0)
 		bsr.w	LCon_Platform_Move			; begin platform moving
@@ -127,22 +127,22 @@ LCon_LoadPlatforms:
 		adda.w	(a2,d0.w),a2				; get address of platform position data
 		move.w	(a2)+,d1				; get object count
 		movea.l	a0,a1					; overwrite current object with 1st platform
-		bra.s	@makefirst
+		bra.s	.makefirst
 ; ===========================================================================
 
-	@loop:
+	.loop:
 		bsr.w	FindFreeObj				; find free OST slot
-		bne.s	@fail					; branch if not found
+		bne.s	.fail					; branch if not found
 
-	@makefirst:
+	.makefirst:
 		move.b	#id_LabyrinthConvey,ost_id(a1)		; load platform object
 		move.w	(a2)+,ost_x_pos(a1)
 		move.w	(a2)+,ost_y_pos(a1)
 		move.w	(a2)+,d0
 		move.b	d0,ost_subtype(a1)
 
-	@fail:
-		dbf	d1,@loop				; repeat for number of objects
+	.fail:
+		dbf	d1,.loop				; repeat for number of objects
 
 		addq.l	#4,sp
 		rts	
@@ -169,17 +169,17 @@ LCon_OnPlatform:
 LCon_Wheel:	; Routine 6
 		move.w	(v_frame_counter).w,d0			; get synchronised frame counter
 		andi.w	#3,d0					; read only bits 0-1 (max. 4 frames)
-		bne.s	@frame_not_0				; branch if not 0
+		bne.s	.frame_not_0				; branch if not 0
 		moveq	#1,d1
 		tst.b	(f_convey_reverse).w			; is conveyor running in reverse?
-		beq.s	@no_reverse				; if not, branch
+		beq.s	.no_reverse				; if not, branch
 		neg.b	d1					; reverse animation
 
-	@no_reverse:
+	.no_reverse:
 		add.b	d1,ost_frame(a0)			; increment or decrement frame
 		andi.b	#3,ost_frame(a0)
 
-	@frame_not_0:
+	.frame_not_0:
 		addq.l	#4,sp
 		bra.w	DespawnObject
 
@@ -189,44 +189,44 @@ LCon_Wheel:	; Routine 6
 
 LCon_Platform_Update:
 		tst.b	(v_button_state+$E).w			; has button $E been pressed?
-		beq.s	@no_reverse				; if not, branch
+		beq.s	.no_reverse				; if not, branch
 		tst.b	ost_lcon_reverse(a0)			; is reverse flag already set?
-		bne.s	@no_reverse				; if yes, branch
+		bne.s	.no_reverse				; if yes, branch
 		move.b	#1,ost_lcon_reverse(a0)			; set local flag
 		move.b	#1,(f_convey_reverse).w			; set global flag
 		neg.b	ost_lcon_corner_inc(a0)
-		bra.s	@next_corner
+		bra.s	.next_corner
 ; ===========================================================================
 
-@no_reverse:
+.no_reverse:
 		move.w	ost_x_pos(a0),d0
 		cmp.w	ost_lcon_corner_x_pos(a0),d0		; is platform at corner?
-		bne.s	@not_at_corner				; if not, branch
+		bne.s	.not_at_corner				; if not, branch
 		move.w	ost_y_pos(a0),d0
 		cmp.w	ost_lcon_corner_y_pos(a0),d0
-		bne.s	@not_at_corner
+		bne.s	.not_at_corner
 
-@next_corner:
+.next_corner:
 		moveq	#0,d1
 		move.b	ost_lcon_corner_next(a0),d1
 		add.b	ost_lcon_corner_inc(a0),d1
 		cmp.b	ost_lcon_corner_count(a0),d1		; is next corner valid?
-		bcs.s	@is_valid				; if yes, branch
+		bcs.s	.is_valid				; if yes, branch
 		move.b	d1,d0
 		moveq	#0,d1					; reset corner counter to 0
 		tst.b	d0
-		bpl.s	@is_valid
+		bpl.s	.is_valid
 		move.b	ost_lcon_corner_count(a0),d1
 		subq.b	#4,d1
 
-	@is_valid:
+	.is_valid:
 		move.b	d1,ost_lcon_corner_next(a0)
 		movea.l	ost_lcon_corner_ptr(a0),a1
 		move.w	(a1,d1.w),ost_lcon_corner_x_pos(a0)
 		move.w	2(a1,d1.w),ost_lcon_corner_y_pos(a0)
 		bsr.w	LCon_Platform_Move
 
-	@not_at_corner:
+	.not_at_corner:
 		bsr.w	SpeedToPos
 		rts	
 ; End of function LCon_Platform_Update
@@ -240,31 +240,31 @@ LCon_Platform_Move:
 		move.w	#-$100,d2
 		move.w	ost_x_pos(a0),d0
 		sub.w	ost_lcon_corner_x_pos(a0),d0		; d0 = x distance between platform & corner
-		bcc.s	@is_right				; branch if +ve (platform is right of corner)
+		bcc.s	.is_right				; branch if +ve (platform is right of corner)
 		neg.w	d0					; make d0 +ve
 		neg.w	d2					; d2 = $100
 
-	@is_right:
+	.is_right:
 		moveq	#0,d1
 		move.w	#-$100,d3
 		move.w	ost_y_pos(a0),d1
 		sub.w	ost_lcon_corner_y_pos(a0),d1		; d1 = y distance between platform & corner
-		bcc.s	@is_below				; branch if +ve (platform is below corner)
+		bcc.s	.is_below				; branch if +ve (platform is below corner)
 		neg.w	d1					; make d1 +ve
 		neg.w	d3					; d3 = $100
 
-	@is_below:
+	.is_below:
 		cmp.w	d0,d1					; is platform nearer corner on y axis?
-		bcs.s	@nearer_y				; if yes, branch
+		bcs.s	.nearer_y				; if yes, branch
 		move.w	ost_x_pos(a0),d0
 		sub.w	ost_lcon_corner_x_pos(a0),d0		; d0 = x distance between platform & corner
-		beq.s	@match_x				; branch if 0
+		beq.s	.match_x				; branch if 0
 		ext.l	d0
 		asl.l	#8,d0					; multiply by $100
 		divs.w	d1,d0					; divide by y distance
 		neg.w	d0
 
-	@match_x:
+	.match_x:
 		move.w	d0,ost_x_vel(a0)
 		move.w	d3,ost_y_vel(a0)
 		swap	d0
@@ -273,16 +273,16 @@ LCon_Platform_Move:
 		rts	
 ; ===========================================================================
 
-@nearer_y:
+.nearer_y:
 		move.w	ost_y_pos(a0),d1
 		sub.w	ost_lcon_corner_y_pos(a0),d1
-		beq.s	@match_y
+		beq.s	.match_y
 		ext.l	d1
 		asl.l	#8,d1
 		divs.w	d0,d1
 		neg.w	d1
 
-	@match_y:
+	.match_y:
 		move.w	d1,ost_y_vel(a0)
 		move.w	d2,ost_x_vel(a0)
 		swap	d1
@@ -300,7 +300,7 @@ LCon_Corner_Data:
 		ptr LCon_Corners_3
 		ptr LCon_Corners_4
 		ptr LCon_Corners_5
-LCon_Corners_0:	dc.w @end-(*+4)					; act 1
+LCon_Corners_0:	dc.w .end-(*+4)					; act 1
 		dc.w $1070
 		dc.w $1078, $21A
 		dc.w $10BE, $260
@@ -308,46 +308,46 @@ LCon_Corners_0:	dc.w @end-(*+4)					; act 1
 		dc.w $108C, $3C5
 		dc.w $1022, $390
 		dc.w $1022, $244
-	@end:
+	.end:
 
-LCon_Corners_1:	dc.w @end-(*+4)					; act 1
+LCon_Corners_1:	dc.w .end-(*+4)					; act 1
 		dc.w $1280
 		dc.w $127E, $280
 		dc.w $12CE, $2D0
 		dc.w $12CE, $46E
 		dc.w $1232, $420
 		dc.w $1232, $2CC
-	@end:
+	.end:
 
-LCon_Corners_2:	dc.w @end-(*+4)					; act 2
+LCon_Corners_2:	dc.w .end-(*+4)					; act 2
 		dc.w $D68
 		dc.w $D22, $482
 		dc.w $D22, $5DE
 		dc.w $DAE, $5DE
 		dc.w $DAE, $482
-	@end:
+	.end:
 
-LCon_Corners_3:	dc.w @end-(*+4)					; act 2
+LCon_Corners_3:	dc.w .end-(*+4)					; act 2
 		dc.w $DA0
 		dc.w $D62, $3A2
 		dc.w $DEE, $3A2
 		dc.w $DEE, $4DE
 		dc.w $D62, $4DE
-	@end:
+	.end:
 
-LCon_Corners_4:	dc.w @end-(*+4)					; act 3
+LCon_Corners_4:	dc.w .end-(*+4)					; act 3
 		dc.w $D00
 		dc.w $CAC, $242
 		dc.w $DDE, $242
 		dc.w $DDE, $3DE
 		dc.w $C52, $3DE
 		dc.w $C52, $29C
-	@end:
+	.end:
 
-LCon_Corners_5:	dc.w @end-(*+4)					; act 3
+LCon_Corners_5:	dc.w .end-(*+4)					; act 3
 		dc.w $1300
 		dc.w $1252, $20A
 		dc.w $13DE, $20A
 		dc.w $13DE, $2BE
 		dc.w $1252, $2BE
-	@end:
+	.end:

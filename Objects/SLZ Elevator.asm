@@ -56,7 +56,7 @@ Elev_Main:	; Routine 0
 		addq.b	#2,ost_routine(a0)			; goto Elev_Platform next
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0			; get subtype
-		bpl.s	@normal					; branch for types 0-$7F
+		bpl.s	.normal					; branch for types 0-$7F
 
 		addq.b	#4,ost_routine(a0)			; goto Elev_MakeMulti next
 		andi.w	#$7F,d0					; ignore high bit
@@ -67,7 +67,7 @@ Elev_Main:	; Routine 0
 		rts	
 ; ===========================================================================
 
-	@normal:
+	.normal:
 		lsr.w	#3,d0
 		andi.w	#$1E,d0					; read only high nybble
 		lea	Elev_Var1(pc,d0.w),a2
@@ -104,10 +104,10 @@ Elev_StoodOn:	; Routine 4
 		bsr.w	Elev_Types
 		move.w	(sp)+,d2
 		tst.b	ost_id(a0)				; does object still exist?
-		beq.s	@deleted				; if not, branch
+		beq.s	.deleted				; if not, branch
 		jmp	(MoveWithPlatform2).l			; update Sonic's position
 
-	@deleted:
+	.deleted:
 		rts	
 ; ===========================================================================
 
@@ -143,10 +143,10 @@ Elev_Down:
 Elev_UpRight:
 Elev_DownLeft:
 		cmpi.b	#id_Elev_StoodOn,ost_routine(a0)	; check if Sonic is standing on the object
-		bne.s	@notstanding
+		bne.s	.notstanding
 		addq.b	#1,ost_subtype(a0)			; if yes, add 1 to type (goes to 2, 4, 6 or 8)
 
-	@notstanding:
+	.notstanding:
 		rts	
 ; ===========================================================================
 
@@ -205,18 +205,18 @@ Elev_UpVanish:
 		add.w	ost_elev_y_start(a0),d0
 		move.w	d0,ost_y_pos(a0)
 		tst.b	ost_subtype(a0)				; has platform reached destination and stopped?
-		beq.w	@typereset				; if yes, branch
+		beq.w	.typereset				; if yes, branch
 		rts	
 ; ===========================================================================
 
-	@typereset:
+	.typereset:
 		btst	#status_platform_bit,ost_status(a0)	; is platform being stood on?
-		beq.s	@delete					; if not, branch
+		beq.s	.delete					; if not, branch
 		bset	#status_air_bit,ost_status(a1)
 		bclr	#status_platform_bit,ost_status(a1)
 		move.b	#id_Sonic_Control,ost_routine(a1)
 
-	@delete:
+	.delete:
 		bra.w	DeleteObject
 
 ; ---------------------------------------------------------------------------
@@ -226,19 +226,19 @@ Elev_UpVanish:
 Elev_Move:
 		move.w	ost_elev_acceleration(a0),d0		; get current acceleration
 		tst.b	ost_elev_dec_flag(a0)			; is platform in deceleration phase?
-		bne.s	@decelerate				; if yes, branch
+		bne.s	.decelerate				; if yes, branch
 		cmpi.w	#$800,d0				; is acceleration at or above max?
-		bcc.s	@update_acc				; if yes, branch
+		bcc.s	.update_acc				; if yes, branch
 		addi.w	#$10,d0					; increase acceleration
-		bra.s	@update_acc
+		bra.s	.update_acc
 ; ===========================================================================
 
-@decelerate:
+.decelerate:
 		tst.w	d0					; is acceleration 0?
-		beq.s	@update_acc				; if yes, branch
+		beq.s	.update_acc				; if yes, branch
 		subi.w	#$10,d0					; decrease acceleration
 
-@update_acc:
+.update_acc:
 		move.w	d0,ost_elev_acceleration(a0)		; set new acceleration
 		ext.l	d0
 		asl.l	#8,d0					; multiply by $100
@@ -247,33 +247,33 @@ Elev_Move:
 		swap	d0
 		move.w	ost_elev_distance(a0),d2		; get target distance
 		cmp.w	d2,d0					; has distance been covered?
-		bls.s	@dont_dec				; if not, branch
+		bls.s	.dont_dec				; if not, branch
 		move.b	#1,ost_elev_dec_flag(a0)		; set deceleration flag
 
-	@dont_dec:
+	.dont_dec:
 		add.w	d2,d2
 		cmp.w	d2,d0					; has complete distance been covered? (including deceleration phase)
-		bne.s	@keep_type				; if not, branch
+		bne.s	.keep_type				; if not, branch
 		clr.b	ost_subtype(a0)				; convert to type 0 (non-moving)
 
-	@keep_type:
+	.keep_type:
 		rts
 
 ; ===========================================================================
 
 Elev_MakeMulti:	; Routine 6
 		subq.w	#1,ost_elev_distance(a0)		; decrement timer
-		bne.s	@chkdel					; branch if time remains
+		bne.s	.chkdel					; branch if time remains
 
 		move.w	ost_elev_dist_master(a0),ost_elev_distance(a0) ; reset timer
 		bsr.w	FindFreeObj				; find free OST slot
-		bne.s	@chkdel					; branch if not found
+		bne.s	.chkdel					; branch if not found
 		move.b	#id_Elevator,ost_id(a1)			; create elevator object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)		; match position
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	#type_elev_up_vanish_1,ost_subtype(a1)	; platform rises and vanishes
 
-	@chkdel:
+	.chkdel:
 		addq.l	#4,sp
 		out_of_range	DeleteObject
 		rts	

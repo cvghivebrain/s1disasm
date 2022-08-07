@@ -92,59 +92,59 @@ SEgg_Move:
 
 SEgg_PreLeap:
 		subq.w	#1,ost_eggman_wait_time(a0)		; decrement timer
-		bne.s	@wait					; if time remains, branch
+		bne.s	.wait					; if time remains, branch
 		addq.b	#2,ost_routine2(a0)			; goto SEgg_Leap next
 		move.b	#id_ani_eggman_jump1,ost_anim(a0)
 		addq.w	#4,ost_y_pos(a0)
 		move.w	#15,ost_eggman_wait_time(a0)		; wait quarter of a second before jumping
 
-	@wait:
+	.wait:
 		bra.s	SEgg_Move
 ; ===========================================================================
 
 SEgg_Leap:
 		subq.w	#1,ost_eggman_wait_time(a0)		; decrement timer
-		bgt.s	@update_pos
-		bne.s	@wait
+		bgt.s	.update_pos
+		bne.s	.wait
 		move.w	#-$FC,ost_x_vel(a0)			; make Eggman leap
 		move.w	#-$3C0,ost_y_vel(a0)
 
-	@wait:
+	.wait:
 		cmpi.w	#$2132,ost_x_pos(a0)			; has Eggman reach the button?
-		bgt.s	@not_at_btn				; if not, branch
+		bgt.s	.not_at_btn				; if not, branch
 		clr.w	ost_x_vel(a0)				; stop moving horizontally
 
-	@not_at_btn:
+	.not_at_btn:
 		addi.w	#$24,ost_y_vel(a0)			; apply gravity
 		tst.w	ost_y_vel(a0)				; is Eggman moving downwards?
-		bmi.s	@find_blocks				; if not, branch
+		bmi.s	.find_blocks				; if not, branch
 		cmpi.w	#$595,ost_y_pos(a0)			; has Eggman passed $595 on y axis?
-		bcs.s	@find_blocks				; if not, branch
+		bcs.s	.find_blocks				; if not, branch
 		move.w	#$5357,ost_subtype(a0)			; set flag for button to change to pressed
 		cmpi.w	#$59B,ost_y_pos(a0)			; has Eggman passed $59B on y axis?
-		bcs.s	@find_blocks				; if not, branch
+		bcs.s	.find_blocks				; if not, branch
 		move.w	#$59B,ost_y_pos(a0)			; stop at $59B
 		clr.w	ost_y_vel(a0)				; stop falling
 
-@find_blocks:
+.find_blocks:
 		move.w	ost_x_vel(a0),d0
 		or.w	ost_y_vel(a0),d0
-		bne.s	@update_pos				; branch if Eggman is moving at all
+		bne.s	.update_pos				; branch if Eggman is moving at all
 		lea	(v_ost_all).w,a1			; start at the first OST slot
 		moveq	#$3E,d0
 		moveq	#sizeof_ost,d1				; $40
 
-	@loop:	
+	.loop:	
 		adda.w	d1,a1					; next OST slot
 		cmpi.b	#id_FalseFloor,(a1)			; is object a block? (id $83)
-		dbeq	d0,@loop				; if not, repeat (max $3E times)
+		dbeq	d0,.loop				; if not, repeat (max $3E times)
 
-		bne.s	@update_pos
+		bne.s	.update_pos
 		move.w	#$474F,ost_subtype(a1)			; set block to disintegrate
 		addq.b	#2,ost_routine2(a0)			; goto SEgg_Move next
 		move.b	#id_ani_eggman_laugh,ost_anim(a0)
 
-@update_pos:
+.update_pos:
 		bra.w	SEgg_Move
 ; ===========================================================================
 

@@ -10,10 +10,10 @@ Prison:
 		move.b	ost_routine(a0),d0
 		move.w	Pri_Index(pc,d0.w),d1
 		jsr	Pri_Index(pc,d1.w)
-		out_of_range.s	@delete
+		out_of_range.s	.delete
 		jmp	(DisplaySprite).l
 
-	@delete:
+	.delete:
 		jmp	(DeleteObject).l
 ; ===========================================================================
 Pri_Index:	index *,,2
@@ -51,18 +51,18 @@ Pri_Main:	; Routine 0
 		move.b	(a1)+,ost_priority(a0)
 		move.b	(a1)+,ost_frame(a0)
 		cmpi.w	#8,d0					; is subtype = 2 ?
-		bne.s	@not02					; if not, branch
+		bne.s	.not02					; if not, branch
 
 		move.b	#id_col_16x16,ost_col_type(a0)
 		move.b	#8,ost_col_property(a0)
 
-	@not02:
+	.not02:
 		rts	
 ; ===========================================================================
 
 Pri_Body:	; Routine 2
 		cmpi.b	#2,(v_boss_status).w			; has prison been opened?
-		beq.s	@is_open				; if yes, branch
+		beq.s	.is_open				; if yes, branch
 		move.w	#$2B,d1
 		move.w	#$18,d2
 		move.w	#$18,d3
@@ -70,14 +70,14 @@ Pri_Body:	; Routine 2
 		jmp	(SolidObject).l
 ; ===========================================================================
 
-@is_open:
+.is_open:
 		tst.b	ost_solid(a0)				; is Sonic on top of the prison?
-		beq.s	@not_on_top				; if not, branch
+		beq.s	.not_on_top				; if not, branch
 		clr.b	ost_solid(a0)
 		bclr	#status_platform_bit,(v_ost_player+ost_status).w
 		bset	#status_air_bit,(v_ost_player+ost_status).w
 
-	@not_on_top:
+	.not_on_top:
 		move.b	#id_frame_prison_broken,ost_frame(a0)	; use use borken prison frame (2)
 		rts	
 ; ===========================================================================
@@ -92,7 +92,7 @@ Pri_Switch:	; Routine 4
 		jsr	(AnimateSprite).l
 		move.w	ost_prison_y_start(a0),ost_y_pos(a0)
 		tst.b	ost_solid(a0)				; is Sonic on top of the switch?
-		beq.s	@not_on_top				; if not, branch
+		beq.s	.not_on_top				; if not, branch
 
 		addq.w	#8,ost_y_pos(a0)			; move switch down 8px
 		move.b	#id_Pri_Explosion,ost_routine(a0)	; goto Pri_Explosion next
@@ -105,7 +105,7 @@ Pri_Switch:	; Routine 4
 		bclr	#status_platform_bit,(v_ost_player+ost_status).w
 		bset	#status_air_bit,(v_ost_player+ost_status).w
 
-	@not_on_top:
+	.not_on_top:
 		rts	
 ; ===========================================================================
 
@@ -114,10 +114,10 @@ Pri_Panel:
 Pri_Explosion:	; Routine 6, 8, $A
 		moveq	#7,d0
 		and.b	(v_vblank_counter_byte).w,d0		; byte that increments every frame
-		bne.s	@noexplosion				; branch if any of bits 0-2 are set
+		bne.s	.noexplosion				; branch if any of bits 0-2 are set
 
 		jsr	(FindFreeObj).l				; find free OST slot
-		bne.s	@noexplosion				; branch if not found
+		bne.s	.noexplosion				; branch if not found
 		move.b	#id_ExplosionBomb,ost_id(a1)		; load explosion object every 8 frames
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
@@ -131,13 +131,13 @@ Pri_Explosion:	; Routine 6, 8, $A
 		lsr.b	#3,d0
 		add.w	d0,ost_y_pos(a1)
 
-	@noexplosion:
+	.noexplosion:
 		subq.w	#1,ost_anim_time(a0)			; decrement timer
-		beq.s	@makeanimal				; branch if 0
+		beq.s	.makeanimal				; branch if 0
 		rts	
 ; ===========================================================================
 
-@makeanimal:
+.makeanimal:
 		move.b	#2,(v_boss_status).w			; set flag for prison open
 		move.b	#id_Pri_Animals,ost_routine(a0)		; goto Pri_Animals next
 		move.b	#id_frame_prison_blank,ost_frame(a0)	; make switch invisible
@@ -147,9 +147,9 @@ Pri_Explosion:	; Routine 6, 8, $A
 		move.w	#$9A,d5					; animal jumping queue start
 		moveq	#-$1C,d4				; relative x position
 
-	@loop:
+	.loop:
 		jsr	(FindFreeObj).l				; find free OST slot
-		bne.s	@fail					; branch if not found
+		bne.s	.fail					; branch if not found
 		move.b	#id_Animals,ost_id(a1)			; load animal object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
@@ -157,19 +157,19 @@ Pri_Explosion:	; Routine 6, 8, $A
 		addq.w	#7,d4					; next animal loads 7px right
 		move.w	d5,ost_animal_prison_num(a1)		; give each animal a num so it jumps at a different time
 		subq.w	#8,d5					; decrement queue number
-		dbf	d6,@loop				; repeat 7 more	times
+		dbf	d6,.loop				; repeat 7 more	times
 
-	@fail:
+	.fail:
 		rts	
 ; ===========================================================================
 
 Pri_Animals:	; Routine $C
 		moveq	#7,d0
 		and.b	(v_vblank_counter_byte).w,d0		; byte that increments every frame
-		bne.s	@noanimal				; branch if any of bits 0-2 are set
+		bne.s	.noanimal				; branch if any of bits 0-2 are set
 
 		jsr	(FindFreeObj).l				; find free OST slot
-		bne.s	@noanimal				; branch if not found
+		bne.s	.noanimal				; branch if not found
 		move.b	#id_Animals,ost_id(a1)			; load animal object every 8 frames
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
@@ -177,20 +177,20 @@ Pri_Animals:	; Routine $C
 		andi.w	#$1F,d0
 		subq.w	#6,d0
 		tst.w	d1
-		bpl.s	@ispositive
+		bpl.s	.ispositive
 		neg.w	d0
 
-	@ispositive:
+	.ispositive:
 		add.w	d0,ost_x_pos(a1)			; pseudorandom position
 		move.w	#$C,ost_animal_prison_num(a1)		; set time for animal to jump out
 
-	@noanimal:
+	.noanimal:
 		subq.w	#1,ost_anim_time(a0)			; decrement timer
-		bne.s	@wait					; branch if time remains
+		bne.s	.wait					; branch if time remains
 		addq.b	#2,ost_routine(a0)			; goto Pri_EndAct next
 		move.w	#180,ost_anim_time(a0)			; this does nothing
 
-	@wait:
+	.wait:
 		rts	
 ; ===========================================================================
 
@@ -200,16 +200,16 @@ Pri_EndAct:	; Routine $E
 		moveq	#sizeof_ost,d2				; d2 = $40
 		lea	(v_ost_player+sizeof_ost).w,a1		; start at first OST slot after Sonic
 
-	@findanimal:
+	.findanimal:
 		cmp.b	(a1),d1					; is object $28	(animal) loaded?
-		beq.s	@found					; if yes, branch
+		beq.s	.found					; if yes, branch
 		adda.w	d2,a1					; next OST slot
-		dbf	d0,@findanimal				; repeat $3E times (this misses the last $40 OST slots)
+		dbf	d0,.findanimal				; repeat $3E times (this misses the last $40 OST slots)
 
 		jsr	(HasPassedAct).l			; load gfx, play music (see "Signpost & HasPassedAct.asm")
 		jmp	(DeleteObject).l
 
-	@found:
+	.found:
 		rts	
 
 ; ---------------------------------------------------------------------------

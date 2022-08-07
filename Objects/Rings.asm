@@ -59,10 +59,10 @@ Ring_Main:	; Routine 0
 		move.b	d1,d0
 		andi.w	#7,d1					; read bits 0-2 of subtype (ring quantity minus 1)
 		cmpi.w	#7,d1					; is subtype = 7 ?
-		bne.s	@not_7					; if not, branch
+		bne.s	.not_7					; if not, branch
 		moveq	#6,d1					; max 6
 
-	@not_7:
+	.not_7:
 		swap	d1					; move into high word
 		move.w	#0,d1					; clear low word
 		lsr.b	#4,d0					; read high nybble of subtype
@@ -75,20 +75,20 @@ Ring_Main:	; Routine 0
 		move.w	ost_x_pos(a0),d2
 		move.w	ost_y_pos(a0),d3
 		lsr.b	#1,d4					; has first ring been collected previously?
-		bcs.s	@skip_ring				; if yes, branch
+		bcs.s	.skip_ring				; if yes, branch
 		bclr	#7,(a2)
-		bra.s	@load_first
+		bra.s	.load_first
 ; ===========================================================================
 
-@loop:
+.loop:
 		swap	d1					; swap ring counter & loop counter
 		lsr.b	#1,d4					; has this ring been collected previously?
-		bcs.s	@skip_ring				; if yes, branch
+		bcs.s	.skip_ring				; if yes, branch
 		bclr	#7,(a2)
 		bsr.w	FindFreeObj				; find free OST slot
-		bne.s	@fail					; branch if not found
+		bne.s	.fail					; branch if not found
 
-@load_first:
+.load_first:
 		move.b	#id_Rings,ost_id(a1)			; load ring object
 		addq.b	#2,ost_routine(a1)			; goto Ring_Animate next
 		move.w	d2,ost_x_pos(a1)			; set x position based on d2
@@ -103,14 +103,14 @@ Ring_Main:	; Routine 0
 		move.b	ost_respawn(a0),ost_respawn(a1)
 		move.b	d1,ost_ring_num(a1)			; ring remembers which one in the current batch it is 
 
-@skip_ring:
+.skip_ring:
 		addq.w	#1,d1					; increment ring counter
 		add.w	d5,d2					; add x spacing value to d2
 		add.w	d6,d3					; add y spacing value to d3
 		swap	d1					; swap ring counter & loop counter
-		dbf	d1,@loop				; repeat for number of rings
+		dbf	d1,.loop				; repeat for number of rings
 
-@fail:
+.fail:
 		btst	#0,(a2)
 		bne.w	DeleteObject
 

@@ -37,7 +37,7 @@ Invis_Main:	; Routine 0
 
 Invis_Solid:	; Routine 2
 		bsr.w	CheckOffScreen				; is object off screen?
-		bne.s	@chkdel					; if yes, branch
+		bne.s	.chkdel					; if yes, branch
 		moveq	#0,d1
 		move.b	ost_displaywidth(a0),d1
 		addi.w	#$B,d1
@@ -48,14 +48,14 @@ Invis_Solid:	; Routine 2
 		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject_NoRenderChk
 
-@chkdel:
-		out_of_range.s	@delete
+.chkdel:
+		out_of_range.s	.delete
 		tst.w	(v_debug_active).w			; are you using	debug mode?
-		beq.s	@nodisplay				; if not, branch
+		beq.s	.nodisplay				; if not, branch
 		jmp	(DisplaySprite).l			; if yes, display the object
 
-	@nodisplay:
+	.nodisplay:
 		rts	
 
-	@delete:
+	.delete:
 		jmp	(DeleteObject).l

@@ -25,11 +25,11 @@ MoveWithPlatform2:						; jump here to use standard height (9)
 
 	MWP_MoveSonic:
 		tst.b	(v_lock_multi).w			; is object collision disabled?
-		bmi.s	@exit					; if yes, branch
+		bmi.s	.exit					; if yes, branch
 		cmpi.b	#id_Sonic_Death,(v_ost_player+ost_routine).w ; is Sonic dying?
-		bhs.s	@exit					; if yes, branch
+		bhs.s	.exit					; if yes, branch
 		tst.w	(v_debug_active).w			; is debug mode in use?
-		bne.s	@exit					; if yes, branch
+		bne.s	.exit					; if yes, branch
 		moveq	#0,d1
 		move.b	ost_height(a1),d1
 		sub.w	d1,d0
@@ -37,5 +37,5 @@ MoveWithPlatform2:						; jump here to use standard height (9)
 		sub.w	ost_x_pos(a0),d2
 		sub.w	d2,ost_x_pos(a1)			; update Sonic's x position
 
-	@exit:
+	.exit:
 		rts

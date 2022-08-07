@@ -16,9 +16,9 @@ PalLoad_Next:
 		adda.w	#v_pal_dry_next-v_pal_dry,a3		; jump to next palette RAM address
 		move.w	(a1)+,d7				; get length of palette data
 
-	@loop:
+	.loop:
 		move.l	(a2)+,(a3)+				; move data to RAM
-		dbf	d7,@loop
+		dbf	d7,.loop
 		rts
 
 ; ---------------------------------------------------------------------------
@@ -38,9 +38,9 @@ PalLoad_Now:
 		movea.w	(a1)+,a3				; get target RAM address
 		move.w	(a1)+,d7				; get length of palette
 
-	@loop:
+	.loop:
 		move.l	(a2)+,(a3)+				; move data to RAM
-		dbf	d7,@loop
+		dbf	d7,.loop
 		rts
 
 ; ---------------------------------------------------------------------------
@@ -61,9 +61,9 @@ PalLoad_Water:
 		suba.w	#v_pal_dry-v_pal_water,a3		; jump to underwater palette RAM address
 		move.w	(a1)+,d7				; get length of palette data
 
-	@loop:
+	.loop:
 		move.l	(a2)+,(a3)+				; move data to RAM
-		dbf	d7,@loop
+		dbf	d7,.loop
 		rts
 
 ; ---------------------------------------------------------------------------
@@ -84,9 +84,9 @@ PalLoad_Water_Next:
 		suba.w	#v_pal_dry-v_pal_water_next,a3		; jump to next underwater palette RAM address
 		move.w	(a1)+,d7				; get length of palette data
 
-	@loop:
+	.loop:
 		move.l	(a2)+,(a3)+				; move data to RAM
-		dbf	d7,@loop
+		dbf	d7,.loop
 		rts
 
 ; ---------------------------------------------------------------------------

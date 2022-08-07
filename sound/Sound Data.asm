@@ -167,8 +167,8 @@ Kos_DacDriver:							; TODO: this is currently hardcoded to replace the dummy po
 		dc.b SegaPCM&$FF, ((SegaPCM&$7F00)>>8)|$80	; Pointer to Sega PCM, relative to start of ROM bank (little endian)
 		incbin	"sound\DAC Driver.kos", $B2, 1
 
-@size:		equ	filesize("\SegaPCM_File")		; calculate the size of the Sega PCM
-		dc.b @size&$FF, (@size&$FF00)>>8		; ... the size of the Sega PCM (little endian)
+.size:		equ	filesize("\SegaPCM_File")		; calculate the size of the Sega PCM
+		dc.b .size&$FF, (.size&$FF00)>>8		; ... the size of the Sega PCM (little endian)
 		incbin	"sound\DAC Driver.kos", $B5, $16AB
 		even
 

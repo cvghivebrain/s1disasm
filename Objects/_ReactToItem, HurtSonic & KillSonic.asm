@@ -20,11 +20,11 @@ ReactToItem:
 		subq.b	#sonic_height-sonic_height_hitbox,d5	; d5 = Sonic's height minus 3
 		sub.w	d5,d3					; d3 = y pos of Sonic's top edge
 		cmpi.b	#id_frame_Duck,ost_frame(a0)		; is Sonic ducking?
-		bne.s	@notducking				; if not, branch
+		bne.s	.notducking				; if not, branch
 		addi.w	#(sonic_height_hitbox-sonic_height_hitbox_duck)*2,d3 ; lower top edge when ducking (by 12px)
 		moveq	#sonic_height_hitbox_duck,d5		; use smaller height
 
-	@notducking:
+	.notducking:
 		move.w	#sonic_width_hitbox*2,d4		; d4 = Sonic's total width (16px)
 		add.w	d5,d5					; d5 = Sonic's total height
 		lea	(v_ost_level_obj).w,a1			; first OST slot for interactable objects
@@ -101,35 +101,35 @@ React_ChkDist:
 		move.w	ost_x_pos(a1),d0
 		sub.w	d1,d0					; d0 = x pos of object's left edge
 		sub.w	d2,d0
-		bcc.s	@sonic_left				; branch if Sonic is left of the object
+		bcc.s	.sonic_left				; branch if Sonic is left of the object
 		add.w	d1,d1
 		add.w	d1,d0
-		bcs.s	@within_x				; branch if Sonic is inside the object
+		bcs.s	.within_x				; branch if Sonic is inside the object
 		bra.w	React_Next				; next object
 ; ===========================================================================
 
-@sonic_left:
+.sonic_left:
 		cmp.w	d4,d0
 		bhi.w	React_Next				; branch if Sonic is outside the object
 
-@within_x:
+.within_x:
 		moveq	#0,d1
 		move.b	(a2)+,d1				; get height from list
 		move.w	ost_y_pos(a1),d0
 		sub.w	d1,d0					; d0 = y pos of object's top edge
 		sub.w	d3,d0					; d0 = distance between Sonic's and object's top edge
-		bcc.s	@sonic_above				; branch if Sonic is above the object
+		bcc.s	.sonic_above				; branch if Sonic is above the object
 		add.w	d1,d1
 		add.w	d0,d1
-		bcs.s	@within_y				; branch if Sonic is inside the object
+		bcs.s	.within_y				; branch if Sonic is inside the object
 		bra.w	React_Next				; next object
 ; ===========================================================================
 
-@sonic_above:
+.sonic_above:
 		cmp.w	d5,d0
 		bhi.w	React_Next				; branch if Sonic is outside the object
 
-@within_y:
+.within_y:
 		move.b	ost_col_type(a1),d1			; load collision type
 		andi.b	#$C0,d1					; read only bits 6-7 (type)
 		beq.w	React_Enemy				; branch if type is 0 (enemy)
@@ -144,49 +144,49 @@ React_ChkDist:
 		cmpi.b	#id_col_16x16,d0			; is collision type $46 (monitor)?
 		beq.s	React_Monitor				; if yes, branch
 		cmpi.w	#sonic_flash_time-ring_delay,ost_sonic_flash_time(a0) ; has Sonic been hit recently?
-		bcc.w	@invincible				; if yes, branch
+		bcc.w	.invincible				; if yes, branch
 		addq.b	#2,ost_routine(a1)			; goto Ring_Collect (if ring), RLoss_Collect (if bouncing ring), GRing_Collect (if giant ring) next
 
-	@invincible:
+	.invincible:
 		rts	
 ; ===========================================================================
 
 React_Monitor:
 		tst.w	ost_y_vel(a0)				; is Sonic moving upwards?
-		bpl.s	@sonic_down				; if not, branch
+		bpl.s	.sonic_down				; if not, branch
 
 		move.w	ost_y_pos(a0),d0
 		subi.w	#$10,d0					; d0 = y pos above Sonic
 		cmp.w	ost_y_pos(a1),d0
-		bcs.s	@donothing				; branch if monitor is below d0
+		bcs.s	.donothing				; branch if monitor is below d0
 
 		neg.w	ost_y_vel(a0)				; reverse Sonic's vertical speed
 		move.w	#-$180,ost_y_vel(a1)			; move monitor upwards
 		tst.b	ost_routine2(a1)
-		bne.s	@donothing				; branch if monitor is stood on or falling
+		bne.s	.donothing				; branch if monitor is stood on or falling
 		addq.b	#4,ost_routine2(a1)			; set routine counter to goto Mon_Solid_Fall
 		rts	
 ; ===========================================================================
 
-@sonic_down:
+.sonic_down:
 		cmpi.b	#id_Roll,ost_anim(a0)			; is Sonic rolling/jumping?
-		bne.s	@donothing				; if not, branch
+		bne.s	.donothing				; if not, branch
 		neg.w	ost_y_vel(a0)				; reverse Sonic's y speed
 		addq.b	#2,ost_routine(a1)			; set routine counter to goto Mon_BreakOpen next
 
-	@donothing:
+	.donothing:
 		rts	
 ; ===========================================================================
 
 React_Enemy:
 		tst.b	(v_invincibility).w			; is Sonic invincible?
-		bne.s	@donthurtsonic				; if yes, branch
+		bne.s	.donthurtsonic				; if yes, branch
 		cmpi.b	#id_Roll,ost_anim(a0)			; is Sonic rolling/jumping?
 		bne.w	React_ChkHurt				; if not, branch
 
-	@donthurtsonic:
+	.donthurtsonic:
 		tst.b	ost_col_property(a1)
-		beq.s	@breakenemy				; branch if it's not a boss
+		beq.s	.breakenemy				; branch if it's not a boss
 
 		neg.w	ost_x_vel(a0)				; repel Sonic
 		neg.w	ost_y_vel(a0)
@@ -194,48 +194,48 @@ React_Enemy:
 		asr	ost_y_vel(a0)
 		move.b	#0,ost_col_type(a1)			; temporarily make boss harmless
 		subq.b	#1,ost_col_property(a1)			; decrement hit counter
-		bne.s	@flagnotclear				; branch if not 0
+		bne.s	.flagnotclear				; branch if not 0
 		bset	#status_broken_bit,ost_status(a1)	; set flag for boss beaten
 
-	@flagnotclear:
+	.flagnotclear:
 		rts	
 ; ===========================================================================
 
-@breakenemy:
+.breakenemy:
 		bset	#status_broken_bit,ost_status(a1)	; flag enemy as broken
 		moveq	#0,d0
 		move.w	(v_enemy_combo).w,d0
 		addq.w	#2,(v_enemy_combo).w			; add 2 to item bonus counter
 		cmpi.w	#Enemy_Points_end-Enemy_Points-2,d0
-		bcs.s	@bonusokay
+		bcs.s	.bonusokay
 		moveq	#Enemy_Points_end-Enemy_Points-2,d0	; max bonus is #6 (1000 points)
 
-	@bonusokay:
+	.bonusokay:
 		move.w	d0,ost_enemy_combo(a1)			; set frame for points object (spawned by animal object)
 		move.w	Enemy_Points(pc,d0.w),d0
 		cmpi.w	#combo_max,(v_enemy_combo).w		; have 16 enemies been destroyed?
-		bcs.s	@lessthan16				; if not, branch
+		bcs.s	.lessthan16				; if not, branch
 		move.w	#combo_max_points,d0			; fix bonus to 10000
 		move.w	#id_frame_points_10k*2,ost_enemy_combo(a1) ; use 10k frame for points object
 
-	@lessthan16:
+	.lessthan16:
 		bsr.w	AddPoints				; update score
 		move.b	#id_ExplosionItem,ost_id(a1)		; change object to explosion
 		move.b	#id_ExItem_Animal,ost_routine(a1)	; explosion also spawns an animal
 		tst.w	ost_y_vel(a0)
-		bmi.s	@bouncedown				; branch if Sonic is moving upwards
+		bmi.s	.bouncedown				; branch if Sonic is moving upwards
 		move.w	ost_y_pos(a0),d0
 		cmp.w	ost_y_pos(a1),d0
-		bcc.s	@bounceup				; branch if Sonic is below enemy
+		bcc.s	.bounceup				; branch if Sonic is below enemy
 		neg.w	ost_y_vel(a0)
 		rts	
 ; ===========================================================================
 
-	@bouncedown:
+	.bouncedown:
 		addi.w	#$100,ost_y_vel(a0)
 		rts	
 
-	@bounceup:
+	.bounceup:
 		subi.w	#$100,ost_y_vel(a0)
 		rts	
 
@@ -252,17 +252,17 @@ React_Caterkiller:
 
 React_ChkHurt:
 		tst.b	(v_invincibility).w			; is Sonic invincible?
-		beq.s	@notinvincible				; if not, branch
+		beq.s	.notinvincible				; if not, branch
 
-	@isflashing:
+	.isflashing:
 		moveq	#-1,d0
 		rts	
 ; ===========================================================================
 
-	@notinvincible:
+	.notinvincible:
 		nop	
 		tst.w	ost_sonic_flash_time(a0)		; is Sonic flashing?
-		bne.s	@isflashing				; if yes, branch
+		bne.s	.isflashing				; if yes, branch
 		movea.l	a1,a2
 
 ; continue straight to HurtSonic
@@ -281,17 +281,17 @@ React_ChkHurt:
 
 HurtSonic:
 		tst.b	(v_shield).w
-		bne.s	@hasshield				; branch if Sonic has a shield
+		bne.s	.hasshield				; branch if Sonic has a shield
 		tst.w	(v_rings).w
-		beq.w	@norings				; branch if Sonic has no rings
+		beq.w	.norings				; branch if Sonic has no rings
 
 		jsr	(FindFreeObj).l				; find free OST slot
-		bne.s	@hasshield				; branch if not found
+		bne.s	.hasshield				; branch if not found
 		move.b	#id_RingLoss,ost_id(a1)			; load bouncing multi rings object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 
-	@hasshield:
+	.hasshield:
 		move.b	#0,(v_shield).w				; remove shield
 		move.b	#id_Sonic_Hurt,ost_routine(a0)		; run hurt animation/action
 		bsr.w	Sonic_ResetOnFloor			; reset several of Sonic's flags
@@ -299,37 +299,37 @@ HurtSonic:
 		move.w	#-$400,ost_y_vel(a0)			; make Sonic bounce away from the object
 		move.w	#-$200,ost_x_vel(a0)
 		btst	#status_underwater_bit,ost_status(a0)	; is Sonic underwater?
-		beq.s	@isdry					; if not, branch
+		beq.s	.isdry					; if not, branch
 
 		move.w	#-$200,ost_y_vel(a0)			; slower bounce
 		move.w	#-$100,ost_x_vel(a0)
 
-	@isdry:
+	.isdry:
 		move.w	ost_x_pos(a0),d0
 		cmp.w	ost_x_pos(a2),d0
-		bcs.s	@isleft					; if Sonic is left of the object, branch
+		bcs.s	.isleft					; if Sonic is left of the object, branch
 		neg.w	ost_x_vel(a0)				; if Sonic is right of the object, reverse
 
-	@isleft:
+	.isleft:
 		move.w	#0,ost_inertia(a0)
 		move.b	#id_Hurt,ost_anim(a0)
 		move.w	#sonic_flash_time,ost_sonic_flash_time(a0) ; set temp invincible time to 2 seconds
 		move.w	#sfx_Death,d0				; load normal damage sound
 		cmpi.b	#id_Spikes,(a2)				; was damage caused by spikes?
-		bne.s	@sound					; if not, branch
+		bne.s	.sound					; if not, branch
 		cmpi.b	#id_Harpoon,(a2)			; was damage caused by LZ harpoon?
-		bne.s	@sound					; if not, branch
+		bne.s	.sound					; if not, branch
 		move.w	#sfx_SpikeHit,d0			; load spikes damage sound
 
-	@sound:
+	.sound:
 		jsr	(PlaySound1).l
 		moveq	#-1,d0
 		rts	
 ; ===========================================================================
 
-@norings:
+.norings:
 		tst.w	(f_debug_enable).w			; is debug mode	cheat on?
-		bne.w	@hasshield				; if yes, branch
+		bne.w	.hasshield				; if yes, branch
 
 ; continue straight into KillSonic
 
@@ -346,7 +346,7 @@ HurtSonic:
 
 KillSonic:
 		tst.w	(v_debug_active).w			; is debug mode	active?
-		bne.s	@dontdie				; if yes, branch
+		bne.s	.dontdie				; if yes, branch
 		move.b	#0,(v_invincibility).w			; remove invincibility
 		move.b	#id_Sonic_Death,ost_routine(a0)		; run death animation/action
 		bsr.w	Sonic_ResetOnFloor			; reset several of Sonic's flags
@@ -359,13 +359,13 @@ KillSonic:
 		bset	#tile_hi_bit,ost_tile(a0)
 		move.w	#sfx_Death,d0				; play normal death sound
 		cmpi.b	#id_Spikes,(a2)				; check	if you were killed by spikes
-		bne.s	@sound
+		bne.s	.sound
 		move.w	#sfx_SpikeHit,d0			; play spikes death sound
 
-	@sound:
+	.sound:
 		jsr	(PlaySound1).l
 
-	@dontdie:
+	.dontdie:
 		moveq	#-1,d0
 		rts
 
@@ -375,50 +375,50 @@ React_Special:
 		move.b	ost_col_type(a1),d1			; get collision type
 		andi.b	#$3F,d1					; read only bits 0-5 (size)
 		cmpi.b	#id_col_8x8,d1
-		beq.s	@caterkiller				; branch if $CB (caterkiller)
+		beq.s	.caterkiller				; branch if $CB (caterkiller)
 		cmpi.b	#id_col_20x16,d1
-		beq.s	@yadrin					; branch if $CC (yadrin)
+		beq.s	.yadrin					; branch if $CC (yadrin)
 		cmpi.b	#id_col_8x8_2,d1
-		beq.s	@D7orE1					; branch if $D7 (SYZ bumper)
+		beq.s	.D7orE1					; branch if $D7 (SYZ bumper)
 		cmpi.b	#id_col_4x32,d1
-		beq.s	@D7orE1					; branch if $E1 (LZ pole)
+		beq.s	.D7orE1					; branch if $E1 (LZ pole)
 		rts	
 ; ===========================================================================
 
-@caterkiller:
+.caterkiller:
 		bra.w	React_Caterkiller			; set flag to fragment caterkiller, then hurt Sonic
 ; ===========================================================================
 
-@yadrin:
+.yadrin:
 		sub.w	d0,d5					; d5 = Sonic's height, minus y dist between Sonic & yadrin
 		cmpi.w	#8,d5
-		bcc.s	@normalenemy				; branch if Sonic is below spike level
+		bcc.s	.normalenemy				; branch if Sonic is below spike level
 		move.w	ost_x_pos(a1),d0
 		subq.w	#4,d0
 		btst	#status_xflip_bit,ost_status(a1)
-		beq.s	@no_xflip
+		beq.s	.no_xflip
 		subi.w	#$10,d0
 
-	@no_xflip:
+	.no_xflip:
 		sub.w	d2,d0					; d0 = x pos of yadrin's face, minus x pos of Sonic's left edge
-		bcc.s	@sonic_left				; branch if Sonic is left of the yadrin
+		bcc.s	.sonic_left				; branch if Sonic is left of the yadrin
 		addi.w	#$18,d0
-		bcs.s	@within_x				; branch if Sonic is inside the yadrin
-		bra.s	@normalenemy
+		bcs.s	.within_x				; branch if Sonic is inside the yadrin
+		bra.s	.normalenemy
 ; ===========================================================================
 
-@sonic_left:
+.sonic_left:
 		cmp.w	d4,d0
-		bhi.s	@normalenemy				; branch if Sonic is outside the yadrin
+		bhi.s	.normalenemy				; branch if Sonic is outside the yadrin
 
-@within_x:
+.within_x:
 		bra.w	React_ChkHurt				; check for invincibility, then hurt Sonic
 ; ===========================================================================
 
-	@normalenemy:
+	.normalenemy:
 		bra.w	React_Enemy				; treat like a normal enemy
 ; ===========================================================================
 
-@D7orE1:
+.D7orE1:
 		addq.b	#1,ost_col_property(a1)			; set flag for Sonic touching bumper/pole
 		rts

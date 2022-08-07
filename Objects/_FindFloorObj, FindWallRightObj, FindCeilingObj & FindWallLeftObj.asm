@@ -33,10 +33,10 @@ FindFloorObj2:
 		bsr.w	FindFloor
 		move.b	(v_angle_right).w,d3
 		btst	#0,d3					; is angle snap bit set?
-		beq.s	@no_snap
+		beq.s	.no_snap
 		move.b	#0,d3					; snap to flat floor
 
-	@no_snap:
+	.no_snap:
 		rts
 
 ; ---------------------------------------------------------------------------
@@ -68,10 +68,10 @@ FindWallRightObj:
 		bsr.w	FindWall
 		move.b	(v_angle_right).w,d3
 		btst	#0,d3					; is angle snap bit set?
-		beq.s	@no_snap
+		beq.s	.no_snap
 		move.b	#$C0,d3					; snap to flat right wall
 
-	@no_snap:
+	.no_snap:
 		rts
 
 		endm
@@ -107,10 +107,10 @@ FindCeilingObj:
 		bsr.w	FindFloor
 		move.b	(v_angle_right).w,d3
 		btst	#0,d3					; is angle snap bit set?
-		beq.s	@no_snap
+		beq.s	.no_snap
 		move.b	#$80,d3					; snap to flat ceiling
 
-	@no_snap:
+	.no_snap:
 		rts
 
 		endm
@@ -147,10 +147,10 @@ FindWallLeftObj:
 		bsr.w	FindWall
 		move.b	(v_angle_right).w,d3
 		btst	#0,d3					; is angle snap bit set?
-		beq.s	@no_snap
+		beq.s	.no_snap
 		move.b	#$40,d3					; snap to flat left wall
 
-	@no_snap:
+	.no_snap:
 		rts
 
 		endm

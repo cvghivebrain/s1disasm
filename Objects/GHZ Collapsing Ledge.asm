@@ -40,12 +40,12 @@ Ledge_Main:	; Routine 0
 
 Ledge_Touch:	; Routine 2
 		tst.b	ost_ledge_flag(a0)			; has ledge been stood on?
-		beq.s	@slope					; if not, branch
+		beq.s	.slope					; if not, branch
 		tst.b	ost_ledge_wait_time(a0)			; has time reached zero?
 		beq.w	Ledge_Fragment				; if yes, branch
 		subq.b	#1,ost_ledge_wait_time(a0)		; decrement timer
 
-	@slope:
+	.slope:
 		move.w	#$30,d1					; width
 		lea	(Ledge_SlopeData).l,a2			; heightmap
 		bsr.w	SlopeObject				; detect collision with Sonic, update relevant flags & goto Ledge_Collapse next
@@ -78,28 +78,28 @@ Ledge_WaitFall:	; Routine 6
 		tst.b	ost_ledge_wait_time(a0)			; has time delay reached zero?
 		beq.s	Ledge_FallNow				; if yes, branch
 		tst.b	ost_ledge_flag(a0)			; has ledge been stood on?
-		bne.w	@stood_on				; if yes, branch
+		bne.w	.stood_on				; if yes, branch
 		subq.b	#1,ost_ledge_wait_time(a0)		; decrement timer
 		bra.w	DisplaySprite
 ; ===========================================================================
 
-@stood_on:
+.stood_on:
 		subq.b	#1,ost_ledge_wait_time(a0)		; decrement timer
 		bsr.w	Ledge_WalkOff				; update Sonic's y position & platform status
 		lea	(v_ost_player).w,a1
 		btst	#status_platform_bit,ost_status(a1)	; is Sonic on ledge?
-		beq.s	@platform_clear				; if not, branch
+		beq.s	.platform_clear				; if not, branch
 		tst.b	ost_ledge_wait_time(a0)			; has time reached 0?
-		bne.s	@exit					; if not, branch
+		bne.s	.exit					; if not, branch
 		bclr	#status_platform_bit,ost_status(a1)	; clear platform status
 		bclr	#status_pushing_bit,ost_status(a1)
 		move.b	#id_Run,ost_anim_restart(a1)
 
-	@platform_clear:
+	.platform_clear:
 		move.b	#0,ost_ledge_flag(a0)
 		move.b	#id_Ledge_WaitFall,ost_routine(a0)	; goto Ledge_WaitFall next
 
-	@exit:
+	.exit:
 		rts	
 ; ===========================================================================
 
@@ -148,15 +148,15 @@ FragmentObject:
 		move.b	ost_id(a0),d4
 		move.b	ost_render(a0),d5
 		movea.l	a0,a1					; replace ledge object with fragment
-		bra.s	@skip_findost
+		bra.s	.skip_findost
 ; ===========================================================================
 
-@loop:
+.loop:
 		bsr.w	FindFreeObj				; find free OST slot
-		bne.s	@display				; branch if not found
+		bne.s	.display				; branch if not found
 		addq.w	#5,a3					; next sprite piece
 
-@skip_findost:
+.skip_findost:
 		move.b	#id_Ledge_WaitFall,ost_routine(a1)	; id_CFlo_WaitFall in CollapseFloor object
 		move.b	d4,ost_id(a1)
 		move.l	a3,ost_mappings(a1)
@@ -168,13 +168,13 @@ FragmentObject:
 		move.b	ost_displaywidth(a0),ost_displaywidth(a1)
 		move.b	(a4)+,ost_ledge_wait_time(a1)		; each fragment has different timing
 		cmpa.l	a0,a1					; is this fragment the first? (i.e. parent object)
-		bhs.s	@firstfrag				; if yes, branch
+		bhs.s	.firstfrag				; if yes, branch
 		bsr.w	DisplaySprite_a1
 
-	@firstfrag:
-		dbf	d1,@loop				; repeat for all fragments
+	.firstfrag:
+		dbf	d1,.loop				; repeat for all fragments
 
-	@display:
+	.display:
 		bsr.w	DisplaySprite
 		play.w	1, jmp, sfx_Collapse			; play collapsing sound
 

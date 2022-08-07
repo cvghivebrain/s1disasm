@@ -45,12 +45,12 @@ SSS_Main:	; Routine 0
 
 SSS_Action:	; Routine 2
 		tst.w	(f_debug_enable).w			; is debug mode	cheat enabled?
-		beq.s	@not_debug				; if not, branch
+		beq.s	.not_debug				; if not, branch
 		btst	#bitB,(v_joypad_press_actual).w		; is button B pressed?
-		beq.s	@not_debug				; if not, branch
+		beq.s	.not_debug				; if not, branch
 		move.w	#1,(v_debug_active).w			; change Sonic into a ring
 
-	@not_debug:
+	.not_debug:
 		move.b	#0,ost_ss_item(a0)
 		moveq	#0,d0
 		move.b	ost_status(a0),d0
@@ -94,36 +94,36 @@ SSS_Display:
 
 SSS_Move:
 		btst	#bitL,(v_joypad_hold).w			; is left being pressed?
-		beq.s	@not_left				; if not, branch
+		beq.s	.not_left				; if not, branch
 		bsr.w	SSS_MoveLeft
 
-	@not_left:
+	.not_left:
 		btst	#bitR,(v_joypad_hold).w			; is right being pressed?
-		beq.s	@not_right				; if not, branch
+		beq.s	.not_right				; if not, branch
 		bsr.w	SSS_MoveRight
 
-	@not_right:
+	.not_right:
 		move.b	(v_joypad_hold).w,d0
 		andi.b	#btnL+btnR,d0				; is left or right being pressed?
 		bne.s	SSS_UpdatePos				; if yes, branch
 		move.w	ost_inertia(a0),d0			; get inertia
 		beq.s	SSS_UpdatePos				; branch if 0
-		bmi.s	@inertia_neg				; branch if negative
+		bmi.s	.inertia_neg				; branch if negative
 		subi.w	#$C,d0					; subtract $C
-		bcc.s	@update_inertia				; branch if positive (after subtraction)
+		bcc.s	.update_inertia				; branch if positive (after subtraction)
 		move.w	#0,d0					; set to 0 if negative (after subtraction)
 
-	@update_inertia:
+	.update_inertia:
 		move.w	d0,ost_inertia(a0)			; set new inertia
 		bra.s	SSS_UpdatePos
 ; ===========================================================================
 
-@inertia_neg:
+.inertia_neg:
 		addi.w	#$C,d0					; add $C to inertia
-		bcc.s	@update_inertia2			; branch if negative
+		bcc.s	.update_inertia2			; branch if negative
 		move.w	#0,d0					; set to 0 if positive (after addition)
 
-	@update_inertia2:
+	.update_inertia2:
 		move.w	d0,ost_inertia(a0)			; set new inertia
 
 SSS_UpdatePos:
@@ -140,7 +140,7 @@ SSS_UpdatePos:
 		move.l	ost_y_pos(a0),d2
 		move.l	ost_x_pos(a0),d3
 		bsr.w	SSS_FindWall				; detect nearby walls
-		beq.s	@no_collide				; branch if none found
+		beq.s	.no_collide				; branch if none found
 		movem.l	(sp)+,d0-d1
 		sub.l	d1,ost_x_pos(a0)			; cancel position updates
 		sub.l	d0,ost_y_pos(a0)
@@ -148,7 +148,7 @@ SSS_UpdatePos:
 		rts	
 ; ===========================================================================
 
-@no_collide:
+.no_collide:
 		movem.l	(sp)+,d0-d1
 		rts
 
@@ -157,26 +157,26 @@ SSS_UpdatePos:
 SSS_MoveLeft:
 		bset	#status_xflip_bit,ost_status(a0)
 		move.w	ost_inertia(a0),d0			; get inertia
-		beq.s	@inertia_0				; branch if 0
-		bpl.s	@inertia_positive			; branch if positive (moving right)
+		beq.s	.inertia_0				; branch if 0
+		bpl.s	.inertia_positive			; branch if positive (moving right)
 
-	@inertia_0:
+	.inertia_0:
 		subi.w	#$C,d0					; subtract $C from inertia
 		cmpi.w	#-sonic_ss_max_speed,d0
-		bgt.s	@update_inertia
+		bgt.s	.update_inertia
 		move.w	#-sonic_ss_max_speed,d0			; set minimum inertia
 
-	@update_inertia:
+	.update_inertia:
 		move.w	d0,ost_inertia(a0)
 		rts	
 ; ===========================================================================
 
-@inertia_positive:
+.inertia_positive:
 		subi.w	#$40,d0
-		bcc.s	@wait
+		bcc.s	.wait
 		nop	
 
-	@wait:
+	.wait:
 		move.w	d0,ost_inertia(a0)
 		rts
 
@@ -185,26 +185,26 @@ SSS_MoveLeft:
 SSS_MoveRight:
 		bclr	#status_xflip_bit,ost_status(a0)
 		move.w	ost_inertia(a0),d0			; get inertia
-		bmi.s	@inertia_neg				; branch if negative (moving left)
+		bmi.s	.inertia_neg				; branch if negative (moving left)
 		addi.w	#$C,d0					; add $C to inertia
 		cmpi.w	#sonic_ss_max_speed,d0
-		blt.s	@update_inertia
+		blt.s	.update_inertia
 		move.w	#sonic_ss_max_speed,d0			; set maximum inertia
 
-	@update_inertia:
+	.update_inertia:
 		move.w	d0,ost_inertia(a0)
-		bra.s	@exit
+		bra.s	.exit
 ; ===========================================================================
 
-@inertia_neg:
+.inertia_neg:
 		addi.w	#$40,d0
-		bcc.s	@wait
+		bcc.s	.wait
 		nop	
 
-	@wait:
+	.wait:
 		move.w	d0,ost_inertia(a0)
 
-	@exit:
+	.exit:
 		rts
 
 ; ---------------------------------------------------------------------------
@@ -214,7 +214,7 @@ SSS_MoveRight:
 SSS_Jump:
 		move.b	(v_joypad_press).w,d0
 		andi.b	#btnABC,d0				; is A,	B or C pressed?
-		beq.s	@exit					; if not, branch
+		beq.s	.exit					; if not, branch
 		move.b	(v_ss_angle).w,d0			; get SS angle
 		andi.b	#$FC,d0					; round down to nearest 4
 		neg.b	d0
@@ -229,7 +229,7 @@ SSS_Jump:
 		bset	#status_air_bit,ost_status(a0)		; goto SSS_InAir next
 		play.w	1, jsr, sfx_Jump			; play jumping sound
 
-	@exit:
+	.exit:
 		rts
 
 ; ---------------------------------------------------------------------------
@@ -241,13 +241,13 @@ nullsub_2:
 		
 		move.w	#-$400,d1
 		cmp.w	ost_y_vel(a0),d1
-		ble.s	@exit					; branch if Sonic isn't moving up faster than -$400
+		ble.s	.exit					; branch if Sonic isn't moving up faster than -$400
 		move.b	(v_joypad_hold).w,d0
 		andi.b	#btnABC,d0
-		bne.s	@exit					; branch if A/B/C are pressed
+		bne.s	.exit					; branch if A/B/C are pressed
 		move.w	d1,ost_y_vel(a0)			; fix speed to -$400
 
-	@exit:
+	.exit:
 		rts
 
 ; ---------------------------------------------------------------------------
@@ -259,18 +259,18 @@ SS_FixCamera:
 		move.w	ost_x_pos(a0),d3
 		move.w	(v_camera_x_pos).w,d0
 		subi.w	#160,d3
-		bcs.s	@ignore_x				; branch if Sonic is within 160px of left edge
+		bcs.s	.ignore_x				; branch if Sonic is within 160px of left edge
 		sub.w	d3,d0
 		sub.w	d0,(v_camera_x_pos).w			; fix camera 160px (half screen) left of Sonic
 
-	@ignore_x:
+	.ignore_x:
 		move.w	(v_camera_y_pos).w,d0
 		subi.w	#112,d2
-		bcs.s	@ignore_y				; branch if Sonic is within 112px of top edge
+		bcs.s	.ignore_y				; branch if Sonic is within 112px of top edge
 		sub.w	d2,d0
 		sub.w	d0,(v_camera_y_pos).w			; fix camera 112px (half screen) above Sonic
 
-	@ignore_y:
+	.ignore_y:
 		rts
 
 ; ===========================================================================
@@ -278,18 +278,18 @@ SS_FixCamera:
 SSS_ExitStage:	; Routine 4
 		addi.w	#$40,(v_ss_rotation_speed).w		; increase stage rotation
 		cmpi.w	#$1800,(v_ss_rotation_speed).w		; check if it's up to $1800
-		bne.s	@not1800				; if not, branch
+		bne.s	.not1800				; if not, branch
 		move.b	#id_Level,(v_gamemode).w		; set game mode to normal level
 
-	@not1800:
+	.not1800:
 		cmpi.w	#$3000,(v_ss_rotation_speed).w		; check if it's up to $3000
-		blt.s	@not3000				; if not, branch
+		blt.s	.not3000				; if not, branch
 		move.w	#0,(v_ss_rotation_speed).w		; stop rotation
 		move.w	#$4000,(v_ss_angle).w
 		addq.b	#2,ost_routine(a0)			; goto SSS_ExitWait next
 		move.w	#60,ost_ss_restart_time(a0)
 
-	@not3000:
+	.not3000:
 		move.w	(v_ss_angle).w,d0
 		add.w	(v_ss_rotation_speed).w,d0
 		move.w	d0,(v_ss_angle).w
@@ -301,10 +301,10 @@ SSS_ExitStage:	; Routine 4
 
 SSS_ExitWait:	; Routine 6
 		subq.w	#1,ost_ss_restart_time(a0)		; decrement timer
-		bne.s	@wait					; branch if time remains
+		bne.s	.wait					; branch if time remains
 		move.b	#id_Level,(v_gamemode).w
 
-	@wait:
+	.wait:
 		jsr	(Sonic_Animate).l
 		jsr	(Sonic_LoadGfx).l
 		bsr.w	SS_FixCamera
@@ -418,19 +418,19 @@ SSS_FindWall:
 ; ===========================================================================
 
 SSS_FindWall_Chk:
-		beq.s	@no_collide				; branch if 0
+		beq.s	.no_collide				; branch if 0
 		cmpi.b	#id_SS_Item_1Up,d4			; is the item an extra life?
-		beq.s	@no_collide				; if yes, branch
+		beq.s	.no_collide				; if yes, branch
 		cmpi.b	#id_SS_Item_Em1-1,d4			; is the item an emerald or ghost block ($3B+)?
-		bcs.s	@collide				; if yes, branch
+		bcs.s	.collide				; if yes, branch
 		cmpi.b	#id_SS_Item_Glass5,d4			; is the item a flashing glass block ($4B+)?
-		bcc.s	@collide				; if not, branch
+		bcc.s	.collide				; if not, branch
 
-	@no_collide:
+	.no_collide:
 		rts	
 ; ===========================================================================
 
-@collide:
+.collide:
 		move.b	d4,ost_ss_item(a0)			; get id of wall item
 		move.l	a1,ost_ss_item_address(a0)		; get address within layout
 		moveq	#-1,d5					; set flag for collision
@@ -468,20 +468,20 @@ SSS_ChkRing:
 		cmpi.b	#id_SS_Item_Ring,d4			; is the item a	ring?
 		bne.s	SSS_Chk1Up				; if not, branch
 		bsr.w	SS_FindFreeUpdate			; find free item update slot
-		bne.s	@noslot
+		bne.s	.noslot
 		move.b	#id_SS_UpdateRing,(a2)			; item sparkles and vanishes
 		move.l	a1,ss_update_levelptr(a2)		; address within layout to be updated
 
-	@noslot:
+	.noslot:
 		jsr	(CollectRing).l				; get a ring
 		cmpi.w	#rings_for_continue,(v_rings).w		; check if you have 50 rings
-		bcs.s	@nocontinue				; if not, branch
+		bcs.s	.nocontinue				; if not, branch
 		bset	#0,(v_ring_reward).w			; set flag
-		bne.s	@nocontinue				; branch if flag was already set
+		bne.s	.nocontinue				; branch if flag was already set
 		addq.b	#1,(v_continues).w			; add 1 to number of continues
 		play.w	0, jsr, sfx_Continue			; play extra continue sound
 
-	@nocontinue:
+	.nocontinue:
 		moveq	#0,d4
 		rts	
 ; ===========================================================================
@@ -490,11 +490,11 @@ SSS_Chk1Up:
 		cmpi.b	#id_SS_Item_1Up,d4			; is the item an extra life?
 		bne.s	SSS_ChkEmerald
 		bsr.w	SS_FindFreeUpdate
-		bne.s	@noslot
+		bne.s	.noslot
 		move.b	#id_SS_Update1Up,(a2)
 		move.l	a1,ss_update_levelptr(a2)
 
-	@noslot:
+	.noslot:
 		addq.b	#1,(v_lives).w				; add 1 to number of lives
 		addq.b	#1,(f_hud_lives_update).w		; update the lives counter
 		play.w	0, jsr, mus_ExtraLife			; play extra life music
@@ -508,13 +508,13 @@ SSS_ChkEmerald:
 		cmpi.b	#id_SS_Item_Em6,d4
 		bhi.s	SSS_ChkGhost
 		bsr.w	SS_FindFreeUpdate
-		bne.s	@noslot
+		bne.s	.noslot
 		move.b	#id_SS_UpdateEmerald,(a2)
 		move.l	a1,ss_update_levelptr(a2)
 
-	@noslot:
+	.noslot:
 		cmpi.b	#countof_emeralds,(v_emeralds).w	; do you have all the emeralds?
-		beq.s	@noemerald				; if yes, branch
+		beq.s	.noemerald				; if yes, branch
 		subi.b	#id_SS_Item_Em1,d4
 		moveq	#0,d0
 		move.b	(v_emeralds).w,d0
@@ -522,7 +522,7 @@ SSS_ChkEmerald:
 		move.b	d4,(a2,d0.w)
 		addq.b	#1,(v_emeralds).w			; add 1 to number of emeralds
 
-	@noemerald:
+	.noemerald:
 		play.w	1, jsr, mus_Emerald			; play emerald music
 		moveq	#0,d4
 		rts	
@@ -535,37 +535,37 @@ SSS_ChkGhost:
 
 SSS_ChkGhostTag:
 		cmpi.b	#id_SS_Item_Switch,d4			; is the item a	switch for ghost blocks?
-		bne.s	@noghost				; if not, branch
+		bne.s	.noghost				; if not, branch
 		cmpi.b	#1,ost_ss_ghost(a0)			; have the ghost blocks been passed?
-		bne.s	@noghost				; if not, branch
+		bne.s	.noghost				; if not, branch
 		move.b	#2,ost_ss_ghost(a0)			; mark the ghost blocks as "solid"
 
-	@noghost:
+	.noghost:
 		moveq	#-1,d4
 		rts	
 ; ===========================================================================
 
 SSS_MakeGhostSolid:
 		cmpi.b	#2,ost_ss_ghost(a0)			; is the ghost marked as "solid"?
-		bne.s	@notsolid				; if not, branch
+		bne.s	.notsolid				; if not, branch
 		lea	(v_ss_layout_start).l,a1		; get layout address (blocks before $1020 are blank)
 		moveq	#ss_height_actual-1,d1			; $40
 
-	@looprow:
+	.looprow:
 		moveq	#ss_width_actual-1,d2			; $40
 
-	@loopitem:
+	.loopitem:
 		cmpi.b	#id_SS_Item_Ghost,(a1)			; is the item a	ghost block?
-		bne.s	@noreplace				; if not, branch
+		bne.s	.noreplace				; if not, branch
 		move.b	#id_SS_Item_RedWhi,(a1)			; replace ghost	block with a solid block
 
-	@noreplace:
+	.noreplace:
 		addq.w	#1,a1					; next block
-		dbf	d2,@loopitem
+		dbf	d2,.loopitem
 		lea	ss_width-ss_width_actual(a1),a1		; jump to next row (i.e. skip $40 bytes of padding)
-		dbf	d1,@looprow
+		dbf	d1,.looprow
 
-@notsolid:
+.notsolid:
 		clr.b	ost_ss_ghost(a0)
 		moveq	#0,d4
 		rts
@@ -578,15 +578,15 @@ SSS_ChkItems2:
 		move.b	ost_ss_item(a0),d0			; get item id
 		bne.s	SSS_ChkBumper				; branch if not 0
 		subq.b	#1,ost_ss_updown_time(a0)		; decrement UP/DOWN cooldown timer
-		bpl.s	@updown_off				; branch if positive
+		bpl.s	.updown_off				; branch if positive
 		move.b	#0,ost_ss_updown_time(a0)		; set to 0
 
-	@updown_off:
+	.updown_off:
 		subq.b	#1,ost_ss_r_time(a0)			; decrement R cooldown timer
-		bpl.s	@r_off					; branch if positive
+		bpl.s	.r_off					; branch if positive
 		move.b	#0,ost_ss_r_time(a0)			; set to 0
 
-	@r_off:
+	.r_off:
 		rts	
 ; ===========================================================================
 
@@ -615,13 +615,13 @@ SSS_ChkBumper:
 		move.w	d0,ost_y_vel(a0)
 		bset	#status_air_bit,ost_status(a0)		; set Sonic's air flag
 		bsr.w	SS_FindFreeUpdate			; find free item update slot
-		bne.s	@noslot					; branch if not found
+		bne.s	.noslot					; branch if not found
 		move.b	#id_SS_UpdateBumper,(a2)		; set update type
 		move.l	ost_ss_item_address(a0),d0
 		subq.l	#1,d0
 		move.l	d0,ss_update_levelptr(a2)		; set address within layout to update
 
-	@noslot:
+	.noslot:
 		play.w	1, jmp, sfx_Bumper			; play bumper sound
 ; ===========================================================================
 
@@ -640,13 +640,13 @@ SSS_UPblock:
 		bne.w	SSS_ChkItems_End			; branch if time remains
 		move.b	#30,ost_ss_updown_time(a0)		; set cooldown to half a second
 		btst	#6,(v_ss_rotation_speed+1).w		; is SS rotation speed $40? (minimum)
-		beq.s	@keepspeed				; if not, branch
+		beq.s	.keepspeed				; if not, branch
 		asl	(v_ss_rotation_speed).w			; increase stage rotation speed
 		movea.l	ost_ss_item_address(a0),a1
 		subq.l	#1,a1
 		move.b	#id_SS_Item_Down,(a1)			; change item to a "DOWN" block
 
-	@keepspeed:
+	.keepspeed:
 		play.w	1, jmp, sfx_ActionBlock			; play up/down sound
 ; ===========================================================================
 
@@ -657,13 +657,13 @@ SSS_DOWNblock:
 		bne.w	SSS_ChkItems_End
 		move.b	#30,ost_ss_updown_time(a0)
 		btst	#6,(v_ss_rotation_speed+1).w		; is SS rotation speed $40? (minimum)
-		bne.s	@keepspeed				; if yes, branch
+		bne.s	.keepspeed				; if yes, branch
 		asr	(v_ss_rotation_speed).w			; reduce stage rotation speed
 		movea.l	ost_ss_item_address(a0),a1
 		subq.l	#1,a1
 		move.b	#id_SS_Item_Up,(a1)			; change item to an "UP" block
 
-	@keepspeed:
+	.keepspeed:
 		play.w	1, jmp, sfx_ActionBlock			; play up/down sound
 ; ===========================================================================
 
@@ -674,30 +674,30 @@ SSS_Rblock:
 		bne.w	SSS_ChkItems_End
 		move.b	#30,ost_ss_r_time(a0)
 		bsr.w	SS_FindFreeUpdate			; find free item update slot
-		bne.s	@noslot					; branch if not found
+		bne.s	.noslot					; branch if not found
 		move.b	#id_SS_UpdateR,(a2)
 		move.l	ost_ss_item_address(a0),d0
 		subq.l	#1,d0
 		move.l	d0,ss_update_levelptr(a2)
 
-	@noslot:
+	.noslot:
 		neg.w	(v_ss_rotation_speed).w			; reverse stage rotation
 		play.w	1, jmp, sfx_ActionBlock			; play R-block sound
 ; ===========================================================================
 
 SSS_ChkGlass:
 		cmpi.b	#id_SS_Item_Glass1,d0			; is the item a	glass block?
-		beq.s	@glass					; if yes, branch
+		beq.s	.glass					; if yes, branch
 		cmpi.b	#id_SS_Item_Glass2,d0
-		beq.s	@glass
+		beq.s	.glass
 		cmpi.b	#id_SS_Item_Glass3,d0
-		beq.s	@glass
+		beq.s	.glass
 		cmpi.b	#id_SS_Item_Glass4,d0
 		bne.s	SSS_ChkItems_End			; if not, branch
 
-	@glass:
+	.glass:
 		bsr.w	SS_FindFreeUpdate			; find free item update slot
-		bne.s	@noslot
+		bne.s	.noslot
 		move.b	#id_SS_UpdateGlass,(a2)
 		movea.l	ost_ss_item_address(a0),a1
 		subq.l	#1,a1
@@ -705,13 +705,13 @@ SSS_ChkGlass:
 		move.b	(a1),d0
 		addq.b	#1,d0					; change glass type when touched
 		cmpi.b	#id_SS_Item_Glass4,d0
-		bls.s	@update					; if glass is still there, branch
+		bls.s	.update					; if glass is still there, branch
 		clr.b	d0					; remove the glass block when it's destroyed
 
-	@update:
+	.update:
 		move.b	d0,ss_update_levelptr(a2)		; update the stage layout
 
-	@noslot:
+	.noslot:
 		play.w	1, jmp, sfx_Diamonds			; play diamond block sound
 ; ===========================================================================
 

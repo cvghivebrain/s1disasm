@@ -50,7 +50,7 @@ ost_cstomp_parent:		rs.l 1					; $3C ; address of OST of parent object
 CStom_Main:	; Routine 0
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0			; get subtype
-		bpl.s	@not_80					; branch if 0-$7F
+		bpl.s	.not_80					; branch if 0-$7F
 		andi.w	#$7F,d0
 		add.w	d0,d0
 		lea	CStom_BtnNums(pc,d0.w),a2
@@ -58,15 +58,15 @@ CStom_Main:	; Routine 0
 		move.b	(a2)+,d0				; get replacement subtype
 		move.b	d0,ost_subtype(a0)			; change subtype to 0
 
-	@not_80:
+	.not_80:
 		andi.b	#$F,d0					; read low nybble of subtype
 		add.w	d0,d0
 		move.w	CStom_Lengths(pc,d0.w),d2		; get length
 		tst.w	d0
-		bne.s	@not_0					; branch if subtype isn't 0
+		bne.s	.not_0					; branch if subtype isn't 0
 		move.w	d2,ost_cstomp_chain_length(a0)		; if subtype is 0, chain starts at max length
 
-	@not_0:
+	.not_0:
 		lea	(CStom_Var).l,a2
 		movea.l	a0,a1					; first object is parent (block)
 		moveq	#3,d1					; 3 additional objects (chain, spikes, ceiling)
@@ -95,7 +95,7 @@ CStom_MakeStomper:
 		move.b	#4,ost_priority(a1)
 		move.b	(a2)+,ost_frame(a1)
 		cmpi.b	#id_frame_cstomp_spikes,ost_frame(a1)	; is the spikes component being loaded?
-		bne.s	@not_spikes				; if not, branch
+		bne.s	.not_spikes				; if not, branch
 		subq.w	#1,d1
 		move.b	ost_subtype(a0),d0
 		andi.w	#$F0,d0					; read high nybble of subtype
@@ -105,7 +105,7 @@ CStom_MakeStomper:
 		move.b	#id_col_40x16+id_col_hurt,ost_col_type(a1) ; make spikes harmful
 		addq.w	#1,d1
 
-	@not_spikes:
+	.not_spikes:
 		move.l	a0,ost_cstomp_parent(a1)
 		dbf	d1,CStom_Loop
 
@@ -140,15 +140,15 @@ CStom_Block:	; Routine 2
 		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject
 		btst	#status_platform_bit,ost_status(a0)	; is Sonic standing on it?
-		beq.s	@display				; if not, branch
+		beq.s	.display				; if not, branch
 		cmpi.b	#$10,ost_cstomp_chain_length(a0)	; is chain longer than $10?
-		bcc.s	@display				; if yes, branch
+		bcc.s	.display				; if yes, branch
 		movea.l	a0,a2
 		lea	(v_ost_player).w,a0
 		jsr	(KillSonic).l				; Sonic gets crushed against ceiling
 		movea.l	a2,a0
 
-	@display:
+	.display:
 		bsr.w	DisplaySprite
 		bra.w	CStom_ChkDel
 ; ===========================================================================
@@ -202,26 +202,26 @@ CStom_Type00:
 		tst.b	(a2,d0.w)				; has button (d0) been pressed?
 		beq.s	CStom_Type00_Fall			; if not, branch
 		tst.w	(v_cstomp_y_pos).w			; is stomper below the top edge of the level?
-		bpl.s	@within_boundary			; is yes, branch
+		bpl.s	.within_boundary			; is yes, branch
 		cmpi.b	#$10,ost_cstomp_chain_length(a0)	; is chain at its shortest?
-		beq.s	@stop					; if yes, branch
+		beq.s	.stop					; if yes, branch
 
-	@within_boundary:
+	.within_boundary:
 		tst.w	ost_cstomp_chain_length(a0)
-		beq.s	@stop
+		beq.s	.stop
 		move.b	(v_vblank_counter_byte).w,d0		; get byte that increments every frame
 		andi.b	#$F,d0					; read low nybble
-		bne.s	@skip_sound				; branch if not 0
+		bne.s	.skip_sound				; branch if not 0
 		tst.b	ost_render(a0)
-		bpl.s	@skip_sound
+		bpl.s	.skip_sound
 		play.w	1, jsr, sfx_ChainRise			; play rising chain sound every 16 frames
 
-	@skip_sound:
+	.skip_sound:
 		subi.w	#$80,ost_cstomp_chain_length(a0)	; shorten chain
 		bcc.s	CStom_SetPos				; branch if +ve
 		move.w	#0,ost_cstomp_chain_length(a0)
 
-	@stop:
+	.stop:
 		move.w	#0,ost_y_vel(a0)			; stop stomper rising
 		bra.s	CStom_SetPos
 ; ===========================================================================
@@ -263,12 +263,12 @@ CStom_Type01:
 CStom_Type01_Rise:
 		move.b	(v_vblank_counter_byte).w,d0
 		andi.b	#$F,d0
-		bne.s	@skip_sound
+		bne.s	.skip_sound
 		tst.b	ost_render(a0)
-		bpl.s	@skip_sound
+		bpl.s	.skip_sound
 		play.w	1, jsr, sfx_ChainRise			; play rising chain sound every 16 frames
 
-	@skip_sound:
+	.skip_sound:
 		subi.w	#$80,ost_cstomp_chain_length(a0)
 		bcc.s	CStom_Type01_SetPos
 		move.w	#0,ost_cstomp_chain_length(a0)
@@ -302,13 +302,13 @@ CStom_Type01_SetPos:
 CStom_Type03:
 		move.w	(v_ost_player+ost_x_pos).w,d0
 		sub.w	ost_x_pos(a0),d0
-		bcc.s	@sonic_is_right				; branch if Sonic is to the right
+		bcc.s	.sonic_is_right				; branch if Sonic is to the right
 		neg.w	d0					; d0 = distance between Sonic & stomper
 
-	@sonic_is_right:
+	.sonic_is_right:
 		cmpi.w	#$90,d0					; is Sonic within 144px?
-		bcc.s	@over_144				; if not, branch
+		bcc.s	.over_144				; if not, branch
 		addq.b	#1,ost_subtype(a0)			; allow stomper to drop by changing subtype
 
-	@over_144:
+	.over_144:
 		bra.w	CStom_SetPos

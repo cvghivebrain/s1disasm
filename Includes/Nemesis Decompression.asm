@@ -69,12 +69,12 @@ NemDec_ProcessCompressedData:
 		ext.w	d0
 		sub.w	d0,d6					; subtract from shift value so that the next code is read next time around
 		cmpi.w	#9,d6					; does a new byte need to be read?
-		bcc.s	@skip_new_byte				; if not, branch
+		bcc.s	.skip_new_byte				; if not, branch
 		addq.w	#8,d6
 		asl.w	#8,d5
 		move.b	(a0)+,d5				; read next byte
 
-	@skip_new_byte:
+	.skip_new_byte:
 		move.b	1(a1,d1.w),d1
 		move.w	d1,d0
 		andi.w	#$F,d1					; get palette index for pixel

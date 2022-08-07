@@ -27,10 +27,10 @@ JoypadInit:
 ReadJoypads:
 		lea	(v_joypad_hold_actual).w,a0		; address where joypad states are written
 		lea	(port_1_data).l,a1			; first joypad port
-		bsr.s	@read					; do the first joypad
+		bsr.s	.read					; do the first joypad
 		addq.w	#2,a1					; do the second	joypad
 
-	@read:
+	.read:
 		move.b	#0,(a1)					; set port to read 00SA00DU
 		nop	
 		nop	

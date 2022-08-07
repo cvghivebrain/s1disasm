@@ -40,32 +40,32 @@ Smash_Solid:	; Routine 2
 		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject
 		btst	#status_pushing_bit,ost_status(a0)	; is Sonic pushing against the wall?
-		bne.s	@chkroll				; if yes, branch
+		bne.s	.chkroll				; if yes, branch
 
-@donothing:
+.donothing:
 		rts	
 ; ===========================================================================
 
-@chkroll:
+.chkroll:
 		cmpi.b	#id_Roll,ost_anim(a1)			; is Sonic rolling?
-		bne.s	@donothing				; if not, branch
+		bne.s	.donothing				; if not, branch
 		move.w	ost_smash_x_vel(a0),d0			; get Sonic's speed
-		bpl.s	@chkspeed				; branch if Sonic is moving right
+		bpl.s	.chkspeed				; branch if Sonic is moving right
 		neg.w	d0					; convert -ve to +ve
 
-	@chkspeed:
+	.chkspeed:
 		cmpi.w	#$480,d0				; is Sonic's speed $480 or higher?
-		bcs.s	@donothing				; if not, branch
+		bcs.s	.donothing				; if not, branch
 		move.w	ost_smash_x_vel(a0),ost_x_vel(a1)
 		addq.w	#4,ost_x_pos(a1)
 		lea	(Smash_FragSpd1).l,a4			; use fragments that move right
 		move.w	ost_x_pos(a0),d0
 		cmp.w	ost_x_pos(a1),d0			; is Sonic to the right of the block?
-		bcs.s	@smash					; if yes, branch
+		bcs.s	.smash					; if yes, branch
 		subq.w	#8,ost_x_pos(a1)
 		lea	(Smash_FragSpd2).l,a4			; use fragments that move left
 
-	@smash:
+	.smash:
 		move.w	ost_x_vel(a1),ost_inertia(a1)
 		bclr	#status_pushing_bit,ost_status(a0)
 		bclr	#status_pushing_bit,ost_status(a1)
@@ -100,15 +100,15 @@ SmashObject:
 		move.b	ost_id(a0),d4
 		move.b	ost_render(a0),d5
 		movea.l	a0,a1
-		bra.s	@loadfrag
+		bra.s	.loadfrag
 ; ===========================================================================
 
-	@loop:
+	.loop:
 		bsr.w	FindFreeObj				; find free OST slot
-		bne.s	@playsnd				; branch if not found
+		bne.s	.playsnd				; branch if not found
 		addq.w	#5,a3					; next sprite in mappings frame
 
-@loadfrag:
+.loadfrag:
 		move.b	#id_Smash_FragMove,ost_routine(a1)
 		move.b	d4,ost_id(a1)
 		move.l	a3,ost_mappings(a1)
@@ -121,7 +121,7 @@ SmashObject:
 		move.w	(a4)+,ost_x_vel(a1)
 		move.w	(a4)+,ost_y_vel(a1)
 		cmpa.l	a0,a1					; is parent OST before fragment OST in RAM?
-		bcc.s	@parent_earlier				; if yes, branch
+		bcc.s	.parent_earlier				; if yes, branch
 
 		; fragment OST is before parent, so Smash_FragMove must be duplicated here
 		move.l	a0,-(sp)
@@ -131,10 +131,10 @@ SmashObject:
 		movea.l	(sp)+,a0
 		bsr.w	DisplaySprite_a1
 
-	@parent_earlier:
-		dbf	d1,@loop
+	.parent_earlier:
+		dbf	d1,.loop
 
-	@playsnd:
+	.playsnd:
 		play.w	1, jmp, sfx_Smash			; play smashing sound
 
 ; ===========================================================================

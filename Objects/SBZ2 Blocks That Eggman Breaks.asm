@@ -42,9 +42,9 @@ FFloor_Main:	; Routine 0
 		moveq	#8-1,d6					; 8 blocks
 		lea	ost_ffloor_children(a0),a2
 
-@loop:
+.loop:
 		jsr	(FindFreeObj).l				; find free OST slot
-		bne.s	@fail					; branch if not found
+		bne.s	.fail					; branch if not found
 		move.w	a1,(a2)+				; save child OST address to list in parent OST
 		move.b	#id_FalseFloor,(a1)			; load block object
 		move.l	#Map_FFloor,ost_mappings(a1)
@@ -57,9 +57,9 @@ FFloor_Main:	; Routine 0
 		move.w	#$5D0,ost_y_pos(a1)
 		addi.w	#$20,d5					; add $20 for next x position
 		move.b	#id_FFloor_Block,ost_routine(a1)	; goto FFloor_Block next
-		dbf	d6,@loop				; repeat sequence 7 more times
+		dbf	d6,.loop				; repeat sequence 7 more times
 
-	@fail:
+	.fail:
 		addq.b	#2,ost_routine(a0)			; goto FFloor_ChkBreak next
 		rts	
 ; ===========================================================================
@@ -90,7 +90,7 @@ FFloor_Solid:
 
 FFloor_Break:	; Routine 4
 		subi.b	#$E,ost_anim_time(a0)			; decrement timer
-		bcc.s	@stay_solid				; branch if time remains (never happens)
+		bcc.s	.stay_solid				; branch if time remains (never happens)
 		moveq	#-1,d0
 		move.b	ost_frame(a0),d0			; get current frame (starts as 0, increments as blocks break)
 		ext.w	d0
@@ -102,7 +102,7 @@ FFloor_Break:	; Routine 4
 		cmpi.b	#8,ost_frame(a0)			; have all blocks broken? (final frame)
 		beq.s	FFloor_AllGone				; if yes, branch
 
-	@stay_solid:
+	.stay_solid:
 		bra.s	FFloor_Solid
 ; ===========================================================================
 
@@ -135,24 +135,24 @@ FFloor_BlockBreak:
 		move.b	#8,ost_displaywidth(a0)
 		move.b	#8,ost_height(a0)
 		lea	(a0),a1					; replace block with first fragment
-		bra.s	@first_frag
+		bra.s	.first_frag
 ; ===========================================================================
 
-	@loop:
+	.loop:
 		jsr	(FindNextFreeObj).l			; find free OST slot
-		bne.s	@fail					; branch if not found
+		bne.s	.fail					; branch if not found
 
-@first_frag:
+.first_frag:
 		lea	(a0),a2					; a2 = parent block OST
 		lea	(a1),a3					; a3 = fragment OST
 		moveq	#(sizeof_ost/16)-1,d3
 
-	@copy_ost:
+	.copy_ost:
 		move.l	(a2)+,(a3)+
 		move.l	(a2)+,(a3)+
 		move.l	(a2)+,(a3)+
 		move.l	(a2)+,(a3)+
-		dbf	d3,@copy_ost				; copy contents of parent block OST to fragment OST
+		dbf	d3,.copy_ost				; copy contents of parent block OST to fragment OST
 
 		move.w	(a4)+,ost_y_vel(a1)			; get initial y speed from FFloor_FragSpeed
 		move.w	(a5)+,d3
@@ -161,9 +161,9 @@ FFloor_BlockBreak:
 		add.w	d3,ost_y_pos(a1)
 		move.b	d4,ost_frame(a1)			; set frame
 		addq.w	#1,d4					; next frame
-		dbf	d1,@loop				; repeat sequence 3 more times
+		dbf	d1,.loop				; repeat sequence 3 more times
 
-	@fail:
+	.fail:
 		play.w	1, jsr, sfx_Smash			; play smashing sound
 		jmp	(DisplaySprite).l
 ; ===========================================================================

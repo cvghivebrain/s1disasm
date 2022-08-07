@@ -49,12 +49,12 @@ Bri_Main:	; Routine 0
 		subq.b	#2,d1					; d1 = number of logs, minus 1 for parent, minus 1 for first loop
 		bcs.s	Bri_Action				; don't make more if bridge has only 1 log
 
-@buildloop:
+.buildloop:
 		bsr.w	FindFreeObj				; find free OST slot
 		bne.s	Bri_Action				; branch if not found
 		addq.b	#1,ost_subtype(a0)
 		cmp.w	ost_x_pos(a0),d3			; is this the middle log? (parent log is middle)
-		bne.s	@notmiddle				; if not, branch
+		bne.s	.notmiddle				; if not, branch
 		; treat parent log as though it's the middle child log
 		addi.w	#$10,d3
 		move.w	d2,ost_y_pos(a0)
@@ -66,7 +66,7 @@ Bri_Main:	; Routine 0
 		move.b	d5,(a2)+				; add parent OST index to child list
 		addq.b	#1,ost_subtype(a0)
 
-	@notmiddle:
+	.notmiddle:
 		move.w	a1,d5
 		subi.w	#v_ost_all&$FFFF,d5			; get RAM address of child OST
 		lsr.w	#6,d5					; divide by $40
@@ -84,16 +84,16 @@ Bri_Main:	; Routine 0
 		move.b	#3,ost_priority(a1)
 		move.b	#8,ost_displaywidth(a1)
 		addi.w	#$10,d3					; x pos. of next log
-		dbf	d1,@buildloop				; repeat d1 times (length of bridge)
+		dbf	d1,.buildloop				; repeat d1 times (length of bridge)
 
 Bri_Action:	; Routine 2
 		bsr.s	Bri_Detect				; detect collision, goto Bri_Platform next when stood on
 		tst.b	ost_bridge_bend(a0)
-		beq.s	@display
+		beq.s	.display
 		subq.b	#4,ost_bridge_bend(a0)			; move log back up
 		bsr.w	Bri_UpdateY
 
-	@display:
+	.display:
 		bsr.w	DisplaySprite
 		bra.w	Bri_ChkDel
 
@@ -143,19 +143,19 @@ Bri_ChkPosition:
 		move.w	d1,d2					; d2 = distance from centre to right edge
 		addq.w	#8,d1					; d1 = distance from centre to left edge
 		bsr.s	ExitPlatform2				; update flags, goto Bri_Action next if leaving the bridge
-		bcc.s	@exit
+		bcc.s	.exit
 		lsr.w	#4,d0					; d0 = relative position of log Sonic is standing on, divided by 16
 		move.b	d0,ost_bridge_current_log(a0)
 		move.b	ost_bridge_bend(a0),d0			; get current bend
 		cmpi.b	#$40,d0
-		beq.s	@max_bend				; branch if $40
+		beq.s	.max_bend				; branch if $40
 		addq.b	#4,ost_bridge_bend(a0)			; increase bend
 
-	@max_bend:
+	.max_bend:
 		bsr.w	Bri_UpdateY				; update y position of all logs
 		bsr.w	Bri_MoveSonic				; update Sonic's position
 
-	@exit:
+	.exit:
 		rts	
 ; End of function Bri_ChkPosition
 
@@ -212,7 +212,7 @@ Bri_UpdateY:
 		lea	(a4,d3.w),a3
 		lea	ost_bridge_child_list(a0),a2
 
-	@loop_left:
+	.loop_left:
 		moveq	#0,d0
 		move.b	(a2)+,d0				; get OST id of child log
 		lsl.w	#6,d0
@@ -226,7 +226,7 @@ Bri_UpdateY:
 		swap	d0					; swap high/low words
 		add.w	ost_bridge_y_start(a1),d0		; add initial y position
 		move.w	d0,ost_y_pos(a1)			; update y position
-		dbf	d2,@loop_left				; repeat for all logs left of the one being stood on
+		dbf	d2,.loop_left				; repeat for all logs left of the one being stood on
 
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0			; get bridge length
@@ -235,15 +235,15 @@ Bri_UpdateY:
 		addq.b	#1,d3					; start at 1
 		sub.b	d0,d3
 		neg.b	d3					; d3 = logs to the right
-		bmi.s	@exit					; branch if invalid
+		bmi.s	.exit					; branch if invalid
 		move.w	d3,d2
 		lsl.w	#4,d3					; multiply by $10
 		lea	(a4,d3.w),a3
 		adda.w	d2,a3
 		subq.w	#1,d2
-		bcs.s	@exit
+		bcs.s	.exit
 
-	@loop_right:
+	.loop_right:
 		moveq	#0,d0
 		move.b	(a2)+,d0
 		lsl.w	#6,d0
@@ -257,9 +257,9 @@ Bri_UpdateY:
 		swap	d0
 		add.w	ost_bridge_y_start(a1),d0
 		move.w	d0,ost_y_pos(a1)
-		dbf	d2,@loop_right
+		dbf	d2,.loop_right
 
-	@exit:
+	.exit:
 		rts	
 ; End of function Bri_UpdateY
 
@@ -311,30 +311,30 @@ Bri_Data_Align:
 ; ===========================================================================
 
 Bri_ChkDel:
-		out_of_range	@deletebridge
+		out_of_range	.deletebridge
 		rts
 
-@deletebridge:
+.deletebridge:
 		moveq	#0,d2
 		lea	ost_subtype(a0),a2			; get bridge length
 		move.b	(a2)+,d2				; move bridge length to	d2
 		subq.b	#1,d2					; subtract 1
-		bcs.s	@delparent				; branch if there are no child objects
+		bcs.s	.delparent				; branch if there are no child objects
 
-	@loop:
+	.loop:
 		moveq	#0,d0
 		move.b	(a2)+,d0
 		lsl.w	#6,d0
 		addi.l	#v_ost_all&$FFFFFF,d0
 		movea.l	d0,a1
 		cmp.w	a0,d0
-		beq.s	@skipdel
+		beq.s	.skipdel
 		bsr.w	DeleteChild
 
-	@skipdel:
-		dbf	d2,@loop				; repeat d2 times (bridge length)
+	.skipdel:
+		dbf	d2,.loop				; repeat d2 times (bridge length)
 
-@delparent:
+.delparent:
 		bsr.w	DeleteObject
 		rts	
 ; ===========================================================================

@@ -40,41 +40,41 @@ GMake_Main:	; Routine 0
 
 GMake_Wait:	; Routine 2
 		subq.w	#1,ost_gmake_wait_time(a0)		; decrement timer
-		bpl.s	@cancel					; if time remains, branch
+		bpl.s	.cancel					; if time remains, branch
 
 		move.w	ost_gmake_wait_total(a0),ost_gmake_wait_time(a0) ; reset timer
 		move.w	(v_ost_player+ost_y_pos).w,d0
 		move.w	ost_y_pos(a0),d1
 		cmp.w	d1,d0
-		bcc.s	@cancel					; branch if Sonic is to the right
+		bcc.s	.cancel					; branch if Sonic is to the right
 		subi.w	#$170,d1
 		cmp.w	d1,d0
-		bcs.s	@cancel					; branch if Sonic is more than 368px to the left
+		bcs.s	.cancel					; branch if Sonic is more than 368px to the left
 		addq.b	#2,ost_routine(a0)			; if Sonic is within range, goto GMake_ChkType next
 
-	@cancel:
+	.cancel:
 		rts	
 ; ===========================================================================
 
 GMake_MakeLava:	; Routine 6
 		addq.b	#2,ost_routine(a0)			; goto GMake_Display next
 		bsr.w	FindNextFreeObj				; find free OST slot
-		bne.s	@fail					; branch if not found
+		bne.s	.fail					; branch if not found
 		move.b	#id_LavaGeyser,ost_id(a1)		; load lavafall object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 		move.b	ost_subtype(a0),ost_subtype(a1)
 		move.l	a0,ost_geyser_parent(a1)
 
-	@fail:
+	.fail:
 		move.b	#id_ani_geyser_bubble2,ost_anim(a0)
 		tst.b	ost_subtype(a0)				; is object type 0 (geyser) ?
-		beq.s	@isgeyser				; if yes, branch
+		beq.s	.isgeyser				; if yes, branch
 		move.b	#id_ani_geyser_blank,ost_anim(a0)
 		bra.s	GMake_Display
 ; ===========================================================================
 
-	@isgeyser:
+	.isgeyser:
 		movea.l	ost_gmake_parent(a0),a1			; copy address of parent OST (from PushBlock)
 		bset	#status_yflip_bit,ost_status(a1)
 		move.w	#-$580,ost_y_vel(a1)

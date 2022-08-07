@@ -53,11 +53,11 @@ BSpike_Main:	; Routine 0
 		bset	#status_xflip_bit,ost_status(a0)
 		move.w	ost_x_pos(a0),d0
 		cmp.w	ost_x_pos(a1),d0			; is spikeball on right side of seesaw?
-		bgt.s	@on_right				; if yes, branch
+		bgt.s	.on_right				; if yes, branch
 		bclr	#status_xflip_bit,ost_status(a0)
 		move.b	#2,ost_bspike_state(a0)
 
-	@on_right:
+	.on_right:
 		addq.b	#2,ost_routine(a0)			; goto BSpike_Fall next
 
 BSpike_Fall:	; Routine 2
@@ -68,29 +68,29 @@ BSpike_Fall:	; Routine 2
 		move.b	ost_frame(a1),d0			; get seesaw frame
 		move.w	ost_x_pos(a0),d1
 		sub.w	ost_bspike_x_start(a0),d1
-		bcc.s	@on_right				; branch if spikeball is on right side of seesaw
+		bcc.s	.on_right				; branch if spikeball is on right side of seesaw
 		addq.w	#2,d0
 
-	@on_right:
+	.on_right:
 		add.w	d0,d0
 		move.w	ost_bspike_y_start(a0),d1
 		add.w	(a2,d0.w),d1				; d1 = expected y pos for spikeball
 		cmp.w	ost_y_pos(a0),d1
-		bgt.s	@exit					; branch if spikeball is above d1
+		bgt.s	.exit					; branch if spikeball is above d1
 		movea.l	ost_bspike_seesaw(a0),a1		; get address of OST of seesaw
 		moveq	#2,d1
 		btst	#status_xflip_bit,ost_status(a0)
-		beq.s	@no_xflip
+		beq.s	.no_xflip
 		moveq	#0,d1
 
-	@no_xflip:
+	.no_xflip:
 		move.w	#$F0,ost_subtype(a0)
 		move.b	#10,ost_anim_time_low(a0)			; set frame duration to 10 frames
 		move.b	ost_anim_time_low(a0),ost_anim_time(a0)
 		bra.w	BSpike_Update
 ; ===========================================================================
 
-@exit:
+.exit:
 		rts	
 ; ===========================================================================
 
@@ -99,49 +99,49 @@ BSpike_Bounce:	; Routine 4
 		moveq	#0,d0
 		move.b	ost_bspike_state(a0),d0
 		sub.b	ost_seesaw_state(a1),d0
-		beq.s	@no_change				; branch if seesaw and spikeball have same state
-		bcc.s	@on_left				; branch if spikeball lands on left side
+		beq.s	.no_change				; branch if seesaw and spikeball have same state
+		bcc.s	.on_left				; branch if spikeball lands on left side
 		neg.b	d0					; make d0 +ve
 
-	@on_left:
+	.on_left:
 		move.w	#-$818,d1
 		move.w	#-$114,d2
 		cmpi.b	#1,d0					; was seesaw flat?
-		beq.s	@weaker					; if yes, branch
+		beq.s	.weaker					; if yes, branch
 		move.w	#-$960,d1
 		move.w	#-$F4,d2
 		cmpi.w	#$9C0,ost_seesaw_impact(a1)
-		blt.s	@weaker					; branch if Sonic landed on seesaw below given speed
+		blt.s	.weaker					; branch if Sonic landed on seesaw below given speed
 		move.w	#-$A20,d1
 		move.w	#-$80,d2
 
-	@weaker:
+	.weaker:
 		move.w	d1,ost_y_vel(a0)			; set bounce speed for spikeball
 		move.w	d2,ost_x_vel(a0)
 		move.w	ost_x_pos(a0),d0
 		sub.w	ost_bspike_x_start(a0),d0
-		bcc.s	@on_right				; branch if spikeball was on right side
+		bcc.s	.on_right				; branch if spikeball was on right side
 		neg.w	ost_x_vel(a0)				; move in correct direction
 
-	@on_right:
+	.on_right:
 		move.b	#id_frame_seesaw_silver,ost_frame(a0)
 		move.w	#$20,ost_subtype(a0)			; set timer
 		addq.b	#2,ost_routine(a0)			; goto BSpike_HitBoss next
 		bra.w	BSpike_HitBoss
 ; ===========================================================================
 
-@no_change:
+.no_change:
 		lea	(BSpike_YPos).l,a2
 		moveq	#0,d0
 		move.b	ost_frame(a1),d0			; get seesaw frame
 		move.w	#$28,d2					; dist from seesaw centre to edge
 		move.w	ost_x_pos(a0),d1
 		sub.w	ost_bspike_x_start(a0),d1
-		bcc.s	@on_right2				; branch if spikeball is on right side
+		bcc.s	.on_right2				; branch if spikeball is on right side
 		neg.w	d2
 		addq.w	#2,d0
 
-	@on_right2:
+	.on_right2:
 		add.w	d0,d0
 		move.w	ost_bspike_y_start(a0),d1
 		add.w	(a2,d0.w),d1				; add relative y pos to initial y pos
@@ -159,21 +159,21 @@ BSpike_Bounce:	; Routine 4
 
 BSpike_Animate:
 		cmpi.w	#$78,ost_subtype(a0)			; subtype decrements like a timer
-		bne.s	@not_fast				; branch if not at specified value
+		bne.s	.not_fast				; branch if not at specified value
 		move.b	#5,ost_anim_time_low(a0)			; use faster animation speed
 
-	@not_fast:
+	.not_fast:
 		cmpi.w	#$3C,ost_subtype(a0)
-		bne.s	@not_faster
+		bne.s	.not_faster
 		move.b	#2,ost_anim_time_low(a0)			; use fastest animation speed
 
-	@not_faster:
+	.not_faster:
 		subq.b	#1,ost_anim_time(a0)			; decrement animation timer
-		bgt.s	@wait					; branch if time remains
+		bgt.s	.wait					; branch if time remains
 		bchg	#0,ost_frame(a0)			; change frame
 		move.b	ost_anim_time_low(a0),ost_anim_time(a0)
 
-	@wait:
+	.wait:
 		rts	
 ; ===========================================================================
 
@@ -183,16 +183,16 @@ BSpike_HitBoss:	; Routine 6
 		moveq	#sizeof_ost,d1
 		moveq	#$3E,d2					; check first $40 OST slots
 
-	@loop:
+	.loop:
 		cmp.b	(a1),d0					; is object the boss?
-		beq.s	@boss_found				; if yes, branch
+		beq.s	.boss_found				; if yes, branch
 		adda.w	d1,a1					; next OST slot
-		dbf	d2,@loop				; repeat for all OST slots
+		dbf	d2,.loop				; repeat for all OST slots
 
-		bra.s	@boss_missed
+		bra.s	.boss_missed
 ; ===========================================================================
 
-@boss_found:
+.boss_found:
 		move.w	ost_x_pos(a1),d0			; position of boss
 		move.w	ost_y_pos(a1),d1
 		move.w	ost_x_pos(a0),d2			; position of spikeball
@@ -206,7 +206,7 @@ BSpike_HitBoss:	; Routine 6
 		ext.w	d4
 		add.w	d4,d2
 		cmp.w	d0,d2
-		bcs.s	@boss_missed
+		bcs.s	.boss_missed
 		move.b	(a2)+,d4
 		ext.w	d4
 		add.w	d4,d0
@@ -214,7 +214,7 @@ BSpike_HitBoss:	; Routine 6
 		ext.w	d4
 		add.w	d4,d2
 		cmp.w	d2,d0
-		bcs.s	@boss_missed
+		bcs.s	.boss_missed
 		move.b	(a2)+,d4
 		ext.w	d4
 		add.w	d4,d1
@@ -222,7 +222,7 @@ BSpike_HitBoss:	; Routine 6
 		ext.w	d4
 		add.w	d4,d3
 		cmp.w	d1,d3
-		bcs.s	@boss_missed
+		bcs.s	.boss_missed
 		move.b	(a2)+,d4
 		ext.w	d4
 		add.w	d4,d1
@@ -230,32 +230,32 @@ BSpike_HitBoss:	; Routine 6
 		ext.w	d4
 		add.w	d4,d3
 		cmp.w	d3,d1
-		bcs.s	@boss_missed
+		bcs.s	.boss_missed
 
 		addq.b	#2,ost_routine(a0)			; goto BSpike_Explode next
 		clr.w	ost_subtype(a0)
 		clr.b	ost_col_type(a1)			; make boss harmless
 		subq.b	#1,ost_col_property(a1)			; subtract hit point from boss
-		bne.s	@boss_missed				; branch if not 0
+		bne.s	.boss_missed				; branch if not 0
 		bset	#status_broken_bit,ost_status(a1)	; flag boss as beaten
 		clr.w	ost_x_vel(a0)				; stop spikeball moving
 		clr.w	ost_y_vel(a0)
 
-@boss_missed:
+.boss_missed:
 		tst.w	ost_y_vel(a0)				; is spikeball moving upwards?
-		bpl.s	@downwards				; if not, branch
+		bpl.s	.downwards				; if not, branch
 		jsr	(ObjectFall).l				; apply gravity and update position
 		move.w	ost_bspike_y_start(a0),d0
 		subi.w	#$2F,d0
 		cmp.w	ost_y_pos(a0),d0			; is spikeball within 48px of seesaw?
-		bgt.s	@animate				; if yes, branch
+		bgt.s	.animate				; if yes, branch
 		jsr	(ObjectFall).l				; apply gravity and update position
 
-	@animate:
+	.animate:
 		bra.w	BSpike_Animate
 ; ===========================================================================
 
-@downwards:
+.downwards:
 		jsr	(ObjectFall).l				; apply gravity and update position
 		movea.l	ost_bspike_seesaw(a0),a1		; get address of OST of seesaw below
 		lea	(BSpike_YPos).l,a2
@@ -263,31 +263,31 @@ BSpike_HitBoss:	; Routine 6
 		move.b	ost_frame(a1),d0			; get seesaw frame
 		move.w	ost_x_pos(a0),d1
 		sub.w	ost_bspike_x_start(a0),d1
-		bcc.s	@on_right				; branch if spikeball is on right side of seesaw
+		bcc.s	.on_right				; branch if spikeball is on right side of seesaw
 		addq.w	#2,d0
 
-	@on_right:
+	.on_right:
 		add.w	d0,d0
 		move.w	ost_bspike_y_start(a0),d1
 		add.w	(a2,d0.w),d1				; d1 = expected y pos for spikeball
 		cmp.w	ost_y_pos(a0),d1
-		bgt.s	@animate				; branch if spikeball is above d1
+		bgt.s	.animate				; branch if spikeball is above d1
 		movea.l	ost_bspike_seesaw(a0),a1		; get address of OST of seesaw
 		moveq	#2,d1
 		tst.w	ost_x_vel(a0)
-		bmi.s	@moving_left
+		bmi.s	.moving_left
 		moveq	#0,d1
 
-	@moving_left:
+	.moving_left:
 		move.w	#0,ost_subtype(a0)
 
 BSpike_Update:
 		move.b	d1,ost_seesaw_state(a1)			; set new state for seesaw (0 or 2)
 		move.b	d1,ost_bspike_state(a0)
 		cmp.b	ost_frame(a1),d1			; was seesaw in a different state previously?
-		beq.s	@no_change				; if not, branch
+		beq.s	.no_change				; if not, branch
 		bclr	#status_platform_bit,ost_status(a1)
-		beq.s	@no_change				; branch if Sonic wasn't on the seesaw
+		beq.s	.no_change				; branch if Sonic wasn't on the seesaw
 
 		clr.b	ost_routine2(a1)
 		move.b	#id_See_Slope,ost_routine(a1)		; reset seesaw routine
@@ -295,10 +295,10 @@ BSpike_Update:
 		move.w	ost_y_vel(a0),ost_y_vel(a2)
 		neg.w	ost_y_vel(a2)				; launch Sonic into air
 		cmpi.b	#id_frame_seesaw_flat,ost_frame(a1)	; was seesaw flat?
-		bne.s	@not_flat				; if not, branch
+		bne.s	.not_flat				; if not, branch
 		asr	ost_y_vel(a2)				; reduce speed
 
-	@not_flat:
+	.not_flat:
 		bset	#status_air_bit,ost_status(a2)
 		bclr	#status_platform_bit,ost_status(a2)
 		clr.b	ost_sonic_jump(a2)
@@ -309,7 +309,7 @@ BSpike_Update:
 		move.b	#id_Sonic_Control,ost_routine(a2)
 		play.w	1, jsr, sfx_Spring			; play "spring" sound
 
-	@no_change:
+	.no_change:
 		clr.w	ost_x_vel(a0)
 		clr.w	ost_y_vel(a0)
 		addq.b	#2,ost_routine(a0)			; goto BSpike_Bounce next
@@ -335,18 +335,18 @@ BSpike_Explode:	; Routine 8
 		move.b	#id_ExplosionBomb,(a0)			; turn object into explosion
 		clr.b	ost_routine(a0)
 		cmpi.w	#$20,ost_subtype(a0)			; is shrapnel flag set?
-		beq.s	@make_frags				; if yes, branch
+		beq.s	.make_frags				; if yes, branch
 		rts	
 ; ===========================================================================
 
-@make_frags:
+.make_frags:
 		move.w	ost_bspike_y_start(a0),ost_y_pos(a0)
 		moveq	#4-1,d1					; number of fragments
 		lea	BSpike_FragSpeed(pc),a2
 
-	@loop:
+	.loop:
 		jsr	(FindFreeObj).l				; find free OST slot
-		bne.s	@fail					; branch if not found
+		bne.s	.fail					; branch if not found
 		move.b	#id_BossSpikeball,(a1)			; load shrapnel object
 		move.b	#id_BSpike_MoveFrag,ost_routine(a1)	; goto BSpike_MoveFrag next
 		move.l	#Map_BSBall,ost_mappings(a1)
@@ -361,8 +361,8 @@ BSpike_Explode:	; Routine 8
 		bset	#render_onscreen_bit,ost_render(a1)
 		move.b	#$C,ost_displaywidth(a1)
 
-	@fail:
-		dbf	d1,@loop				; repeat sequence 3 more times
+	.fail:
+		dbf	d1,.loop				; repeat sequence 3 more times
 
 		rts	
 ; ===========================================================================

@@ -59,16 +59,16 @@ GFire_Spread:	; Routine 2
 		add.w	ost_burn_sink(a0),d0			; add difference when platform sinks
 		move.w	d0,ost_y_pos(a0)			; update y position
 		cmpi.w	#$84,d1
-		bcc.s	@no_fire				; branch if beyond right edge of platform
+		bcc.s	.no_fire				; branch if beyond right edge of platform
 		addi.l	#$10000,ost_x_pos(a0)			; move 1px right
 		cmpi.w	#$80,d1
-		bcc.s	@no_fire
+		bcc.s	.no_fire
 		move.l	ost_x_pos(a0),d0
 		addi.l	#$80000,d0
 		andi.l	#$FFFFF,d0
-		bne.s	@no_fire
+		bne.s	.no_fire
 		bsr.w	FindNextFreeObj				; find free OST slot
-		bne.s	@no_fire				; branch if not found
+		bne.s	.no_fire				; branch if not found
 		move.b	#id_GrassFire,ost_id(a1)		; create another fire
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	d2,ost_burn_y_start(a1)			; initial y pos (ignores platform sinking)
@@ -77,7 +77,7 @@ GFire_Spread:	; Routine 2
 		movea.l	ost_burn_parent(a0),a2
 		bsr.w	LGrass_AddChildToList			; add to list in parent's OST
 
-	@no_fire:
+	.no_fire:
 		bra.s	GFire_Animate
 ; ===========================================================================
 

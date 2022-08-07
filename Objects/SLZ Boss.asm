@@ -39,17 +39,17 @@ BSLZ_Main:
 		lea	BSLZ_ObjData(pc),a2			; get data for routine number, animation & priority
 		movea.l	a0,a1					; replace current object with 1st in list
 		moveq	#3,d1					; 3 additional objects
-		bra.s	@load_boss
+		bra.s	.load_boss
 ; ===========================================================================
 
-@loop:
+.loop:
 		jsr	(FindNextFreeObj).l			; find free OST slot
-		bne.s	@fail					; branch if not found
+		bne.s	.fail					; branch if not found
 		move.b	#id_BossStarLight,ost_id(a1)
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
 		move.w	ost_y_pos(a0),ost_y_pos(a1)
 
-@load_boss:
+.load_boss:
 		bclr	#status_xflip_bit,ost_status(a0)
 		clr.b	ost_routine2(a1)
 		move.b	(a2)+,ost_routine(a1)			; goto BSLZ_ShipMain/BSLZ_FaceMain/BSLZ_FlameMain/BSLZ_TubeMain next
@@ -60,24 +60,24 @@ BSLZ_Main:
 		move.b	#render_rel,ost_render(a1)
 		move.b	#$20,ost_displaywidth(a1)
 		move.l	a0,ost_boss_parent(a1)			; save address of OST of parent
-		dbf	d1,@loop				; repeat sequence 3 more times
+		dbf	d1,.loop				; repeat sequence 3 more times
 
-	@fail:
+	.fail:
 		lea	(v_ost_all+sizeof_ost).w,a1		; start at first OST slot after Sonic
 		lea	ost_boss_seesaw(a0),a2			; where to save seesaw OST addresses
 		moveq	#id_Seesaw,d0
 		moveq	#$3E,d1					; check first $40 OSTs (there are $80 total)
 
-	@find_loop:
+	.find_loop:
 		cmp.b	(a1),d0					; is object a seesaw?
-		bne.s	@notgood				; if not, branch
+		bne.s	.notgood				; if not, branch
 		tst.b	ost_subtype(a1)				; is seesaw empty?
-		beq.s	@notgood				; if not, branch
+		beq.s	.notgood				; if not, branch
 		move.w	a1,(a2)+				; set pointer to seesaw OST
 
-	@notgood:
+	.notgood:
 		adda.w	#sizeof_ost,a1				; next OST slot
-		dbf	d1,@find_loop				; repeat for remaining OST slots
+		dbf	d1,.find_loop				; repeat for remaining OST slots
 
 BSLZ_ShipMain:	; Routine 2
 		moveq	#0,d0
@@ -126,34 +126,34 @@ BSLZ_Update_SkipWobble:
 
 BSLZ_Update_SkipPos:
 		cmpi.b	#id_BSLZ_Explode,ost_routine2(a0)
-		bcc.s	@exit
+		bcc.s	.exit
 		tst.b	ost_status(a0)				; has boss been beaten?
-		bmi.s	@beaten					; if yes, branch
+		bmi.s	.beaten					; if yes, branch
 		tst.b	ost_col_type(a0)			; is ship collision clear?
-		bne.s	@exit					; if not, branch
+		bne.s	.exit					; if not, branch
 		tst.b	ost_boss_flash_num(a0)			; is ship flashing?
-		bne.s	@flash					; if yes, branch
+		bne.s	.flash					; if yes, branch
 		move.b	#$20,ost_boss_flash_num(a0)		; set ship to flash 32 times
 		play.w	1, jsr, sfx_BossHit			; play boss damage sound
 
-	@flash:
+	.flash:
 		lea	(v_pal_dry_line2+2).w,a1		; load 2nd palette, 2nd entry
 		moveq	#0,d0					; move 0 (black) to d0
 		tst.w	(a1)					; is colour white?
-		bne.s	@is_white				; if yes, branch
+		bne.s	.is_white				; if yes, branch
 		move.w	#boss_flash_color,d0			; move $EEE (white) to d0
 
-	@is_white:
+	.is_white:
 		move.w	d0,(a1)					; load colour stored in	d0
 		subq.b	#1,ost_boss_flash_num(a0)		; decrement flash counter
-		bne.s	@exit					; branch if not 0
+		bne.s	.exit					; branch if not 0
 		move.b	#id_col_24x24,ost_col_type(a0)		; enable boss collision again
 
-	@exit:
+	.exit:
 		rts	
 ; ===========================================================================
 
-@beaten:
+.beaten:
 		moveq	#100,d0
 		bsr.w	AddPoints				; give Sonic 1000 points
 		move.b	#6,ost_routine2(a0)
@@ -166,49 +166,49 @@ BSLZ_ShipMove:
 		move.w	ost_boss_parent_x_pos(a0),d0
 		move.w	#$200,ost_x_vel(a0)			; move ship right
 		btst	#status_xflip_bit,ost_status(a0)	; is ship facing left?
-		bne.s	@face_right				; if not, branch
+		bne.s	.face_right				; if not, branch
 		neg.w	ost_x_vel(a0)				; move ship left
 		cmpi.w	#$2008,d0				; has ship reached left side of screen?
-		bgt.s	@find_seesaw				; if not, branch
-		bra.s	@chg_dir
+		bgt.s	.find_seesaw				; if not, branch
+		bra.s	.chg_dir
 ; ===========================================================================
 
-@face_right:
+.face_right:
 		cmpi.w	#$2138,d0				; has ship reached right side of screen?
-		blt.s	@find_seesaw				; if not, branch
+		blt.s	.find_seesaw				; if not, branch
 
-@chg_dir:
+.chg_dir:
 		bchg	#status_xflip_bit,ost_status(a0)	; change direction
 
-@find_seesaw:
+.find_seesaw:
 		move.w	ost_x_pos(a0),d0
 		moveq	#-1,d1
 		moveq	#3-1,d2					; number of seesaws
 		lea	ost_boss_seesaw(a0),a2			; get OST addresses for the 3 seesaws
 		moveq	#$28,d4					; dist from centre to right side of seesaw
 		tst.w	ost_x_vel(a0)
-		bpl.s	@moving_right				; branch if ship is moving right
+		bpl.s	.moving_right				; branch if ship is moving right
 		neg.w	d4					; dist from centre to left side of seesaw
 
-	@moving_right:
-	@loop:
+	.moving_right:
+	.loop:
 		move.w	(a2)+,d1
 		movea.l	d1,a3					; a3 = address of seesaw OST
 		btst	#status_platform_bit,ost_status(a3)	; is Sonic on the seesaw?
-		bne.s	@sonic_on_seesaw			; if yes, branch
+		bne.s	.sonic_on_seesaw			; if yes, branch
 		move.w	ost_x_pos(a3),d3
 		add.w	d4,d3					; d3 = x position of left/right side of seesaw
 		sub.w	d0,d3
-		beq.s	@seesaw_found				; branch if ship is directly over side of seesaw
+		beq.s	.seesaw_found				; branch if ship is directly over side of seesaw
 
-	@sonic_on_seesaw:
-		dbf	d2,@loop
+	.sonic_on_seesaw:
+		dbf	d2,.loop
 
 		move.b	d2,ost_subtype(a0)			; set subtype to -1 if no seesaw is found
 		bra.w	BSLZ_Update				; update position, check for hit
 ; ===========================================================================
 
-@seesaw_found:
+.seesaw_found:
 		move.b	d2,ost_subtype(a0)			; number of seesaw the ship is above (0/1/2)
 		addq.b	#2,ost_routine2(a0)			; goto BSLZ_MakeBall next
 		move.b	#$28,ost_boss_wait_time(a0)		; set timer to 40 frames
@@ -217,11 +217,11 @@ BSLZ_ShipMove:
 
 BSLZ_MakeBall:
 		cmpi.b	#$28,ost_boss_wait_time(a0)		; has timer started counting down yet?
-		bne.s	@wait_next				; if yes, branch
+		bne.s	.wait_next				; if yes, branch
 		moveq	#-1,d0
 		move.b	ost_subtype(a0),d0			; get number of seesaw the ship is above (0/1/2)
 		ext.w	d0
-		bmi.s	@exit					; branch if no seesaw found (-1)
+		bmi.s	.exit					; branch if no seesaw found (-1)
 		subq.w	#2,d0
 		neg.w	d0					; switch between 0 and 2
 		add.w	d0,d0
@@ -231,17 +231,17 @@ BSLZ_MakeBall:
 		lea	(v_ost_all+sizeof_ost).w,a1		; first OST slot excluding Sonic
 		moveq	#$3E,d1					; check first $40 OSTs (there are $80 total)
 
-	@loop:
+	.loop:
 		cmp.l	ost_bspike_seesaw(a1),d0		; does seesaw already have a spikeball?
-		beq.s	@exit					; if yes, branch
+		beq.s	.exit					; if yes, branch
 		adda.w	#sizeof_ost,a1				; next OST slot
-		dbf	d1,@loop				; repeat for all OST slots
+		dbf	d1,.loop				; repeat for all OST slots
 
 		move.l	a0,-(sp)				; save current OST address to stack
 		lea	(a2),a0					; pretend the seesaw is current object
 		jsr	(FindNextFreeObj).l			; find free OST slot after this one
 		movea.l	(sp)+,a0				; restore current OST
-		bne.s	@exit					; branch if free OST slot not found
+		bne.s	.exit					; branch if free OST slot not found
 
 		move.b	#id_BossSpikeball,(a1)			; load spiked ball object
 		move.w	ost_x_pos(a0),ost_x_pos(a1)
@@ -250,24 +250,24 @@ BSLZ_MakeBall:
 		move.b	ost_status(a2),ost_status(a1)
 		move.l	a2,ost_bspike_seesaw(a1)		; save seesaw OST address to spikeball
 
-	@wait_next:
+	.wait_next:
 		subq.b	#1,ost_boss_wait_time(a0)		; decrement timer
-		beq.s	@exit					; branch if 0
+		beq.s	.exit					; branch if 0
 		bra.w	BSLZ_Update_SkipPos			; check for hit
 ; ===========================================================================
 
-@exit:
+.exit:
 		subq.b	#2,ost_routine2(a0)			; goto BSLZ_ShipMove next
 		bra.w	BSLZ_Update				; update position, check for hit
 ; ===========================================================================
 
 BSLZ_Explode:
 		subq.b	#1,ost_boss_wait_time(a0)		; decrement timer
-		bmi.s	@stop_exploding				; branch if below 0
+		bmi.s	.stop_exploding				; branch if below 0
 		bra.w	BossExplode				; load explosion object
 ; ===========================================================================
 
-@stop_exploding:
+.stop_exploding:
 		addq.b	#2,ost_routine2(a0)			; goto BSLZ_Recover next
 		clr.w	ost_y_vel(a0)				; stop moving
 		bset	#status_xflip_bit,ost_status(a0)	; ship face right
@@ -275,46 +275,46 @@ BSLZ_Explode:
 		clr.w	ost_x_vel(a0)
 		move.b	#-$18,ost_boss_wait_time(a0)		; set timer (counts up)
 		tst.b	(v_boss_status).w
-		bne.s	@exit
+		bne.s	.exit
 		move.b	#1,(v_boss_status).w			; set boss beaten flag
 
-	@exit:
+	.exit:
 		bra.w	BSLZ_Update_SkipPos
 ; ===========================================================================
 
 BSLZ_Recover:
 		addq.b	#1,ost_boss_wait_time(a0)		; increment timer
-		beq.s	@stop_falling				; branch if 0
-		bpl.s	@ship_recovers				; branch if 1 or more
+		beq.s	.stop_falling				; branch if 0
+		bpl.s	.ship_recovers				; branch if 1 or more
 		addi.w	#$18,ost_y_vel(a0)			; apply gravity (falls)
-		bra.s	@update
+		bra.s	.update
 ; ===========================================================================
 
-@stop_falling:
+.stop_falling:
 		clr.w	ost_y_vel(a0)				; stop falling
-		bra.s	@update
+		bra.s	.update
 ; ===========================================================================
 
-@ship_recovers:
+.ship_recovers:
 		cmpi.b	#$20,ost_boss_wait_time(a0)		; have 32 frames passed since ship stopped falling?
-		bcs.s	@ship_rises				; if not, branch
-		beq.s	@ship_rising				; if exactly 32, branch
+		bcs.s	.ship_rises				; if not, branch
+		beq.s	.ship_rising				; if exactly 32, branch
 		cmpi.b	#$2A,ost_boss_wait_time(a0)		; have 42 frames passed since ship stopped rising?
-		bcs.s	@update					; if not, branch
+		bcs.s	.update					; if not, branch
 		addq.b	#2,ost_routine2(a0)			; goto BSLZ_Escape next
-		bra.s	@update
+		bra.s	.update
 ; ===========================================================================
 
-@ship_rises:
+.ship_rises:
 		subq.w	#8,ost_y_vel(a0)			; move ship upwards
-		bra.s	@update
+		bra.s	.update
 ; ===========================================================================
 
-@ship_rising:
+.ship_rising:
 		clr.w	ost_y_vel(a0)
 		play.w	0, jsr, mus_SLZ				; play SLZ music
 
-@update:
+.update:
 		bra.w	BSLZ_Update_SkipWobble			; update position
 ; ===========================================================================
 
@@ -322,16 +322,16 @@ BSLZ_Escape:
 		move.w	#$400,ost_x_vel(a0)			; move ship right
 		move.w	#-$40,ost_y_vel(a0)			; move ship upwards
 		cmpi.w	#$2160,(v_boundary_right).w		; check for new boundary
-		bcc.s	@chkdel
+		bcc.s	.chkdel
 		addq.w	#2,(v_boundary_right).w			; expand right edge of level boundary
-		bra.s	@update
+		bra.s	.update
 ; ===========================================================================
 
-@chkdel:
+.chkdel:
 		tst.b	ost_render(a0)				; is ship on-screen?
 		bpl.w	BSLZ_Delete				; if not, branch
 
-@update:
+.update:
 		bsr.w	BossMove				; update parent position
 		bra.w	BSLZ_Update				; update position
 ; ===========================================================================
@@ -342,32 +342,32 @@ BSLZ_FaceMain:	; Routine 4
 		movea.l	ost_boss_parent(a0),a1			; get address of OST of parent object
 		move.b	ost_routine2(a1),d0
 		cmpi.b	#id_BSLZ_Explode,d0
-		bmi.s	@chk_hit
+		bmi.s	.chk_hit
 		moveq	#id_ani_boss_defeat,d1
-		bra.s	@update
+		bra.s	.update
 ; ===========================================================================
 
-@chk_hit:
+.chk_hit:
 		tst.b	ost_col_type(a1)			; is boss collision on?
-		bne.s	@chk_sonic_hurt				; if yes, branch
+		bne.s	.chk_sonic_hurt				; if yes, branch
 		moveq	#id_ani_boss_hit,d1			; use hit animation
-		bra.s	@update
+		bra.s	.update
 ; ===========================================================================
 
-@chk_sonic_hurt:
+.chk_sonic_hurt:
 		cmpi.b	#id_Sonic_Hurt,(v_ost_player+ost_routine).w ; is Sonic hurt or dead?
-		bcs.s	@update					; if not, branch
+		bcs.s	.update					; if not, branch
 		moveq	#id_ani_boss_laugh,d1
 
-@update:
+.update:
 		move.b	d1,ost_anim(a0)				; set animation
 		cmpi.b	#id_BSLZ_Escape,d0			; is ship on BSLZ_Escape?
-		bne.s	@display				; if not, branch
+		bne.s	.display				; if not, branch
 		move.b	#id_ani_boss_panic,ost_anim(a0)		; use sweating animation
 		tst.b	ost_render(a0)				; is object on-screen?
 		bpl.w	BSLZ_Delete				; if not, branch
 
-	@display:
+	.display:
 		bra.s	BSLZ_FaceFlame_Display
 ; ===========================================================================
 
@@ -375,14 +375,14 @@ BSLZ_FlameMain:; Routine 6
 		move.b	#id_ani_boss_flame1,ost_anim(a0)
 		movea.l	ost_boss_parent(a0),a1			; get address of OST of parent object
 		cmpi.b	#id_BSLZ_Escape,ost_routine2(a1)	; is ship on BSLZ_Escape?
-		bne.s	@chk_flame				; if not, branch
+		bne.s	.chk_flame				; if not, branch
 		tst.b	ost_render(a0)				; is object on-screen?
 		bpl.w	BSLZ_Delete				; if not, branch
 		move.b	#id_ani_boss_bigflame,ost_anim(a0)	; use big flame animation
 		bra.s	BSLZ_FaceFlame_Display
 ; ===========================================================================
 
-@chk_flame:
+.chk_flame:
 		cmpi.b	#id_BSLZ_Recover,ost_routine2(a1)
 		bgt.s	BSLZ_FaceFlame_Display			; branch if on BSLZ_Escape
 		cmpi.b	#id_BSLZ_MakeBall,ost_routine2(a1)
@@ -408,11 +408,11 @@ BSLZ_Tube_Display:
 BSLZ_TubeMain:	; Routine 8
 		movea.l	ost_boss_parent(a0),a1			; get address of OST of parent object
 		cmpi.b	#id_BSLZ_Escape,ost_routine2(a1)	; is ship on BSLZ_Escape?
-		bne.s	@display				; if not, branch
+		bne.s	.display				; if not, branch
 		tst.b	ost_render(a0)				; is object on-screen?
 		bpl.w	BSLZ_Delete				; if not, branch
 
-	@display:
+	.display:
 		move.l	#Map_BossItems,ost_mappings(a0)
 		move.w	#tile_Nem_Weapons+tile_pal2,ost_tile(a0)
 		move.b	#id_frame_boss_widepipe,ost_frame(a0)

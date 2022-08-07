@@ -33,7 +33,7 @@ SSRC_Main:	; Routine 0
 		subq.b	#1,d1					; subtract 1 for number of loops
 		bcs.w	DeleteObject				; if you have 0	emeralds, branch
 
-	@loop:
+	.loop:
 		move.b	#id_SSRChaos,ost_id(a1)
 		move.w	(a2)+,ost_x_pos(a1)			; set x position from list
 		move.w	#$F0,ost_y_screen(a1)			; set y position
@@ -47,14 +47,14 @@ SSRC_Main:	; Routine 0
 		move.w	#tile_Nem_ResultEm+tile_hi,ost_tile(a1)
 		move.b	#render_abs,ost_render(a1)
 		lea	sizeof_ost(a1),a1			; next object
-		dbf	d1,@loop				; repeat for rest of emeralds
+		dbf	d1,.loop				; repeat for rest of emeralds
 
 SSRC_Flash:	; Routine 2
 		move.b	ost_frame(a0),d0			; get previous frame
 		move.b	#id_frame_ssrc_blank,ost_frame(a0)	; use blank frame (6)
 		cmpi.b	#id_frame_ssrc_blank,d0			; was previous frame blank?
-		bne.s	@keep_frame				; if not, branch
+		bne.s	.keep_frame				; if not, branch
 		move.b	ost_anim(a0),ost_frame(a0)		; use original frame stored in ost_anim
 
-	@keep_frame:
+	.keep_frame:
 		bra.w	DisplaySprite

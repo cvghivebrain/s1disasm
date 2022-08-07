@@ -34,36 +34,36 @@ Surf_Action:	; Routine 2
 		andi.w	#$FFE0,d1				; round down to $20
 		add.w	ost_surf_x_start(a0),d1			; add initial position
 		btst	#0,(v_frame_counter_low).w
-		beq.s	@even					; branch on even frames
+		beq.s	.even					; branch on even frames
 		addi.w	#$20,d1					; add $20 every other frame to create flicker
 
-	@even:
+	.even:
 		move.w	d1,ost_x_pos(a0)			; match x position to screen position
 		move.w	(v_water_height_actual).w,d1
 		move.w	d1,ost_y_pos(a0)			; match y position to water height
 		tst.b	ost_surf_freeze(a0)
-		bne.s	@stopped
+		bne.s	.stopped
 		btst	#bitStart,(v_joypad_press_actual).w	; is Start button pressed?
-		beq.s	@animate				; if not, branch
+		beq.s	.animate				; if not, branch
 		addq.b	#id_frame_surf_paused1,ost_frame(a0)	; use different frames
 		move.b	#1,ost_surf_freeze(a0)			; stop animation
-		bra.s	@display
+		bra.s	.display
 ; ===========================================================================
 
-@stopped:
+.stopped:
 		tst.w	(f_pause).w				; is the game paused?
-		bne.s	@display				; if yes, branch
+		bne.s	.display				; if yes, branch
 		move.b	#0,ost_surf_freeze(a0)			; resume animation
 		subq.b	#id_frame_surf_paused1,ost_frame(a0)	; use normal frames
 
-@animate:
+.animate:
 		subq.b	#1,ost_anim_time(a0)			; decrement animation timer
-		bpl.s	@display				; branch if time remains
+		bpl.s	.display				; branch if time remains
 		move.b	#7,ost_anim_time(a0)			; reset timer
 		addq.b	#1,ost_frame(a0)			; next frame
 		cmpi.b	#id_frame_surf_normal3+1,ost_frame(a0)
-		bcs.s	@display
+		bcs.s	.display
 		move.b	#0,ost_frame(a0)			; reset to frame 0 when animation finishes
 
-@display:
+.display:
 		bra.w	DisplaySprite

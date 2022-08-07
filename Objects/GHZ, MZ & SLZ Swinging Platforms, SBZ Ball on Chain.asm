@@ -69,7 +69,7 @@ Swing_Main:	; Routine 0
 		move.w	ost_y_pos(a0),ost_swing_y_start(a0)
 		move.w	ost_x_pos(a0),ost_swing_x_start(a0)
 		cmpi.b	#id_SLZ,(v_zone).w			; check if level is SLZ
-		bne.s	@notSLZ
+		bne.s	.notSLZ
 
 		move.l	#Map_Swing_SLZ,ost_mappings(a0)		; SLZ specific code
 		move.w	#tile_Nem_SlzSwing+tile_pal3,ost_tile(a0)
@@ -77,9 +77,9 @@ Swing_Main:	; Routine 0
 		move.b	#$10,ost_height(a0)
 		move.b	#id_col_32x8+id_col_hurt,ost_col_type(a0)
 
-	@notSLZ:
+	.notSLZ:
 		cmpi.b	#id_SBZ,(v_zone).w			; check if level is SBZ
-		bne.s	@length
+		bne.s	.length
 
 		move.l	#Map_BBall,ost_mappings(a0)		; SBZ specific code
 		move.w	#tile_Nem_BigSpike_SBZ,ost_tile(a0)
@@ -88,7 +88,7 @@ Swing_Main:	; Routine 0
 		move.b	#id_col_16x16+id_col_hurt,ost_col_type(a0)
 		move.b	#id_Swing_Action,ost_routine(a0)	; goto Swing_Action next
 
-@length:
+.length:
 		move.b	ost_id(a0),d4
 		moveq	#0,d1
 		lea	ost_subtype(a0),a2			; (a2) = chain length, followed by child OST indices
@@ -102,13 +102,13 @@ Swing_Main:	; Routine 0
 		move.b	d3,ost_swing_radius(a0)			; relative position of parent (the platform itself)
 		subq.b	#8,d3
 		tst.b	ost_frame(a0)
-		beq.s	@makechain
+		beq.s	.makechain
 		addq.b	#8,d3
 		subq.w	#1,d1
 
-@makechain:
+.makechain:
 		bsr.w	FindFreeObj				; find free OST slot
-		bne.s	@fail					; branch if not found
+		bne.s	.fail					; branch if not found
 		addq.b	#1,ost_subtype(a0)
 		move.w	a1,d5
 		subi.w	#v_ost_all&$FFFF,d5
@@ -126,15 +126,15 @@ Swing_Main:	; Routine 0
 		move.b	#id_frame_swing_chain,ost_frame(a1)	; use chain sprite
 		move.b	d3,ost_swing_radius(a1)			; radius is smaller for chainlinks closer to top
 		subi.b	#$10,d3					; each one is 16px higher
-		bcc.s	@notanchor				; branch if not the highest link
+		bcc.s	.notanchor				; branch if not the highest link
 		move.b	#id_frame_swing_anchor,ost_frame(a1)	; use anchor sprite
 		move.b	#3,ost_priority(a1)
 		bset	#tile_pal34_bit,ost_tile(a1)
 
-	@notanchor:
-		dbf	d1,@makechain				; repeat d1 times (chain length)
+	.notanchor:
+		dbf	d1,.makechain				; repeat d1 times (chain length)
 
-	@fail:
+	.fail:
 		move.w	a0,d5					; get parent OST address
 		subi.w	#v_ost_all&$FFFF,d5
 		lsr.w	#6,d5
@@ -144,7 +144,7 @@ Swing_Main:	; Routine 0
 		move.w	#-$200,ost_swing_unused(a0)
 		move.w	(sp)+,d1				; retrieve chain length from stack
 		btst	#4,d1					; is object type $1x ?
-		beq.s	@not1x					; if not, branch
+		beq.s	.not1x					; if not, branch
 
 		move.l	#Map_GBall,ost_mappings(a0)		; use GHZ ball mappings
 		move.w	#tile_Nem_Ball+tile_pal3,ost_tile(a0)
@@ -152,7 +152,7 @@ Swing_Main:	; Routine 0
 		move.b	#2,ost_priority(a0)
 		move.b	#id_col_20x20+id_col_hurt,ost_col_type(a0) ; make object hurt when touched
 
-	@not1x:
+	.not1x:
 		cmpi.b	#id_SBZ,(v_zone).w			; is zone SBZ?
 		beq.s	Swing_Action				; if yes, branch
 
@@ -202,11 +202,11 @@ Swing_Move:
 		move.b	(v_oscillating_0_to_80_fast).w,d0
 		move.w	#$80,d1
 		btst	#status_xflip_bit,ost_status(a0)
-		beq.s	@no_xflip
+		beq.s	.no_xflip
 		neg.w	d0					; invert if xflipped
 		add.w	d1,d0					; d0 = oscillating value, same for all platforms
 
-	@no_xflip:
+	.no_xflip:
 		bra.s	Swing_MoveAll
 
 		endm
@@ -233,7 +233,7 @@ Swing_MoveAll:
 		moveq	#0,d6
 		move.b	(a2)+,d6				; get chain length
 
-	@loop:
+	.loop:
 		moveq	#0,d4
 		move.b	(a2)+,d4				; get child OST index
 		lsl.w	#6,d4
@@ -250,7 +250,7 @@ Swing_MoveAll:
 		add.w	d3,d5
 		move.w	d4,ost_y_pos(a1)			; update position
 		move.w	d5,ost_x_pos(a1)
-		dbf	d6,@loop				; repeat for all chainlinks and platform
+		dbf	d6,.loop				; repeat for all chainlinks and platform
 		rts
 
 ; ===========================================================================
@@ -265,14 +265,14 @@ Swing_DelAll:
 		lea	ost_subtype(a0),a2
 		move.b	(a2)+,d2
 
-	@loop:
+	.loop:
 		moveq	#0,d0
 		move.b	(a2)+,d0
 		lsl.w	#6,d0
 		addi.l	#v_ost_all&$FFFFFF,d0
 		movea.l	d0,a1
 		bsr.w	DeleteChild
-		dbf	d2,@loop				; repeat for length of chain
+		dbf	d2,.loop				; repeat for length of chain
 		rts	
 ; ===========================================================================
 

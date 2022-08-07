@@ -8,7 +8,7 @@
 
 AnimateLevelGfx:
 		tst.w	(f_pause).w				; is the game paused?
-		bne.s	@ispaused				; if yes, branch
+		bne.s	.ispaused				; if yes, branch
 		lea	(vdp_data_port).l,a6
 		bsr.w	LoadArt_GiantRing			; load giant ring gfx if needed
 		moveq	#0,d0
@@ -17,7 +17,7 @@ AnimateLevelGfx:
 		move.w	AniArt_Index(pc,d0.w),d0
 		jmp	AniArt_Index(pc,d0.w)
 
-	@ispaused:
+	.ispaused:
 		rts	
 
 ; ===========================================================================
@@ -49,10 +49,10 @@ tilecount:	= 8						; number of tiles per frame
 		move.b	(v_levelani_0_frame).w,d0
 		addq.b	#1,(v_levelani_0_frame).w		; increment frame counter
 		andi.w	#1,d0					; there are only 2 frames
-		beq.s	@isframe0				; branch if frame 0
+		beq.s	.isframe0				; branch if frame 0
 		lea	tilecount*sizeof_cell(a1),a1		; use graphics for frame 1
 
-	@isframe0:
+	.isframe0:
 		locVRAM	$6F00					; VRAM address
 		move.w	#tilecount-1,d1				; number of 8x8	tiles
 		bra.w	LoadTiles
@@ -70,10 +70,10 @@ tilecount:	= 16						; number of tiles per frame
 		move.b	(v_levelani_1_frame).w,d0
 		addq.b	#1,(v_levelani_1_frame).w
 		andi.w	#1,d0					; there are only 2 frames
-		beq.s	@isframe0
+		beq.s	.isframe0
 		lea	tilecount*sizeof_cell(a1),a1
 
-	@isframe0:
+	.isframe0:
 		locVRAM	$6B80
 		move.w	#tilecount-1,d1
 		bra.w	LoadTiles
@@ -84,18 +84,18 @@ AniArt_GHZ_Smallflower:
 tilecount:	= 12						; number of tiles per frame
 
 		subq.b	#1,(v_levelani_2_time).w		; decrement timer
-		bpl.s	@end					; branch if not -1
+		bpl.s	.end					; branch if not -1
 
 		move.b	#7,(v_levelani_2_time).w
 		move.b	(v_levelani_2_frame).w,d0
 		addq.b	#1,(v_levelani_2_frame).w		; increment frame counter
 		andi.w	#3,d0					; there are 4 frames
-		move.b	@sequence(pc,d0.w),d0			; get actual frame number from list
+		move.b	.sequence(pc,d0.w),d0			; get actual frame number from list
 		btst	#0,d0					; is frame 0 or 2? (actual frame, not frame counter)
-		bne.s	@isframe1				; if not, branch
+		bne.s	.isframe1				; if not, branch
 		move.b	#$7F,(v_levelani_2_time).w		; set longer duration for frames 0 and 2
 
-	@isframe1:
+	.isframe1:
 		lsl.w	#7,d0					; multiply frame num by $80
 		move.w	d0,d1
 		add.w	d0,d0
@@ -106,10 +106,10 @@ tilecount:	= 12						; number of tiles per frame
 		move.w	#tilecount-1,d1
 		bsr.w	LoadTiles
 
-	@end:
+	.end:
 		rts	
 
-@sequence:	dc.b 0,	1, 2, 1
+.sequence:	dc.b 0,	1, 2, 1
 
 ; ---------------------------------------------------------------------------
 ; Animated pattern routine - Marble
@@ -130,10 +130,10 @@ tilecount:	= 8						; number of tiles per frame
 		move.b	(v_levelani_0_frame).w,d0
 		addq.b	#1,d0					; increment frame counter
 		cmpi.b	#3,d0					; there are 3 frames
-		bne.s	@frame01or2				; branch if frame 0, 1 or 2
+		bne.s	.frame01or2				; branch if frame 0, 1 or 2
 		moveq	#0,d0					; wrap to 0 if 3
 
-	@frame01or2:
+	.frame01or2:
 		move.b	d0,(v_levelani_0_frame).w
 		mulu.w	#tilecount*sizeof_cell,d0
 		adda.w	d0,a1					; jump to appropriate tile
@@ -161,7 +161,7 @@ tilecount:	= 4						; 4 per column, 16 total
 		move.b	(v_oscillating_0_to_40).w,d3		; get oscillating value
 		move.w	#4-1,d2					; number of columns of tiles
 
-	@loop:
+	.loop:
 		move.w	d3,d0
 		add.w	d0,d0
 		andi.w	#$1E,d0					; d0 = low nybble of oscillating value * 2
@@ -172,7 +172,7 @@ tilecount:	= 4						; 4 per column, 16 total
 		move.w	#((tilecount*sizeof_cell)/4)-1,d1	; $1F
 		jsr	(a3)					; copy gfx to VRAM
 		addq.w	#4,d3					; increment initial oscillating value
-		dbf	d2,@loop				; repeat 3 times
+		dbf	d2,.loop				; repeat 3 times
 		rts	
 ; ===========================================================================
 
@@ -181,7 +181,7 @@ AniArt_MZ_Torch:
 tilecount:	= 6						; number of tiles per frame
 
 		subq.b	#1,(v_levelani_2_time).w		; decrement timer
-		bpl.w	@end					; branch if not 0
+		bpl.w	.end					; branch if not 0
 		
 		move.b	#7,(v_levelani_2_time).w		; time to display each frame
 		lea	(Art_MzTorch).l,a1			; torch gfx
@@ -195,7 +195,7 @@ tilecount:	= 6						; number of tiles per frame
 		move.w	#tilecount-1,d1
 		bra.w	LoadTiles
 
-@end:
+.end:
 		rts
 
 ; ---------------------------------------------------------------------------
@@ -207,15 +207,15 @@ AniArt_SBZ:
 tilecount:	= 12						; number of tiles per frame
 
 		tst.b	(v_levelani_2_frame).w
-		beq.s	@smokepuff				; branch if counter hits 0
+		beq.s	.smokepuff				; branch if counter hits 0
 		
 		subq.b	#1,(v_levelani_2_frame).w		; decrement counter
-		bra.s	@chk_smokepuff2
+		bra.s	.chk_smokepuff2
 ; ===========================================================================
 
-@smokepuff:
+.smokepuff:
 		subq.b	#1,(v_levelani_0_time).w		; decrement timer
-		bpl.s	@chk_smokepuff2				; branch if not 0
+		bpl.s	.chk_smokepuff2				; branch if not 0
 		
 		move.b	#7,(v_levelani_0_time).w		; time to display each frame
 		lea	(Art_SbzSmoke).l,a1			; smoke gfx
@@ -223,7 +223,7 @@ tilecount:	= 12						; number of tiles per frame
 		move.b	(v_levelani_0_frame).w,d0
 		addq.b	#1,(v_levelani_0_frame).w		; increment frame counter
 		andi.w	#7,d0
-		beq.s	@untilnextpuff				; branch if frame 0
+		beq.s	.untilnextpuff				; branch if frame 0
 		subq.w	#1,d0
 		mulu.w	#tilecount*sizeof_cell,d0
 		lea	(a1,d0.w),a1
@@ -231,10 +231,10 @@ tilecount:	= 12						; number of tiles per frame
 		bra.w	LoadTiles
 ; ===========================================================================
 
-@untilnextpuff:
+.untilnextpuff:
 		move.b	#180,(v_levelani_2_frame).w		; time between smoke puffs (3 seconds)
 
-@clearsky:
+.clearsky:
 		move.w	#(tilecount/2)-1,d1
 		bsr.w	LoadTiles
 		lea	(Art_SbzSmoke).l,a1
@@ -242,17 +242,17 @@ tilecount:	= 12						; number of tiles per frame
 		bra.w	LoadTiles				; load blank tiles for no smoke puff
 ; ===========================================================================
 
-@chk_smokepuff2:
+.chk_smokepuff2:
 		tst.b	(v_levelani_2_time).w
-		beq.s	@smokepuff2				; branch if counter hits 0
+		beq.s	.smokepuff2				; branch if counter hits 0
 		
 		subq.b	#1,(v_levelani_2_time).w		; decrement counter
-		bra.s	@end
+		bra.s	.end
 ; ===========================================================================
 
-@smokepuff2:
+.smokepuff2:
 		subq.b	#1,(v_levelani_1_time).w		; decrement timer
-		bpl.s	@end					; branch if not 0
+		bpl.s	.end					; branch if not 0
 		
 		move.b	#7,(v_levelani_1_time).w		; time to display each frame
 		lea	(Art_SbzSmoke).l,a1			; smoke gfx
@@ -260,7 +260,7 @@ tilecount:	= 12						; number of tiles per frame
 		move.b	(v_levelani_1_frame).w,d0
 		addq.b	#1,(v_levelani_1_frame).w		; increment frame counter
 		andi.w	#7,d0
-		beq.s	@untilnextpuff2				; branch if frame 0
+		beq.s	.untilnextpuff2				; branch if frame 0
 		subq.w	#1,d0
 		mulu.w	#tilecount*sizeof_cell,d0
 		lea	(a1,d0.w),a1
@@ -268,12 +268,12 @@ tilecount:	= 12						; number of tiles per frame
 		bra.w	LoadTiles
 ; ===========================================================================
 
-@untilnextpuff2:
+.untilnextpuff2:
 		move.b	#120,(v_levelani_2_time).w		; time between smoke puffs (2 seconds)
-		bra.s	@clearsky
+		bra.s	.clearsky
 ; ===========================================================================
 
-@end:
+.end:
 		rts
 
 ; ---------------------------------------------------------------------------
@@ -295,11 +295,11 @@ tilecount:	= 16						; number of tiles per frame
 		move.b	(v_levelani_1_frame).w,d0
 		addq.b	#1,(v_levelani_1_frame).w		; increment frame counter
 		andi.w	#1,d0					; only 2 frames
-		beq.s	@isframe0				; branch if frame 0
+		beq.s	.isframe0				; branch if frame 0
 		lea	tilecount*sizeof_cell(a1),a1
 		lea	tilecount*sizeof_cell(a2),a2
 
-	@isframe0:
+	.isframe0:
 		locVRAM	$6B80
 		move.w	#tilecount-1,d1
 		bsr.w	LoadTiles
@@ -320,7 +320,7 @@ tilecount:	= 12						; number of tiles per frame
 		move.b	(v_levelani_2_frame).w,d0
 		addq.b	#1,(v_levelani_2_frame).w		; increment frame counter
 		andi.w	#7,d0					; max 8 frames
-		move.b	@sequence(pc,d0.w),d0			; get actual frame num from sequence data
+		move.b	.sequence(pc,d0.w),d0			; get actual frame num from sequence data
 		lsl.w	#7,d0					; multiply by $80
 		move.w	d0,d1
 		add.w	d0,d0
@@ -331,7 +331,7 @@ tilecount:	= 12						; number of tiles per frame
 		move.w	#tilecount-1,d1
 		bra.w	LoadTiles
 		
-@sequence:	dc.b 0,	0, 0, 1, 2, 2, 2, 1
+.sequence:	dc.b 0,	0, 0, 1, 2, 2, 2, 1
 
 ; ===========================================================================
 
@@ -364,7 +364,7 @@ AniArt_Ending_Flower4:
 tilecount:	= 16						; number of tiles per frame
 
 		subq.b	#1,(v_levelani_5_time).w		; decrement timer
-		bpl.s	@end					; branch if not 0
+		bpl.s	.end					; branch if not 0
 		
 		move.b	#$B,(v_levelani_5_time).w
 		move.b	(v_levelani_5_frame).w,d0
@@ -379,7 +379,7 @@ tilecount:	= 16						; number of tiles per frame
 		move.w	#tilecount-1,d1
 		bra.w	LoadTiles
 
-@end:
+.end:
 		rts	
 ; ===========================================================================
 
@@ -583,11 +583,11 @@ LoadArt_GiantRing:
 tilecount:	= (sizeof_art_giantring/sizeof_cell)/7		; number of tiles to load per frame over 7 frames (14)
 
 		tst.w	(v_giantring_gfx_offset).w		; $C40 is written here by GiantRing (98 tiles)
-		bne.s	@loadTiles				; branch if not 0
+		bne.s	.loadTiles				; branch if not 0
 		rts	
 ; ===========================================================================
 
-@loadTiles:
+.loadTiles:
 		subi.w	#tilecount*sizeof_cell,(v_giantring_gfx_offset).w ; count down the 14 tiles we're going to load now
 		lea	(Art_BigRing).l,a1			; giant ring gfx
 		moveq	#0,d0

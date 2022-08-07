@@ -14,12 +14,12 @@ DisplaySprite:
 		andi.w	#$380,d0
 		adda.w	d0,a1					; jump to priority section in queue
 		cmpi.w	#sizeof_priority-2,(a1)			; is this section full? ($7E)
-		bcc.s	@full					; if yes, branch
+		bcc.s	.full					; if yes, branch
 		addq.w	#2,(a1)					; increment sprite count
 		adda.w	(a1),a1					; jump to empty position
 		move.w	a0,(a1)					; insert RAM address for OST of object
 
-	@full:
+	.full:
 		rts
 
 ; ---------------------------------------------------------------------------
@@ -38,10 +38,10 @@ DisplaySprite_a1:
 		andi.w	#$380,d0
 		adda.w	d0,a2
 		cmpi.w	#sizeof_priority-2,(a2)
-		bcc.s	@full
+		bcc.s	.full
 		addq.w	#2,(a2)
 		adda.w	(a2),a2
 		move.w	a1,(a2)
 
-	@full:
+	.full:
 		rts

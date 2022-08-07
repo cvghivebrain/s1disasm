@@ -30,11 +30,11 @@ MDis_Main:	; Routine 0
 
 MDis_Animate:	; Routine 2
 		subq.b	#1,ost_anim_time(a0)			; subtract 1 from frame duration
-		bpl.s	@display
+		bpl.s	.display
 		move.b	#9,ost_anim_time(a0)			; set frame duration to 9 frames
 		addq.b	#1,ost_frame(a0)			; next frame
 		cmpi.b	#4,ost_frame(a0)			; has animation completed?
 		beq.w	DeleteObject				; if yes, branch
 
-	@display:
+	.display:
 		bra.w	DisplaySprite

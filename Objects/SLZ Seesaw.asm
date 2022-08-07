@@ -51,10 +51,10 @@ See_Main:	; Routine 0
 		move.b	#$30,ost_displaywidth(a0)
 		move.w	ost_x_pos(a0),ost_seesaw_x_start(a0)
 		tst.b	ost_subtype(a0)				; is object type 0?
-		bne.s	@noball					; if not, branch
+		bne.s	.noball					; if not, branch
 
 		bsr.w	FindNextFreeObj				; find free OST slot
-		bne.s	@noball					; branch if not found
+		bne.s	.noball					; branch if not found
 		move.b	#id_Seesaw,ost_id(a1)			; load spikeball object
 		addq.b	#id_See_Spikeball,ost_routine(a1)	; goto See_Spikeball next
 		move.w	ost_x_pos(a0),ost_x_pos(a1)		; spikeball position is updated later
@@ -62,12 +62,12 @@ See_Main:	; Routine 0
 		move.b	ost_status(a0),ost_status(a1)
 		move.l	a0,ost_seesaw_parent(a1)		; save address of OST of parent (seesaw)
 
-	@noball:
+	.noball:
 		btst	#status_xflip_bit,ost_status(a0)	; is seesaw flipped?
-		beq.s	@noflip					; if not, branch
+		beq.s	.noflip					; if not, branch
 		move.b	#id_frame_seesaw_sloping_rightup,ost_frame(a0) ; use different frame
 
-	@noflip:
+	.noflip:
 		move.b	ost_frame(a0),ost_seesaw_state(a0)	; set state to 0 or 2
 
 See_Slope:	; Routine 2
@@ -75,10 +75,10 @@ See_Slope:	; Routine 2
 		bsr.w	See_ChgFrame				; update frame if needed
 		lea	(See_DataSlope).l,a2			; heightmap for sloped seesaw
 		btst	#0,ost_frame(a0)			; is seesaw flat?
-		beq.s	@notflat				; if not, branch
+		beq.s	.notflat				; if not, branch
 		lea	(See_DataFlat).l,a2			; heightmap for flat seesaw
 
-	@notflat:
+	.notflat:
 		lea	(v_ost_player).w,a1
 		move.w	ost_y_vel(a1),ost_seesaw_impact(a0)	; save speed at which Sonic landed on the seesaw
 		move.w	#$30,d1
@@ -90,10 +90,10 @@ See_StoodOn:	; Routine 4
 		bsr.w	See_ChkSide				; check where Sonic is on seesaw and update frame
 		lea	(See_DataSlope).l,a2
 		btst	#0,ost_frame(a0)			; is seesaw flat?
-		beq.s	@notflat				; if not, branch
+		beq.s	.notflat				; if not, branch
 		lea	(See_DataFlat).l,a2
 
-	@notflat:
+	.notflat:
 		move.w	#$30,d1
 		jsr	(ExitPlatform).l			; goto See_Slope next if Sonic leaves seesaw
 		move.w	#$30,d1
@@ -117,11 +117,11 @@ See_ChkSide:
 		lea	(v_ost_player).w,a1
 		move.w	ost_x_pos(a0),d0
 		sub.w	ost_x_pos(a1),d0			; is Sonic on the left side of the seesaw?
-		bcc.s	@leftside				; if yes, branch
+		bcc.s	.leftside				; if yes, branch
 		neg.w	d0
 		moveq	#id_frame_seesaw_sloping_leftup,d1	; left side is raised (0)
 
-	@leftside:
+	.leftside:
 		cmpi.w	#8,d0					; is Sonic more than 8px from centre?
 		bcc.s	See_ChgFrame				; if yes, branch
 		moveq	#id_frame_seesaw_flat,d1		; seesaw is flat (1)
@@ -129,20 +129,20 @@ See_ChkSide:
 See_ChgFrame:
 		move.b	ost_frame(a0),d0
 		cmp.b	d1,d0					; does frame need to change?
-		beq.s	@noflip					; if not, branch
-		bcc.s	@reduce_frame				; branch if previous frame is > new frame
+		beq.s	.noflip					; if not, branch
+		bcc.s	.reduce_frame				; branch if previous frame is > new frame
 		addq.b	#2,d0
 
-	@reduce_frame:
+	.reduce_frame:
 		subq.b	#1,d0
 		move.b	d0,ost_frame(a0)			; update frame
 		move.b	d1,ost_seesaw_state(a0)
 		bclr	#render_xflip_bit,ost_render(a0)
 		btst	#1,ost_frame(a0)			; is frame 2 or 3?
-		beq.s	@noflip					; if not, branch
+		beq.s	.noflip					; if not, branch
 		bset	#render_xflip_bit,ost_render(a0)
 
-	@noflip:
+	.noflip:
 		rts	
 ; ===========================================================================
 
@@ -169,47 +169,47 @@ See_SpikeAction:
 		moveq	#0,d0
 		move.b	ost_seesaw_state(a0),d0
 		sub.b	ost_seesaw_state(a1),d0			; d0 = seesaw/spikeball state difference
-		beq.s	@align_spike				; branch if same
-		bcc.s	@spike_from_left			; branch if spikeball is launched from left
+		beq.s	.align_spike				; branch if same
+		bcc.s	.spike_from_left			; branch if spikeball is launched from left
 		neg.b	d0
 
-	@spike_from_left:
+	.spike_from_left:
 		move.w	#-$818,d1				; spikeball speed from flat seesaw
 		move.w	#-$114,d2
 		cmpi.b	#1,d0					; is seesaw flat?
-		beq.s	@launch_spikeball			; if yes, branch
+		beq.s	.launch_spikeball			; if yes, branch
 		move.w	#-$AF0,d1				; moderate spikeball speed
 		move.w	#-$CC,d2
 		cmpi.w	#$A00,ost_seesaw_impact(a1)		; has Sonic landed on seesaw with > $A00 force?
-		blt.s	@launch_spikeball			; if yes, branch
+		blt.s	.launch_spikeball			; if yes, branch
 		move.w	#-$E00,d1				; max spikeball speed
 		move.w	#-$A0,d2
 
-	@launch_spikeball:
+	.launch_spikeball:
 		move.w	d1,ost_y_vel(a0)			; set spikeball speed
 		move.w	d2,ost_x_vel(a0)
 		move.w	ost_x_pos(a0),d0
 		sub.w	ost_seesaw_x_start(a0),d0
-		bcc.s	@from_x_start				; branch if spikeball is in its starting position
+		bcc.s	.from_x_start				; branch if spikeball is in its starting position
 		neg.w	ost_x_vel(a0)				; launch in opposite direction
 
-	@from_x_start:
+	.from_x_start:
 		addq.b	#2,ost_routine(a0)			; goto See_SpikeFall next
 		bra.s	See_SpikeFall
 ; ===========================================================================
 
-@align_spike:
+.align_spike:
 		lea	(See_YPos).l,a2				; address for list of relative y positions
 		moveq	#0,d0
 		move.b	ost_frame(a1),d0			; get frame of parent seesaw
 		move.w	#$28,d2					; x distance from centre
 		move.w	ost_x_pos(a0),d1
 		sub.w	ost_seesaw_x_start(a0),d1
-		bcc.s	@spike_from_left2			; branch if spikeball is left of its start position
+		bcc.s	.spike_from_left2			; branch if spikeball is left of its start position
 		neg.w	d2
 		addq.w	#2,d0
 
-	@spike_from_left2:
+	.spike_from_left2:
 		add.w	d0,d0
 		move.w	ost_seesaw_y_start(a0),d1		; get initial y position
 		add.w	(a2,d0.w),d1				; add relative position
@@ -223,19 +223,19 @@ See_SpikeAction:
 
 See_SpikeFall:	; Routine $A
 		tst.w	ost_y_vel(a0)				; is spikeball falling downwards?
-		bpl.s	@downwards				; if yes, branch
+		bpl.s	.downwards				; if yes, branch
 		bsr.w	ObjectFall				; apply gravity and update position
 		move.w	ost_seesaw_y_start(a0),d0
 		subi.w	#$2F,d0
 		cmp.w	ost_y_pos(a0),d0			; is spikeball more than 47px above seesaw?
-		bgt.s	@no_double_grav				; if not, branch
+		bgt.s	.no_double_grav				; if not, branch
 		bsr.w	ObjectFall				; apply more gravity
 
-	@no_double_grav:
+	.no_double_grav:
 		rts	
 ; ===========================================================================
 
-@downwards:
+.downwards:
 		bsr.w	ObjectFall				; apply gravity and update position
 		movea.l	ost_seesaw_parent(a0),a1		; get parent OST address
 		lea	(See_YPos).l,a2				; address for list of relative y positions
@@ -243,29 +243,29 @@ See_SpikeFall:	; Routine $A
 		move.b	ost_frame(a1),d0			; get frame of parent seesaw
 		move.w	ost_x_pos(a0),d1
 		sub.w	ost_seesaw_x_start(a0),d1
-		bcc.s	@spike_from_left			; branch if spikeball is left of its start position
+		bcc.s	.spike_from_left			; branch if spikeball is left of its start position
 		addq.w	#2,d0
 
-	@spike_from_left:
+	.spike_from_left:
 		add.w	d0,d0
 		move.w	ost_seesaw_y_start(a0),d1		; get initial y position
 		add.w	(a2,d0.w),d1				; add relative position
 		cmp.w	ost_y_pos(a0),d1			; has spikeball reached that position?
-		bgt.s	@exit					; if not, branch
+		bgt.s	.exit					; if not, branch
 
 		movea.l	ost_seesaw_parent(a0),a1
 		moveq	#2,d1
 		tst.w	ost_x_vel(a0)				; is spikeball moving left?
-		bmi.s	@moving_left				; if yes, branch
+		bmi.s	.moving_left				; if yes, branch
 		moveq	#0,d1
 
-	@moving_left:
+	.moving_left:
 		move.b	d1,ost_seesaw_state(a1)			; update state for seesaw and spikeball
 		move.b	d1,ost_seesaw_state(a0)
 		cmp.b	ost_frame(a1),d1			; get seesaw frame
-		beq.s	@skip_spring				; branch if 0 (left side raised)
+		beq.s	.skip_spring				; branch if 0 (left side raised)
 		bclr	#status_platform_bit,ost_status(a1)	; clear flag for Sonic standing on seesaw
-		beq.s	@skip_spring				; branch if already clear
+		beq.s	.skip_spring				; branch if already clear
 
 		clr.b	ost_routine2(a1)
 		move.b	#id_See_Slope,ost_routine(a1)
@@ -279,12 +279,12 @@ See_SpikeFall:	; Routine $A
 		move.b	#id_Sonic_Control,ost_routine(a2)
 		play.w	1, jsr, sfx_Spring			; play spring sound
 
-	@skip_spring:
+	.skip_spring:
 		clr.w	ost_x_vel(a0)
 		clr.w	ost_y_vel(a0)
 		subq.b	#2,ost_routine(a0)			; goto See_SpikeAction next
 
-@exit:
+.exit:
 		rts	
 ; ===========================================================================
 See_YPos:	dc.w -8						; on raised side

@@ -39,23 +39,23 @@ CalcSqrt:
 			move.w	d0,d1				; clear low word of d1
 			moveq	#8-1,d2				; number of loops
 
-	@loop:
+	.loop:
 			rol.l	#2,d1
 			add.w	d0,d0
 			addq.w	#1,d0
 			sub.w	d0,d1
-			bcc.s	@loc_2C9A
+			bcc.s	.loc_2C9A
 			add.w	d0,d1
 			subq.w	#1,d0
-			dbf	d2,@loop
+			dbf	d2,.loop
 			lsr.w	#1,d0
 			movem.l	(sp)+,d1-d2			; retrieve d1 and d2 from stack
 			rts	
 ; ===========================================================================
 
-	@loc_2C9A:
+	.loc_2C9A:
 			addq.w	#1,d0
-			dbf	d2,@loop
+			dbf	d2,.loop
 			lsr.w	#1,d0
 			movem.l	(sp)+,d1-d2
 			rts
@@ -82,17 +82,17 @@ CalcAngle:
 		beq.s	CalcAngle_Both0				; branch if both are 0
 		move.w	d2,d4
 		tst.w	d3
-		bpl.w	@x_positive				; branch if x is positive
+		bpl.w	.x_positive				; branch if x is positive
 		neg.w	d3					; force x positive
 
-	@x_positive:
+	.x_positive:
 		tst.w	d4
-		bpl.w	@y_positive				; branch if y is positive
+		bpl.w	.y_positive				; branch if y is positive
 		neg.w	d4					; force y positive
 
-	@y_positive:
+	.y_positive:
 		cmp.w	d3,d4
-		bcc.w	@y_larger				; branch if y is larger or same
+		bcc.w	.y_larger				; branch if y is larger or same
 		lsl.l	#8,d4
 		divu.w	d3,d4					; d4 = (y*$100)/x
 		moveq	#0,d0
@@ -100,7 +100,7 @@ CalcAngle:
 		bra.s	CalcAngle_ChkRotation
 ; ===========================================================================
 
-@y_larger:
+.y_larger:
 		lsl.l	#8,d3
 		divu.w	d4,d3					; d3 = (x*$100)/y
 		moveq	#$40,d0
@@ -108,17 +108,17 @@ CalcAngle:
 
 CalcAngle_ChkRotation:
 		tst.w	d1
-		bpl.w	@x_positive				; branch if x is positive
+		bpl.w	.x_positive				; branch if x is positive
 		neg.w	d0
 		addi.w	#$80,d0
 
-	@x_positive:
+	.x_positive:
 		tst.w	d2
-		bpl.w	@y_positive				; branch if y is positive
+		bpl.w	.y_positive				; branch if y is positive
 		neg.w	d0
 		addi.w	#$100,d0
 
-	@y_positive:
+	.y_positive:
 		movem.l	(sp)+,d3-d4
 		rts	
 ; ===========================================================================

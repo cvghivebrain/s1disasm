@@ -60,19 +60,19 @@ Spin_Main:	; Routine 0
 
 Spin_Trapdoor:	; Routine 2
 		subq.w	#1,ost_spin_wait_time(a0)		; decrement timer
-		bpl.s	@animate				; if time remains, branch
+		bpl.s	.animate				; if time remains, branch
 
 		move.w	ost_spin_wait_master(a0),ost_spin_wait_time(a0)
 		bchg	#0,ost_anim(a0)				; switch between opening/closing animations
 		tst.b	ost_render(a0)
-		bpl.s	@animate
+		bpl.s	.animate
 		play.w	1, jsr, sfx_Door			; play door sound
 
-	@animate:
+	.animate:
 		lea	(Ani_Spin).l,a1
 		jsr	(AnimateSprite).l
 		tst.b	ost_frame(a0)				; is frame number 0 displayed?
-		bne.s	@notsolid				; if not, branch
+		bne.s	.notsolid				; if not, branch
 		move.w	#$4B,d1
 		move.w	#$C,d2
 		move.w	d2,d3
@@ -82,38 +82,38 @@ Spin_Trapdoor:	; Routine 2
 		bra.w	DespawnObject
 ; ===========================================================================
 
-@notsolid:
+.notsolid:
 		btst	#status_platform_bit,ost_status(a0)	; is Sonic standing on the trapdoor?
-		beq.s	@display				; if not, branch
+		beq.s	.display				; if not, branch
 		lea	(v_ost_player).w,a1
 		bclr	#status_platform_bit,ost_status(a1)
 		bclr	#status_platform_bit,ost_status(a0)
 		clr.b	ost_solid(a0)
 
-	@display:
+	.display:
 		bra.w	DespawnObject
 ; ===========================================================================
 
 Spin_Spinner:	; Routine 4
 		move.w	(v_frame_counter).w,d0			; read frame counter
 		and.w	ost_spin_sync(a0),d0			; apply bitmask ($3F or $7F)
-		bne.s	@delay					; branch if not 0
+		bne.s	.delay					; branch if not 0
 		move.b	#1,ost_spin_flag(a0)			; set flag (occurs every 64 or 128 frames)
 
-	@delay:
+	.delay:
 		tst.b	ost_spin_flag(a0)			; is flag set?
-		beq.s	@animate				; if not, branch
+		beq.s	.animate				; if not, branch
 		subq.w	#1,ost_spin_wait_time(a0)		; decrement timer
-		bpl.s	@animate				; branch if time remains
+		bpl.s	.animate				; branch if time remains
 		move.w	ost_spin_wait_master(a0),ost_spin_wait_time(a0) ; reset timer
 		clr.b	ost_spin_flag(a0)
 		bchg	#0,ost_anim(a0)				; restart animation (switches between identical animations)
 
-	@animate:
+	.animate:
 		lea	(Ani_Spin).l,a1
 		jsr	(AnimateSprite).l
 		tst.b	ost_frame(a0)				; check	if frame number	0 is displayed
-		bne.s	@notsolid2				; if not, branch
+		bne.s	.notsolid2				; if not, branch
 		move.w	#$1B,d1
 		move.w	#7,d2
 		move.w	d2,d3
@@ -123,15 +123,15 @@ Spin_Spinner:	; Routine 4
 		bra.w	DespawnObject
 ; ===========================================================================
 
-@notsolid2:
+.notsolid2:
 		btst	#status_platform_bit,ost_status(a0)	; is Sonic on the platform?
-		beq.s	@display				; if not, branch
+		beq.s	.display				; if not, branch
 		lea	(v_ost_player).w,a1
 		bclr	#status_platform_bit,ost_status(a1)
 		bclr	#status_platform_bit,ost_status(a0)
 		clr.b	ost_solid(a0)
 
-	@display:
+	.display:
 		bra.w	DespawnObject
 
 ; ---------------------------------------------------------------------------

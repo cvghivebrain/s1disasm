@@ -32,13 +32,13 @@ Swi_Action:	; Routine 2
 		move.w	ost_switch_y_start(a0),ost_y_pos(a0)	; restore position on y-axis
 		move.w	#$10,d1					; width
 		bsr.w	Swi_Detect				; check if Sonic touches the switch
-		beq.s	@display				; if not, branch
+		beq.s	.display				; if not, branch
 
 		addq.w	#2,ost_y_pos(a0)			; move object down 2px
 		moveq	#1,d0
 		move.w	d0,(v_button_state).w			; set button 0 as "pressed"
 
-	@display:
+	.display:
 		bsr.w	DisplaySprite
 		out_of_range	Swi_Delete
 		rts	
@@ -63,10 +63,10 @@ Swi_Detect:
 		move.w	ost_x_pos(a1),d0
 		sub.w	ost_x_pos(a0),d0
 		add.w	d1,d0
-		bmi.s	@not_touched				; branch if Sonic is to the left
+		bmi.s	.not_touched				; branch if Sonic is to the left
 		add.w	d1,d1
 		cmp.w	d1,d0
-		bcc.s	@not_touched				; branch if Sonic is to the right
+		bcc.s	.not_touched				; branch if Sonic is to the right
 		move.w	ost_y_pos(a1),d2
 		move.b	ost_height(a1),d1
 		ext.w	d1
@@ -74,14 +74,14 @@ Swi_Detect:
 		move.w	ost_y_pos(a0),d0
 		subi.w	#$10,d0
 		sub.w	d1,d0
-		bhi.s	@not_touched				; branch if Sonic is above it
+		bhi.s	.not_touched				; branch if Sonic is above it
 		cmpi.w	#-$10,d0
-		bcs.s	@not_touched				; branch if Sonic is below it
+		bcs.s	.not_touched				; branch if Sonic is below it
 		moveq	#-1,d0					; Sonic has touched it
 		rts	
 ; ===========================================================================
 
-@not_touched:
+.not_touched:
 		moveq	#0,d0					; Sonic hasn't touched it
 		rts	
 ; End of function Swi_Detect

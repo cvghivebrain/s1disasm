@@ -35,23 +35,23 @@ Stair_Main:	; Routine 0
 		moveq	#ost_stair_y_diff_list,d3		; id of first stair
 		moveq	#1,d4					; value to add to iterate through stairs
 		btst	#status_xflip_bit,ost_status(a0)	; is object flipped?
-		beq.s	@notflipped				; if not, branch
+		beq.s	.notflipped				; if not, branch
 		moveq	#ost_stair_y_diff_list+3,d3		; start from final stair
 		moveq	#-1,d4					; iterate backwards
 
-	@notflipped:
+	.notflipped:
 		move.w	ost_x_pos(a0),d2
 		movea.l	a0,a1					; replace current object with first stair
 		moveq	#3,d1					; 3 additional stairs
-		bra.s	@makeblocks
+		bra.s	.makeblocks
 ; ===========================================================================
 
-	@loop:
+	.loop:
 		bsr.w	FindNextFreeObj				; find free OST slot
-		bne.w	@fail					; branch if not found
+		bne.w	.fail					; branch if not found
 		move.b	#4,ost_routine(a1)			; goto Stair_Solid next
 
-@makeblocks:
+.makeblocks:
 		move.b	#id_Staircase,ost_id(a1)		; load another stair object
 		move.l	#Map_Stair,ost_mappings(a1)
 		move.w	#0+tile_pal3,ost_tile(a1)
@@ -67,9 +67,9 @@ Stair_Main:	; Routine 0
 		move.b	d3,ost_stair_child_id(a1)		; values $38-$3B (or $3B-$38 if flipped)
 		move.l	a0,ost_stair_parent(a1)
 		add.b	d4,d3					; next child id
-		dbf	d1,@loop				; repeat sequence 3 times
+		dbf	d1,.loop				; repeat sequence 3 times
 
-	@fail:
+	.fail:
 
 Stair_Move:	; Routine 2
 		moveq	#0,d0
@@ -94,15 +94,15 @@ Stair_Solid:	; Routine 4
 		move.w	ost_x_pos(a0),d4
 		bsr.w	SolidObject				; detect collision
 		tst.b	d4					; has Sonic touched top/bottom of stair?
-		bpl.s	@not_topbottom				; if not, branch
+		bpl.s	.not_topbottom				; if not, branch
 		move.b	d4,ost_stair_flag(a2)			; set collision flag
 
-	@not_topbottom:
+	.not_topbottom:
 		btst	#status_platform_bit,ost_status(a0)	; is Sonic standing on the stair?
-		beq.s	@exit					; if not, branch
+		beq.s	.exit					; if not, branch
 		move.b	#1,ost_stair_flag(a2)			; set collision flag
 
-	@exit:
+	.exit:
 		rts	
 ; ===========================================================================
 Stair_TypeIndex:index *
@@ -114,41 +114,41 @@ Stair_TypeIndex:index *
 
 Stair_Type00:
 		tst.w	ost_stair_wait_time(a0)			; is timer above 0?
-		bne.s	@dec_timer				; if yes, branch
+		bne.s	.dec_timer				; if yes, branch
 		cmpi.b	#1,ost_stair_flag(a0)			; has Sonic stood on the stairs?
-		bne.s	@exit					; if not, branch
+		bne.s	.exit					; if not, branch
 		move.w	#30,ost_stair_wait_time(a0)		; set time delay to half a second
 
-	@exit:
+	.exit:
 		rts	
 ; ===========================================================================
 
-@dec_timer:
+.dec_timer:
 		subq.w	#1,ost_stair_wait_time(a0)		; decrement timer
-		bne.s	@exit					; branch if time remains
+		bne.s	.exit					; branch if time remains
 		addq.b	#1,ost_subtype(a0)			; add 1 to type
 		rts	
 ; ===========================================================================
 
 Stair_Type02:
 		tst.w	ost_stair_wait_time(a0)			; is timer above 0?
-		bne.s	@dec_timer				; if yes, branch
+		bne.s	.dec_timer				; if yes, branch
 		tst.b	ost_stair_flag(a0)			; have stairs been hit from below?
-		bpl.s	@exit					; if not, branch
+		bpl.s	.exit					; if not, branch
 		move.w	#60,ost_stair_wait_time(a0)		; set time delay to 1 second
 
-	@exit:
+	.exit:
 		rts	
 ; ===========================================================================
 
-@dec_timer:
+.dec_timer:
 		subq.w	#1,ost_stair_wait_time(a0)		; decrement timer
-		bne.s	@jiggle					; branch if time remains
+		bne.s	.jiggle					; branch if time remains
 		addq.b	#1,ost_subtype(a0)			; add 1 to type
 		rts	
 ; ===========================================================================
 
-@jiggle:
+.jiggle:
 		lea	ost_stair_y_diff_list(a0),a1		; address of list of distance moved for each stair
 		move.w	ost_stair_wait_time(a0),d0		; get value from timer
 		lsr.b	#2,d0
@@ -166,7 +166,7 @@ Stair_Type02:
 Stair_Type01:
 		lea	ost_stair_y_diff_list(a0),a1		; address of list of distance moved for each stair
 		cmpi.b	#$80,(a1)				; has first stair moved 128px?
-		beq.s	@exit					; if yes, branch
+		beq.s	.exit					; if yes, branch
 		addq.b	#1,(a1)					; move first stair down 1px
 		moveq	#0,d1
 		move.b	(a1)+,d1
@@ -183,6 +183,6 @@ Stair_Type01:
 		move.b	d2,(a1)+
 		move.b	d1,(a1)+
 
-	@exit:
+	.exit:
 		rts	
 		rts	

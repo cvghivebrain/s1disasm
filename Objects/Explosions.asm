@@ -42,13 +42,13 @@ ExItem_Main:	; Routine 2
 ExItem_Animate:	; Routine 4 (2 for ExplosionBomb)
 ExBom_Animate:
 		subq.b	#1,ost_anim_time(a0)			; subtract 1 from frame duration
-		bpl.s	@display
+		bpl.s	.display
 		move.b	#7,ost_anim_time(a0)			; set frame duration to 7 frames
 		addq.b	#1,ost_frame(a0)			; next frame
 		cmpi.b	#5,ost_frame(a0)			; is the final frame (05) displayed?
 		beq.w	DeleteObject				; if yes, branch
 
-	@display:
+	.display:
 		bra.w	DisplaySprite
 
 ; ---------------------------------------------------------------------------

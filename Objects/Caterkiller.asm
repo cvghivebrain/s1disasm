@@ -48,10 +48,10 @@ Cat_Main:	; Routine 0
 		move.l	#Map_Cat,ost_mappings(a0)
 		move.w	#tile_Nem_Cater_SBZ+tile_pal2,ost_tile(a0)
 		cmpi.b	#id_SBZ,(v_zone).w
-		beq.s	@isscrapbrain				; if zone is SBZ, branch
+		beq.s	.isscrapbrain				; if zone is SBZ, branch
 		move.w	#tile_Nem_Cater+tile_pal2,ost_tile(a0)	; MZ specific code
 
-	@isscrapbrain:
+	.isscrapbrain:
 		andi.b	#render_xflip+render_yflip,ost_render(a0)
 		ori.b	#render_rel,ost_render(a0)
 		move.b	ost_render(a0),ost_status(a0)
@@ -61,10 +61,10 @@ Cat_Main:	; Routine 0
 		move.w	ost_x_pos(a0),d2			; head x position
 		moveq	#12,d5					; distance between segments (12px)
 		btst	#status_xflip_bit,ost_status(a0)
-		beq.s	@noflip
+		beq.s	.noflip
 		neg.w	d5					; negative if xflipped
 
-	@noflip:
+	.noflip:
 		move.b	#id_Cat_BodySeg1,d6			; routine number
 		moveq	#0,d3
 		moveq	#4,d4
@@ -74,7 +74,7 @@ Cat_Main:	; Routine 0
 Cat_Loop:
 		jsr	(FindNextFreeObj).l
 		if Revision=0
-			bne.s	@fail
+			bne.s	.fail
 		else
 			bne.w	Cat_Despawn
 		endc
@@ -97,7 +97,7 @@ Cat_Loop:
 		addq.b	#4,d4
 		movea.l	a1,a2					; make adjacent segment the parent object instead of head
 
-	@fail:
+	.fail:
 		dbf	d1,Cat_Loop				; repeat sequence 2 more times
 
 		move.b	#7,ost_cat_wait_time(a0)
@@ -111,22 +111,22 @@ Cat_Head:	; Routine 2
 		move.w	Cat_Head_Index(pc,d0.w),d1
 		jsr	Cat_Head_Index(pc,d1.w)
 		move.b	ost_cat_mode(a0),d1			; is animation flag set?
-		bpl.s	@display				; if not, branch
+		bpl.s	.display				; if not, branch
 		lea	(Ani_Cat).l,a1
 		move.b	ost_angle(a0),d0
 		andi.w	#$7F,d0					; ignore high bit of angle
 		addq.b	#4,ost_angle(a0)			; increment angle (wraps from $FC to 0)
 		move.b	(a1,d0.w),d0				; get byte from animation script, based on angle
-		bpl.s	@animate				; branch if not $FF
+		bpl.s	.animate				; branch if not $FF
 		bclr	#7,ost_cat_mode(a0)			; disable animation
-		bra.s	@display
+		bra.s	.display
 
-	@animate:
+	.animate:
 		andi.b	#$10,d1					; read mouth open/closed bit
 		add.b	d1,d0					; add to frame (+$10)
 		move.b	d0,ost_frame(a0)			; set frame
 
-	@display:
+	.display:
 		out_of_range	Cat_Despawn
 		jmp	(DisplaySprite).l
 
@@ -134,10 +134,10 @@ Cat_Despawn:
 		lea	(v_respawn_list).w,a2
 		moveq	#0,d0
 		move.b	ost_respawn(a0),d0
-		beq.s	@delete
+		beq.s	.delete
 		bclr	#7,2(a2,d0.w)				; clear high bit of respawn entry
 
-	@delete:
+	.delete:
 		move.b	#id_Cat_Delete,ost_routine(a0)		; goto Cat_Delete next
 		rts	
 ; ===========================================================================
@@ -152,41 +152,41 @@ Cat_Head_Index:	index *,,2
 
 Cat_Undulate:
 		subq.b	#1,ost_cat_wait_time(a0)		; decrement timer
-		bmi.s	@move					; branch if -1
+		bmi.s	.move					; branch if -1
 		rts	
 ; ===========================================================================
 
-	@move:
+	.move:
 		addq.b	#2,ost_routine2(a0)			; goto Cat_Floor next
 		move.b	#$10,ost_cat_wait_time(a0)		; set timer for movement
 		move.w	#-$C0,ost_x_vel(a0)			; move head to the left
 		move.w	#$40,ost_inertia(a0)
 		bchg	#4,ost_cat_mode(a0)			; change between mouth open/moving up, and mouth closed/moving down
-		bne.s	@is_moving				; branch if mouth open/moving up
+		bne.s	.is_moving				; branch if mouth open/moving up
 		clr.w	ost_x_vel(a0)				; don't move left
 		neg.w	ost_inertia(a0)
 
-	@is_moving:
+	.is_moving:
 		bset	#7,ost_cat_mode(a0)			; update animation
 
 Cat_Floor:
 		subq.b	#1,ost_cat_wait_time(a0)		; decrement timer
-		bmi.s	@undulate_next				; branch if -1
+		bmi.s	.undulate_next				; branch if -1
 		if Revision=0
 			move.l	ost_x_pos(a0),-(sp)		; save x pos to stack
 			move.l	ost_x_pos(a0),d2
 		else
 			tst.w	ost_x_vel(a0)
-			beq.s	@notmoving			; branch if head isn't moving horizontally
+			beq.s	.notmoving			; branch if head isn't moving horizontally
 			move.l	ost_x_pos(a0),d2
 			move.l	d2,d3				; d3 = x pos before update
 		endc
 		move.w	ost_x_vel(a0),d0
 		btst	#status_xflip_bit,ost_status(a0)
-		beq.s	@noflip
+		beq.s	.noflip
 		neg.w	d0					; change direction if xflipped (i.e. move right)
 
-	@noflip:
+	.noflip:
 		ext.l	d0
 		asl.l	#8,d0					; multiply speed by $100
 		add.l	d0,d2					; add to x pos
@@ -195,22 +195,22 @@ Cat_Floor:
 			jsr	(FindFloorObj).l
 			move.l	(sp)+,d2			; retrieve previous x pos from stack
 			cmpi.w	#-8,d1
-			blt.s	@turn_around			; branch if > 8px below floor
+			blt.s	.turn_around			; branch if > 8px below floor
 			cmpi.w	#$C,d1
-			bge.s	@turn_around			; branch if > 11px above floor (also detects a ledge)
+			bge.s	.turn_around			; branch if > 11px above floor (also detects a ledge)
 			add.w	d1,ost_y_pos(a0)		; align to floor
 			swap	d2
 			cmp.w	ost_x_pos(a0),d2
-			beq.s	@notmoving			; branch if head hasn't moved horizontally
+			beq.s	.notmoving			; branch if head hasn't moved horizontally
 		else
 			swap	d3
 			cmp.w	ost_x_pos(a0),d3
-			beq.s	@notmoving			; branch if head hasn't moved horizontally
+			beq.s	.notmoving			; branch if head hasn't moved horizontally
 			jsr	(FindFloorObj).l
 			cmpi.w	#-8,d1
-			blt.s	@turn_around			; branch if > 8px below floor
+			blt.s	.turn_around			; branch if > 8px below floor
 			cmpi.w	#$C,d1
-			bge.s	@turn_around			; branch if > 11px above floor (also detects a ledge)
+			bge.s	.turn_around			; branch if > 11px above floor (also detects a ledge)
 			add.w	d1,ost_y_pos(a0)		; align to floor
 		endc
 		moveq	#0,d0
@@ -219,11 +219,11 @@ Cat_Floor:
 		andi.b	#$F,ost_cat_segment_pos(a0)		; wrap to 0 after $F
 		move.b	d1,ost_cat_floormap(a0,d0.w)		; write floor height for current position in array
 
-	@notmoving:
+	.notmoving:
 		rts	
 ; ===========================================================================
 
-@undulate_next:
+.undulate_next:
 		subq.b	#2,ost_routine2(a0)			; goto Cat_Undulate next
 		move.b	#7,ost_cat_wait_time(a0)		; set timer for delay
 		if Revision=0
@@ -235,7 +235,7 @@ Cat_Floor:
 		rts	
 ; ===========================================================================
 
-@turn_around:
+.turn_around:
 		if Revision=0
 			move.l	d2,ost_x_pos(a0)		; restore previous x pos (i.e. stop moving)
 			bchg	#status_xflip_bit,ost_status(a0) ; change direction
@@ -248,15 +248,15 @@ Cat_Floor:
 			move.b	ost_cat_segment_pos(a0),d0	; get pos counter for head
 			move.b	#$80,ost_cat_floormap(a0,d0.w)	; save stop position in floor map array
 			neg.w	ost_x_sub(a0)
-			beq.s	@face_left			; branch if x subpixel is 0
+			beq.s	.face_left			; branch if x subpixel is 0
 			btst	#status_xflip_bit,ost_status(a0)
-			beq.s	@face_left			; branch if facing left
+			beq.s	.face_left			; branch if facing left
 			subq.w	#1,ost_x_pos(a0)
 			addq.b	#1,ost_cat_segment_pos(a0)	; increment pos counter
 			moveq	#0,d0
 			move.b	ost_cat_segment_pos(a0),d0
 			clr.b	ost_cat_floormap(a0,d0.w)
-	@face_left:
+	.face_left:
 			bchg	#status_xflip_bit,ost_status(a0)
 			move.b	ost_status(a0),ost_render(a0)
 		endc
@@ -275,10 +275,10 @@ Cat_BodySeg2:	; Routine 6
 		andi.w	#$7F,d0					; ignore high bit of angle
 		addq.b	#4,ost_angle(a0)			; increment angle (wraps from $FC to 0)
 		tst.b	4(a1,d0.w)				; get byte from animation script, based on angle
-		bpl.s	@update_frame				; branch if not $FF
+		bpl.s	.update_frame				; branch if not $FF
 		addq.b	#4,ost_angle(a0)			; increment angle again
 
-	@update_frame:
+	.update_frame:
 		move.b	(a1,d0.w),d0				; get frame id from animation
 		addq.b	#id_frame_cat_body1,d0			; skip head frames to body frames
 		move.b	d0,ost_frame(a0)			; update frame
@@ -289,7 +289,7 @@ Cat_BodySeg1:	; Routine 4, 8
 		bmi.w	Cat_Body_Break				; branch if caterkiller is broken
 		move.b	ost_cat_mode(a1),ost_cat_mode(a0)	; copy animation mode flags
 		move.b	ost_routine2(a1),ost_routine2(a0)
-		beq.w	@chk_broken
+		beq.w	.chk_broken
 		move.w	ost_inertia(a1),ost_inertia(a0)
 		move.w	ost_x_vel(a1),d0
 		if Revision=0
@@ -302,22 +302,22 @@ Cat_BodySeg1:	; Routine 4, 8
 		move.l	d2,d3					; d3 = x pos before update
 		move.w	ost_x_vel(a0),d0
 		btst	#status_xflip_bit,ost_status(a0)
-		beq.s	@noflip
+		beq.s	.noflip
 		neg.w	d0					; reverse speed if xflipped
 
-	@noflip:
+	.noflip:
 		ext.l	d0
 		asl.l	#8,d0					; multiply speed by $100
 		add.l	d0,d2					; add to x pos
 		move.l	d2,ost_x_pos(a0)			; update position
 		swap	d3
 		cmp.w	ost_x_pos(a0),d3
-		beq.s	@chk_broken				; branch if segment hasn't moved
+		beq.s	.chk_broken				; branch if segment hasn't moved
 		moveq	#0,d0
 		move.b	ost_cat_segment_pos(a0),d0		; get pos counter
 		move.b	ost_cat_floormap(a1,d0.w),d1		; get floor height from parent's floor array
 		cmpi.b	#$80,d1					; floor height $80 means a wall or drop
-		bne.s	@align_to_floor				; branch if not $80
+		bne.s	.align_to_floor				; branch if not $80
 		if Revision=0
 			swap	d3
 			move.l	d3,ost_x_pos(a0)		; restore previous x pos (i.e. don't move)
@@ -325,44 +325,44 @@ Cat_BodySeg1:	; Routine 4, 8
 		else
 			move.b	d1,ost_cat_floormap(a0,d0.w)
 			neg.w	ost_x_sub(a0)
-			beq.s	@face_left
+			beq.s	.face_left
 			btst	#status_xflip_bit,ost_status(a0)
-			beq.s	@face_left			; branch if facing left
+			beq.s	.face_left			; branch if facing left
 			cmpi.w	#-$C0,ost_x_vel(a0)
-			bne.s	@face_left			; branch if not moving left
+			bne.s	.face_left			; branch if not moving left
 			subq.w	#1,ost_x_pos(a0)
 			addq.b	#1,ost_cat_segment_pos(a0)
 			moveq	#0,d0
 			move.b	ost_cat_segment_pos(a0),d0
 			clr.b	ost_cat_floormap(a0,d0.w)
-	@face_left:
+	.face_left:
 		endc
 		bchg	#status_xflip_bit,ost_status(a0)	; change direction
 		move.b	ost_status(a0),ost_render(a0)
 		addq.b	#1,ost_cat_segment_pos(a0)		; increment pos counter
 		andi.b	#$F,ost_cat_segment_pos(a0)		; wrap to 0 after $F
-		bra.s	@chk_broken
+		bra.s	.chk_broken
 ; ===========================================================================
 
-@align_to_floor:
+.align_to_floor:
 		ext.w	d1
 		add.w	d1,ost_y_pos(a0)			; align to floor
 		addq.b	#1,ost_cat_segment_pos(a0)		; increment pos counter
 		andi.b	#$F,ost_cat_segment_pos(a0)		; wrap to 0 after $F
 		move.b	d1,ost_cat_floormap(a0,d0.w)		; write floor height for current position in array
 
-@chk_broken:
+.chk_broken:
 		cmpi.b	#id_Cat_Fragment,ost_routine(a1)
 		beq.s	Cat_Body_Break				; branch if parent is broken body segment
 		cmpi.b	#id_ExplosionItem,ost_id(a1)
-		beq.s	@head_broken				; branch if parent is broken head
+		beq.s	.head_broken				; branch if parent is broken head
 		cmpi.b	#id_Cat_Delete,ost_routine(a1)
-		bne.s	@deleted				; branch if parent is set to delete
+		bne.s	.deleted				; branch if parent is set to delete
 
-	@head_broken:
+	.head_broken:
 		move.b	#id_Cat_Delete,ost_routine(a0)		; set current segment to delete
 
-	@deleted:
+	.deleted:
 		jmp	(DisplaySprite).l
 
 ; ===========================================================================
@@ -380,10 +380,10 @@ Cat_Head_Break:
 		move.b	ost_routine(a0),d0			; get routine number (2/4/6/8)
 		move.w	Cat_FragSpeed-2(pc,d0.w),d0		; get speed of specified segment
 		btst	#status_xflip_bit,ost_status(a0)
-		beq.s	@no_xflip
+		beq.s	.no_xflip
 		neg.w	d0					; reverse if xflipped
 
-	@no_xflip:
+	.no_xflip:
 		move.w	d0,ost_x_vel(a0)			; set x speed
 		move.w	#-$400,ost_y_vel(a0)
 		move.b	#id_Cat_Fragment,ost_routine(a0)	; goto Cat_Fragment next
@@ -392,14 +392,14 @@ Cat_Head_Break:
 Cat_Fragment:	; Routine $C
 		jsr	(ObjectFall).l				; apply gravity & update positioin
 		tst.w	ost_y_vel(a0)
-		bmi.s	@nocollide				; branch if moving upwards
+		bmi.s	.nocollide				; branch if moving upwards
 		jsr	(FindFloorObj).l
 		tst.w	d1					; has object hit floor?
-		bpl.s	@nocollide				; if not, branch
+		bpl.s	.nocollide				; if not, branch
 		add.w	d1,ost_y_pos(a0)			; align to floor
 		move.w	#-$400,ost_y_vel(a0)			; bounce
 
-	@nocollide:
+	.nocollide:
 		tst.b	ost_render(a0)				; is object on-screen?
 		bpl.w	Cat_Despawn				; if not, branch
 		jmp	(DisplaySprite).l

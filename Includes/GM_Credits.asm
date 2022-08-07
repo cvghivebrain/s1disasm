@@ -19,9 +19,9 @@ GM_Credits:
 		lea	(v_ost_all).w,a1			; RAM address to start clearing
 		moveq	#0,d0
 		move.w	#loops_to_clear_ost,d1			; size of RAM block to clear
-	@clear_ost:
+	.clear_ost:
 		move.l	d0,(a1)+
-		dbf	d1,@clear_ost				; clear object RAM
+		dbf	d1,.clear_ost				; clear object RAM
 
 		locVRAM	vram_credits
 		lea	(Nem_CreditText).l,a0			; load credits alphabet graphics
@@ -30,9 +30,9 @@ GM_Credits:
 		lea	(v_pal_dry_next).w,a1
 		moveq	#0,d0
 		move.w	#loops_to_clear_pal,d1
-	@clear_pal:
+	.clear_pal:
 		move.l	d0,(a1)+
-		dbf	d1,@clear_pal				; clear next palette
+		dbf	d1,.clear_pal				; clear next palette
 
 		moveq	#id_Pal_Sonic,d0
 		bsr.w	PalLoad_Next				; load Sonic's palette
@@ -47,10 +47,10 @@ GM_Credits:
 		lea	(a2,d0.w),a2				; jump to relevant level header
 		moveq	#0,d0
 		move.b	(a2),d0					; get 1st PLC id for level
-		beq.s	@no_plc					; branch if 0
+		beq.s	.no_plc					; branch if 0
 		bsr.w	AddPLC					; load level graphics over next few frames
 
-	@no_plc:
+	.no_plc:
 		moveq	#id_PLC_Main2,d0
 		bsr.w	AddPLC					; load graphics for monitors/shield/stars over next few frames
 		move.w	#120,(v_countdown).w			; display a credit for 2 seconds
@@ -86,7 +86,7 @@ EndDemoSetup:
 		move.w	d0,(v_zone).w				; set zone/act number
 		addq.w	#1,(v_credits_num).w			; increment credits number
 		cmpi.w	#(sizeof_EndDemoList/2)+1,(v_credits_num).w ; have credits finished? (+1 because v_credits_num is already incremented)
-		bhs.s	@exit					; if yes, branch
+		bhs.s	.exit					; if yes, branch
 		move.w	#$8001,(v_demo_mode).w			; set demo+ending mode
 		move.b	#id_Demo,(v_gamemode).w			; set game mode to 8 (demo)
 		move.b	#lives_start,(v_lives).w		; set lives to 3
@@ -96,17 +96,17 @@ EndDemoSetup:
 		move.l	d0,(v_score).w				; clear score
 		move.b	d0,(v_last_lamppost).w			; clear lamppost counter
 		cmpi.w	#id_Demo_EndLZ+1,(v_credits_num).w	; is LZ demo running?
-		bne.s	@exit					; if not, branch
+		bne.s	.exit					; if not, branch
 
 		lea	(EndDemo_LampVar).l,a1			; load lamppost variables
 		lea	(v_last_lamppost).w,a2
 		move.w	#((EndDemo_LampVar_end-EndDemo_LampVar)/4)-1,d0
 
-	@lamppost_loop:
+	.lamppost_loop:
 		move.l	(a1)+,(a2)+				; copy lamppost variables to RAM
-		dbf	d0,@lamppost_loop
+		dbf	d0,.lamppost_loop
 
-@exit:
+.exit:
 		rts
 
 		include_enddemo_list				; Includes\Demo Pointers.asm
@@ -154,9 +154,9 @@ TryAgainEnd:
 		lea	(v_ost_all).w,a1
 		moveq	#0,d0
 		move.w	#((sizeof_ost*countof_ost)/4)-1,d1
-	@clear_ost:
+	.clear_ost:
 		move.l	d0,(a1)+
-		dbf	d1,@clear_ost				; clear object RAM
+		dbf	d1,.clear_ost				; clear object RAM
 
 		moveq	#id_PLC_TryAgain,d0
 		bsr.w	QuickPLC				; load "TRY AGAIN" or "END" patterns
@@ -164,9 +164,9 @@ TryAgainEnd:
 		lea	(v_pal_dry_next).w,a1
 		moveq	#0,d0
 		move.w	#(sizeof_pal_all/4)-1,d1
-	@clear_pal:
+	.clear_pal:
 		move.l	d0,(a1)+
-		dbf	d1,@clear_pal				; fill palette with black
+		dbf	d1,.clear_pal				; fill palette with black
 
 		moveq	#id_Pal_Ending,d0
 		bsr.w	PalLoad_Next				; load ending palette
@@ -188,12 +188,12 @@ TryAg_MainLoop:
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
 		andi.b	#btnStart,(v_joypad_press_actual).w	; is Start button pressed?
-		bne.s	@exit					; if yes, branch
+		bne.s	.exit					; if yes, branch
 		tst.w	(v_countdown).w				; has 30 seconds elapsed?
-		beq.s	@exit					; if yes, branch
+		beq.s	.exit					; if yes, branch
 		cmpi.b	#id_Credits,(v_gamemode).w
 		beq.s	TryAg_MainLoop
 
-	@exit:
+	.exit:
 		move.b	#id_Sega,(v_gamemode).w			; goto Sega screen
 		rts	

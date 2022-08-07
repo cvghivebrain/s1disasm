@@ -165,33 +165,33 @@ Spike_LeftRight:
 
 Spike_Wait:
 		tst.w	ost_spike_move_time(a0)			; has timer hit 0?
-		beq.s	@update					; if yes, branch
+		beq.s	.update					; if yes, branch
 		subq.w	#1,ost_spike_move_time(a0)		; decrement timer
-		bne.s	@exit					; branch if not 0
+		bne.s	.exit					; branch if not 0
 		tst.b	ost_render(a0)				; is spikes object on-screen?
-		bpl.s	@exit					; if not, branch
+		bpl.s	.exit					; if not, branch
 		play.w	1, jsr, sfx_SpikeMove			; play "spikes moving" sound
-		bra.s	@exit
+		bra.s	.exit
 ; ===========================================================================
 
-@update:
+.update:
 		tst.w	ost_spike_move_flag(a0)			; are spikes in original position?
-		beq.s	@original_pos				; if yes, branch
+		beq.s	.original_pos				; if yes, branch
 		subi.w	#$800,ost_spike_move_dist(a0)		; subtract 8px from distance
-		bcc.s	@exit					; branch if 0 or more
+		bcc.s	.exit					; branch if 0 or more
 		move.w	#0,ost_spike_move_dist(a0)		; set minimum distance
 		move.w	#0,ost_spike_move_flag(a0)		; set flag that spikes are in original position
 		move.w	#60,ost_spike_move_time(a0)		; set time delay to 1 second
-		bra.s	@exit
+		bra.s	.exit
 ; ===========================================================================
 
-@original_pos:
+.original_pos:
 		addi.w	#$800,ost_spike_move_dist(a0)		; add 8px to move distance
 		cmpi.w	#$2000,ost_spike_move_dist(a0)		; has it moved 32px?
-		bcs.s	@exit					; if not, branch
+		bcs.s	.exit					; if not, branch
 		move.w	#$2000,ost_spike_move_dist(a0)		; set max distance
 		move.w	#1,ost_spike_move_flag(a0)		; set flag that spikes are in new position
 		move.w	#60,ost_spike_move_time(a0)		; set time delay to 1 second
 
-@exit:
+.exit:
 		rts	
