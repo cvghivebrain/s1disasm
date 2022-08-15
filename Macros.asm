@@ -96,36 +96,6 @@ index:		macro
 		ptr_id_inc: = \3
 		endc
 		
-		tmp_array: equs "empty"				; clear tmp_array
-
-		popo
-		list
-		endm
-	
-; ---------------------------------------------------------------------------
-; Create a mirrored pointer index. Used to keep Sonic's mappings & DPLC
-; indexes aligned.
-; input: same as index (see above), prefix, pointer label array
-; ---------------------------------------------------------------------------
-
-mirror_index:	macro
-		nolist
-		pusho
-		opt	m-
-
-		index.\0 \1,\2,\3
-		ptr_prefix: equs "\4"
-		ptr_pos: = 1
-		ptr_bar: = instr(1,"\5","|")			; find first bar
-		while ptr_bar>0
-		ptr_sub: substr ptr_pos,ptr_bar-1,"\5"		; get label
-		ptr \ptr_prefix\_\ptr_sub			; create pointer
-		ptr_pos: = ptr_bar+1
-		ptr_bar: = instr(ptr_pos,"\5","|")		; find next bar
-		endw
-		ptr_sub: substr ptr_pos,,"\5"
-		ptr \ptr_prefix\_\ptr_sub			; final pointer
-
 		popo
 		list
 		endm
@@ -157,16 +127,6 @@ ptr:		macro
 			else
 			\prefix_id\\1_\$ptr_id: equ ptr_id	; if id already exists, append number
 			endc
-		endc
-		
-		if strlen("\2")=0				; check if label should be stored
-		else
-			if strcmp("\tmp_array","empty")
-			tmp_array: equs "\1"			; store first label
-			else
-			tmp_array: equs "\tmp_array|\1"		; store subsequent labels
-			endc
-		\2: equs tmp_array
 		endc
 		
 		ptr_id: = ptr_id+ptr_id_inc			; increment id
