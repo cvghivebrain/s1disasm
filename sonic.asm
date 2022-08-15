@@ -15,9 +15,7 @@
 
 		include "Mega Drive.asm"
 		include "Macros - More CPUs.asm"
-		include "Macros - 68k Extended.asm"
-		include "Macros - General.asm"
-		include "Macros - Sonic.asm"
+		include "Macros.asm"
 		include "sound\Sounds.asm"
 		include "sound\Sound Equates.asm"
 		include "Constants.asm"
@@ -34,9 +32,9 @@ AddressSRAM:	equ 3						; 0 = odd+even; 2 = even only; 3 = odd only
 ; Change to 0 to build the original version of the game, dubbed REV00
 ; Change to 1 to build the later version, dubbed REV01, which includes various bugfixes and enhancements
 ; Change to 2 to build the version from Sonic Mega Collection, dubbed REVXB, which fixes the infamous "spike bug"
-	if ~def(Revision)					; bit-perfect check will automatically set this variable
+		if ~def(Revision)				; bit-perfect check will automatically set this variable
 Revision:	equ 1
-	endc
+		endc
 
 ZoneCount:	equ 6						; discrete zones are: GHZ, MZ, SYZ, LZ, SLZ, and SBZ
 
