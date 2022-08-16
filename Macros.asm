@@ -366,6 +366,17 @@ endobj:		macro
 		endm
 
 ; ---------------------------------------------------------------------------
+; Saves file size to constant without using filesize function
+; input: label, file name (including folder)
+; ---------------------------------------------------------------------------
+
+file_size:	macro lbl,file
+		incbin	\file					; write file to ROM
+		\lbl: equ *					; current address is same as size
+		org 0						; return to start of ROM and overwrite from here
+		endm
+
+; ---------------------------------------------------------------------------
 ; Define an external file
 ; input: label, file name (including folder), extension (actual),
 ;  extension (uncompressed)
@@ -374,7 +385,7 @@ endobj:		macro
 filedef:	macro lbl,file,ex1,ex2
 		filename: equs \file				; get file name without quotes
 		file_\lbl: equs "\filename\.\ex1"		; record file name
-		sizeof_\lbl: equ filesize("\filename\.\ex2")	; record file size of associated uncompressed file
+		file_size sizeof_\lbl,"\filename\.\ex2"		; record file size of associated uncompressed file
 		endm
 
 ; ---------------------------------------------------------------------------
