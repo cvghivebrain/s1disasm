@@ -237,52 +237,52 @@ CheckSumError:
 ; Palette data & routines
 ; ---------------------------------------------------------------------------
 		include "Includes\PaletteCycle.asm"
-Pal_TitleCyc:	incbin	"Palettes\Cycle - Title Screen Water.bin"
-Pal_GHZCyc:	incbin	"Palettes\Cycle - GHZ.bin"
-Pal_LZCyc1:	incbin	"Palettes\Cycle - LZ Waterfall.bin"
-Pal_LZCyc2:	incbin	"Palettes\Cycle - LZ Conveyor Belt.bin"
-Pal_LZCyc3:	incbin	"Palettes\Cycle - LZ Conveyor Belt Underwater.bin"
-Pal_SBZ3Cyc1:	incbin	"Palettes\Cycle - SBZ3 Waterfall.bin"
-Pal_MZCyc:	incbin	"Palettes\Cycle - MZ (Unused).bin"
-Pal_SLZCyc:	incbin	"Palettes\Cycle - SLZ.bin"
-Pal_SYZCyc1:	incbin	"Palettes\Cycle - SYZ1.bin"
-Pal_SYZCyc2:	incbin	"Palettes\Cycle - SYZ2.bin"
+		incfile	Pal_TitleCyc
+		incfile	Pal_GHZCyc
+		incfile	Pal_LZCyc1
+		incfile	Pal_LZCyc2
+		incfile	Pal_LZCyc3
+		incfile	Pal_SBZ3Cyc1
+		incfile	Pal_MZCyc
+		incfile	Pal_SLZCyc
+		incfile	Pal_SYZCyc1
+		incfile	Pal_SYZCyc2
 		include_Pal_SBZCycList				; "Includes\PaletteCycle.asm"
-Pal_SBZCyc1:	incbin	"Palettes\Cycle - SBZ 1.bin"
-Pal_SBZCyc2:	incbin	"Palettes\Cycle - SBZ 2.bin"
-Pal_SBZCyc3:	incbin	"Palettes\Cycle - SBZ 3.bin"
-Pal_SBZCyc4:	incbin	"Palettes\Cycle - SBZ 4.bin"
-Pal_SBZCyc5:	incbin	"Palettes\Cycle - SBZ 5.bin"
-Pal_SBZCyc6:	incbin	"Palettes\Cycle - SBZ 6.bin"
-Pal_SBZCyc7:	incbin	"Palettes\Cycle - SBZ 7.bin"
-Pal_SBZCyc8:	incbin	"Palettes\Cycle - SBZ 8.bin"
-Pal_SBZCyc9:	incbin	"Palettes\Cycle - SBZ 9.bin"
-Pal_SBZCyc10:	incbin	"Palettes\Cycle - SBZ 10.bin"
+		incfile	Pal_SBZCyc1
+		incfile	Pal_SBZCyc2
+		incfile	Pal_SBZCyc3
+		incfile	Pal_SBZCyc4
+		incfile	Pal_SBZCyc5
+		incfile	Pal_SBZCyc6
+		incfile	Pal_SBZCyc7
+		incfile	Pal_SBZCyc8
+		incfile	Pal_SBZCyc9
+		incfile	Pal_SBZCyc10
 		include	"Includes\PaletteFadeIn, PaletteFadeOut, PaletteWhiteIn & PaletteWhiteOut.asm"
 		include	"Includes\GM_Sega.asm"
-Pal_Sega1:	incbin	"Palettes\Sega - Stripe.bin"
-Pal_Sega2:	incbin	"Palettes\Sega - All.bin"
+		incfile	Pal_Sega1
+		incfile	Pal_Sega2
 		include "Includes\PalLoad & PalPointers.asm"
-Pal_SegaBG:	incbin	"Palettes\Sega Background.bin"
-Pal_Title:	incbin	"Palettes\Title Screen.bin"
-Pal_LevelSel:	incbin	"Palettes\Level Select.bin"
-Pal_Sonic:	incbin	"Palettes\Sonic.bin"
-Pal_GHZ:	incbin	"Palettes\Green Hill Zone.bin"
-Pal_LZ:		incbin	"Palettes\Labyrinth Zone.bin"
-Pal_LZWater:	incbin	"Palettes\Labyrinth Zone Underwater.bin"
-Pal_MZ:		incbin	"Palettes\Marble Zone.bin"
-Pal_SLZ:	incbin	"Palettes\Star Light Zone.bin"
-Pal_SYZ:	incbin	"Palettes\Spring Yard Zone.bin"
-Pal_SBZ1:	incbin	"Palettes\SBZ Act 1.bin"
-Pal_SBZ2:	incbin	"Palettes\SBZ Act 2.bin"
-Pal_Special:	incbin	"Palettes\Special Stage.bin"
-Pal_SBZ3:	incbin	"Palettes\SBZ Act 3.bin"
-Pal_SBZ3Water:	incbin	"Palettes\SBZ Act 3 Underwater.bin"
-Pal_LZSonWater:	incbin	"Palettes\Sonic - LZ Underwater.bin"
-Pal_SBZ3SonWat:	incbin	"Palettes\Sonic - SBZ3 Underwater.bin"
-Pal_SSResult:	incbin	"Palettes\Special Stage Results.bin"
-Pal_Continue:	incbin	"Palettes\Special Stage Continue Bonus.bin"
-Pal_Ending:	incbin	"Palettes\Ending.bin"
+		incfile	Pal_SegaBG
+		incfile	Pal_Title
+		incfile	Pal_LevelSel
+		incfile	Pal_Sonic
+		incfile	Pal_GHZ
+		incfile	Pal_LZ
+		incfile	Pal_LZWater
+		incfile	Pal_MZ
+		incfile	Pal_SLZ
+		incfile	Pal_SYZ
+		incfile	Pal_SBZ1
+		incfile	Pal_SBZ2
+		incfile	Pal_Special
+		incfile	Pal_SBZ3
+		incfile	Pal_SBZ3Water
+		incfile	Pal_LZSonWater
+		incfile	Pal_SBZ3SonWat
+		incfile	Pal_SSResult
+		incfile	Pal_Continue
+		incfile	Pal_Ending
 
 		include "Includes\WaitForVBlank.asm"
 		include "Objects\_RandomNumber.asm"
@@ -1060,45 +1060,25 @@ Eni_SSBg2:	incbin	"Tilemaps\SS Background 2.eni"		; special stage background (ma
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - primary patterns and block mappings
 ; ---------------------------------------------------------------------------
-Blk16_GHZ:	incbin	"16x16 Mappings\GHZ.eni"
-		even
+		incfile	Blk16_GHZ
 		incfile	Nem_GHZ_1st
 		incfile	Nem_GHZ_2nd
-Blk256_GHZ:	incbin	"256x256 Mappings\GHZ.kos"
-		even
-Blk16_LZ:	incbin	"16x16 Mappings\LZ.eni"
-		even
+		incfile	Blk256_GHZ
+		incfile	Blk16_LZ
 		incfile	Nem_LZ
-Blk256_LZ:	incbin	"256x256 Mappings\LZ.kos"
-		even
-Blk16_MZ:	incbin	"16x16 Mappings\MZ.eni"
-		even
+		incfile	Blk256_LZ
+		incfile	Blk16_MZ
 		incfile	Nem_MZ
-Blk256_MZ:	if Revision=0
-			incbin	"256x256 Mappings\MZ (REV00).kos"
-		else
-			incbin	"256x256 Mappings\MZ.kos"
-		endc
-		even
-Blk16_SLZ:	incbin	"16x16 Mappings\SLZ.eni"
-		even
+		incfile	Blk256_MZ
+		incfile	Blk16_SLZ
 		incfile	Nem_SLZ
-Blk256_SLZ:	incbin	"256x256 Mappings\SLZ.kos"
-		even
-Blk16_SYZ:	incbin	"16x16 Mappings\SYZ.eni"
-		even
+		incfile	Blk256_SLZ
+		incfile	Blk16_SYZ
 		incfile	Nem_SYZ
-Blk256_SYZ:	incbin	"256x256 Mappings\SYZ.kos"
-		even
-Blk16_SBZ:	incbin	"16x16 Mappings\SBZ.eni"
-		even
+		incfile	Blk256_SYZ
+		incfile	Blk16_SBZ
 		incfile	Nem_SBZ
-Blk256_SBZ:	if Revision=0
-			incbin	"256x256 Mappings\SBZ (REV00).kos"
-		else
-			incbin	"256x256 Mappings\SBZ.kos"
-		endc
-		even
+		incfile	Blk256_SBZ
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - bosses and ending sequence
 ; ---------------------------------------------------------------------------
@@ -1523,7 +1503,7 @@ ObjPos_Null:	endobj
 ; ---------------------------------------------------------------------------
 ; Sound driver data
 ; ---------------------------------------------------------------------------
-		include "sound/Sound Data.asm"
+		include "sound\Sound Data.asm"
 
 ROM_End:
 		END

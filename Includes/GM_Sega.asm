@@ -9,7 +9,7 @@ sega_bg_height:	equ 8
 sega_fg_width:	equ $28						; fg dimensions - white box with logo cutout
 sega_fg_height:	equ $1C
 
-countof_stripe:	equ filesize("Palettes\Sega - Stripe.bin")/2	; colours in stripe that moves across logo
+countof_stripe:	equ sizeof_Pal_Sega1/2				; colours in stripe that moves across logo
 countof_sega:	equ $C/2					; colours in Sega logo
 
 GM_Sega:

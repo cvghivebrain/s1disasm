@@ -367,13 +367,14 @@ endobj:		macro
 
 ; ---------------------------------------------------------------------------
 ; Define an external file
-; input: label, file name (including folder), extension
+; input: label, file name (including folder), extension (actual),
+;  extension (uncompressed)
 ; ---------------------------------------------------------------------------
 
-filedef:	macro lbl,file,ex
+filedef:	macro lbl,file,ex1,ex2
 		filename: equs \file				; get file name without quotes
-		file_\lbl: equs "\filename\.\ex"		; record file name
-		sizeof_\lbl: equ filesize("\filename\.bin")	; record file size of associated .bin file
+		file_\lbl: equs "\filename\.\ex1"		; record file name
+		sizeof_\lbl: equ filesize("\filename\.\ex2")	; record file size of associated uncompressed file
 		endm
 
 ; ---------------------------------------------------------------------------

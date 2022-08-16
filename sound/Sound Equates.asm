@@ -1,4 +1,3 @@
-SegaPCM_File:	equs	"sound/dac/sega.pcm"			; the actual file location of the Sega PCM file. Used a few times below
 		pusho						; save options
 		opt	ae+					; enable auto evens
 
