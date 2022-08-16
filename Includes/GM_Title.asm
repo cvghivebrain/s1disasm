@@ -66,7 +66,7 @@ GM_Title:
 		lea	(vdp_data_port).l,a6
 		locVRAM	vram_text,4(a6)
 		lea	(Art_Text).l,a5				; load level select font
-		move.w	#(sizeof_art_text/2)-1,d1
+		move.w	#(sizeof_Art_Text/2)-1,d1
 
 	.load_text:
 		move.w	(a5)+,(a6)

@@ -580,7 +580,7 @@ AniArt_MZ_Magma_Shift3_Col3:
 
 LoadArt_GiantRing:
 
-tilecount:	= (sizeof_art_giantring/sizeof_cell)/7		; number of tiles to load per frame over 7 frames (14)
+tilecount:	= (sizeof_Art_BigRing/sizeof_cell)/7		; number of tiles to load per frame over 7 frames (14)
 
 		tst.w	(v_giantring_gfx_offset).w		; $C40 is written here by GiantRing (98 tiles)
 		bne.s	.loadTiles				; branch if not 0

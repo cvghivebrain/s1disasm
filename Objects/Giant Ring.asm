@@ -38,7 +38,7 @@ GRing_Okay:
 		addq.b	#2,ost_routine(a0)			; goto GRing_Animate next
 		move.b	#2,ost_priority(a0)
 		move.b	#id_col_8x16+id_col_item,ost_col_type(a0) ; when Sonic hits the item, goto GRing_Collect next (see ReactToItem)
-		move.w	#sizeof_art_giantring,(v_giantring_gfx_offset).w ; signal that Art_BigRing should be loaded ($C40 is the size of Art_BigRing)
+		move.w	#sizeof_Art_BigRing,(v_giantring_gfx_offset).w ; signal that Art_BigRing should be loaded ($C40 is the size of Art_BigRing)
 
 GRing_Animate:	; Routine 2
 		move.b	(v_syncani_1_frame).w,ost_frame(a0)

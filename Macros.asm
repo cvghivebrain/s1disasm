@@ -366,29 +366,26 @@ endobj:		macro
 		endm
 
 ; ---------------------------------------------------------------------------
-; Declares a Nemesis compressed graphics file
-; input: label, file name without extension or folder
+; Define an external file
+; input: label, file name (including folder), extension
 ; ---------------------------------------------------------------------------
 
-nemesis:	macro
-		file_\1: equs \2
-		file_nem: equs \2
-		sizeof_\1: equ filesize("\nemfolderdec\\file_nem\.bin")
+filedef:	macro lbl,file,ex
+		filename: equs \file				; get file name without quotes
+		file_\lbl: equs "\filename\.\ex"		; record file name
+		sizeof_\lbl: equ filesize("\filename\.bin")	; record file size of associated .bin file
 		endm
 
 ; ---------------------------------------------------------------------------
-; Incbins a Nemesis compressed graphics file
-; input: label (must have been declared)
+; Incbins a file
+; input: label (must have been declared by filedef)
 ; ---------------------------------------------------------------------------
 
-nemfile:	macro
-		file_nem: equs file_\1
-	\1:	incbin	"\nemfolder\\file_nem\.nem"
+incfile:	macro lbl
+		filename: equs file_\lbl			; get file name
+	\lbl:	incbin	"\filename"				; write file to ROM
 		even
 		endm
-
-nemfolder:	equs "Graphics - Compressed\"
-nemfolderdec:	equs "Graphics - Compressed\Decompressed\"
 
 ; ---------------------------------------------------------------------------
 ; Declares a blank object

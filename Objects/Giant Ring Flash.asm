@@ -22,7 +22,7 @@ ost_flash_parent:	equ $3C					; address of OST of parent object (4 bytes)
 Flash_Main:	; Routine 0
 		addq.b	#2,ost_routine(a0)			; goto Flash_ChkDel next
 		move.l	#Map_Flash,ost_mappings(a0)
-		move.w	#((vram_giantring+sizeof_art_giantring)/sizeof_cell)+tile_pal2,ost_tile(a0)
+		move.w	#((vram_giantring+sizeof_Art_BigRing)/sizeof_cell)+tile_pal2,ost_tile(a0)
 		ori.b	#render_rel,ost_render(a0)
 		move.b	#0,ost_priority(a0)
 		move.b	#$20,ost_displaywidth(a0)
