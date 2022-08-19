@@ -75,16 +75,6 @@ index:		macro
 		index_width: equs "\0"
 		endc
 		
-		if strcmp("\index_width","b")
-		index_width_int: = 1
-		elseif strcmp("\index_width","w")
-		index_width_int: = 2
-		elseif strcmp("\index_width","l")
-		index_width_int: = 4
-		else
-		fail
-		endc
-		
 		if strlen("\2")=0				; check if first pointer id is defined
 		ptr_id: = 0					; use 0 by default
 		else
@@ -366,17 +356,6 @@ endobj:		macro
 		endm
 
 ; ---------------------------------------------------------------------------
-; Saves file size to constant without using filesize function
-; input: label, file name (including folder)
-; ---------------------------------------------------------------------------
-
-file_size:	macro lbl,file
-		incbin	\file					; write file to ROM
-		\lbl: equ *					; current address is same as size
-		org 0						; return to start of ROM and overwrite from here
-		endm
-
-; ---------------------------------------------------------------------------
 ; Define an external file
 ; input: label, file name (including folder), extension (actual),
 ;  extension (uncompressed)
@@ -385,7 +364,7 @@ file_size:	macro lbl,file
 filedef:	macro lbl,file,ex1,ex2
 		filename: equs \file				; get file name without quotes
 		file_\lbl: equs "\filename\.\ex1"		; record file name
-		file_size sizeof_\lbl,"\filename\.\ex2"		; record file size of associated uncompressed file
+		sizeof_\lbl: equ filesize("\filename\.\ex2")	; record file size of associated uncompressed file
 		endm
 
 ; ---------------------------------------------------------------------------
