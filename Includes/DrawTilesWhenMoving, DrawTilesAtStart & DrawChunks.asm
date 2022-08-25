@@ -248,10 +248,10 @@ DrawBGScrollBlock2:
 			move.w	4(a3),d1			; get bg y position
 			andi.w	#$FFF0,d1			; round down to nearest 16
 			sub.w	d1,d4				; d4 = height of screen that isn't bg block 1
-			pushr	d4			; save to stack
+			move.w	d4,-(sp)			; save to stack
 			moveq	#-16,d5				; x coordinate
 			bsr.w	Calc_VRAM_Pos			; d0 = VDP command for bg nametable
-			popr	d4			; retrieve y coordinate from stack
+			move.w	(sp)+,d4			; retrieve y coordinate from stack
 			moveq	#-16,d5
 			move.w	(v_scroll_block_1_height).w,d6
 			move.w	4(a3),d1
@@ -271,10 +271,10 @@ DrawBGScrollBlock2:
 			move.w	4(a3),d1
 			andi.w	#$FFF0,d1
 			sub.w	d1,d4
-			pushr	d4
+			move.w	d4,-(sp)
 			move.w	#320,d5
 			bsr.w	Calc_VRAM_Pos
-			popr	d4
+			move.w	(sp)+,d4
 			move.w	#320,d5
 			move.w	(v_scroll_block_1_height).w,d6
 			move.w	4(a3),d1
@@ -329,10 +329,10 @@ DrawBGScrollBlock2_Unused:
 			move.w	4(a3),d1
 			andi.w	#$FFF0,d1
 			sub.w	d1,d4
-			pushr	d4
+			move.w	d4,-(sp)
 			moveq	#-16,d5
 			bsr.w	Calc_VRAM_Pos_Unknown
-			popr	d4
+			move.w	(sp)+,d4
 			moveq	#-16,d5
 			moveq	#3-1,d6				; Draw only three rows
 			bsr.w	DrawColumn_Partial
@@ -345,10 +345,10 @@ DrawBGScrollBlock2_Unused:
 			move.w	4(a3),d1
 			andi.w	#$FFF0,d1
 			sub.w	d1,d4
-			pushr	d4
+			move.w	d4,-(sp)
 			move.w	#320,d5
 			bsr.w	Calc_VRAM_Pos_Unknown
-			popr	d4
+			move.w	(sp)+,d4
 			move.w	#320,d5
 			moveq	#3-1,d6
 			bsr.w	DrawColumn_Partial
