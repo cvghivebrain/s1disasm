@@ -236,7 +236,7 @@ Drown_Countdown:; Routine $A
 		move.b	#$A,ost_drown_extra_bub(a0)
 		move.w	#1,ost_drown_extra_flag(a0)
 		move.w	#120,ost_drown_restart_time(a0)		; restart after 2 seconds
-		move.l	a0,-(sp)				; save OST address to stack
+		pushr	a0					; save OST address to stack
 		lea	(v_ost_player).w,a0			; use Sonic's OST temporarily
 		bsr.w	Sonic_ResetOnFloor			; clear Sonic's status flags
 		move.b	#id_Drown,ost_anim(a0)			; use Sonic's drowning animation
@@ -246,7 +246,7 @@ Drown_Countdown:; Routine $A
 		move.w	#0,ost_x_vel(a0)
 		move.w	#0,ost_inertia(a0)
 		move.b	#1,(f_disable_scrolling).w
-		movea.l	(sp)+,a0				; restore OST from stack
+		popr	a0					; restore OST from stack
 		rts	
 ; ===========================================================================
 
@@ -258,11 +258,11 @@ Drown_Countdown:; Routine $A
 ; ===========================================================================
 
 	.delay_death:
-		move.l	a0,-(sp)				; save OST address to stack
+		pushr	a0					; save OST address to stack
 		lea	(v_ost_player).w,a0			; use Sonic's OST temporarily
 		jsr	(SpeedToPos).l				; update Sonic's position
 		addi.w	#$10,ost_y_vel(a0)			; make Sonic fall
-		movea.l	(sp)+,a0				; restore OST
+		popr	a0					; restore OST
 		bra.s	.create_bubble
 ; ===========================================================================
 

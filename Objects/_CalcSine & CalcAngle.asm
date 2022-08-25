@@ -32,7 +32,7 @@ include_CalcAngle:	macro
 
 		if Revision=0
 CalcSqrt:
-			movem.l	d1-d2,-(sp)			; preserve d1 and d2 in stack
+			pushr	d1-d2				; preserve d1 and d2 in stack
 			move.w	d0,d1
 			swap	d1				; copy input to high word of d1
 			moveq	#0,d0
@@ -57,7 +57,7 @@ CalcSqrt:
 			addq.w	#1,d0
 			dbf	d2,.loop
 			lsr.w	#1,d0
-			movem.l	(sp)+,d1-d2
+			popr	d1-d2
 			rts
 		endc
 
@@ -73,7 +73,7 @@ CalcSqrt:
 ; ---------------------------------------------------------------------------
 
 CalcAngle:
-		movem.l	d3-d4,-(sp)
+		pushr	d3-d4
 		moveq	#0,d3
 		moveq	#0,d4
 		move.w	d1,d3					; d3 = x distance
@@ -119,13 +119,13 @@ CalcAngle_ChkRotation:
 		addi.w	#$100,d0
 
 	.y_positive:
-		movem.l	(sp)+,d3-d4
+		popr	d3-d4
 		rts	
 ; ===========================================================================
 
 CalcAngle_Both0:
 		move.w	#$40,d0
-		movem.l	(sp)+,d3-d4
+		popr	d3-d4
 		rts
 
 		endm

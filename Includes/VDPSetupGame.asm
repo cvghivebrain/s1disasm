@@ -30,7 +30,7 @@ VDPSetupGame:
 
 		clr.l	(v_fg_y_pos_vsram).w
 		clr.l	(v_fg_x_pos_hscroll).w
-		move.l	d1,-(sp)
+		pushr	d1
 		dma_fill	0,$FFFF,0			; clear the VRAM (also sets a5 to vdp_control_port)
 
 	.waitforDMA:
@@ -39,7 +39,7 @@ VDPSetupGame:
 		bne.s	.waitforDMA				; if yes, branch
 
 		move.w	#$8F02,(a5)				; set VDP increment size
-		move.l	(sp)+,d1
+		popr	d1
 		rts
 
 ; ===========================================================================

@@ -8,7 +8,7 @@ LevelDataLoad:
 		lsl.w	#4,d0					; multiply by 16
 		lea	(LevelHeaders).l,a2			; address of level headers
 		lea	(a2,d0.w),a2				; jump to relevant level header
-		move.l	a2,-(sp)				; save address to stack
+		pushr	a2					; save address to stack
 		addq.l	#4,a2					; skip to 16x16 mappings pointer
 		movea.l	(a2)+,a0				; load pointer
 		lea	(v_16x16_tiles).w,a1			; RAM address for 16x16 mappings
@@ -36,7 +36,7 @@ LevelDataLoad:
 
 	.normalpal:
 		bsr.w	PalLoad_Next				; load palette (based on d0)
-		movea.l	(sp)+,a2				; retrieve level header address from stack
+		popr	a2				; retrieve level header address from stack
 		addq.w	#4,a2					; jump to 2nd PLC
 		moveq	#0,d0
 		move.b	(a2),d0					; read 2nd PLC id

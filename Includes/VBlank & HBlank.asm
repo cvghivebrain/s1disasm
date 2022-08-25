@@ -3,7 +3,7 @@
 ; ---------------------------------------------------------------------------
 
 VBlank:
-		movem.l	d0-a6,-(sp)				; save all registers to stack
+		pushr	d0-a6					; save all registers to stack
 		tst.b	(v_vblank_routine).w			; is routine number 0?
 		beq.s	VBlank_Lag				; if yes, branch
 		move.w	(vdp_control_port).l,d0
@@ -29,7 +29,7 @@ VBlank_Music:
 
 VBlank_Exit:
 		addq.l	#1,(v_vblank_counter).w			; increment frame counter
-		movem.l	(sp)+,d0-a6				; restore all registers from stack
+		popr	d0-a6					; restore all registers from stack
 		rte						; end of VBlank
 ; ===========================================================================
 VBlank_Index:	index *,,2
@@ -313,7 +313,7 @@ HBlank:
 		tst.w	(f_hblank_pal_change).w			; is palette set to change during HBlank?
 		beq.s	.nochg					; if not, branch
 		move.w	#0,(f_hblank_pal_change).w
-		movem.l	a0-a1,-(sp)				; save a0-a1 to stack
+		pushr	a0-a1					; save a0-a1 to stack
 		lea	(vdp_data_port).l,a1
 		lea	(v_pal_water).w,a0			; get palette from RAM
 		move.l	#$C0000000,4(a1)			; set VDP to CRAM write
@@ -321,7 +321,7 @@ HBlank:
 		move.l	(a0)+,(a1)				; copy palette to CRAM
 		endr
 		move.w	#$8A00+223,4(a1)			; reset HBlank register
-		movem.l	(sp)+,a0-a1				; restore a0-a1 from stack
+		popr	a0-a1					; restore a0-a1 from stack
 		tst.b	(f_hblank_run_snd).w			; is flag set to update sound & some graphics during HBlank?
 		bne.s	.update_hblank				; if yes, branch
 
@@ -332,8 +332,8 @@ HBlank:
 ; The following only runs during a level and HBlank is set to run on line 96 or below
 .update_hblank:
 		clr.b	(f_hblank_run_snd).w
-		movem.l	d0-a6,-(sp)				; save registers to stack
+		pushr	d0-a6					; save registers to stack
 		bsr.w	DrawTiles_LevelGfx_HUD_PLC		; display new tiles, update animated gfx, update HUD, decompress 3 cells of Nemesis gfx
 		jsr	(UpdateSound).l				; update audio
-		movem.l	(sp)+,d0-a6				; restore registers from stack
+		popr	d0-a6					; restore registers from stack
 		rte						; end of HBlank

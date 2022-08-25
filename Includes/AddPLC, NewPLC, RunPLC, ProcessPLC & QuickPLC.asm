@@ -6,7 +6,7 @@
 ; ---------------------------------------------------------------------------
 
 AddPLC:
-		movem.l	a1-a2,-(sp)				; save a1/a2 to stack
+		pushr	a1-a2					; save a1/a2 to stack
 		lea	(PatternLoadCues).l,a1
 		add.w	d0,d0
 		move.w	(a1,d0.w),d0
@@ -30,7 +30,7 @@ AddPLC:
 		dbf	d0,.loop				; repeat for all items in PLC
 
 	.skip:
-		movem.l	(sp)+,a1-a2				; restore a1/a2 from stack
+		popr	a1-a2					; restore a1/a2 from stack
 		rts
 
 ; ---------------------------------------------------------------------------
@@ -42,7 +42,7 @@ AddPLC:
 ; ---------------------------------------------------------------------------
 
 NewPLC:
-		movem.l	a1-a2,-(sp)				; save a1/a2 to stack
+		pushr	a1-a2					; save a1/a2 to stack
 		lea	(PatternLoadCues).l,a1
 		add.w	d0,d0
 		move.w	(a1,d0.w),d0
@@ -58,7 +58,7 @@ NewPLC:
 		dbf	d0,.loop				; repeat for all items in PLC
 
 	.skip:
-		movem.l	(sp)+,a1-a2				; restore a1/a2 from stack
+		popr	a1-a2					; restore a1/a2 from stack
 		rts
 
 ; ---------------------------------------------------------------------------

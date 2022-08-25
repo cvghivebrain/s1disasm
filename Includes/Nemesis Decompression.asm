@@ -13,7 +13,7 @@
 ; ---------------------------------------------------------------------------
 
 NemDec:
-		movem.l	d0-a1/a3-a5,-(sp)
+		pushr	d0-a1/a3-a5
 		lea	(NemPCD_WriteRowToVDP).l,a3		; write all data to the same location
 		lea	(vdp_data_port).l,a4			; specifically, to the VDP data port
 		bra.s	NemDecMain
@@ -27,7 +27,7 @@ NemDec:
 ; ---------------------------------------------------------------------------
 
 NemDecToRAM:
-		movem.l	d0-a1/a3-a5,-(sp)
+		pushr	d0-a1/a3-a5
 		lea	(NemPCD_WriteRowToRAM).l,a3		; advance to the next location after each write
 
 NemDecMain:
@@ -49,7 +49,7 @@ loc_146A:
 		move.b	(a0)+,d5				; get second byte of compressed data
 		move.w	#$10,d6					; set initial shift value
 		bsr.s	NemDec_ProcessCompressedData
-		movem.l	(sp)+,d0-a1/a3-a5
+		popr	d0-a1/a3-a5
 		rts
 
 ; ---------------------------------------------------------------------------

@@ -302,10 +302,10 @@ BSpike_Update:
 		bset	#status_air_bit,ost_status(a2)
 		bclr	#status_platform_bit,ost_status(a2)
 		clr.b	ost_sonic_jump(a2)
-		move.l	a0,-(sp)				; save spikeball OST address to stack
+		pushr	a0					; save spikeball OST address to stack
 		lea	(a2),a0					; pretend Sonic is current object
 		jsr	(Sonic_ChkRoll).l			; allow Sonic to bounce-roll off seesaw
-		movea.l	(sp)+,a0				; restore spikeball OST
+		popr	a0					; restore spikeball OST
 		move.b	#id_Sonic_Control,ost_routine(a2)
 		play.w	1, jsr, sfx_Spring			; play "spring" sound
 

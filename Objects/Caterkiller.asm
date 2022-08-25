@@ -193,7 +193,7 @@ Cat_Floor:
 		move.l	d2,ost_x_pos(a0)			; update position
 		if Revision=0
 			jsr	(FindFloorObj).l
-			move.l	(sp)+,d2			; retrieve previous x pos from stack
+			popr	d2				; retrieve previous x pos from stack
 			cmpi.w	#-8,d1
 			blt.s	.turn_around			; branch if > 8px below floor
 			cmpi.w	#$C,d1

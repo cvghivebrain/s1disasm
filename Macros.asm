@@ -12,6 +12,26 @@ align:		macro
 		endm
 
 ; ---------------------------------------------------------------------------
+; Save and restore registers from the stack.
+; ---------------------------------------------------------------------------
+
+pushr:		macro
+		if strlen("\1")>2
+		movem.l	\1,-(sp)				; save multiple registers
+		else
+		move.l	\1,-(sp)				; save one register
+		endc
+		endm
+
+popr:		macro
+		if strlen("\1")>2
+		movem.l	(sp)+,\1				; restore multiple registers
+		else
+		move.l	(sp)+,\1				; restore one register
+		endc
+		endm
+
+; ---------------------------------------------------------------------------
 ; Align and pad RAM sections so that they are divisible by a longword.
 ; ---------------------------------------------------------------------------
 

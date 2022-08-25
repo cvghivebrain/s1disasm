@@ -265,10 +265,10 @@ Solid_TopBtmAir:
 Solid_Squash:
 		btst	#status_air_bit,ost_status(a1)		; is Sonic in the air?
 		bne.s	Solid_TopBtmAir				; if yes, branch
-		move.l	a0,-(sp)				; save address of OST of current object to stack
+		pushr	a0					; save address of OST of current object to stack
 		movea.l	a1,a0					; temporarily make Sonic the current object
 		jsr	(KillSonic).l				; kill Sonic
-		movea.l	(sp)+,a0				; restore address of OST of current object from stack
+		popr	a0					; restore address of OST of current object from stack
 		moveq	#-1,d4					; return top/bottom collision
 		rts	
 ; ===========================================================================
@@ -327,10 +327,10 @@ Solid_ResetFloor:
 		move.w	ost_x_vel(a1),ost_inertia(a1)
 		btst	#status_air_bit,ost_status(a1)		; is Sonic in the air?
 		beq.s	.notinair				; if not, branch
-		move.l	a0,-(sp)				; save address of OST of current object to stack
+		pushr	a0					; save address of OST of current object to stack
 		movea.l	a1,a0					; temporarily make Sonic the current object
 		jsr	(Sonic_ResetOnFloor).l			; reset Sonic as if on floor
-		movea.l	(sp)+,a0				; restore address of OST of current object from stack
+		popr	a0					; restore address of OST of current object from stack
 
 	.notinair:
 		bset	#status_platform_bit,ost_status(a1)	; set object standing flag

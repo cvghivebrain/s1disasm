@@ -246,11 +246,11 @@ SS_BGLoad:
 		lea	(v_ss_enidec_buffer).l,a1		; use tilemap for checkerboard pattern
 
 	.is_birdfish:
-		movem.l	d0-d4,-(sp)
+		pushr	d0-d4
 		moveq	#fish_width-1,d1
 		moveq	#fish_height-1,d2
 		bsr.w	TilemapToVRAM				; copy tilemap for 1 bird or fish from RAM to VRAM
-		movem.l	(sp)+,d0-d4
+		popr	d0-d4
 
 	.skip_birdfish:
 		addi.l	#(fish_width*2)<<16,d0			; skip 8 cells ($10 bytes)

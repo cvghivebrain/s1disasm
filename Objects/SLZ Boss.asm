@@ -237,10 +237,10 @@ BSLZ_MakeBall:
 		adda.w	#sizeof_ost,a1				; next OST slot
 		dbf	d1,.loop				; repeat for all OST slots
 
-		move.l	a0,-(sp)				; save current OST address to stack
+		pushr	a0					; save current OST address to stack
 		lea	(a2),a0					; pretend the seesaw is current object
 		jsr	(FindNextFreeObj).l			; find free OST slot after this one
-		movea.l	(sp)+,a0				; restore current OST
+		popr	a0					; restore current OST
 		bne.s	.exit					; branch if free OST slot not found
 
 		move.b	#id_BossSpikeball,(a1)			; load spiked ball object

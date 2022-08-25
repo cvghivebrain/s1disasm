@@ -94,7 +94,7 @@ Spike_Upright:
 Spike_Hurt:
 		tst.b	(v_invincibility).w			; is Sonic invincible?
 		bne.s	Spike_Display				; if yes, branch
-		move.l	a0,-(sp)				; save OST address for spikes to stack
+		pushr	a0					; save OST address for spikes to stack
 		movea.l	a0,a2					; a2 is OST for spikes now
 		lea	(v_ost_player).w,a0			; a0 is temporarily Sonic now
 		cmpi.b	#id_Sonic_Hurt,ost_routine(a0)		; is Sonic hurt or dead?
@@ -116,7 +116,7 @@ Spike_Hurt:
 		jsr	(HurtSonic).l				; lose rings/die
 
 	Spike_Skip_Hurt:
-		movea.l	(sp)+,a0				; restore OST address for spikes from stack
+		popr	a0					; restore OST address for spikes from stack
 
 Spike_Display:
 		bsr.w	DisplaySprite

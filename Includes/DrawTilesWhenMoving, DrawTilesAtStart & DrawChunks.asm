@@ -248,10 +248,10 @@ DrawBGScrollBlock2:
 			move.w	4(a3),d1			; get bg y position
 			andi.w	#$FFF0,d1			; round down to nearest 16
 			sub.w	d1,d4				; d4 = height of screen that isn't bg block 1
-			move.w	d4,-(sp)			; save to stack
+			pushr	d4			; save to stack
 			moveq	#-16,d5				; x coordinate
 			bsr.w	Calc_VRAM_Pos			; d0 = VDP command for bg nametable
-			move.w	(sp)+,d4			; retrieve y coordinate from stack
+			popr	d4			; retrieve y coordinate from stack
 			moveq	#-16,d5
 			move.w	(v_scroll_block_1_height).w,d6
 			move.w	4(a3),d1
@@ -271,10 +271,10 @@ DrawBGScrollBlock2:
 			move.w	4(a3),d1
 			andi.w	#$FFF0,d1
 			sub.w	d1,d4
-			move.w	d4,-(sp)
+			pushr	d4
 			move.w	#320,d5
 			bsr.w	Calc_VRAM_Pos
-			move.w	(sp)+,d4
+			popr	d4
 			move.w	#320,d5
 			move.w	(v_scroll_block_1_height).w,d6
 			move.w	4(a3),d1
@@ -329,10 +329,10 @@ DrawBGScrollBlock2_Unused:
 			move.w	4(a3),d1
 			andi.w	#$FFF0,d1
 			sub.w	d1,d4
-			move.w	d4,-(sp)
+			pushr	d4
 			moveq	#-16,d5
 			bsr.w	Calc_VRAM_Pos_Unknown
-			move.w	(sp)+,d4
+			popr	d4
 			moveq	#-16,d5
 			moveq	#3-1,d6				; Draw only three rows
 			bsr.w	DrawColumn_Partial
@@ -345,10 +345,10 @@ DrawBGScrollBlock2_Unused:
 			move.w	4(a3),d1
 			andi.w	#$FFF0,d1
 			sub.w	d1,d4
-			move.w	d4,-(sp)
+			pushr	d4
 			move.w	#320,d5
 			bsr.w	Calc_VRAM_Pos_Unknown
-			move.w	(sp)+,d4
+			popr	d4
 			move.w	#320,d5
 			moveq	#3-1,d6
 			bsr.w	DrawColumn_Partial
@@ -383,17 +383,17 @@ DrawBGScrollBlock2_SBZ:
 			movea.w	(a3,d0.w),a3			; get pointer to bg block 1/2/3 x pos
 			beq.s	.bg_x_pos_0			; branch if 0
 			moveq	#-16,d5				; x coordinate
-			movem.l	d4/d5,-(sp)
+			pushr	d4/d5
 			bsr.w	Calc_VRAM_Pos			; d0 = VDP command for bg nametable
-			movem.l	(sp)+,d4/d5
+			popr	d4/d5
 			bsr.w	DrawRow				; draw full row on top or bottom of screen
 			bra.s	.chk_other
 ;===============================================================================
 	.bg_x_pos_0:
 			moveq	#0,d5
-			movem.l	d4/d5,-(sp)
+			pushr	d4/d5
 			bsr.w	Calc_VRAM_Pos_IgnoreX
-			movem.l	(sp)+,d4/d5
+			popr	d4/d5
 			moveq	#(512/16)-1,d6			; draw entire row
 			bsr.w	DrawRow_IgnoreX
 	.chk_other:
@@ -479,17 +479,17 @@ DrawBGScrollBlock3_MZ:
 			movea.w	DrawBG_XPosCopy_Ptrs(pc,d0.w),a3
 			beq.s	locj_6F9A
 			moveq	#-16,d5
-			movem.l	d4/d5,-(sp)
+			pushr	d4/d5
 			bsr.w	Calc_VRAM_Pos
-			movem.l	(sp)+,d4/d5
+			popr	d4/d5
 			bsr.w	DrawRow
 			bra.s	locj_6FAE
 ;===============================================================================
 	locj_6F9A:
 			moveq	#0,d5
-			movem.l	d4/d5,-(sp)
+			pushr	d4/d5
 			bsr.w	Calc_VRAM_Pos_IgnoreX
-			movem.l	(sp)+,d4/d5
+			popr	d4/d5
 			moveq	#(512/16)-1,d6
 			bsr.w	DrawRow_IgnoreX
 	locj_6FAE:
@@ -526,13 +526,13 @@ DrawBGScrollBlock3_MZ:
 			btst	d0,(a2)
 			beq.s	locj_701C
 			movea.w	DrawBG_XPosCopy_Ptrs(pc,d0.w),a3
-			movem.l	d4/d5/a0,-(sp)
-			movem.l	d4/d5,-(sp)
+			pushr	d4/d5/a0
+			pushr	d4/d5
 			bsr.w	GetBlockData
-			movem.l	(sp)+,d4/d5
+			popr	d4/d5
 			bsr.w	Calc_VRAM_Pos
 			bsr.w	DrawBlock
-			movem.l	(sp)+,d4/d5/a0
+			popr	d4/d5/a0
 	locj_701C:
 			addi.w	#16,d4
 			dbf	d6,locj_6FF4
@@ -564,13 +564,13 @@ DrawRow_Partial:
 		move.l	d0,d1
 
 	.loop:
-		movem.l	d4-d5,-(sp)
+		pushr	d4-d5
 		bsr.w	GetBlockData
 		move.l	d1,d0
 		bsr.w	DrawBlock
 		addq.b	#4,d1					; two tiles ahead
 		andi.b	#$7F,d1					; wrap around row
-		movem.l	(sp)+,d4-d5
+		popr	d4-d5
 		addi.w	#16,d5					; x coordinate of next block
 		dbf	d6,.loop
 		rts
@@ -582,13 +582,13 @@ DrawRow_IgnoreX:
 			move.l	d0,d1
 
 	.loop:
-			movem.l	d4-d5,-(sp)
+			pushr	d4-d5
 			bsr.w	GetBlockData_IgnoreX
 			move.l	d1,d0
 			bsr.w	DrawBlock
 			addq.b	#4,d1
 			andi.b	#$7F,d1
-			movem.l	(sp)+,d4-d5
+			popr	d4-d5
 			addi.w	#16,d5
 			dbf	d6,.loop
 			rts
@@ -617,13 +617,13 @@ DrawColumn_Partial:
 		move.l	d0,d1
 
 	.loop:
-		movem.l	d4-d5,-(sp)
+		pushr	d4-d5
 		bsr.w	GetBlockData
 		move.l	d1,d0
 		bsr.w	DrawBlock
 		addi.w	#$100,d1				; two rows ahead
 		andi.w	#$FFF,d1				; wrap around plane
-		movem.l	(sp)+,d4-d5
+		popr	d4-d5
 		addi.w	#16,d4					; x coordinate of next block
 		dbf	d6,.loop
 		rts
@@ -891,7 +891,7 @@ DrawChunks:
 		moveq	#((224+16+16)/16)-1,d6			; draw entire height of screen
 
 	.loop:
-		movem.l	d4-d6,-(sp)
+		pushr	d4-d6
 		moveq	#0,d5					; draw from left edge of screen
 		move.w	d4,d1
 		bsr.w	Calc_VRAM_Pos
@@ -899,7 +899,7 @@ DrawChunks:
 		moveq	#0,d5
 		moveq	#(512/16)-1,d6				; draw full row
 		bsr.w	DrawRow_Partial
-		movem.l	(sp)+,d4-d6
+		popr	d4-d6
 		addi.w	#16,d4					; next row
 		dbf	d6,.loop
 		rts
@@ -911,13 +911,13 @@ DrawTilesAtStart_GHZ:
 			moveq	#0,d4
 			moveq	#((224+16+16)/16)-1,d6
 	locj_7224:			
-			movem.l	d4-d6,-(sp)
+			pushr	d4-d6
 			lea	(locj_724a),a0
 			move.w	(v_bg1_y_pos).w,d0
 			add.w	d4,d0
 			andi.w	#$F0,d0
 			bsr.w	locj_72Ba
-			movem.l	(sp)+,d4-d6
+			popr	d4-d6
 			addi.w	#16,d4
 			dbf	d6,locj_7224
 			rts
@@ -928,14 +928,14 @@ DrawTilesAtStart_MZ:
 			moveq	#-16,d4
 			moveq	#((224+16+16)/16)-1,d6
 	locj_725E:			
-			movem.l	d4-d6,-(sp)
+			pushr	d4-d6
 			lea	(locj_6EF2+1),a0
 			move.w	(v_bg1_y_pos).w,d0
 			subi.w	#$200,d0
 			add.w	d4,d0
 			andi.w	#$7F0,d0
 			bsr.w	locj_72Ba
-			movem.l	(sp)+,d4-d6
+			popr	d4-d6
 			addi.w	#16,d4
 			dbf	d6,locj_725E
 			rts
@@ -944,13 +944,13 @@ DrawTilesAtStart_SBZ1:
 			moveq	#-16,d4
 			moveq	#((224+16+16)/16)-1,d6
 	locj_728C:			
-			movem.l	d4-d6,-(sp)
+			pushr	d4-d6
 			lea	(locj_6DF4+1),a0
 			move.w	(v_bg1_y_pos).w,d0
 			add.w	d4,d0
 			andi.w	#$1F0,d0
 			bsr.w	locj_72Ba
-			movem.l	(sp)+,d4-d6
+			popr	d4-d6
 			addi.w	#16,d4
 			dbf	d6,locj_728C
 			rts
@@ -963,16 +963,16 @@ locj_72Ba:
 			movea.w	locj_72B2(pc,d0.w),a3
 			beq.s	locj_72da
 			moveq	#-16,d5
-			movem.l	d4/d5,-(sp)
+			pushr	d4/d5
 			bsr.w	Calc_VRAM_Pos
-			movem.l	(sp)+,d4/d5
+			popr	d4/d5
 			bsr.w	DrawRow
 			bra.s	locj_72EE
 	locj_72da:
 			moveq	#0,d5
-			movem.l	d4/d5,-(sp)
+			pushr	d4/d5
 			bsr.w	Calc_VRAM_Pos_IgnoreX
-			movem.l	(sp)+,d4/d5
+			popr	d4/d5
 			moveq	#(512/16)-1,d6
 			bsr.w	DrawRow_IgnoreX
 	locj_72EE:

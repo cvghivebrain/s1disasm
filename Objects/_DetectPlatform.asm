@@ -77,10 +77,10 @@ Plat_NoCheck:							; jump here to skip all checks
 		move.w	ost_x_vel(a1),ost_inertia(a1)
 		btst	#status_air_bit,ost_status(a1)		; is Sonic in the air/jumping?
 		beq.s	.notinair				; if not, branch
-		move.l	a0,-(sp)
+		pushr	a0
 		movea.l	a1,a0
 		jsr	(Sonic_ResetOnFloor).l			; make Sonic land
-		movea.l	(sp)+,a0
+		popr	a0
 
 	.notinair:
 		bset	#status_platform_bit,ost_status(a1)
