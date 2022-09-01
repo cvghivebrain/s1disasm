@@ -20,6 +20,7 @@ include_MusicList:	macro
 ; ---------------------------------------------------------------------------
 
 GM_Level:
+GM_Demo:
 		bset	#7,(v_gamemode).w			; add $80 to gamemode (for pre level sequence)
 		tst.w	(v_demo_mode).w				; is this an ending demo?
 		bmi.s	.keep_music				; if yes, branch

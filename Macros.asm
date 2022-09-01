@@ -1,5 +1,5 @@
 ; ---------------------------------------------------------------------------
-; Test if argument is used
+; Test if macro argument is used
 ; ---------------------------------------------------------------------------
 
 ifarg		macros
@@ -13,11 +13,11 @@ ifnotarg	macros
 ; input: length to align to, value to use as padding (default is 0)
 ; ---------------------------------------------------------------------------
 
-align:		macro
-		if narg=1
-		dcb.b (\1-(*%\1))%\1,0
+align:		macro length,value
+		ifarg \value
+		dcb.b (\length-(*%\length))%\length,\value
 		else
-		dcb.b (\1-(*%\1))%\1,\2
+		dcb.b (\length-(*%\length))%\length,0
 		endc
 		endm
 
@@ -208,7 +208,7 @@ dma:		macro source,length,dest1,dest2
 		endm
 
 ; ---------------------------------------------------------------------------
-; DMA fill VRAM with a value.
+; DMA fill VRAM with a byte value.
 ; input: value, length, destination
 ; uses d1, a5
 ; ---------------------------------------------------------------------------
@@ -219,7 +219,7 @@ dma_fill:	macro value,length,dest
 		move.l	#$94000000+(((length)&$FF00)<<8)+$9300+((length)&$FF),(a5) ; set length of DMA
 		move.w	#$9780,(a5)				; set DMA mode to fill
 		move.l	#$40000080+(((dest)&$3FFF)<<16)+(((dest)&$C000)>>14),(a5) ; set target of DMA
-		move.w	#value,(vdp_data_port).l		; set byte to fill with
+		move.w	#value<<8,(vdp_data_port).l		; set byte to fill with
 	.wait_for_dma\@:
 		move.w	(a5),d1					; get status register
 		btst	#1,d1					; is DMA in progress?
@@ -229,6 +229,7 @@ dma_fill:	macro value,length,dest
 
 ; ---------------------------------------------------------------------------
 ; Disable display
+; uses d0
 ; ---------------------------------------------------------------------------
 
 disable_display:	macro
@@ -239,6 +240,7 @@ disable_display:	macro
 
 ; ---------------------------------------------------------------------------
 ; Enable display
+; uses d0
 ; ---------------------------------------------------------------------------
 
 enable_display:	macro
@@ -263,6 +265,7 @@ zonewarning:	macro dest,elementsize
 ; ---------------------------------------------------------------------------
 ; Copy a tilemap from 68K (ROM/RAM) to the VRAM without using DMA
 ; input: source, destination, width [cells], height [cells]
+; uses d0, d1, d2, d3, d4, a1
 ; ---------------------------------------------------------------------------
 
 copyTilemap:	macro source,dest,x,y,width,height
@@ -277,6 +280,7 @@ copyTilemap:	macro source,dest,x,y,width,height
 ; ---------------------------------------------------------------------------
 ; check if object moves out of range
 ; input: location to jump to if out of range, x-axis pos (ost_x_pos(a0) by default)
+; uses d0, d1
 ; ---------------------------------------------------------------------------
 
 out_of_range:	macro exit,pos

@@ -183,22 +183,18 @@ MainGameLoop:
 ; ---------------------------------------------------------------------------
 gmptr:		macro
 		id_\1:	equ *-GameModeArray
-		if narg=1
 		bra.w	GM_\1
-		else
-		bra.w	GM_\2
-		endc
 		endm
 
 GameModeArray:
-		gmptr Sega					; Sega Screen ($00)
-		gmptr Title					; Title	Screen ($04)
-		gmptr Demo, Level				; Demo Mode ($08)
-		gmptr Level					; Normal Level ($0C)
-		gmptr Special					; Special Stage	($10)
-		gmptr Continue					; Continue Screen ($14)
-		gmptr Ending					; End of game sequence ($18)
-		gmptr Credits					; Credits ($1C)
+		gmptr Sega					; 0 - Sega screen (Includes\GM_Sega.asm)
+		gmptr Title					; 4 - Title screen (Includes\GM_Title.asm)
+		gmptr Demo					; 8 - Demo mode (Includes\GM_Level.asm - contains both demo and level)
+		gmptr Level					; $C - Normal level (Includes\GM_Level.asm)
+		gmptr Special					; $10 - Special stage (Includes\GM_Special.asm)
+		gmptr Continue					; $14 - Continue screen (Includes\GM_Continue.asm)
+		gmptr Ending					; $18 - End of game sequence (Includes\GM_Ending.asm)
+		gmptr Credits					; $1C - Credits (Includes\GM_Credits.asm)
 		rts
 ; ===========================================================================
 
