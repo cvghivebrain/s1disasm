@@ -1,4 +1,14 @@
 ; ---------------------------------------------------------------------------
+; Test if argument is used
+; ---------------------------------------------------------------------------
+
+ifarg		macros
+		if strlen("\1")>0
+
+ifnotarg	macros
+		if strlen("\1")=0
+
+; ---------------------------------------------------------------------------
 ; Align and pad.
 ; input: length to align to, value to use as padding (default is 0)
 ; ---------------------------------------------------------------------------
@@ -55,7 +65,7 @@ rsblockend:	macro
 
 rsobj:		macro name,start
 		rsobj_name: equs "\name"			; remember name of current object
-		if strlen("\start")>0
+		ifarg \start
 		rsset \start					; start at specified position
 		else
 		rsset ost_used					; start at end of regular OST usage
@@ -79,31 +89,33 @@ rsobjend:	macro
 ;  relative to themselves), id start (default 0), id increment (default 1)
 ; ---------------------------------------------------------------------------
 
-index:		macro
+index:		macro start,idstart,idinc
 		nolist
 		pusho
 		opt	m-
 
-		if strlen("\1")>0				; check if start is defined
-		index_start: = \1
+		ifarg \start					; check if start is defined
+		index_start: = \start
 		else
 		index_start: = -1
 		endc
-		if strlen("\0")=0				; check if width is defined (b, w, l)
-		index_width: equs "w"				; use w by default
-		else
+
+		ifarg \0					; check if width is defined (b, w, l)
 		index_width: equs "\0"
+		else
+		index_width: equs "w"				; use w by default
 		endc
 		
-		if strlen("\2")=0				; check if first pointer id is defined
+		ifarg \idstart					; check if first pointer id is defined
+		ptr_id: = \idstart
+		else
 		ptr_id: = 0					; use 0 by default
-		else
-		ptr_id: = \2
 		endc
-		if strlen("\3")=0				; check if pointer id increment is defined
-		ptr_id_inc: = 1					; use 1 by default
+
+		ifarg \idinc					; check if pointer id increment is defined
+		ptr_id_inc: = \idinc
 		else
-		ptr_id_inc: = \3
+		ptr_id_inc: = 1					; use 1 by default
 		endc
 		
 		popo
@@ -112,7 +124,7 @@ index:		macro
 
 ; ---------------------------------------------------------------------------
 ; Item in a pointer index.
-; input: pointer target, pointer label array (optional)
+; input: pointer target
 ; ---------------------------------------------------------------------------
 
 ptr:		macro
@@ -151,10 +163,10 @@ ptr:		macro
 ; ---------------------------------------------------------------------------
 
 locVRAM:	macro loc,controlport
-		if narg=1
-		move.l	#($40000000+(((loc)&$3FFF)<<16)+(((loc)&$C000)>>14)),(vdp_control_port).l
-		else
+		ifarg \controlport
 		move.l	#($40000000+(((loc)&$3FFF)<<16)+(((loc)&$C000)>>14)),\controlport
+		else
+		move.l	#($40000000+(((loc)&$3FFF)<<16)+(((loc)&$C000)>>14)),(vdp_control_port).l
 		endc
 		endm
 
@@ -164,32 +176,32 @@ locVRAM:	macro loc,controlport
 ;  cram/vsram destination (0 by default)
 ; ---------------------------------------------------------------------------
 
-dma:		macro
+dma:		macro source,length,dest1,dest2
 		dma_type: = $4000
 		dma_type2: = $80
 		
-		if strcmp("\3","cram")
+		if strcmp("\dest1","cram")
 		dma_type: = $C000
-			if strlen("\4")=0
-			dma_dest: = 0
+			ifarg \dest2
+			dma_dest: =\dest2
 			else
-			dma_dest: = \4
+			dma_dest: = 0
 			endc
-		elseif strcmp("\3","vsram")
+		elseif strcmp("\dest1","vsram")
 		dma_type2: = $90
-			if strlen("\4")=0
-			dma_dest: = 0
+			ifarg \dest2
+			dma_dest: =\dest2
 			else
-			dma_dest: = \4
+			dma_dest: = 0
 			endc
 		else
-		dma_dest: = \3
+		dma_dest: = \dest1
 		endc
 		
 		lea	(vdp_control_port).l,a5
-		move.l	#$94000000+(((\2>>1)&$FF00)<<8)+$9300+((\2>>1)&$FF),(a5)
-		move.l	#$96000000+(((\1>>1)&$FF00)<<8)+$9500+((\1>>1)&$FF),(a5)
-		move.w	#$9700+((((\1>>1)&$FF0000)>>16)&$7F),(a5)
+		move.l	#$94000000+(((\length>>1)&$FF00)<<8)+$9300+((\length>>1)&$FF),(a5)
+		move.l	#$96000000+(((\source>>1)&$FF00)<<8)+$9500+((\source>>1)&$FF),(a5)
+		move.w	#$9700+((((\source>>1)&$FF0000)>>16)&$7F),(a5)
 		move.w	#dma_type+(dma_dest&$3FFF),(a5)
 		move.w	#dma_type2+((dma_dest&$C000)>>14),(v_vdp_dma_buffer).w
 		move.w	(v_vdp_dma_buffer).w,(a5)
@@ -198,15 +210,21 @@ dma:		macro
 ; ---------------------------------------------------------------------------
 ; DMA fill VRAM with a value.
 ; input: value, length, destination
+; uses d1, a5
 ; ---------------------------------------------------------------------------
 
-dma_fill:	macro value,length,loc
+dma_fill:	macro value,length,dest
 		lea	(vdp_control_port).l,a5
-		move.w	#$8F01,(a5)
-		move.l	#$94000000+(((length)&$FF00)<<8)+$9300+((length)&$FF),(a5)
-		move.w	#$9780,(a5)
-		move.l	#$40000080+(((loc)&$3FFF)<<16)+(((loc)&$C000)>>14),(a5)
-		move.w	#value,(vdp_data_port).l
+		move.w	#$8F01,(a5)				; set VDP increment to 1 byte
+		move.l	#$94000000+(((length)&$FF00)<<8)+$9300+((length)&$FF),(a5) ; set length of DMA
+		move.w	#$9780,(a5)				; set DMA mode to fill
+		move.l	#$40000080+(((dest)&$3FFF)<<16)+(((dest)&$C000)>>14),(a5) ; set target of DMA
+		move.w	#value,(vdp_data_port).l		; set byte to fill with
+	.wait_for_dma\@:
+		move.w	(a5),d1					; get status register
+		btst	#1,d1					; is DMA in progress?
+		bne.s	.wait_for_dma\@				; if yes, branch
+		move.w	#$8F02,(a5)				; set VDP increment 2 bytes
 		endm
 
 ; ---------------------------------------------------------------------------
@@ -235,10 +253,10 @@ enable_display:	macro
 ; input: index address, element size
 ; ---------------------------------------------------------------------------
 
-zonewarning:	macro loc,elementsize
+zonewarning:	macro dest,elementsize
 	.end:
-		if (.end-loc)-(ZoneCount*elementsize)<>0
-		inform 1,"Size of \loc ($%h) does not match ZoneCount ($\#ZoneCount).",(.end-loc)/elementsize
+		if (.end-dest)-(ZoneCount*elementsize)<>0
+		inform 1,"Size of \dest ($%h) does not match ZoneCount ($\#ZoneCount).",(.end-dest)/elementsize
 		endc
 		endm
 
@@ -247,9 +265,9 @@ zonewarning:	macro loc,elementsize
 ; input: source, destination, width [cells], height [cells]
 ; ---------------------------------------------------------------------------
 
-copyTilemap:	macro source,loc,x,y,width,height
+copyTilemap:	macro source,dest,x,y,width,height
 		lea	(source).l,a1
-		vram_loc: = (loc)+(sizeof_vram_row*(y))+((x)*2)
+		vram_loc: = (dest)+(sizeof_vram_row*(y))+((x)*2)
 		locVRAM	vram_loc,d0
 		moveq	#width-1,d1
 		moveq	#height-1,d2
@@ -262,7 +280,7 @@ copyTilemap:	macro source,loc,x,y,width,height
 ; ---------------------------------------------------------------------------
 
 out_of_range:	macro exit,pos
-		if narg=2
+		ifarg \pos
 		move.w	pos,d0					; get object position (if specified as not ost_x_pos)
 		else
 		move.w	ost_x_pos(a0),d0			; get object position

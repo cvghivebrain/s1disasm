@@ -30,16 +30,9 @@ VDPSetupGame:
 
 		clr.l	(v_fg_y_pos_vsram).w
 		clr.l	(v_fg_x_pos_hscroll).w
-		pushr	d1
+		pushr	d1					; save d1 to stack (d1 is used by dma_fill)
 		dma_fill	0,$FFFF,0			; clear the VRAM (also sets a5 to vdp_control_port)
-
-	.waitforDMA:
-		move.w	(a5),d1
-		btst	#1,d1					; is dma_fill still running?
-		bne.s	.waitforDMA				; if yes, branch
-
-		move.w	#$8F02,(a5)				; set VDP increment size
-		popr	d1
+		popr	d1					; restore d1
 		rts
 
 ; ===========================================================================

@@ -15,13 +15,6 @@ GM_Special:
 		bsr.w	ClearScreen
 		enable_ints
 		dma_fill	0,$6FFF,$5000
-
-	.wait_for_dma:
-		move.w	(a5),d1					; read control port ($C00004)
-		btst	#1,d1					; is DMA running?
-		bne.s	.wait_for_dma				; if yes, branch
-		
-		move.w	#$8F02,(a5)				; set VDP increment to 2 bytes
 		bsr.w	SS_BGLoad
 		moveq	#id_PLC_SpecialStage,d0
 		bsr.w	QuickPLC				; load special stage gfx
