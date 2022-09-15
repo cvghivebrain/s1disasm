@@ -100,9 +100,9 @@ Elev_StoodOn:	; Routine 4
 		moveq	#0,d1
 		move.b	ost_displaywidth(a0),d1
 		jsr	(ExitPlatform).l			; goto Elev_Platform next if Sonic leaves platform
-		move.w	ost_x_pos(a0),-(sp)
+		pushr.w	ost_x_pos(a0)
 		bsr.w	Elev_Types
-		move.w	(sp)+,d2
+		popr.w	d2
 		tst.b	ost_id(a0)				; does object still exist?
 		beq.s	.deleted				; if not, branch
 		jmp	(MoveWithPlatform2).l			; update Sonic's position

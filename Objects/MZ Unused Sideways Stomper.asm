@@ -85,12 +85,12 @@ SStom_Main:	; Routine 0
 		move.b	#$10,ost_displaywidth(a0)
 
 SStom_Solid:	; Routine 2
-		move.w	ost_x_pos(a0),-(sp)
+		pushr.w	ost_x_pos(a0)
 		bsr.w	SStom_Move				; update position of main block
 		move.w	#$17,d1
 		move.w	#$20,d2
 		move.w	#$20,d3
-		move.w	(sp)+,d4
+		popr.w	d4
 		bsr.w	SolidObject
 		bsr.w	DisplaySprite
 		bra.w	SStom_ChkDel

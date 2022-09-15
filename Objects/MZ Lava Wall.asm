@@ -90,9 +90,9 @@ LWall_Solid:	; Routine 2
 		addq.w	#1,d3
 		move.w	ost_x_pos(a0),d4
 		move.b	ost_routine(a0),d0
-		move.w	d0,-(sp)				; save routine counter to stack
+		pushr.w	d0					; save routine counter to stack
 		bsr.w	SolidObject
-		move.w	(sp)+,d0
+		popr.w	d0
 		move.b	d0,ost_routine(a0)			; restore routine counter from stack (unnecessary?)
 		cmpi.w	#$6A0,ost_x_pos(a0)			; has object reached $6A0 on the x-axis?
 		bne.s	.animate				; if not, branch

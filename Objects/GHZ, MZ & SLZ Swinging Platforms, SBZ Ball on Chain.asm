@@ -93,7 +93,7 @@ Swing_Main:	; Routine 0
 		moveq	#0,d1
 		lea	ost_subtype(a0),a2			; (a2) = chain length, followed by child OST indices
 		move.b	(a2),d1					; d1 = chain length
-		move.w	d1,-(sp)
+		pushr.w	d1
 		andi.w	#$F,d1					; max length is 15
 		move.b	#0,(a2)+				; clear subtype
 		move.w	d1,d3
@@ -142,7 +142,7 @@ Swing_Main:	; Routine 0
 		move.b	d5,(a2)+				; save to end of child OST list
 		move.w	#$4080,ost_angle(a0)			; unused
 		move.w	#-$200,ost_swing_unused(a0)
-		move.w	(sp)+,d1				; retrieve chain length from stack
+		popr.w	d1					; retrieve chain length from stack
 		btst	#4,d1					; is object type $1x ?
 		beq.s	.not1x					; if not, branch
 
@@ -173,9 +173,9 @@ Swing_Action2:	; Routine 4
 		moveq	#0,d1
 		move.b	ost_displaywidth(a0),d1
 		bsr.w	ExitPlatform
-		move.w	ost_x_pos(a0),-(sp)
+		pushr.w	ost_x_pos(a0)
 		bsr.w	Swing_Move				; update positions of chainlinks and platform
-		move.w	(sp)+,d2
+		popr.w	d2
 		moveq	#0,d3
 		move.b	ost_height(a0),d3
 		addq.b	#1,d3

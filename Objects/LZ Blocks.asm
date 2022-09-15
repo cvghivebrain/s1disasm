@@ -58,14 +58,14 @@ LBlk_Main:	; Routine 0
 		move.b	#1,ost_lblock_flag(a0)			; for types 1/3, set "untouched" flag
 
 LBlk_Action:	; Routine 2
-		move.w	ost_x_pos(a0),-(sp)			; save recent x pos to stack
+		pushr.w	ost_x_pos(a0)				; save recent x pos to stack
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0			; get block type
 		andi.w	#$F,d0					; read only the low nybble
 		add.w	d0,d0
 		move.w	LBlk_Type_Index(pc,d0.w),d1
 		jsr	LBlk_Type_Index(pc,d1.w)		; update position/speed based on type
-		move.w	(sp)+,d4				; retrieve x pos from stack
+		popr.w	d4					; retrieve x pos from stack
 		tst.b	ost_render(a0)				; is block on-screen?
 		bpl.s	.chkdel					; if not, branch
 		moveq	#0,d1

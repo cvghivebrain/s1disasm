@@ -49,7 +49,7 @@ CalcSqrt:
 			subq.w	#1,d0
 			dbf	d2,.loop
 			lsr.w	#1,d0
-			movem.l	(sp)+,d1-d2			; retrieve d1 and d2 from stack
+			popr	d1-d2				; retrieve d1 and d2 from stack
 			rts	
 ; ===========================================================================
 

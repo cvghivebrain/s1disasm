@@ -128,7 +128,7 @@ PushB_ChkVisible:
 ; ===========================================================================
 
 PushB_OnLava:
-		move.w	ost_x_pos(a0),-(sp)
+		pushr.w	ost_x_pos(a0)
 		cmpi.b	#4,ost_routine2(a0)
 		bcc.s	.pushing				; branch if ost_routine2 = 4 or 6 (PushB_Solid_Lava/PushB_Solid_Push)
 		bsr.w	SpeedToPos				; update position
@@ -197,14 +197,14 @@ PushB_OnLava_Solid:
 		addi.w	#$B,d1
 		move.w	#$10,d2
 		move.w	#$11,d3
-		move.w	(sp)+,d4
+		popr.w	d4
 		bsr.w	PushB_Solid				; make block solid & update its position
 		bsr.s	PushB_ChkGeyser
 		bra.w	PushB_Display
 ; ===========================================================================
 
 PushB_OnLava_Sunk:
-		move.w	(sp)+,d4
+		popr.w	d4
 		lea	(v_ost_player).w,a1
 		bclr	#status_platform_bit,ost_status(a1)
 		bclr	#status_platform_bit,ost_status(a0)
@@ -333,11 +333,11 @@ PushB_Solid_Side:
 		bmi.s	PushB_Solid_Left			; if left of the object, branch
 		btst	#status_xflip_bit,ost_status(a1)	; is Sonic facing left?
 		bne.w	PushB_Solid_Exit			; if yes, branch
-		move.w	d0,-(sp)
+		pushr.w	d0
 		moveq	#0,d3
 		move.b	ost_displaywidth(a0),d3
 		jsr	(FindWallRightObj).l
-		move.w	(sp)+,d0
+		popr.w	d0
 		tst.w	d1					; has object hit right wall?
 		bmi.w	PushB_Solid_Exit			; if not, branch
 		addi.l	#$10000,ost_x_pos(a0)			; move 1px right and clear subpixels
@@ -349,12 +349,12 @@ PushB_Solid_Side:
 PushB_Solid_Left:
 		btst	#status_xflip_bit,ost_status(a1)	; is Sonic facing right?
 		beq.s	PushB_Solid_Exit			; if yes, branch
-		move.w	d0,-(sp)
+		pushr.w	d0
 		moveq	#0,d3
 		move.b	ost_displaywidth(a0),d3
 		not.w	d3
 		jsr	(FindWallLeftObj).l
-		move.w	(sp)+,d0
+		popr.w	d0
 		tst.w	d1					; has object hit left wall?
 		bmi.s	PushB_Solid_Exit			; if not, branch
 		subi.l	#$10000,ost_x_pos(a0)			; move 1px left and clear subpixels
@@ -366,14 +366,14 @@ PushB_Solid_Side_Sonic:
 		add.w	d0,ost_x_pos(a1)			; + or - 1 to Sonic's x position
 		move.w	d1,ost_inertia(a1)			; + or - $40 to Sonic's inertia
 		move.w	#0,ost_x_vel(a1)
-		move.w	d0,-(sp)
+		pushr.w	d0
 		play.w	1, jsr, sfx_Push			; play pushing sound
-		move.w	(sp)+,d0
+		popr.w	d0
 		tst.b	ost_subtype(a0)				; is bit 7 of subtype set? (no gravity flag)
 		bmi.s	PushB_Solid_Exit			; if yes, branch
-		move.w	d0,-(sp)
+		pushr.w	d0
 		jsr	(FindFloorObj).l
-		move.w	(sp)+,d0
+		popr.w	d0
 		cmpi.w	#4,d1
 		ble.s	.align_floor				; branch if object is within 4px of floor
 		move.w	#$400,ost_x_vel(a0)

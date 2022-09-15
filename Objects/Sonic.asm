@@ -434,9 +434,9 @@ Sonic_StopAtWall:
 	.neginertia:
 		move.b	ost_angle(a0),d0
 		add.b	d1,d0					; d0 = angle with 90-degree rotation
-		move.w	d0,-(sp)				; store in stack
+		pushr.w	d0					; store in stack
 		bsr.w	Sonic_CalcRoomAhead			; get distance to wall ahead
-		move.w	(sp)+,d0				; restore from stack
+		popr.w	d0					; restore from stack
 		tst.w	d1					; has Sonic hit a wall?
 		bpl.s	.exit					; if not, branch
 		asl.w	#8,d1
@@ -1798,7 +1798,7 @@ Sonic_AnglePos:
 		move.w	#0,d6
 		moveq	#tilemap_solid_top_bit,d5		; bit to test for solidness (top solid)
 		bsr.w	FindFloor
-		move.w	d1,-(sp)				; save d1 (distance to floor) to stack
+		pushr.w	d1					; save d1 (distance to floor) to stack
 
 		move.w	ost_y_pos(a0),d2
 		move.w	ost_x_pos(a0),d3
@@ -1815,7 +1815,7 @@ Sonic_AnglePos:
 		move.w	#0,d6
 		moveq	#tilemap_solid_top_bit,d5		; bit to test for solidness (top solid)
 		bsr.w	FindFloor				; d1 = distance to floor left side
-		move.w	(sp)+,d0				; d0 = distance to floor right side
+		popr.w	d0					; d0 = distance to floor right side
 		bsr.w	Sonic_Angle				; update angle
 		tst.w	d1
 		beq.s	.on_floor				; branch if Sonic is 0px from floor
@@ -1945,7 +1945,7 @@ Sonic_WalkVertR:
 		move.w	#0,d6
 		moveq	#tilemap_solid_top_bit,d5		; bit to test for solidness (top solid)
 		bsr.w	FindWall
-		move.w	d1,-(sp)				; save d1 (distance to wall) to stack
+		pushr.w	d1					; save d1 (distance to wall) to stack
 
 		move.w	ost_y_pos(a0),d2
 		move.w	ost_x_pos(a0),d3
@@ -1961,7 +1961,7 @@ Sonic_WalkVertR:
 		move.w	#0,d6
 		moveq	#tilemap_solid_top_bit,d5		; bit to test for solidness (top solid)
 		bsr.w	FindWall				; d1 = distance to wall lower side
-		move.w	(sp)+,d0				; d0 = distance to wall upper side
+		popr.w	d0					; d0 = distance to wall upper side
 		bsr.w	Sonic_Angle				; update angle
 		tst.w	d1
 		beq.s	.on_wall				; branch if Sonic is 0px from wall
@@ -2011,7 +2011,7 @@ Sonic_WalkCeiling:
 		move.w	#tilemap_yflip,d6			; yflip tile
 		moveq	#tilemap_solid_top_bit,d5		; bit to test for solidness (top solid)
 		bsr.w	FindFloor
-		move.w	d1,-(sp)				; save d1 (distance to ceiling) to stack
+		pushr.w	d1					; save d1 (distance to ceiling) to stack
 
 		move.w	ost_y_pos(a0),d2
 		move.w	ost_x_pos(a0),d3
@@ -2028,7 +2028,7 @@ Sonic_WalkCeiling:
 		move.w	#tilemap_yflip,d6			; yflip tile
 		moveq	#tilemap_solid_top_bit,d5		; bit to test for solidness (top solid)
 		bsr.w	FindFloor				; d1 = distance to ceiling left side
-		move.w	(sp)+,d0				; d0 = distance to ceiling right side
+		popr.w	d0					; d0 = distance to ceiling right side
 		bsr.w	Sonic_Angle				; update angle
 		tst.w	d1
 		beq.s	.on_ceiling				; branch if Sonic is 0px from ceiling
@@ -2078,7 +2078,7 @@ Sonic_WalkVertL:
 		move.w	#tilemap_xflip,d6			; xflip tile
 		moveq	#tilemap_solid_top_bit,d5		; bit to test for solidness (top solid)
 		bsr.w	FindWall
-		move.w	d1,-(sp)				; save d1 (distance to wall) to stack
+		pushr.w	d1					; save d1 (distance to wall) to stack
 
 		move.w	ost_y_pos(a0),d2
 		move.w	ost_x_pos(a0),d3
@@ -2095,7 +2095,7 @@ Sonic_WalkVertL:
 		move.w	#tilemap_xflip,d6			; xflip tile
 		moveq	#tilemap_solid_top_bit,d5		; bit to test for solidness (top solid)
 		bsr.w	FindWall				; d1 = distance to wall lower side
-		move.w	(sp)+,d0				; d0 = distance to wall upper side
+		popr.w	d0					; d0 = distance to wall upper side
 		bsr.w	Sonic_Angle				; update angle
 		tst.w	d1
 		beq.s	.on_wall				; branch if Sonic is 0px from wall
@@ -2241,7 +2241,7 @@ Sonic_FindFloor:
 		move.w	#0,d6
 		moveq	#tilemap_solid_top_bit,d5		; bit to test for solidness (top solid)
 		bsr.w	FindFloor
-		move.w	d1,-(sp)				; save d1 (distance to floor) to stack
+		pushr.w	d1					; save d1 (distance to floor) to stack
 		
 		move.w	ost_y_pos(a0),d2
 		move.w	ost_x_pos(a0),d3
@@ -2257,7 +2257,7 @@ Sonic_FindFloor:
 		move.w	#0,d6
 		moveq	#tilemap_solid_top_bit,d5		; bit to test for solidness (top solid)
 		bsr.w	FindFloor				; d1 = distance to floor left side
-		move.w	(sp)+,d0				; d0 = distance to floor right side
+		popr.w	d0					; d0 = distance to floor right side
 		move.b	#0,d2
 
 Sonic_FindSmaller:
@@ -2345,7 +2345,7 @@ Sonic_FindWallRight:
 		move.w	#0,d6
 		moveq	#tilemap_solid_lrb_bit,d5		; bit to test for solidness (left/right/bottom solid)
 		bsr.w	FindWall
-		move.w	d1,-(sp)				; save d1 (distance to wall) to stack
+		pushr.w	d1					; save d1 (distance to wall) to stack
 		
 		move.w	ost_y_pos(a0),d2
 		move.w	ost_x_pos(a0),d3
@@ -2361,7 +2361,7 @@ Sonic_FindWallRight:
 		move.w	#0,d6
 		moveq	#tilemap_solid_lrb_bit,d5		; bit to test for solidness (left/right/bottom solid)
 		bsr.w	FindWall				; d1 = distance to wall upper side
-		move.w	(sp)+,d0				; d0 = distance to wall lower side
+		popr.w	d0					; d0 = distance to wall lower side
 		
 		move.b	#$C0,d2
 		bra.w	Sonic_FindSmaller			; make d1 the smaller distance
@@ -2429,7 +2429,7 @@ Sonic_FindCeiling:
 		move.w	#tilemap_yflip,d6			; yflip tile
 		moveq	#tilemap_solid_lrb_bit,d5		; bit to test for solidness (left/right/bottom solid)
 		bsr.w	FindFloor
-		move.w	d1,-(sp)				; save d1 (distance to ceiling) to stack
+		pushr.w	d1					; save d1 (distance to ceiling) to stack
 		
 		move.w	ost_y_pos(a0),d2
 		move.w	ost_x_pos(a0),d3
@@ -2446,7 +2446,7 @@ Sonic_FindCeiling:
 		move.w	#tilemap_yflip,d6			; yflip tile
 		moveq	#tilemap_solid_lrb_bit,d5		; bit to test for solidness (left/right/bottom solid)
 		bsr.w	FindFloor				; d1 = distance to ceiling on left side
-		move.w	(sp)+,d0				; d0 = distance to ceiling on right side
+		popr.w	d0					; d0 = distance to ceiling on right side
 		
 		move.b	#$80,d2
 		bra.w	Sonic_FindSmaller			; make d1 the smaller distance
@@ -2514,7 +2514,7 @@ Sonic_FindWallLeft:
 		move.w	#tilemap_xflip,d6			; xflip tile
 		moveq	#tilemap_solid_lrb_bit,d5		; bit to test for solidness (left/right/bottom solid)
 		bsr.w	FindWall
-		move.w	d1,-(sp)				; save d1 (distance to wall) to stack
+		pushr.w	d1					; save d1 (distance to wall) to stack
 		
 		move.w	ost_y_pos(a0),d2
 		move.w	ost_x_pos(a0),d3
@@ -2531,7 +2531,7 @@ Sonic_FindWallLeft:
 		move.w	#tilemap_xflip,d6			; xflip tile
 		moveq	#tilemap_solid_lrb_bit,d5		; bit to test for solidness (left/right/bottom solid)
 		bsr.w	FindWall				; d1 = distance to wall lower side
-		move.w	(sp)+,d0				; d0 = distance to wall upper side
+		popr.w	d0					; d0 = distance to wall upper side
 		
 		move.b	#$40,d2
 		bra.w	Sonic_FindSmaller			; make d1 the smaller distance

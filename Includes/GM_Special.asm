@@ -562,7 +562,7 @@ SS_ShowLayout:
 		bsr.w	SS_UpdateItems
 
 ; Calculate x/y positions of each cell in a 16x16 grid when rotated
-		move.w	d5,-(sp)				; save sprite count to stack
+		pushr.w	d5					; save sprite count to stack
 		lea	(v_ss_sprite_grid_plot).w,a1		; address to write grid coords
 		move.b	(v_ss_angle).w,d0
 		andi.b	#$FC,d0					; round down angle to nearest 4 (disable this line for smoother rotation)
@@ -586,14 +586,14 @@ SS_ShowLayout:
 		move.w	#ss_visible_height-1,d7			; grid is 16 cells high
 
 	.loop_gridrow:
-		movem.w	d0-d2,-(sp)
-		movem.w	d0-d1,-(sp)
+		pushr.w	d0-d2
+		pushr.w	d0-d1
 		neg.w	d0
 		muls.w	d2,d1
 		muls.w	d3,d0
 		move.l	d0,d6
 		add.l	d1,d6
-		movem.w	(sp)+,d0-d1
+		popr.w	d0-d1
 		muls.w	d2,d0
 		muls.w	d3,d1
 		add.l	d0,d1
@@ -611,12 +611,12 @@ SS_ShowLayout:
 		add.l	d4,d1
 		dbf	d6,.loop_gridcell			; repeat for all cells in row
 
-		movem.w	(sp)+,d0-d2
+		popr.w	d0-d2
 		addi.w	#ss_block_width,d3
 		dbf	d7,.loop_gridrow			; repeat for all rows
 
 ; Populate the 16x16 grid with sprites based on the level layout
-		move.w	(sp)+,d5
+		popr.w	d5
 		lea	(v_ss_layout).l,a0
 		moveq	#0,d0
 		move.w	(v_camera_y_pos).w,d0			; get camera y pos

@@ -173,7 +173,7 @@ Cat_Floor:
 		subq.b	#1,ost_cat_wait_time(a0)		; decrement timer
 		bmi.s	.undulate_next				; branch if -1
 		if Revision=0
-			move.l	ost_x_pos(a0),-(sp)		; save x pos to stack
+			pushr	ost_x_pos(a0)			; save x pos to stack
 			move.l	ost_x_pos(a0),d2
 		else
 			tst.w	ost_x_vel(a0)

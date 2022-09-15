@@ -25,19 +25,54 @@ align:		macro length,value
 ; Save and restore registers from the stack.
 ; ---------------------------------------------------------------------------
 
-pushr:		macro
-		if strlen("\1")>2
-		movem.l	\1,-(sp)				; save multiple registers
+chkifreg:	macro
+		isreg: = 1					; assume string is register
+		isregm: = 0					; assume single register
+		regtmp: equs \1					; copy input
+		rept strlen(\1)
+		regchr:	substr ,1,"\regtmp"			; get first character
+		regtmp:	substr 2,,"\regtmp"			; remove first character
+		if instr("ad01234567/-","\regchr")
 		else
-		move.l	\1,-(sp)				; save one register
+		isreg: = 0					; string isn't register if it contains characters besides those listed
+		endc
+		if instr("/-","\regchr")
+		isregm: = 1					; string is multi-register
+		endc
+		endr
+		endm
+
+pushr:		macro
+		chkifreg "\1"
+		if (isreg=1)&(isregm=1)
+			ifarg \0				; check if size is specified
+			movem.\0	\1,-(sp)		; save multiple registers (b/w)
+			else
+			movem.l	\1,-(sp)			; save multiple registers
+			endc
+		else
+			ifarg \0				; check if size is specified
+			move.\0	\1,-(sp)			; save one register (b/w)
+			else
+			move.l	\1,-(sp)			; save one whole register
+			endc
 		endc
 		endm
 
 popr:		macro
-		if strlen("\1")>2
-		movem.l	(sp)+,\1				; restore multiple registers
+		chkifreg "\1"
+		if (isreg=1)&(isregm=1)
+			ifarg \0				; check if size is specified
+			movem.\0	(sp)+,\1		; restore multiple registers (b/w)
+			else
+			movem.l	(sp)+,\1			; restore multiple whole registers
+			endc
 		else
-		move.l	(sp)+,\1				; restore one register
+			ifarg \0				; check if size is specified
+			move.\0	(sp)+,\1			; restore one register (b/w)
+			else
+			move.l	(sp)+,\1			; restore one whole register
+			endc
 		endc
 		endm
 

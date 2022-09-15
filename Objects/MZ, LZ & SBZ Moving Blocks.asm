@@ -83,9 +83,9 @@ MBlock_StandOn:	; Routine 4
 		moveq	#0,d1
 		move.b	ost_displaywidth(a0),d1
 		jsr	(ExitPlatform).l
-		move.w	ost_x_pos(a0),-(sp)
+		pushr.w	ost_x_pos(a0)
 		bsr.w	MBlock_Move
-		move.w	(sp)+,d2
+		popr.w	d2
 		jsr	(MoveWithPlatform2).l
 
 MBlock_ChkDel:

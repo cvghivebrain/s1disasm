@@ -94,10 +94,10 @@ Plat_StoodOn:	; Routine 4
 		moveq	#0,d1
 		move.b	ost_displaywidth(a0),d1
 		bsr.w	ExitPlatform				; detect Sonic leaving platform, goto Plat_Solid next if he does
-		move.w	ost_x_pos(a0),-(sp)
+		pushr.w	ost_x_pos(a0)
 		bsr.w	Plat_Move
 		bsr.w	Plat_Nudge
-		move.w	(sp)+,d2
+		popr.w	d2
 		bsr.w	MoveWithPlatform2
 		bsr.w	DisplaySprite
 		bra.w	Plat_ChkDel

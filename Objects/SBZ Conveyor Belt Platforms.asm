@@ -155,13 +155,13 @@ SpinC_Solid:	; Routine 2
 		jsr	(AnimateSprite).l
 		tst.b	ost_frame(a0)				; is platform on a spinning frame?
 		bne.s	.spinning				; if yes, branch
-		move.w	ost_x_pos(a0),-(sp)
+		pushr.w	ost_x_pos(a0)
 		bsr.w	SpinC_Update
 		move.w	#$1B,d1
 		move.w	#7,d2
 		move.w	d2,d3
 		addq.w	#1,d3
-		move.w	(sp)+,d4
+		popr.w	d4
 		bra.w	SolidObject				; make platform solid on flat frame
 ; ===========================================================================
 

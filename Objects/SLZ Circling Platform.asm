@@ -45,9 +45,9 @@ Circ_StoodOn:	; Routine 4
 		moveq	#0,d1
 		move.b	ost_displaywidth(a0),d1
 		jsr	(ExitPlatform).l			; goto Circ_Platform next if Sonic leaves platform
-		move.w	ost_x_pos(a0),-(sp)
+		pushr.w	ost_x_pos(a0)
 		bsr.w	Circ_Types
-		move.w	(sp)+,d2
+		popr.w	d2
 		jmp	(MoveWithPlatform2).l			; update Sonic's position
 ; ===========================================================================
 

@@ -38,7 +38,7 @@ Gird_Main:	; Routine 0
 		bsr.w	Gird_ChgDir				; set initial speed & direction
 
 Gird_Action:	; Routine 2
-		move.w	ost_x_pos(a0),-(sp)
+		pushr.w	ost_x_pos(a0)
 		tst.w	ost_girder_wait_time(a0)		; has time delay hit 0?
 		beq.s	.beginmove				; if yes, branch
 		subq.w	#1,ost_girder_wait_time(a0)		; decrement delay timer
@@ -52,7 +52,7 @@ Gird_Action:	; Routine 2
 
 	.skip_move:
 	.skip_chg:
-		move.w	(sp)+,d4
+		popr.w	d4
 		tst.b	ost_render(a0)				; is object on-screen?
 		bpl.s	.chkdel					; if not, branch
 		moveq	#0,d1

@@ -107,14 +107,14 @@ Sto_Main:	; Routine 0
 		bclr	#7,2(a2,d0.w)
 
 Sto_Action:	; Routine 2
-		move.w	ost_x_pos(a0),-(sp)			; save x pos to stack
+		pushr.w	ost_x_pos(a0)				; save x pos to stack
 		moveq	#0,d0
 		move.b	ost_subtype(a0),d0			; get subtype (not the same as starting subtype)
 		andi.w	#$F,d0					; read only low nybble
 		add.w	d0,d0
 		move.w	Sto_Type_Index(pc,d0.w),d1
 		jsr	Sto_Type_Index(pc,d1.w)
-		move.w	(sp)+,d4				; retrieve x pos from stack
+		popr.w	d4					; retrieve x pos from stack
 		tst.b	ost_render(a0)
 		bpl.s	.chkdel
 		moveq	#0,d1

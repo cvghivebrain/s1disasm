@@ -100,7 +100,7 @@ But_Delete:
 ; ---------------------------------------------------------------------------
 
 But_PBlock_Chk:
-		move.w	d3,-(sp)
+		pushr.w	d3
 		move.w	ost_x_pos(a0),d2
 		move.w	ost_y_pos(a0),d3
 		subi.w	#$10,d2					; d2 = x pos. of button left edge
@@ -120,7 +120,7 @@ But_PBlock_Chk:
 		lea	sizeof_ost(a1),a1			; check next object
 		dbf	d6,.loop				; repeat $5F times
 
-		move.w	(sp)+,d3
+		popr.w	d3
 		moveq	#0,d0
 		rts	
 ; ===========================================================================
@@ -166,6 +166,6 @@ But_PBlock_Chk:
 		bhi.s	.next
 
 .pblock_y_ok:
-		move.w	(sp)+,d3
+		popr.w	d3
 		moveq	#1,d0
 		rts
