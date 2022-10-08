@@ -5,9 +5,10 @@
 ;	a0 = address of OST of Sonic
 
 ; output:
-;	d0 = -1 if Sonic touches an enemy or harmful object while invincible, or is hurt or killed
+;	d0.l = -1 if Sonic touches an enemy or harmful object while invincible, or is hurt or killed
 ;	a2 = address of OST of object hurting/killing Sonic
-;	uses d1, d2, d3, d4, d5, a1
+
+;	uses d1.l, d2.w, d3.w, d4.w, d5.l, a1
 ; ---------------------------------------------------------------------------
 
 ReactToItem:
@@ -275,7 +276,7 @@ React_ChkHurt:
 ;	a2 = address of OST of object hurting Sonic
 
 ; output:
-;	d0 = -1
+;	d0.l = -1
 ;	a1 = address of OST of ring loss object (if Sonic had rings)
 ; ---------------------------------------------------------------------------
 
@@ -341,7 +342,7 @@ HurtSonic:
 ;	a2 = address of OST of object killing Sonic
 
 ; output:
-;	d0 = -1
+;	d0.l = -1
 ; ---------------------------------------------------------------------------
 
 KillSonic:

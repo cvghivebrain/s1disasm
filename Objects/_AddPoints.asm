@@ -2,13 +2,18 @@
 ; Add points subroutine
 ;
 ; input:
-;	d0 = points to add (appears as *10 larger on the HUD)
+;	d0.l = points to add (appears as *10 larger on the HUD)
 
 ; output:
-;	d0 = score
-;	(a2) = high score (REV00 only)
-;	(a3) = score
-;	uses d1
+;	d0.l = score
+;	(a2).l = high score (REV00 only)
+;	(a3).l = score
+
+;	uses d1.l
+
+; usage:
+;		moveq	#100,d0
+;		bsr.w	AddPoints				; give Sonic 1000 points
 ; ---------------------------------------------------------------------------
 
 AddPoints:

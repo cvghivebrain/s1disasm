@@ -2,8 +2,12 @@
 ; Subroutine to	check if an object is off screen
 
 ; output:
-;	d0 = flag set if object is off screen
-;	d1 = y pos of object relative to screen
+;	d0.l = flag set if object is off screen
+;	d1.w = y pos of object relative to screen
+
+; usage:
+;		bsr.w	CheckOffScreen
+;		bne.s	.offscreen				; branch if off screen
 ; ---------------------------------------------------------------------------
 
 CheckOffScreen:
@@ -31,8 +35,14 @@ CheckOffScreen:
 ; More precise than above subroutine, taking width into account
 
 ; output:
-;	d0 = flag set if object is off screen
-;	d1 = y pos of object relative to screen
+;	d0.l = flag set if object is off screen
+;	d1.w = y pos of object relative to screen
+
+;	uses d1.l
+
+; usage:
+;		bsr.w	CheckOffScreen_Wide
+;		bne.s	.offscreen				; branch if off screen
 ; ---------------------------------------------------------------------------
 
 CheckOffScreen_Wide:

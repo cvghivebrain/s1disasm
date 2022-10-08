@@ -9,7 +9,8 @@ BldSpr_ScrPos:	dc.l 0						; blank
 
 ; output:
 ;	a2 = address of last sprite in sprite buffer
-;	uses d0, d1, d2, d3, d4, d5, d6, d7, a0, a1, a4
+
+;	uses d0.l, d1.w, d2.w, d3.w, d4.w, d5.l, d6.l, d7.l, a0, a1, a4
 ; ---------------------------------------------------------------------------
 
 BuildSprites:
@@ -123,15 +124,15 @@ BuildSprites:
 ; Subroutine to	convert	and add sprite mappings to the sprite buffer
 ;
 ; input:
-;	d1 = number of sprite pieces
-;	d2 = VDP y position
-;	d3 = VDP x position
-;	d4 = render flags (ost_render)
-;	d5 = current sprite count
+;	d1.w = number of sprite pieces
+;	d2.w = VDP y position
+;	d3.w = VDP x position
+;	d4.b = render flags (ost_render)
+;	d5.b = current sprite count
 ;	a1 = current address in sprite mappings
 ;	a2 = current address in sprite buffer
 
-;	uses d0, d1, d4, d5, a1, a2
+;	uses d0, d1.w, d4.w, d5.b, a1, a2
 ; ---------------------------------------------------------------------------
 
 BuildSpr_Draw:

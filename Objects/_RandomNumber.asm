@@ -2,8 +2,8 @@
 ; Subroutine to generate a pseudo-random number
 
 ; output:
-;	d0 = pseudo-random number
-;	d1 = d0 with high/low words swapped
+;	d0.l = pseudo-random number
+;	d1.l = d0 with high/low words swapped
 ; ---------------------------------------------------------------------------
 
 RandomNumber:

@@ -2,7 +2,7 @@
 ; Subroutine to play music for LZ/SBZ3 after a countdown
 
 ; output:
-;	d0 = track number
+;	d0.w = track number
 ; ---------------------------------------------------------------------------
 
 ResumeMusic:
