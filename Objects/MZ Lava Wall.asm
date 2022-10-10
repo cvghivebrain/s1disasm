@@ -12,7 +12,7 @@ LavaWall:
 		move.w	LWall_Index(pc,d0.w),d1
 		jmp	LWall_Index(pc,d1.w)
 ; ===========================================================================
-LWall_Index:	index *,,2
+LWall_Index:	index offset(*),,2
 		ptr LWall_Main
 		ptr LWall_Solid
 		ptr LWall_Action
@@ -143,7 +143,7 @@ LWall_Delete:	; Routine 8
 
 include_LavaWall_animation:	macro
 
-Ani_LWall:	index *
+Ani_LWall:	index offset(*)
 		ptr ani_lavawall_0
 		
 ani_lavawall_0:	dc.b 9

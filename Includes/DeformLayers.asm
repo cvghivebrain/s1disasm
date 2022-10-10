@@ -38,7 +38,7 @@ DeformLayers:
 ; ---------------------------------------------------------------------------
 ; Offset index for background layer deformation	code
 ; ---------------------------------------------------------------------------
-Deform_Index:	index *
+Deform_Index:	index offset(*)
 		ptr Deform_GHZ
 		ptr Deform_LZ
 		ptr Deform_MZ

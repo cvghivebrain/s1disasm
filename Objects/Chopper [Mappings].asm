@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Chopper enemy (GHZ)
 ; ---------------------------------------------------------------------------
-Map_Chop:	index *
+Map_Chop:	index offset(*)
 		ptr frame_chopper_shut
 		ptr frame_chopper_open
 		

@@ -13,7 +13,7 @@ Crabmeat:
 		move.w	Crab_Index(pc,d0.w),d1
 		jmp	Crab_Index(pc,d1.w)
 ; ===========================================================================
-Crab_Index:	index *,,2
+Crab_Index:	index offset(*),,2
 		ptr Crab_Main
 		ptr Crab_Action
 		ptr Crab_Delete
@@ -58,7 +58,7 @@ Crab_Action:	; Routine 2
 		bra.w	DespawnObject
 ; ===========================================================================
 Crab_Action_Index:
-		index *
+		index offset(*)
 		ptr Crab_WaitFire
 		ptr Crab_Walk
 ; ===========================================================================
@@ -225,7 +225,7 @@ Crab_BallMove:	; Routine 8
 ; Animation script
 ; ---------------------------------------------------------------------------
 
-Ani_Crab:	index *
+Ani_Crab:	index offset(*)
 		ptr ani_crab_stand
 		ptr ani_crab_standslope
 		ptr ani_crab_standsloperev

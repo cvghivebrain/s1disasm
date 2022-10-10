@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Buzz Bomber	enemy
 ; ---------------------------------------------------------------------------
-Map_Buzz:	index *
+Map_Buzz:	index offset(*)
 		ptr frame_buzz_fly1
 		ptr frame_buzz_fly2
 		ptr frame_buzz_fly3

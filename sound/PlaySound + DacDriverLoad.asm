@@ -7,7 +7,7 @@ DacDriverLoad:
 		stopZ80						; stop the z80 and make sure z80 reset was not asserted
 		resetZ80_release
 
-		lea	(Kos_DacDriver).l,a0			; compressed DAC driver address
+		lea	(DACDriver).l,a0			; compressed DAC driver address
 		lea	(z80_ram).l,a1				; load into start of z80 RAM
 		bsr.w	KosDec					; decompress the DAC driver
 

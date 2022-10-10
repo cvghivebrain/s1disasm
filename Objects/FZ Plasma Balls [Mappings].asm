@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - energy balls (FZ)
 ; ---------------------------------------------------------------------------
-Map_Plasma:	index *
+Map_Plasma:	index offset(*)
 		ptr frame_plasma_fuzzy1				; 0
 		ptr frame_plasma_fuzzy2				; 1
 		ptr frame_plasma_white1				; 2

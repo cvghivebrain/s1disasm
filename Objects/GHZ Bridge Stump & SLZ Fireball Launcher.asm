@@ -12,7 +12,7 @@ Scenery:
 		move.w	Scen_Index(pc,d0.w),d1
 		jmp	Scen_Index(pc,d1.w)
 ; ===========================================================================
-Scen_Index:	index *
+Scen_Index:	index offset(*)
 		ptr Scen_Main
 		ptr Scen_ChkDel
 

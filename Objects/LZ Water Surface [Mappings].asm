@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - water surface (LZ)
 ; ---------------------------------------------------------------------------
-Map_Surf:	index *
+Map_Surf:	index offset(*)
 		ptr frame_surf_normal1
 		ptr frame_surf_normal2
 		ptr frame_surf_normal3

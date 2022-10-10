@@ -11,7 +11,7 @@ GameOverCard:
 		move.w	Over_Index(pc,d0.w),d1
 		jmp	Over_Index(pc,d1.w)
 ; ===========================================================================
-Over_Index:	index *,,2
+Over_Index:	index offset(*),,2
 		ptr Over_ChkPLC
 		ptr Over_Move
 		ptr Over_Wait

@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Caterkiller	enemy (MZ, SBZ)
 ; ---------------------------------------------------------------------------
-Map_Cat:	index *
+Map_Cat:	index offset(*)
 		ptr frame_cat_head1				; 0
 		ptr frame_cat_head2
 		ptr frame_cat_head3

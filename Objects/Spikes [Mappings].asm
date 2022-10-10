@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - spikes
 ; ---------------------------------------------------------------------------
-Map_Spike:	index *
+Map_Spike:	index offset(*)
 		ptr frame_spike_3up
 		ptr frame_spike_3left
 		ptr frame_spike_1up

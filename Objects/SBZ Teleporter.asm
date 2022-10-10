@@ -16,7 +16,7 @@ Teleport:
 	.delete:
 		jmp	(DeleteObject).l
 ; ===========================================================================
-Tele_Index:	index *,,2
+Tele_Index:	index offset(*),,2
 		ptr Tele_Main
 		ptr Tele_Action
 		ptr Tele_Bump
@@ -233,7 +233,7 @@ Tele_Move_X:
 		rts
 
 ; ===========================================================================
-Tele_Data:	index *
+Tele_Data:	index offset(*)
 		ptr Tele_Type00
 		ptr Tele_Type01
 		ptr Tele_Type02

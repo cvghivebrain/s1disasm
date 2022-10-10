@@ -11,7 +11,7 @@ Saws:
 		move.w	Saw_Index(pc,d0.w),d1
 		jmp	Saw_Index(pc,d1.w)
 ; ===========================================================================
-Saw_Index:	index *,,2
+Saw_Index:	index offset(*),,2
 		ptr Saw_Main
 		ptr Saw_Action
 
@@ -50,7 +50,7 @@ Saw_Action:	; Routine 2
 		jmp	(DeleteObject).l
 ; ===========================================================================
 Saw_Type_Index:
-		index *
+		index offset(*)
 		ptr Saw_Pizza_Still				; pizza cutter, doesn't move - unused
 		ptr Saw_Pizza_Sideways				; pizza cutter, moves side-to-side
 		ptr Saw_Pizza_UpDown				; pizza cutter, moves up and down

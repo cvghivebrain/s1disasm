@@ -16,7 +16,7 @@ EndSTH:
 			jmp	(DisplaySprite).l
 		endc
 ; ===========================================================================
-ESth_Index:	index *,,2
+ESth_Index:	index offset(*),,2
 		ptr ESth_Main
 		ptr ESth_Move
 		ptr ESth_GotoCredits

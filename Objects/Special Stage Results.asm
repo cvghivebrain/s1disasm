@@ -11,7 +11,7 @@ SSResult:
 		move.w	SSR_Index(pc,d0.w),d1
 		jmp	SSR_Index(pc,d1.w)
 ; ===========================================================================
-SSR_Index:	index *,,2
+SSR_Index:	index offset(*),,2
 		ptr SSR_Main
 		ptr SSR_Move
 		ptr SSR_Wait

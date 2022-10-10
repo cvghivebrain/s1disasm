@@ -1,5 +1,8 @@
 		pusho						; save options
 		opt	ae+					; enable auto evens
+		
+		
+Z80_Space:			equ $1760				; space reserved for the DAC Driver. The DAC compressor may ask you to increase this value.
 
 ; ---------------------------------------------------------------------------
 ; Constants for track variables

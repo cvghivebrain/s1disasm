@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - metal pylons in foreground (SLZ)
 ; ---------------------------------------------------------------------------
-Map_Pylon:	index *
+Map_Pylon:	index offset(*)
 		ptr frame_pylon_0
 		
 frame_pylon_0:

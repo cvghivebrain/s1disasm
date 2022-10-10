@@ -13,7 +13,7 @@ CollapseFloor:
 		move.w	CFlo_Index(pc,d0.w),d1
 		jmp	CFlo_Index(pc,d1.w)
 ; ===========================================================================
-CFlo_Index:	index *,,2
+CFlo_Index:	index offset(*),,2
 		ptr CFlo_Main
 		ptr CFlo_Touch
 		ptr CFlo_Collapse

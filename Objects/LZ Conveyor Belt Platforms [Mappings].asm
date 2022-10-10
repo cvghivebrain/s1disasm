@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - platforms on a conveyor belt (LZ)
 ; ---------------------------------------------------------------------------
-Map_LConv:	index *
+Map_LConv:	index offset(*)
 		ptr frame_lcon_wheel1
 		ptr frame_lcon_wheel2
 		ptr frame_lcon_wheel3

@@ -2,7 +2,7 @@
 ; Sprite mappings - points that appear when you destroy something
 ; ---------------------------------------------------------------------------
 
-Map_Points:	index *
+Map_Points:	index offset(*)
 		ptr frame_points_100
 		ptr frame_points_200
 		ptr frame_points_500

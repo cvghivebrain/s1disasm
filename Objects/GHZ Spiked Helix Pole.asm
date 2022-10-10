@@ -11,7 +11,7 @@ Helix:
 		move.w	Hel_Index(pc,d0.w),d1
 		jmp	Hel_Index(pc,d1.w)
 ; ===========================================================================
-Hel_Index:	index *,,2
+Hel_Index:	index offset(*),,2
 		ptr Hel_Main
 		ptr Hel_Action
 		ptr Hel_Action

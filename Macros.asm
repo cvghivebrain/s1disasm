@@ -15,9 +15,9 @@ ifnotarg	macros
 
 align:		macro length,value
 		ifarg \value
-		dcb.b (\length-(*%\length))%\length,\value
+		dcb.b (\length-(offset(*)%\length))%\length,\value
 		else
-		dcb.b (\length-(*%\length))%\length,0
+		dcb.b (\length-(offset(*)%\length))%\length,0
 		endc
 		endm
 
@@ -120,7 +120,7 @@ rsobjend:	macro
 
 ; ---------------------------------------------------------------------------
 ; Create a pointer index.
-; input: start location (usually * or 0; leave blank to make pointers
+; input: start location (usually offset(*) or 0; leave blank to make pointers
 ;  relative to themselves), id start (default 0), id increment (default 1)
 ; ---------------------------------------------------------------------------
 
@@ -168,7 +168,7 @@ ptr:		macro
 		opt	m-
 
 		if index_start=-1
-		dc.\index_width \1-*
+		dc.\index_width \1-offset(*)
 		else
 		dc.\index_width \1-index_start
 		endc
@@ -341,12 +341,12 @@ spritemap:	macro
 		if ~def(current_sprite)
 		current_sprite: = 1
 		endc
-		sprite_start: = *+1
+		sprite_start: = offset(*)+1
 		dc.b (sprite_\#current_sprite-sprite_start)/5
 		endm
 
 endsprite:	macro
-		sprite_\#current_sprite: equ *
+		sprite_\#current_sprite: equ offset(*)
 		current_sprite: = current_sprite+1
 		endm
 

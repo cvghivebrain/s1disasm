@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - energy ball	launcher (FZ)
 ; ---------------------------------------------------------------------------
-Map_PLaunch:	index *
+Map_PLaunch:	index offset(*)
 		ptr frame_plaunch_red
 		ptr frame_plaunch_white
 		ptr frame_plaunch_sparking1

@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - "GAME OVER"	and "TIME OVER"
 ; ---------------------------------------------------------------------------
-Map_Over:	index *
+Map_Over:	index offset(*)
 		ptr frame_gameover_game
 		ptr frame_gameover_over
 		ptr frame_gameover_time

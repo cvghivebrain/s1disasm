@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - large girder block (SBZ)
 ; ---------------------------------------------------------------------------
-Map_Gird:	index *
+Map_Gird:	index offset(*)
 		ptr frame_girder_0
 		
 frame_girder_0:	spritemap

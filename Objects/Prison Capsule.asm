@@ -16,7 +16,7 @@ Prison:
 	.delete:
 		jmp	(DeleteObject).l
 ; ===========================================================================
-Pri_Index:	index *,,2
+Pri_Index:	index offset(*),,2
 		ptr Pri_Main
 		ptr Pri_Body
 		ptr Pri_Switch
@@ -216,7 +216,7 @@ Pri_EndAct:	; Routine $E
 ; Animation script
 ; ---------------------------------------------------------------------------
 
-Ani_Pri:	index *
+Ani_Pri:	index offset(*)
 		ptr ani_prison_switchflash
 		ptr ani_prison_switchflash
 		

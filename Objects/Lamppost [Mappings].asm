@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - lamppost
 ; ---------------------------------------------------------------------------
-Map_Lamp:	index *
+Map_Lamp:	index offset(*)
 		ptr frame_lamp_blue
 		ptr frame_lamp_poleonly
 		ptr frame_lamp_redballonly

@@ -14,7 +14,7 @@ Spikes:
 		move.w	Spike_Index(pc,d0.w),d1
 		jmp	Spike_Index(pc,d1.w)
 ; ===========================================================================
-Spike_Index:	index *,,2
+Spike_Index:	index offset(*),,2
 		ptr Spike_Main
 		ptr Spike_Solid
 
@@ -132,7 +132,7 @@ Spike_Move:
 		jmp	Spike_TypeIndex(pc,d1.w)
 ; ===========================================================================
 Spike_TypeIndex:
-		index *
+		index offset(*)
 		ptr Spike_Still					; $x0
 		ptr Spike_UpDown				; $x1
 		ptr Spike_LeftRight				; $x2

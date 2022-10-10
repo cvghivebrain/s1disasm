@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - GHZ	bridge
 ; ---------------------------------------------------------------------------
-Map_Bri:	index *
+Map_Bri:	index offset(*)
 		ptr frame_bridge_log
 		ptr frame_bridge_stump
 		ptr frame_bridge_rope

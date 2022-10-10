@@ -13,7 +13,7 @@ CirclingPlatform:
 		out_of_range	DeleteObject,ost_circ_x_start(a0)
 		bra.w	DisplaySprite
 ; ===========================================================================
-Circ_Index:	index *,,2
+Circ_Index:	index offset(*),,2
 		ptr Circ_Main
 		ptr Circ_Platform
 		ptr Circ_StoodOn
@@ -60,7 +60,7 @@ Circ_Types:
 		jmp	Circ_Type_Index(pc,d1.w)
 ; ===========================================================================
 Circ_Type_Index:
-		index *,,4
+		index offset(*),,4
 		ptr Circ_Anticlockwise				; types 0-3
 		ptr Circ_Clockwise				; types 4-7
 ; ===========================================================================

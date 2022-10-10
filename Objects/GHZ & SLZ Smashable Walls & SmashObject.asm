@@ -13,7 +13,7 @@ SmashWall:
 		jsr	Smash_Index(pc,d1.w)
 		bra.w	DespawnObject
 ; ===========================================================================
-Smash_Index:	index *,,2
+Smash_Index:	index offset(*),,2
 		ptr Smash_Main
 		ptr Smash_Solid
 		ptr Smash_FragMove

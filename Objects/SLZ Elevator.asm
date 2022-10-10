@@ -14,7 +14,7 @@ Elevator:
 		out_of_range	DeleteObject,ost_elev_x_start(a0)
 		bra.w	DisplaySprite
 ; ===========================================================================
-Elev_Index:	index *,,2
+Elev_Index:	index offset(*),,2
 		ptr Elev_Main
 		ptr Elev_Platform
 		ptr Elev_StoodOn
@@ -120,7 +120,7 @@ Elev_Types:
 		jmp	Elev_Type_Index(pc,d1.w)
 ; ===========================================================================
 Elev_Type_Index:
-		index *
+		index offset(*)
 		ptr Elev_Still					; 0 - doesn't move
 		ptr Elev_Up					; 1 - rises when stood on
 		ptr Elev_Up_Now	

@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - smashable walls (GHZ, SLZ)
 ; ---------------------------------------------------------------------------
-Map_Smash:	index *
+Map_Smash:	index offset(*)
 		ptr frame_smash_left
 		ptr frame_smash_middle
 		ptr frame_smash_right

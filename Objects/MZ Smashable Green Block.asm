@@ -12,7 +12,7 @@ SmashBlock:
 		jsr	Smab_Index(pc,d1.w)
 		bra.w	DespawnObject
 ; ===========================================================================
-Smab_Index:	index *,,2
+Smab_Index:	index offset(*),,2
 		ptr Smab_Main
 		ptr Smab_Solid
 		ptr Smab_FragMove

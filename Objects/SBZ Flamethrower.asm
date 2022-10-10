@@ -11,7 +11,7 @@ Flamethrower:
 		move.w	Flame_Index(pc,d0.w),d1
 		jmp	Flame_Index(pc,d1.w)
 ; ===========================================================================
-Flame_Index:	index *,,2
+Flame_Index:	index offset(*),,2
 		ptr Flame_Main
 		ptr Flame_Action
 
@@ -74,7 +74,7 @@ Flame_Action:	; Routine 2
 ; Animation script
 ; ---------------------------------------------------------------------------
 
-Ani_Flame:	index *
+Ani_Flame:	index offset(*)
 		ptr ani_flame_pipe_on
 		ptr ani_flame_pipe_off
 		ptr ani_flame_valve_on

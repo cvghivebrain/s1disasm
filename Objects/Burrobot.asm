@@ -11,7 +11,7 @@ Burrobot:
 		move.w	Burro_Index(pc,d0.w),d1
 		jmp	Burro_Index(pc,d1.w)
 ; ===========================================================================
-Burro_Index:	index *,,2
+Burro_Index:	index offset(*),,2
 		ptr Burro_Main
 		ptr Burro_Action
 
@@ -44,7 +44,7 @@ Burro_Action:	; Routine 2
 		bra.w	DespawnObject
 ; ===========================================================================
 Burro_Action_Index:
-		index *,,2
+		index offset(*),,2
 		ptr Burro_ChangeDir
 		ptr Burro_Move
 		ptr Burro_Jump
@@ -176,7 +176,7 @@ Burro_ChkDist:
 ; Animation script
 ; ---------------------------------------------------------------------------
 
-Ani_Burro:	index *
+Ani_Burro:	index offset(*)
 		ptr ani_burro_walk1
 		ptr ani_burro_walk2
 		ptr ani_burro_digging

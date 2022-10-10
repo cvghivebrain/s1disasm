@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - "SONIC HAS PASSED" title card
 ; ---------------------------------------------------------------------------
-Map_Has:	index *
+Map_Has:	index offset(*)
 		ptr frame_has_sonichas
 		ptr frame_has_passed
 		ptr frame_has_score

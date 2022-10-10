@@ -11,7 +11,7 @@ Fan:
 		move.w	Fan_Index(pc,d0.w),d1
 		jmp	Fan_Index(pc,d1.w)
 ; ===========================================================================
-Fan_Index:	index *,,2
+Fan_Index:	index offset(*),,2
 		ptr Fan_Main
 		ptr Fan_Delay
 

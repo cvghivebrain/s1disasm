@@ -22,7 +22,7 @@ Seesaw:
 		bhi.w	DeleteObject
 		bra.w	DisplaySprite
 ; ===========================================================================
-See_Index:	index *,,2
+See_Index:	index offset(*),,2
 		ptr See_Main
 		ptr See_Slope
 		ptr See_StoodOn

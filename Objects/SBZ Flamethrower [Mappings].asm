@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - flame thrower (SBZ)
 ; ---------------------------------------------------------------------------
-Map_Flame:	index *
+Map_Flame:	index offset(*)
 		ptr frame_flame_pipe1
 		ptr frame_flame_pipe2
 		ptr frame_flame_pipe3

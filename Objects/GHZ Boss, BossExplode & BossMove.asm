@@ -13,7 +13,7 @@ BossGreenHill:
 		move.w	BGHZ_Index(pc,d0.w),d1
 		jmp	BGHZ_Index(pc,d1.w)
 ; ===========================================================================
-BGHZ_Index:	index *,,2
+BGHZ_Index:	index offset(*),,2
 		ptr BGHZ_Main
 		ptr BGHZ_ShipMain
 		ptr BGHZ_FaceMain
@@ -68,7 +68,7 @@ BGHZ_ShipMain:	; Routine 2
 		or.b	d0,ost_render(a0)			; combine x/yflip bits from status instead
 		jmp	(DisplaySprite).l
 ; ===========================================================================
-BGHZ_ShipIndex:	index *,,2
+BGHZ_ShipIndex:	index offset(*),,2
 		ptr BGHZ_ShipStart
 		ptr BGHZ_MakeBall
 		ptr BGHZ_ShipMove

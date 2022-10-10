@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - cylinders Eggman hides in (FZ)
 ; ---------------------------------------------------------------------------
-Map_EggCyl:	index *
+Map_EggCyl:	index offset(*)
 		ptr frame_cylinder_flat
 		ptr frame_cylinder_extending1
 		ptr frame_cylinder_extending2

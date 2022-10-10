@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - special stage entry	from beta
 ; ---------------------------------------------------------------------------
-Map_Vanish:	index *
+Map_Vanish:	index offset(*)
 		ptr frame_vanish_flash1
 		ptr frame_vanish_flash2
 		ptr frame_vanish_flash3

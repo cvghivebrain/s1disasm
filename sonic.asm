@@ -13,6 +13,8 @@
 		opt	w+					; print warnings
 		opt	m+					; do not expand macros - if enabled, this can break assembling
 
+Main	section	org(0)
+
 		include "Mega Drive.asm"
 		include "Macros - More CPUs.asm"
 		include "Macros.asm"
@@ -1164,7 +1166,7 @@ Art_SbzSmoke:	incbin	"Graphics\SBZ Background Smoke.bin"
 ; ---------------------------------------------------------------------------
 ; Level	layout index
 ; ---------------------------------------------------------------------------
-Level_Index:	index *
+Level_Index:	index offset(*)
 		; GHZ
 		ptr Level_GHZ1
 		ptr Level_GHZ_bg
@@ -1378,7 +1380,7 @@ Level_End_unused:	dc.b 0,	0, 0, 0
 ; ---------------------------------------------------------------------------
 ; Object position index
 ; ---------------------------------------------------------------------------
-ObjPos_Index:	index *
+ObjPos_Index:	index offset(*)
 		; GHZ
 		ptr ObjPos_GHZ1
 		ptr ObjPos_Null

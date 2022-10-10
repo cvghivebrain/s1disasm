@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - electrocution orbs (SBZ)
 ; ---------------------------------------------------------------------------
-Map_Elec:	index *
+Map_Elec:	index offset(*)
 		ptr frame_electro_normal
 		ptr frame_electro_zap1
 		ptr frame_electro_zap2

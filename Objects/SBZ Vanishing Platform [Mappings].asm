@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - vanishing platforms	(SBZ)
 ; ---------------------------------------------------------------------------
-Map_VanP:	index *
+Map_VanP:	index offset(*)
 		ptr frame_vanish_whole
 		ptr frame_vanish_half
 		ptr frame_vanish_quarter

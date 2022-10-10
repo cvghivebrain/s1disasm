@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - SCORE, TIME, RINGS
 ; ---------------------------------------------------------------------------
-Map_HUD:	index *
+Map_HUD:	index offset(*)
 		ptr frame_hud_allyellow
 		ptr frame_hud_ringred
 		ptr frame_hud_timered

@@ -13,7 +13,7 @@ Gargoyle:
 		jsr	Gar_Index(pc,d1.w)
 		bra.w	DespawnObject
 ; ===========================================================================
-Gar_Index:	index *,,2
+Gar_Index:	index offset(*),,2
 		ptr Gar_Main
 		ptr Gar_MakeFire
 		ptr Gar_FireBall

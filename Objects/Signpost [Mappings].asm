@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - signpost
 ; ---------------------------------------------------------------------------
-Map_Sign:	index *
+Map_Sign:	index offset(*)
 		ptr frame_sign_eggman
 		ptr frame_sign_spin1
 		ptr frame_sign_spin2

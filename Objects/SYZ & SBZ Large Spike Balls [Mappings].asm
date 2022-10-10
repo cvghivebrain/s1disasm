@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - spiked ball on a chain (SBZ) and big spiked ball (SYZ)
 ; ---------------------------------------------------------------------------
-Map_BBall:	index *
+Map_BBall:	index offset(*)
 		ptr frame_bball_ball
 		ptr frame_bball_chain
 		ptr frame_bball_anchor

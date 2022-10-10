@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Eggman (SBZ2, FZ)
 ; ---------------------------------------------------------------------------
-Map_SEgg:	index *
+Map_SEgg:	index offset(*)
 		ptr frame_eggman_stand
 		ptr frame_eggman_laugh1
 		ptr frame_eggman_laugh2

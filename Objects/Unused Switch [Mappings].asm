@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Unused switch thingy
 ; ---------------------------------------------------------------------------
-Map_Switch:	index *
+Map_Switch:	index offset(*)
 		ptr frame_switch_0
 		
 frame_switch_0:	spritemap

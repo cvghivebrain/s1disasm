@@ -33,7 +33,7 @@ LCon_ChkDel:
 		bclr	#0,(a2,d0.w)
 		bra.w	DeleteObject
 ; ===========================================================================
-LCon_Index:	index *,,2
+LCon_Index:	index offset(*),,2
 		ptr LCon_Main
 		ptr LCon_Platform
 		ptr LCon_OnPlatform
@@ -293,7 +293,7 @@ LCon_Platform_Move:
 
 ; ===========================================================================
 LCon_Corner_Data:
-		index *
+		index offset(*)
 		ptr LCon_Corners_0
 		ptr LCon_Corners_1
 		ptr LCon_Corners_2

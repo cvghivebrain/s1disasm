@@ -277,7 +277,7 @@ LPL_InitBG:
 
 ; ===========================================================================
 LPL_InitBG_Index:
-		index *
+		index offset(*)
 		ptr LPL_InitBG_GHZ
 		ptr LPL_InitBG_LZ
 		ptr LPL_InitBG_MZ

@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - stomper and	sliding doors (SBZ)
 ; ---------------------------------------------------------------------------
-Map_Stomp:	index *
+Map_Stomp:	index offset(*)
 		ptr frame_stomp_door
 		ptr frame_stomp_stomper
 		ptr frame_stomp_stomper

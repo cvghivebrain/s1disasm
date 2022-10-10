@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - waterfalls (LZ)
 ; ---------------------------------------------------------------------------
-Map_WFall:	index *
+Map_WFall:	index offset(*)
 		ptr frame_wfall_vertnarrow
 		ptr frame_wfall_cornerwide
 		ptr frame_wfall_cornermedium

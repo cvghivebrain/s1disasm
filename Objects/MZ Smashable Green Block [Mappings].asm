@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - smashable green block (MZ)
 ; ---------------------------------------------------------------------------
-Map_Smab:	index *
+Map_Smab:	index offset(*)
 		ptr frame_smash_two
 		ptr frame_smash_four
 		

@@ -11,7 +11,7 @@ Harpoon:
 		move.w	Harp_Index(pc,d0.w),d1
 		jmp	Harp_Index(pc,d1.w)
 ; ===========================================================================
-Harp_Index:	index *,,2
+Harp_Index:	index offset(*),,2
 		ptr Harp_Main
 		ptr Harp_Move
 		ptr Harp_Wait
@@ -62,7 +62,7 @@ Harp_Wait:	; Routine 4
 ; Animation script
 ; ---------------------------------------------------------------------------
 
-Ani_Harp:	index *
+Ani_Harp:	index offset(*)
 		ptr ani_harp_h_extending
 		ptr ani_harp_h_retracting
 		ptr ani_harp_v_extending

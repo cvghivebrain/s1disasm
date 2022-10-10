@@ -13,7 +13,7 @@ FireMaker:
 		jsr	FireM_Index(pc,d1.w)
 		bra.w	FBall_ChkDel
 ; ===========================================================================
-FireM_Index:	index *,,2
+FireM_Index:	index offset(*),,2
 		ptr FireM_Main
 		ptr FireM_MakeFire
 

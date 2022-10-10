@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - bubbles (LZ)
 ; ---------------------------------------------------------------------------
-Map_Bub:	index *
+Map_Bub:	index offset(*)
 		ptr frame_bubble_0
 		ptr frame_bubble_1
 		ptr frame_bubble_2

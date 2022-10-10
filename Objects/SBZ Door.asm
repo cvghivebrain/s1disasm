@@ -11,7 +11,7 @@ AutoDoor:
 		move.w	ADoor_Index(pc,d0.w),d1
 		jmp	ADoor_Index(pc,d1.w)
 ; ===========================================================================
-ADoor_Index:	index *,,2
+ADoor_Index:	index offset(*),,2
 		ptr ADoor_Main
 		ptr ADoor_OpenShut
 ; ===========================================================================
@@ -70,7 +70,7 @@ ADoor_Animate:
 ; Animation script
 ; ---------------------------------------------------------------------------
 
-Ani_ADoor:	index *
+Ani_ADoor:	index offset(*)
 		ptr ani_autodoor_close
 		ptr ani_autodoor_open
 		

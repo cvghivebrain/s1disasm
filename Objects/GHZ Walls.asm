@@ -13,7 +13,7 @@ EdgeWalls:
 		move.w	Edge_Index(pc,d0.w),d1
 		jmp	Edge_Index(pc,d1.w)
 ; ===========================================================================
-Edge_Index:	index *,,2
+Edge_Index:	index offset(*),,2
 		ptr Edge_Main
 		ptr Edge_Solid
 		ptr Edge_Display

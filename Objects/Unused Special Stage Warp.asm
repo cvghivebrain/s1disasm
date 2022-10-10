@@ -8,7 +8,7 @@ VanishSonic:
 		move.w	Van_Index(pc,d0.w),d1
 		jmp	Van_Index(pc,d1.w)
 ; ===========================================================================
-Van_Index:	index *,,2
+Van_Index:	index offset(*),,2
 		ptr Van_Main
 		ptr Van_RmvSonic
 		ptr Van_LoadSonic
@@ -65,7 +65,7 @@ Van_LoadSonic:	; Routine 4
 
 include_VanishSonic_animation:	macro
 
-Ani_Vanish:	index *
+Ani_Vanish:	index offset(*)
 		ptr ani_vanish_0
 		
 ani_vanish_0:	dc.b 5

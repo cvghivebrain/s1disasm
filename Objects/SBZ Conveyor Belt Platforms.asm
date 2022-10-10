@@ -33,7 +33,7 @@ SpinC_ChkDel:
 SpinC_Delete:
 		jmp	(DeleteObject).l
 ; ===========================================================================
-SpinC_Index:	index *,,2
+SpinC_Index:	index offset(*),,2
 		ptr SpinC_Main
 		ptr SpinC_Solid
 
@@ -224,7 +224,7 @@ SpinC_Update:
 ; Animation script
 ; ---------------------------------------------------------------------------
 
-Ani_SpinConvey:	index *
+Ani_SpinConvey:	index offset(*)
 		ptr ani_spinc_spin
 		ptr ani_spinc_still
 		
@@ -256,7 +256,7 @@ ani_spinc_still:
 		even
 
 SpinC_Corner_Data:
-		index *
+		index offset(*)
 		ptr SpinC_Corners_0
 		ptr SpinC_Corners_1
 		ptr SpinC_Corners_2

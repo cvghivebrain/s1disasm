@@ -11,7 +11,7 @@ Pylon:
 		move.w	Pyl_Index(pc,d0.w),d1
 		jmp	Pyl_Index(pc,d1.w)
 ; ===========================================================================
-Pyl_Index:	index *,,2
+Pyl_Index:	index offset(*),,2
 		ptr Pyl_Main
 		ptr Pyl_Display
 ; ===========================================================================

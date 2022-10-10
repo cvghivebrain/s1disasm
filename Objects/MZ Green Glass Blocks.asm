@@ -18,7 +18,7 @@ GlassBlock:
 Glass_Delete:
 		bra.w	DeleteObject
 ; ===========================================================================
-Glass_Index:	index *,,2
+Glass_Index:	index offset(*),,2
 		ptr Glass_Main
 		ptr Glass_Block012
 		ptr Glass_Reflect012
@@ -136,7 +136,7 @@ Glass_Types:
 ; End of function Glass_Types
 
 ; ===========================================================================
-Glass_TypeIndex:index *
+Glass_TypeIndex:index offset(*)
 		ptr Glass_Still					; 0 - doesn't move
 		ptr Glass_UpDown				; 1 - moves up and down
 		ptr Glass_UpDown_Rev				; 2 - moves up and down, reversed

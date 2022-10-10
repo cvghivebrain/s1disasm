@@ -11,7 +11,7 @@ Bumper:
 		move.w	Bump_Index(pc,d0.w),d1
 		jmp	Bump_Index(pc,d1.w)
 ; ===========================================================================
-Bump_Index:	index *,,2
+Bump_Index:	index offset(*),,2
 		ptr Bump_Main
 		ptr Bump_Hit
 ; ===========================================================================
@@ -87,7 +87,7 @@ Bump_Hit:	; Routine 2
 ; Animation script
 ; ---------------------------------------------------------------------------
 
-Ani_Bump:	index *
+Ani_Bump:	index offset(*)
 		ptr ani_bump_normal
 		ptr ani_bump_bumped
 		

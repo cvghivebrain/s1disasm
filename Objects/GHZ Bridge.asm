@@ -11,7 +11,7 @@ Bridge:
 		move.w	Bri_Index(pc,d0.w),d1
 		jmp	Bri_Index(pc,d1.w)
 ; ===========================================================================
-Bri_Index:	index *,,2
+Bri_Index:	index offset(*),,2
 		ptr Bri_Main
 		ptr Bri_Action
 		ptr Bri_Platform

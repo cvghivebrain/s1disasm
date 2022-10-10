@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - prison capsule
 ; ---------------------------------------------------------------------------
-Map_Pri:	index *
+Map_Pri:	index offset(*)
 		ptr frame_prison_capsule
 		ptr frame_prison_switch1
 		ptr frame_prison_broken

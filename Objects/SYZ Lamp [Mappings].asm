@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - lamp (SYZ)
 ; ---------------------------------------------------------------------------
-Map_Light:	index *
+Map_Light:	index offset(*)
 		ptr frame_light_0
 		ptr frame_light_1
 		ptr frame_light_2

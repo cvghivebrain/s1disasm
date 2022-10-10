@@ -16,7 +16,7 @@ Monitor:
 		move.w	Mon_Index(pc,d0.w),d1
 		jmp	Mon_Index(pc,d1.w)
 ; ===========================================================================
-Mon_Index:	index *,,2
+Mon_Index:	index offset(*),,2
 		ptr Mon_Main
 		ptr Mon_Solid
 		ptr Mon_BreakOpen
@@ -262,7 +262,7 @@ Mon_Solid_Detect:
 
 include_Monitor_animation:	macro
 
-Ani_Monitor:	index *
+Ani_Monitor:	index offset(*)
 		ptr ani_monitor_static				; 0
 		ptr ani_monitor_eggman				; 1
 		ptr ani_monitor_sonic				; 2

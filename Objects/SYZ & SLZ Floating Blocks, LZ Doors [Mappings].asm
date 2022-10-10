@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - floating blocks (SYZ/SLZ/LZ)
 ; ---------------------------------------------------------------------------
-Map_FBlock:	index *
+Map_FBlock:	index offset(*)
 		ptr frame_fblock_syz1x1
 		ptr frame_fblock_syz2x2
 		ptr frame_fblock_syz1x2

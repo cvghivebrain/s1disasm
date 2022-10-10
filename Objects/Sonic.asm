@@ -17,7 +17,7 @@ Sonic_Normal:
 		move.w	Sonic_Index(pc,d0.w),d1
 		jmp	Sonic_Index(pc,d1.w)
 ; ===========================================================================
-Sonic_Index:	index *,,2
+Sonic_Index:	index offset(*),,2
 		ptr Sonic_Main
 		ptr Sonic_Control
 		ptr Sonic_Hurt
@@ -86,7 +86,7 @@ Sonic_Control:	; Routine 2
 		rts	
 
 ; ===========================================================================
-Sonic_Modes:	index *,,2
+Sonic_Modes:	index offset(*),,2
 		ptr Sonic_Mode_Normal				; status_jump_bit = 0; status_air_bit = 0
 		ptr Sonic_Mode_Air				; status_jump_bit = 0; status_air_bit = 1
 		ptr Sonic_Mode_Roll				; status_jump_bit = 1; status_air_bit = 0

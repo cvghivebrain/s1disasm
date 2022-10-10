@@ -11,7 +11,7 @@ CollapseLedge:
 		move.w	Ledge_Index(pc,d0.w),d1
 		jmp	Ledge_Index(pc,d1.w)
 ; ===========================================================================
-Ledge_Index:	index *,,2
+Ledge_Index:	index offset(*),,2
 		ptr Ledge_Main
 		ptr Ledge_Touch
 		ptr Ledge_Collapse

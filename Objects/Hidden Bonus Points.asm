@@ -13,7 +13,7 @@ HiddenBonus:
 		move.w	Bonus_Index(pc,d0.w),d1
 		jmp	Bonus_Index(pc,d1.w)
 ; ===========================================================================
-Bonus_Index:	index *,,2
+Bonus_Index:	index offset(*),,2
 		ptr Bonus_Main
 		ptr Bonus_Display
 

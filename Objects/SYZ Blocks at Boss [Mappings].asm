@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - blocks that	Robotnik picks up (SYZ)
 ; ---------------------------------------------------------------------------
-Map_BossBlock:	index *
+Map_BossBlock:	index offset(*)
 		ptr frame_bblock_wholeblock
 		ptr frame_bblock_topleft
 		ptr frame_bblock_topright

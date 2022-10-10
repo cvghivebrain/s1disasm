@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - large moving grass-covered platforms (MZ)
 ; ---------------------------------------------------------------------------
-Map_LGrass:	index *
+Map_LGrass:	index offset(*)
 		ptr frame_grass_wide
 		ptr frame_grass_sloped
 		ptr frame_grass_narrow

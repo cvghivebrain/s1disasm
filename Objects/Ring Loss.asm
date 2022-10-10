@@ -12,7 +12,7 @@ RingLoss:
 		move.w	RLoss_Index(pc,d0.w),d1
 		jmp	RLoss_Index(pc,d1.w)
 ; ===========================================================================
-RLoss_Index:	index *,,2
+RLoss_Index:	index offset(*),,2
 		ptr RLoss_Count
 		ptr RLoss_Bounce
 		ptr RLoss_Collect

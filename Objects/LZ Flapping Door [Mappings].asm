@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - flapping door (LZ)
 ; ---------------------------------------------------------------------------
-Map_Flap:	index *
+Map_Flap:	index offset(*)
 		ptr frame_flap_closed
 		ptr frame_flap_halfway
 		ptr frame_flap_open

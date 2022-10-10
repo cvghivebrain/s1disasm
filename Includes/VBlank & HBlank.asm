@@ -32,7 +32,7 @@ VBlank_Exit:
 		popr	d0-a6					; restore all registers from stack
 		rte						; end of VBlank
 ; ===========================================================================
-VBlank_Index:	index *,,2
+VBlank_Index:	index offset(*),,2
 		ptr VBlank_Lag					; 0
 		ptr VBlank_Sega					; 2
 		ptr VBlank_Title				; 4

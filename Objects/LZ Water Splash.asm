@@ -11,7 +11,7 @@ Splash:
 		move.w	Spla_Index(pc,d0.w),d1
 		jmp	Spla_Index(pc,d1.w)
 ; ===========================================================================
-Spla_Index:	index *,,2
+Spla_Index:	index offset(*),,2
 		ptr Spla_Main
 		ptr Spla_Display
 		ptr Spla_Delete
@@ -42,7 +42,7 @@ Spla_Delete:	; Routine 4
 
 include_Splash_animation:	macro
 
-Ani_Splash:	index *
+Ani_Splash:	index offset(*)
 		ptr ani_splash_0
 		
 ani_splash_0:	dc.b 4

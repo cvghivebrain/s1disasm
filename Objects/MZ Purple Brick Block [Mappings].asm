@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - solid blocks and blocks that fall from the ceiling (MZ)
 ; ---------------------------------------------------------------------------
-Map_Brick:	index *
+Map_Brick:	index offset(*)
 		ptr frame_brick_0
 		
 frame_brick_0:	spritemap

@@ -12,7 +12,7 @@ EndChaos:
 		jsr	ECha_Index(pc,d1.w)
 		jmp	(DisplaySprite).l
 ; ===========================================================================
-ECha_Index:	index *,,2
+ECha_Index:	index offset(*),,2
 		ptr ECha_Main
 		ptr ECha_Move
 

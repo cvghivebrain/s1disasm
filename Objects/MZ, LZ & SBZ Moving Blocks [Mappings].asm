@@ -2,7 +2,7 @@
 ; Sprite mappings - moving platform blocks (MZ, LZ, SBZ)
 ; ---------------------------------------------------------------------------
 
-Map_MBlock:	index *
+Map_MBlock:	index offset(*)
 		ptr frame_mblock_mz1
 		ptr frame_mblock_mz2
 		ptr frame_mblock_sbz
@@ -44,7 +44,7 @@ frame_mblock_mz3:
 		endsprite
 		even
 
-Map_MBlockLZ:	index *
+Map_MBlockLZ:	index offset(*)
 		ptr frame_mblocklz_0
 		
 frame_mblocklz_0:

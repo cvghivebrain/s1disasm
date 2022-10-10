@@ -11,7 +11,7 @@ BigSpikeBall:
 		move.w	BBall_Index(pc,d0.w),d1
 		jmp	BBall_Index(pc,d1.w)
 ; ===========================================================================
-BBall_Index:	index *,,2
+BBall_Index:	index offset(*),,2
 		ptr BBall_Main
 		ptr BBall_Move
 
@@ -54,7 +54,7 @@ BBall_Move:	; Routine 2
 		out_of_range	DeleteObject,ost_bball_x_start(a0)
 		bra.w	DisplaySprite
 ; ===========================================================================
-BBall_Types:	index *
+BBall_Types:	index offset(*)
 		ptr BBall_Still					; 0 - unused
 		ptr BBall_Sideways				; 1
 		ptr BBall_UpDown				; 2

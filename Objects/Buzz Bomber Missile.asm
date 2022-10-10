@@ -12,7 +12,7 @@ Missile:
 		move.w	Msl_Index(pc,d0.w),d1
 		jmp	Msl_Index(pc,d1.w)
 ; ===========================================================================
-Msl_Index:	index *,,2
+Msl_Index:	index offset(*),,2
 		ptr Msl_Main
 		ptr Msl_Animate
 		ptr Msl_FromBuzz
@@ -108,7 +108,7 @@ Msl_Animate2:
 
 include_Missile_animation:	macro
 
-Ani_Missile:	index *
+Ani_Missile:	index offset(*)
 		ptr ani_buzz_flare
 		ptr ani_buzz_missile
 		

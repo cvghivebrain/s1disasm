@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - chaos emeralds from	the special stage results screen
 ; ---------------------------------------------------------------------------
-Map_SSRC:	index *
+Map_SSRC:	index offset(*)
 		ptr frame_ssrc_blue
 		ptr frame_ssrc_yellow
 		ptr frame_ssrc_pink

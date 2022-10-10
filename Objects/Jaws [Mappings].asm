@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Jaws enemy (LZ)
 ; ---------------------------------------------------------------------------
-Map_Jaws:	index *
+Map_Jaws:	index offset(*)
 		ptr frame_jaws_open1
 		ptr frame_jaws_shut1
 		ptr frame_jaws_open2

@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - walking bomb enemy (SLZ, SBZ)
 ; ---------------------------------------------------------------------------
-Map_Bomb:	index *
+Map_Bomb:	index offset(*)
 		ptr frame_bomb_stand1
 		ptr frame_bomb_stand2
 		ptr frame_bomb_walk1

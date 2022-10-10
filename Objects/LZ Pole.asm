@@ -11,7 +11,7 @@ Pole:
 		move.w	Pole_Index(pc,d0.w),d1
 		jmp	Pole_Index(pc,d1.w)
 ; ===========================================================================
-Pole_Index:	index *,,2
+Pole_Index:	index offset(*),,2
 		ptr Pole_Main
 		ptr Pole_Action
 		ptr Pole_Display

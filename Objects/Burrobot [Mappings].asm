@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Burrobot enemy (LZ)
 ; ---------------------------------------------------------------------------
-Map_Burro:	index *
+Map_Burro:	index offset(*)
 		ptr frame_burro_walk1
 		ptr frame_burro_walk2
 		ptr frame_burro_dig1

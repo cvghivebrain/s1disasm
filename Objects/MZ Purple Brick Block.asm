@@ -11,7 +11,7 @@ MarbleBrick:
 		move.w	Brick_Index(pc,d0.w),d1
 		jmp	Brick_Index(pc,d1.w)
 ; ===========================================================================
-Brick_Index:	index *,,2
+Brick_Index:	index offset(*),,2
 		ptr Brick_Main
 		ptr Brick_Action
 
@@ -57,7 +57,7 @@ Brick_Action:	; Routine 2
 			bra.w	DisplaySprite
 		endc
 ; ===========================================================================
-Brick_TypeIndex:index *
+Brick_TypeIndex:index offset(*)
 		ptr Brick_Still					; doesn't move
 		ptr Brick_Wobbles				; wobbles
 		ptr Brick_Falls					; wobbles and falls

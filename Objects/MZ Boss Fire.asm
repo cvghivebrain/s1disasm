@@ -13,7 +13,7 @@ BossFire:
 		jsr	BFire_Index(pc,d0.w)
 		jmp	(DisplaySprite).l
 ; ===========================================================================
-BFire_Index:	index *,,2
+BFire_Index:	index offset(*),,2
 		ptr BFire_Main
 		ptr BFire_Action
 		ptr BFire_TempFire
@@ -67,7 +67,7 @@ BFire_Action:	; Routine 2
 BFire_Delete:
 		jmp	(DeleteObject).l
 ; ===========================================================================
-BFire_Index2:	index *,,2
+BFire_Index2:	index offset(*),,2
 		ptr BFire_Drop
 		ptr BFire_Duplicate
 		ptr BFire_FireSpread

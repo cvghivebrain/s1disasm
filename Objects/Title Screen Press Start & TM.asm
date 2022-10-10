@@ -12,7 +12,7 @@ PSBTM:
 		jsr	PSB_Index(pc,d1.w)
 		bra.w	DisplaySprite
 ; ===========================================================================
-PSB_Index:	index *,,2
+PSB_Index:	index offset(*),,2
 		ptr PSB_Main
 		ptr PSB_Animate
 		ptr PSB_Exit
@@ -49,7 +49,7 @@ PSB_Animate:	; Routine 2
 
 include_PSBTM_animation:	macro
 
-Ani_PSB:	index *
+Ani_PSB:	index offset(*)
 		ptr ani_psb_flash
 		
 ani_psb_flash:	dc.b $1F

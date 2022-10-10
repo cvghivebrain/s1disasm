@@ -12,7 +12,7 @@ Chopper:
 		jsr	Chop_Index(pc,d1.w)
 		bra.w	DespawnObject
 ; ===========================================================================
-Chop_Index:	index *,,2
+Chop_Index:	index offset(*),,2
 		ptr Chop_Main
 		ptr Chop_ChgSpeed
 
@@ -60,7 +60,7 @@ Chop_ChgSpeed:	; Routine 2
 ; Animation script
 ; ---------------------------------------------------------------------------
 
-Ani_Chop:	index *
+Ani_Chop:	index offset(*)
 		ptr ani_chopper_slow
 		ptr ani_chopper_fast
 		ptr ani_chopper_still

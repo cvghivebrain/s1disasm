@@ -17,7 +17,7 @@ FalseFloor:
 		move.w	FFloor_Index(pc,d0.w),d1
 		jmp	FFloor_Index(pc,d1.w)
 ; ===========================================================================
-FFloor_Index:	index *,,2
+FFloor_Index:	index offset(*),,2
 		ptr FFloor_Main
 		ptr FFloor_ChkBreak
 		ptr FFloor_Break

@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - blocks (LZ)
 ; ---------------------------------------------------------------------------
-Map_LBlock:	index *
+Map_LBlock:	index offset(*)
 		ptr frame_lblock_sinkblock
 		ptr frame_lblock_riseplatform
 		ptr frame_lblock_cork

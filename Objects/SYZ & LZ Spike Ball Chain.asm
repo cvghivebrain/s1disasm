@@ -13,7 +13,7 @@ SpikeBall:
 		move.w	SBall_Index(pc,d0.w),d1
 		jmp	SBall_Index(pc,d1.w)
 ; ===========================================================================
-SBall_Index:	index *,,2
+SBall_Index:	index offset(*),,2
 		ptr SBall_Main
 		ptr SBall_Move
 		ptr SBall_Display

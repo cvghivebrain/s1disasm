@@ -2,7 +2,7 @@
 ; Sprite mappings - buzz bomber missile vanishing
 ; ---------------------------------------------------------------------------
 Map_MisDissolve:
-		index *
+		index offset(*)
 		ptr byte_8EAE
 		ptr byte_8EB4
 		ptr byte_8EBA

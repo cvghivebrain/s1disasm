@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - GHZ	collapsing ledge
 ; ---------------------------------------------------------------------------
-Map_Ledge:	index *
+Map_Ledge:	index offset(*)
 		ptr frame_ledge_left
 		ptr frame_ledge_right
 		ptr frame_ledge_leftsmash

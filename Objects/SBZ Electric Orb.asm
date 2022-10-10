@@ -11,7 +11,7 @@ Electro:
 		move.w	Elec_Index(pc,d0.w),d1
 		jmp	Elec_Index(pc,d1.w)
 ; ===========================================================================
-Elec_Index:	index *,,2
+Elec_Index:	index offset(*),,2
 		ptr Elec_Main
 		ptr Elec_Shock
 
@@ -57,7 +57,7 @@ Elec_Shock:	; Routine 2
 ; Animation script
 ; ---------------------------------------------------------------------------
 
-Ani_Elec:	index *
+Ani_Elec:	index offset(*)
 		ptr ani_electro_normal
 		ptr ani_electro_zap
 		

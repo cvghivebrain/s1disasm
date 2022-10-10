@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - fire balls (MZ, SLZ)
 ; ---------------------------------------------------------------------------
-Map_Fire:	index *
+Map_Fire:	index offset(*)
 		ptr frame_fire_vertical1
 		ptr frame_fire_vertical2
 		ptr frame_fire_vertcollide

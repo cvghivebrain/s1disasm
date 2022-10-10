@@ -11,7 +11,7 @@ ShieldItem:
 		move.w	Shi_Index(pc,d0.w),d1
 		jmp	Shi_Index(pc,d1.w)
 ; ===========================================================================
-Shi_Index:	index *,,2
+Shi_Index:	index offset(*),,2
 		ptr Shi_Main
 		ptr Shi_Shield
 		ptr Shi_Stars
@@ -116,7 +116,7 @@ Shi_Stars:	; Routine 4
 
 include_ShieldItem_animation:	macro
 
-Ani_Shield:	index *
+Ani_Shield:	index offset(*)
 		ptr ani_shield_0
 		ptr ani_stars1
 		ptr ani_stars2

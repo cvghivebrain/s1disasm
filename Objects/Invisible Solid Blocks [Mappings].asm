@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - invisible solid blocks (visible in debug mode)
 ; ---------------------------------------------------------------------------
-Map_Invis:	index *
+Map_Invis:	index offset(*)
 		ptr frame_invis_solid
 		ptr frame_invis_unused1
 		ptr frame_invis_unused2

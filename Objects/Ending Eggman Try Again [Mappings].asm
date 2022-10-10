@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Robotnik on	the "TRY AGAIN"	and "END" screens
 ; ---------------------------------------------------------------------------
-Map_EEgg:	index *
+Map_EEgg:	index offset(*)
 		ptr frame_eegg_juggle1
 		ptr frame_eegg_juggle2
 		ptr frame_eegg_juggle3

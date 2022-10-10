@@ -11,7 +11,7 @@ RingFlash:
 		move.w	Flash_Index(pc,d0.w),d1
 		jmp	Flash_Index(pc,d1.w)
 ; ===========================================================================
-Flash_Index:	index *,,2
+Flash_Index:	index offset(*),,2
 		ptr Flash_Main
 		ptr Flash_ChkDel
 		ptr Flash_Delete

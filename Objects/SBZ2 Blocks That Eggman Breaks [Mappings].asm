@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - blocks that	disintegrate when Eggman presses a switch
 ; ---------------------------------------------------------------------------
-Map_FFloor:	index *
+Map_FFloor:	index offset(*)
 		ptr frame_ffloor_wholeblock
 		ptr frame_ffloor_topleft
 		ptr frame_ffloor_topright

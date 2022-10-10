@@ -14,7 +14,7 @@ Button:
 		move.w	But_Index(pc,d0.w),d1
 		jmp	But_Index(pc,d1.w)
 ; ===========================================================================
-But_Index:	index *,,2
+But_Index:	index offset(*),,2
 		ptr But_Main
 		ptr But_Action
 ; ===========================================================================

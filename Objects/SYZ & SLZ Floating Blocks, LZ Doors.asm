@@ -13,7 +13,7 @@ FloatingBlock:
 		move.w	FBlock_Index(pc,d0.w),d1
 		jmp	FBlock_Index(pc,d1.w)
 ; ===========================================================================
-FBlock_Index:	index *
+FBlock_Index:	index offset(*)
 		ptr FBlock_Main
 		ptr FBlock_Action
 
@@ -153,7 +153,7 @@ FBlock_Action:	; Routine 2
 			jmp	(DeleteObject).l
 		endc
 ; ===========================================================================
-FBlock_Types:	index *
+FBlock_Types:	index offset(*)
 		ptr FBlock_Still				; 0
 		ptr FBlock_LeftRight				; 1
 		ptr FBlock_LeftRightWide			; 2

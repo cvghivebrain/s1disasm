@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - purple rock	(GHZ)
 ; ---------------------------------------------------------------------------
-Map_PRock:	index *
+Map_PRock:	index offset(*)
 		ptr frame_rock_0
 		
 frame_rock_0:	spritemap

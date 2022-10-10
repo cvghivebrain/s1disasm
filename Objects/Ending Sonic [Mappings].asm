@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Sonic on the ending	sequence
 ; ---------------------------------------------------------------------------
-Map_ESon:	index *
+Map_ESon:	index offset(*)
 		ptr frame_esonic_hold1
 		ptr frame_esonic_hold2
 		ptr frame_esonic_up

@@ -11,7 +11,7 @@ Newtron:
 		move.w	Newt_Index(pc,d0.w),d1
 		jmp	Newt_Index(pc,d1.w)
 ; ===========================================================================
-Newt_Index:	index *,,2
+Newt_Index:	index offset(*),,2
 		ptr Newt_Main
 		ptr Newt_Action
 		ptr Newt_Delete
@@ -41,7 +41,7 @@ Newt_Action:	; Routine 2
 		bra.w	DespawnObject
 ; ===========================================================================
 Newt_Action_Index:
-		index *,,2
+		index offset(*),,2
 		ptr Newt_ChkDist
 		ptr Newt_Type0
 		ptr Newt_Type0_Floor
@@ -180,7 +180,7 @@ Newt_Delete:	; Routine 4
 ; Animation script
 ; ---------------------------------------------------------------------------
 
-Ani_Newt:	index *
+Ani_Newt:	index offset(*)
 		ptr ani_newt_blank
 		ptr ani_newt_drop
 		ptr ani_newt_fly1

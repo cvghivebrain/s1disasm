@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - walls of the special stage
 ; ---------------------------------------------------------------------------
-Map_SSWalls:	index *
+Map_SSWalls:	index offset(*)
 		ptr frame_ss_wall_0
 		ptr frame_ss_wall_1
 		ptr frame_ss_wall_2

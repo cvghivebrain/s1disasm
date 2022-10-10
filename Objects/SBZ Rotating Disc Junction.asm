@@ -12,7 +12,7 @@ Junction:
 		move.w	Jun_Index(pc,d0.w),d1
 		jmp	Jun_Index(pc,d1.w)
 ; ===========================================================================
-Jun_Index:	index *,,2
+Jun_Index:	index offset(*),,2
 		ptr Jun_Main
 		ptr Jun_Action
 		ptr Jun_Display

@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - special stage "UP" block
 ; ---------------------------------------------------------------------------
-Map_SS_Up:	index *
+Map_SS_Up:	index offset(*)
 		ptr frame_ss_up_0
 		ptr frame_ss_up_1
 		

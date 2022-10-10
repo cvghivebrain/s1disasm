@@ -12,7 +12,7 @@ BossBlock:
 		move.w	BBlock_Index(pc,d0.w),d1
 		jmp	BBlock_Index(pc,d1.w)
 ; ===========================================================================
-BBlock_Index:	index *,,2
+BBlock_Index:	index offset(*),,2
 		ptr BBlock_Main
 		ptr BBlock_Action
 		ptr BBlock_Frag

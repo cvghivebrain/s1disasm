@@ -14,7 +14,7 @@ BossBall:
 		move.w	GBall_Index(pc,d0.w),d1
 		jmp	GBall_Index(pc,d1.w)
 ; ===========================================================================
-GBall_Index:	index *,,2
+GBall_Index:	index offset(*),,2
 		ptr GBall_Main
 		ptr GBall_Base
 		ptr GBall_Base2

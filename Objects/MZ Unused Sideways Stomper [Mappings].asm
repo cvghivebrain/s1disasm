@@ -2,7 +2,7 @@
 ; Sprite mappings - unused sideway-facing spiked stomper (MZ)
 ; ---------------------------------------------------------------------------
 
-Map_SStom:	index *
+Map_SStom:	index offset(*)
 		ptr frame_mash_block
 		ptr frame_mash_spikes
 		ptr frame_mash_wallbracket

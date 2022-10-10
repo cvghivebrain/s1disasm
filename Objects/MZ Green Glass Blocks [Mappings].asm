@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - large green	glassy blocks (MZ)
 ; ---------------------------------------------------------------------------
-Map_Glass:	index *
+Map_Glass:	index offset(*)
 		ptr frame_glass_tall
 		ptr frame_glass_shine
 		ptr frame_glass_short

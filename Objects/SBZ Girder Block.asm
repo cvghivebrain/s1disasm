@@ -11,7 +11,7 @@ Girder:
 		move.w	Gird_Index(pc,d0.w),d1
 		jmp	Gird_Index(pc,d1.w)
 ; ===========================================================================
-Gird_Index:	index *,,2
+Gird_Index:	index offset(*),,2
 		ptr Gird_Main
 		ptr Gird_Action
 

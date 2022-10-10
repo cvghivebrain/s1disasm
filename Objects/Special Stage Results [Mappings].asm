@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - special stage results screen
 ; ---------------------------------------------------------------------------
-Map_SSR:	index *
+Map_SSR:	index offset(*)
 		ptr frame_ssr_chaos
 		ptr frame_ssr_score
 		ptr frame_ssr_ringbonus

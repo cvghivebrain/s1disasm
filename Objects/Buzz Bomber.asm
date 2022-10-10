@@ -13,7 +13,7 @@ BuzzBomber:
 		move.w	Buzz_Index(pc,d0.w),d1
 		jmp	Buzz_Index(pc,d1.w)
 ; ===========================================================================
-Buzz_Index:	index *,,2
+Buzz_Index:	index offset(*),,2
 		ptr Buzz_Main
 		ptr Buzz_Action
 		ptr Buzz_Delete
@@ -42,7 +42,7 @@ Buzz_Action:	; Routine 2
 		bsr.w	AnimateSprite
 		bra.w	DespawnObject
 ; ===========================================================================
-.index:		index *,,2
+.index:		index offset(*),,2
 		ptr Buzz_Move
 		ptr Buzz_ChkDist
 ; ===========================================================================
@@ -137,7 +137,7 @@ Buzz_Delete:	; Routine 4
 
 include_BuzzBomber_animation:	macro
 
-Ani_Buzz:	index *
+Ani_Buzz:	index offset(*)
 		ptr ani_buzz_fly1
 		ptr ani_buzz_fly2
 		ptr ani_buzz_fire

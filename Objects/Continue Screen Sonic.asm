@@ -12,7 +12,7 @@ ContSonic:
 		jsr	CSon_Index(pc,d1.w)
 		jmp	(DisplaySprite).l
 ; ===========================================================================
-CSon_Index:	index *,,2
+CSon_Index:	index offset(*),,2
 		ptr CSon_Main
 		ptr CSon_ChkLand
 		ptr CSon_Animate
@@ -80,7 +80,7 @@ CSon_Run:	; Routine 6
 ; Animation script
 ; ---------------------------------------------------------------------------
 
-Ani_CSon:	index *
+Ani_CSon:	index offset(*)
 		ptr ani_csonic_0
 
 ani_csonic_0:	dc.b 4

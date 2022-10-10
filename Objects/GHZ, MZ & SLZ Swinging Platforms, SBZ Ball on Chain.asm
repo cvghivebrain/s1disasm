@@ -41,7 +41,7 @@ SwingingPlatform:
 		move.w	Swing_Index(pc,d0.w),d1
 		jmp	Swing_Index(pc,d1.w)
 ; ===========================================================================
-Swing_Index:	index *,,2
+Swing_Index:	index offset(*),,2
 		ptr Swing_Main
 		ptr Swing_SetSolid
 		ptr Swing_Action2

@@ -16,7 +16,7 @@ BossFinal:
 		move.w	BFZ_Index(pc,d0.w),d0
 		jmp	BFZ_Index(pc,d0.w)
 ; ===========================================================================
-BFZ_Index:	index *,,2
+BFZ_Index:	index offset(*),,2
 		ptr BFZ_Main
 		ptr BFZ_Eggman
 		ptr BFZ_Panel
@@ -126,7 +126,7 @@ BFZ_Eggman:	; Routine 2
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 BFZ_Eggman_Index:
-		index *,,2
+		index offset(*),,2
 		ptr BFZ_Eggman_Wait
 		ptr BFZ_Eggman_Crush
 		ptr BFZ_Eggman_Plasma
@@ -613,7 +613,7 @@ BFZ_EmptyShip:	; Routine $A
 ; Animation script
 ; ---------------------------------------------------------------------------
 
-Ani_FZEgg:	index *
+Ani_FZEgg:	index offset(*)
 		ptr ani_fzeggman_0
 		
 ani_fzeggman_0:	dc.b 3
