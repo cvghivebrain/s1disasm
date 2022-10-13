@@ -4,7 +4,8 @@
 ; output:
 ;	a5 = vdp_control_port ($C00004)
 ;	a6 = vdp_data_port ($C00000)
-;	uses d0, d1, d2, d3, d4, d5, d6, d7, a1, a2, a3, a4
+
+;	uses d0.l, d1.l, d2.w, d3.l, d4.l, d5.l, d6.l, d7.l, a1, a2, a3, a4
 ; ---------------------------------------------------------------------------
 
 ; Background only - used by title screen
@@ -102,15 +103,15 @@ DrawTilesWhenMoving:
 ; Subroutines to draw 16x16 tiles on the background in sections
 
 ; input:
-;	d2 = value added to base VRAM address to get bg nametable
-;	(a2) = redraw direction flags
-;	(a3) = bg x position
-;	4(a3) = bg y position
+;	d2.w = value added to base VRAM address to get bg nametable
+;	(a2).b = redraw direction flags
+;	(a3).w = bg x position
+;	4(a3).w = bg y position
 ;	a4 = address of bg layout
 ;	a5 = vdp_control_port
 ;	a6 = vdp_data_port
 
-;	uses d0, d1, d3, d4, d5, d6, d7, a1, a2, a4
+;	uses d0.l, d1.l, d3.l, d4.l, d5.l, d6.l, d7.l, a1, a2, a4
 ; ---------------------------------------------------------------------------
 
 DrawBGScrollBlock1:
@@ -545,16 +546,16 @@ DrawBGScrollBlock3_MZ:
 ; Subroutine to draw a row of 16x16 tiles, left to right
 
 ; input:
-;	d0 = VRAM address as VDP command (word swapped)
-;	d2 = VRAM write command ($4000) + nametable start address relative to vram_fg
-;	d4 = y coordinate
-;	d5 = x coordinate
-;	d6 = 16x16 tiles to draw minus 1 (DrawRow_Partial only)
+;	d0.l = VRAM address as VDP command (word swapped)
+;	d2.w = VRAM write command ($4000) + nametable start address relative to vram_fg
+;	d4.w = y coordinate
+;	d5.w = x coordinate
+;	d6.w = 16x16 tiles to draw minus 1 (DrawRow_Partial only)
 ;	a4 = address of level/bg layout
 ;	a5 = vdp_control_port
 ;	a6 = vdp_data_port
 
-;	uses d0, d1, d3, d5, d6, d7, a1
+;	uses d0.l, d1.l, d3.l, d5.w, d6.l, d7.l, a1
 ; ---------------------------------------------------------------------------
 
 DrawRow:
@@ -598,16 +599,16 @@ DrawRow_IgnoreX:
 ; Subroutine to draw a column of 16x16 tiles, top to bottom
 
 ; input:
-;	d0 = VRAM address as VDP command (word swapped)
-;	d2 = VRAM write command ($4000) + nametable start address relative to vram_fg
-;	d4 = y coordinate
-;	d5 = x coordinate
-;	d6 = 16x16 tiles to draw minus 1 (DrawRow_Partial only)
+;	d0.l = VRAM address as VDP command (word swapped)
+;	d2.w = VRAM write command ($4000) + nametable start address relative to vram_fg
+;	d4.w = y coordinate
+;	d5.w = x coordinate
+;	d6.w = 16x16 tiles to draw minus 1 (DrawRow_Partial only)
 ;	a4 = address of level/bg layout
 ;	a5 = vdp_control_port
 ;	a6 = vdp_data_port
 
-;	uses d0, d1, d3, d4, d6, d7, a1
+;	uses d0.l, d1.l, d3.l, d4.w, d6.l, d7.l, a1
 ; ---------------------------------------------------------------------------
 
 DrawColumn:
@@ -632,15 +633,15 @@ DrawColumn_Partial:
 ; Subroutine to draw one 16x16 tile
 
 ; input:
-;	d0 = VRAM address as VDP command (word swapped)
-;	d2 = VRAM write command ($4000) + nametable start address relative to vram_fg
-;	d7 = delta between rows in fg/bg nametables, as in VDP command ($800000)
+;	d0.l = VRAM address as VDP command (word swapped)
+;	d2.w = VRAM write command ($4000) + nametable start address relative to vram_fg
+;	d7.l = delta between rows in fg/bg nametables, as in VDP command ($800000)
 ;	a0 = address of 16x16 tile id and x/y flip metadata from 256x256 mappings
 ;	a1 = address of 16x16 tile mappings
 ;	a5 = vdp_control_port
 ;	a6 = vdp_data_port
 
-;	uses d0, d4, d5, a1
+;	uses d0.l, d4.l, d5.l, a1
 ; ---------------------------------------------------------------------------
 
 DrawBlock:
@@ -728,10 +729,10 @@ DrawFlipXY:
 ; Subroutine to get the address of a 16x16 tile at a screen coordinate
 
 ; input:
-;	d4 = y coordinate
-;	d5 = x coordinate
-;	(a3) = camera/bg x position
-;	4(a3) = camera/bg y position
+;	d4.w = y coordinate
+;	d5.w = x coordinate
+;	(a3).w = camera/bg x position
+;	4(a3).w = camera/bg y position
 ;	a4 = address of level/bg layout
 ;	a5 = vdp_control_port
 ;	a6 = vdp_data_port
@@ -739,7 +740,8 @@ DrawFlipXY:
 ; output:
 ;	a0 = address of 16x16 tile id and x/y flip metadata from 256x256 mappings
 ;	a1 = address of 16x16 tile mappings
-;	uses d0, d3, d4, d5
+
+;	uses d0.w, d3.l, d4.w, d5.w
 ; ---------------------------------------------------------------------------
 
 GetBlockData:
@@ -794,14 +796,15 @@ GetBlockData:
 ; fg/bg nametable access
 
 ; input:
-;	d4 = y coordinate
-;	d5 = x coordinate
-;	(a3) = camera x position (Calc_VRAM_Pos only)
-;	4(a3) = camera y position
+;	d4.w = y coordinate
+;	d5.w = x coordinate
+;	(a3).w = camera x position (Calc_VRAM_Pos only)
+;	4(a3).w = camera y position
 
 ; output:
-;	d0 = VDP command (word swapped)
-;	uses d4, d5
+;	d0.l = VDP command (word swapped)
+
+;	uses d4.w, d5.w
 ; ---------------------------------------------------------------------------
 
 Calc_VRAM_Pos:
@@ -827,6 +830,17 @@ Calc_VRAM_Pos:
 ; ---------------------------------------------------------------------------
 ; Unused subroutine. Same as Calc_VRAM_Pos, except the base address for the
 ; fg/bg nametable is $8000 instead of $C000.
+
+; input:
+;	d4.w = y coordinate
+;	d5.w = x coordinate
+;	(a3).w = camera x position (Calc_VRAM_Pos only)
+;	4(a3).w = camera y position
+
+; output:
+;	d0.l = VDP command (word swapped)
+
+;	uses d4.w, d5.w
 ; ---------------------------------------------------------------------------
 
 Calc_VRAM_Pos_Unknown:
