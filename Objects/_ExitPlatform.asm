@@ -2,12 +2,18 @@
 ; Subroutine allowing Sonic to walk or jump off	a platform
 
 ; input:
-;	d1 = half platform width, left side
-;	d2 = half platform width, right side (ExitPlatform2 only)
+;	d1.w = half platform width, left side
+;	d2.w = half platform width, right side (ExitPlatform2 only)
 
 ; output:
 ;	a1 = OST of Sonic
-;	uses d0, d2
+
+;	uses d0.w, d2.w
+
+; usage:
+;		moveq	#0,d1
+;		move.b	ost_displaywidth(a0),d1
+;		bsr.w	ExitPlatform
 ; ---------------------------------------------------------------------------
 
 ExitPlatform:

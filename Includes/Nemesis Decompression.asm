@@ -158,6 +158,8 @@ NemPCD_WriteRowToRAM_XOR:
 
 ; ---------------------------------------------------------------------------
 ; Part of the Nemesis decompressor, builds the code table (in RAM)
+
+;	uses d0.w, d1.w, d5.l, d7.w, a0
 ; ---------------------------------------------------------------------------
 
 NemDec_BuildCodeTable:

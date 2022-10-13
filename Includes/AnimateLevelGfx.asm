@@ -3,7 +3,8 @@
 
 ; output:
 ;	a6 = vdp_data_port ($C00000)
-;	uses d0, d1, d2, d3, a1, a2, a3, a4
+
+;	uses d0.l, d1.w, d2.w, d3.w, a1, a2, a3, a4
 ; ---------------------------------------------------------------------------
 
 AnimateLevelGfx:
@@ -392,7 +393,9 @@ AniArt_none:
 ; input:
 ;	a1 = source address
 ;	a6 = vdp_data_port ($C00000)
-;	d1 = number of tiles to load (minus one)
+;	d1.w = number of tiles to load (minus one)
+
+;	uses d1.w, a1
 ; ---------------------------------------------------------------------------
 
 LoadTiles:
@@ -406,11 +409,11 @@ LoadTiles:
 ; Subroutines to animate MZ magma
 
 ; input:
-;	d1 = number of longwords to write to VRAM
+;	d1.w = number of longwords to write to VRAM
 ;	a1 = address of magma gfx (stored as 32x32 image)
 ;	a6 = vdp_data_port ($C00000)
 
-;	uses d0
+;	uses d0.l, d1.w, a1
 ; ---------------------------------------------------------------------------
 
 AniArt_MZ_Magma_Index:
@@ -575,7 +578,7 @@ AniArt_MZ_Magma_Shift3_Col3:
 ; input:
 ;	a6 = vdp_data_port
 
-;	uses d0, d1, a1
+;	uses d0.l, d1.w, a1
 ; ---------------------------------------------------------------------------
 
 LoadArt_GiantRing:

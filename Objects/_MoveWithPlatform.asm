@@ -1,14 +1,27 @@
 ; ---------------------------------------------------------------------------
-; Subroutine to	change Sonic's position with a platform
+; Subroutine to	update Sonic's position when standing on a platform
 ;
 ; input:
-;	d2 = platform x position
-;	d3 = platform height (MoveWithPlatform only)
+;	d2.w = platform x position
+;	d3.w = platform height (MoveWithPlatform only)
 
 ; output:
-;	d1 = Sonic's height
+;	d1.l = Sonic's height
 ;	a1 = address of OST of Sonic
-;	uses d0, d2
+
+;	uses d0.w, d2.w
+
+; usage (if object only moves vertically):
+;		move.w	ost_x_pos(a0),d2
+;		move.w	#$10,d3
+;		bsr.w	MoveWithPlatform
+
+; usage (if object moves horizontally):
+;		pushr.w	ost_x_pos(a0)				; save x pos before moving
+;		bsr.w	MoveObject				; move object
+;		popr.w	d2					; retrieve previous x pos
+;		move.w	#$10,d3
+;		bsr.w	MoveWithPlatform
 ; ---------------------------------------------------------------------------
 
 MoveWithPlatform:

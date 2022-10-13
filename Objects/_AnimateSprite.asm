@@ -6,7 +6,12 @@
 
 ; output:
 ;	a1 = animation script (e.g. ani_crab_stand)
-;	uses d0, d1
+
+;	uses d0.l, d1.l
+
+; usage:
+;		lea	(Ani_Hog).l,a1
+;		bsr.w	AnimateSprite
 ; ---------------------------------------------------------------------------
 
 AnimateSprite:
