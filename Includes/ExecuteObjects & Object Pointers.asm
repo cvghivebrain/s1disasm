@@ -2,10 +2,9 @@
 ; Object code execution subroutine
 
 ; output:
-;	d7.l = OST index of last object (not changed by any object)
+;	d7 = OST index of last object (not changed by any object)
 ;	a0 = address of OST of last object
-
-;	uses d0.l, a1 (objects may use other registers)
+;	uses d0, a1 (objects may use other registers)
 ; ---------------------------------------------------------------------------
 
 ExecuteObjects:

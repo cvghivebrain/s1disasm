@@ -1,8 +1,5 @@
 ; ---------------------------------------------------------------------------
-; Subroutine to check if object is still on-screen:
-; display if yes, delete if not
-
-;	uses d0.l, d1.l, a1, a2
+; Routine to check if object is still on-screen: display if yes, delete if not
 ; ---------------------------------------------------------------------------
 
 DespawnObject:

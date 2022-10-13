@@ -5,7 +5,7 @@
 ; Curiously, an example of the original 'raw' data that this was intended
 ; to process can be found in the J2ME version, in a file called 'blkcol.bct'.
 
-;	uses d0.l, d1.w, d2.w, d3.w, d4.l, d5.l, a1, a2
+;	uses d0, d1, d2, d3, d4, d5, a1, a2
 ; ---------------------------------------------------------------------------
 
 RawColBlocks		equ CollArray1

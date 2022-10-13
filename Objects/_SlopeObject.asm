@@ -2,20 +2,14 @@
 ; Sloped platform subroutine (GHZ collapsing ledges and	SLZ seesaws)
 ;
 ; input:
-;	d1.w = platform half width
+;	d1 = platform half width
 ;	a2 = address of heightmap data
 
 ; output:
-;	d2.w = Sonic's y position
-;	d3.l = height of platform where Sonic is standing
+;	d2 = Sonic's y position
+;	d3 = height of platform where Sonic is standing
 ;	a1 = address of OST of Sonic
-
-;	uses d0.l, d1.w, a2
-
-; usage:
-;		move.w	#$30,d1					; width
-;		lea	(Ledge_SlopeData).l,a2			; heightmap
-;		bsr.w	SlopeObject
+;	uses d0, d1, a2
 ; ---------------------------------------------------------------------------
 
 SlopeObject:

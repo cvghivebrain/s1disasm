@@ -2,11 +2,11 @@
 ; Subroutine to convert an angle (0 to $FF) to sine and cosine (-$100 to $100)
 
 ; input:
-;	d0.w = angle
+;	d0 = angle
 
 ; output:
-;	d0.w = sine
-;	d1.w = cosine
+;	d0 = sine
+;	d1 = cosine
 ; ---------------------------------------------------------------------------
 
 CalcSine:
@@ -22,12 +22,10 @@ CalcSine:
 ; Subroutine to calculate the square root of a number (0 to $FFFF)
 
 ; input:
-;	d0.w = number
+;	d0 = number
 
 ; output:
-;	d0.w = square root of number
-
-;	uses d0.l
+;	d0 = square root of number
 ; ---------------------------------------------------------------------------
 
 include_CalcAngle:	macro
@@ -67,13 +65,11 @@ CalcSqrt:
 ; Subroutine to convert x/y distance to an angle
 
 ; input:
-;	d1.w = x-axis distance
-;	d2.w = y-axis distance
+;	d1 = x-axis distance
+;	d2 = y-axis distance
 
 ; output:
-;	d0.w = angle
-
-;	uses d0.l
+;	d0 = angle
 ; ---------------------------------------------------------------------------
 
 CalcAngle:

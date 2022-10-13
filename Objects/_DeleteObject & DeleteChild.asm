@@ -7,8 +7,7 @@
 
 ; output:
 ;	a1 = address of next OST
-
-;	uses d0.l, d1.l
+;	uses d0, d1
 ; ---------------------------------------------------------------------------
 
 DeleteObject:

@@ -1,15 +1,14 @@
 ; ---------------------------------------------------------------------------
-; Subroutine to	find which 16x16 tile the object is standing on
+; Subroutine to	find which tile	the object is standing on
 
 ; input:
-;	d2.w = y position of object's bottom edge
-;	d3.w = x position of object
+;	d2 = y position of object's bottom edge
+;	d3 = x position of object
 
 ; output:
 ;	a1 = address within 256x256 mappings where object is standing
-;	(a1).w = 16x16 tile number, x/yflip, solidness
-
-;	uses d0.w, d1.l
+;	(a1) = 16x16 tile number, x/yflip, solidness
+;	uses d0, d1
 ; ---------------------------------------------------------------------------
 
 FindNearestTile:
@@ -70,20 +69,19 @@ FindNearestTile:
 ; Subroutine to	find the floor
 
 ; input:
-;	d2.w = y position of object's bottom edge
-;	d3.w = x position of object
-;	d5.l = bit to test for solidness: $D = top solid; $E = left/right/bottom solid
-;	d6.w = eor bitmask for 16x16 tile
-;	a3.w = height of 16x16 tiles: $10 or -$10 if object is inverted
+;	d2 = y position of object's bottom edge
+;	d3 = x position of object
+;	d5 = bit to test for solidness: $D = top solid; $E = left/right/bottom solid
+;	d6 = eor bitmask for 16x16 tile
+;	a3 = height of 16x16 tiles: $10 or -$10 if object is inverted
 ;	a4 = RAM address to write angle byte
 
 ; output:
-;	d1.w = distance to the floor
+;	d1 = distance to the floor
 ;	a1 = address within 256x256 mappings where object is standing
-;	(a1).w = 16x16 tile number, x/yflip, solidness
-;	(a4).b = floor angle
-
-;	uses d0.w, d2.w, d4.w
+;	(a1) = 16x16 tile number, x/yflip, solidness
+;	(a4) = floor angle
+;	uses d0, d2, d4
 ; ---------------------------------------------------------------------------
 
 FindFloor:
@@ -239,20 +237,19 @@ FindFloor2:
 ; Subroutine to	find a wall
 
 ; input:
-;	d2.w = y position of object's bottom edge
-;	d3.w = x position of object
-;	d5.l = bit to test for solidness: $D = top solid; $E = left/right/bottom solid
-;	d6.w = eor bitmask for 16x16 tile
-;	a3.w = height of 16x16 tiles: $10 or -$10 if object is inverted
+;	d2 = y position of object's bottom edge
+;	d3 = x position of object
+;	d5 = bit to test for solidness: $D = top solid; $E = left/right/bottom solid
+;	d6 = eor bitmask for 16x16 tile
+;	a3 = height of 16x16 tiles: $10 or -$10 if object is inverted
 ;	a4 = RAM address to write angle byte
 
 ; output:
-;	d1.w = distance to the wall
+;	d1 = distance to the wall
 ;	a1 = address within 256x256 mappings where object is standing
-;	(a1).w = 16x16 tile number, x/yflip, solidness
-;	(a4).b = floor angle
-
-;	uses d0.w, d3.w, d4.w
+;	(a1) = 16x16 tile number, x/yflip, solidness
+;	(a4) = floor angle
+;	uses d0, d3, d4
 ; ---------------------------------------------------------------------------
 
 FindWall:

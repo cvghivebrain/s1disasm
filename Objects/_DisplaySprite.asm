@@ -4,7 +4,7 @@
 ; input:
 ;	a0 = address of OST for object
 
-;	uses d0.w, a1
+;	uses d0, a1
 ; ---------------------------------------------------------------------------
 
 DisplaySprite:
@@ -28,7 +28,7 @@ DisplaySprite:
 ; input:
 ;	a1 = address of OST for object
 
-;	uses d0.w, a2
+;	uses d0, a2
 ; ---------------------------------------------------------------------------
 
 DisplaySprite_a1:

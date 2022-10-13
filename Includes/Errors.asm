@@ -83,7 +83,7 @@ ErrorWaitForC:
 ; output:
 ;	a6 = vdp_data_port ($C00000)
 
-;	uses d0.l, d1.l, a0
+;	uses d0, d1, a0
 ; ---------------------------------------------------------------------------
 
 ShowErrorMessage:

@@ -71,10 +71,8 @@ Debug_Action:	; Routine 2
 ; Subroutine for controls while debug is in use
 
 ; input:
-;	d6.w = number of items in debug list
+;	d6 = number of items in debug list
 ;	a2 = address of first item in debug list
-
-;	uses d0.l, d1.l, d2.l, d3.l, d4.l
 ; ---------------------------------------------------------------------------
 
 Debug_Control:
@@ -212,8 +210,6 @@ Debug_ChgItem:
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to get mappings, VRAM & frame info from debug list
-
-;	uses d0.l
 ; ---------------------------------------------------------------------------
 
 Debug_GetFrame:
@@ -239,186 +235,187 @@ DebugList:	index offset(*)
 		zonewarning DebugList,2
 		ptr DebugList_Ending
 
-dbug:		macro object,map,subtype,frame,vram
+dbug:		macro map,object,subtype,frame,vram
 		dc.l map+(id_\object<<24)
 		dc.b subtype,frame
 		dc.w vram
 		endm
 
 DebugList_GHZ:
-		dc.w (.end-*-2)/8
+		dc.w (DebugList_GHZ_end-DebugList_GHZ-2)/8
 
-;			object		mappings	subtype	frame	VRAM setting
-		dbug	Rings,		Map_Ring,	0,	0,	tile_Nem_Ring+tile_pal2
-		dbug	Monitor,	Map_Monitor,	0,	0,	tile_Nem_Monitors
-		dbug	Crabmeat,	Map_Crab,	0,	0,	tile_Nem_Crabmeat
-		dbug	BuzzBomber,	Map_Buzz,	0,	0,	tile_Nem_Buzz
-		dbug	Chopper,	Map_Chop,	0,	0,	tile_Nem_Chopper
-		dbug	Spikes,		Map_Spike,	type_spike_3up+type_spike_still,	0,	tile_Nem_Spikes
-		dbug	BasicPlatform,	Map_Plat_GHZ,	type_plat_still,	0,	0+tile_pal3
-		dbug	PurpleRock,	Map_PRock,	0,	0,	tile_Nem_PurpleRock+tile_pal4
-		dbug	MotoBug,	Map_Moto,	0,	0,	tile_Nem_Motobug
-		dbug	Springs,	Map_Spring,	type_spring_red+type_spring_up,	0,	tile_Nem_HSpring
-		dbug	Newtron,	Map_Newt,	0,	0,	tile_Nem_Newtron+tile_pal2
-		dbug	EdgeWalls,	Map_Edge,	type_edge_shadow,	0,	tile_Nem_GhzEdgeWall+tile_pal3
-		dbug	Obj19,		Map_GBall,	0,	0,	tile_Nem_Ball+tile_pal3
-		dbug	Lamppost,	Map_Lamp,	1,	0,	tile_Nem_Lamp
-		dbug	GiantRing,	Map_GRing,	0,	0,	(vram_giantring/sizeof_cell)+tile_pal2
-		dbug	HiddenBonus,	Map_Bonus,	type_bonus_10k,	id_frame_bonus_10000,	tile_Nem_Bonus+tile_hi
-	.end:
+;			mappings	object		subtype	frame	VRAM setting
+		dbug 	Map_Ring,	Rings,		0,	0,	tile_Nem_Ring+tile_pal2
+		dbug	Map_Monitor,	Monitor,	0,	0,	tile_Nem_Monitors
+		dbug	Map_Crab,	Crabmeat,	0,	0,	tile_Nem_Crabmeat
+		dbug	Map_Buzz,	BuzzBomber,	0,	0,	tile_Nem_Buzz
+		dbug	Map_Chop,	Chopper,	0,	0,	tile_Nem_Chopper
+		dbug	Map_Spike,	Spikes,		type_spike_3up+type_spike_still,	0,	tile_Nem_Spikes
+		dbug	Map_Plat_GHZ,	BasicPlatform,	type_plat_still,	0,	0+tile_pal3
+		dbug	Map_PRock,	PurpleRock,	0,	0,	tile_Nem_PurpleRock+tile_pal4
+		dbug	Map_Moto,	MotoBug,	0,	0,	tile_Nem_Motobug
+		dbug	Map_Spring,	Springs,	type_spring_red+type_spring_up,	0,	tile_Nem_HSpring
+		dbug	Map_Newt,	Newtron,	0,	0,	tile_Nem_Newtron+tile_pal2
+		dbug	Map_Edge,	EdgeWalls,	type_edge_shadow,	0,	tile_Nem_GhzEdgeWall+tile_pal3
+		dbug	Map_GBall,	Obj19,		0,	0,	tile_Nem_Ball+tile_pal3
+		dbug	Map_Lamp,	Lamppost,	1,	0,	tile_Nem_Lamp
+		dbug	Map_GRing,	GiantRing,	0,	0,	(vram_giantring/sizeof_cell)+tile_pal2
+		dbug	Map_Bonus,	HiddenBonus,	type_bonus_10k,	id_frame_bonus_10000,	tile_Nem_Bonus+tile_hi
+	DebugList_GHZ_end:
 
 DebugList_LZ:
-		dc.w (.end-*-2)/8
+		dc.w (DebugList_LZ_end-DebugList_LZ-2)/8
 
-;			object		mappings	subtype	frame	VRAM setting
-		dbug	Rings,		Map_Ring,	0,	0,	tile_Nem_Ring+tile_pal2
-		dbug	Monitor,	Map_Monitor,	0,	0,	tile_Nem_Monitors
-		dbug	Springs,	Map_Spring,	type_spring_red+type_spring_up,	0,	tile_Nem_HSpring
-		dbug	Jaws,		Map_Jaws,	8,	0,	tile_Nem_Jaws+tile_pal2
-		dbug	Burrobot,	Map_Burro,	0,	id_frame_burro_dig1,	tile_Nem_Burrobot+tile_hi
-		dbug	Harpoon,	Map_Harp,	type_harp_h,	id_frame_harp_h_retracted,	tile_Nem_Harpoon
-		dbug	Harpoon,	Map_Harp,	type_harp_v,	id_frame_harp_v_retracted,	tile_Nem_Harpoon
-		dbug	PushBlock,	Map_Push,	0,	0,	tile_Nem_LzPole+tile_pal3
-		dbug	Button,		Map_But,	0,	0,	tile_Nem_Button+4
-		dbug	Spikes,		Map_Spike,	type_spike_3up+type_spike_still,	0,	tile_Nem_Spikes
-		dbug	MovingBlock,	Map_MBlockLZ,	type_mblock_1+type_mblock_rightdrop,	0,	tile_Nem_LzHalfBlock+tile_pal3
-		dbug	LabyrinthBlock,	Map_LBlock,	type_lblock_sink,	id_frame_lblock_sinkblock,	tile_Nem_LzDoorH+tile_pal3
-		dbug	LabyrinthBlock,	Map_LBlock,	type_lblock_rise,	id_frame_lblock_riseplatform,	tile_Nem_LzDoorH+tile_pal3
-		dbug	LabyrinthBlock,	Map_LBlock,	type_lblock_sinkside,	id_frame_lblock_sinkblock,	tile_Nem_LzDoorH+tile_pal3
-		dbug	Gargoyle,	Map_Gar,	0,	0,	$43E+tile_pal3
-		dbug	LabyrinthBlock,	Map_LBlock,	type_lblock_cork,	id_frame_lblock_cork,	tile_Nem_LzDoorH+tile_pal3
-		dbug	LabyrinthBlock,	Map_LBlock,	type_lblock_solid,	id_frame_lblock_block,	tile_Nem_LzDoorH+tile_pal3
-		dbug	LabyrinthConvey, Map_LConv,	type_lcon_wheel,	0,	tile_Nem_LzWheel
-		dbug	Orbinaut,	Map_Orb,	0,	0,	tile_Nem_Orbinaut_LZ
-		dbug	Bubble,		Map_Bub,	$84,	id_frame_bubble_bubmaker1,	tile_Nem_Bubbles+tile_hi
-		dbug	Waterfall,	Map_WFall,	type_wfall_cornermedium,	id_frame_wfall_cornermedium,	tile_Nem_Splash+tile_pal3+tile_hi
-		dbug	Waterfall,	Map_WFall,	type_wfall_splash,	id_frame_wfall_splash1,	tile_Nem_Splash+tile_pal3+tile_hi
-		dbug	Pole,		Map_Pole,	0,	0,	tile_Nem_LzPole+tile_pal3
-		dbug	FlapDoor,	Map_Flap,	2,	0,	tile_Nem_FlapDoor+tile_pal3
-		dbug	Lamppost,	Map_Lamp,	1,	0,	tile_Nem_Lamp
-	.end:
+;			mappings	object		subtype	frame	VRAM setting
+		dbug	Map_Ring,	Rings,		0,	0,	tile_Nem_Ring+tile_pal2
+		dbug	Map_Monitor,	Monitor,	0,	0,	tile_Nem_Monitors
+		dbug	Map_Spring,	Springs,	type_spring_red+type_spring_up,	0,	tile_Nem_HSpring
+		dbug	Map_Jaws,	Jaws,		8,	0,	tile_Nem_Jaws+tile_pal2
+		dbug	Map_Burro,	Burrobot,	0,	id_frame_burro_dig1,	tile_Nem_Burrobot+tile_hi
+		dbug	Map_Harp,	Harpoon,	type_harp_h,	id_frame_harp_h_retracted,	tile_Nem_Harpoon
+		dbug	Map_Harp,	Harpoon,	type_harp_v,	id_frame_harp_v_retracted,	tile_Nem_Harpoon
+		dbug	Map_Push,	PushBlock,	0,	0,	tile_Nem_LzPole+tile_pal3
+		dbug	Map_But,	Button,		0,	0,	tile_Nem_Button+4
+		dbug	Map_Spike,	Spikes,		type_spike_3up+type_spike_still,	0,	tile_Nem_Spikes
+		dbug	Map_MBlockLZ,	MovingBlock,	type_mblock_1+type_mblock_rightdrop,	0,	tile_Nem_LzHalfBlock+tile_pal3
+		dbug	Map_LBlock,	LabyrinthBlock, type_lblock_sink,	id_frame_lblock_sinkblock,	tile_Nem_LzDoorH+tile_pal3
+		dbug	Map_LBlock,	LabyrinthBlock, type_lblock_rise,	id_frame_lblock_riseplatform,	tile_Nem_LzDoorH+tile_pal3
+		dbug	Map_LBlock,	LabyrinthBlock, 5,	id_frame_lblock_sinkblock,	tile_Nem_LzDoorH+tile_pal3
+		dbug	Map_Gar,	Gargoyle,	0,	0,	$43E+tile_pal3
+		dbug	Map_LBlock,	LabyrinthBlock, type_lblock_cork,	id_frame_lblock_cork,	tile_Nem_LzDoorH+tile_pal3
+		dbug	Map_LBlock,	LabyrinthBlock, type_lblock_solid,	id_frame_lblock_block,	tile_Nem_LzDoorH+tile_pal3
+		dbug	Map_LConv,	LabyrinthConvey, type_lcon_wheel,	0,	tile_Nem_LzWheel
+		dbug	Map_Orb,	Orbinaut,	0,	0,	tile_Nem_Orbinaut_LZ
+		dbug	Map_Bub,	Bubble,		$84,	id_frame_bubble_bubmaker1,	tile_Nem_Bubbles+tile_hi
+		dbug	Map_WFall,	Waterfall,	type_wfall_cornermedium,	id_frame_wfall_cornermedium,	tile_Nem_Splash+tile_pal3+tile_hi
+		dbug	Map_WFall,	Waterfall,	type_wfall_splash,	id_frame_wfall_splash1,	tile_Nem_Splash+tile_pal3+tile_hi
+		dbug	Map_Pole,	Pole,		0,	0,	tile_Nem_LzPole+tile_pal3
+		dbug	Map_Flap,	FlapDoor,	2,	0,	tile_Nem_FlapDoor+tile_pal3
+		dbug	Map_Lamp,	Lamppost,	1,	0,	tile_Nem_Lamp
+	DebugList_LZ_end:
 
 DebugList_MZ:
-		dc.w (.end-*-2)/8
+		dc.w (DebugList_MZ_end-DebugList_MZ-2)/8
 
-;			object		mappings	subtype	frame	VRAM setting
-		dbug	Rings,		Map_Ring,	0,	0,	tile_Nem_Ring+tile_pal2
-		dbug	Monitor,	Map_Monitor,	0,	0,	tile_Nem_Monitors
-		dbug	BuzzBomber,	Map_Buzz,	0,	0,	tile_Nem_Buzz
-		dbug	Spikes,		Map_Spike,	type_spike_3up+type_spike_still,	0,	tile_Nem_Spikes
-		dbug	Springs,	Map_Spring,	type_spring_red+type_spring_up,	0,	tile_Nem_HSpring
-		dbug	FireMaker,	Map_Fire,	0,	0,	tile_Nem_Fireball
-		dbug	MarbleBrick,	Map_Brick,	type_brick_still,	0,	0+tile_pal3
-		dbug	GeyserMaker,	Map_Geyser,	0,	0,	tile_Nem_Lava+tile_pal4
-		dbug	LavaWall,	Map_LWall,	0,	0,	tile_Nem_Lava+tile_pal4
-		dbug	PushBlock,	Map_Push,	type_pblock_single,	0,	tile_Nem_MzBlock+tile_pal3
-		dbug	Yadrin,		Map_Yad,	0,	0,	tile_Nem_Yadrin+tile_pal2
-		dbug	SmashBlock,	Map_Smab,	0,	0,	tile_Nem_MzBlock+tile_pal3
-		dbug	MovingBlock,	Map_MBlock,	type_mblock_1+type_mblock_still,	0,	tile_Nem_MzBlock
-		dbug	CollapseFloor,	Map_CFlo,	0,	0,	tile_Nem_MzBlock+tile_pal4
-		dbug	LavaTag,	Map_LTag,	0,	0,	tile_Nem_Monitors+tile_hi
-		dbug	Batbrain,	Map_Bat,	0,	0,	tile_Nem_Batbrain
-		dbug	Caterkiller,	Map_Cat,	0,	0,	tile_Nem_Cater+tile_pal2
-		dbug	Lamppost,	Map_Lamp,	1,	0,	tile_Nem_Lamp
-	.end:
+;			mappings	object		subtype	frame	VRAM setting
+		dbug	Map_Ring,	Rings,		0,	0,	tile_Nem_Ring+tile_pal2
+		dbug	Map_Monitor,	Monitor,	0,	0,	tile_Nem_Monitors
+		dbug	Map_Buzz,	BuzzBomber,	0,	0,	tile_Nem_Buzz
+		dbug	Map_Spike,	Spikes,		type_spike_3up+type_spike_still,	0,	tile_Nem_Spikes
+		dbug	Map_Spring,	Springs,	type_spring_red+type_spring_up,	0,	tile_Nem_HSpring
+		dbug	Map_Fire,	FireMaker,	0,	0,	tile_Nem_Fireball
+		dbug	Map_Brick,	MarbleBrick,	type_brick_still,	0,	0+tile_pal3
+		dbug	Map_Geyser,	GeyserMaker,	0,	0,	tile_Nem_Lava+tile_pal4
+		dbug	Map_LWall,	LavaWall,	0,	0,	tile_Nem_Lava+tile_pal4
+		dbug	Map_Push,	PushBlock,	type_pblock_single,	0,	tile_Nem_MzBlock+tile_pal3
+		dbug	Map_Yad,	Yadrin,		0,	0,	tile_Nem_Yadrin+tile_pal2
+		dbug	Map_Smab,	SmashBlock,	0,	0,	tile_Nem_MzBlock+tile_pal3
+		dbug	Map_MBlock,	MovingBlock,	type_mblock_1+type_mblock_still,	0,	tile_Nem_MzBlock
+		dbug	Map_CFlo,	CollapseFloor,	0,	0,	tile_Nem_MzBlock+tile_pal4
+		dbug	Map_LTag,	LavaTag,	0,	0,	tile_Nem_Monitors+tile_hi
+		dbug	Map_Bat,	Batbrain,	0,	0,	tile_Nem_Batbrain
+		dbug	Map_Cat,	Caterkiller,	0,	0,	tile_Nem_Cater+tile_pal2
+		dbug	Map_Lamp,	Lamppost,	1,	0,	tile_Nem_Lamp
+	DebugList_MZ_end:
 
 DebugList_SLZ:
-		dc.w (.end-*-2)/8
+		dc.w (DebugList_SLZ_end-DebugList_SLZ-2)/8
 
-;			object		mappings	subtype	frame	VRAM setting
-		dbug	Rings,		Map_Ring,	0,	0,	tile_Nem_Ring+tile_pal2
-		dbug	Monitor,	Map_Monitor,	0,	0,	tile_Nem_Monitors
-		dbug	Elevator,	Map_Elev,	type_elev_up_short,	0,	0+tile_pal3
-		dbug	CollapseFloor,	Map_CFlo,	0,	id_frame_cfloor_slz,	tile_Nem_SlzBlock+tile_pal3
-		dbug	BasicPlatform,	Map_Plat_SLZ,	type_plat_still,	0,	0+tile_pal3
-		dbug	CirclingPlatform, Map_Circ,	0,	0,	0+tile_pal3
-		dbug	Staircase,	Map_Stair,	type_stair_above,	0,	0+tile_pal3
-		dbug	Fan,		Map_Fan,	type_fan_left_onoff,	0,	tile_Nem_Fan+tile_pal3
-		dbug	Seesaw,		Map_Seesaw,	0,	0,	tile_Nem_Seesaw
-		dbug	Springs,	Map_Spring,	type_spring_red+type_spring_up,	0,	tile_Nem_HSpring
-		dbug	FireMaker,	Map_Fire,	0,	0,	tile_Nem_Fireball_SLZ
-		dbug	Scenery,	Map_Scen,	type_scen_cannon,	0,	tile_Nem_SlzCannon+tile_pal3
-		dbug	Bomb,		Map_Bomb,	0,	0,	tile_Nem_Bomb
-		dbug	Orbinaut,	Map_Orb,	0,	0,	tile_Nem_Orbinaut+tile_pal2
-		dbug	Lamppost,	Map_Lamp,	1,	0,	tile_Nem_Lamp
-	.end:
+;			mappings	object		subtype	frame	VRAM setting
+		dbug	Map_Ring,	Rings,		0,	0,	tile_Nem_Ring+tile_pal2
+		dbug	Map_Monitor,	Monitor,	0,	0,	tile_Nem_Monitors
+		dbug	Map_Elev,	Elevator,	type_elev_up_short,	0,	0+tile_pal3
+		dbug	Map_CFlo,	CollapseFloor,	0,	id_frame_cfloor_slz,	tile_Nem_SlzBlock+tile_pal3
+		dbug	Map_Plat_SLZ,	BasicPlatform,	type_plat_still,	0,	0+tile_pal3
+		dbug	Map_Circ,	CirclingPlatform, 0,	0,	0+tile_pal3
+		dbug	Map_Stair,	Staircase,	type_stair_above,	0,	0+tile_pal3
+		dbug	Map_Fan,	Fan,		type_fan_left_onoff,	0,	tile_Nem_Fan+tile_pal3
+		dbug	Map_Seesaw,	Seesaw,		0,	0,	tile_Nem_Seesaw
+		dbug	Map_Spring,	Springs,	type_spring_red+type_spring_up,	0,	tile_Nem_HSpring
+		dbug	Map_Fire,	FireMaker,	0,	0,	tile_Nem_Fireball_SLZ
+		dbug	Map_Scen,	Scenery,	type_scen_cannon,	0,	tile_Nem_SlzCannon+tile_pal3
+		dbug	Map_Bomb,	Bomb,		0,	0,	tile_Nem_Bomb
+		dbug	Map_Orb,	Orbinaut,	0,	0,	tile_Nem_Orbinaut+tile_pal2
+		dbug	Map_Lamp,	Lamppost,	1,	0,	tile_Nem_Lamp
+	DebugList_SLZ_end:
 
 DebugList_SYZ:
-		dc.w (.end-*-2)/8
+		dc.w (DebugList_SYZ_end-DebugList_SYZ-2)/8
 
-;			object		mappings	subtype	frame	VRAM setting
-		dbug	Rings,		Map_Ring,	0,	0,	tile_Nem_Ring+tile_pal2
-		dbug	Monitor,	Map_Monitor,	0,	0,	tile_Nem_Monitors
-		dbug	Spikes,		Map_Spike,	type_spike_3up+type_spike_still,	0,	tile_Nem_Spikes
-		dbug	Springs,	Map_Spring,	type_spring_red+type_spring_up,	0,	tile_Nem_HSpring
-		dbug	Roller,		Map_Roll,	0,	0,	tile_Nem_Roller
-		dbug	SpinningLight,	Map_Light,	0,	0,	0
-		dbug	Bumper,		Map_Bump,	0,	0,	tile_Nem_Bumper
-		dbug	Crabmeat,	Map_Crab,	0,	0,	tile_Nem_Crabmeat
-		dbug	BuzzBomber,	Map_Buzz,	0,	0,	tile_Nem_Buzz
-		dbug	Yadrin,		Map_Yad,	0,	0,	tile_Nem_Yadrin+tile_pal2
-		dbug	BasicPlatform,	Map_Plat_SYZ,	type_plat_still,	0,	0+tile_pal3
-		dbug	FloatingBlock,	Map_FBlock,	type_fblock_syz1x1+type_fblock_still,	0,	0+tile_pal3
-		dbug	Button,		Map_But,	0,	0,	tile_Nem_Button+4
-		dbug	Caterkiller,	Map_Cat,	0,	0,	tile_Nem_Cater+tile_pal2
-		dbug	Lamppost,	Map_Lamp,	1,	0,	tile_Nem_Lamp
-	.end:
+;			mappings	object		subtype	frame	VRAM setting
+		dbug	Map_Ring,	Rings,		0,	0,	tile_Nem_Ring+tile_pal2
+		dbug	Map_Monitor,	Monitor,	0,	0,	tile_Nem_Monitors
+		dbug	Map_Spike,	Spikes,		type_spike_3up+type_spike_still,	0,	tile_Nem_Spikes
+		dbug	Map_Spring,	Springs,	type_spring_red+type_spring_up,	0,	tile_Nem_HSpring
+		dbug	Map_Roll,	Roller,		0,	0,	tile_Nem_Roller
+		dbug	Map_Light,	SpinningLight,	0,	0,	0
+		dbug	Map_Bump,	Bumper,		0,	0,	tile_Nem_Bumper
+		dbug	Map_Crab,	Crabmeat,	0,	0,	tile_Nem_Crabmeat
+		dbug	Map_Buzz,	BuzzBomber,	0,	0,	tile_Nem_Buzz
+		dbug	Map_Yad,	Yadrin,		0,	0,	tile_Nem_Yadrin+tile_pal2
+		dbug	Map_Plat_SYZ,	BasicPlatform,	type_plat_still,	0,	0+tile_pal3
+		dbug	Map_FBlock,	FloatingBlock,	type_fblock_syz1x1+type_fblock_still,	0,	0+tile_pal3
+		dbug	Map_But,	Button,		0,	0,	tile_Nem_Button+4
+		dbug	Map_Cat,	Caterkiller,	0,	0,	tile_Nem_Cater+tile_pal2
+		dbug	Map_Lamp,	Lamppost,	1,	0,	tile_Nem_Lamp
+	DebugList_SYZ_end:
 
 DebugList_SBZ:
-		dc.w (.end-*-2)/8
+		dc.w (DebugList_SBZ_end-DebugList_SBZ-2)/8
 
-;			object		mappings	subtype	frame	VRAM setting
-		dbug	Rings,		Map_Ring,	0,	0,	tile_Nem_Ring+tile_pal2
-		dbug	Monitor,	Map_Monitor,	0,	0,	tile_Nem_Monitors
-		dbug	Bomb,		Map_Bomb,	0,	0,	tile_Nem_Bomb
-		dbug	Orbinaut,	Map_Orb,	0,	0,	tile_Nem_Orbinaut
-		dbug	Caterkiller,	Map_Cat,	0,	0,	tile_Nem_Cater_SBZ+tile_pal2
-		dbug	SwingingPlatform, Map_BBall,	7,	id_frame_bball_anchor,	tile_Nem_BigSpike_SBZ+tile_pal3
-		dbug	RunningDisc,	Map_Disc,	$E0,	0,	tile_Nem_SbzDisc+tile_pal3+tile_hi
-		dbug	MovingBlock,	Map_MBlock,	type_mblock_sbz+type_mblock_updown,	id_frame_mblock_sbz,	tile_Nem_Stomper+tile_pal2
-		dbug	Button,		Map_But,	0,	0,	tile_Nem_Button+4
-		dbug	SpinPlatform,	Map_Trap,	3,	0,	tile_Nem_TrapDoor+tile_pal3
-		dbug	SpinPlatform,	Map_Spin,	$83,	0,	tile_Nem_SpinPlatform
-		dbug	Saws,		Map_Saw,	type_saw_pizza_updown,	0,	tile_Nem_Cutter+tile_pal3
-		dbug	CollapseFloor,	Map_CFlo,	0,	0,	tile_Nem_SbzFloor+tile_pal3
-		dbug	MovingBlock,	Map_MBlock,	type_mblock_sbzwide+type_mblock_slide,	id_frame_mblock_sbzwide,	tile_Nem_SlideFloor+tile_pal3
-		dbug	ScrapStomp,	Map_Stomp,	0,	id_frame_stomp_door,	tile_Nem_Stomper+tile_pal2
-		dbug	AutoDoor,	Map_ADoor,	0,	0,	tile_Nem_SbzDoorV+tile_pal3
-		dbug	ScrapStomp,	Map_Stomp,	type_stomp_slow,	id_frame_stomp_stomper,	tile_Nem_Stomper+tile_pal2
-		dbug	Saws,		Map_Saw,	type_saw_pizza_sideways,	id_frame_saw_pizzacutter1,	tile_Nem_Cutter+tile_pal3
-		dbug	ScrapStomp,	Map_Stomp,	type_stomp_fast_short,	id_frame_stomp_stomper,	tile_Nem_Stomper+tile_pal2
-		dbug	Saws,		Map_Saw,	type_saw_ground_left,	id_frame_saw_groundsaw1,	tile_Nem_Cutter+tile_pal3
-		dbug	ScrapStomp,	Map_Stomp,	type_stomp_fast_long,	id_frame_stomp_stomper,	tile_Nem_Stomper+tile_pal2
-		dbug	VanishPlatform,	Map_VanP,	0,	0,	tile_Nem_SbzBlock+tile_pal3
-		dbug	Flamethrower,	Map_Flame,	$64,	id_frame_flame_pipe1,	tile_Nem_FlamePipe+tile_hi
-		dbug	Flamethrower,	Map_Flame,	$64,	id_frame_flame_valve1,	tile_Nem_FlamePipe+tile_hi
-		dbug	Electro,	Map_Elec,	4,	0,	tile_Nem_Electric
-		dbug	Girder,		Map_Gird,	0,	0,	tile_Nem_Girder+tile_pal3
-		dbug	Invisibarrier,	Map_Invis,	$11,	0,	tile_Nem_Monitors+tile_hi
-		dbug	BallHog,	Map_Hog,	4,	0,	tile_Nem_BallHog+tile_pal2
-		dbug	Lamppost,	Map_Lamp,	1,	0,	tile_Nem_Lamp
-	.end:
+;			mappings	object		subtype	frame	VRAM setting
+		dbug	Map_Ring,	Rings,		0,	0,	tile_Nem_Ring+tile_pal2
+		dbug	Map_Monitor,	Monitor,	0,	0,	tile_Nem_Monitors
+		dbug	Map_Bomb,	Bomb,		0,	0,	tile_Nem_Bomb
+		dbug	Map_Orb,	Orbinaut,	0,	0,	tile_Nem_Orbinaut
+		dbug	Map_Cat,	Caterkiller,	0,	0,	tile_Nem_Cater_SBZ+tile_pal2
+		dbug	Map_BBall,	SwingingPlatform, 7,	id_frame_bball_anchor,	tile_Nem_BigSpike_SBZ+tile_pal3
+		dbug	Map_Disc,	RunningDisc,	$E0,	0,	tile_Nem_SbzDisc+tile_pal3+tile_hi
+		dbug	Map_MBlock,	MovingBlock,	type_mblock_sbz+type_mblock_updown,	id_frame_mblock_sbz,	tile_Nem_Stomper+tile_pal2
+		dbug	Map_But,	Button,		0,	0,	tile_Nem_Button+4
+		dbug	Map_Trap,	SpinPlatform,	3,	0,	tile_Nem_TrapDoor+tile_pal3
+		dbug	Map_Spin,	SpinPlatform,	$83,	0,	tile_Nem_SpinPlatform
+		dbug	Map_Saw,	Saws,		type_saw_pizza_updown,	0,	tile_Nem_Cutter+tile_pal3
+		dbug	Map_CFlo,	CollapseFloor,	0,	0,	tile_Nem_SbzFloor+tile_pal3
+		dbug	Map_MBlock,	MovingBlock,	type_mblock_sbzwide+type_mblock_slide,	id_frame_mblock_sbzwide,	tile_Nem_SlideFloor+tile_pal3
+		dbug	Map_Stomp,	ScrapStomp,	0,	id_frame_stomp_door,	tile_Nem_Stomper+tile_pal2
+		dbug	Map_ADoor,	AutoDoor,	0,	0,	tile_Nem_SbzDoorV+tile_pal3
+		dbug	Map_Stomp,	ScrapStomp,	type_stomp_slow,	id_frame_stomp_stomper,	tile_Nem_Stomper+tile_pal2
+		dbug	Map_Saw,	Saws,		type_saw_pizza_sideways,	id_frame_saw_pizzacutter1,	tile_Nem_Cutter+tile_pal3
+		dbug	Map_Stomp,	ScrapStomp,	type_stomp_fast_short,	id_frame_stomp_stomper,	tile_Nem_Stomper+tile_pal2
+		dbug	Map_Saw,	Saws,		type_saw_ground_left,	id_frame_saw_groundsaw1,	tile_Nem_Cutter+tile_pal3
+		dbug	Map_Stomp,	ScrapStomp,	type_stomp_fast_long,	id_frame_stomp_stomper,	tile_Nem_Stomper+tile_pal2
+		dbug	Map_VanP,	VanishPlatform, 0,	0,	tile_Nem_SbzBlock+tile_pal3
+		dbug	Map_Flame,	Flamethrower,	$64,	id_frame_flame_pipe1,	tile_Nem_FlamePipe+tile_hi
+		dbug	Map_Flame,	Flamethrower,	$64,	id_frame_flame_valve1,	tile_Nem_FlamePipe+tile_hi
+		dbug	Map_Elec,	Electro,	4,	0,	tile_Nem_Electric
+		dbug	Map_Gird,	Girder,		0,	0,	tile_Nem_Girder+tile_pal3
+		dbug	Map_Invis,	Invisibarrier,	$11,	0,	tile_Nem_Monitors+tile_hi
+		dbug	Map_Hog,	BallHog,	4,	0,	tile_Nem_BallHog+tile_pal2
+		dbug	Map_Lamp,	Lamppost,	1,	0,	tile_Nem_Lamp
+	DebugList_SBZ_end:
 
 DebugList_Ending:
-		dc.w (.end-*-2)/8
+		dc.w (DebugList_Ending_end-DebugList_Ending-2)/8
 
-;			object		mappings	subtype	frame	VRAM setting
-		dbug	Rings,		Map_Ring,	0,	0,	tile_Nem_Ring+tile_pal2
+;			mappings	object		subtype	frame	VRAM setting
+		dbug	Map_Ring,	Rings,		0,	0,	tile_Nem_Ring+tile_pal2
 	if Revision=0
-		dbug	Bumper,		Map_Bump,	0,	0,	$380
-		dbug	Animals,	Map_Animal2,	$A,	0,	$5A0
-		dbug	Animals,	Map_Animal2,	$B,	0,	$5A0
-		dbug	Animals,	Map_Animal2,	$C,	0,	$5A0
-		dbug	Animals,	Map_Animal1,	$D,	0,	tile_Nem_Rabbit_End
-		dbug	Animals,	Map_Animal1,	$E,	0,	tile_Nem_Rabbit_End
-		dbug	Animals,	Map_Animal1,	$F,	0,	tile_Nem_BlackBird_End
-		dbug	Animals,	Map_Animal1,	$10,	0,	tile_Nem_BlackBird_End
-		dbug	Animals,	Map_Animal2,	$11,	0,	tile_Nem_Seal_End
-		dbug	Animals,	Map_Animal3,	$12,	0,	tile_Nem_Pig_End
-		dbug	Animals,	Map_Animal2,	$13,	0,	tile_Nem_Chicken_End
-		dbug	Animals,	Map_Animal3,	$14,	0,	tile_Nem_Squirrel_End
+		dbug	Map_Bump,	Bumper,		0,	0,	$380
+		dbug	Map_Animal2,	Animals,	$A,	0,	$5A0
+		dbug	Map_Animal2,	Animals,	$B,	0,	$5A0
+		dbug	Map_Animal2,	Animals,	$C,	0,	$5A0
+		dbug	Map_Animal1,	Animals,	$D,	0,	tile_Nem_Rabbit_End
+		dbug	Map_Animal1,	Animals,	$E,	0,	tile_Nem_Rabbit_End
+		dbug	Map_Animal1,	Animals,	$F,	0,	tile_Nem_BlackBird_End
+		dbug	Map_Animal1,	Animals,	$10,	0,	tile_Nem_BlackBird_End
+		dbug	Map_Animal2,	Animals,	$11,	0,	tile_Nem_Seal_End
+		dbug	Map_Animal3,	Animals,	$12,	0,	tile_Nem_Pig_End
+		dbug	Map_Animal2,	Animals,	$13,	0,	tile_Nem_Chicken_End
+		dbug	Map_Animal3,	Animals,	$14,	0,	tile_Nem_Squirrel_End
 	else
-		dbug	Rings,		Map_Ring,	0,	id_frame_ring_blank,	tile_Nem_Ring+tile_pal2
+		dbug	Map_Ring,	Rings,		0,	id_frame_ring_blank,	tile_Nem_Ring+tile_pal2
 	endc
-	.end:
+	DebugList_Ending_end:
+
 		even

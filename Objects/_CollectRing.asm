@@ -1,8 +1,7 @@
 ; ---------------------------------------------------------------------------
-; Subroutine to	update ring counters and lives when a ring is collected, and
-; play ring sound or extra life jingle
+; Subroutine to	update ring counters and lives when a ring is collected
 
-;	uses d0.w
+;	uses d0
 ; ---------------------------------------------------------------------------
 
 CollectRing:

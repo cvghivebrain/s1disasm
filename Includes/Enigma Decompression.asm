@@ -2,17 +2,17 @@
 ; Enigma decompression algorithm
 
 ; input:
-;	d0.w = starting art tile (added to each 8x8 before writing to destination)
+;	d0 = starting art tile (added to each 8x8 before writing to destination)
 ;	a0 = source address
 ;	a1 = destination address
 
 ;	uses a0
 
 ; usage:
-;		lea	(source).l,a0
-;		lea	(destination).l,a1
-;		move.w	#arttile,d0
-;		bsr.w	EniDec
+;	lea	(source).l,a0
+;	lea	(destination).l,a1
+;	move.w	#arttile,d0
+;	bsr.w	EniDec
 
 ; See http://www.segaretro.org/Enigma_compression for format description
 ; ---------------------------------------------------------------------------

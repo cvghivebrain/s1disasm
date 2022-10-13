@@ -2,11 +2,7 @@
 ; Subroutine to load pattern load cues (to queue pattern load requests)
 
 ; input:
-;	d0.w = index of PLC list
-
-; usage:
-;		moveq	#id_PLC_Explode,d0
-;		jsr	(AddPLC).l
+;	d0 = index of PLC list
 ; ---------------------------------------------------------------------------
 
 AddPLC:
@@ -42,7 +38,7 @@ AddPLC:
 ; clear the PLC buffer
 
 ; input:
-;	d0.w = index of PLC list
+;	d0 = index of PLC list
 ; ---------------------------------------------------------------------------
 
 NewPLC:
@@ -68,7 +64,7 @@ NewPLC:
 ; ---------------------------------------------------------------------------
 ; Subroutine to	clear the pattern load cue buffer
 
-;	uses d0.l, a2
+;	uses d0, a2
 ; ---------------------------------------------------------------------------
 
 ClearPLC:
@@ -83,8 +79,6 @@ ClearPLC:
 ; ---------------------------------------------------------------------------
 ; Subroutine to	check the PLC buffer and begin decompression if it contains
 ; anything. ProcessPLC handles the actual decompression during VBlank
-
-;	uses d0.l, d1.w, d2.w, d5.l, d6.l, d7.w, a0, a1, a3
 ; ---------------------------------------------------------------------------
 
 RunPLC:
@@ -121,8 +115,6 @@ RunPLC:
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	decompress graphics listed in the PLC buffer
-
-;	uses d0.l, d1.l, d2.l, d3.l, d4.l, d5.l, d6.l, d7.w, a0, a1, a3, a4, a5
 ; ---------------------------------------------------------------------------
 
 nem_tile_count:	= 9
@@ -197,9 +189,7 @@ ProcessPLC_Finish:
 ; frame
 
 ; input:
-;	d0.w = index of PLC list
-
-;	uses d0.l, d1.w, a1
+;	d0 = index of PLC list
 ; ---------------------------------------------------------------------------
 
 QuickPLC:
