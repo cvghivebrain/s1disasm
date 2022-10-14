@@ -5,12 +5,12 @@
 ;	a0 = source address
 ;	a1 = destination address
 
-;	uses d0, d1, d2, d3, d4, d5, d6, a0, a1
+;	uses d0.b, d1.w, d2.l, d3.l, d4.l, d5.w, d6.w, a0, a1
 
 ; usage:
-;	lea	(source).l,a0
-;	lea	(destination).l,a1
-;	bsr.w	KosDec
+;		lea	(source).l,a0
+;		lea	(destination).l,a1
+;		bsr.w	KosDec
 ; ---------------------------------------------------------------------------
 
 KosDec:

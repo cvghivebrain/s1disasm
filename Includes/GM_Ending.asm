@@ -181,7 +181,7 @@ End_FlashLoop:
 ; ---------------------------------------------------------------------------
 ; Subroutine controlling Sonic on the ending sequence
 
-;	uses d0
+;	uses d0.l
 ; ---------------------------------------------------------------------------
 
 End_MoveSonic:	; Routine 0

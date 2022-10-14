@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Subroutine to	initialise joypads
 
-;	uses d0
+;	uses d0.l
 ; ---------------------------------------------------------------------------
 
 JoypadInit:
@@ -18,9 +18,10 @@ JoypadInit:
 ; Subroutine to	read joypad input, and send it to the RAM
 
 ; output:
-;	d0 = actual joypad input (SACBRLDU)
-;	d1 = actual joypad input, new since last frame only (SACBRLDU)
+;	d0.b = actual joypad input (SACBRLDU)
+;	d1.b = actual joypad input, new since last frame only (SACBRLDU)
 ;	a1 = port_1_data ($A10003)
+
 ;	uses a0
 ; ---------------------------------------------------------------------------
 

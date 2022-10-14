@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Subroutine to	move Sonic in demo mode
 
-;	uses d0, d1, d2, a0, a1
+;	uses d0.l, d1.b, d2.l, a0, a1
 ; ---------------------------------------------------------------------------
 
 MoveSonicInDemo:
@@ -12,7 +12,10 @@ MoveSonicInDemo:
 ; ---------------------------------------------------------------------------
 ; Unused subroutine for recording a demo
 
-;	uses d0, a1
+; output:
+;	a1 = address last written by recorder
+
+;	uses d0.w
 ; ---------------------------------------------------------------------------
 
 DemoRecorder:

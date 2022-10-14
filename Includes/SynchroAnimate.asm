@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Subroutine to	change synchronised animation variables (rings, giant rings)
 
-;	uses d0
+;	uses d0.l
 ; ---------------------------------------------------------------------------
 
 SynchroAnimate:

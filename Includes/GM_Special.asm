@@ -200,7 +200,7 @@ SS_ToSegaScreen:
 ; ---------------------------------------------------------------------------
 ; Special stage	background mappings loading subroutine
 
-;	uses d0, d1, d2, d3, d4, d5, d6, d7, a0, a1, a2
+;	uses d0.l, d1.l, d2.l, d3.l, d4.l, d5.l, d6.l, d7.l, a0, a1, a2
 ; ---------------------------------------------------------------------------
 
 ; Fish/bird dimensions in cells
@@ -281,11 +281,12 @@ SS_BGLoad:
 		rts
 
 ; ---------------------------------------------------------------------------
-; Palette cycling routine - special stage
+; Palette cycling and background animation routine
 
 ; output:
 ;	a6 = vdp_control_port
-;	uses d0, d1, a0, a1, a2
+
+;	uses d0.l, d1.w, a0, a1, a2
 ; ---------------------------------------------------------------------------
 
 PalCycle_SS:
@@ -425,7 +426,7 @@ include_Special_2:	macro
 ; ---------------------------------------------------------------------------
 ; Subroutine to	make the special stage background animated
 
-;	uses d0, d1, d2, d3, a1, a3
+;	uses d0.l, d1.l, d2.l, d3.l, a1, a3
 ; ---------------------------------------------------------------------------
 
 SS_BGAnimate:
@@ -554,7 +555,7 @@ include_Special_3:	macro
 ; input:
 ;	d5 = sprite count (from BuildSprites)
 
-;	uses d0, d2, d3, d4, d5, d1, d7, a0, a1
+;	uses d0.l, d1.l, d2.l, d3.l, d4.w, d7.w, a0, a1
 ; ---------------------------------------------------------------------------
 
 SS_ShowLayout:
@@ -687,7 +688,7 @@ SS_ShowLayout:
 ; ---------------------------------------------------------------------------
 ; Subroutine to	animate	walls and rings	in the special stage
 
-;	uses d0, d1, a0, a1
+;	uses d0.l, d1.l, a0, a1
 ; ---------------------------------------------------------------------------
 
 SS_AniWallsRings:
@@ -844,7 +845,8 @@ SS_Wall_Vram_Settings:
 
 ; output:
 ;	a2 = address of free slot in sprite update list
-;	uses d0
+
+;	uses d0.w
 ; ---------------------------------------------------------------------------
 
 SS_FindFreeUpdate:
@@ -863,7 +865,7 @@ SS_FindFreeUpdate:
 ; ---------------------------------------------------------------------------
 ; Subroutine to	update special stage items after they've been touched
 
-;	uses d0, d7, a0, a1
+;	uses d0.l, d7.w, a0, a1
 ; ---------------------------------------------------------------------------
 
 SS_UpdateItems:
@@ -1059,7 +1061,7 @@ SpecialStartPosList:
 ; ---------------------------------------------------------------------------
 ; Subroutine to	load special stage layout
 
-;	uses d0, d1, d2, a0, a1, a3
+;	uses d0.l, d1.l, d2.l, a0, a1, a3
 ; ---------------------------------------------------------------------------
 
 SS_Load:

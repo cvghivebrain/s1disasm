@@ -1,5 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Subroutine to load basic level data
+
+;	uses d0.l, d1.l, d2.l, d3.l, d4.l, d5.w, d6.w, d7.w, a0, a1, a2, a3
 ; ---------------------------------------------------------------------------
 
 LevelDataLoad:
@@ -36,7 +38,7 @@ LevelDataLoad:
 
 	.normalpal:
 		bsr.w	PalLoad_Next				; load palette (based on d0)
-		popr	a2				; retrieve level header address from stack
+		popr	a2					; retrieve level header address from stack
 		addq.w	#4,a2					; jump to 2nd PLC
 		moveq	#0,d0
 		move.b	(a2),d0					; read 2nd PLC id
@@ -51,6 +53,8 @@ LevelDataLoad:
 
 ; Levels are "cropped" in ROM. In RAM the level and background each comprise
 ; eight $40 byte rows, which are stored alternately.
+
+;	uses d0.l, d1.l, d2.w, a1, a3
 ; ---------------------------------------------------------------------------
 
 LevelLayoutLoad:

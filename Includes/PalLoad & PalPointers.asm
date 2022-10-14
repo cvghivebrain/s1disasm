@@ -2,9 +2,9 @@
 ; Subroutines to load palette that will be used after fading in
 
 ; input:
-;	d0 = index number for palette
+;	d0.w = index number for palette
 
-;	uses d0, d7, a1, a2, a3
+;	uses d0.w, d7.w, a1, a2, a3
 ; ---------------------------------------------------------------------------
 
 PalLoad_Next:
@@ -25,9 +25,9 @@ PalLoad_Next:
 ; Subroutines to load palette immediately
 
 ; input:
-;	d0 = index number for palette
+;	d0.w = index number for palette
 
-;	uses d0, d7, a1, a2, a3
+;	uses d0.w, d7.w, a1, a2, a3
 ; ---------------------------------------------------------------------------
 
 PalLoad_Now:
@@ -47,9 +47,9 @@ PalLoad_Now:
 ; Subroutines to load underwater palette immediately
 
 ; input:
-;	d0 = index number for palette
+;	d0.w = index number for palette
 
-;	uses d0, d7, a1, a2, a3
+;	uses d0.w, d7.w, a1, a2, a3
 ; ---------------------------------------------------------------------------
 
 PalLoad_Water:
@@ -70,9 +70,9 @@ PalLoad_Water:
 ; Subroutines to load underwater palette that will be used after fading in
 
 ; input:
-;	d0 = index number for palette
+;	d0.w = index number for palette
 
-;	uses d0, d7, a1, a2, a3
+;	uses d0.w, d7.w, a1, a2, a3
 ; ---------------------------------------------------------------------------
 
 PalLoad_Water_Next:

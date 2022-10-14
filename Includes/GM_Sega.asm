@@ -83,7 +83,9 @@ Sega_WaitLoop:
 ; Palette cycling routine - Sega logo
 
 ; output:
-;	d0 = 0 when palette routine is complete
+;	d0.l = 0 when palette routine is complete
+
+;	uses d1.l, d2.w, a0, a1
 ; ---------------------------------------------------------------------------
 
 PalCycle_Sega:

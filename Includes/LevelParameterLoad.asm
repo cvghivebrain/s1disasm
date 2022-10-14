@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Subroutine to	load level boundaries and start	locations
 
-;	uses d0, d1, d2, a0, a1, a2
+;	uses d0.l, d1.l, d2.l, a0, a1, a2
 ; ---------------------------------------------------------------------------
 
 LevelParameterLoad:
@@ -253,10 +253,10 @@ ScrollBlockHeightList:
 ; Subroutine to	initialise background position and scrolling
 
 ; input:
-;	d0 = v_camera_y_pos
-;	d1 = v_camera_x_pos
+;	d0.w = v_camera_y_pos
+;	d1.w = v_camera_x_pos
 
-;	uses d0, d1, d2, a2
+;	uses d0.l, d1.w, d2.l, a2
 ; ---------------------------------------------------------------------------
 
 LPL_InitBG:

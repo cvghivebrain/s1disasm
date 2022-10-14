@@ -376,7 +376,7 @@ Level_Demo:
 ; ---------------------------------------------------------------------------
 ; Subroutine to set collision index pointer for current zone
 
-;	uses d0
+;	uses d0.l
 ; ---------------------------------------------------------------------------
 
 include_Level_colptrs:	macro
@@ -401,6 +401,8 @@ ColPointers:	dc.l Col_GHZ
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to check Sonic's position and load signpost graphics
+
+;	uses d0.l, d1.w
 ; ---------------------------------------------------------------------------
 
 include_Level_signpost:	macro

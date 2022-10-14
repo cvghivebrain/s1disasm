@@ -5,7 +5,8 @@
 ;	a0 = vdp_control_port ($C00004)
 ;	a1 = vdp_data_port ($C00000)
 ;	a5 = vdp_control_port ($C00004)
-;	uses d0, d1, d7, a2
+
+;	uses d0.l, d7.l, a2
 ; ---------------------------------------------------------------------------
 
 VDPSetupGame:

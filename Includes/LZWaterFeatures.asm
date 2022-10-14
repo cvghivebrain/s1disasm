@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Subroutine to	do special water effects in Labyrinth Zone
 
-;	uses d0, d1, d2, a1, a2
+;	uses d0.l, d1.l, d2.w, a1, a2
 ; ---------------------------------------------------------------------------
 
 LZWaterFeatures:
@@ -59,7 +59,7 @@ WaterHeight:	dc.w $B8					; Labyrinth 1
 ; ---------------------------------------------------------------------------
 ; Labyrinth dynamic water height routines
 
-;	uses d0, d1, d2
+;	uses d0.l, d1.l, d2.b
 ; ---------------------------------------------------------------------------
 
 LZDynamicWater:
@@ -300,7 +300,7 @@ DynWater_SBZ3:
 ; ---------------------------------------------------------------------------
 ; Labyrinth Zone "wind tunnels"	subroutine
 
-;	uses d0, d1, d2, a1, a2
+;	uses d0.l, d1.l, d2.w, a1, a2
 ; ---------------------------------------------------------------------------
 
 LZWindTunnels:
@@ -401,7 +401,7 @@ LZWind_Data:	dc.w $A80, $300, $C10,  $380			; act 1 values (set 1)
 ; ---------------------------------------------------------------------------
 ; Labyrinth Zone water slide subroutine
 
-;	uses d0, d1, a1, a2
+;	uses d0.w, d1.l, a1, a2
 ; ---------------------------------------------------------------------------
 
 LZWaterSlides:

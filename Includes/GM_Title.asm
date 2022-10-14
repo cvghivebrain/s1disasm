@@ -344,8 +344,8 @@ PlayLevel:
 			move.l	#points_for_life,(v_score_next_life).w ; extra life is awarded at 50000 points
 		endc
 		play.b	1, bsr.w, cmd_Fade			; fade out music
-		rts	
-; ===========================================================================
+		rts
+		
 ; ---------------------------------------------------------------------------
 ; Level	select - level pointers
 ; ---------------------------------------------------------------------------
@@ -473,6 +473,11 @@ PlayDemo:
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	change what you're selecting in the level select
+
+; output:
+;	a6 = vdp_data_port ($C00000)
+
+;	uses d0.l, d1.l, d2.l, d3.w, d4.l, a1
 ; ---------------------------------------------------------------------------
 
 LevSel_Navigate:
@@ -538,6 +543,11 @@ LevSel_SndTest:
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to load level select text
+
+; output:
+;	a6 = vdp_data_port ($C00000)
+
+;	uses d0.l, d1.l, d2.l, d3.w, d4.l, a1
 ; ---------------------------------------------------------------------------
 
 LevSel_ShowText:
@@ -594,6 +604,12 @@ soundtest_pos:	= (sizeof_vram_row*$18)+($18*2)
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to draw sound test number
+
+; input:
+;	d3.w = VRAM tile setting
+;	a6 = vdp_data_port ($C00000)
+
+;	uses d0.w
 ; ---------------------------------------------------------------------------
 
 LevSel_DrawSound:
@@ -609,6 +625,13 @@ LevSel_DrawSound:
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to draw a line of text
+
+; input:
+;	d3.w = VRAM tile setting
+;	a1 = address of string
+;	a6 = vdp_data_port ($C00000)
+
+;	uses d0.l, d2.l
 ; ---------------------------------------------------------------------------
 
 LevSel_DrawLine:

@@ -4,6 +4,8 @@
 ; input:
 ;	d0.w = index of PLC list
 
+;	uses d0.w
+
 ; usage:
 ;		moveq	#id_PLC_Explode,d0
 ;		jsr	(AddPLC).l
@@ -43,6 +45,8 @@ AddPLC:
 
 ; input:
 ;	d0.w = index of PLC list
+
+;	uses d0.l
 ; ---------------------------------------------------------------------------
 
 NewPLC:
