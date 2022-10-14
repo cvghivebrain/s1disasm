@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Ball Hog enemy (SBZ)
 ; ---------------------------------------------------------------------------
-Map_Hog:	index *
+Map_Hog:	index offset(*)
 		ptr frame_hog_standing
 		ptr frame_hog_open
 		ptr frame_hog_squat

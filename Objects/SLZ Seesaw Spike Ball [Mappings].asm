@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - spiked balls on the	seesaws	(SLZ)
 ; ---------------------------------------------------------------------------
-Map_SSawBall:	index *
+Map_SSawBall:	index offset(*)
 		ptr frame_seesaw_red
 		ptr frame_seesaw_silver
 		

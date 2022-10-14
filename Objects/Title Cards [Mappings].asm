@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - zone title cards
 ; ---------------------------------------------------------------------------
-Map_Card:	index *
+Map_Card:	index offset(*)
 		ptr frame_card_ghz
 		ptr frame_card_lz
 		ptr frame_card_mz

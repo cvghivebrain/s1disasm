@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - special stage "DOWN" block
 ; ---------------------------------------------------------------------------
-Map_SS_Down:	index *
+Map_SS_Down:	index offset(*)
 		ptr frame_ss_down_0
 		ptr frame_ss_down_1
 		

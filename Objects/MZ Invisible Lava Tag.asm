@@ -11,7 +11,7 @@ LavaTag:
 		move.w	LTag_Index(pc,d0.w),d1
 		jmp	LTag_Index(pc,d1.w)
 ; ===========================================================================
-LTag_Index:	index *,,2
+LTag_Index:	index offset(*),,2
 		ptr LTag_Main
 		ptr LTag_ChkDel
 

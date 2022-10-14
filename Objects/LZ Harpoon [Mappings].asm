@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - harpoon (LZ)
 ; ---------------------------------------------------------------------------
-Map_Harp:	index *
+Map_Harp:	index offset(*)
 		ptr frame_harp_h_retracted
 		ptr frame_harp_h_middle
 		ptr frame_harp_h_extended

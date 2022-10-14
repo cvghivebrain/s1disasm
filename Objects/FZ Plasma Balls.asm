@@ -12,7 +12,7 @@ BossPlasma:
 		move.w	Plasma_Index(pc,d0.w),d0
 		jmp	Plasma_Index(pc,d0.w)
 ; ===========================================================================
-Plasma_Index:	index *,,2
+Plasma_Index:	index offset(*),,2
 		ptr Plasma_Main
 		ptr Plasma_Generator
 		ptr Plasma_MakeBalls
@@ -152,7 +152,7 @@ Plasma_Balls:	; Routine 8
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 Plasma_Balls_Index:
-		index *,,2
+		index offset(*),,2
 		ptr Plasma_Spread
 		ptr Plasma_Drop
 		ptr Plasma_Move
@@ -216,7 +216,7 @@ Plasma_Move:
 ; Animation scripts
 ; ---------------------------------------------------------------------------
 
-Ani_PLaunch:	index *
+Ani_PLaunch:	index offset(*)
 		ptr ani_plaunch_red
 		ptr ani_plaunch_redsparking
 		ptr ani_plaunch_whitesparking
@@ -247,7 +247,7 @@ ani_plaunch_whitesparking:
 
 include_BossPlasma_animation:	macro
 
-Ani_Plasma:	index *
+Ani_Plasma:	index offset(*)
 		ptr ani_plasma_full
 		ptr ani_plasma_short
 		

@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Moto Bug enemy (GHZ)
 ; ---------------------------------------------------------------------------
-Map_Moto:	index *
+Map_Moto:	index offset(*)
 		ptr frame_moto_0
 		ptr frame_moto_1
 		ptr frame_moto_2

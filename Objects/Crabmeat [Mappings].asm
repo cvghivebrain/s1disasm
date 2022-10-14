@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Crabmeat enemy (GHZ, SYZ)
 ; ---------------------------------------------------------------------------
-Map_Crab:	index *
+Map_Crab:	index offset(*)
 		ptr frame_crab_stand
 		ptr frame_crab_walk
 		ptr frame_crab_slope1

@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Batbrain enemy (MZ)
 ; ---------------------------------------------------------------------------
-Map_Bat:	index *
+Map_Bat:	index offset(*)
 		ptr frame_bat_hanging
 		ptr frame_bat_fly1
 		ptr frame_bat_fly2

@@ -14,7 +14,7 @@ Staircase:
 		out_of_range	DeleteObject,ost_stair_x_start(a0)
 		bra.w	DisplaySprite
 ; ===========================================================================
-Stair_Index:	index *,,2
+Stair_Index:	index offset(*),,2
 		ptr Stair_Main
 		ptr Stair_Move
 		ptr Stair_Solid
@@ -105,7 +105,7 @@ Stair_Solid:	; Routine 4
 	.exit:
 		rts	
 ; ===========================================================================
-Stair_TypeIndex:index *
+Stair_TypeIndex:index offset(*)
 		ptr Stair_Type00				; form staircase when stood on
 		ptr Stair_Type01
 		ptr Stair_Type02				; form staircase when hit from below

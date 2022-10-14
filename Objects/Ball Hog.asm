@@ -11,7 +11,7 @@ BallHog:
 		move.w	Hog_Index(pc,d0.w),d1
 		jmp	Hog_Index(pc,d1.w)
 ; ===========================================================================
-Hog_Index:	index *,,2
+Hog_Index:	index offset(*),,2
 		ptr Hog_Main
 		ptr Hog_Action
 
@@ -87,7 +87,7 @@ Hog_Action:	; Routine 2
 
 include_BallHog_animation:	macro
 
-Ani_Hog:	index *
+Ani_Hog:	index offset(*)
 		ptr ani_hog_0
 		
 ani_hog_0:	dc.b 9

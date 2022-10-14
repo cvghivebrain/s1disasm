@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - helix of spikes on a pole (GHZ)
 ; ---------------------------------------------------------------------------
-Map_Hel:	index *
+Map_Hel:	index offset(*)
 		ptr frame_helix_up
 		ptr frame_helix_up45
 		ptr frame_helix_90

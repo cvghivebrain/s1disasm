@@ -18,7 +18,7 @@ Rings:
 		move.w	Ring_Index(pc,d0.w),d1
 		jmp	Ring_Index(pc,d1.w)
 ; ===========================================================================
-Ring_Index:	index *,,2
+Ring_Index:	index offset(*),,2
 		ptr Ring_Main
 		ptr Ring_Animate
 		ptr Ring_Collect
@@ -147,7 +147,7 @@ Ring_Delete:	; Routine 8
 
 include_Rings_animation:	macro
 
-Ani_Ring:	index *
+Ani_Ring:	index offset(*)
 		ptr ani_ring_sparkle
 		
 ani_ring_sparkle:

@@ -16,7 +16,7 @@ BossStarLight:
 		move.w	BSLZ_Index(pc,d0.w),d1
 		jmp	BSLZ_Index(pc,d1.w)
 ; ===========================================================================
-BSLZ_Index:	index *,,2
+BSLZ_Index:	index offset(*),,2
 		ptr BSLZ_Main
 		ptr BSLZ_ShipMain
 		ptr BSLZ_FaceMain
@@ -92,7 +92,7 @@ BSLZ_ShipMain:	; Routine 2
 		or.b	d0,ost_render(a0)			; combine x/yflip bits from status instead
 		jmp	(DisplaySprite).l
 ; ===========================================================================
-BSLZ_ShipIndex:	index *,,2
+BSLZ_ShipIndex:	index offset(*),,2
 		ptr BSLZ_ShipStart
 		ptr BSLZ_ShipMove
 		ptr BSLZ_MakeBall

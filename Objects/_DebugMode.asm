@@ -8,7 +8,7 @@ DebugMode:
 		move.w	Debug_Index(pc,d0.w),d1
 		jmp	Debug_Index(pc,d1.w)
 ; ===========================================================================
-Debug_Index:	index *
+Debug_Index:	index offset(*)
 		ptr Debug_Main
 		ptr Debug_Action
 ; ===========================================================================
@@ -229,7 +229,7 @@ Debug_GetFrame:
 ; Debug	mode item lists
 ; ---------------------------------------------------------------------------
 
-DebugList:	index *
+DebugList:	index offset(*)
 		ptr DebugList_GHZ
 		ptr DebugList_LZ
 		ptr DebugList_MZ

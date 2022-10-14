@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - chaos emeralds on the ending sequence
 ; ---------------------------------------------------------------------------
-Map_ECha:	index *
+Map_ECha:	index offset(*)
 		ptr frame_echaos_flash
 		ptr frame_echaos_blue
 		ptr frame_echaos_yellow

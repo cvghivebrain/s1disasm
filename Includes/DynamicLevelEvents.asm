@@ -49,7 +49,7 @@ DynamicLevelEvents:
 ; ---------------------------------------------------------------------------
 ; Offset index for dynamic level events
 ; ---------------------------------------------------------------------------
-DLE_Index:	index *
+DLE_Index:	index offset(*)
 		ptr DLE_GHZ
 		ptr DLE_LZ
 		ptr DLE_MZ
@@ -70,7 +70,7 @@ DLE_GHZ:
 		move.w	DLE_GHZx(pc,d0.w),d0
 		jmp	DLE_GHZx(pc,d0.w)
 ; ===========================================================================
-DLE_GHZx:	index *
+DLE_GHZx:	index offset(*)
 		ptr DLE_GHZ1
 		ptr DLE_GHZ2
 		ptr DLE_GHZ3
@@ -112,7 +112,7 @@ DLE_GHZ3:
 		move.w	DLE_GHZ3_Index(pc,d0.w),d0
 		jmp	DLE_GHZ3_Index(pc,d0.w)
 ; ===========================================================================
-DLE_GHZ3_Index:	index *
+DLE_GHZ3_Index:	index offset(*)
 		ptr DLE_GHZ3_Main
 		ptr DLE_GHZ3_Boss
 		ptr DLE_GHZ3_End
@@ -192,7 +192,7 @@ DLE_LZ:
 		move.w	DLE_LZx(pc,d0.w),d0
 		jmp	DLE_LZx(pc,d0.w)
 ; ===========================================================================
-DLE_LZx:	index *
+DLE_LZx:	index offset(*)
 		ptr DLE_LZ12
 		ptr DLE_LZ12
 		ptr DLE_LZ3
@@ -265,7 +265,7 @@ DLE_MZ:
 		move.w	DLE_MZx(pc,d0.w),d0
 		jmp	DLE_MZx(pc,d0.w)
 ; ===========================================================================
-DLE_MZx:	index *
+DLE_MZx:	index offset(*)
 		ptr DLE_MZ1
 		ptr DLE_MZ2
 		ptr DLE_MZ3
@@ -277,7 +277,7 @@ DLE_MZ1:
 		move.w	DLE_MZ1_Index(pc,d0.w),d0
 		jmp	DLE_MZ1_Index(pc,d0.w)
 ; ===========================================================================
-DLE_MZ1_Index:	index *
+DLE_MZ1_Index:	index offset(*)
 		ptr DLE_MZ1_0
 		ptr DLE_MZ1_2
 		ptr DLE_MZ1_4
@@ -407,7 +407,7 @@ DLE_MZ3:
 		move.w	DLE_MZ3_Index(pc,d0.w),d0
 		jmp	DLE_MZ3_Index(pc,d0.w)
 ; ===========================================================================
-DLE_MZ3_Index:	index *
+DLE_MZ3_Index:	index offset(*)
 		ptr DLE_MZ3_Boss
 		ptr DLE_MZ3_End
 ; ===========================================================================
@@ -454,7 +454,7 @@ DLE_SLZ:
 		move.w	DLE_SLZx(pc,d0.w),d0
 		jmp	DLE_SLZx(pc,d0.w)
 ; ===========================================================================
-DLE_SLZx:	index *
+DLE_SLZx:	index offset(*)
 		ptr DLE_SLZ12
 		ptr DLE_SLZ12
 		ptr DLE_SLZ3
@@ -470,7 +470,7 @@ DLE_SLZ3:
 		move.w	DLE_SLZ3_Index(pc,d0.w),d0
 		jmp	DLE_SLZ3_Index(pc,d0.w)
 ; ===========================================================================
-DLE_SLZ3_Index:	index *
+DLE_SLZ3_Index:	index offset(*)
 		ptr DLE_SLZ3_Main
 		ptr DLE_SLZ3_Boss
 		ptr DLE_SLZ3_End
@@ -523,7 +523,7 @@ DLE_SYZ:
 		move.w	DLE_SYZx(pc,d0.w),d0
 		jmp	DLE_SYZx(pc,d0.w)
 ; ===========================================================================
-DLE_SYZx:	index *
+DLE_SYZx:	index offset(*)
 		ptr DLE_SYZ1
 		ptr DLE_SYZ2
 		ptr DLE_SYZ3
@@ -554,7 +554,7 @@ DLE_SYZ3:
 		move.w	DLE_SYZ3_Index(pc,d0.w),d0
 		jmp	DLE_SYZ3_Index(pc,d0.w)
 ; ===========================================================================
-DLE_SYZ3_Index:	index *
+DLE_SYZ3_Index:	index offset(*)
 		ptr DLE_SYZ3_Main
 		ptr DLE_SYZ3_Boss
 		ptr DLE_SYZ3_End
@@ -609,7 +609,7 @@ DLE_SBZ:
 		move.w	DLE_SBZx(pc,d0.w),d0
 		jmp	DLE_SBZx(pc,d0.w)
 ; ===========================================================================
-DLE_SBZx:	index *
+DLE_SBZx:	index offset(*)
 		ptr DLE_SBZ1
 		ptr DLE_SBZ2
 		ptr DLE_FZ
@@ -636,7 +636,7 @@ DLE_SBZ2:
 		move.w	DLE_SBZ2_Index(pc,d0.w),d0
 		jmp	DLE_SBZ2_Index(pc,d0.w)
 ; ===========================================================================
-DLE_SBZ2_Index:	index *
+DLE_SBZ2_Index:	index offset(*)
 		ptr DLE_SBZ2_Main
 		ptr DLE_SBZ2_Blocks
 		ptr DLE_SBZ2_Eggman
@@ -707,7 +707,7 @@ DLE_FZ:
 		move.w	DLE_FZ_Index(pc,d0.w),d0
 		jmp	DLE_FZ_Index(pc,d0.w)
 ; ===========================================================================
-DLE_FZ_Index:	index *
+DLE_FZ_Index:	index offset(*)
 		ptr DLE_FZ_Main
 		ptr DLE_FZ_Boss
 		ptr DLE_FZ_Arena

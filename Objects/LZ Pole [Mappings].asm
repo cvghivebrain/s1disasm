@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - pole that breaks (LZ)
 ; ---------------------------------------------------------------------------
-Map_Pole:	index *
+Map_Pole:	index offset(*)
 		ptr frame_pole_normal
 		ptr frame_pole_broken
 		

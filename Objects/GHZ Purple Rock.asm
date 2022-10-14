@@ -11,7 +11,7 @@ PurpleRock:
 		move.w	Rock_Index(pc,d0.w),d1
 		jmp	Rock_Index(pc,d1.w)
 ; ===========================================================================
-Rock_Index:	index *,,2
+Rock_Index:	index offset(*),,2
 		ptr Rock_Main
 		ptr Rock_Solid
 ; ===========================================================================

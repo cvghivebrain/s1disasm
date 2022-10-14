@@ -2,7 +2,7 @@
 ; Sprite mappings - explosion from a badnik or monitor
 ; ---------------------------------------------------------------------------
 Map_ExplodeItem:
-		index *
+		index offset(*)
 		ptr frame_ex_0
 		ptr frame_ex_1
 		ptr frame_ex_2
@@ -40,7 +40,7 @@ frame_ex_4:	spritemap
 ; Sprite mappings - explosion from when	a boss is destroyed
 ; ---------------------------------------------------------------------------
 Map_ExplodeBomb:
-		index *
+		index offset(*)
 		ptr frame_ex_0					; backwards reference
 		ptr frame_exbomb_1
 		ptr frame_exbomb_2

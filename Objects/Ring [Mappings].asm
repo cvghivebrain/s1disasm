@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - rings
 ; ---------------------------------------------------------------------------
-Map_Ring:	index *
+Map_Ring:	index offset(*)
 		ptr frame_ring_front
 		ptr frame_ring_angle1
 		ptr frame_ring_edge

@@ -11,7 +11,7 @@ MissileDissolve:
 		move.w	MDis_Index(pc,d0.w),d1
 		jmp	MDis_Index(pc,d1.w)
 ; ===========================================================================
-MDis_Index:	index *,,2
+MDis_Index:	index offset(*),,2
 		ptr MDis_Main
 		ptr MDis_Animate
 ; ===========================================================================

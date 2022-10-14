@@ -12,7 +12,7 @@ ChainStomp:
 		move.w	CStom_Index(pc,d0.w),d1
 		jmp	CStom_Index(pc,d1.w)
 ; ===========================================================================
-CStom_Index:	index *,,2
+CStom_Index:	index offset(*),,2
 		ptr CStom_Main
 		ptr CStom_Block
 		ptr CStom_Spikes
@@ -184,7 +184,7 @@ CStom_Types:
 		move.w	CStom_TypeIndex(pc,d0.w),d1
 		jmp	CStom_TypeIndex(pc,d1.w)
 ; ===========================================================================
-CStom_TypeIndex:index *
+CStom_TypeIndex:index offset(*)
 		ptr CStom_Type00				; 0
 		ptr CStom_Type01				; 1
 		ptr CStom_Type01				; 2

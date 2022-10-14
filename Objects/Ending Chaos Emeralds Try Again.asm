@@ -12,7 +12,7 @@ TryChaos:
 		jsr	TCha_Index(pc,d1.w)
 		jmp	(DisplaySprite).l
 ; ===========================================================================
-TCha_Index:	index *,,2
+TCha_Index:	index offset(*),,2
 		ptr TCha_Main
 		ptr TCha_Move
 

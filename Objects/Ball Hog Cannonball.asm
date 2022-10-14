@@ -11,7 +11,7 @@ Cannonball:
 		move.w	Cbal_Index(pc,d0.w),d1
 		jmp	Cbal_Index(pc,d1.w)
 ; ===========================================================================
-Cbal_Index:	index *,,2
+Cbal_Index:	index offset(*),,2
 		ptr Cbal_Main
 		ptr Cbal_Bounce
 

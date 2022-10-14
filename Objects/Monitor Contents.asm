@@ -12,7 +12,7 @@ PowerUp:
 		jsr	Pow_Index(pc,d1.w)
 		bra.w	DisplaySprite
 ; ===========================================================================
-Pow_Index:	index *,,2
+Pow_Index:	index offset(*),,2
 		ptr Pow_Main
 		ptr Pow_Move
 		ptr Pow_Delete

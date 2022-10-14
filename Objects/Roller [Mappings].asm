@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Roller enemy (SYZ)
 ; ---------------------------------------------------------------------------
-Map_Roll:	index *
+Map_Roll:	index offset(*)
 		ptr frame_roll_stand
 		ptr frame_roll_fold
 		ptr frame_roll_roll1

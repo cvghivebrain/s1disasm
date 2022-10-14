@@ -3,7 +3,7 @@
 ; (It's just a small blob that moves around in a circle. The disc itself is
 ; part of the level tiles.)
 ; ---------------------------------------------------------------------------
-Map_Disc:	index *
+Map_Disc:	index offset(*)
 		ptr frame_disc_spot
 		
 frame_disc_spot:

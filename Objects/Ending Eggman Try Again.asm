@@ -12,7 +12,7 @@ EndEggman:
 		jsr	EEgg_Index(pc,d1.w)
 		jmp	(DisplaySprite).l
 ; ===========================================================================
-EEgg_Index:	index *,,2
+EEgg_Index:	index offset(*),,2
 		ptr EEgg_Main
 		ptr EEgg_Animate
 		ptr EEgg_Juggle
@@ -80,7 +80,7 @@ EEgg_Wait:	; Routine 6
 ; Animation script
 ; ---------------------------------------------------------------------------
 
-Ani_EEgg:	index *
+Ani_EEgg:	index offset(*)
 		ptr ani_eegg_juggle1
 		ptr ani_eegg_juggle2
 		ptr ani_eegg_end

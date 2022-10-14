@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - missile that Buzz Bomber throws
 ; ---------------------------------------------------------------------------
-Map_Missile:	index *
+Map_Missile:	index offset(*)
 		ptr frame_buzz_flare1
 		ptr frame_buzz_flare2
 		ptr frame_buzz_ball1

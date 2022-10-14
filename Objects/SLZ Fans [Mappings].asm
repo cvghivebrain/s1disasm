@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - fans (SLZ)
 ; ---------------------------------------------------------------------------
-Map_Fan:	index *
+Map_Fan:	index offset(*)
 		ptr frame_fan_0
 		ptr frame_fan_1
 		ptr frame_fan_2

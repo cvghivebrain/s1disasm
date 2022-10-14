@@ -12,7 +12,7 @@ BossSpringYard:
 		move.w	BSYZ_Index(pc,d0.w),d1
 		jmp	BSYZ_Index(pc,d1.w)
 ; ===========================================================================
-BSYZ_Index:	index *,,2
+BSYZ_Index:	index offset(*),,2
 		ptr BSYZ_Main
 		ptr BSYZ_ShipMain
 		ptr BSYZ_FaceMain
@@ -74,7 +74,7 @@ BSYZ_ShipMain:	; Routine 2
 		or.b	d0,ost_render(a0)			; combine x/yflip bits from status instead
 		jmp	(DisplaySprite).l
 ; ===========================================================================
-BSYZ_ShipIndex:index *,,2
+BSYZ_ShipIndex:index offset(*),,2
 		ptr BSYZ_ShipStart
 		ptr BSYZ_ShipMove
 		ptr BSYZ_Attack
@@ -201,7 +201,7 @@ BSYZ_Attack:
 		jmp	BSYZ_Attack_Index(pc,d0.w)
 ; ===========================================================================
 BSYZ_Attack_Index:
-		index *,,2
+		index offset(*),,2
 		ptr BSYZ_Descend
 		ptr BSYZ_Lift
 		ptr BSYZ_LiftStop
@@ -478,7 +478,7 @@ BSYZ_FaceMain:	; Routine 4
 		jmp	(DeleteObject).l
 ; ===========================================================================
 BSYZ_Face_Index:
-		index *
+		index offset(*)
 		ptr BSYZ_Face_ChkHit
 		ptr BSYZ_Face_ChkHit
 		ptr BSYZ_Face_Attack
@@ -504,7 +504,7 @@ BSYZ_Face_Attack:
 		jmp	BSYZ_Face_Attack_Index(pc,d0.w)
 ; ===========================================================================
 BSYZ_Face_Attack_Index:
-		index *
+		index offset(*)
 		ptr BSYZ_Face_Attack_Other			; ship is descending
 		ptr BSYZ_Face_Attack_Lift			; ship is lifting block/ascending
 		ptr BSYZ_Face_Attack_Other			; ship stops at top

@@ -49,7 +49,7 @@ Yadrin:
 		move.w	Yad_Index(pc,d0.w),d1
 		jmp	Yad_Index(pc,d1.w)
 ; ===========================================================================
-Yad_Index:	index *,,2
+Yad_Index:	index offset(*),,2
 		ptr Yad_Main
 		ptr Yad_Action
 
@@ -89,7 +89,7 @@ Yad_Action:	; Routine 2
 		bsr.w	AnimateSprite
 		bra.w	DespawnObject
 ; ===========================================================================
-Yad_Index2:	index *,,2
+Yad_Index2:	index offset(*),,2
 		ptr Yad_Move
 		ptr Yad_FixToFloor
 ; ===========================================================================
@@ -133,7 +133,7 @@ Yad_Pause:
 ; Animation script
 ; ---------------------------------------------------------------------------
 
-Ani_Yad:	index *
+Ani_Yad:	index offset(*)
 		ptr ani_yadrin_stand
 		ptr ani_yadrin_walk
 

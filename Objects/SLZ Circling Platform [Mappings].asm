@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - platforms that move	in circles (SLZ)
 ; ---------------------------------------------------------------------------
-Map_Circ:	index *
+Map_Circ:	index offset(*)
 		ptr frame_circ_platform
 		
 frame_circ_platform:

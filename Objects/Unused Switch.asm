@@ -9,7 +9,7 @@ MagicSwitch:
 		move.w	Swi_Index(pc,d0.w),d1
 		jmp	Swi_Index(pc,d1.w)
 ; ===========================================================================
-Swi_Index:	index *,,2
+Swi_Index:	index offset(*),,2
 		ptr Swi_Main
 		ptr Swi_Action
 		ptr Swi_Delete

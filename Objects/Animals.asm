@@ -13,7 +13,7 @@ Animals:
 		move.w	Anml_Index(pc,d0.w),d1
 		jmp	Anml_Index(pc,d1.w)
 ; ===========================================================================
-Anml_Index:	index *,,2
+Anml_Index:	index offset(*),,2
 		ptr Anml_Main
 		ptr Anml_ChkFloor
 		ptr Anml_Type0

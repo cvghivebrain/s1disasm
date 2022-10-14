@@ -12,7 +12,7 @@ MotoBug:
 		move.w	Moto_Index(pc,d0.w),d1
 		jmp	Moto_Index(pc,d1.w)
 ; ===========================================================================
-Moto_Index:	index *,,2
+Moto_Index:	index offset(*),,2
 		ptr Moto_Main
 		ptr Moto_Action
 		ptr Moto_Animate
@@ -67,7 +67,7 @@ Moto_Action:	; Routine 2
 include_MotoBug_1:	macro
 
 ; ===========================================================================
-Moto_ActIndex:	index *
+Moto_ActIndex:	index offset(*)
 		ptr Moto_Move
 		ptr Moto_FindFloor
 ; ===========================================================================
@@ -130,7 +130,7 @@ Moto_Delete:	; Routine 6
 ; Animation script
 ; ---------------------------------------------------------------------------
 
-Ani_Moto:	index *
+Ani_Moto:	index offset(*)
 		ptr ani_moto_stand
 		ptr ani_moto_walk
 		ptr ani_moto_smoke

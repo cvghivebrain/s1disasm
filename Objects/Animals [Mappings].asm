@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - animals
 ; ---------------------------------------------------------------------------
-Map_Animal1:	index *
+Map_Animal1:	index offset(*)
 		ptr frame_animal1_flap1
 		ptr frame_animal1_flap2
 		ptr frame_animal1_drop
@@ -22,7 +22,7 @@ frame_animal1_flap2:
 		endsprite
 		even
 
-Map_Animal2:	index *
+Map_Animal2:	index offset(*)
 		ptr frame_animal2_flap1
 		ptr frame_animal2_flap2
 		ptr frame_animal2_drop
@@ -43,7 +43,7 @@ frame_animal2_flap2:
 		endsprite
 		even
 
-Map_Animal3:	index *
+Map_Animal3:	index offset(*)
 		ptr frame_animal3_flap1
 		ptr frame_animal3_flap2
 		ptr frame_animal3_drop

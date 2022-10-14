@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - special stage "R" block
 ; ---------------------------------------------------------------------------
-Map_SS_R:	index *
+Map_SS_R:	index offset(*)
 		ptr frame_ss_r_0
 		ptr frame_ss_r_1
 		ptr frame_ss_ghost_switch

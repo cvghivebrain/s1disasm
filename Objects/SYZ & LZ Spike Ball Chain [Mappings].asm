@@ -2,7 +2,7 @@
 ; Sprite mappings - chain of spiked balls (SYZ)
 ; ---------------------------------------------------------------------------
 
-Map_SBall:	index *
+Map_SBall:	index offset(*)
 		ptr frame_sball_syz
 		
 frame_sball_syz:
@@ -15,7 +15,7 @@ frame_sball_syz:
 ; Sprite mappings - spiked ball	on a chain (LZ)
 ; ---------------------------------------------------------------------------
 
-Map_SBall2:	index *
+Map_SBall2:	index offset(*)
 		ptr frame_sball_chain
 		ptr frame_sball_spikeball
 		ptr frame_sball_base

@@ -11,7 +11,7 @@ FlapDoor:
 		move.w	Flap_Index(pc,d0.w),d1
 		jmp	Flap_Index(pc,d1.w)
 ; ===========================================================================
-Flap_Index:	index *,,2
+Flap_Index:	index offset(*),,2
 		ptr Flap_Main
 		ptr Flap_OpenClose
 
@@ -66,7 +66,7 @@ Flap_OpenClose:	; Routine 2
 ; Animation script
 ; ---------------------------------------------------------------------------
 
-Ani_Flap:	index *
+Ani_Flap:	index offset(*)
 		ptr ani_flap_opening
 		ptr ani_flap_closing
 		

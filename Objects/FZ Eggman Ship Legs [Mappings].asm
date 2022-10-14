@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - legs on Eggman's escape ship (FZ)
 ; ---------------------------------------------------------------------------
-Map_FZLegs:	index *
+Map_FZLegs:	index offset(*)
 		ptr frame_fzlegs_extended
 		ptr frame_fzlegs_halfway
 		ptr frame_fzlegs_retracted

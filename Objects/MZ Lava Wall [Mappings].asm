@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - advancing wall of lava (MZ)
 ; ---------------------------------------------------------------------------
-Map_LWall:	index *
+Map_LWall:	index offset(*)
 		ptr frame_lavawall_0
 		ptr frame_lavawall_1
 		ptr frame_lavawall_2

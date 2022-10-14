@@ -198,7 +198,7 @@ sRelease34:	macro
 sHeaderMusic:	macro
 _song: =	_song+1						; increment song offset
 _patchNum: =	0						; initialize patch num
-_songAddr: =	*						; song base address
+_songAddr: =	offset(*)						; song base address
 _songName:	equs "\#_song"					; initialize song name
 _f\_songName: = 0						; initialize fm count
 _p\_songName: = 0						; initialize psg count
@@ -253,7 +253,7 @@ _cx\_songName:	equ _c\_songName				; finished counting channels
 sHeaderSFX:	macro
 _song: =	_song+1						; increment song offset
 _patchNum: =	0						; initialize patch num
-_songAddr: =	*						; song base address
+_songAddr: =	offset(*)						; song base address
 _songName:	equs "\#_song"					; initialize song name
 _c\_songName: =	0						; initialize channel count
 		endm

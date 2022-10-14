@@ -13,7 +13,7 @@ GiantRing:
 		move.w	GRing_Index(pc,d0.w),d1
 		jmp	GRing_Index(pc,d1.w)
 ; ===========================================================================
-GRing_Index:	index *,,2
+GRing_Index:	index offset(*),,2
 		ptr GRing_Main
 		ptr GRing_Animate
 		ptr GRing_Collect

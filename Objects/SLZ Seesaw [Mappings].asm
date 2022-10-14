@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - seesaws (SLZ)
 ; ---------------------------------------------------------------------------
-Map_Seesaw:	index *
+Map_Seesaw:	index offset(*)
 		ptr frame_seesaw_sloping_leftup
 		ptr frame_seesaw_flat
 		ptr frame_seesaw_sloping_rightup

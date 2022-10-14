@@ -2,7 +2,7 @@
 ; Sprite mappings - Yadrin enemy (SYZ)
 ; ---------------------------------------------------------------------------
 
-Map_Yad:	index *
+Map_Yad:	index offset(*)
 		ptr frame_yadrin_walk0
 		ptr frame_yadrin_walk1
 		ptr frame_yadrin_walk2

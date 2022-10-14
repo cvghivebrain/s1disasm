@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - "SONIC TEAM	PRESENTS" and credits
 ; ---------------------------------------------------------------------------
-Map_Cred:	index *
+Map_Cred:	index offset(*)
 		ptr frame_cred_staff
 		ptr frame_cred_gameplan
 		ptr frame_cred_program

@@ -82,7 +82,7 @@ LZDynamicWater:
 	.exit:
 		rts	
 ; ===========================================================================
-DynWater_Index:	index *
+DynWater_Index:	index offset(*)
 		ptr DynWater_LZ1
 		ptr DynWater_LZ2
 		ptr DynWater_LZ3

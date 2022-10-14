@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - platforms that move	when you stand on them (SLZ)
 ; ---------------------------------------------------------------------------
-Map_Elev:	index *
+Map_Elev:	index offset(*)
 		ptr frame_elev_0
 		
 frame_elev_0:	spritemap

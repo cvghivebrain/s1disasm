@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - SLZ	fireball launcher
 ; ---------------------------------------------------------------------------
-Map_Scen:	index *
+Map_Scen:	index offset(*)
 		ptr frame_scen_cannon
 		
 frame_scen_cannon:

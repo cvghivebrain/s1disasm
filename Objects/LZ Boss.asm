@@ -12,7 +12,7 @@ BossLabyrinth:
 		move.w	BLZ_Index(pc,d0.w),d1
 		jmp	BLZ_Index(pc,d1.w)
 ; ===========================================================================
-BLZ_Index:	index *,,2
+BLZ_Index:	index offset(*),,2
 		ptr BLZ_Main
 		ptr BLZ_ShipMain
 		ptr BLZ_FaceMain
@@ -73,7 +73,7 @@ BLZ_ShipMain:	; Routine 2
 		or.b	d0,ost_render(a0)			; combine x/yflip bits from status instead
 		jmp	(DisplaySprite).l
 ; ===========================================================================
-BLZ_ShipIndex:	index *,,2
+BLZ_ShipIndex:	index offset(*),,2
 		ptr BLZ_ShipStart
 		ptr BLZ_ShipMove1
 		ptr BLZ_ShipMove2

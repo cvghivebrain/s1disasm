@@ -11,7 +11,7 @@ VanishPlatform:
 		move.w	VanP_Index(pc,d0.w),d1
 		jmp	VanP_Index(pc,d1.w)
 ; ===========================================================================
-VanP_Index:	index *,,2
+VanP_Index:	index offset(*),,2
 		ptr VanP_Main
 		ptr VanP_Detect
 		ptr VanP_StoodOn
@@ -118,7 +118,7 @@ VanP_StoodOn:	; Routine 4
 ; Animation script
 ; ---------------------------------------------------------------------------
 
-Ani_Van:	index *
+Ani_Van:	index offset(*)
 		ptr ani_vanish_vanish
 		ptr ani_vanish_appear
 		

@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Sonic on the title screen
 ; ---------------------------------------------------------------------------
-Map_TSon:	index *
+Map_TSon:	index offset(*)
 		ptr frame_tson_0
 		ptr frame_tson_1
 		ptr frame_tson_2

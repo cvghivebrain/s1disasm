@@ -11,7 +11,7 @@ WaterSound:
 		move.w	WSnd_Index(pc,d0.w),d1
 		jmp	WSnd_Index(pc,d1.w)
 ; ===========================================================================
-WSnd_Index:	index *,,2
+WSnd_Index:	index offset(*),,2
 		ptr WSnd_Main
 		ptr WSnd_PlaySnd
 ; ===========================================================================

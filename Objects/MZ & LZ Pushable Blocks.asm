@@ -11,7 +11,7 @@ PushBlock:
 		move.w	PushB_Index(pc,d0.w),d1
 		jmp	PushB_Index(pc,d1.w)
 ; ===========================================================================
-PushB_Index:	index *,,2
+PushB_Index:	index offset(*),,2
 		ptr PushB_Main
 		ptr PushB_Action
 		ptr PushB_ChkVisible

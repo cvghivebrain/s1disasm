@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - springs
 ; ---------------------------------------------------------------------------
-Map_Spring:	index *
+Map_Spring:	index offset(*)
 		ptr frame_spring_up
 		ptr frame_spring_upflat
 		ptr frame_spring_upext

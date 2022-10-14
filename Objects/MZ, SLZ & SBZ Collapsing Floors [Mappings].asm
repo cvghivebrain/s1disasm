@@ -2,7 +2,7 @@
 ; Sprite mappings - collapsing floors	(MZ, SLZ, SBZ)
 ; ---------------------------------------------------------------------------
 
-Map_CFlo:	index *
+Map_CFlo:	index offset(*)
 		ptr frame_cfloor_mz
 		ptr frame_cfloor_mz_break
 		ptr frame_cfloor_slz

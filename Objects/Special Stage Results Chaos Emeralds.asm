@@ -11,7 +11,7 @@ SSRChaos:
 		move.w	SSRC_Index(pc,d0.w),d1
 		jmp	SSRC_Index(pc,d1.w)
 ; ===========================================================================
-SSRC_Index:	index *,,2
+SSRC_Index:	index offset(*),,2
 		ptr SSRC_Main
 		ptr SSRC_Flash
 

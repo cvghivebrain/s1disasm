@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - swinging ball on a chain from GHZ boss
 ; ---------------------------------------------------------------------------
-Map_GBall:	index *
+Map_GBall:	index offset(*)
 		ptr frame_ball_shiny
 		ptr frame_ball_check1
 		ptr frame_ball_check2

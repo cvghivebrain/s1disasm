@@ -11,7 +11,7 @@ CreditsText:
 		move.w	Cred_Index(pc,d0.w),d1
 		jmp	Cred_Index(pc,d1.w)
 ; ===========================================================================
-Cred_Index:	index *,,2
+Cred_Index:	index offset(*),,2
 		ptr Cred_Main
 		ptr Cred_Display
 ; ===========================================================================

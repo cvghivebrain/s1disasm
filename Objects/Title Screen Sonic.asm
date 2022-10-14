@@ -11,7 +11,7 @@ TitleSonic:
 		move.w	TSon_Index(pc,d0.w),d1
 		jmp	TSon_Index(pc,d1.w)
 ; ===========================================================================
-TSon_Index:	index *,,2
+TSon_Index:	index offset(*),,2
 		ptr TSon_Main
 		ptr TSon_Delay
 		ptr TSon_Move
@@ -64,7 +64,7 @@ TSon_Animate:	; Routine 6
 
 include_TitleSonic_animation:	macro
 
-Ani_TSon:	index *
+Ani_TSon:	index offset(*)
 		ptr ani_tson_0
 		
 ani_tson_0:	dc.b 7

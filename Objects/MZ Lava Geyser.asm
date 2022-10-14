@@ -12,7 +12,7 @@ LavaGeyser:
 		jsr	Geyser_Index(pc,d1.w)
 		bra.w	DisplaySprite
 ; ===========================================================================
-Geyser_Index:	index *,,2
+Geyser_Index:	index offset(*),,2
 		ptr Geyser_Main
 		ptr Geyser_Action
 		ptr Geyser_Middle
@@ -109,7 +109,7 @@ Geyser_ChkDel:
 		out_of_range	DeleteObject
 		rts	
 ; ===========================================================================
-Geyser_Types:	index *
+Geyser_Types:	index offset(*)
 		ptr Geyser_Type00
 		ptr Geyser_Type01
 ; ===========================================================================
@@ -184,7 +184,7 @@ Geyser_Delete:	; Routine 6
 
 include_LavaGeyser_animation:	macro
 
-Ani_Geyser:	index *
+Ani_Geyser:	index offset(*)
 		ptr ani_geyser_bubble1
 		ptr ani_geyser_bubble2
 		ptr ani_geyser_end

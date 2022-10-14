@@ -3,7 +3,7 @@
 ; ---------------------------------------------------------------------------
 
 sonic_sprites:	macro						; this is a macro so it can be reused for DPLCs
-		index *,,
+		index offset(*),,
 		ptr \1_Blank
 		ptr \1_Stand
 		ptr \1_Wait1

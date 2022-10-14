@@ -13,7 +13,7 @@ DrownCount:
 		move.w	Drown_Index(pc,d0.w),d1
 		jmp	Drown_Index(pc,d1.w)
 ; ===========================================================================
-Drown_Index:	index *,,2
+Drown_Index:	index offset(*),,2
 		ptr Drown_Main
 		ptr Drown_Animate
 		ptr Drown_ChkWater
@@ -345,7 +345,7 @@ Drown_Countdown:; Routine $A
 
 include_DrownCount_animation:	macro
 
-Ani_Drown:	index *
+Ani_Drown:	index offset(*)
 		ptr ani_drown_zeroappear
 		ptr ani_drown_oneappear
 		ptr ani_drown_twoappear

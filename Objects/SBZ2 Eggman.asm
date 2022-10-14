@@ -12,7 +12,7 @@ ScrapEggman:
 		move.w	SEgg_Index(pc,d0.w),d1
 		jmp	SEgg_Index(pc,d1.w)
 ; ===========================================================================
-SEgg_Index:	index *,,2
+SEgg_Index:	index offset(*),,2
 		ptr SEgg_Main
 		ptr SEgg_Eggman
 		ptr SEgg_Button
@@ -70,7 +70,7 @@ SEgg_Eggman:	; Routine 2
 		jsr	(AnimateSprite).l
 		jmp	(DisplaySprite).l
 ; ===========================================================================
-SEgg_EggIndex:	index *,,2
+SEgg_EggIndex:	index offset(*),,2
 		ptr SEgg_ChkSonic
 		ptr SEgg_PreLeap
 		ptr SEgg_Leap
@@ -154,7 +154,7 @@ SEgg_Button:	; Routine 4
 		move.w	SEgg_BtnIndex(pc,d0.w),d0
 		jmp	SEgg_BtnIndex(pc,d0.w)
 ; ===========================================================================
-SEgg_BtnIndex:	index *,,2
+SEgg_BtnIndex:	index offset(*),,2
 		ptr SEgg_BtnChk
 		ptr SEgg_BtnDisplay
 ; ===========================================================================
@@ -173,7 +173,7 @@ SEgg_BtnDisplay:
 ; Animation script
 ; ---------------------------------------------------------------------------
 
-Ani_SEgg:	index *
+Ani_SEgg:	index offset(*)
 		ptr ani_eggman_stand
 		ptr ani_eggman_laugh
 		ptr ani_eggman_jump1

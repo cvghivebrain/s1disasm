@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - gargoyle head (LZ)
 ; ---------------------------------------------------------------------------
-Map_Gar:	index *
+Map_Gar:	index offset(*)
 		ptr frame_gargoyle_head
 		ptr frame_gargoyle_head
 		ptr frame_gargoyle_fireball1

@@ -2,7 +2,7 @@
 ; Sprite mappings - Orbinaut enemy (LZ, SLZ, SBZ)
 ; ---------------------------------------------------------------------------
 
-Map_Orb:	index *
+Map_Orb:	index offset(*)
 		ptr frame_orb_normal
 		ptr frame_orb_medium
 		ptr frame_orb_angry

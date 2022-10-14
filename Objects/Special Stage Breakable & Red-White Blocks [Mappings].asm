@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - special stage breakable glass blocks and red-white blocks
 ; ---------------------------------------------------------------------------
-Map_SS_Glass:	index *
+Map_SS_Glass:	index offset(*)
 		ptr frame_ss_glass_0
 		ptr frame_ss_glass_1
 		ptr frame_ss_glass_2

@@ -2,7 +2,7 @@
 ; Sprite mappings - Newtron enemy (GHZ)
 ; ---------------------------------------------------------------------------
 
-Map_Newt:	index *
+Map_Newt:	index offset(*)
 		ptr frame_newt_trans
 		ptr frame_newt_norm
 		ptr frame_newt_firing

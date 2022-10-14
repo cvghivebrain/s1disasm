@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - doors (SBZ)
 ; ---------------------------------------------------------------------------
-Map_ADoor:	index *
+Map_ADoor:	index offset(*)
 		ptr frame_autodoor_closed
 		ptr frame_autodoor_01
 		ptr frame_autodoor_02

@@ -2,7 +2,7 @@
 ; Sprite mappings - trapdoor (SBZ)
 ; ---------------------------------------------------------------------------
 
-Map_Trap:	index *
+Map_Trap:	index offset(*)
 		ptr frame_trap_closed
 		ptr frame_trap_half
 		ptr frame_trap_open
@@ -40,7 +40,7 @@ frame_trap_open:
 ; Sprite mappings - spinning platforms (SBZ)
 ; ---------------------------------------------------------------------------
 
-Map_Spin:	index *
+Map_Spin:	index offset(*)
 		ptr frame_spin_flat
 		ptr frame_spin_1
 		ptr frame_spin_2

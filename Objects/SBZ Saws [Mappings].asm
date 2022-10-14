@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - ground saws	and pizza cutters (SBZ)
 ; ---------------------------------------------------------------------------
-Map_Saw:	index *
+Map_Saw:	index offset(*)
 		ptr frame_saw_pizzacutter1
 		ptr frame_saw_pizzacutter2
 		ptr frame_saw_groundsaw1

@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - walls (GHZ)
 ; ---------------------------------------------------------------------------
-Map_Edge:	index *
+Map_Edge:	index offset(*)
 		ptr frame_edge_shadow
 		ptr frame_edge_light
 		ptr frame_edge_dark

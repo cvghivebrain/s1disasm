@@ -15,7 +15,7 @@ EggmanCylinder:
 		move.w	Cyl_Index(pc,d0.w),d0
 		jmp	Cyl_Index(pc,d0.w)
 ; ===========================================================================
-Cyl_Index:	index *,,2
+Cyl_Index:	index offset(*),,2
 		ptr Cyl_Main
 		ptr Cyl_Action
 		ptr Cyl_Move
@@ -135,7 +135,7 @@ Cyl_Move:	; Routine 4
 		jsr	Cyl_Move_Index(pc,d0.w)
 		bra.w	Cyl_Update
 ; ===========================================================================
-Cyl_Move_Index:	index *,,2
+Cyl_Move_Index:	index offset(*),,2
 		ptr Cyl_Bottom					; bottom left
 		ptr Cyl_Bottom					; bottom right
 		ptr Cyl_Top					; top left

@@ -11,7 +11,7 @@ TitleCard:
 		move.w	Card_Index(pc,d0.w),d1
 		jmp	Card_Index(pc,d1.w)
 ; ===========================================================================
-Card_Index:	index *,,2
+Card_Index:	index offset(*),,2
 		ptr Card_Main
 		ptr Card_Move
 		ptr Card_Wait

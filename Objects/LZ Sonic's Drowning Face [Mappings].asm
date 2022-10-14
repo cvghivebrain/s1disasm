@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Sonic's face when drowning (LZ) (unused)
 ; ---------------------------------------------------------------------------
-Map_Drown:	index *
+Map_Drown:	index offset(*)
 		ptr frame_drown_face
 		
 frame_drown_face:

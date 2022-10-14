@@ -17,7 +17,7 @@ Lamppost:
 		jsr	Lamp_Index(pc,d1.w)
 		jmp	(DespawnObject).l
 ; ===========================================================================
-Lamp_Index:	index *,,2
+Lamp_Index:	index offset(*),,2
 		ptr Lamp_Main
 		ptr Lamp_Blue
 		ptr Lamp_Finish

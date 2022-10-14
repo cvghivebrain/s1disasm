@@ -11,11 +11,11 @@ LargeGrass:
 		move.w	LGrass_Index(pc,d0.w),d1
 		jmp	LGrass_Index(pc,d1.w)
 ; ===========================================================================
-LGrass_Index:	index *,,2
+LGrass_Index:	index offset(*),,2
 		ptr LGrass_Main
 		ptr LGrass_Action
 
-LGrass_Data:	index *
+LGrass_Data:	index offset(*)
 LGrass_Data_0:	ptr LGrass_Coll_Wide				; heightmap data
 		dc.b id_frame_grass_wide, $40			; frame number,	platform width
 LGrass_Data_1:	ptr LGrass_Coll_Sloped
@@ -113,7 +113,7 @@ LGrass_Types:
 
 ; ===========================================================================
 LGrass_TypeIndex:
-		index *
+		index offset(*)
 		ptr LGrass_Type00
 		ptr LGrass_Type01
 		ptr LGrass_Type02

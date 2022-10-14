@@ -21,7 +21,7 @@ BossSpikeball:
 		bhi.w	BSLZ_Delete
 		jmp	(DisplaySprite).l
 ; ===========================================================================
-BSpike_Index:	index *,,2
+BSpike_Index:	index offset(*),,2
 		ptr BSpike_Main
 		ptr BSpike_Fall
 		ptr BSpike_Bounce

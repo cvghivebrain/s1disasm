@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - lava geyser / lava that falls from the ceiling (MZ)
 ; ---------------------------------------------------------------------------
-Map_Geyser:	index *
+Map_Geyser:	index offset(*)
 		ptr frame_geyser_bubble1			; 0
 		ptr frame_geyser_bubble2			; 1
 		ptr frame_geyser_bubble3			; 2

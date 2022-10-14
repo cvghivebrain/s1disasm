@@ -13,7 +13,7 @@ Caterkiller:
 		move.w	Cat_Index(pc,d0.w),d1
 		jmp	Cat_Index(pc,d1.w)
 ; ===========================================================================
-Cat_Index:	index *,,2
+Cat_Index:	index offset(*),,2
 		ptr Cat_Main
 		ptr Cat_Head
 		ptr Cat_BodySeg1
@@ -145,7 +145,7 @@ Cat_Despawn:
 Cat_Delete:	; Routine $A
 		jmp	(DeleteObject).l
 ; ===========================================================================
-Cat_Head_Index:	index *,,2
+Cat_Head_Index:	index offset(*),,2
 		ptr Cat_Undulate
 		ptr Cat_Floor
 ; ===========================================================================

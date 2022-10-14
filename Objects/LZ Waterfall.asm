@@ -11,7 +11,7 @@ Waterfall:
 		move.w	WFall_Index(pc,d0.w),d1
 		jmp	WFall_Index(pc,d1.w)
 ; ===========================================================================
-WFall_Index:	index *,,2
+WFall_Index:	index offset(*),,2
 		ptr WFall_Main
 		ptr WFall_Animate
 		ptr WFall_ChkDel
@@ -76,7 +76,7 @@ WFall_Priority:	; Routine 8
 ; Animation script
 ; ---------------------------------------------------------------------------
 
-Ani_WFall:	index *
+Ani_WFall:	index offset(*)
 		ptr ani_wfall_splash
 		
 ani_wfall_splash:

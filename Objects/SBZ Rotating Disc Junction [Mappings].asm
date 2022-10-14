@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - rotating disc that grabs Sonic (SBZ)
 ; ---------------------------------------------------------------------------
-Map_Jun:	index *
+Map_Jun:	index offset(*)
 		ptr frame_junc_w				; 0
 		ptr frame_junc_wsw				; 1
 		ptr frame_junc_sw				; 2

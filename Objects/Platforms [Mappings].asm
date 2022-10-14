@@ -3,7 +3,7 @@
 ; ---------------------------------------------------------------------------
 
 Map_Plat_Unused:
-		index *
+		index offset(*)
 		ptr frame_plat_unused_small
 		ptr frame_plat_unused_large
 		
@@ -28,7 +28,7 @@ frame_plat_unused_large:
 		endsprite
 		even
 
-Map_Plat_GHZ:	index *
+Map_Plat_GHZ:	index offset(*)
 		ptr frame_plat_small
 		ptr frame_plat_large
 		
@@ -55,7 +55,7 @@ frame_plat_large:
 		endsprite
 		even
 
-Map_Plat_SYZ:	index *
+Map_Plat_SYZ:	index offset(*)
 		ptr frame_plat_syz
 		
 frame_plat_syz:	spritemap
@@ -65,7 +65,7 @@ frame_plat_syz:	spritemap
 		endsprite
 		even
 
-Map_Plat_SLZ:	index *
+Map_Plat_SLZ:	index offset(*)
 		ptr frame_plat_slz
 		
 frame_plat_slz:	spritemap

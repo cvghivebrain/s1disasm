@@ -12,7 +12,7 @@ ExplosionItem:
 		move.w	ExItem_Index(pc,d0.w),d1
 		jmp	ExItem_Index(pc,d1.w)
 ; ===========================================================================
-ExItem_Index:	index *,,2
+ExItem_Index:	index offset(*),,2
 		ptr ExItem_Animal
 		ptr ExItem_Main
 		ptr ExItem_Animate
@@ -64,7 +64,7 @@ ExplosionBomb:
 		move.w	ExBom_Index(pc,d0.w),d1
 		jmp	ExBom_Index(pc,d1.w)
 ; ===========================================================================
-ExBom_Index:	index *,,2
+ExBom_Index:	index offset(*),,2
 		ptr ExBom_Main
 		ptr ExBom_Animate
 ; ===========================================================================

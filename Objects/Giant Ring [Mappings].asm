@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - giant ring
 ; ---------------------------------------------------------------------------
-Map_GRing:	index *
+Map_GRing:	index offset(*)
 		ptr frame_bigring_front
 		ptr frame_bigring_45_1
 		ptr frame_bigring_side

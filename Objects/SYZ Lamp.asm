@@ -11,7 +11,7 @@ SpinningLight:
 		move.w	Light_Index(pc,d0.w),d1
 		jmp	Light_Index(pc,d1.w)
 ; ===========================================================================
-Light_Index:	index *,,2
+Light_Index:	index offset(*),,2
 		ptr Light_Main
 		ptr Light_Animate
 ; ===========================================================================

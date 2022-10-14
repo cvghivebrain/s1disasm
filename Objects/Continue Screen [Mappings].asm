@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Continue screen
 ; ---------------------------------------------------------------------------
-Map_ContScr:	index *
+Map_ContScr:	index offset(*)
 		ptr frame_cont_text
 		ptr frame_cont_sonic1
 		ptr frame_cont_sonic2

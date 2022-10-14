@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - "PRESS START BUTTON" and "TM" from title screen
 ; ---------------------------------------------------------------------------
-Map_PSB:	index *
+Map_PSB:	index offset(*)
 		ptr frame_psb_blank
 		ptr frame_psb_psb
 		ptr frame_psb_mask

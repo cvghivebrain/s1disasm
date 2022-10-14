@@ -11,7 +11,7 @@ HUD:
 		move.w	HUD_Index(pc,d0.w),d1
 		jmp	HUD_Index(pc,d1.w)
 ; ===========================================================================
-HUD_Index:	index *
+HUD_Index:	index offset(*)
 		ptr HUD_Main
 		ptr HUD_Flash
 ; ===========================================================================

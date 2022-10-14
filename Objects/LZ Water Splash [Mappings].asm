@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - water splash (LZ)
 ; ---------------------------------------------------------------------------
-Map_Splash:	index *
+Map_Splash:	index offset(*)
 		ptr frame_splash_0
 		ptr frame_splash_1
 		ptr frame_splash_2

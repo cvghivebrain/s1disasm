@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - monitors
 ; ---------------------------------------------------------------------------
-Map_Monitor:	index *
+Map_Monitor:	index offset(*)
 		ptr frame_monitor_static0
 		ptr frame_monitor_static1
 		ptr frame_monitor_static2

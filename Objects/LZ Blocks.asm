@@ -11,7 +11,7 @@ LabyrinthBlock:
 		move.w	LBlk_Index(pc,d0.w),d1
 		jmp	LBlk_Index(pc,d1.w)
 ; ===========================================================================
-LBlk_Index:	index *,,2
+LBlk_Index:	index offset(*),,2
 		ptr LBlk_Main
 		ptr LBlk_Action
 
@@ -84,7 +84,7 @@ LBlk_Action:	; Routine 2
 		bra.w	DisplaySprite
 ; ===========================================================================
 LBlk_Type_Index:
-		index *
+		index offset(*)
 		ptr LBlk_Type_Solid				; 0
 		ptr LBlk_Type_Sinks				; 1
 		ptr LBlk_Type_Sinks_Now				; 2

@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - "SONIC THE HEDGEHOG" text on the ending sequence
 ; ---------------------------------------------------------------------------
-Map_ESth:	index *
+Map_ESth:	index offset(*)
 		ptr frame_esth_0
 		
 frame_esth_0:	spritemap

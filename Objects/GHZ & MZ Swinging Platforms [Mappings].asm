@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - GHZ	and MZ swinging	platforms
 ; ---------------------------------------------------------------------------
-Map_Swing_GHZ:	index *
+Map_Swing_GHZ:	index offset(*)
 		ptr frame_swing_block
 		ptr frame_swing_chain
 		ptr frame_swing_anchor

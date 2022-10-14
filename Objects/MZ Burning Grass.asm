@@ -13,7 +13,7 @@ GrassFire:
 		move.w	GFire_Index(pc,d0.w),d1
 		jmp	GFire_Index(pc,d1.w)
 ; ===========================================================================
-GFire_Index:	index *,,2
+GFire_Index:	index offset(*),,2
 		ptr GFire_Main
 		ptr GFire_Spread
 		ptr GFire_Move
@@ -95,7 +95,7 @@ GFire_Animate:
 ; Animation script
 ; ---------------------------------------------------------------------------
 
-Ani_GFire:	index *
+Ani_GFire:	index offset(*)
 		ptr ani_gfire_0
 		
 ani_gfire_0:	dc.b 5

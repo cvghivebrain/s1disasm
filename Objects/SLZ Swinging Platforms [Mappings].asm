@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - SLZ	swinging platforms
 ; ---------------------------------------------------------------------------
-Map_Swing_SLZ:	index *
+Map_Swing_SLZ:	index offset(*)
 		ptr frame_swing_slz_block
 		ptr frame_swing_slz_chain
 		ptr frame_swing_slz_anchor

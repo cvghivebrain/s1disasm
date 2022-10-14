@@ -11,7 +11,7 @@ Jaws:
 		move.w	Jaws_Index(pc,d0.w),d1
 		jmp	Jaws_Index(pc,d1.w)
 ; ===========================================================================
-Jaws_Index:	index *,,2
+Jaws_Index:	index offset(*),,2
 		ptr Jaws_Main
 		ptr Jaws_Turn
 
@@ -59,7 +59,7 @@ Jaws_Turn:	; Routine 2
 ; Animation script
 ; ---------------------------------------------------------------------------
 
-Ani_Jaws:	index *
+Ani_Jaws:	index offset(*)
 		ptr ani_jaws_swim
 		
 ani_jaws_swim:	dc.b 7

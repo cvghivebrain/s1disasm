@@ -11,7 +11,7 @@ Roller:
 		move.w	Roll_Index(pc,d0.w),d1
 		jmp	Roll_Index(pc,d1.w)
 ; ===========================================================================
-Roll_Index:	index *,,2
+Roll_Index:	index offset(*),,2
 		ptr Roll_Main
 		ptr Roll_Action
 
@@ -69,7 +69,7 @@ Roll_ChkGone:
 Roll_Delete:
 		bra.w	DeleteObject
 ; ===========================================================================
-Roll_Index2:	index *,,2
+Roll_Index2:	index offset(*),,2
 		ptr Roll_RollChk
 		ptr Roll_Stopped
 		ptr Roll_ChkJump
@@ -171,7 +171,7 @@ Roll_Stop:
 ; Animation script
 ; ---------------------------------------------------------------------------
 
-Ani_Roll:	index *
+Ani_Roll:	index offset(*)
 		ptr ani_roll_unfold
 		ptr ani_roll_fold
 		ptr ani_roll_roll

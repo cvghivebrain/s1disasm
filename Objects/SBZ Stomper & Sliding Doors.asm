@@ -12,7 +12,7 @@ ScrapStomp:
 		move.w	Sto_Index(pc,d0.w),d1
 		jmp	Sto_Index(pc,d1.w)
 ; ===========================================================================
-Sto_Index:	index *,,2
+Sto_Index:	index offset(*),,2
 		ptr Sto_Main
 		ptr Sto_Action
 
@@ -144,7 +144,7 @@ Sto_Action:	; Routine 2
 		jmp	(DeleteObject).l
 ; ===========================================================================
 Sto_Type_Index:
-		index *
+		index offset(*)
 		ptr Sto_Still
 		ptr Sto_SlideOpen
 		ptr Sto_SlideClose

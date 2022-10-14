@@ -14,7 +14,7 @@ Orbinaut:
 		move.w	Orb_Index(pc,d0.w),d1
 		jmp	Orb_Index(pc,d1.w)
 ; ===========================================================================
-Orb_Index:	index *,,2
+Orb_Index:	index offset(*),,2
 		ptr Orb_Main
 		ptr Orb_ChkSonic
 		ptr Orb_MoveHead
@@ -202,7 +202,7 @@ Orb_FireOrb:	; Routine 8
 ; Animation script
 ; ---------------------------------------------------------------------------
 
-Ani_Orb:	index *
+Ani_Orb:	index offset(*)
 		ptr ani_orb_normal
 		ptr ani_orb_angry
 		

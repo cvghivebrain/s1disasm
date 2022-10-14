@@ -11,7 +11,7 @@ HasPassedCard:
 		move.w	Has_Index(pc,d0.w),d1
 		jmp	Has_Index(pc,d1.w)
 ; ===========================================================================
-Has_Index:	index *,,2
+Has_Index:	index offset(*),,2
 		ptr Has_Main
 		ptr Has_Move
 		ptr Has_Wait

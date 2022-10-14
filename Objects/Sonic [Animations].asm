@@ -2,7 +2,7 @@
 ; Animation script - Sonic
 ; ---------------------------------------------------------------------------
 
-Ani_Sonic:	index *
+Ani_Sonic:	index offset(*)
 		ptr Walk
 		ptr Run
 		ptr Roll

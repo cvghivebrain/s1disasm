@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - pinball bumper (SYZ)
 ; ---------------------------------------------------------------------------
-Map_Bump:	index *
+Map_Bump:	index offset(*)
 		ptr frame_bump_normal
 		ptr frame_bump_bumped1
 		ptr frame_bump_bumped2

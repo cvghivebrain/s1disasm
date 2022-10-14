@@ -12,7 +12,7 @@ Bubble:
 		move.w	Bub_Index(pc,d0.w),d1
 		jmp	Bub_Index(pc,d1.w)
 ; ===========================================================================
-Bub_Index:	index *,,2
+Bub_Index:	index offset(*),,2
 		ptr Bub_Main
 		ptr Bub_Animate
 		ptr Bub_ChkWater
@@ -270,7 +270,7 @@ Bub_ChkSonic:
 ; Animation script
 ; ---------------------------------------------------------------------------
 
-Ani_Bub:	index *
+Ani_Bub:	index offset(*)
 		ptr ani_bubble_small
 		ptr ani_bubble_medium
 		ptr ani_bubble_large

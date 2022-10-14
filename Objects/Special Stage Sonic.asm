@@ -15,7 +15,7 @@ SSS_Normal:
 		move.w	SSS_Index(pc,d0.w),d1
 		jmp	SSS_Index(pc,d1.w)
 ; ===========================================================================
-SSS_Index:	index *,,2
+SSS_Index:	index offset(*),,2
 		ptr SSS_Main
 		ptr SSS_Action
 		ptr SSS_ExitStage
@@ -60,7 +60,7 @@ SSS_Action:	; Routine 2
 		jsr	(Sonic_LoadGfx).l			; update Sonic's gfx
 		jmp	(DisplaySprite).l
 ; ===========================================================================
-SSS_Modes:	index *,,2
+SSS_Modes:	index offset(*),,2
 		ptr SSS_OnWall
 		ptr SSS_InAir
 ; ===========================================================================

@@ -11,7 +11,7 @@ WaterSurface:
 		move.w	Surf_Index(pc,d0.w),d1
 		jmp	Surf_Index(pc,d1.w)
 ; ===========================================================================
-Surf_Index:	index *,,2
+Surf_Index:	index offset(*),,2
 		ptr Surf_Main
 		ptr Surf_Action
 

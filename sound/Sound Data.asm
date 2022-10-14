@@ -158,20 +158,23 @@ SoundPriorities:
 ; Patch and include the kosinski compressed DAC driver
 ; ---------------------------------------------------------------------------
 
-Kos_DacDriver:							; TODO: this is currently hardcoded to replace the dummy pointers and values with actual values. we should find a way to not hardcode this
-		incbin	"sound\DAC Driver.kos", 0, $15
-		dc.b ((SegaPCM&$FF8000)/$8000)&1		; Least bit of bank ID (bit 15 of address)
-		incbin	"sound\DAC Driver.kos", $16, 6
-		dc.b ((SegaPCM&$FF8000)/$8000)>>1		; ... the remaining bits of bank ID (bits 16-23)
-		incbin	"sound\DAC Driver.kos", $1D, $93
-		dc.b SegaPCM&$FF, ((SegaPCM&$7F00)>>8)|$80	; Pointer to Sega PCM, relative to start of ROM bank (little endian)
-		incbin	"sound\DAC Driver.kos", $B2, 1
+DACDriver:
+		pushs				; store section information for Main
+DACZ80:	section	org(0), file("sound/DAC Driver.unc") ; create new section for the sound driver
+		cpu Z80
+		include "sound/DAC Driver.asm"	; include the actual DAC driver
+		
+		cpu 68000
+		pops 							; go back to the main section
+		pushs	
 
-.size:		equ	sizeof_SegaPCM				; calculate the size of the Sega PCM
-		dc.b .size&$FF, (.size&$FF00)>>8		; ... the size of the Sega PCM (little endian)
-		incbin	"sound\DAC Driver.kos", $B5, $16AB
+MergeCode:	section org(0), file("sound/DAC Driver Offset & Size.dat")	; create settings file for storing info about how to merge things
+		dc.l offset(DACDriver),Z80_Space		; store info about location of file and size available
+		pops									; go back to main section
+
+		ds.b Z80_Space							; reserve space for the compressed sound driver
 		even
-
+		
 ; ---------------------------------------------------------------------------
 ; Music file includes
 ; ---------------------------------------------------------------------------
@@ -232,7 +235,7 @@ sfxfile_\name:	include	"sound/sfx/\name\.s"			; include the sfx file itself
 		endc
 
 		; Don't let Sega sample cross $8000-byte boundary (DAC driver doesn't switch banks automatically)
-		if (*&$7FFF) + sizeof_SegaPCM > $8000
+		if (offset(*)&$7FFF) + sizeof_SegaPCM > $8000
 		align $8000
 		endc
 ; ---------------------------------------------------------------------------

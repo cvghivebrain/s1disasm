@@ -11,7 +11,7 @@ RunningDisc:
 		move.w	Disc_Index(pc,d0.w),d1
 		jmp	Disc_Index(pc,d1.w)
 ; ===========================================================================
-Disc_Index:	index *,,2
+Disc_Index:	index offset(*),,2
 		ptr Disc_Main
 		ptr Disc_Action
 

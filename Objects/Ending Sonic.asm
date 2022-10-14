@@ -12,7 +12,7 @@ EndSonic:
 		jsr	ESon_Index(pc,d1.w)
 		jmp	(DisplaySprite).l
 ; ===========================================================================
-ESon_Index:	index *,,2
+ESon_Index:	index offset(*),,2
 		ptr ESon_Main
 		ptr ESon_MakeEmeralds
 		ptr ESon_Animate
@@ -128,7 +128,7 @@ ESon_Leap:	; Routine $10
 ; Animation script
 ; ---------------------------------------------------------------------------
 
-Ani_ESon:	index *
+Ani_ESon:	index offset(*)
 		ptr ani_esonic_hold
 		ptr ani_esonic_confused
 		ptr ani_esonic_leap

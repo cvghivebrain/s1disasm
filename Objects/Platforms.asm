@@ -13,7 +13,7 @@ BasicPlatform:
 		move.w	Plat_Index(pc,d0.w),d1
 		jmp	Plat_Index(pc,d1.w)
 ; ===========================================================================
-Plat_Index:	index *,,2
+Plat_Index:	index offset(*),,2
 		ptr Plat_Main
 		ptr Plat_Solid
 		ptr Plat_StoodOn
@@ -131,7 +131,7 @@ Plat_Move:
 		jmp	.index(pc,d1.w)
 
 ; ===========================================================================
-.index:		index *
+.index:		index offset(*)
 		ptr Plat_Type_Still				; 0
 		ptr Plat_Type_Sideways				; 1
 		ptr Plat_Type_UpDown				; 2

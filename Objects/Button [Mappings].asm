@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - buttons (MZ, SYZ, LZ, SBZ)
 ; ---------------------------------------------------------------------------
-Map_But:	index *
+Map_But:	index offset(*)
 		ptr frame_button_up
 		ptr frame_button_down
 		ptr frame_button_unk

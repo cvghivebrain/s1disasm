@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - pushable blocks (MZ, LZ)
 ; ---------------------------------------------------------------------------
-Map_Push:	index *
+Map_Push:	index offset(*)
 		ptr frame_pblock_single
 		ptr frame_pblock_four
 		

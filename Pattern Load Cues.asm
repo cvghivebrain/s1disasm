@@ -2,7 +2,7 @@
 ; Pattern load cues
 ; ---------------------------------------------------------------------------
 PatternLoadCues:
-		index *
+		index offset(*)
 		ptr PLC_Main
 		ptr PLC_Main2
 		ptr PLC_Explode

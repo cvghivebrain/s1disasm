@@ -11,7 +11,7 @@ Batbrain:
 		move.w	Bat_Index(pc,d0.w),d1
 		jmp	Bat_Index(pc,d1.w)
 ; ===========================================================================
-Bat_Index:	index *,,2
+Bat_Index:	index offset(*),,2
 		ptr Bat_Main
 		ptr Bat_Action
 
@@ -40,7 +40,7 @@ Bat_Action:	; Routine 2
 		bra.w	DespawnObject
 ; ===========================================================================
 Bat_Action_Index:
-		index *
+		index offset(*)
 		ptr Bat_DropChk
 		ptr Bat_DropFly
 		ptr Bat_FlapSound
@@ -174,7 +174,7 @@ Bat_ChkDist:
 ; Animation script
 ; ---------------------------------------------------------------------------
 
-Ani_Bat:	index *
+Ani_Bat:	index offset(*)
 		ptr ani_bat_hang
 		ptr ani_bat_drop
 		ptr ani_bat_fly

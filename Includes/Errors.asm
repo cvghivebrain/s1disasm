@@ -111,7 +111,7 @@ ShowErrorMessage:
 		rts
 
 ; ===========================================================================
-ErrorText:	index *
+ErrorText:	index offset(*)
 		ptr .exception
 		ptr .bus
 		ptr .address

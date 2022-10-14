@@ -22,7 +22,7 @@ AnimateLevelGfx:
 		rts	
 
 ; ===========================================================================
-AniArt_Index:	index *
+AniArt_Index:	index offset(*)
 		ptr AniArt_GHZ
 		ptr AniArt_none
 		ptr AniArt_MZ
@@ -417,7 +417,7 @@ LoadTiles:
 ; ---------------------------------------------------------------------------
 
 AniArt_MZ_Magma_Index:
-		index *
+		index offset(*)
 		ptr AniArt_MZ_Magma_Shift0_Col0
 		ptr AniArt_MZ_Magma_Shift1_Col0
 		ptr AniArt_MZ_Magma_Shift2_Col0

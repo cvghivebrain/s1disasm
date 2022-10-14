@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Eggman in broken eggmobile (FZ)
 ; ---------------------------------------------------------------------------
-Map_FZDamaged:	index *
+Map_FZDamaged:	index offset(*)
 		ptr frame_fzeggman_damage1
 		ptr frame_fzeggman_damage2
 		

@@ -12,7 +12,7 @@ Bomb:
 		move.w	Bom_Index(pc,d0.w),d1
 		jmp	Bom_Index(pc,d1.w)
 ; ===========================================================================
-Bom_Index:	index *,,2
+Bom_Index:	index offset(*),,2
 		ptr Bom_Main
 		ptr Bom_Action
 		ptr Bom_Fuse
@@ -54,7 +54,7 @@ Bom_Action:	; Routine 2
 		bra.w	DespawnObject
 ; ===========================================================================
 Bom_Action_Index:
-		index *,,2
+		index offset(*),,2
 		ptr Bom_Action_Walk
 		ptr Bom_Action_Wait
 		ptr Bom_Action_Explode
@@ -212,7 +212,7 @@ Bom_ShrSpeed:	dc.w -$200, -$300				; top left
 ; Animation script
 ; ---------------------------------------------------------------------------
 
-Ani_Bomb:	index *
+Ani_Bomb:	index offset(*)
 		ptr ani_bomb_stand
 		ptr ani_bomb_walk
 		ptr ani_bomb_active

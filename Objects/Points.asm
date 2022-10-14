@@ -12,7 +12,7 @@ Points:
 		jsr	Poi_Index(pc,d1.w)
 		bra.w	DisplaySprite
 ; ===========================================================================
-Poi_Index:	index *,,2
+Poi_Index:	index offset(*),,2
 		ptr Poi_Main
 		ptr Poi_Slower
 ; ===========================================================================

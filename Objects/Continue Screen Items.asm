@@ -11,7 +11,7 @@ ContScrItem:
 		move.w	CSI_Index(pc,d0.w),d1
 		jmp	CSI_Index(pc,d1.w)
 ; ===========================================================================
-CSI_Index:	index *,,2
+CSI_Index:	index offset(*),,2
 		ptr CSI_Main
 		ptr CSI_Display
 		ptr CSI_MakeMiniSonic

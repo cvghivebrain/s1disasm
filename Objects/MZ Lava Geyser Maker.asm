@@ -13,7 +13,7 @@ GeyserMaker:
 		jsr	GMake_Index(pc,d1.w)
 		bra.w	Geyser_ChkDel
 ; ===========================================================================
-GMake_Index:	index *,,2
+GMake_Index:	index offset(*),,2
 		ptr GMake_Main
 		ptr GMake_Wait
 		ptr GMake_ChkType

@@ -14,7 +14,7 @@ Invisibarrier:
 		move.w	Invis_Index(pc,d0.w),d1
 		jmp	Invis_Index(pc,d1.w)
 ; ===========================================================================
-Invis_Index:	index *,,2
+Invis_Index:	index offset(*),,2
 		ptr Invis_Main
 		ptr Invis_Solid
 ; ===========================================================================

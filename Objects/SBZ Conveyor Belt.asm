@@ -11,7 +11,7 @@ Conveyor:
 		move.w	Conv_Index(pc,d0.w),d1
 		jmp	Conv_Index(pc,d1.w)
 ; ===========================================================================
-Conv_Index:	index *,,2
+Conv_Index:	index offset(*),,2
 		ptr Conv_Main
 		ptr Conv_Action
 

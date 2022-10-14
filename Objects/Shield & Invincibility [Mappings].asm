@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - shield and invincibility stars
 ; ---------------------------------------------------------------------------
-Map_Shield:	index *
+Map_Shield:	index offset(*)
 		ptr frame_shield_blank
 		ptr frame_shield_1
 		ptr frame_shield_2

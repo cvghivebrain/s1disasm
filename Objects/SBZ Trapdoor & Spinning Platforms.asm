@@ -11,7 +11,7 @@ SpinPlatform:
 		move.w	Spin_Index(pc,d0.w),d1
 		jmp	Spin_Index(pc,d1.w)
 ; ===========================================================================
-Spin_Index:	index *,,2
+Spin_Index:	index offset(*),,2
 		ptr Spin_Main
 		ptr Spin_Trapdoor
 		ptr Spin_Spinner
@@ -138,7 +138,7 @@ Spin_Spinner:	; Routine 4
 ; Animation script
 ; ---------------------------------------------------------------------------
 
-Ani_Spin:	index *
+Ani_Spin:	index offset(*)
 		ptr ani_spin_trapopen
 		ptr ani_spin_trapclose
 		ptr ani_spin_1
