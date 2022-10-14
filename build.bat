@@ -17,4 +17,4 @@ rem compress and insert DAC driver
 rem check for success and fix header
 IF NOT EXIST s1built.bin PAUSE & EXIT 2
 fixheadr.exe s1built.bin
-pause
+exit 0

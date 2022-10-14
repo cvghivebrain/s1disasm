@@ -22,3 +22,4 @@ Differences with the disassembly on the [Sonic Retro Github page](https://github
   * Prevents word/longword variables starting on an odd address.
   * Prevents accidental clearing of bytes after the end of a cleared section (which are always in multiples of 4 bytes).
   * Indicates how much RAM is used (and unused) in errors.txt.
+* DAC driver is compiled, compressed and inserted seamlessly. Thanks to [AuroraFields](https://github.com/NatsumiFox) for [the Dual PCM tool](https://github.com/NatsumiFox/Dual-PCM-Compress).
