@@ -2,11 +2,11 @@
 <ObjDef xmlns="http://www.sonicretro.org" Name="Rotating Junction">
   <Images>
     <ImageFromMappings id="gap">
-      <ArtFile filename="../Graphics - Compressed/SBZ Junction Wheel.nem"/>
+      <ArtFile filename="../Graphics Nemesis/SBZ Junction Wheel.nem"/>
       <MapFile type="ASM" filename="mappings/Rotating Junction.asm" frame="0" startpal="2" />
     </ImageFromMappings>
     <ImageFromMappings id="circle">
-      <ArtFile filename="../Graphics - Compressed/SBZ Junction Wheel.nem"/>
+      <ArtFile filename="../Graphics Nemesis/SBZ Junction Wheel.nem"/>
       <MapFile type="ASM" filename="mappings/Rotating Junction.asm" frame="16" startpal="2" />
     </ImageFromMappings>
   </Images>

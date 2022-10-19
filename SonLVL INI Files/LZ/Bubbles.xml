@@ -2,7 +2,7 @@
 <ObjDef xmlns="http://www.sonicretro.org" Namespace="S1ObjectDefinitions.LZ" TypeName="Bubbles" Language="cs" Name="Bubbles" Image="img1" DefaultSubtype="80">
   <Images>
     <ImageFromMappings id="img1">
-      <ArtFile filename="../Graphics - Compressed/LZ Bubbles &amp; Countdown.nem"/>
+      <ArtFile filename="../Graphics Nemesis/LZ Bubbles &amp; Countdown.nem"/>
       <MapFile type="ASM" filename="mappings/Bubbles.asm" frame="19" startpal="0" />
     </ImageFromMappings>
   </Images>

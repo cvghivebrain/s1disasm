@@ -2,11 +2,11 @@
 <ObjDef xmlns="http://www.sonicretro.org" Name="Large Glass Pillar" Image="tall" RememberState="false">
   <Images>
     <ImageFromMappings id="tall">
-      <ArtFile filename="../Graphics - Compressed/MZ Green Glass Block.nem"/>
+      <ArtFile filename="../Graphics Nemesis/MZ Green Glass Block.nem"/>
       <MapFile type="ASM" filename="mappings/MZ Large Green Glass Blocks.asm" frame="0" startpal="2"/>
     </ImageFromMappings>
     <ImageFromMappings id="short">
-      <ArtFile filename="../Graphics - Compressed/MZ Green Glass Block.nem"/>
+      <ArtFile filename="../Graphics Nemesis/MZ Green Glass Block.nem"/>
       <MapFile type="ASM" filename="mappings/MZ Large Green Glass Blocks.asm" frame="2" startpal="2"/>
     </ImageFromMappings>
   </Images>

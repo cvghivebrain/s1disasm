@@ -2,11 +2,11 @@
 <ObjDef xmlns="http://www.sonicretro.org" Name="Conveyor Belt" Image="wheel">
   <Images>
     <ImageFromMappings id="wheel">
-      <ArtFile filename="../Graphics - Compressed/LZ Wheel.nem"/>
+      <ArtFile filename="../Graphics Nemesis/LZ Wheel.nem"/>
       <MapFile type="ASM" filename="mappings/LZ Conveyor.asm" frame="0" startpal="0"/>
     </ImageFromMappings>
     <ImageFromMappings id="platform">
-      <ArtFile filename="../Graphics - Compressed/LZ Wheel.nem"/>
+      <ArtFile filename="../Graphics Nemesis/LZ Wheel.nem"/>
       <MapFile type="ASM" filename="mappings/LZ Conveyor.asm" frame="4" startpal="2"/>
     </ImageFromMappings>
   </Images>

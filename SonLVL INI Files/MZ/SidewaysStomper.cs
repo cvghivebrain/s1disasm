@@ -12,9 +12,9 @@ namespace S1ObjectDefinitions.MZ
 
 		public override void Init(ObjectData data)
 		{
-			byte[] blocks = ObjectHelper.OpenArtFile("../Graphics - Compressed/MZ Metal Blocks.nem", CompressionType.Nemesis);
+			byte[] blocks = ObjectHelper.OpenArtFile("../Graphics Nemesis/MZ Metal Blocks.nem", CompressionType.Nemesis);
 			byte[] padding = new byte[0x4360-blocks.Length];
-			byte[] spikes = ObjectHelper.OpenArtFile("../Graphics - Compressed/Spikes.nem", CompressionType.Nemesis);
+			byte[] spikes = ObjectHelper.OpenArtFile("../Graphics Nemesis/Spikes.nem", CompressionType.Nemesis);
 			List<byte> tmpartfile = new List<byte>();
 			tmpartfile.AddRange(blocks);
 			tmpartfile.AddRange(padding);

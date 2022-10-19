@@ -11,7 +11,7 @@ namespace S1ObjectDefinitions.SBZ
 
 		public override void Init(ObjectData data)
 		{
-			byte[] artfile = ObjectHelper.OpenArtFile("../Graphics - Compressed/SBZ Flaming Pipe.nem", CompressionType.Nemesis);
+			byte[] artfile = ObjectHelper.OpenArtFile("../Graphics Nemesis/SBZ Flaming Pipe.nem", CompressionType.Nemesis);
 			for (int i = 0; i < labels.Length; i++)
 				imgs.Add(ObjectHelper.MapASMToBmp(artfile, "mappings/Flamethrower.asm", labels[i], 0));
 		}

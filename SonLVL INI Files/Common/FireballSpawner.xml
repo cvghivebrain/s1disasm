@@ -2,7 +2,7 @@
 <ObjDef xmlns="http://www.sonicretro.org" Name="Fireball Spawner" Image="fireball" Debug="true">
   <Images>
     <ImageFromMappings id="fireball">
-      <ArtFile filename="../Graphics - Compressed/Fireballs.nem" />
+      <ArtFile filename="../Graphics Nemesis/Fireballs.nem" />
       <MapFile type="ASM" filename="mappings/Fireballs.asm" frame="1" startpal="0" />
     </ImageFromMappings>
   </Images>

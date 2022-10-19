@@ -2,11 +2,11 @@
 <ObjDef xmlns="http://www.sonicretro.org" Name="Door" Image="vertical" RememberState="true">
   <Images>
     <ImageFromMappings id="vertical">
-      <ArtFile filename="../Graphics - Compressed/LZ Vertical Door.nem"/>
+      <ArtFile filename="../Graphics Nemesis/LZ Vertical Door.nem"/>
       <MapFile type="ASM" filename="mappings/Floating Blocks and Doors.asm" frame="6" startpal="2"/>
     </ImageFromMappings>
     <ImageFromMappings id="horizontal">
-      <ArtFile filename="../Graphics - Compressed/LZ Horizontal Door.nem" offset="1088"/>
+      <ArtFile filename="../Graphics Nemesis/LZ Horizontal Door.nem" offset="1088"/>
       <MapFile type="ASM" filename="mappings/Floating Blocks and Doors.asm" frame="7" startpal="2"/>
     </ImageFromMappings>
   </Images>

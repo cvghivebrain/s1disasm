@@ -13,9 +13,9 @@ namespace S1ObjectDefinitions.SBZ
 
 		public override void Init(ObjectData data)
 		{
-			imgwreckingball = ObjectHelper.MapASMToBmp(ObjectHelper.OpenArtFile("../Graphics - Compressed/GHZ Giant Ball.nem", CompressionType.Nemesis), "mappings/GHZ Ball.asm", 1, 2);
+			imgwreckingball = ObjectHelper.MapASMToBmp(ObjectHelper.OpenArtFile("../Graphics Nemesis/GHZ Giant Ball.nem", CompressionType.Nemesis), "mappings/GHZ Ball.asm", 1, 2);
 			for (int i = 0; i < labels.Length; i++)
-				imgs.Add(ObjectHelper.MapASMToBmp(ObjectHelper.OpenArtFile("../Graphics - Compressed/SYZ Large Spikeball.nem", CompressionType.Nemesis), "mappings/Big Spiked Ball.asm", labels[i], i == 2 ? 2 : 0));
+				imgs.Add(ObjectHelper.MapASMToBmp(ObjectHelper.OpenArtFile("../Graphics Nemesis/SYZ Large Spikeball.nem", CompressionType.Nemesis), "mappings/Big Spiked Ball.asm", labels[i], i == 2 ? 2 : 0));
 		}
 
 		public override ReadOnlyCollection<byte> Subtypes

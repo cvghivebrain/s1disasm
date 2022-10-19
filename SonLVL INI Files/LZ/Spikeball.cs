@@ -14,7 +14,7 @@ namespace S1ObjectDefinitions.LZ
 
 		public override void Init(ObjectData data)
 		{
-			byte[] artfile = ObjectHelper.OpenArtFile("../Graphics - Compressed/LZ Spiked Ball & Chain.nem", CompressionType.Nemesis);
+			byte[] artfile = ObjectHelper.OpenArtFile("../Graphics Nemesis/LZ Spiked Ball & Chain.nem", CompressionType.Nemesis);
 			img = ObjectHelper.MapASMToBmp(artfile, "mappings/Spiked Ball and Chain (LZ).asm", 1, 0);
 			for (int i = 0; i < labels.Length; i++)
 				imgs.Add(ObjectHelper.MapASMToBmp(artfile, "mappings/Spiked Ball and Chain (LZ).asm", labels[i], 0));
