@@ -469,7 +469,7 @@ blankobj:	macro
 ; ---------------------------------------------------------------------------
 
 jcond:		macro btype,jumpto
-		btype.s	.nojump\@
+		\btype\.s	.nojump\@
 		jmp	jumpto
 	.nojump\@:
 		endm
