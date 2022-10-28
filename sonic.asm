@@ -13,7 +13,8 @@
 		opt	w+					; print warnings
 		opt	m+					; do not expand macros - if enabled, this can break assembling
 
-Main:		section	org(0)
+Main: 	group org(0)
+		section MainProgram,Main
 
 		include "Mega Drive.asm"
 		include "Macros - More CPUs.asm"

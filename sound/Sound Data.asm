@@ -160,7 +160,7 @@ SoundPriorities:
 
 DACDriver:
 		pushs				; store section information for Main
-DACZ80:	section	org(0), file("sound/DAC Driver.unc") ; create new section for the sound driver
+DACZ80:	section	org(0), file("sound/DAC Driver.unc"), over(Main) ; create new section for the sound driver
 		cpu Z80
 		include "sound/DAC Driver.asm"	; include the actual DAC driver
 		
@@ -168,7 +168,7 @@ DACZ80:	section	org(0), file("sound/DAC Driver.unc") ; create new section for th
 		pops 							; go back to the main section
 		pushs	
 
-MergeCode:	section org(0), file("sound/DAC Driver Offset & Size.dat")	; create settings file for storing info about how to merge things
+MergeCode:	section org(0), file("sound/DAC Driver Offset & Size.dat"), over(Main)	; create settings file for storing info about how to merge things
 		dc.l offset(DACDriver),Z80_Space		; store info about location of file and size available
 		pops									; go back to main section
 
