@@ -17,11 +17,11 @@ GM_Sega:
 		bsr.w	ClearPLC
 		bsr.w	PaletteFadeOut				; fade out from previous gamemode
 		lea	(vdp_control_port).l,a6
-		move.w	#$8004,(a6)				; use normal colour mode
-		move.w	#$8200+(vram_fg>>10),(a6)		; set foreground nametable address
-		move.w	#$8400+(vram_bg>>13),(a6)		; set background nametable address
-		move.w	#$8700,(a6)				; set background colour (palette entry 0)
-		move.w	#$8B00,(a6)				; full-screen horizontal scrolling
+		move.w	#vdp_md_color,(a6)			; use normal colour mode
+		move.w	#vdp_fg_nametable+(vram_fg>>10),(a6)	; set foreground nametable address
+		move.w	#vdp_bg_nametable+(vram_bg>>13),(a6)	; set background nametable address
+		move.w	#vdp_bg_color+0,(a6)			; set background colour (palette entry 0)
+		move.w	#vdp_full_vscroll|vdp_full_hscroll,(a6)	; full-screen horizontal scrolling
 		clr.b	(f_water_pal_full).w
 		disable_ints
 		disable_display

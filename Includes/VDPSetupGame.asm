@@ -20,7 +20,7 @@ VDPSetupGame:
 
 		move.w	(VDPSetupArray+2).l,d0
 		move.w	d0,(v_vdp_mode_buffer).w		; save $8134 to buffer for later use
-		move.w	#$8A00+223,(v_vdp_hint_counter).w	; horizontal interrupt every 224th scanline
+		move.w	#vdp_hint_counter+223,(v_vdp_hint_counter).w ; horizontal interrupt every 224th scanline
 
 		moveq	#0,d0
 		move.l	#$C0000000,(vdp_control_port).l		; set VDP to CRAM write
@@ -37,23 +37,23 @@ VDPSetupGame:
 		rts
 
 ; ===========================================================================
-VDPSetupArray:	dc.w $8004					; normal colour mode
-		dc.w $8134					; enable V.interrupts, enable DMA
-		dc.w $8200+(vram_fg>>10)			; set foreground nametable address
-		dc.w $8300+(vram_window>>10)			; set window nametable address
-		dc.w $8400+(vram_bg>>13)			; set background nametable address
-		dc.w $8500+(vram_sprites>>9)			; set sprite table address
-		dc.w $8600					; unused
-		dc.w $8700					; set background colour (palette entry 0)
-		dc.w $8800					; unused
-		dc.w $8900					; unused
-		dc.w $8A00					; default H.interrupt register
-		dc.w $8B00					; full-screen vertical scrolling
-		dc.w $8C81					; 40-cell display mode
-		dc.w $8D00+(vram_hscroll>>10)			; set background hscroll address
-		dc.w $8E00					; unused
-		dc.w $8F02					; set VDP increment size
-		dc.w $9001					; 64x32 cell plane size
-		dc.w $9100					; window horizontal position
-		dc.w $9200					; window vertical position
+VDPSetupArray:	dc.w vdp_md_color				; $8004 ; normal colour mode
+		dc.w vdp_enable_vint|vdp_enable_dma|vdp_ntsc_display|vdp_md_display ; $8134
+		dc.w vdp_fg_nametable+(vram_fg>>10)		; set foreground nametable address
+		dc.w vdp_window_nametable+(vram_window>>10)	; set window nametable address
+		dc.w vdp_bg_nametable+(vram_bg>>13)		; set background nametable address
+		dc.w vdp_sprite_table+(vram_sprites>>9)		; set sprite table address
+		dc.w vdp_sprite_table2				; unused
+		dc.w vdp_bg_color+0				; set background colour (palette entry 0)
+		dc.w vdp_sms_hscroll				; unused
+		dc.w vdp_sms_vscroll				; unused
+		dc.w vdp_hint_counter+0				; default horizontal interrupt register
+		dc.w vdp_full_vscroll|vdp_full_hscroll		; $8B00 ; full-screen vertical/horizontal scrolling
+		dc.w vdp_320px_screen_width			; $8C81 ; 40-cell display mode
+		dc.w vdp_hscroll_table+(vram_hscroll>>10)	; set background hscroll address
+		dc.w vdp_nametable_hi				; unused
+		dc.w vdp_auto_inc+2				; set VDP increment size
+		dc.w vdp_plane_width_64|vdp_plane_height_32	; $9001 ; 64x32 cell plane size
+		dc.w vdp_window_x_pos				; window horizontal position
+		dc.w vdp_window_y_pos				; window vertical position
 	VDPSetupArray_end:

@@ -320,7 +320,7 @@ HBlank:
 		rept sizeof_pal_all/4
 		move.l	(a0)+,(a1)				; copy palette to CRAM
 		endr
-		move.w	#$8A00+223,4(a1)			; reset HBlank register
+		move.w	#vdp_hint_counter+223,4(a1)		; reset HBlank register
 		popr	a0-a1					; restore a0-a1 from stack
 		tst.b	(f_hblank_run_snd).w			; is flag set to update sound & some graphics during HBlank?
 		bne.s	.update_hblank				; if yes, branch

@@ -9,13 +9,13 @@ GM_Title:
 		disable_ints
 		bsr.w	DacDriverLoad
 		lea	(vdp_control_port).l,a6
-		move.w	#$8004,(a6)				; normal colour mode
-		move.w	#$8200+(vram_fg>>10),(a6)		; set foreground nametable address
-		move.w	#$8400+(vram_bg>>13),(a6)		; set background nametable address
-		move.w	#$9001,(a6)				; 64x32 cell plane size
-		move.w	#$9200,(a6)				; window vertical position 0 (i.e. disabled)
-		move.w	#$8B03,(a6)				; single pixel line horizontal scrolling
-		move.w	#$8720,(a6)				; set background colour (palette line 2, entry 0)
+		move.w	#vdp_md_color,(a6)			; normal colour mode
+		move.w	#vdp_fg_nametable+(vram_fg>>10),(a6)	; set foreground nametable address
+		move.w	#vdp_bg_nametable+(vram_bg>>13),(a6)	; set background nametable address
+		move.w	#vdp_plane_width_64|vdp_plane_height_32,(a6) ; 64x32 cell plane size
+		move.w	#vdp_window_y_pos,(a6)			; window vertical position 0 (i.e. disabled)
+		move.w	#vdp_full_vscroll|vdp_1px_hscroll,(a6)	; single pixel line horizontal scrolling
+		move.w	#vdp_bg_color+$20,(a6)			; set background colour (palette line 2, entry 0)
 		clr.b	(f_water_pal_full).w
 		bsr.w	ClearScreen
 

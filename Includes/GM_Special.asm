@@ -7,10 +7,10 @@ GM_Special:
 		bsr.w	PaletteWhiteOut				; fade to white from previous gamemode
 		disable_ints
 		lea	(vdp_control_port).l,a6
-		move.w	#$8B03,(a6)				; 1-pixel line scroll mode
-		move.w	#$8004,(a6)				; normal colour mode
-		move.w	#$8A00+175,(v_vdp_hint_counter).w
-		move.w	#$9011,(a6)				; 64x64 cell plane size
+		move.w	#vdp_full_vscroll|vdp_1px_hscroll,(a6)	; 1-pixel line scroll mode
+		move.w	#vdp_md_color,(a6)			; normal colour mode
+		move.w	#vdp_hint_counter+175,(v_vdp_hint_counter).w
+		move.w	#vdp_plane_width_64|vdp_plane_height_64,(a6) ; 64x64 cell plane size
 		disable_display
 		bsr.w	ClearScreen
 		enable_ints
@@ -139,9 +139,9 @@ SS_FinishLoop:
 
 		disable_ints
 		lea	(vdp_control_port).l,a6
-		move.w	#$8200+(vram_fg>>10),(a6)		; set foreground nametable address
-		move.w	#$8400+(vram_bg>>13),(a6)		; set background nametable address
-		move.w	#$9001,(a6)				; 64x32 cell plane size
+		move.w	#vdp_fg_nametable+(vram_fg>>10),(a6)	; set foreground nametable address
+		move.w	#vdp_bg_nametable+(vram_bg>>13),(a6)	; set background nametable address
+		move.w	#vdp_plane_width_64|vdp_plane_height_32,(a6) ; 64x32 cell plane size
 		bsr.w	ClearScreen
 		locVRAM	vram_Nem_TitleCard			; $B000 - Pattern Load Cues.asm
 		lea	(Nem_TitleCard).l,a0			; load title card patterns
@@ -312,11 +312,11 @@ PalCycle_SS:
 		move.w	d0,(v_ss_bg_mode).w
 		lea	(SS_BG_Modes).l,a1
 		lea	(a1,d0.w),a1				; jump to mode data
-		move.w	#$8200,d0				; VDP register - fg nametable address
+		move.w	#vdp_fg_nametable,d0			; VDP register - fg nametable address
 		move.b	(a1)+,d0				; apply address from mode data
 		move.w	d0,(a6)					; send VDP instruction
 		move.b	(a1),(v_fg_y_pos_vsram).w		; get byte to send to VSRAM
-		move.w	#$8400,d0				; VDP register - bg nametable address
+		move.w	#vdp_bg_nametable,d0			; VDP register - bg nametable address
 		move.b	(a0)+,d0				; apply address from list
 		move.w	d0,(a6)					; send VDP instruction
 		move.l	#$40000010,(vdp_control_port).l		; set VDP to VSRAM write mode

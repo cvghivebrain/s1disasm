@@ -7,8 +7,8 @@ GM_Continue:
 		disable_ints
 		disable_display
 		lea	(vdp_control_port).l,a6
-		move.w	#$8004,(a6)				; normal colour mode
-		move.w	#$8700,(a6)				; background colour
+		move.w	#vdp_md_color,(a6)			; normal colour mode
+		move.w	#vdp_bg_color+0,(a6)			; background colour
 		bsr.w	ClearScreen
 
 		lea	(v_ost_all).w,a1			; RAM address to start clearing

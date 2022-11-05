@@ -136,7 +136,7 @@ bit:		macro
 		elseif instr("\2","(i")				; bit n,(ix+n)
 			num2: equ \2
 			getindex \2
-			dc.b ireg, $cb, num2, $40+(num*8)
+			dc.b ireg, $cb, num2, $46+(num*8)
 		else
 		fail
 		endc
@@ -232,7 +232,7 @@ daa:		macros
 
 dec:		macro
 		local num
-		if instr("a b c d e h l ","\1\ ")
+		if instr("a b c d e h l (hl) ","\1\ ")
 		getzreg	\1
 		dc.b $5+(zreg*8)
 		elseif strcmp("\1","ixh")
@@ -339,7 +339,7 @@ in:		macro
 
 inc:		macro
 		local num
-		if instr("a b c d e h l ","\1\ ")
+		if instr("a b c d e h l (hl) ","\1\ ")
 		getzreg	\1
 		dc.b $4+(zreg*8)
 		elseif strcmp("\1","ixh")
@@ -680,7 +680,7 @@ ld:		macro
 			tmp_fc:	substr	1,1,"\2"
 			tmp_lc:	substr	tmp_len,tmp_len,"\2"
 			if strcmp("\tmp_fc","(") & strcmp("\tmp_lc",")") ; ld hl,(n)
-			dc.b $ed, $6b, num&$ff, num>>8
+			dc.b $2a, num&$ff, num>>8
 			else					; ld hl,n
 			dc.b $21, num&$ff, num>>8
 			endc
@@ -755,7 +755,7 @@ ld:		macro
 			elseif strcmp("\2","de")
 			dc.w $ed53
 			elseif strcmp("\2","hl")
-			dc.w $ed63
+			dc.b $22
 			elseif strcmp("\2","sp")
 			dc.w $ed73
 			elseif strcmp("\2","ix")
@@ -865,8 +865,7 @@ res:		macro
 		elseif instr("\2","(i")				; res n,(ix+n)
 			num2: equ \2
 			getindex \2
-			dc.b ireg, $cb, num2
-		dc.b $80+(num*8)
+			dc.b ireg, $cb, num2, $86+(num*8)
 		else
 		fail
 		endc
@@ -1072,13 +1071,15 @@ scf:		macros
 set:		macro
 		local num, num2
 		num: equ \1
-		if instr("a b c d e h l (hl) ","\2\ ")
+		if narg=1
+		inform 3,"Use = instead of SET for redefinable symbols."
+		elseif instr("a b c d e h l (hl) ","\2\ ")
 		getzreg	\2
 		dc.b $cb, $c0+(num*8)+zreg
 		elseif instr("\2","(i")				; set n,(ix+n)
 			num2: equ \2
 			getindex \2
-			dc.b ireg, $cb, num2, $c0+(num*8)
+			dc.b ireg, $cb, num2, $c6+(num*8)
 		else
 		fail
 		endc

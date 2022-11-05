@@ -84,14 +84,14 @@ GM_Demo:
 		disable_ints
 		bsr.w	ClearScreen
 		lea	(vdp_control_port).l,a6
-		move.w	#$8B03,(a6)				; single pixel line horizontal scrolling
-		move.w	#$8200+(vram_fg>>10),(a6)		; set foreground nametable address
-		move.w	#$8400+(vram_bg>>13),(a6)		; set background nametable address
-		move.w	#$8500+(vram_sprites>>9),(a6)		; set sprite table address
-		move.w	#$9001,(a6)				; 64x32 cell plane size
-		move.w	#$8004,(a6)				; normal colour mode
-		move.w	#$8720,(a6)				; set background colour (line 3; colour 0)
-		move.w	#$8A00+223,(v_vdp_hint_counter).w	; set palette change position (for water)
+		move.w	#vdp_full_vscroll|vdp_1px_hscroll,(a6)	; single pixel line horizontal scrolling
+		move.w	#vdp_fg_nametable+(vram_fg>>10),(a6)	; set foreground nametable address
+		move.w	#vdp_bg_nametable+(vram_bg>>13),(a6)	; set background nametable address
+		move.w	#vdp_sprite_table+(vram_sprites>>9),(a6) ; set sprite table address
+		move.w	#vdp_plane_width_64|vdp_plane_height_32,(a6) ; 64x32 cell plane size
+		move.w	#vdp_md_color,(a6)			; normal colour mode
+		move.w	#vdp_bg_color+$20,(a6)			; set background colour (line 3; colour 0)
+		move.w	#vdp_hint_counter+223,(v_vdp_hint_counter).w ; set palette change position (for water)
 		move.w	(v_vdp_hint_counter).w,(a6)
 		cmpi.b	#id_LZ,(v_zone).w			; is level LZ?
 		bne.s	.skip_water				; if not, branch
