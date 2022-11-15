@@ -250,16 +250,16 @@ dma:		macro source,length,dest1,dest2
 
 dma_fill:	macro value,length,dest
 		lea	(vdp_control_port).l,a5
-		move.w	#$8F01,(a5)				; set VDP increment to 1 byte
+		move.w	#vdp_auto_inc+1,(a5)			; set VDP increment to 1 byte
 		move.l	#$94000000+(((length)&$FF00)<<8)+$9300+((length)&$FF),(a5) ; set length of DMA
-		move.w	#$9780,(a5)				; set DMA mode to fill
+		move.w	#vdp_dma_vram_fill,(a5)			; set DMA mode to fill
 		move.l	#$40000080+(((dest)&$3FFF)<<16)+(((dest)&$C000)>>14),(a5) ; set target of DMA
 		move.w	#value<<8,(vdp_data_port).l		; set byte to fill with
 	.wait_for_dma\@:
 		move.w	(a5),d1					; get status register
 		btst	#1,d1					; is DMA in progress?
 		bne.s	.wait_for_dma\@				; if yes, branch
-		move.w	#$8F02,(a5)				; set VDP increment 2 bytes
+		move.w	#vdp_auto_inc+2,(a5)			; set VDP increment 2 bytes
 		endm
 
 ; ---------------------------------------------------------------------------

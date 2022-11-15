@@ -159,20 +159,20 @@ SoundPriorities:
 ; ---------------------------------------------------------------------------
 
 DACDriver:
-		pushs				; store section information for Main
-DACZ80:	section	org(0), file("sound/DAC Driver.unc"), over(Main) ; create new section for the sound driver
+		pushs						; store section information for Main
+DACZ80:		section	org(0), file("sound/DAC Driver.unc"), over(Main) ; create new section for the sound driver
 		cpu Z80
-		include "sound/DAC Driver.asm"	; include the actual DAC driver
+		include "sound/DAC Driver.asm"			; include the actual DAC driver
 		
 		cpu 68000
-		pops 							; go back to the main section
+		pops 						; go back to the main section
 		pushs	
 
 MergeCode:	section org(0), file("sound/DAC Driver Offset & Size.dat"), over(Main)	; create settings file for storing info about how to merge things
 		dc.l offset(DACDriver),Z80_Space		; store info about location of file and size available
-		pops									; go back to main section
+		pops						; go back to main section
 
-		ds.b Z80_Space							; reserve space for the compressed sound driver
+		ds.b Z80_Space					; reserve space for the compressed sound driver
 		even
 		
 ; ---------------------------------------------------------------------------
@@ -230,13 +230,13 @@ sfxfile_\name:	include	"sound/sfx/\name\.s"			; include the sfx file itself
 ; ---------------------------------------------------------------------------
 
 		; check that SEGA PCM is not larger than a z80 bank
-		if sizeof_SegaPCM > $8000
+		if sizeof_SegaPCM > sizeof_z80_bank
 		inform 3,"Sega sound must fit within $8000 bytes, but its size is $%h bytes.", sizeof_SegaPCM
 		endc
 
 		; Don't let Sega sample cross $8000-byte boundary (DAC driver doesn't switch banks automatically)
-		if (offset(*)&$7FFF) + sizeof_SegaPCM > $8000
-		align $8000
+		if (offset(*)&(sizeof_z80_bank-1)) + sizeof_SegaPCM > sizeof_z80_bank
+		align sizeof_z80_bank
 		endc
 ; ---------------------------------------------------------------------------
 

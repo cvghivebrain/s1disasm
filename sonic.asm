@@ -13,7 +13,7 @@
 		opt	w+					; print warnings
 		opt	m+					; do not expand macros - if enabled, this can break assembling
 
-Main: 	group org(0)
+Main: 		group org(0)
 		section MainProgram,Main
 
 		include "Mega Drive.asm"
@@ -158,7 +158,7 @@ CheckSumCheck:
 		dbf	d6,.clearRAM				; clear RAM ($FE00-$FFFF)
 
 		move.b	(console_version).l,d0
-		andi.b	#$C0,d0
+		andi.b	#console_region+console_speed,d0
 		move.b	d0,(v_console_region).w			; get region setting
 		move.l	#'init',(v_checksum_pass).w		; set flag so checksum won't run again
 

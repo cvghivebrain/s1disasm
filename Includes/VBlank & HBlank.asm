@@ -9,7 +9,7 @@ VBlank:
 		move.w	(vdp_control_port).l,d0
 		move.l	#$40000010+(0<<16),(vdp_control_port).l	; set write destination to VSRAM address 0
 		move.l	(v_fg_y_pos_vsram).w,(vdp_data_port).l	; send screen y-axis pos. to VSRAM
-		btst	#6,(v_console_region).w			; is Mega Drive PAL?
+		btst	#console_speed_bit,(v_console_region).w	; is Mega Drive PAL?
 		beq.s	.notPAL					; if not, branch
 
 		move.w	#$700,d0
@@ -60,7 +60,7 @@ VBlank_Lag:
 		bne.w	VBlank_Music				; if not, branch
 
 		move.w	(vdp_control_port).l,d0
-		btst	#6,(v_console_region).w			; is Mega Drive PAL?
+		btst	#console_speed_bit,(v_console_region).w	; is Mega Drive PAL?
 		beq.s	.notPAL					; if not, branch
 
 		move.w	#$700,d0

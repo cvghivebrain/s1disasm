@@ -107,6 +107,13 @@ ym2612_d1:		equ $A04003
 
 ; I/O addresses
 console_version:	equ $A10001
+	console_region_bit:	equ 7				; 0 = Japan; 1 = overseas
+	console_speed_bit:	equ 6				; 0 = NTSC; 1 = PAL
+	console_mcd_bit:	equ 5				; 1 = Mega-CD attached (or other addon?)
+	console_region:		equ 1<<console_region_bit
+	console_speed:		equ 1<<console_speed_bit
+	console_mcd:		equ 1<<console_mcd_bit
+	console_revision:	equ $F				; revision id in bits 0-3; revision 0 has no TMSS
 port_1_data_hi:		equ $A10002
 port_1_data:		equ $A10003
 port_2_data_hi:		equ $A10004
@@ -141,6 +148,7 @@ sizeof_ram:		equ $10000
 sizeof_vram:		equ $10000
 sizeof_vsram:		equ $50
 sizeof_z80_ram:		equ z80_ram_end-z80_ram			; $2000
+sizeof_z80_bank:	equ $8000				; size of switchable Z80 ROM window
 
 ; ---------------------------------------------------------------------------
 ; stop the Z80
