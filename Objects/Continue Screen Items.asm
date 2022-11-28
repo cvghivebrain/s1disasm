@@ -24,8 +24,8 @@ CSI_Main:	; Routine 0
 		move.w	#(vram_cont_sonic/sizeof_cell)+tile_hi,ost_tile(a0)
 		move.b	#render_abs,ost_render(a0)
 		move.b	#$3C,ost_displaywidth(a0)
-		move.w	#$120,ost_x_pos(a0)
-		move.w	#$C0,ost_y_screen(a0)
+		move.w	#screen_left+160,ost_x_pos(a0)
+		move.w	#screen_top+64,ost_y_screen(a0)
 		move.w	#0,(v_rings).w				; clear rings
 
 CSI_Display:	; Routine 2
@@ -33,8 +33,21 @@ CSI_Display:	; Routine 2
 ; ===========================================================================
 
 	CSI_MiniSonicPos:
-		dc.w $116, $12A, $102, $13E, $EE, $152, $DA, $166, $C6
-		dc.w $17A, $B2,	$18E, $9E, $1A2, $8A
+		dc.w screen_left+150
+		dc.w screen_left+170
+		dc.w screen_left+130
+		dc.w screen_left+190
+		dc.w screen_left+110
+		dc.w screen_left+210
+		dc.w screen_left+90
+		dc.w screen_left+230
+		dc.w screen_left+70
+		dc.w screen_left+250
+		dc.w screen_left+50
+		dc.w screen_left+270
+		dc.w screen_left+30
+		dc.w screen_left+290
+		dc.w screen_left+10
 
 CSI_MakeMiniSonic:
 		; Routine 4
@@ -47,7 +60,7 @@ CSI_MakeMiniSonic:
 		jmp	(DeleteObject).l			; cancel if you have 0-1 continues
 
 	.more_than_1:
-		moveq	#1,d3
+		moveq	#1,d3					; flag for final mini-Sonic
 		cmpi.b	#14,d1					; do you have fewer than 16 continues
 		bcs.s	.fewer_than_16				; if yes, branch
 
@@ -63,10 +76,10 @@ CSI_MiniSonicLoop:
 		move.w	(a2)+,ost_x_pos(a1)			; use above data for x-axis position
 		tst.b	d2					; do you have an even number of continues?
 		beq.s	.is_even				; if yes, branch
-		subi.w	#$A,ost_x_pos(a1)			; shift mini-Sonics slightly to the right
+		subi.w	#10,ost_x_pos(a1)			; shift mini-Sonics slightly to the right
 
 	.is_even:
-		move.w	#$D0,ost_y_screen(a1)
+		move.w	#screen_top+80,ost_y_screen(a1)
 		move.b	#id_frame_cont_mini1_6,ost_frame(a1)
 		move.b	#id_CSI_ChkDel,ost_routine(a1)
 		move.l	#Map_ContScr,ost_mappings(a1)
@@ -76,11 +89,11 @@ CSI_MiniSonicLoop:
 		dbf	d1,CSI_MiniSonicLoop			; repeat for number of continues
 
 		lea	-sizeof_ost(a1),a1
-		move.b	d3,ost_subtype(a1)
+		move.b	d3,ost_subtype(a1)			; set flag for final mini-Sonic
 
 CSI_ChkDel:	; Routine 6
-		tst.b	ost_subtype(a0)				; do you have 16 or more continues?
-		beq.s	CSI_Animate				; if yes, branch
+		tst.b	ost_subtype(a0)				; is this the final mini-Sonic?
+		beq.s	CSI_Animate				; if not, branch
 		cmpi.b	#id_CSon_Run,(v_ost_player+ost_routine).w ; is Sonic running?
 		bcs.s	CSI_Animate				; if not, branch
 		move.b	(v_vblank_counter_byte).w,d0

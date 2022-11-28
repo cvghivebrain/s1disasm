@@ -25,21 +25,21 @@ Over_ChkPLC:	; Routine 0
 
 Over_Main:
 		addq.b	#2,ost_routine(a0)			; goto Over_Move next
-		move.w	#$50,ost_x_pos(a0)			; set x position
+		move.w	#screen_left-48,ost_x_pos(a0)		; set x position (starts outside screen)
 		btst	#0,ost_frame(a0)			; is the object "OVER"?
 		beq.s	.not_over				; if not, branch
-		move.w	#$1F0,ost_x_pos(a0)			; set x position for "OVER"
+		move.w	#screen_right+48,ost_x_pos(a0)		; set x position for "OVER" (starts outside screen)
 
 	.not_over:
-		move.w	#$F0,ost_y_screen(a0)
+		move.w	#screen_top+112,ost_y_screen(a0)
 		move.l	#Map_Over,ost_mappings(a0)
 		move.w	#tile_Nem_GameOver+tile_hi,ost_tile(a0)
 		move.b	#render_abs,ost_render(a0)
 		move.b	#0,ost_priority(a0)
 
 Over_Move:	; Routine 2
-		moveq	#$10,d1					; set horizontal speed
-		cmpi.w	#$120,ost_x_pos(a0)			; has object reached its target position?
+		moveq	#16,d1					; set horizontal speed
+		cmpi.w	#screen_left+160,ost_x_pos(a0)		; has object reached its target position?
 		beq.s	.next					; if yes, branch
 		bcs.s	.not_over				; branch if object is left of target (GAME/TIME)
 		neg.w	d1					; move left instead

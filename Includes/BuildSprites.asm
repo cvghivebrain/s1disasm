@@ -46,9 +46,9 @@ BuildSprites:
 		bmi.w	.next_object				; branch if object is outside left side of screen
 		move.w	d3,d1
 		sub.w	d0,d1					; d1 = x pos of object's left edge on screen
-		cmpi.w	#320,d1
+		cmpi.w	#screen_width,d1
 		bge.s	.next_object				; branch if object is outside right side of screen
-		addi.w	#128,d3					; d3 = x pos of object on screen, +128px for VDP sprite coordinate
+		addi.w	#screen_left,d3				; d3 = x pos of object on screen, +128px for VDP sprite coordinate
 
 		btst	#render_useheight_bit,d4		; is use height flag on?
 		beq.s	.assume_height				; if not, branch
@@ -61,9 +61,9 @@ BuildSprites:
 		bmi.s	.next_object				; branch if object is outside top side of screen
 		move.w	d2,d1
 		sub.w	d0,d1					; d1 = y pos of object's top edge on screen
-		cmpi.w	#224,d1
+		cmpi.w	#screen_height,d1
 		bge.s	.next_object				; branch if object is outside bottom side of screen
-		addi.w	#128,d2					; d2 = y pos of object on screen, +128px for VDP sprite coordinate
+		addi.w	#screen_top,d2				; d2 = y pos of object on screen, +128px for VDP sprite coordinate
 		bra.s	.draw_object
 ; ===========================================================================
 
@@ -76,10 +76,10 @@ BuildSprites:
 	.assume_height:
 		move.w	ost_y_pos(a0),d2
 		sub.w	4(a1),d2				; d2 = y pos of object on screen
-		addi.w	#128,d2
-		cmpi.w	#96,d2
+		addi.w	#screen_top,d2
+		cmpi.w	#screen_top-32,d2
 		blo.s	.next_object				; branch if > 32px outside top side of screen
-		cmpi.w	#384,d2
+		cmpi.w	#screen_bottom+32,d2
 		bhs.s	.next_object				; branch if > 32px outside bottom side of screen
 
 	.draw_object:

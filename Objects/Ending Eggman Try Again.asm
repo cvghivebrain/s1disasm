@@ -25,8 +25,8 @@ ost_eeggman_wait_time:	rs.w 1					; $30 ; time between juggle motions
 
 EEgg_Main:	; Routine 0
 		addq.b	#2,ost_routine(a0)			; goto EEgg_Animate next
-		move.w	#$120,ost_x_pos(a0)
-		move.w	#$F4,ost_y_screen(a0)
+		move.w	#screen_left+160,ost_x_pos(a0)
+		move.w	#screen_top+116,ost_y_screen(a0)
 		move.l	#Map_EEgg,ost_mappings(a0)
 		move.w	#tile_Nem_TryAgain,ost_tile(a0)
 		move.b	#render_abs,ost_render(a0)

@@ -30,25 +30,39 @@ ost_has_x_start:	rs.w 1					; $32 ; start & finish x position
 include_Has_Config:	macro
 		; x pos start, x pos stop, y pos
 		; routine, frame
-Has_Config:	dc.w 4, $124, $BC				; "SONIC HAS"
+Has_Config:	dc.w screen_left-124			; "SONIC HAS"
+		dc.w screen_left+164
+		dc.w screen_top+60
 		dc.b id_Has_Move, id_frame_has_sonichas
 
-		dc.w -$120, $120, $D0				; "PASSED"
+		dc.w screen_left-416			; "PASSED"
+		dc.w screen_left+160
+		dc.w screen_top+80
 		dc.b id_Has_Move, id_frame_has_passed
 
-		dc.w $40C, $14C, $D6				; "ACT" 1/2/3
+		dc.w screen_left+908			; "ACT" 1/2/3
+		dc.w screen_left+204
+		dc.w screen_top+86
 		dc.b id_Has_Move, id_frame_card_act1_6
 
-		dc.w $520, $120, $EC				; score
+		dc.w screen_left+1184			; score
+		dc.w screen_left+160
+		dc.w screen_top+108
 		dc.b id_Has_Move, id_frame_has_score
 
-		dc.w $540, $120, $FC				; time bonus
+		dc.w screen_left+1216			; time bonus
+		dc.w screen_left+160
+		dc.w screen_top+124
 		dc.b id_Has_Move, id_frame_has_timebonus
 
-		dc.w $560, $120, $10C				; ring bonus
+		dc.w screen_left+1248			; ring bonus
+		dc.w screen_left+160
+		dc.w screen_top+140
 		dc.b id_Has_Move, id_frame_has_ringbonus
 
-		dc.w $20C, $14C, $CC				; oval
+		dc.w screen_left+396			; oval
+		dc.w screen_left+204
+		dc.w screen_top+76
 		dc.b id_Has_Move, id_frame_card_oval_5
 		endm
 ; ===========================================================================
@@ -85,7 +99,7 @@ Has_Main:	; Routine 0
 		dbf	d1,.loop				; repeat 6 times
 
 Has_Move:	; Routine 2
-		moveq	#$10,d1					; set horizontal speed (moves right)
+		moveq	#16,d1					; set horizontal speed (moves right)
 		move.w	ost_has_x_stop(a0),d0
 		cmp.w	ost_x_pos(a0),d0			; has object reached its target position?
 		beq.s	.at_target				; if yes, branch

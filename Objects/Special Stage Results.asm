@@ -31,19 +31,29 @@ ost_ssr_x_stop:		rs.w 1					; $30 ; on screen x position
 include_SSR_Config:	macro
 		; x pos start, x pos stop, y pos
 		; routine number, frame number
-SSR_Config:	dc.w $20, $120,	$C4
+SSR_Config:	dc.w screen_left-96
+		dc.w screen_left+160
+		dc.w screen_top+68
 		dc.b id_SSR_Move, id_frame_ssr_chaos
 
-		dc.w $320, $120, $118
+		dc.w screen_left+672
+		dc.w screen_left+160
+		dc.w screen_top+152
 		dc.b id_SSR_Move, id_frame_ssr_score
 
-		dc.w $360, $120, $128
+		dc.w screen_left+736
+		dc.w screen_left+160
+		dc.w screen_top+168
 		dc.b id_SSR_Move, id_frame_ssr_ringbonus
 
-		dc.w $1EC, $11C, $C4
+		dc.w screen_left+364
+		dc.w screen_left+156
+		dc.w screen_top+68
 		dc.b id_SSR_Move, id_frame_card_oval_3
 
-		dc.w $3A0, $120, $138
+		dc.w screen_left+800
+		dc.w screen_left+160
+		dc.w screen_top+184
 		dc.b id_SSR_Move, id_frame_ssr_continue
 		endm
 ; ===========================================================================

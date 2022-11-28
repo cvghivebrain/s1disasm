@@ -16,12 +16,12 @@ SSRC_Index:	index offset(*),,2
 		ptr SSRC_Flash
 
 SSRC_PosData:	; x positions for chaos emeralds
-		dc.w $110					; blue
-		dc.w $128					; yellow
-		dc.w $F8					; pink
-		dc.w $140					; green
-		dc.w $E0					; red
-		dc.w $158					; grey
+		dc.w screen_left+144				; blue
+		dc.w screen_left+168				; yellow
+		dc.w screen_left+120				; pink
+		dc.w screen_left+192				; green
+		dc.w screen_left+96				; red
+		dc.w screen_left+216				; grey
 ; ===========================================================================
 
 SSRC_Main:	; Routine 0
@@ -36,7 +36,7 @@ SSRC_Main:	; Routine 0
 	.loop:
 		move.b	#id_SSRChaos,ost_id(a1)
 		move.w	(a2)+,ost_x_pos(a1)			; set x position from list
-		move.w	#$F0,ost_y_screen(a1)			; set y position
+		move.w	#screen_top+112,ost_y_screen(a1)	; set y position
 		lea	(v_emerald_list).w,a3			; get list of individual emeralds (numbered 0 to 5)
 		move.b	(a3,d2.w),d3				; read value of current emerald
 		move.b	d3,ost_frame(a1)			; set frame number

@@ -24,44 +24,78 @@ ost_card_x_start:	rs.w 1					; $32 ; start & finish x position
 
 include_Card_Data:	macro
 Card_ItemData:	; y position, routine number, frame number
-		dc.w $D0
+		dc.w screen_top+80
 		dc.b id_Card_Move, id_frame_card_ghz		; zone name (frame number changes)
-		dc.w $E4
+		dc.w screen_top+100
 		dc.b id_Card_Move, id_frame_card_zone		; "ZONE"
-		dc.w $EA
+		dc.w screen_top+106
 		dc.b id_Card_Move, id_frame_card_act1		; act number (frame number changes)
-		dc.w $E0
+		dc.w screen_top+96
 		dc.b id_Card_Move, id_frame_card_oval		; oval
 
 Card_PosData:	; x pos start, x pos stop
-		dc.w 0,	$120					; GREEN HILL
-		dc.w -$104, $13C				; ZONE
-		dc.w $414, $154					; ACT x
-		dc.w $214, $154					; oval
-		dc.w 0,	$120					; LABYRINTH
-		dc.w -$10C, $134
-		dc.w $40C, $14C
-		dc.w $20C, $14C
-		dc.w 0,	$120					; MARBLE
-		dc.w -$120, $120
-		dc.w $3F8, $138
-		dc.w $1F8, $138
-		dc.w 0,	$120					; STAR LIGHT
-		dc.w -$104, $13C
-		dc.w $414, $154
-		dc.w $214, $154
-		dc.w 0,	$120					; SPRING YARD
-		dc.w -$FC, $144
-		dc.w $41C, $15C
-		dc.w $21C, $15C
-		dc.w 0,	$120					; SCRAP BRAIN
-		dc.w -$FC, $144
-		dc.w $41C, $15C
-		dc.w $21C, $15C
-		dc.w 0,	$120					; FINAL
-		dc.w -$11C, $124
-		dc.w $3EC, $3EC
-		dc.w $1EC, $12C
+		dc.w screen_left-128				; GREEN HILL
+		dc.w screen_left+160
+		dc.w screen_left-388				; ZONE
+		dc.w screen_left+188
+		dc.w screen_left+916				; ACT x
+		dc.w screen_left+212
+		dc.w screen_left+404				; oval
+		dc.w screen_left+212
+		
+		dc.w screen_left-128				; LABYRINTH
+		dc.w screen_left+160
+		dc.w screen_left-396
+		dc.w screen_left+180
+		dc.w screen_left+908
+		dc.w screen_left+204
+		dc.w screen_left+396
+		dc.w screen_left+204
+		
+		dc.w screen_left-128				; MARBLE
+		dc.w screen_left+160
+		dc.w screen_left-416
+		dc.w screen_left+160
+		dc.w screen_left+888
+		dc.w screen_left+184
+		dc.w screen_left+376
+		dc.w screen_left+184
+		
+		dc.w screen_left-128				; STAR LIGHT
+		dc.w screen_left+160
+		dc.w screen_left-388
+		dc.w screen_left+188
+		dc.w screen_left+916
+		dc.w screen_left+212
+		dc.w screen_left+404
+		dc.w screen_left+212
+		
+		dc.w screen_left-128				; SPRING YARD
+		dc.w screen_left+160
+		dc.w screen_left-380
+		dc.w screen_left+196
+		dc.w screen_left+924
+		dc.w screen_left+220
+		dc.w screen_left+412
+		dc.w screen_left+220
+		
+		dc.w screen_left-128				; SCRAP BRAIN
+		dc.w screen_left+160
+		dc.w screen_left-380
+		dc.w screen_left+196
+		dc.w screen_left+924
+		dc.w screen_left+220
+		dc.w screen_left+412
+		dc.w screen_left+220
+		
+		dc.w screen_left-128				; FINAL
+		dc.w screen_left+160
+		dc.w screen_left-412
+		dc.w screen_left+164
+		dc.w screen_left+876
+		dc.w screen_left+876
+		dc.w screen_left+364
+		dc.w screen_left+172
 		endm
 ; ===========================================================================
 

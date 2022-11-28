@@ -38,9 +38,9 @@ TCha_Main:	; Routine 0
 		move.w	#tile_Nem_EndEm_TryAgain,ost_tile(a1)
 		move.b	#render_abs,ost_render(a1)
 		move.b	#1,ost_priority(a1)
-		move.w	#$104,ost_x_pos(a1)
-		move.w	#$120,ost_ectry_x_start(a1)
-		move.w	#$EC,ost_y_screen(a1)
+		move.w	#screen_left+132,ost_x_pos(a1)
+		move.w	#screen_left+160,ost_ectry_x_start(a1)
+		move.w	#screen_top+108,ost_y_screen(a1)
 		move.w	ost_y_screen(a1),ost_ectry_y_start(a1)
 		move.b	#$1C,ost_ectry_radius(a1)
 		lea	(v_emerald_list).w,a3
