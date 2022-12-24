@@ -49,16 +49,16 @@ SlopeObject:
 ; Assumes Sonic is already on the platform
 ;
 ; input:
-;	d1 = platform half width
-;	d2 = platform x position
+;	d1.w = platform half width
+;	d2.w = platform x position
 ;	a2 = address of heightmap data
 
 ; output:
-;	d0 = Sonic's y position
-;	d1 = Sonic's height
-;	d3 = height of platform where Sonic is standing
+;	d0.w = Sonic's y position
+;	d1.b = Sonic's height
 ;	a1 = address of OST of Sonic
-;	uses d2
+
+;	uses d1.l, d2.w
 ; ---------------------------------------------------------------------------
 
 include_SlopeObject_NoChk:	macro

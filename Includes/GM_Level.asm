@@ -96,7 +96,7 @@ GM_Demo:
 		cmpi.b	#id_LZ,(v_zone).w			; is level LZ?
 		bne.s	.skip_water				; if not, branch
 
-		move.w	#$8014,(a6)				; enable horizontal interrupts
+		move.w	#vdp_enable_hint|vdp_md_color,(a6)	; enable horizontal interrupts
 		moveq	#0,d0
 		move.b	(v_act).w,d0
 		add.w	d0,d0

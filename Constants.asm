@@ -25,8 +25,8 @@ screen_width:		equ 320
 screen_height:		equ 224
 screen_top:		equ 128					; y coordinate of top edge of screen for sprites
 screen_left:		equ 128					; x coordinate of left edge of screen for sprites
-screen_bottom:		equ screen_top+screen_height
-screen_right:		equ screen_left+screen_width
+screen_bottom:		equ screen_top+screen_height		; y coordinate of bottom edge of screen for sprites (352)
+screen_right:		equ screen_left+screen_width		; x coordinate of right edge of screen for sprites (448)
 
 ; VRAM data
 vram_window:		equ $A000				; window nametable - unused

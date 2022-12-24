@@ -24,12 +24,12 @@
 
 ; usage (if object moves horizontally):
 ;		pushr.w	ost_x_pos(a0)				; save x pos before moving
-;		bsr.w	MoveObject				; move object
+;		bsr.w	.moveobject				; move object
 ;		move.w	#$1B,d1					; width
 ;		move.w	#5,d2					; height
 ;		move.w	#5,d3					; height
 ;		popr.w	d4					; retrieve previous x pos
-;		bsr.w	SolidObject			
+;		bsr.w	SolidObject
 ; ---------------------------------------------------------------------------
 
 SolidObject:

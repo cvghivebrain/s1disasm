@@ -234,9 +234,9 @@ dma:		macro source,length,dest1,dest2
 		endc
 		
 		lea	(vdp_control_port).l,a5
-		move.l	#$94000000+(((\length>>1)&$FF00)<<8)+$9300+((\length>>1)&$FF),(a5)
-		move.l	#$96000000+(((\source>>1)&$FF00)<<8)+$9500+((\source>>1)&$FF),(a5)
-		move.w	#$9700+((((\source>>1)&$FF0000)>>16)&$7F),(a5)
+		move.l	#(vdp_dma_length_hi<<16)+((((length)>>1)&$FF00)<<8)+vdp_dma_length_low+(((length)>>1)&$FF),(a5)
+		move.l	#(vdp_dma_source_mid<<16)+((((source)>>1)&$FF00)<<8)+vdp_dma_source_low+(((source)>>1)&$FF),(a5)
+		move.w	#vdp_dma_source_hi+(((((source)>>1)&$FF0000)>>16)&$7F),(a5)
 		move.w	#dma_type+(dma_dest&$3FFF),(a5)
 		move.w	#dma_type2+((dma_dest&$C000)>>14),(v_vdp_dma_buffer).w
 		move.w	(v_vdp_dma_buffer).w,(a5)
@@ -251,7 +251,7 @@ dma:		macro source,length,dest1,dest2
 dma_fill:	macro value,length,dest
 		lea	(vdp_control_port).l,a5
 		move.w	#vdp_auto_inc+1,(a5)			; set VDP increment to 1 byte
-		move.l	#$94000000+(((length)&$FF00)<<8)+$9300+((length)&$FF),(a5) ; set length of DMA
+		move.l	#(vdp_dma_length_hi<<16)+(((length)&$FF00)<<8)+vdp_dma_length_low+((length)&$FF),(a5) ; set length of DMA
 		move.w	#vdp_dma_vram_fill,(a5)			; set DMA mode to fill
 		move.l	#$40000080+(((dest)&$3FFF)<<16)+(((dest)&$C000)>>14),(a5) ; set target of DMA
 		move.w	#value<<8,(vdp_data_port).l		; set byte to fill with
@@ -269,7 +269,7 @@ dma_fill:	macro value,length,dest
 
 disable_display:	macro
 		move.w	(v_vdp_mode_buffer).w,d0		; $81xx
-		andi.b	#$BF,d0					; clear bit 6
+		andi.b	#~vdp_enable_display&$FF,d0		; clear bit 6
 		move.w	d0,(vdp_control_port).l
 		endm
 
@@ -280,7 +280,7 @@ disable_display:	macro
 
 enable_display:	macro
 		move.w	(v_vdp_mode_buffer).w,d0		; $81xx
-		ori.b	#$40,d0					; set bit 6
+		ori.b	#vdp_enable_display&$FF,d0		; set bit 6
 		move.w	d0,(vdp_control_port).l
 		endm
 
@@ -293,7 +293,7 @@ enable_display:	macro
 zonewarning:	macro dest,elementsize
 	.end:
 		if (.end-dest)-(ZoneCount*elementsize)<>0
-		inform 1,"Size of \dest ($%h) does not match ZoneCount ($\#ZoneCount).",(.end-dest)/elementsize
+		inform 1,"Size of \dest ($%h) does not match ZoneCount ($%h).",(.end-dest)/elementsize,ZoneCount
 		endc
 		endm
 

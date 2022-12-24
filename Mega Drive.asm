@@ -27,7 +27,7 @@ vdp_control_port:	equ $C00004
 	
 	vdp_mode_register2:	equ $8100
 	vdp_128kb_vram:		equ vdp_mode_register2+$80	; use 128kB of VRAM, Teradrive only
-	vdp_hide_display:	equ vdp_mode_register2+$40	; fill display with bg colour
+	vdp_enable_display:	equ vdp_mode_register2+$40	; enable display
 	vdp_enable_vint:	equ vdp_mode_register2+$20	; enable vertical interrupts
 	vdp_enable_dma:		equ vdp_mode_register2+$10	; enable DMA operations
 	vdp_pal_display:	equ vdp_mode_register2+8	; 240px screen height (PAL)
@@ -104,6 +104,8 @@ ym2612_a0:		equ $A04000
 ym2612_d0:		equ $A04001
 ym2612_a1:		equ $A04002
 ym2612_d1:		equ $A04003
+z80_bank_reg:		equ $A06000				; Bank register for address $8000-$FFFF
+z80_psg:		equ $A07F11
 
 ; I/O addresses
 console_version:	equ $A10001
