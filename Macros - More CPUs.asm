@@ -105,11 +105,11 @@ adc:		macro
 			if instr("a b c d e h l (hl) ","\1\ ")
 			getzreg	\1
 			dc.b $88+zreg
-			elseif strcmp("\1","ixh")
+			elseif strcmp("\1","ixh")|strcmp("\1","ixu")
 			dc.w $dd8c
 			elseif strcmp("\1","ixl")
 			dc.w $dd8d
-			elseif strcmp("\1","iyh")
+			elseif strcmp("\1","iyh")|strcmp("\1","iyu")
 			dc.w $fd8c
 			elseif strcmp("\1","iyl")
 			dc.w $fd8d
@@ -187,11 +187,11 @@ cp:		macro
 		if instr("a b c d e h l (hl) ","\1\ ")
 		getzreg	\1
 		dc.b $b8+zreg
-		elseif strcmp("\1","ixh")
+		elseif strcmp("\1","ixh")|strcmp("\1","ixu")
 		dc.w $ddbc
 		elseif strcmp("\1","ixl")
 		dc.w $ddbd
-		elseif strcmp("\1","iyh")
+		elseif strcmp("\1","iyh")|strcmp("\1","iyu")
 		dc.w $fdbc
 		elseif strcmp("\1","iyl")
 		dc.w $fdbd
@@ -235,11 +235,11 @@ dec:		macro
 		if instr("a b c d e h l (hl) ","\1\ ")
 		getzreg	\1
 		dc.b $5+(zreg*8)
-		elseif strcmp("\1","ixh")
+		elseif strcmp("\1","ixh")|strcmp("\1","ixu")
 		dc.w $dd25
 		elseif strcmp("\1","ixl")
 		dc.w $dd2d
-		elseif strcmp("\1","iyh")
+		elseif strcmp("\1","iyh")|strcmp("\1","iyu")
 		dc.w $fd25
 		elseif strcmp("\1","iyl")
 		dc.w $fd2d
@@ -342,11 +342,11 @@ inc:		macro
 		if instr("a b c d e h l (hl) ","\1\ ")
 		getzreg	\1
 		dc.b $4+(zreg*8)
-		elseif strcmp("\1","ixh")
+		elseif strcmp("\1","ixh")|strcmp("\1","ixu")
 		dc.w $dd24
 		elseif strcmp("\1","ixl")
 		dc.w $dd2c
-		elseif strcmp("\1","iyh")
+		elseif strcmp("\1","iyh")|strcmp("\1","iyu")
 		dc.w $fd24
 		elseif strcmp("\1","iyl")
 		dc.w $fd2c
@@ -471,11 +471,11 @@ ld:		macro
 			dc.w $ed57
 			elseif strcmp("\2","r")
 			dc.w $ed5f
-			elseif strcmp("\2","ixh")
+			elseif strcmp("\2","ixh")|strcmp("\2","ixu")
 			dc.w $dd7c
 			elseif strcmp("\2","ixl")
 			dc.w $dd7d
-			elseif strcmp("\2","iyh")
+			elseif strcmp("\2","iyh")|strcmp("\2","iyu")
 			dc.w $fd7c
 			elseif strcmp("\2","iyl")
 			dc.w $fd7d
@@ -502,11 +502,11 @@ ld:		macro
 			if instr("a b c d e h l (hl) ","\2\ ")
 			getzreg	\2
 			dc.b $40+zreg
-			elseif strcmp("\2","ixh")
+			elseif strcmp("\2","ixh")|strcmp("\2","ixu")
 			dc.w $dd44
 			elseif strcmp("\2","ixl")
 			dc.w $dd45
-			elseif strcmp("\2","iyh")
+			elseif strcmp("\2","iyh")|strcmp("\2","iyu")
 			dc.w $fd44
 			elseif strcmp("\2","iyl")
 			dc.w $fd45
@@ -522,11 +522,11 @@ ld:		macro
 			if instr("a b c d e h l (hl) ","\2\ ")
 			getzreg	\2
 			dc.b $48+zreg
-			elseif strcmp("\2","ixh")
+			elseif strcmp("\2","ixh")|strcmp("\2","ixu")
 			dc.w $dd4c
 			elseif strcmp("\2","ixl")
 			dc.w $dd4d
-			elseif strcmp("\2","iyh")
+			elseif strcmp("\2","iyh")|strcmp("\2","iyu")
 			dc.w $fd4c
 			elseif strcmp("\2","iyl")
 			dc.w $fd4d
@@ -542,11 +542,11 @@ ld:		macro
 			if instr("a b c d e h l (hl) ","\2\ ")
 			getzreg	\2
 			dc.b $50+zreg
-			elseif strcmp("\2","ixh")
+			elseif strcmp("\2","ixh")|strcmp("\2","ixu")
 			dc.w $dd54
 			elseif strcmp("\2","ixl")
 			dc.w $dd55
-			elseif strcmp("\2","iyh")
+			elseif strcmp("\2","iyh")|strcmp("\2","iyu")
 			dc.w $fd54
 			elseif strcmp("\2","iyl")
 			dc.w $fd55
@@ -562,11 +562,11 @@ ld:		macro
 			if instr("a b c d e h l (hl) ","\2\ ")
 			getzreg	\2
 			dc.b $58+zreg
-			elseif strcmp("\2","ixh")
+			elseif strcmp("\2","ixh")|strcmp("\2","ixu")
 			dc.w $dd5c
 			elseif strcmp("\2","ixl")
 			dc.w $dd5d
-			elseif strcmp("\2","iyh")
+			elseif strcmp("\2","iyh")|strcmp("\2","iyu")
 			dc.w $fd5c
 			elseif strcmp("\2","iyl")
 			dc.w $fd5d
@@ -606,11 +606,11 @@ ld:		macro
 		dc.w $ed47
 		elseif strcmp("\1","r")
 		dc.w $ed4f
-		elseif strcmp("\1","ixh")
+		elseif strcmp("\1","ixh")|strcmp("\1","ixu")
 			if instr("a b c d e ","\2\ ")
 			getzreg	\2
 			dc.w $dd60+zreg
-			elseif strcmp("\2","ixh")
+			elseif strcmp("\2","ixh")|strcmp("\2","ixu")
 			dc.w $dd64
 			elseif strcmp("\2","ixl")
 			dc.w $dd65
@@ -622,7 +622,7 @@ ld:		macro
 			if instr("a b c d e ","\2\ ")
 			getzreg	\2
 			dc.w $dd68+zreg
-			elseif strcmp("\2","ixh")
+			elseif strcmp("\2","ixh")|strcmp("\2","ixu")
 			dc.w $dd6c
 			elseif strcmp("\2","ixl")
 			dc.w $dd6d
@@ -630,11 +630,11 @@ ld:		macro
 			num: equ \2
 			dc.b $dd, $2e, num
 			endc
-		elseif strcmp("\1","iyh")
+		elseif strcmp("\1","iyh")|strcmp("\1","iyu")
 			if instr("a b c d e ","\2\ ")
 			getzreg	\2
 			dc.w $fd60+zreg
-			elseif strcmp("\2","iyh")
+			elseif strcmp("\2","iyh")|strcmp("\2","iyu")
 			dc.w $fd64
 			elseif strcmp("\2","iyl")
 			dc.w $fd65
@@ -646,7 +646,7 @@ ld:		macro
 			if instr("a b c d e ","\2\ ")
 			getzreg	\2
 			dc.w $fd68+zreg
-			elseif strcmp("\2","iyh")
+			elseif strcmp("\2","iyh")|strcmp("\2","iyu")
 			dc.w $fd6c
 			elseif strcmp("\2","iyl")
 			dc.w $fd6d
@@ -1020,33 +1020,17 @@ rrd:		macros
 rst:		macro
 		local num
 		num: equ \1
+		if num>7
 		dc.b $c7+(num&$38)
+		else
+		dc.b $c7+(num<<3)
+		endc
 		endm
 
 
 sbc:		macro
 		local num
-		if strcmp("\1","a")
-			if instr("a b c d e h l (hl) ","\2\ ")
-			getzreg	\2
-			dc.b $98+zreg
-			elseif strcmp("\2","ixh")
-			dc.w $dd9c
-			elseif strcmp("\2","ixl")
-			dc.w $dd9d
-			elseif strcmp("\2","iyh")
-			dc.w $fd9c
-			elseif strcmp("\2","iyl")
-			dc.w $fd9d
-			elseif instr("\2","(i")			; sbc a,(ix+n)
-				num: equ \2
-				getindex \2
-				dc.b ireg, $9e, num
-			else					; sbc a,n
-			num: equ \2
-			dc.b $de, num
-			endc
-		elseif strcmp("\1","hl")
+		if strcmp("\1","hl")
 			if strcmp("\2","bc")
 			dc.w $ed42
 			elseif strcmp("\2","de")
@@ -1057,6 +1041,34 @@ sbc:		macro
 			dc.w $ed72
 			else
 			fail
+			endc
+			mexit
+		endc
+
+		; "sbc a, x" or "sbc x"
+		if narg=2 & strcmp("\1","a")
+			shift					; ignore a
+		endc
+		
+		if (narg=1) | (narg=2)
+			if instr("a b c d e h l (hl) ","\1\ ")
+			getzreg	\1
+			dc.b $98+zreg
+			elseif strcmp("\1","ixh")|strcmp("\1","ixu")
+			dc.w $dd9c
+			elseif strcmp("\1","ixl")
+			dc.w $dd9d
+			elseif strcmp("\1","iyh")|strcmp("\1","iyu")
+			dc.w $fd9c
+			elseif strcmp("\1","iyl")
+			dc.w $fd9d
+			elseif instr("\1","(i")			; sbc a,(ix+n)
+				num: equ \1
+				getindex \1
+				dc.b ireg, $9e, num
+			else					; sbc a,n
+			num: equ \1
+			dc.b $de, num
 			endc
 		else
 		fail
@@ -1129,6 +1141,15 @@ sll:		macro
 		endc
 		endm
 
+sl1:		macros
+		sll \_
+
+sls:		macros
+		sll \_
+
+slia:		macros
+		sll \_
+
 
 sra:		macro
 		local num
@@ -1176,14 +1197,17 @@ srl:		macro
 
 xor:		macro
 		local num
+		if narg=2 & strcmp("\1","a")
+		shift						; ignore a if using alternate syntax
+		endc
 		if instr("a b c d e h l (hl) ","\1\ ")
 		getzreg	\1
 		dc.b $a8+zreg
-		elseif strcmp("\1","ixh")
+		elseif strcmp("\1","ixh")|strcmp("\1","ixu")
 		dc.w $ddac
 		elseif strcmp("\1","ixl")
 		dc.w $ddad
-		elseif strcmp("\1","iyh")
+		elseif strcmp("\1","iyh")|strcmp("\1","iyu")
 		dc.w $fdac
 		elseif strcmp("\1","iyl")
 		dc.w $fdad
@@ -1273,11 +1297,11 @@ add:		macro
 				if instr("a b c d e h l (hl) ","\1\ ")
 				getzreg	\1
 				dc.b $80+zreg
-				elseif strcmp("\1","ixh")
+				elseif strcmp("\1","ixh")|strcmp("\1","ixu")
 				dc.w $dd84
 				elseif strcmp("\1","ixl")
 				dc.w $dd85
-				elseif strcmp("\1","iyh")
+				elseif strcmp("\1","iyh")|strcmp("\1","iyu")
 				dc.w $fd84
 				elseif strcmp("\1","iyl")
 				dc.w $fd85
@@ -1301,14 +1325,17 @@ add:		macro
 and:		macro
 		local num
 		if cpu_mode=1					; Z80
+			if narg=2 & strcmp("\1","a")
+			shift					; ignore a if using alternate syntax
+			endc
 			if instr("a b c d e h l (hl) ","\1\ ")
 			getzreg	\1
 			dc.b $a0+zreg
-			elseif strcmp("\1","ixh")
+			elseif strcmp("\1","ixh")|strcmp("\1","ixu")
 			dc.w $dda4
 			elseif strcmp("\1","ixl")
 			dc.w $dda5
-			elseif strcmp("\1","iyh")
+			elseif strcmp("\1","iyh")|strcmp("\1","iyu")
 			dc.w $fda4
 			elseif strcmp("\1","iyl")
 			dc.w $fda5
@@ -1347,14 +1374,17 @@ nop:		macro
 or:		macro
 		local num
 		if cpu_mode=1					; Z80
+			if narg=2 & strcmp("\1","a")
+			shift					; ignore a if using alternate syntax
+			endc
 			if instr("a b c d e h l (hl) ","\1\ ")
 			getzreg	\1
 			dc.b $b0+zreg
-			elseif strcmp("\1","ixh")
+			elseif strcmp("\1","ixh")|strcmp("\1","ixu")
 			dc.w $ddb4
 			elseif strcmp("\1","ixl")
 			dc.w $ddb5
-			elseif strcmp("\1","iyh")
+			elseif strcmp("\1","iyh")|strcmp("\1","iyu")
 			dc.w $fdb4
 			elseif strcmp("\1","iyl")
 			dc.w $fdb5
@@ -1375,19 +1405,22 @@ or:		macro
 sub:		macro
 		local num
 		if cpu_mode=1					; Z80
+			if narg=2 & strcmp("\1","a")
+			shift					; ignore a if using alternate syntax
+			endc
 			if instr("a b c d e h l (hl) ","\1\ ")
 			getzreg	\1
 			dc.b $90+zreg
-			elseif strcmp("\1","ixh")
+			elseif strcmp("\1","ixh")|strcmp("\1","ixu")
 			dc.w $dd94
 			elseif strcmp("\1","ixl")
 			dc.w $dd95
-			elseif strcmp("\1","iyh")
+			elseif strcmp("\1","iyh")|strcmp("\1","iyu")
 			dc.w $fd94
 			elseif strcmp("\1","iyl")
 			dc.w $fd95
 			elseif instr("\1","(i")			; sub (ix+n)
-				um: equ \1
+				num: equ \1
 				getindex \1
 				dc.b ireg, $96, num
 			else					; sub n
