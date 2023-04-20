@@ -877,11 +877,6 @@ Eni_JapNames:	incbin	"Tilemaps\Hidden Japanese Credits.eni"	; Japanese credits (
 		include "Objects\Sonic DPLCs.asm"		; SonicDynPLC
 
 ; ---------------------------------------------------------------------------
-; Uncompressed graphics	- Sonic
-; ---------------------------------------------------------------------------
-Art_Sonic:	incbin	"Graphics\Sonic.bin"			; Sonic
-		even
-; ---------------------------------------------------------------------------
 ; Compressed graphics - various
 ; ---------------------------------------------------------------------------
 		if Revision=0

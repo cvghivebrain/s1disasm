@@ -1019,7 +1019,13 @@ rrd:		macros
 
 rst:		macro
 		local num
+		if (strlen("\1")=1) & instr("01234567","\1")
 		num: equ \1
+		elseif type(\1)&2=2				; check if sections/groups are in use
+		num: equ offset(\1)
+		else
+		num: equ \1
+		endc
 		if num>7
 		dc.b $c7+(num&$38)
 		else
