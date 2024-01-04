@@ -283,13 +283,13 @@ ei:		macros
 ex:		macro
 		if strcmp("\_","af,af")				; ex af,af'
 		dc.b 8
-		elseif strcmp("\_","(sp),hl")
+		elseif strcmp("\_","(sp),hl")|strcmp("\_","hl,(sp)")
 		dc.b $e3
-		elseif strcmp("\_","(sp),ix")
+		elseif strcmp("\_","(sp),ix")|strcmp("\_","ix,(sp)")
 		dc.w $dde3
-		elseif strcmp("\_","(sp),iy")
+		elseif strcmp("\_","(sp),iy")|strcmp("\_","iy,(sp)")
 		dc.w $fde3
-		elseif strcmp("\_","de,hl")
+		elseif strcmp("\_","de,hl")|strcmp("\_","hl,de")
 		dc.b $eb
 		else
 		fail
