@@ -102,7 +102,7 @@ v_obj31ypos:		equ v_cstomp_y_pos
 v_bossstatus:		equ v_boss_status
 v_trackpos:		equ v_sonic_pos_tracker_num
 v_trackbyte:		equ v_sonic_pos_tracker_num_low
-f_lockscreen:		equ f_boss_boundary
+f_lockscreen:		equ f_boss_loaded
 v_256loop1:		equ v_256x256_with_loop_1
 v_256loop2:		equ v_256x256_with_loop_2
 v_256roll1:		equ v_256x256_with_tunnel_1
@@ -328,6 +328,7 @@ Sonic_ChgJumpDir:	equ Sonic_JumpDirection
 ; Sonic 1 2021
 ost_actwidth:		equ ost_displaywidth
 ost_anim_delay:		equ ost_anim_time_low
+f_boss_boundary:	equ f_boss_loaded
 
 ; Sonic 2 Github
 id:			equ ost_id

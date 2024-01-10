@@ -167,7 +167,7 @@ DLE_GHZ3_Boss:
 
 	.fail:
 		play.w	0, bsr.w, mus_Boss			; play boss music
-		move.b	#1,(f_boss_boundary).w			; lock screen
+		move.b	#1,(f_boss_loaded).w			; lock screen
 		addq.b	#2,(v_dle_routine).w			; goto DLE_GHZ3_End next
 		moveq	#id_PLC_Boss,d0
 		bra.w	AddPLC					; load boss gfx
@@ -226,7 +226,7 @@ DLE_LZ3:
 
 	.fail:
 		play.w	0, bsr.w, mus_Boss			; play boss music
-		move.b	#1,(f_boss_boundary).w			; lock screen
+		move.b	#1,(f_boss_loaded).w			; lock screen
 		addq.b	#2,(v_dle_routine).w			; don't load boss again
 		moveq	#id_PLC_Boss,d0
 		bra.w	AddPLC					; load boss gfx
@@ -429,7 +429,7 @@ DLE_MZ3_Boss:
 
 	.fail:
 		play.w	0, bsr.w, mus_Boss			; play boss music
-		move.b	#1,(f_boss_boundary).w			; lock screen
+		move.b	#1,(f_boss_loaded).w			; lock screen
 		addq.b	#2,(v_dle_routine).w			; goto DLE_MZ3_End next
 		moveq	#id_PLC_Boss,d0
 		bra.w	AddPLC					; load boss gfx
@@ -497,7 +497,7 @@ DLE_SLZ3_Boss:
 
 	.fail:
 		play.w	0, bsr.w, mus_Boss			; play boss music
-		move.b	#1,(f_boss_boundary).w			; lock screen
+		move.b	#1,(f_boss_loaded).w			; lock screen
 		addq.b	#2,(v_dle_routine).w			; goto DLE_SLZ3_End next
 		moveq	#id_PLC_Boss,d0
 		bra.w	AddPLC					; load boss gfx
@@ -585,7 +585,7 @@ DLE_SYZ3_Boss:
 
 	.fail:
 		play.w	0, bsr.w, mus_Boss			; play boss music
-		move.b	#1,(f_boss_boundary).w			; lock screen
+		move.b	#1,(f_boss_loaded).w			; lock screen
 		moveq	#id_PLC_Boss,d0
 		bra.w	AddPLC					; load boss gfx
 ; ===========================================================================
@@ -684,7 +684,7 @@ DLE_SBZ2_Eggman:
 		addq.b	#2,(v_dle_routine).w			; goto DLE_SBZ2_End next
 
 	.fail:
-		move.b	#1,(f_boss_boundary).w			; lock screen
+		move.b	#1,(f_boss_loaded).w			; lock screen
 
 	.set_boundary:
 		bra.s	DLE_SBZ2_SetBoundary
@@ -735,7 +735,7 @@ DLE_FZ_Boss:
 		bne.s	.set_boundary				; branch if not found
 		move.b	#id_BossFinal,(a1)			; load FZ boss object
 		addq.b	#2,(v_dle_routine).w			; goto DLE_FZ_Arena next
-		move.b	#1,(f_boss_boundary).w			; lock screen
+		move.b	#1,(f_boss_loaded).w			; lock screen
 
 	.set_boundary:
 		bra.s	DLE_SBZ2_SetBoundary
