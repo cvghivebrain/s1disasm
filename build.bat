@@ -4,6 +4,8 @@ rem compress kosinski files
 for %%f in ("256x256 Mappings\*.unc") do "bin\kosinski_compress.exe" "%%f" "256x256 Mappings\%%~nf.kos"
 for %%f in ("Graphics Kosinski\*.bin") do "bin\kosinski_compress.exe" "%%f" "Graphics Kosinski\%%~nf.kos"
 
+for %%f in ("Graphics Nemesis\*.bin") do "bin\clownnemesis.exe" -ca "%%f" "Graphics Nemesis\%%~nf.nem"
+
 rem assemble final rom
 IF EXIST s1built.bin move /Y s1built.bin s1built.prev.bin >NUL
 IF EXIST DAC Driver.unc move /Y DAC Driver.unc >NUL

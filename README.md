@@ -17,7 +17,7 @@ Differences with the disassembly on the [Sonic Retro Github page](https://github
   * Constants used for render and status flags.
 * Different labels used for some RAM addresses and routines.
   * Deprecated labels, as well as those from other games, are stored in [a compatibility file](Includes/Compatibility.asm).
-* Automatic recompression of Kosinski-compressed data. Thanks to [Clownacy](https://github.com/Clownacy) for [the compressor](https://github.com/Clownacy/accurate-kosinski).
+* Automatic recompression of Kosinski and Nemesis-compressed data. Thanks to [Clownacy](https://github.com/Clownacy) for the [Kosinski](https://github.com/Clownacy/accurate-kosinski) and [Nemesis](https://github.com/Clownacy/clownnemesis) compressors.
 * Automatic RAM management.
   * Prevents word/longword variables starting on an odd address.
   * Prevents accidental clearing of bytes after the end of a cleared section (which are always in multiples of 4 bytes).

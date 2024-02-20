@@ -909,6 +909,7 @@ Eni_SSBg2:	incbin	"Tilemaps\SS Background 2.eni"		; special stage background (ma
 		incfile	Nem_SS1UpBlock
 		incfile	Nem_SSEmStars
 		incfile	Nem_SSRedWhite
+		dc.w 0
 		incfile	Nem_SSZone1
 		incfile	Nem_SSZone2
 		incfile	Nem_SSZone3
@@ -920,6 +921,7 @@ Eni_SSBg2:	incbin	"Tilemaps\SS Background 2.eni"		; special stage background (ma
 		incfile	Nem_SSGhost
 		incfile	Nem_SSWBlock
 		incfile	Nem_SSGlass
+		dc.w 0
 		incfile	Nem_ResultEm
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - GHZ stuff
@@ -960,9 +962,11 @@ Eni_SSBg2:	incbin	"Tilemaps\SS Background 2.eni"		; special stage background (ma
 		incfile	Nem_MzMetal
 		incfile	Nem_MzButton
 		incfile	Nem_MzGlass
+		dc.w 0
 		incfile	Nem_MzUnkGrass
 		incfile	Nem_Fireball
 		incfile	Nem_Lava
+		dc.w 0
 		incfile	Nem_MzBlock
 		incfile	Nem_MzUnkBlock
 ; ---------------------------------------------------------------------------
@@ -973,6 +977,7 @@ Eni_SSBg2:	incbin	"Tilemaps\SS Background 2.eni"		; special stage background (ma
 		incfile	Nem_Fan
 		incfile	Nem_SlzWall
 		incfile	Nem_Pylon
+		dc.w 0
 		incfile	Nem_SlzSwing
 		incfile	Nem_SlzBlock
 		incfile	Nem_SlzCannon
@@ -1033,6 +1038,7 @@ Eni_SSBg2:	incbin	"Tilemaps\SS Background 2.eni"		; special stage background (ma
 		incfile	Nem_HSpring
 		incfile	Nem_VSpring
 		incfile	Nem_SignPost
+		dc.w 0
 		incfile	Nem_Lamp
 		incfile	Nem_BigFlash
 		incfile	Nem_Bonus
@@ -1072,6 +1078,7 @@ Eni_SSBg2:	incbin	"Tilemaps\SS Background 2.eni"		; special stage background (ma
 		incfile	Blk256_SYZ
 		incfile	Blk16_SBZ
 		incfile	Nem_SBZ
+		dc.w 0
 		incfile	Blk256_SBZ
 ; ---------------------------------------------------------------------------
 ; Compressed graphics - bosses and ending sequence
@@ -1091,8 +1098,10 @@ Eni_SSBg2:	incbin	"Tilemaps\SS Background 2.eni"		; special stage background (ma
 		endc
 		incfile	Kos_EndFlowers
 		incfile	Nem_EndFlower
+		dc.w 0
 		incfile	Nem_CreditText
 		incfile	Nem_EndStH
+		dc.w 0
 
 		if Revision=0
 			dcb.b $104,$FF				; why?
