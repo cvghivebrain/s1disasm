@@ -890,6 +890,7 @@ Eni_JapNames:	incbin	"Tilemaps\Hidden Japanese Credits.eni"	; Japanese credits (
 			incfile	Nem_UnkFire
 			incfile	Nem_Warp
 			incfile	Nem_Goggle
+			dc.w 0
 		endc
 
 		include "Objects\Special Stage Walls [Mappings].asm" ; Map_SSWalls
