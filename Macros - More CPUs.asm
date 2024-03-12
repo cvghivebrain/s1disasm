@@ -43,6 +43,15 @@ binclude:	macros
 ; Z80 instruction set
 ; ---------------------------------------------------------------------------
 
+z80_error:	macro
+
+		instruction: equs \1
+		errtype: equs \2
+		invoc:	equs \3
+
+		inform 2,"\errtype: \instruction \invoc"
+		endm
+
 getzreg:	macro						; convert register to numerical value
 		if strcmp("\1","a")
 		zreg: = 7
@@ -71,7 +80,7 @@ getindex:	macro						; convert index register to register offset and value
 		elseif instr("\1","(iy")
 		ireg: = $fd
 		else
-			fail
+			inform 2,"Could not determine ireg."
 		endc
 		endm
 
@@ -91,13 +100,17 @@ adc:		macro
 			elseif strcmp("\2","sp")
 			dc.w $ed7a
 			else
-			fail
+			z80_error	"adc","Illegal addressing mode or unexpected end of line","\_"
+			mexit
 			endc
 			mexit
 		endc
 
-		; "adc a, x" or "adc x"
-		if narg=2 & strcmp("\1","a")
+		; "adc a,x" or "adc x"
+		if narg=2 & ~strcmp("\1","a") ;& strcmp("\2","a")	; filter out illegal destinations
+			z80_error	"adc","Illegal addressing mode or unexpected end of line","\_"
+			mexit
+		elseif narg=2 & strcmp("\1","a")
 			shift					; ignore a
 		endc
 
@@ -122,7 +135,8 @@ adc:		macro
 			dc.b $ce, num
 			endc
 		else
-		fail
+		z80_error	"adc","Illegal addressing mode or unexpected end of line","\_"
+		mexit
 		endc
 		endm
 
@@ -138,7 +152,8 @@ bit:		macro
 			getindex \2
 			dc.b ireg, $cb, num2, $46+(num*8)
 		else
-		fail
+		z80_error	"bit","Illegal addressing mode or unexpected end of line","\_"
+		mexit
 		endc
 		endm
 
@@ -167,12 +182,14 @@ call:		macro
 			elseif strcmp("\1","m")
 			dc.b $fc
 			else
-				fail
+				z80_error	"call","Illegal branch condition","\_"
+				mexit
 			endc
 
 			shift
 		else
-			fail
+			z80_error	"call","Unexpected end of line","\_"
+			mexit
 		endc
 
 		dc.b num&$FF, num>>8
@@ -184,6 +201,14 @@ ccf:		macros
 
 cp:		macro
 		local num
+
+		if narg=2 & ~strcmp("\1","a")
+			z80_error	"cp","Illegal addressing mode","\_"
+			mexit
+		elseif narg=2 & strcmp("\1","a")
+			shift					; ignore a if using alternate syntax
+		endc
+
 		if instr("a b c d e h l (hl) ","\1\ ")
 		getzreg	\1
 		dc.b $b8+zreg
@@ -260,7 +285,8 @@ dec:		macro
 			getindex \1
 			dc.b ireg, $35, num
 		else
-		fail
+		z80_error	"dec","Illegal addressing mode or unexpected end of line","\_"
+		mexit
 		endc
 		endm
 
@@ -272,6 +298,10 @@ di:		macros
 djnz:		macro
 		local num
 		num: equ \1
+		;if ((num-*)>=-$80)&((num-*)<=$7f)
+		;inform 2,"Branch (%h) is out of range: djnz \_",num-*
+		;mexit
+		;endc
 		dc.b $10, num-*-2
 		endm
 
@@ -292,7 +322,8 @@ ex:		macro
 		elseif strcmp("\_","de,hl")|strcmp("\_","hl,de")
 		dc.b $eb
 		else
-		fail
+		z80_error	"ex","Illegal addressing mode or unexpected end of line","\_"
+		mexit
 		endc
 		endm
 
@@ -312,7 +343,8 @@ im:		macro
 		elseif \1=2
 		dc.w $ed5e
 		else
-		fail
+		z80_error	"im","Invalid interrupt mode","\_"
+		mexit
 		endc
 		endm
 
@@ -332,7 +364,8 @@ in:		macro
 		elseif strcmp("\1","(c)")
 		dc.w $ed70
 		else
-		fail
+		z80_error	"in","Illegal addressing mode or unexpected end of line","\_"
+		mexit
 		endc
 		endm
 
@@ -367,7 +400,8 @@ inc:		macro
 			getindex \1
 			dc.b ireg, $34, num
 		else
-		fail
+		z80_error	"inc","Illegal addressing mode or unexpected end of line","\_"
+		mexit
 		endc
 		endm
 
@@ -421,8 +455,13 @@ jp:		macro
 			elseif strcmp("\1","m")
 			num: equ \2
 			dc.b $fa
-			else					; jp n
-			num: equ \1
+			else
+			if narg=2
+			z80_error	"jp","Illegal branch condition","\_"
+			mexit
+			endc
+
+			num: equ \1					; jp n
 			dc.b $c3
 			endc
 			if narg=2
@@ -447,23 +486,37 @@ jr:		macro
 		elseif strcmp("\1","c")
 		num: equ \2
 		dc.b $38
-		else						; jr n
-		num: equ \1
+		else
+		if narg=2
+		z80_error	"jr","Illegal branch condition","\_"
+		mexit
+		endc
+		num: equ \1		; jr n
 		dc.b $18
 		endc
 		if narg=2
 		shift
 		endc
-		dc.b num-*-1
 		;if ((num-*)>=-$80)&((num-*)<=$7f)
-		;fail
+		;inform 2,"Branch (%h) is out of range: jr \_",num-*
+		;mexit
 		;endc
+		dc.b num-*-1
 		endm
 
 
 ld:		macro
 		local num, num2
+
+		if ~(narg=2)|strcmp("\2","")
+			z80_error	"ld","Unexpected end of line","\_"
+			mexit
+		endc
 		if strcmp("\1","a")
+			if (strlen("\2")=2)&instr("bc de hl sp ix iy ","\2\ ")	; filter out illegal sources
+			z80_error	"ld","Illegal addressing mode","\_"
+			mexit
+			endc
 			if instr("a b c d e h l (hl) ","\2\ ")
 			getzreg	\2
 			dc.b $78+zreg
@@ -499,6 +552,12 @@ ld:		macro
 				endc
 			endc
 		elseif strcmp("\1","b")
+
+			if ((strlen("\2")=2)&instr("bc de hl sp ix iy ","\2\ "))|((strlen("\2")=1)&instr("i r ","\2\ "))	; filter out illegal sources
+			z80_error	"ld","Illegal addressing mode","\_"
+			mexit
+			endc
+
 			if instr("a b c d e h l (hl) ","\2\ ")
 			getzreg	\2
 			dc.b $40+zreg
@@ -519,6 +578,10 @@ ld:		macro
 			dc.b $6, num
 			endc
 		elseif strcmp("\1","c")
+			if ((strlen("\2")=2)&instr("bc de hl sp ix iy ","\2\ "))|((strlen("\2")=1)&instr("i r ","\2\ "))	; filter out illegal sources
+			z80_error	"ld","Illegal addressing mode","\_"
+			mexit
+			endc
 			if instr("a b c d e h l (hl) ","\2\ ")
 			getzreg	\2
 			dc.b $48+zreg
@@ -539,6 +602,10 @@ ld:		macro
 			dc.b $e, num
 			endc
 		elseif strcmp("\1","d")
+			if ((strlen("\2")=2)&instr("bc de hl sp ix iy ","\2\ "))|((strlen("\2")=1)&instr("i r ","\2\ "))	; filter out illegal sources
+			z80_error	"ld","Illegal addressing mode","\_"
+			mexit
+			endc
 			if instr("a b c d e h l (hl) ","\2\ ")
 			getzreg	\2
 			dc.b $50+zreg
@@ -559,6 +626,10 @@ ld:		macro
 			dc.b $16, num
 			endc
 		elseif strcmp("\1","e")
+			if ((strlen("\2")=2)&instr("bc de hl sp ix iy ","\2\ "))|((strlen("\2")=1)&instr("i r ","\2\ "))	; filter out illegal sources
+			z80_error	"ld","Illegal addressing mode","\_"
+			mexit
+			endc
 			if instr("a b c d e h l (hl) ","\2\ ")
 			getzreg	\2
 			dc.b $58+zreg
@@ -579,6 +650,10 @@ ld:		macro
 			dc.b $1e, num
 			endc
 		elseif strcmp("\1","h")
+			if ((strlen("\2")=2)&instr("bc de hl sp ix iy ","\2\ "))|((strlen("\2")=1)&instr("i r ","\2\ "))	; filter out illegal sources
+			z80_error	"ld","Illegal addressing mode","\_"
+			mexit
+			endc
 			if instr("a b c d e h l (hl) ","\2\ ")
 			getzreg	\2
 			dc.b $60+zreg
@@ -591,6 +666,10 @@ ld:		macro
 			dc.b $26, num
 			endc
 		elseif strcmp("\1","l")
+			if ((strlen("\2")=2)&instr("bc de hl sp ix iy ","\2\ "))|((strlen("\2")=1)&instr("i r ","\2\ "))	; filter out illegal sources
+			z80_error	"ld","Illegal addressing mode","\_"
+			mexit
+			endc
 			if instr("a b c d e h l (hl) ","\2\ ")
 			getzreg	\2
 			dc.b $68+zreg
@@ -602,11 +681,25 @@ ld:		macro
 			num: equ \2
 			dc.b $2e, num
 			endc
-		elseif strcmp("\1","i")
-		dc.w $ed47
-		elseif strcmp("\1","r")
-		dc.w $ed4f
+		elseif strcmp("\1","i")		; ld i,a
+			if strcmp("\2","a")
+			dc.w $ed47
+			else
+			z80_error	"ld","Illegal addressing mode","\_"
+			mexit
+			endc
+		elseif strcmp("\1","r")		; ld r,a
+			if	strcmp("\2","a")
+			dc.w $ed4f
+			else
+			z80_error	"ld","Illegal addressing mode","\_"
+			mexit
+			endc
 		elseif strcmp("\1","ixh")|strcmp("\1","ixu")
+			if ((strlen("\2")=2)&instr("bc de hl sp ix iy ","\2\ "))|((strlen("\2")=1)&instr("i r h l ","\2\ "))	; filter out illegal sources
+			z80_error	"ld","Illegal addressing mode","\_"
+			mexit
+			endc
 			if instr("a b c d e ","\2\ ")
 			getzreg	\2
 			dc.w $dd60+zreg
@@ -619,6 +712,10 @@ ld:		macro
 			dc.b $dd, $26, num
 			endc
 		elseif strcmp("\1","ixl")
+			if ((strlen("\2")=2)&instr("bc de hl sp ix iy ","\2\ "))|((strlen("\2")=1)&instr("i r h l ","\2\ "))	; filter out illegal sources
+			z80_error	"ld","Illegal addressing mode","\_"
+			mexit
+			endc
 			if instr("a b c d e ","\2\ ")
 			getzreg	\2
 			dc.w $dd68+zreg
@@ -631,6 +728,10 @@ ld:		macro
 			dc.b $dd, $2e, num
 			endc
 		elseif strcmp("\1","iyh")|strcmp("\1","iyu")
+			if ((strlen("\2")=2)&instr("bc de hl sp ix iy ","\2\ "))|((strlen("\2")=1)&instr("i r h l ","\2\ "))	; filter out illegal sources
+			z80_error	"ld","Illegal addressing mode","\_"
+			mexit
+			endc
 			if instr("a b c d e ","\2\ ")
 			getzreg	\2
 			dc.w $fd60+zreg
@@ -643,6 +744,10 @@ ld:		macro
 			dc.b $fd, $26, num
 			endc
 		elseif strcmp("\1","iyl")
+			if ((strlen("\2")=2)&instr("bc de hl sp ix iy ","\2\ "))|((strlen("\2")=1)&instr("i r h l ","\2\ "))	; filter out illegal sources
+			z80_error	"ld","Illegal addressing mode","\_"
+			mexit
+			endc
 			if instr("a b c d e ","\2\ ")
 			getzreg	\2
 			dc.w $fd68+zreg
@@ -655,6 +760,10 @@ ld:		macro
 			dc.b $fd, $2e, num
 			endc
 		elseif strcmp("\1","bc")
+			if instr("a b c d e h l (hl) ixh ixu ixl iyh iyu iyl i r ","\2\ ")	; filter out illegal sources
+			z80_error	"ld","Illegal addressing mode","\_"
+			mexit
+			endc
 			num: equ \2
 			tmp_len: = strlen("\2")
 			tmp_fc:	substr	1,1,"\2"
@@ -665,6 +774,10 @@ ld:		macro
 			dc.b $1, num&$ff, num>>8
 			endc
 		elseif strcmp("\1","de")
+			if instr("a b c d e h l (hl) ixh ixu ixl iyh iyu iyl i r ","\2\ ")	; filter out illegal sources
+			z80_error	"ld","Illegal addressing mode","\_"
+			mexit
+			endc
 			num: equ \2
 			tmp_len: = strlen("\2")
 			tmp_fc:	substr	1,1,"\2"
@@ -675,6 +788,10 @@ ld:		macro
 			dc.b $11, num&$ff, num>>8
 			endc
 		elseif strcmp("\1","hl")
+			if instr("a b c d e h l (hl) ixh ixu ixl iyh iyu iyl i r ","\2\ ")	; filter out illegal sources
+			z80_error	"ld","Illegal addressing mode","\_"
+			mexit
+			endc
 			num: equ \2
 			tmp_len: = strlen("\2")
 			tmp_fc:	substr	1,1,"\2"
@@ -685,6 +802,10 @@ ld:		macro
 			dc.b $21, num&$ff, num>>8
 			endc
 		elseif strcmp("\1","sp")
+			if instr("a b c d e h l (hl) ixh ixu ixl iyh iyu iyl i r ","\2\ ")	; filter out illegal sources
+			z80_error	"ld","Illegal addressing mode","\_"
+			mexit
+			endc
 			if strcmp("\2","hl")
 			dc.b $f9
 			elseif strcmp("\2","ix")
@@ -703,6 +824,10 @@ ld:		macro
 				endc
 			endc
 		elseif strcmp("\1","ix")
+			if instr("a b c d e h l (hl) ixh ixu ixl iyh iyu iyl i r ","\2\ ")	; filter out illegal sources
+			z80_error	"ld","Illegal addressing mode","\_"
+			mexit
+			endc
 			num: equ \2
 			tmp_len: = strlen("\2")
 			tmp_fc:	substr	1,1,"\2"
@@ -713,6 +838,10 @@ ld:		macro
 			dc.b $dd, $21, num&$ff, num>>8
 			endc
 		elseif strcmp("\1","iy")
+			if instr("a b c d e h l (hl) ixh ixu ixl iyh iyu iyl i r ","\2\ ")	; filter out illegal sources
+			z80_error	"ld","Illegal addressing mode","\_"
+			mexit
+			endc
 			num: equ \2
 			tmp_len: = strlen("\2")
 			tmp_fc:	substr	1,1,"\2"
@@ -723,9 +852,19 @@ ld:		macro
 			dc.b $fd, $21, num&$ff, num>>8
 			endc
 		elseif strcmp("\1","(bc)")
-		dc.b 2
+			if strcmp("\2","a")			; ld (bc),a
+			dc.b 2
+			else
+			z80_error	"ld","Illegal addressing mode","\_"
+			mexit
+			endc
 		elseif strcmp("\1","(de)")
-		dc.b $12
+			if strcmp("\2","a")			; ld (de),a
+			dc.b $12
+			else
+			z80_error	"ld","Illegal addressing mode","\_"
+			mexit
+			endc
 		elseif strcmp("\1","(hl)")
 			if instr("a b c d e h l ","\2\ ")
 			getzreg	\2
@@ -763,7 +902,8 @@ ld:		macro
 			elseif strcmp("\2","iy")
 			dc.w $fd22
 			else
-			fail
+			z80_error	"ld","Illegal addressing mode","\_"
+			mexit
 			endc
 			dc.b num&$FF, num>>8
 		endc
@@ -805,7 +945,8 @@ out:		macro
 		num: equ \1
 		dc.b $d3, num
 		else
-		fail
+		z80_error	"out","Illegal addressing mode or unexpected end of line","\_"
+		mexit
 		endc
 		endm
 
@@ -832,7 +973,8 @@ pop:		macro
 		elseif strcmp("\1","iy")
 		dc.w $fde1
 		else
-		fail
+		z80_error	"pop","Illegal addressing mode or unexpected end of line","\_"
+		mexit
 		endc
 		endm
 
@@ -851,7 +993,8 @@ push:		macro
 		elseif strcmp("\1","iy")
 		dc.w $fde5
 		else
-		fail
+		z80_error	"push","Illegal addressing mode or unexpected end of line","\_"
+		mexit
 		endc
 		endm
 
@@ -867,7 +1010,8 @@ res:		macro
 			getindex \2
 			dc.b ireg, $cb, num2, $86+(num*8)
 		else
-		fail
+		z80_error	"res","Illegal addressing mode or unexpected end of line","\_"
+		mexit
 		endc
 		endm
 
@@ -892,7 +1036,8 @@ ret:		macro
 		elseif strlen("\1")=0				; ret
 		dc.b $c9
 		else
-		fail
+		z80_error	"ret","Illegal branch condition","\_"
+		mexit
 		endc
 		endm
 
@@ -922,7 +1067,8 @@ rl:		macro
 			dc.b $16
 			endc
 		else
-		fail
+		z80_error	"rl","Illegal addressing mode or unexpected end of line","\_"
+		mexit
 		endc
 		endm
 
@@ -948,10 +1094,10 @@ rlc:		macro
 			dc.b $6
 			endc
 		else
-		fail
+		z80_error	"rlc","Illegal addressing mode or unexpected end of line","\_"
+		mexit
 		endc
 		endm
-
 
 rlca:		macros
 		dc.b $7
@@ -978,7 +1124,8 @@ rr:		macro
 			dc.b $1e
 			endc
 		else
-		fail
+		z80_error	"rr","Illegal addressing mode or unexpected end of line","\_"
+		mexit
 		endc
 		endm
 
@@ -1004,7 +1151,8 @@ rrc:		macro
 			dc.b $e
 			endc
 		else
-		fail
+		z80_error	"rrc","Illegal addressing mode or unexpected end of line","\_"
+		mexit
 		endc
 		endm
 
@@ -1046,7 +1194,8 @@ sbc:		macro
 			elseif strcmp("\2","sp")
 			dc.w $ed72
 			else
-			fail
+			z80_error	"sbc","Illegal addressing mode or unexpected end of line","\_"
+			mexit
 			endc
 			mexit
 		endc
@@ -1055,7 +1204,7 @@ sbc:		macro
 		if narg=2 & strcmp("\1","a")
 			shift					; ignore a
 		endc
-		
+
 		if (narg=1) | (narg=2)
 			if instr("a b c d e h l (hl) ","\1\ ")
 			getzreg	\1
@@ -1077,7 +1226,8 @@ sbc:		macro
 			dc.b $de, num
 			endc
 		else
-		fail
+		z80_error	"sbc","Illegal addressing mode or unexpected end of line","\_"
+		mexit
 		endc
 		endm
 
@@ -1099,7 +1249,8 @@ set:		macro
 			getindex \2
 			dc.b ireg, $cb, num2, $c6+(num*8)
 		else
-		fail
+		z80_error	"set","Illegal addressing mode or unexpected end of line","\_"
+		mexit
 		endc
 		endm
 
@@ -1121,7 +1272,8 @@ sla:		macro
 			dc.b $26
 			endc
 		else
-		fail
+		z80_error	"sla","Illegal addressing mode or unexpected end of line","\_"
+		mexit
 		endc
 		endm
 
@@ -1143,7 +1295,8 @@ sll:		macro
 			dc.b $36
 			endc
 		else
-		fail
+		z80_error	"sll","Illegal addressing mode or unexpected end of line","\_"
+		mexit
 		endc
 		endm
 
@@ -1174,7 +1327,8 @@ sra:		macro
 			dc.b $2e
 			endc
 		else
-		fail
+		z80_error	"sra","Illegal addressing mode or unexpected end of line","\_"
+		mexit
 		endc
 		endm
 
@@ -1196,7 +1350,8 @@ srl:		macro
 			dc.b $3e
 			endc
 		else
-		fail
+		z80_error	"srl","Illegal addressing mode or unexpected end of line","\_"
+		mexit
 		endc
 		endm
 
@@ -1261,7 +1416,8 @@ add:		macro
 				elseif strcmp("\2","sp")
 				dc.b $39
 				else
-				fail
+				z80_error	"add","Illegal addressing mode or unexpected end of line","\_"
+				mexit
 				endc
 				mexit
 
@@ -1275,7 +1431,8 @@ add:		macro
 				elseif strcmp("\2","sp")
 				dc.w $dd39
 				else
-				fail
+				z80_error	"add","Illegal addressing mode or unexpected end of line","\_"
+				mexit
 				endc
 				mexit
 
@@ -1289,7 +1446,8 @@ add:		macro
 				elseif strcmp("\2","sp")
 				dc.w $fd39
 				else
-				fail
+				z80_error	"add","Illegal addressing mode or unexpected end of line","\_"
+				mexit
 				endc
 				mexit
 			endc
@@ -1320,7 +1478,8 @@ add:		macro
 				dc.b $c6, num
 				endc
 			else
-			fail
+			z80_error	"add","Illegal addressing mode or unexpected end of line","\_"
+			mexit
 			endc
 		else						; 68k
 		axd.\0	\_
